@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,22 +18,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link TibberConfiguration} class contains fields mapping configuration parameters.
  *
  * @author Stian Kjoglum - Initial contribution
+ * @author Bernd Weymann - make configuration variables public and introduce updateHour
  */
 @NonNullByDefault
 public class TibberConfiguration {
-    private String token = "";
-    private String homeid = "";
-    private int refresh;
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getHomeid() {
-        return homeid;
-    }
-
-    public int getRefresh() {
-        return refresh;
-    }
+    public String token = "";
+    public String homeid = "";
+    public int updateHour = 13;
 }

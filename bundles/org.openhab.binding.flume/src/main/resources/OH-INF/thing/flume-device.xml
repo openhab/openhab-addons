@@ -11,6 +11,7 @@
 
 		<label>Flume Meter Device</label>
 		<description>Flume water meter device.</description>
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="instant-usage" typeId="instant-usage"/>
@@ -36,6 +37,10 @@
 		<item-type>Number:Volume</item-type>
 		<label>Cumulative Used</label>
 		<description>Cumulative water used (volume)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -43,6 +48,10 @@
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Instant Water Usage</label>
 		<description>Instantaneous water flow rate (volume / minute)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -50,6 +59,10 @@
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>Date/Time when device was last seen</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

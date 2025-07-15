@@ -6,7 +6,7 @@ Transforms an [XML](https://www.w3.org/XML/) input using an [XPath](https://www.
 
 ### Basic Example
 
-Given a retrieved XML 
+Given a retrieved XML
 
 **Input XML**
 
@@ -48,15 +48,15 @@ A simple xpath query to fetch the Azimut value does not work as it does not addr
 
 There are two ways to address the namespace.
 
-* Simple path which may not work in complex XML.
-* With full qualified path.
+- Simple path which may not work in complex XML.
+- With full qualified path.
 
 The XPath
 
-* `[name()='PTZStatus']/*[name()='AbsoluteHigh']/*[name()='azimuth']/`
-* `/*[local-name()='PTZStatus' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']/*[local-name()='AbsoluteHigh' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']/*[local-name()='azimuth' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']`
+- `[name()='PTZStatus']/*[name()='AbsoluteHigh']/*[name()='azimuth']/`
+- `/*[local-name()='PTZStatus' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']/*[local-name()='AbsoluteHigh' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']/*[local-name()='azimuth' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']`
 
-returns 
+returns
 
 ```
 <azimuth>450</azimuth>
@@ -64,27 +64,27 @@ returns
 
 ### In Setup
 
-**.items**
+#### .items
 
-```csv
+```java
 String  Temperature_xml "Temperature [XPATH(/*[name()='PTZStatus']/*[name()='AbsoluteHigh']/*[name()='azimuth']/):%s °C]" {...}
 Number  Temperature "Temperature [%.1f °C]"
 ```
 
-**.rules**
+### .rules
 
-```php
+```java
 rule "Convert XML to Item Type Number"
-  when
+when
     Item Temperature_xml changed
-  then
+then
     // use the transformation service to retrieve the value
     // Simple
     val mytest = transform("XPATH", "/*[name()='PTZStatus']
                                      /*[name()='AbsoluteHigh']
                                      /*[name()='azimuth']
-                                     /text()", 
-                                    Temperature_xml.state.toString )  
+                                     /text()",
+                                    Temperature_xml.state.toString )
     // Fully qualified
     val mytest = transform("XPATH", "/*[local-name()='PTZStatus'    and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']
                                      /*[local-name()='AbsoluteHigh' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']
@@ -116,6 +116,6 @@ Please note: This profile is a one-way transformation, i.e. only values from a d
 
 ## Further Reading
 
-* An [introduction](https://www.w3schools.com/xml/xpath_intro.asp) to XPath at W3School
-* An informative explanation of [common mistakes](https://qxf2.com/blog/common-xpath-mistakes/).
-* Online validation tools like [this](https://www.freeformatter.com/xpath-tester.html) to check the syntax.
+- An [introduction](https://www.w3schools.com/xml/xpath_intro.asp) to XPath at W3School
+- An informative explanation of [common mistakes](https://qxf2.com/blog/common-xpath-mistakes/).
+- Online validation tools like [this](https://www.freeformatter.com/xpath-tester.html) to check the syntax.

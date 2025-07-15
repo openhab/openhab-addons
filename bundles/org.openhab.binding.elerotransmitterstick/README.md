@@ -86,7 +86,7 @@ A typical item configuration for a rollershutter looks like this:
 
 ```java
 Rollershutter Rollershutter1 {channel="elerotransmitterstick:elerochannel:0a0a0a0a:1:control",autoupdate="false" }
-String Rollershutter1State  {channel="elerotransmitterstick:elerochannel:0a0a0a0a:1:status" } 
+String Rollershutter1State  {channel="elerotransmitterstick:elerochannel:0a0a0a0a:1:status" }
 ```
 
 A sitemap entry looks like this:

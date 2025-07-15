@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,8 @@ public class GreeAirDevice {
     private final InetAddress ipAddress;
     private int port = 0;
     private String encKey = "";
-    private GreeCryptoUtil.EncryptionTypes encType = GreeCryptoUtil.EncryptionTypes.ECB;
+    private EncryptionTypes encType = EncryptionTypes.UNKNOWN;
+    private int refreshInterval = 5;
     private Optional<GreeScanResponseDTO> scanResponseGson = Optional.empty();
     private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
     private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
@@ -74,10 +75,19 @@ public class GreeAirDevice {
     }
 
     public GreeAirDevice(InetAddress ipAddress, int port, GreeScanResponseDTO scanResponse) {
+        this(ipAddress, port, scanResponse, GreeCryptoUtil.getEncryptionType(scanResponse));
+    }
+
+    public GreeAirDevice(InetAddress ipAddress, int port, GreeScanResponseDTO scanResponse,
+            EncryptionTypes encryptionType) {
         this.ipAddress = ipAddress;
         this.port = port;
         this.scanResponseGson = Optional.of(scanResponse);
-        this.encType = GreeCryptoUtil.getEncryptionType(scanResponse);
+        if (encryptionType == EncryptionTypes.UNKNOWN) {
+            this.encType = GreeCryptoUtil.getEncryptionType(scanResponse);
+        } else {
+            this.encType = encryptionType;
+        }
     }
 
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
@@ -148,7 +158,7 @@ public class GreeAirDevice {
         }
     }
 
-    public void bindWithDevice(DatagramSocket clientSocket) throws GreeException {
+    public void bindWithDevice(DatagramSocket clientSocket, EncryptionTypes encryptionTypeConfig) throws GreeException {
         try {
             // Prep the Binding Request pack
             GreeBindRequestPackDTO bindReqPackGson = new GreeBindRequestPackDTO();
@@ -158,12 +168,13 @@ public class GreeAirDevice {
             String bindReqPackStr = GSON.toJson(bindReqPackGson);
 
             // Encrypt and send the Binding Request pack
+            setEncryptionType(encryptionTypeConfig);
             String[] encryptedBindReqData = GreeCryptoUtil.encrypt(GreeCryptoUtil.getGeneralKeyByteArray(encType),
                     bindReqPackStr, encType);
             DatagramPacket sendPacket = createPackRequest(1, encryptedBindReqData);
             clientSocket.send(sendPacket);
 
-            // Recieve a response, create the JSON to hold the response values
+            // Receive a response, create the JSON to hold the response values
             GreeBindResponseDTO resp = receiveResponse(clientSocket, GreeBindResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decrypt(resp, encType);
             resp.packJson = GSON.fromJson(resp.decryptedPack, GreeBindResponsePackDTO.class);
@@ -174,7 +185,12 @@ public class GreeAirDevice {
             // save the outcome
             isBound = true;
         } catch (IOException | JsonSyntaxException e) {
-            throw new GreeException("Unable to bind to device", e);
+            if (encType == EncryptionTypes.ECB) {
+                logger.debug("Unable to bind to device - changing the encryption mode to COMBINED and trying again", e);
+                bindWithDevice(clientSocket, EncryptionTypes.COMBINED);
+            } else {
+                throw new GreeException("Unable to bind to device", e);
+            }
         }
     }
 
@@ -460,11 +476,11 @@ public class GreeAirDevice {
         request.uid = 0;
         request.tcid = getId();
         request.pack = data[0];
-        if (encType == GreeCryptoUtil.EncryptionTypes.GCM) {
+        if (encType != EncryptionTypes.ECB) {
             if (data.length > 1) {
                 request.tag = data[1];
             } else {
-                logger.warn("Missing string for tag property for GCM encryption data");
+                logger.warn("Missing string for tag property for {} encryption data", encType);
             }
         }
         byte[] sendData = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);
@@ -519,6 +535,30 @@ public class GreeAirDevice {
         return isBound;
     }
 
+    public void setEncryptionType(EncryptionTypes value) {
+        logger.debug("setEncriptionType called for device: {}, to change from: {}, to: {}", getName(), encType, value);
+        if (value == EncryptionTypes.UNKNOWN && encType == EncryptionTypes.UNKNOWN) {
+            logger.debug("Set default ECB type for device: {}", getName());
+            encType = EncryptionTypes.ECB;
+        } else if (value == EncryptionTypes.UNKNOWN) {
+            logger.debug("Trying to set the encription type to UNKNOWN, no change made for device: {}", getName());
+        } else {
+            encType = value;
+        }
+    }
+
+    public EncryptionTypes getEncryptionType() {
+        return encType;
+    }
+
+    public void setRefreshInterval(int value) {
+        refreshInterval = value;
+    }
+
+    public int getRefreshInterval() {
+        return refreshInterval;
+    }
+
     public byte[] getKey() {
         return encKey.getBytes(StandardCharsets.UTF_8);
     }
@@ -528,7 +568,12 @@ public class GreeAirDevice {
     }
 
     public String getName() {
-        return scanResponseGson.isPresent() ? scanResponseGson.get().packJson.name : "";
+        if (scanResponseGson.isPresent()) {
+            String name = scanResponseGson.get().packJson.name;
+            return name.trim().isEmpty() ? getId() : name;
+        }
+
+        return "";
     }
 
     public String getVendor() {

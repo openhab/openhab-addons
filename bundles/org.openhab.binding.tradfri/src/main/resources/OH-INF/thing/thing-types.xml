@@ -7,7 +7,7 @@
 	<bridge-type id="gateway">
 		<label>TRÅDFRI Gateway</label>
 		<description>IKEA TRÅDFRI IP Gateway</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>serialNumber</representation-property>
 
 		<config-description-ref uri="bridge-type:tradfri:gateway"/>
@@ -22,7 +22,7 @@
 
 		<label>On/Off Plug</label>
 		<description>A plug that can be switched on and off.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 		</channels>
@@ -39,7 +39,7 @@
 
 		<label>Dimmable Light</label>
 		<description>A light that has continuous brightness control.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
@@ -56,7 +56,7 @@
 
 		<label>Color Temperature Light</label>
 		<description>A dimmable light that supports different color temperature settings.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
@@ -74,7 +74,7 @@
 
 		<label>Color Light</label>
 		<description>A dimmable light that supports full colors and color temperature settings.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
 			<channel id="color" typeId="system.color"/>
@@ -92,7 +92,7 @@
 
 		<label>Occupancy Sensor</label>
 		<description>This represents the motion sensor capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>OccupancySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -110,7 +110,7 @@
 
 		<label>Non-Colour Controller</label>
 		<description>This represents the wireless dimmer sensor capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -128,7 +128,7 @@
 
 		<label>Non-Colour Scene Controller</label>
 		<description>This represents the remote control capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -146,7 +146,7 @@
 
 		<label>Window Covering Device</label>
 		<description>This represents a blind or curtain that can be moved up and down. Also reports current battery level.</description>
-
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="battery_level" typeId="system.battery-level"/>
@@ -165,7 +165,7 @@
 
 		<label>Window Covering Controller</label>
 		<description>This represents the wireless open/close remote capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -183,7 +183,7 @@
 
 		<label>Air Purifier</label>
 		<description>This represents the air purifier sensors and controls.</description>
-
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="fan_speed" typeId="fan-speed"/>
 			<channel id="fan_mode" typeId="fan-mode"/>
@@ -206,6 +206,10 @@
 		<label>Position</label>
 		<description>Control the position of the blind or curtain in percent from 0 (open) to 100 (closed).</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="fan-mode">
@@ -214,6 +218,10 @@
 		<label>Fan Speed Mode</label>
 		<description>Controls the configured fan speed.</description>
 
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%d">
 			<options>
 				<option value="0">Power Off</option>
@@ -234,6 +242,10 @@
 		<description>Displays the current fan speed (0..50).</description>
 		<category>Fan</category>
 
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -242,6 +254,10 @@
 
 		<label>Disable LED</label>
 		<description>Disables the LED's on the Air Purifier.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="lock-button">
@@ -249,6 +265,10 @@
 
 		<label>Lock Physical Button</label>
 		<description>When ON, locks the physical button on the device.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="air-quality-pm25">
@@ -257,6 +277,10 @@
 		<label>PM 2.5</label>
 		<description>Density of Particulate Matter of 2.5μm measured by the Air Purifier, in ppm.</description>
 
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%d ppm"/>
 	</channel-type>
 
@@ -266,6 +290,10 @@
 		<label>Air Quality</label>
 		<description>An evaluation of the Air Quality between 1 (Good) and 3 (Bad).</description>
 
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%d">
 			<options>
 				<option value="1">Good</option>
@@ -282,6 +310,10 @@
 		<description>The number of minutes before the next filter check (or time since check is required if below 0).</description>
 		<category>Time</category>
 
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f d"/>
 	</channel-type>
 
@@ -291,6 +323,9 @@
 		<label>Filter Check Alarm</label>
 		<description>When this value is ON, you need to perform a filter check.</description>
 
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -301,6 +336,10 @@
 		<description>The duration for which the current filter was used.</description>
 		<category>Time</category>
 
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f week"/>
 	</channel-type>
 

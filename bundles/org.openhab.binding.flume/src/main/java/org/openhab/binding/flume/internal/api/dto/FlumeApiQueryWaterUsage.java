@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,22 +23,13 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jeff James - Initial contribution
  */
-public class FlumeApiQueryWaterUsage {
-    @SerializedName("request_id")
-    public String requestId;
-    @SerializedName("since_datetime")
-    public LocalDateTime sinceDateTime;
-    @SerializedName("until_datetime")
-    public LocalDateTime untilDateTime;
-    @SerializedName("tz")
-    public String timeZone;
-    public FlumeApi.BucketType bucket;
-    @SerializedName("device_id")
-    public String[] deviceId;
-    @SerializedName("group_multiplier")
-    public Integer groupMultiplier;
-    public FlumeApi.OperationType operation;
-    public FlumeApi.UnitType units;
-    @SerializedName("sort_direction")
-    public FlumeApi.SortDirectionType sortDirection;
+public record FlumeApiQueryWaterUsage( //
+        @SerializedName("request_id") String requestId, //
+        @SerializedName("since_datetime") LocalDateTime sinceDateTime, //
+        @SerializedName("until_datetime") LocalDateTime untilDateTime, //
+        FlumeApi.BucketType bucket, //
+        @SerializedName("group_multiplier") Integer groupMultiplier, //
+        FlumeApi.OperationType operation, //
+        FlumeApi.UnitType units, //
+        @SerializedName("sort_direction") FlumeApi.SortDirectionType sortDirection) {
 }

@@ -7,7 +7,7 @@
 	<bridge-type id="neatoaccount">
 		<label>Neato Account</label>
 		<description>Access to Neato Account. Used to discover robots tied to account.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>E-mail Address</label>
@@ -30,7 +30,7 @@
 
 		<label>Neato Vacuum Cleaner</label>
 		<description>Provides communication with Neato Vacuum cleaner.</description>
-
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 		<channels>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="state" typeId="state"/>
@@ -71,6 +71,10 @@
 		<item-type>String</item-type>
 		<label>Current State</label>
 		<description>Current state of the vacuum cleaner.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="INVALID">Invalid</option>
@@ -86,6 +90,10 @@
 		<item-type>String</item-type>
 		<label>Current Action</label>
 		<description>Current action of the vacuum cleaner.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="INVALID">Invalid</option>
@@ -147,6 +155,10 @@
 		<item-type>String</item-type>
 		<label>Send Command</label>
 		<description>Send Commands to Vacuum Cleaner. (clean with map, clean, pause, resume, stop, dock)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false" pattern="%s">
 			<options>
 				<option value="clean">Clean</option>
@@ -163,6 +175,10 @@
 		<item-type>String</item-type>
 		<label>Cleaning Category</label>
 		<description>Current or last category of the cleaning.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="MANUAL">Manual Cleaning</option>
@@ -177,6 +193,10 @@
 		<item-type>String</item-type>
 		<label>Cleaning Mode</label>
 		<description>Current or last cleaning mode.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="ECO">Eco</option>
@@ -189,6 +209,10 @@
 		<item-type>String</item-type>
 		<label>Cleaning Modifier</label>
 		<description>Modifier of current or last cleaning.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="NORMAL">Normal</option>

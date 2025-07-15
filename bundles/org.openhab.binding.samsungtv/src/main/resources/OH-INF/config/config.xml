@@ -55,6 +55,12 @@
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="orientationKey" type="text">
+			<label>Key code to send to rotate TV</label>
+			<description>Only works with optional rotating mount</description>
+			<default>KEY_MULTI_VIEW</default>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="smartThingsApiKey" type="text" groupName="Cloud Connection">
 			<label>Smartthings PAT</label>
 			<description>Go to https://account.smartthings.com/tokens and obtain a Personal Access Token, enter it here.</description>
@@ -63,6 +69,12 @@
 		<parameter name="smartThingsDeviceId" type="text" groupName="Cloud Connection">
 			<label>Smartthings Device ID</label>
 			<description>Once your PAT is entered and saved, look in the log for the Device ID for this TV, enter it here.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="smartThingsSubscription" type="boolean" groupName="Cloud Connection">
+			<label>Subscribe to SmartThings</label>
+			<description>Reduces polling on SmartThings, by subscribing to Device Events</description>
+			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

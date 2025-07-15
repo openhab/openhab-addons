@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -453,6 +453,7 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsRoller {
+        public Integer id;
         public Double maxtime;
         @SerializedName("maxtime_open")
         public Double maxtimeOpen;
@@ -552,6 +553,7 @@ public class Shelly1ApiJsonDTO {
 
         public Double pf; // 3EM
         public Double current; // 3EM
+        public Double frequency; // Gen4
     }
 
     public static class ShellyEMNCurrentSettings {
@@ -772,6 +774,7 @@ public class Shelly1ApiJsonDTO {
 
         public Double totalCurrent;
         public Double totalPower;
+        public Double totalKWH;
         public Double totalReturned;
 
         @SerializedName("ext_temperature")

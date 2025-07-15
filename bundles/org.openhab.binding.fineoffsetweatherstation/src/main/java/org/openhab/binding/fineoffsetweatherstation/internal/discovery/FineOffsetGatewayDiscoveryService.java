@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,7 +36,6 @@ import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorCon
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
@@ -195,10 +193,8 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
 
     @Nullable
     private Protocol determineProtocol(FineOffsetGatewayConfiguration config) {
-        ConversionContext conversionContext = new ConversionContext(ZoneOffset.UTC);
         for (Protocol protocol : Protocol.values()) {
-            try (GatewayQueryService gatewayQueryService = protocol.getGatewayQueryService(config, null,
-                    conversionContext)) {
+            try (GatewayQueryService gatewayQueryService = protocol.getGatewayQueryService(config, null)) {
                 Collection<MeasuredValue> result = gatewayQueryService.getMeasuredValues();
                 logger.trace("found {} measured values via protocol {}", result.size(), protocol);
                 if (!result.isEmpty()) {
@@ -286,6 +282,11 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
      * The thread, which waits for data and submits the unique results addresses to the discovery results
      */
     private class ReceiverThread extends Thread {
+
+        public ReceiverThread() {
+            super(String.format("OH-binding-%s-%s", FineOffsetWeatherStationBindingConstants.BINDING_ID, "Receiver"));
+        }
+
         @Override
         public void run() {
             DatagramSocket socket = getSocket();

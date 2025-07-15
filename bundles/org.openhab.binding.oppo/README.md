@@ -114,11 +114,11 @@ The following channels are available:
 | sub_shift         | Number      | Sets the subtitle shift (-10 to 10) [10x models and up] (note more than 5 from 0 throws an error on the BDP103)                       |
 | hdmi_mode         | String      | Sets the current HDMI output mode (options vary by model; see notes above for allowed values)                                         |
 | hdr_mode          | String      | Sets current HDR output mode (Auto, On, Off) [UDP-203/205 only]                                                                       |
-| remote_button     | String      | Simulate pressing a button on the remote control (3 letter code; codes can be found in Appendix A below)                              |
+| remote_button     | String      | Simulate pressing a button on the remote control [3 letter code; codes can be found in Appendix A below] (WriteOnly)                  |
 
 ## Full Example
 
-oppo.things:
+### `oppo.things` Example
 
 ```java
 // direct IP connection
@@ -132,7 +132,7 @@ oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, ve
 
 ```
 
-oppo.items:
+### `oppo.items` Example
 
 ```java
 Switch oppo_power "Power" { channel="oppo:player:myoppo:power" }
@@ -142,7 +142,7 @@ Number oppo_source "Source Input [%s]" { channel="oppo:player:myoppo:source" }
 String oppo_play_mode "Play Mode [%s]" { channel="oppo:player:myoppo:play_mode" }
 Player oppo_control "Control" { channel="oppo:player:myoppo:control" }
 String oppo_time_mode "Time Mode [%s]" { channel="oppo:player:myoppo:time_mode" }
-Number:Time oppo_time_display "Time [JS(secondsformat.js):%s]" { channel="oppo:player:myoppo:time_display" }
+Number:Time oppo_time_display "Time [%s]" { channel="oppo:player:myoppo:time_display" }
 Number oppo_current_title "Current Title/Track [%s]" { channel="oppo:player:myoppo:current_title" }
 Number oppo_total_title "Total Title/Track [%s]" { channel="oppo:player:myoppo:total_title" }
 Number oppo_current_chapter "Current Chapter [%s]" { channel="oppo:player:myoppo:current_chapter" }
@@ -160,37 +160,10 @@ Number oppo_osd_position "OSD Position [%s]" { channel="oppo:player:myoppo:osd_p
 Number oppo_sub_shift "Subtitle Shift [%s]" { channel="oppo:player:myoppo:sub_shift" }
 String oppo_hdmi_mode "HDMI Mode [%s]" { channel="oppo:player:myoppo:hdmi_mode" }
 String oppo_hdr_mode "HDR Mode [%s]" { channel="oppo:player:myoppo:hdr_mode" }
-String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button", autoupdate="false" }
+String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button" }
 ```
 
-secondsformat.js:
-
-```javascript
-(function(timestamp) {
-    var totalSeconds = Date.parse(timestamp) / 1000
-
-    if (isNaN(totalSeconds)) {
-        return '-';
-    } else {
-        hours = Math.floor(totalSeconds / 3600);
-        totalSeconds %= 3600;
-        minutes = Math.floor(totalSeconds / 60);
-        seconds = totalSeconds % 60;
-        if ( hours < 10 ) {
-            hours = '0' + hours;
-        }
-        if ( minutes < 10 ) {
-            minutes = '0' + minutes;
-        }
-        if ( seconds < 10 ) {
-            seconds = '0' + seconds;
-        }
-        return hours + ':' + minutes + ':' + seconds;
-    }
-})(input)
-```
-
-oppo.sitemap:
+### `oppo.sitemap` Example
 
 ```perl
 sitemap oppo label="Oppo Blu-ray" {
@@ -228,7 +201,7 @@ sitemap oppo label="Oppo Blu-ray" {
 }
 ```
 
-### Appendix A - 'remote_button' codes:
+### Appendix A - 'remote_button' codes
 
 | Command | Function                                                                    |
 |---------|-----------------------------------------------------------------------------|
@@ -296,7 +269,7 @@ sitemap oppo label="Oppo Blu-ray" {
 | SEH     | Display the Picture Adjustment menu                                         |
 | DRB     | Display the Darbee Adjustment menu                                          |
 
-#### Extra buttons on UDP models:
+#### Extra buttons on UDP models
 
 | Command | Function                                                                            |
 |---------|-------------------------------------------------------------------------------------|

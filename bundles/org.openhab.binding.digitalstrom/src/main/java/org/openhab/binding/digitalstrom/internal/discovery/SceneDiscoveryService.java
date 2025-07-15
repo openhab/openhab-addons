@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
     public void deactivate() {
         logger.debug("deactivate discovery service for scene type {} remove thing tyspes {}", sceneType,
                 super.getSupportedThingTypes());
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     @Override

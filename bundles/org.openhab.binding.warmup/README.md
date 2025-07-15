@@ -4,27 +4,26 @@ This binding integrates [Warmup](https://www.warmup.co.uk) Wifi enabled Thermost
 
 Devices known to work with the binding:
 
-* [Warmup 4iE](https://www.warmup.co.uk/thermostats/smart/4ie-underfloor-heating)
-* [Warmup Element](https://www.warmup.co.uk/thermostats/smart/element-wifi-thermostat)
+- [Warmup 4iE](https://www.warmup.co.uk/thermostats/smart/4ie-underfloor-heating)
+- [Warmup Element](https://www.warmup.co.uk/thermostats/smart/element-wifi-thermostat)
 
 Device expected to work with the binding:
 
-* [Warmup 6iE](https://www.warmup.co.uk/thermostats/smart/6ie-underfloor-heating)
+- [Warmup 6iE](https://www.warmup.co.uk/thermostats/smart/6ie-underfloor-heating)
 
 Devices which might work with the binding:
 
-* Other similar looking devices marketed under different brands, mentioned in the API
-  * [Laticrete](https://laticrete.com/)
-  * [Rointe](https://rointe.com/)
-  * [Porcelanosa](https://www.porcelanosa.com/)
-  * Equus
-  * [Savant](https://www.savant.com/)
+- Other similar looking devices marketed under different brands, mentioned in the API
+  - [Laticrete](https://laticrete.com/)
+  - [Rointe](https://rointe.com/)
+  - [Porcelanosa](https://www.porcelanosa.com/)
+  - Equus
+  - [Savant](https://www.savant.com/)
 
 Any Warmup device must be registered at <https://my.warmup.com/> prior to usage, or connected through the [MyHeating app](https://www.warmup.co.uk/thermostats/smart/myheating-app).
 
 This API is not known to be documented publicly.
 The binding api implementation has been derived from the implementations at <https://github.com/alyc100/SmartThingsPublic/blob/master/devicetypes/alyc100/warmup-4ie.src/warmup-4ie.groovy> and <https://github.com/alex-0103/warmup4IE/blob/master/warmup4ie/warmup4ie.py>, and enhanced by inspecting the [GraphQL endpoint](https://apil.warmup.com/graphql).
-
 
 ## Supported Things
 
@@ -38,8 +37,7 @@ The Warmup binding supports the following thing types:
 |----------|-------|------------------------------------------------------------------------------------------------|
 | `room`   | Room  | A room containing an individual Warmup WiFi connected device which controls a heating circuit. |
 
-### Room
-
+**Room**
 The device is optimised for controlling underfloor heating (electric or hydronic), although it can also control central heating circuits.
 The device reports the temperature from one of two thermostats, either a floor temperature probe or the air temperature at the device.
 It appears to be possible to configure two devices in a primary / secondary configuration, but it is not clear how this might be represented by the API and hasn't been implemented.
@@ -50,7 +48,7 @@ Once credentials are successfully added to the bridge, any rooms (devices) detec
 
 ## Thing Configuration
 
-### My Warmup Account
+### `my-warmup` Bridge Configuration
 
 | config parameter | type    | description                                     | required | default |
 |------------------|---------|-------------------------------------------------|----------|---------|
@@ -58,7 +56,7 @@ Once credentials are successfully added to the bridge, any rooms (devices) detec
 | password         | String  | Password for my.warmup.com                      | true     |         |
 | refreshInterval  | Integer | Interval in seconds between automatic refreshes | true     | 300     |
 
-### Room
+### `room` Thing Configuration
 
 Rooms are configured automatically with a Serial Number on discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. Changing the target temperature results in a temporary override to that temperature, for the duration configured on the thing. This defaults to 60 minutes.
 
@@ -84,10 +82,10 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 
 ### Run Mode Statuses
 
-These run mode statuses are defined for the API. 
-The descriptions are based on inspection of the device behaviour and are not sourced from documentation. 
-Only the value `schedule` is writeable, this reverts the device to the program/schedule configured on the device. 
-The value `fixed` can be set by commanding the `fixedTemperature` channel. The value `override` can be set by commanding the `targetTemperature` channel. 
+These run mode statuses are defined for the API.
+The descriptions are based on inspection of the device behaviour and are not sourced from documentation.
+Only the value `schedule` is writeable, this reverts the device to the program/schedule configured on the device.
+The value `fixed` can be set by commanding the `fixedTemperature` channel. The value `override` can be set by commanding the `targetTemperature` channel.
 
 | api value  | ui name          | description                                                                     |
 |------------|------------------|---------------------------------------------------------------------------------|
@@ -133,6 +131,7 @@ getActions("warmup", "warmup:room:my_warmup:my_room").setOverride(18 | °C, 10 |
 ```javascript
 actions.get("warmup", "warmup:room:my_warmup:my_room").setOverride(Quantity("18 °C"), Quantity("10 min"));
 ```
+
 :::
 
 ::::

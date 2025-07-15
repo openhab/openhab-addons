@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,11 +68,24 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
         thingHandler.queryDiscoveryData();
     }
 
-    public void processDeviceDefinitions(List<Device> deviceList) {
+    public void processDeviceDefinitions(List<Device> deviceList, Map<Integer, String> zoneIdToName,
+            Map<Integer, String> areaIdToName) {
         for (Device device : deviceList) {
-            // Integer zoneid = device.getZone();
+            Integer zoneId = device.getZone();
             Integer deviceId = device.getDevice();
+            Integer areaId = device.getArea();
+
             String label = device.getFullyQualifiedName();
+            // RA3 doesn't provide a name for the above instead you
+            // need to get the Area and Zone name to have it make sense
+            if (label.isEmpty()) {
+                String areaName = areaIdToName.getOrDefault(areaId, "");
+                if (areaName.isEmpty()) {
+                    label = zoneIdToName.getOrDefault(zoneId, "");
+                } else {
+                    label = String.format("%s - %s", areaName, zoneIdToName.getOrDefault(zoneId, ""));
+                }
+            }
             if (deviceId > 0) {
                 logger.debug("Discovered device: {} type: {} id: {}", label, device.deviceType, deviceId);
                 if (device.deviceType != null) {
@@ -88,10 +101,12 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
                         case "SunnataDimmer":
                         case "WallDimmer":
                         case "PlugInDimmer":
+                        case "DivaSmartDimmer":
                             notifyDiscovery(THING_TYPE_DIMMER, deviceId, label);
                             break;
                         case "WallSwitch":
                         case "PlugInSwitch":
+                        case "DivaSmartSwitch":
                             notifyDiscovery(THING_TYPE_SWITCH, deviceId, label);
                             break;
                         case "CasetaFanSpeedController":
@@ -99,6 +114,7 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
                             notifyDiscovery(THING_TYPE_FAN, deviceId, label);
                             break;
                         case "Pico2Button":
+                        case "PaddleSwitchPico":
                             notifyDiscovery(THING_TYPE_PICO, deviceId, label, "model", "2B");
                             break;
                         case "Pico2ButtonRaiseLower":
@@ -114,11 +130,16 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
                         case "QsWirelessShade":
                             notifyDiscovery(THING_TYPE_SHADE, deviceId, label);
                             break;
+                        case "RPSWallMountedOccupancySensor":
+                            // TODO: Handle ra3 OccupancySensors, will need to get area
+                            // that the sensor is associated with to get at the sensor
+                            // status
+                            break;
                         case "RPSOccupancySensor":
                             // Don't discover sensors. Using occupancy groups instead.
                             break;
                         default:
-                            logger.info("Unrecognized device type: {}", device.deviceType);
+                            logger.info("Unrecognized device type: {} id: {}", device.deviceType, deviceId);
                             break;
                     }
                 }

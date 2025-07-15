@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.ipp.internal.IppBindingConstants.*;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -177,7 +178,7 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
     }
 
     @Override
-    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
             @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
         return Set.of();
     }

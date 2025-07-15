@@ -7,6 +7,7 @@
 	<thing-type id="etherrain">
 		<label>EtherRain</label>
 		<description>This is a stand alone EtherRain device that allows sprinkler control</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="commandstatus" typeId="commandstatus"/>
@@ -109,6 +110,10 @@
 		<label>Operating Status</label>
 		<description>Current operating status of the Etherrain</description>
 		<category>Water</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -125,6 +130,10 @@
 		<label>Rain</label>
 		<description>Provides feedback on whether the EtherRain device has detected rain or not</description>
 		<category>Sensor</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

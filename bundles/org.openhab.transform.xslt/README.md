@@ -4,14 +4,14 @@ Transform input using the XML Stylesheet Language for Transformations (XSLT).
 
 XSLT is a standard method to transform an XML structure from one document into a new document with a different structure.
 
-The transformation expects the rule to be read from a file which is stored under the `transform` folder. 
+The transformation expects the rule to be read from a file which is stored under the `transform` folder.
 To organize the various transformations one should use subfolders.
 
 General transformation rule summary:
 
-* The directive `xsl:output` defines how the output document should be structured.
-* The directive `xsl:template` specifies matching attributes for the XML node to find. 
-* The `xsl:template` tag contains the rule which specifies what should be done.
+- The directive `xsl:output` defines how the output document should be structured.
+- The directive `xsl:template` specifies matching attributes for the XML node to find.
+- The `xsl:template` tag contains the rule which specifies what should be done.
 
 The Rule uses XPath to gather the XML node information.
 For more information have a look at the [XPath transformation](https://docs.openhab.org/addons/transformations/xpath/readme.html) .
@@ -31,9 +31,9 @@ A simple but complete XSLT transformation looks like in the following example, w
 
 **transform/helloworld.xsl**
 
-* `xsl:output`: transform incoming document into another XML-like document, without indentation.
-* `xsl:template`: `match="/"` "any type of node", so the whole document.
-* The `xsl` rule does `select` the node `/root/node` and extracts the `value-of` attribute `val`.
+- `xsl:output`: transform incoming document into another XML-like document, without indentation.
+- `xsl:template`: `match="/"` "any type of node", so the whole document.
+- The `xsl` rule does `select` the node `/root/node` and extracts the `value-of` attribute `val`.
 
 ```xml
 <?xml version='1.0' encoding='UTF-8'?>
@@ -57,34 +57,34 @@ This example has a namespace defined, as you would find in real world applicatio
 
 **input XML**
 
-* The tag `<PTZStatus>` contains an attribute `xmlns=` which defines the namespace `http://www.hikvision.com/ver20/XMLSchema`.
+- The tag `<PTZStatus>` contains an attribute `xmlns=` which defines the namespace `http://www.hikvision.com/ver20/XMLSchema`.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <PTZStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
-	<AbsoluteHigh>
-		<elevation>0</elevation>
-		<azimuth date="Fri, 18 Dec 2009 9:38 am PST" >450</azimuth>
-		<absoluteZoom>10</absoluteZoom>
-	</AbsoluteHigh>
+    <AbsoluteHigh>
+        <elevation>0</elevation>
+        <azimuth date="Fri, 18 Dec 2009 9:38 am PST" >450</azimuth>
+        <absoluteZoom>10</absoluteZoom>
+    </AbsoluteHigh>
 </PTZStatus>
 ```
 
 **transform/azimut.xsl**
 
-In the rule, the tag `<xsl:stylesheet>` has to have an attribute `xmlns:xsl="http://www.w3.org/1999/XSL/Transform"` and a second attribute `xmlns:`. 
+In the rule, the tag `<xsl:stylesheet>` has to have an attribute `xmlns:xsl="http://www.w3.org/1999/XSL/Transform"` and a second attribute `xmlns:`.
 This attribute has to be the same as the namespace for the input document.
 In the rule each step traversed along the path to the next tag has to be prepended with the `xmlns` namespace, here defined as `h`.
 
-* `xsl:output` transform incoming document into another XML-like document, no indentation, **without XML**.
-* `xsl:template`: `match="/"` whole document.
-* Full path to node `azimuth` reading out `date` attribute.
-* Add a linebreak by setting `&#10;` as text.
-* Search for node `azimuth` by prepending `//` and get the `text`.
+- `xsl:output` transform incoming document into another XML-like document, no indentation, **without XML**.
+- `xsl:template`: `match="/"` whole document.
+- Full path to node `azimuth` reading out `date` attribute.
+- Add a linebreak by setting `&#10;` as text.
+- Search for node `azimuth` by prepending `//` and get the `text`.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" 
+<xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:h="http://www.hikvision.com/ver20/XMLSchema">
    <xsl:output method="xml" indent="no" encoding="UTF-8" omit-xml-declaration="yes"  />
@@ -120,7 +120,7 @@ Please note: This profile is a one-way transformation, i.e. only values from a d
 
 ## Further Reading
 
-* Extended introduction and more [examples](https://en.wikipedia.org/wiki/XSLT#XSLT_examples) at Wikipedia.
-* A good [introduction](https://www.w3schools.com/xml/xsl_intro.asp) and [tutorial](https://www.w3schools.com/xml/xsl_transformation.asp) at W3School.
-* An informative [tutorial](https://www.ibm.com/developerworks/library/x-xsltmistakes/) of common mistakes.
-* Online XSL transformer tools like [this](https://www.freeformatter.com/xsl-transformer.html) to check the syntax.
+- Extended introduction and more [examples](https://en.wikipedia.org/wiki/XSLT#XSLT_examples) at Wikipedia.
+- A good [introduction](https://www.w3schools.com/xml/xsl_intro.asp) and [tutorial](https://www.w3schools.com/xml/xsl_transformation.asp) at W3School.
+- An informative [tutorial](https://www.ibm.com/developerworks/library/x-xsltmistakes/) of common mistakes.
+- Online XSL transformer tools like [this](https://www.freeformatter.com/xsl-transformer.html) to check the syntax.

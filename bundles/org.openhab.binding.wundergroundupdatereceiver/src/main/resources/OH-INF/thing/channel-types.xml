@@ -10,7 +10,7 @@
 		<description>The date and time of the last update.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Point</tag>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
@@ -22,7 +22,8 @@
 		<description>The date and time of the last update in UTC as submitted by the device. This can be 'now'.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Point</tag>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -35,7 +36,7 @@
 			case of 'now', the current time is used.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Point</tag>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,6 @@ public class JmxMetricsExporter extends MetricsExporter {
     private JmxConfig getJmxConfig() {
         return new JmxConfig() {
             @Override
-            @io.micrometer.core.lang.Nullable
             @Nullable
             public String get(@Nullable String k) {
                 return null; // accept the rest of the defaults

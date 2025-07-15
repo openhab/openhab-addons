@@ -13,7 +13,7 @@
 		<label>CBEMM EJP</label>
 		<description>Single-phase Electricity meter with EJP option - CBEMM (aka "Compteur Bleu Electronique Monophasé
 			Multitarif")</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="isousc" typeId="isouscType"/>
 			<channel id="ptec" typeId="ptecType"/>

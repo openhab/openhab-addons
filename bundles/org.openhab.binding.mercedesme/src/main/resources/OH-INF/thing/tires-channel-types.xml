@@ -4,24 +4,40 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="pressure-front-right">
-		<item-type>Number:Pressure</item-type>
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Front Right</label>
-		<state pattern="%.1f bar" readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-rear-right">
-		<item-type>Number:Pressure</item-type>
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Rear Right</label>
-		<state pattern="%.1f bar" readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-front-left">
-		<item-type>Number:Pressure</item-type>
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Front Left</label>
-		<state pattern="%.1f bar" readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-rear-left">
-		<item-type>Number:Pressure</item-type>
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Rear Left</label>
-		<state pattern="%.1f bar" readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sensor-available">
 		<item-type>Number</item-type>
@@ -39,6 +55,9 @@
 	<channel-type id="marker-front-right">
 		<item-type>Number</item-type>
 		<label>Tire Warning Front Right</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
 			<options>
@@ -53,6 +72,9 @@
 	<channel-type id="marker-rear-right">
 		<item-type>Number</item-type>
 		<label>Tire Warning Rear Right</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
 			<options>
@@ -67,6 +89,9 @@
 	<channel-type id="marker-front-left">
 		<item-type>Number</item-type>
 		<label>Tire Warning Front Left</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
 			<options>
@@ -81,6 +106,9 @@
 	<channel-type id="marker-rear-left">
 		<item-type>Number</item-type>
 		<label>Tire Warning Rear Left</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
 			<options>
@@ -95,6 +123,10 @@
 	<channel-type id="last-update">
 		<item-type>DateTime</item-type>
 		<label>Tire Update Time</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

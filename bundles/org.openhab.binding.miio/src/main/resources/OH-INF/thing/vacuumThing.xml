@@ -6,6 +6,7 @@
 
 	<thing-type id="vacuum">
 		<label>Xiaomi Robot Vacuum</label>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="actions" typeId="actions"/>
@@ -140,6 +141,10 @@
 	<channel-type id="fan_power">
 		<item-type>Number</item-type>
 		<label>Fan Power</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="in_cleaning" advanced="true">
@@ -319,6 +324,10 @@
 	<channel-type id="fan">
 		<item-type>Number</item-type>
 		<label>Control Fan Level</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="-1" max="105" step="1" readOnly="false">
 			<options>
 				<option value="38">Silent</option>

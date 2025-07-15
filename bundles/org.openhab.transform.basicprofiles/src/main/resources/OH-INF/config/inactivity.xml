@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:basic-profiles:inactivity">
+		<parameter name="timeout" type="text">
+			<label>Timeout</label>
+			<description>Duration after which the item's state is updated if no data is received from the binding. The default is
+				1h. The format is the same as used in the expire parameter.</description>
+			<default>1h</default>
+		</parameter>
+		<parameter name="inverted" type="boolean" required="false">
+			<label>Inverted</label>
+			<description>Optional. If false (default), the item's state is initially OFF, and changes to ON after the timeout. If
+				true, the behavior is reversed: the initial state is ON, and it changes to OFF after the timeout.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

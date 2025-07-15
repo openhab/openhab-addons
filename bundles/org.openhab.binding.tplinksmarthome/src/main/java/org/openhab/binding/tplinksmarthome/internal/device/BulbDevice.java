@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNELS_BULB_SWITCH;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_BRIGHTNESS;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_COLOR;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_COLOR_TEMPERATURE;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_COLOR_TEMPERATURE_ABS;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_ENERGY_POWER;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_SWITCH;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
 
@@ -74,6 +68,13 @@ public class BulbDevice extends SmartHomeDevice {
             response = handleOnOffType(channelId, onOffCommand, transitionPeriod);
         } else if (command instanceof HSBType hsbCommand && CHANNEL_COLOR.equals(channelId)) {
             response = handleHSBType(channelId, hsbCommand, transitionPeriod);
+        } else if (command instanceof QuantityType<?> genericQuantity
+                && CHANNEL_COLOR_TEMPERATURE_ABS.equals(channelId)) {
+            QuantityType<?> kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
+            if (kelvinQuantity == null) {
+                return false;
+            }
+            response = handleDecimalType(channelId, new DecimalType(kelvinQuantity.intValue()), transitionPeriod);
         } else if (command instanceof DecimalType decimalCommand) {
             response = handleDecimalType(channelId, decimalCommand, transitionPeriod);
         } else {
@@ -162,5 +163,13 @@ public class BulbDevice extends SmartHomeDevice {
 
     private int guardColorTemperature(final int colorTemperature) {
         return Math.max(colorTempMin, Math.min(colorTempMax, colorTemperature));
+    }
+
+    public int getColorTempMin() {
+        return colorTempMin;
+    }
+
+    public int getColorTempMax() {
+        return colorTempMax;
     }
 }

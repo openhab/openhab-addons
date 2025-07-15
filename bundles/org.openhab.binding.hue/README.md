@@ -15,7 +15,7 @@ Both bridges are fully supported by this binding.
 
 Almost all available Hue devices are supported by this binding.
 This includes not only the "Friends of Hue", but also products like the LivingWhites adapter.
-Additionally, it is possible to use OSRAM Lightify devices as well as other Zigbee Light Link compatible products, including the IKEA TRÅDFRI lights (when updated). 
+Additionally, it is possible to use OSRAM Lightify devices as well as other Zigbee Light Link compatible products, including the IKEA TRÅDFRI lights (when updated).
 Beside bulbs and luminaires the Hue binding also supports some Zigbee sensors.
 Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
 Please note that the devices need to be registered with the Hue Bridge before it is possible for this binding to use them.
@@ -37,7 +37,7 @@ Potentially two types of Bridge will be discovered - namely an API v1 Bridge and
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
-```text
+```ini
 discovery.hue:background=false
 ```
 

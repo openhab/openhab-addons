@@ -163,7 +163,7 @@ A change would break all existing installations and is therefore not implemented
 | position         | Group address of the absolute position | 5.001       |
 | increaseDecrease | Group address for relative movement    | 3.007       |
 
-##### Channel Type `number`, `number-control` 
+##### Channel Type `number`, `number-control`
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
@@ -221,7 +221,6 @@ When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel
 | position         | Group address of the absolute position                                                                                                        | 5.001       |
 | increaseDecrease | Group address for relative movement                                                                                                           | 3.007       |
 | frequency        | Increase/Decrease frequency in milliseconds in case the binding should handle that (0 if the KNX device sends the commands repeatedly itself) | 0           |
-
 
 ##### Channel Type "rollershutter-control"
 
@@ -411,7 +410,7 @@ Further DPTs and subtypes may be added later once implemented and released in th
 |||
 | 232.600         | HSBType (color)                                    | RGB                                  |
 | 232.60000       | HSBType (color)                                    | Non-Standard, DPT 232.600 with HSB instead of RGB data |
-||| 
+|||
 | 235.001         | QuantityType\<> (number) (Number:ActiveEnergy)     | Composed DPT 235.001, first element ActiveEnergy (Wh), read only  |
 | 235.61001       | DecimalType (number)                               | Non-Standard, composed DPT 235.001, second element Tariff (plain number), read only |
 |||
@@ -621,7 +620,7 @@ Bridge knx:serial:bridge [
     Thing device generic {
         Type switch-control        : controlSwitch        "Control Switch"        [ ga="3/3/10+<3/3/11" ]   // '<'  signs are allowed but will be ignored for control Channels
         Type dimmer-control        : controlDimmer        "Control Dimmer"        [ switch="3/3/50+3/3/48", position="3/3/46", increaseDecrease="3/3/49", frequency=300 ]
-        Type color                 : controlColorLight    "Color"                 [ hsb="6/0/10", switch="6/0/12", position="6/0/14", 
+        Type color                 : controlColorLight    "Color"                 [ hsb="6/0/10", switch="6/0/12", position="6/0/14",
         Type rollershutter-control : controlRollershutter "Control Rollershutter" [ upDown="3/4/1+3/4/2", stopMove="3/4/3", position="3/4/4" ]
         Type number-control        : controlNumber        "Control Number"        [ ga="1/2/2" ]
         Type string-control        : controlString        "Control String"        [ ga="1/4/2" ]
@@ -648,3 +647,73 @@ Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { c
 
 The KNX binding provides additional functionality which can be triggered from the openHAB console.
 Type `openhab:knx` on the openHAB console for further information.
+
+## Troubleshooting
+
+### Extended Logging
+
+Logging can be configured via the UI.
+This affects only the log of the binding and does not include Calimero library used for KNX communication.
+In special cases, it might be useful to set both KNX logging and Calimero logging.
+This can be done in the openHAB console:
+
+```shell
+log:set TRACE org.openhab.binding.knx
+log:set TRACE calimero
+```
+
+Note that this will lead to a few lines in the log for each KNX frame received or sent.
+
+Logging can be set back to normal, similarly using:
+
+```shell
+log:set DEFAULT org.openhab.binding.knx
+log:set DEFAULT calimero
+```
+
+### Serial Devices
+
+In case you experience communication errors like incomplete or dropped frames, BCU reset errors in the log, or similar problems:
+
+- Make sure that no other service accesses the serial port (e.g., `knxd`, `hciuart`, etc.).
+Use `ps aux` and make sure none of those are running in parallel.
+- Increase the log level also for Calimero library, see above.
+- If the problem relates only to KNX data secure, please note that very old KNX devices do not support long frames, which are required for KNX data secure. Check your interface and the couplers (technical reference manual, ETS, or openHAB device info when fetch is enabled).
+
+### kBerry Module for Raspberry Pi
+
+#### Configuration of the kBerry Module
+
+Uploading an application to the module is not necessary for use with openHAB.
+
+#### Configuration of the Serial Port
+
+Configuration of the serial port is necessary.
+This is done by editing text files in the folder `/boot/firmware` on the PI (for older distributions, it is `/boot`).
+This can be done manually or using the tool `raspi-config`.
+
+If something goes wrong, you can also recover using a Windows machine, as this partition is also accessible from Windows when using a micro SD card reader. 
+
+##### config.txt
+
+The serial port (UART) needs to be activated on GPIO pins 14 and 15.
+The configuration options have changed over time, depending on the Linux distribution and the hardware revision of the Raspberry Pi.
+
+The following settings might work for you:
+
+For PI 5, add `dtoverlay=disable-bt` and `dtoverlay=uart0`.
+
+For PI 4, add `dtoverlay=disable-bt`.
+
+For PI 3, add `dtoverlay=pi3-miniuart-bt`.
+
+##### cmdline.txt
+
+Remove the part that refers to the serial port, e.g. `console=serial0,115200`.
+
+Finally, reboot the PI.
+
+#### openHAB Configuration
+
+Add a KNX Thing manually, KNX FT1.2 Interface, select `/dev/ttyAMA0` as port.
+If you use file-based configuration, see the example above.

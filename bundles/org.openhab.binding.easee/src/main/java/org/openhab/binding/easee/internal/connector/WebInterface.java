@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.account.Login;
 import org.openhab.binding.easee.internal.command.account.RefreshToken;
+import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
 import org.openhab.binding.easee.internal.handler.StatusHandler;
 import org.openhab.binding.easee.internal.model.ValidationException;
@@ -269,9 +270,10 @@ public class WebInterface implements AtomicReferenceTrait {
     }
 
     public void start() {
+        EaseeConfiguration config = handler.getBridgeConfiguration();
         setAuthenticated(false);
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
-                WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.SECONDS));
+                config.getWebRequestInitialDelay(), config.getWebRequestInterval(), TimeUnit.SECONDS));
     }
 
     /**

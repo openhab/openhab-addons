@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.util.UnitUtils;
@@ -219,7 +220,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
         if (availabilityTopic != null) {
             addAvailabilityTopic(availabilityTopic, config.payloadAvailable, config.payloadNotAvailable,
-                    config.transformationPattern);
+                    new ChannelTransformation(config.transformationPattern));
         } else {
             clearAllAvailabilityTopics();
         }

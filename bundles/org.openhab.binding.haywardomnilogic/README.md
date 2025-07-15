@@ -167,10 +167,10 @@ Hayward OmniLogic Connection Parameters:
 | heaterEnable          | Switch             | Heater enable           |      R     |
 | heaterCurrentSetpoint | Number:Temperature | Heater Current Setpoint |     R/W    |
 
-**Item Types Number:Dimensionless should have the units (i.e. %, ppm) defined in the Unit metadata 
+**Item Types Number:Dimensionless should have the units (i.e. %, ppm) defined in the Unit metadata
 
 ## Full Example
 
 After installing the binding, you will need to manually add the Hayward Connection thing and enter your credentials.
-All pool items can be automatically discovered by scanning the bridge.  
+All pool items can be automatically discovered by scanning the bridge.
 Goto the inbox and add the things.

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,6 +80,12 @@ public class ButtonDatapointTest extends JavaTest {
         HmDatapoint releaseDp = createPressDatapointFrom(longPressDp, "PRESS_LONG_RELEASE", Boolean.TRUE);
         mockEventReceiver.eventReceived(releaseDp);
         assertThat(buttonVirtualDatapoint.getValue(), is("LONG_RELEASED"));
+
+        // A CONT event right after a SHORT event should not trigger another SHORT_PRESSED event
+        HmDatapoint shortPressDp = createPressDatapointFrom(longPressDp, "PRESS_SHORT", Boolean.TRUE);
+        mockEventReceiver.eventReceived(shortPressDp);
+        mockEventReceiver.eventReceived(contPressDp);
+        assertThat(buttonVirtualDatapoint.getValue(), nullValue());
     }
 
     @Test
@@ -98,6 +104,12 @@ public class ButtonDatapointTest extends JavaTest {
         HmDatapoint releaseDp = createPressDatapointFrom(longPressDp, "PRESS_LONG_RELEASE", Boolean.TRUE);
         mockEventReceiver.eventReceived(releaseDp);
         assertThat(buttonVirtualDatapoint.getValue(), is("LONG_RELEASED"));
+
+        // A LONG event right after a SHORT event should not trigger another SHORT_PRESSED event
+        HmDatapoint shortPressDp = createPressDatapointFrom(longPressDp, "PRESS_SHORT", Boolean.TRUE);
+        mockEventReceiver.eventReceived(shortPressDp);
+        mockEventReceiver.eventReceived(contPressDp);
+        assertThat(buttonVirtualDatapoint.getValue(), nullValue());
     }
 
     @Test

@@ -1,7 +1,7 @@
 # BenQ Projector Binding
 
 This binding is compatible with BenQ projectors that support the control protocol via the built-in Ethernet port, serial port or USB to serial adapter.
-If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.  
+If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.
 
 The manufacturer's guide for connecting to the projector and the control protocol can be found in this document: [LX9215_RS232 Control Guide_0_Windows7_Windows8_WinXP.pdf](https://esupportdownload.benq.com/esupport/Projector/Control%20Protocols/LX9215/LX9215_RS232%20Control%20Guide_0_Windows7_Windows8_WinXP.pdf)
 
@@ -11,7 +11,7 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4' options are present and enabled in the projector's network menu, the thing will be discovered automatically.
+If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4' options are present and enabled in the projector's network menu, the Thing will be discovered automatically.
 Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
@@ -68,7 +68,7 @@ Some notes:
 
 ## Full Example
 
-things/benq.things:
+### `benq.things` Example
 
 ```java
 // serial port connection
@@ -79,7 +79,7 @@ benqprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port=
 
 ```
 
-items/benq.items
+### `benq.items` Example
 
 ```java
 Switch benqPower                                      { channel="benqprojector:projector-serial:hometheater:power" }
@@ -88,17 +88,17 @@ String benqPictureMode  "Picture Mode [%s]"           { channel="benqprojector:p
 String benqAspectRatio  "Aspect Ratio [%s]"           { channel="benqprojector:projector-serial:hometheater:aspectratio" }
 Switch benqFreeze                                     { channel="benqprojector:projector-serial:hometheater:freeze" }
 Switch benqBlank                                      { channel="benqprojector:projector-serial:hometheater:blank" }
-String benqDirect                                     { channel="benqprojector:projector-serial:hometheater:directcmd", autoupdate="false" }
-Number benqLampTime     "Lamp Time [%d h]"   <switch> { channel="benqprojector:projector-serial:hometheater:lamptime" }
+String benqDirect                                     { channel="benqprojector:projector-serial:hometheater:directcmd" }
+Number benqLampTime     "Lamp Time [%d h]"    <light> { channel="benqprojector:projector-serial:hometheater:lamptime" }
 ```
 
-sitemaps/benq.sitemap
+### `benq.sitemap` Example
 
 ```perl
 sitemap benq label="BenQ Projector" {
     Frame label="Controls" {
         Switch     item=benqPower  label="Power"
-        Selection  item=benqSource label="Source" mappings=["hdmi"="HDMI", "hdmi2"="HDMI2", "ypbr"="Component", "RGB"="Computer", "vid"="Video", "svid"="S-Video"]
+        Selection  item=benqSource label="Source" mappings=["hdmi"="HDMI", "hdmi2"="HDMI2", "usbreader"="USB Reader", "ypbr"="Component", "RGB"="Computer", "vid"="Video", "svid"="S-Video"]
         Selection  item=benqPictureMode label="Picture Mode"
         Selection  item=benqAspectRatio label="Aspect Ratio"
         Switch     item=benqFreeze label="Freeze"

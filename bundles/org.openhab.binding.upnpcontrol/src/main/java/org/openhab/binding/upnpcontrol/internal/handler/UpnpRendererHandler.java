@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
@@ -160,11 +161,12 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile @Nullable ScheduledFuture<?> trackPositionRefresh;
     private volatile int posAtNotificationStart = 0;
 
-    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg,
-            UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
+    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            UpnpAudioSinkReg audioSinkReg, UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
             UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+        super(thing, upnpIOService, upnpService, configuration, upnpStateDescriptionProvider,
+                upnpCommandDescriptionProvider);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
@@ -218,6 +220,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     @Override
     protected void initJob() {
         synchronized (jobLock) {
+            sendDeviceSearchRequest();
+
             if (!upnpIOService.isRegistered(this)) {
                 String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
@@ -1111,6 +1115,10 @@ public class UpnpRendererHandler extends UpnpHandler {
             UpnpRenderingControlConfiguration config = renderingControlConfiguration;
 
             long volume = Long.valueOf(value);
+            if (volume < 0) {
+                logger.warn("UPnP device {} received invalid volume value {}", thing.getLabel(), value);
+                return;
+            }
             volume = volume * 100 / config.maxvolume;
 
             String upnpChannel = variable.replace("Volume", "volume").replace("Master", "");
@@ -1648,12 +1656,12 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
         if (!(isCurrent
                 && (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")))) {
-            if (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
+            if (media.getAlbumArtUri().isBlank() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
                 updateState(ALBUM_ART, UnDefType.UNDEF);
             } else {
                 State albumArt = null;
                 try {
-                    albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+                    albumArt = HttpUtil.downloadImage(media.getAlbumArtUri().trim());
                 } catch (IllegalArgumentException e) {
                     logger.debug("Invalid album art URI: {}", media.getAlbumArtUri(), e);
                 }

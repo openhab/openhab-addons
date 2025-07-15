@@ -205,7 +205,7 @@ Rules:
 rule "Yamaha_Input_Ex"
 when
     Item Yamaha_Input changed or
-    Item Yamaha_Tuner_Band changed    
+    Item Yamaha_Tuner_Band changed
 then
     var String input = "" + Yamaha_Input.state
     if (Yamaha_Input.state == "TUNER" && Yamaha_Tuner_Band.state !== NULL) {
@@ -234,7 +234,7 @@ Enabling detailed logging may help troubleshoot your configuration (or trace bug
 
 Add the following lines to the logger configuration file (`userdata\etc\org.ops4j.pax.logging.cfg`):
 
-```text
+```ini
 log4j2.logger.yamaha.name = org.openhab.binding.yamahareceiver
 log4j2.logger.yamaha.level = TRACE
 ```
@@ -267,7 +267,7 @@ Use the UI to customize the setting for your particular AVR: `Things > Edit > Ya
 For example, if your AVR returns `HDMI_1` for command `HDMI1` you can create such mapping list:
 
 `HDMI_1=HDMI1,HDMI 1=HDMI1,HDMI_2=HDMI2,HDMI 2=HDMI2`
-  
+
 If you unsure what mapping to apply, enable trace logging (see section earlier) and you should see what is going on:
 
 ```text

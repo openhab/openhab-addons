@@ -10,6 +10,8 @@
 			The TiVo TCP Control Protocol is an ASCII-based command protocol for remote control of a TiVo DVR over a TCP local
 			network connection. The commands allow control of channel changes, user interface navigation and allow the client to
 			send simulated remote control button presses to the Digital Video Recorder.</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
+
 		<channels>
 			<channel id="channelSet" typeId="channelSet"/>
 			<channel id="channelForce" typeId="channelForce"/>
@@ -19,6 +21,10 @@
 			<channel id="kbdCommand" typeId="kbdCommand"/>
 			<channel id="dvrStatus" typeId="dvrStatus"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>host</representation-property>
 
@@ -84,6 +90,10 @@
 		<description>Displays the current channel number. When changed (SETCH), tunes the DVR to the specified channel (unless
 			a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work. Type:
 			Number (1-9999) [Decimals allowed for OTA sub-channels], DisplayFormat: %d</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state min="1" max="9999" step="0.1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="channelForce">
@@ -93,6 +103,10 @@
 			cancelling any recordings in progress if necessary i.e. all tuners are already in use / recording. The TiVo must be
 			in Live TV mode for this command to work. Type: Number (1-9999) [Decimals allowed for OTA sub-channels],
 			DisplayFormat: %d</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state min="1" max="9999" step="0.1" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="isRecording">
@@ -106,7 +120,7 @@
 		<label>Change Menu Screen</label>
 		<description>Change(TELEPORT) to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My
 			Shows), SEARCH, NETFLIX. Type: String</description>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="TIVO">TIVO</option>
 				<option value="LIVETV">LIVETV</option>
@@ -116,13 +130,14 @@
 				<option value="NETFLIX">NETFLIX</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="irCommand">
 		<item-type>String</item-type>
 		<label>Remote Control Button</label>
 		<description>Send a simulated button push (IRCODE) from the remote control to the TiVo. See README.md for supported
 			codes. Type: String</description>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="UP">UP</option>
 				<option value="DOWN">DOWN</option>
@@ -181,13 +196,14 @@
 				<option value="VIDEO_MODE_NATIVE">VIDEO_MODE_NATIVE</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="kbdCommand">
 		<item-type>String</item-type>
 		<label>Keyboard Command</label>
 		<description>Sends a code (KEYBOARD) corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in
 			document TCP Remote Protocol 1.1 for supported characters and special character codes. Type: String</description>
-		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="dvrStatus">
 		<item-type>String</item-type>

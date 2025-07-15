@@ -13,6 +13,7 @@
 
 		<label>Sensor</label>
 		<description>This Thing defines a Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -30,6 +31,7 @@
 
 		<label>RainSensor</label>
 		<description>This Thing defines a Rain Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="rainrate" typeId="rainrate"/>
@@ -45,6 +47,7 @@
 
 		<label>PowerSensor</label>
 		<description>This Thing defines a Power Sensor</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="watt" typeId="watt"/>
@@ -61,6 +64,7 @@
 
 		<label>WindSensor</label>
 		<description>This Thing defines a Wind Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="windgust" typeId="windgust"/>
@@ -75,6 +79,10 @@
 		<label>Temperature</label>
 		<description>Actual measured room temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -84,6 +92,10 @@
 		<label>Humidity</label>
 		<description>Actual measured room Humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -92,6 +104,10 @@
 		<item-type>Number:Length</item-type>
 		<label>Rainrate</label>
 		<description>The current rain rate</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -99,6 +115,10 @@
 		<item-type>Number:Length</item-type>
 		<label>Total Rain</label>
 		<description>Total rain</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -107,6 +127,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Wind Gust</label>
 		<description>Current wind gust</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -114,6 +138,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Wind Average</label>
 		<description>Current average wind</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -122,6 +150,10 @@
 		<label>Wind Direction</label>
 		<description>Current wind direction</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -129,6 +161,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Current power</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -137,6 +173,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Lux</label>
 		<description>Current lumination</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%f %unit%"/>
 	</channel-type>
 
@@ -144,6 +184,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Ampere</label>
 		<description>Current ampere</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 

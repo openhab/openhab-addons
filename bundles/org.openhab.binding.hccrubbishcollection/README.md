@@ -9,7 +9,7 @@ A single supported thing called `collection`.
 
 ## Thing Configuration
 
-The thing supports one setting labelled `address` which is your street number and name as it appears on Google.  
+The thing supports one setting labelled `address` which is your street number and name as it appears on Google.<br>
 _For Example:
 1 Victoria Street_
 

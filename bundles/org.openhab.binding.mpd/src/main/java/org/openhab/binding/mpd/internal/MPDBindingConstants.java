@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MPDBindingConstants {
 
-    private static final String BINDING_ID = "mpd";
+    public static final String BINDING_ID = "mpd";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MPD = new ThingTypeUID(BINDING_ID, "mpd");

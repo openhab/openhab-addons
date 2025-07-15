@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,14 +69,12 @@ public class FlumeDeviceActions implements ThingActions {
      * Query water usage
      */
     @RuleAction(label = "query water usage", description = "Queries water usage over a period of time.")
-    public @Nullable @ActionOutput(name = "value", type = "QuantityType<Volume>") QuantityType<Volume> queryWaterUsage(
+    public @Nullable @ActionOutput(label = "Water Usage", type = "QuantityType<Volume>") QuantityType<Volume> queryWaterUsage(
             @ActionInput(name = "sinceDateTime", label = "Since Date/Time", required = true, description = "Restrict the query range to data samples since this datetime.") @Nullable LocalDateTime sinceDateTime,
             @ActionInput(name = "untilDateTime", label = "Until Date/Time", required = true, description = "Restrict the query range to data samples until this datetime.") @Nullable LocalDateTime untilDateTime,
             @ActionInput(name = "bucket", label = "Bucket size", required = true, description = "The bucket grouping of the data we are querying (MIN, HR, DAY, MON, YR).") @Nullable String bucket,
             @ActionInput(name = "operation", label = "Operation", required = true, description = "The aggregate/accumulate operation to perform (SUM, AVG, MIN, MAX, CNT).") @Nullable String operation) {
         logger.info("queryWaterUsage called");
-
-        FlumeApiQueryWaterUsage query = new FlumeApiQueryWaterUsage();
 
         FlumeDeviceHandler localDeviceHandler = deviceHandler;
         if (localDeviceHandler == null) {
@@ -90,31 +88,26 @@ public class FlumeDeviceActions implements ThingActions {
             logger.warn("queryWaterUsage called with null inputs");
             return null;
         }
-
-        if (!FlumeApi.OperationType.contains(operation)) {
-            logger.warn("Invalid aggregation operation in call to queryWaterUsage");
-            return null;
-        } else {
-            query.operation = FlumeApi.OperationType.valueOf(operation);
-        }
-
-        if (!FlumeApi.BucketType.contains(bucket)) {
-            logger.warn("Invalid bucket type in call to queryWaterUsage");
-            return null;
-        } else {
-            query.bucket = FlumeApi.BucketType.valueOf(bucket);
-        }
-
-        if (untilDateTime.isBefore(sinceDateTime)) {
+        if (!untilDateTime.isAfter(sinceDateTime)) {
             logger.warn("sinceDateTime must be earlier than untilDateTime");
             return null;
         }
+        if (!FlumeApi.OperationType.contains(operation)) {
+            logger.warn("Invalid aggregation operation in call to queryWaterUsage");
+            return null;
+        }
+        if (!FlumeApi.BucketType.contains(bucket)) {
+            logger.warn("Invalid bucket type in call to queryWaterUsage");
+            return null;
+        }
 
-        query.requestId = QUERYID;
-        query.sinceDateTime = sinceDateTime;
-        query.untilDateTime = untilDateTime;
-        query.bucket = FlumeApi.BucketType.valueOf(bucket);
-        query.units = imperialUnits ? FlumeApi.UnitType.GALLONS : FlumeApi.UnitType.LITERS;
+        FlumeApiQueryWaterUsage query = new FlumeApiQueryWaterUsage(QUERYID, //
+                sinceDateTime, //
+                untilDateTime, //
+                FlumeApi.BucketType.valueOf(bucket), //
+                100, //
+                FlumeApi.OperationType.valueOf(operation), //
+                imperialUnits ? FlumeApi.UnitType.GALLONS : FlumeApi.UnitType.LITERS, FlumeApi.SortDirectionType.ASC);
 
         Float usage;
         try {

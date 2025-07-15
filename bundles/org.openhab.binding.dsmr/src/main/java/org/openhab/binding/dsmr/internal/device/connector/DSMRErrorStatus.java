@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,6 +44,10 @@ public enum DSMRErrorStatus {
      * Serial port doesn't support the configured settings.
      */
     PORT_NOT_COMPATIBLE(true),
+    /**
+     * Serial port time out or illegal state.
+     */
+    PORT_PORT_TIMEOUT(false),
     /**
      * Reading data from the serial port failed.
      */

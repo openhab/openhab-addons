@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="senseenergy"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="monitor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud-connector"/>
+		</supported-bridge-type-refs>
+
+		<label>Sense Energy Monitor</label>
+		<description>Sense energy monitor instance.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="discovered-devices" typeId="discovered-devices"/>
+			<channel-group id="self-reporting-devices" typeId="self-reporting-devices"/>
+			<channel-group id="proxy-devices" typeId="proxy-devices"/>
+		</channel-groups>
+
+		<properties>
+			<property name="solarConfigured"></property>
+			<property name="ipAddress"></property>
+			<property name="version"></property>
+			<property name="serial"></property>
+			<property name="ssid"></property>
+			<property name="mac"></property>
+		</properties>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="integer">
+				<label>ID</label>
+				<description>Device ID (only known from the openHAB log or when devices is discovered).</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<channel-group-type id="general">
+		<label>General Information</label>
+		<description>General information about the monitor</description>
+		<channels>
+			<channel id="frequency" typeId="frequency"/>
+			<channel id="grid-power" typeId="grid-power"/>
+			<channel id="potential-1" typeId="potential-1"/>
+			<channel id="potential-2" typeId="potential-2"/>
+			<channel id="leg-1-power" typeId="leg-1-power"/>
+			<channel id="leg-2-power" typeId="leg-2-power"/>
+			<channel id="main-power" typeId="main-power"/>
+			<channel id="solar-power" typeId="solar-power"/>
+			<channel id="devices-updated-trigger" typeId="devices-updated-trigger"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="discovered-devices">
+		<label>Discovered Devices</label>
+		<description>Sense discovered devices</description>
+	</channel-group-type>
+
+	<channel-group-type id="self-reporting-devices">
+		<label>Self-Reporting Devices</label>
+		<description>Devices that self report their power to Sense</description>
+	</channel-group-type>
+
+	<channel-group-type id="proxy-devices">
+		<label>Proxy Devices</label>
+		<description>Proxy devices configured in openHAB which report their power</description>
+	</channel-group-type>
+
+	<channel-group-type id="device-template">
+		<label>Device</label>
+		<description>Discovered devices</description>
+		<channels>
+			<channel id="device-power" typeId="device-power"/>
+			<channel id="trigger" typeId="device-trigger"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="potential-1">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Potential 1</label>
+		<description>Potential measured on first 120V branch.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="potential-2">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Potential 2</label>
+		<description>Potential measured on second 120V branch.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="leg-1-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Leg 1 Power</label>
+		<description>Power detected by the first Sense clamp.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="leg-2-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Leg 2 Power</label>
+		<description>Power detected by the second Sense clamp.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="main-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Main Power</label>
+		<description>Power detected by the main Sense clamp.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="solar-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Solar Power</label>
+		<description>Power detected by the solar Sense clamp.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="grid-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Grid Power</label>
+		<description>Power consumed from the grid (negative if supplying power to grid)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="devices-updated-trigger" advanced="true">
+		<kind>trigger</kind>
+		<label>Discovered Devices Updated</label>
+		<description>Triggered when the discovered device list has been updated</description>
+	</channel-type>
+
+	<channel-type id="device-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Power</label>
+		<description>Power draw of discovered device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="device-trigger" advanced="true">
+		<kind>trigger</kind>
+		<label>On Off Trigger</label>
+		<description>Triggered when the discovered device turns ON and OFF.</description>
+		<event>
+			<options>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="frequency" advanced="true">
+		<item-type unitHint="Hz">Number:Frequency</item-type>
+		<label>Frequency</label>
+		<description>Electrical frequency detected by Sense.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

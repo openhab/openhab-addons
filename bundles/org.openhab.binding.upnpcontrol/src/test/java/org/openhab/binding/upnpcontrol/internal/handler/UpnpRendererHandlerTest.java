@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -205,7 +205,7 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
         upnpEntryQueue = new UpnpEntryQueue(entries, "54321");
 
         handler = spy(new UpnpRendererHandler(requireNonNull(thing), requireNonNull(upnpIOService),
-                requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
+                requireNonNull(upnpService), requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
                 requireNonNull(upnpCommandDescriptionProvider), configuration));
 
         initHandler(requireNonNull(handler));

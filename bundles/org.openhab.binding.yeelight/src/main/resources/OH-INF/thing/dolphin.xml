@@ -7,7 +7,7 @@
 	<thing-type id="dolphin">
 		<label>Yeelight White LED Bulb</label>
 		<description>Yeelight White LED Bulb</description>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="command" typeId="command"/>

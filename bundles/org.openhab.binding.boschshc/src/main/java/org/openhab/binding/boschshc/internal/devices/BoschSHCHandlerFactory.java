@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,31 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_CAMERA_360;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_DIMMER;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_RELAY;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHC;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMART_BULB;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_THERMOSTAT;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_TWINGUARD;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_USER_DEFINED_STATE;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WATER_DETECTOR;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -67,8 +43,8 @@ import org.openhab.binding.boschshc.internal.devices.userdefinedstate.UserStateH
 import org.openhab.binding.boschshc.internal.devices.wallthermostat.WallThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.waterleakage.WaterLeakageSensorHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContact2Handler;
+import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContact2PlusHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContactHandler;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -76,9 +52,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link BoschSHCHandlerFactory} is responsible for creating things and
@@ -93,13 +67,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.boschshc", service = ThingHandlerFactory.class)
 public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
-
-    private TimeZoneProvider timeZoneProvider;
-
-    @Activate
-    public BoschSHCHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-    }
 
     private static class ThingTypeHandlerMapping {
         public ThingTypeUID thingTypeUID;
@@ -117,6 +84,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_TWINGUARD, TwinguardHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT, WindowContactHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2, WindowContact2Handler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2_PLUS, WindowContact2PlusHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_MOTION_DETECTOR, MotionDetectorHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL_2, ShutterControl2Handler::new),
@@ -130,10 +98,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_SMART_BULB, SmartBulbHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR, SmokeDetectorHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_USER_DEFINED_STATE, UserStateHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH,
-                    thing -> new UniversalSwitchHandler(thing, timeZoneProvider)),
-            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH_2,
-                    thing -> new UniversalSwitch2Handler(thing, timeZoneProvider)),
+            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH, UniversalSwitchHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH_2, UniversalSwitch2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR_2, SmokeDetector2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_LIGHT_CONTROL_2, LightControl2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_DIMMER, DimmerHandler::new),
@@ -151,6 +117,6 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         // Search for mapping for thing type and return handler for it if found. Otherwise return null.
         return supportedThingTypes.stream().filter(mapping -> mapping.thingTypeUID.equals(thingTypeUID)).findFirst()
-                .<@Nullable BaseThingHandler> map(mapping -> mapping.handlerSupplier.apply(thing)).orElse(null);
+                .map(mapping -> mapping.handlerSupplier.apply(thing)).orElse(null);
     }
 }

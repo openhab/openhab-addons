@@ -6,20 +6,36 @@
 	<channel-type id="doors-channel">
 		<item-type>String</item-type>
 		<label>Overall Door Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="windows-channel">
 		<item-type>String</item-type>
 		<label>Overall Window Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lock-channel">
 		<item-type>String</item-type>
 		<label>Doors Locked</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="next-service-date-channel">
 		<item-type>DateTime</item-type>
 		<label>Next Service Date</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tb %1$tY" readOnly="true"/>
 	</channel-type>
 	<channel-type id="next-service-mileage-channel">
@@ -40,21 +56,37 @@
 	<channel-type id="charging-remaining-channel">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Charging Time</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="plug-connection-channel">
 		<item-type>String</item-type>
 		<label>Plug Connection Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-update-channel">
 		<item-type>DateTime</item-type>
 		<label>Last Car Status Timestamp</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-fetched-channel">
 		<item-type>DateTime</item-type>
 		<label>Last Openhab Update Timestamp</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 	<channel-type id="raw-channel" advanced="true">

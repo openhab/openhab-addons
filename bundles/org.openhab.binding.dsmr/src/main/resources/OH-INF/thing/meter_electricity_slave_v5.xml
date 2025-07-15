@@ -11,7 +11,7 @@
 
 		<label>Slave Electricity Meter (DSMR V5.x)</label>
 		<description>This is the slave electricity meter that complies to the DSMR 5.x specification.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="meter_device_type" typeId="deviceType"/>
 			<channel id="meter_equipment_identifier" typeId="equipmentIdType"/>

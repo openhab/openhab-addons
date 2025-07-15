@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.fronius.internal.handler;
 
 import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
+
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -82,6 +84,14 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
+    }
+
+    /**
+     * Called by the bridge to handle a bridge configuration update.
+     *
+     * @param configurationParameters map of changed bridge configuration parameters
+     */
+    protected void handleBridgeConfigurationUpdate(Map<String, Object> configurationParameters) {
     }
 
     /**

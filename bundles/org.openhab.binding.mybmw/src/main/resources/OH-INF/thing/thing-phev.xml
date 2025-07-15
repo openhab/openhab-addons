@@ -11,6 +11,7 @@
 
 		<label>Plug-In-Hybrid Electric Vehicle</label>
 		<description>Conventional Fuel Vehicle with supporting Electric Engine (PHEV)</description>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="update" typeId="ev-vehicle-update"/>

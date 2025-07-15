@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,6 +46,8 @@ import org.openhab.binding.energidataservice.internal.api.dto.CO2EmissionRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.CO2EmissionRecords;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecords;
+import org.openhab.binding.energidataservice.internal.api.dto.DayAheadPriceRecord;
+import org.openhab.binding.energidataservice.internal.api.dto.DayAheadPriceRecords;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecords;
 import org.openhab.binding.energidataservice.internal.api.serialization.InstantDeserializer;
@@ -86,12 +89,12 @@ public class ApiController {
             .create();
     private final HttpClient httpClient;
     private final TimeZoneProvider timeZoneProvider;
-    private final String userAgent;
+    private final Supplier<String> userAgentSupplier;
 
     public ApiController(HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClient;
         this.timeZoneProvider = timeZoneProvider;
-        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+        this.userAgentSupplier = this::getUserAgent;
     }
 
     /**
@@ -116,7 +119,7 @@ public class ApiController {
                 .param("start", start.toString()) //
                 .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
                 .param("columns", "HourUTC,SpotPrice" + currency) //
-                .agent(userAgent) //
+                .agent(userAgentSupplier.get()) //
                 .method(HttpMethod.GET);
 
         if (!end.isEmpty()) {
@@ -136,6 +139,54 @@ public class ApiController {
         } catch (TimeoutException | ExecutionException e) {
             throw new DataServiceException(e);
         }
+    }
+
+    /**
+     * Retrieve day-ahead prices for requested area and in requested {@link Currency}.
+     *
+     * @param priceArea Usually DK1 or DK2
+     * @param currency DKK or EUR
+     * @param start Specifies the start point of the period for the data request
+     * @param properties Map of properties which will be updated with metadata from headers
+     * @return Records with pairs of time start and price in requested currency.
+     * @throws InterruptedException
+     * @throws DataServiceException
+     */
+    public DayAheadPriceRecord[] getDayAheadPrices(String priceArea, Currency currency, DateQueryParameter start,
+            DateQueryParameter end, Map<String, String> properties) throws InterruptedException, DataServiceException {
+        if (!SUPPORTED_CURRENCIES.contains(currency)) {
+            throw new IllegalArgumentException("Invalid currency " + currency.getCurrencyCode());
+        }
+
+        Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + Dataset.DayAheadPrices)
+                .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
+                .param("start", start.toString()) //
+                .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
+                .param("columns", "TimeUTC,DayAheadPrice" + currency) //
+                .agent(userAgentSupplier.get()) //
+                .method(HttpMethod.GET);
+
+        if (!end.isEmpty()) {
+            request = request.param("end", end.toString());
+        }
+
+        try {
+            String responseContent = sendRequest(request, properties);
+            DayAheadPriceRecords records = gson.fromJson(responseContent, DayAheadPriceRecords.class);
+            if (records == null || Objects.isNull(records.records())) {
+                throw new DataServiceException("Error parsing response");
+            }
+
+            return Arrays.stream(records.records()).filter(Objects::nonNull).toArray(DayAheadPriceRecord[]::new);
+        } catch (JsonSyntaxException e) {
+            throw new DataServiceException("Error parsing response", e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new DataServiceException(e);
+        }
+    }
+
+    private String getUserAgent() {
+        return "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
     }
 
     private String sendRequest(Request request, Map<String, String> properties)
@@ -210,7 +261,7 @@ public class ApiController {
                 .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                 .param("filter", mapToFilter(filterMap)) //
                 .param("columns", columns) //
-                .agent(userAgent) //
+                .agent(userAgentSupplier.get()) //
                 .method(HttpMethod.GET);
 
         DateQueryParameter start = tariffFilter.getStart();
@@ -277,7 +328,7 @@ public class ApiController {
                 .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
                 .param("columns", "Minutes5UTC,CO2Emission") //
                 .param("sort", "Minutes5UTC DESC") //
-                .agent(userAgent) //
+                .agent(userAgentSupplier.get()) //
                 .method(HttpMethod.GET);
 
         try {

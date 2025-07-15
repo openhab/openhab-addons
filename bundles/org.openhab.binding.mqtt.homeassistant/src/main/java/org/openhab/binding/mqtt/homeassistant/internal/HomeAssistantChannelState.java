@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,6 +59,7 @@ public class HomeAssistantChannelState extends ChannelState {
 
     @Override
     public CompletableFuture<Boolean> publishValue(Command command) {
+        Predicate<Command> commandFilter = this.commandFilter;
         if (commandFilter != null) {
             try {
                 if (!commandFilter.test(command)) {

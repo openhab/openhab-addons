@@ -7,6 +7,7 @@
 	<thing-type id="intesisHome">
 		<label>IntesisHome WiFi Adapter</label>
 		<description>Represents a single IntesisHome WiFi adapter on the network, connected to an A/C unit.</description>
+		<semantic-equipment-tag>WirelessAccessPoint</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
@@ -37,6 +38,7 @@
 	<thing-type id="intesisBox">
 		<label>IntesisBox Adapter</label>
 		<description>Represents a single IntesisBox WiFi adapter on the network, connected to an A/C unit.</description>
+		<semantic-equipment-tag>WirelessAccessPoint</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
@@ -71,6 +73,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.intesis.ambientTemperature.label</label>
 		<description>@text/channel-type.intesis.ambientTemperature.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5" readOnly="true"></state>
 	</channel-type>
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,6 +72,7 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonStatus;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneExpanded;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
 import org.openhab.core.library.types.StringType;
@@ -132,6 +133,11 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private final Map<Integer, Integer> zoneToDevice = new HashMap<>();
     private final Map<Integer, Integer> deviceToZone = new HashMap<>();
     private final Object zoneMapsLock = new Object();
+
+    private final Object zoneIdToNameLock = new Object();
+    private final Map<Integer, String> zoneIdToName = new HashMap<>();
+    public final Object areaIdToNameLock = new Object();
+    public final Map<Integer, String> areaIdToName = new HashMap<>();
 
     private @Nullable Map<Integer, List<Integer>> deviceButtonMap;
     private Map<Integer, Integer> buttonToDevice = new HashMap<>();
@@ -304,12 +310,12 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_INITIALIZING);
 
-        Thread readerThread = new Thread(this::readerThreadJob, "Lutron reader");
+        Thread readerThread = new Thread(this::readerThreadJob, "OH-binding-" + getThing().getUID() + "-BridgeReader");
         readerThread.setDaemon(true);
         readerThread.start();
         this.readerThread = readerThread;
 
-        Thread senderThread = new Thread(this::senderThreadJob, "Lutron sender");
+        Thread senderThread = new Thread(this::senderThreadJob, "OH-binding-" + getThing().getUID() + "-BridgeSender");
         senderThread.setDaemon(true);
         senderThread.start();
         this.senderThread = senderThread;
@@ -325,12 +331,14 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
      * Called by connect() and discovery service to request fresh discovery data
      */
     public void queryDiscoveryData() {
+        sendCommand(new LeapCommand(Request.getAreas()));
+
         if (!isRadioRA3) {
             sendCommand(new LeapCommand(Request.getDevices()));
         } else {
+            sendCommand(new LeapCommand(Request.getZoneStatuses()));
             sendCommand(new LeapCommand(Request.getDevices(false)));
         }
-        sendCommand(new LeapCommand(Request.getAreas()));
         sendCommand(new LeapCommand(Request.getOccupancyGroups()));
     }
 
@@ -628,7 +636,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         LeapDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
-            discoveryService.processDeviceDefinitions(Arrays.asList(device));
+            discoveryService.processDeviceDefinitions(Arrays.asList(device), zoneIdToName, areaIdToName);
         }
     }
 
@@ -655,12 +663,36 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         LeapDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
-            discoveryService.processDeviceDefinitions(deviceList);
+            discoveryService.processDeviceDefinitions(deviceList, zoneIdToName, areaIdToName);
+        }
+    }
+
+    @Override
+    public void handleMultipleZoneExpandedUpdate(List<ZoneExpanded> expandedZones) {
+        synchronized (zoneIdToNameLock) {
+            zoneIdToName.clear();
+            for (ZoneExpanded zone : expandedZones) {
+                int zoneId = zone.zone.getZone();
+                if (zoneId > 0) {
+                    zoneIdToName.put(zoneId, zone.zone.name);
+                }
+            }
         }
     }
 
     @Override
     public void handleMultipleAreaDefinition(List<Area> areaList) {
+        synchronized (areaIdToNameLock) {
+            areaIdToName.clear();
+            for (Area area : areaList) {
+                int areaId = area.getArea();
+                if (areaId > 0) {
+                    logger.debug("area[{}] == {}", areaId, area.name);
+                    areaIdToName.put(areaId, area.name);
+                }
+            }
+        }
+
         LeapDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.setAreas(areaList);

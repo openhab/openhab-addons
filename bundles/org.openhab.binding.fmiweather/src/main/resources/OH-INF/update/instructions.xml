@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="fmiweather:forecast">
+
+		<instruction-set targetVersion="1">
+			<add-channel id="time" groupIds="forecast">
+				<type>fmiweather:forecast-time-channel</type>
+			</add-channel>
+			<add-channel id="temperature" groupIds="forecast">
+				<type>fmiweather:temperature-channel</type>
+			</add-channel>
+			<add-channel id="humidity" groupIds="forecast">
+				<type>fmiweather:humidity-channel</type>
+			</add-channel>
+			<add-channel id="wind-direction" groupIds="forecast">
+				<type>fmiweather:wind-direction-channel</type>
+			</add-channel>
+			<add-channel id="wind-speed" groupIds="forecast">
+				<type>fmiweather:wind-speed-channel</type>
+			</add-channel>
+			<add-channel id="wind-gust" groupIds="forecast">
+				<type>fmiweather:wind-gust-channel</type>
+			</add-channel>
+			<add-channel id="pressure" groupIds="forecast">
+				<type>fmiweather:pressure-channel</type>
+			</add-channel>
+			<add-channel id="precipitation-intensity" groupIds="forecast">
+				<type>fmiweather:precipitation-intensity-channel</type>
+			</add-channel>
+			<add-channel id="total-cloud-cover" groupIds="forecast">
+				<type>fmiweather:total-cloud-cover-channel</type>
+			</add-channel>
+			<add-channel id="weather-id" groupIds="forecast">
+				<type>fmiweather:weather-id-channel</type>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
+
+</update:update-descriptions>

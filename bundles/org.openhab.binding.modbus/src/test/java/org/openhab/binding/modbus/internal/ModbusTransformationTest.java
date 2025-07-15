@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,5 +50,12 @@ public class ModbusTransformationTest {
         ModbusTransformation transformation = new ModbusTransformation(List.of("constant"));
         assertFalse(transformation.isIdentityTransform());
         assertEquals("constant", transformation.transform("xx"));
+    }
+
+    @Test
+    public void testTransformationFailed() {
+        ModbusTransformation transformation = new ModbusTransformation(List.of("NONEXISTENT(test)"));
+        assertFalse(transformation.isIdentityTransform());
+        assertEquals("", transformation.transform("xx"));
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,39 +12,41 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
 
 /**
  * A MQTT camera, following the https://www.home-assistant.io/components/camera.mqtt/ specification.
  *
- * At the moment this only notifies the user that this feature is not yet supported.
- *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
-    public static final String CAMERA_CHANNEL_ID = "camera"; // Randomly chosen channel "ID"
+public class Camera extends AbstractComponent<Camera.Configuration> {
+    public static final String CAMERA_CHANNEL_ID = "camera";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Camera");
+    public static class Configuration extends EntityConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Camera");
         }
 
-        protected String topic = "";
+        String getTopic() {
+            return getString("topic");
+        }
     }
 
-    public Camera(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Camera(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
         ImageValue value = new ImageValue();
 
-        buildChannel(CAMERA_CHANNEL_ID, ComponentChannelType.IMAGE, value, getName(),
-                componentConfiguration.getUpdateListener()).stateTopic(channelConfiguration.topic).build();
+        buildChannel(CAMERA_CHANNEL_ID, ComponentChannelType.IMAGE, value, "Camera",
+                componentContext.getUpdateListener()).stateTopic(config.getTopic()).build();
+
+        finalizeChannels();
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,6 +58,7 @@ public class ReolinkState {
                     public AbilityKey supportAiPeople = new AbilityKey();
                     public AbilityKey supportAiVehicle = new AbilityKey();
                     public AbilityKey supportAiDogCat = new AbilityKey();
+                    public AbilityKey supportAiTrackClassify = new AbilityKey();
                 }
 
                 public AbilityChn[] abilityChn = new AbilityChn[1];

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,6 +56,7 @@ public class KaleidescapeBindingConstants {
     public static final String TITLE_NUM = "ui#title_num";
     public static final String TITLE_LENGTH = "ui#title_length";
     public static final String TITLE_LOC = "ui#title_loc";
+    public static final String ENDTIME = "ui#endtime";
     public static final String CHAPTER_NUM = "ui#chapter_num";
     public static final String CHAPTER_LENGTH = "ui#chapter_length";
     public static final String CHAPTER_LOC = "ui#chapter_loc";
@@ -91,6 +92,7 @@ public class KaleidescapeBindingConstants {
     public static final String MUSIC_TRACK = "music#track";
     public static final String MUSIC_ARTIST = "music#artist";
     public static final String MUSIC_ALBUM = "music#album";
+    public static final String MUSIC_TITLE_RAW = "music#title";
     public static final String MUSIC_PLAY_MODE = "music#play_mode";
     public static final String MUSIC_PLAY_SPEED = "music#play_speed";
     public static final String MUSIC_TRACK_LENGTH = "music#track_length";

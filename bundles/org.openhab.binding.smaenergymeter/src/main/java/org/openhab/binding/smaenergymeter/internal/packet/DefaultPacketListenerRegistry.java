@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,9 @@ public class DefaultPacketListenerRegistry implements PacketListenerRegistry {
                 logger.warn("Multicast socket {} failed to terminate", entry.getKey(), e);
             }
         }
-        scheduler.shutdownNow();
+        if (!scheduler.isShutdown()) {
+            scheduler.shutdownNow();
+        }
     }
 
     public ScheduledFuture<?> addTask(ReceivingTask runnable) {

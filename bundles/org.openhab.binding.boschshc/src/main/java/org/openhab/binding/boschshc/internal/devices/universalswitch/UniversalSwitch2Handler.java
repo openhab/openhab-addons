@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.boschshc.internal.devices.universalswitch;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -25,7 +24,7 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class UniversalSwitch2Handler extends UniversalSwitchHandler {
 
-    public UniversalSwitch2Handler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public UniversalSwitch2Handler(Thing thing) {
+        super(thing);
     }
 }

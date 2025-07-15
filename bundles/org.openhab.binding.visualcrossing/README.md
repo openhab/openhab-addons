@@ -5,10 +5,10 @@ VisualCrossing Binding provides integration with VisualCrossing API
  > Visual Crossing Weather is the easiest-to-use and lowest-cost source for historical and forecast weather data.
  > Our [Weather API](https://www.visualcrossing.com/weather-api) is designed to integrate easily into any app or code, and
  > our prices are lower than any other provider in the industry.
- > 
+ >
  > Our data is used daily by a diverse customer-base including business analysts, data scientists, insurance professionals,
  > energy producers, construction planners, and academics.
- > 
+ >
  > We have the [Weather Data](https://www.visualcrossing.com/weather-data) and expertise needed to serve any individual or
  > organization from an independent event planner to a global enterprise.
 
@@ -87,31 +87,31 @@ In `day-channel-group` there are 0–23 channels of type `hourXX`
 
 | Channel                | Type                        | Read/Write | Description |
 |------------------------|-----------------------------|------------|-------------|
-| hourXX-datetime        | time-channel                | R          |             |  
-| hourXX-timestamp       | timestamp-channel           | R          |             |  
-| hourXX-temperature     | system.outdoor-temperature  | R          |             |  
-| hourXX-feels-like      | temperature-channel         | R          |             |  
-| hourXX-humidity        | system.atmospheric-humidity | R          |             |  
-| hourXX-dew             | temperature-channel         | R          |             |  
-| hourXX-precip          | precip-channel              | R          |             |  
-| hourXX-precip-prob     | precip-prob-channel         | R          |             |  
-| hourXX-precip-type     | precip-type-channel         | R          |             |  
-| hourXX-snow            | snow-channel                | R          |             |  
-| hourXX-snow-depth      | snow-channel                | R          |             |  
-| hourXX-wind-gust       | system.wind-speed           | R          |             |  
-| hourXX-wind-speed      | system.wind-speed           | R          |             |  
-| hourXX-wind-dir        | system.wind-direction       | R          |             |  
-| hourXX-pressure        | system.barometric-pressure  | R          |             |  
-| hourXX-visibility      | visibility-channel          | R          |             |  
-| hourXX-cloud-cover     | cloud-cover-channel         | R          |             |  
-| hourXX-solar-radiation | solar-radiation-channel     | R          |             |  
-| hourXX-solar-energy    | solar-energy-channel        | R          |             |  
-| hourXX-uv-index        | uv-index-channel            | R          |             |  
-| hourXX-severe-risk     | severe-risk-channel         | R          |             |  
-| hourXX-conditions      | conditions-channel          | R          |             |  
-| hourXX-icon            | icon-channel                | R          |             |  
-| hourXX-stations        | stations-channel            | R          |             |  
-| hourXX-source          | source-channel              | R          |             |   
+| hourXX-datetime        | time-channel                | R          |             |
+| hourXX-timestamp       | timestamp-channel           | R          |             |
+| hourXX-temperature     | system.outdoor-temperature  | R          |             |
+| hourXX-feels-like      | temperature-channel         | R          |             |
+| hourXX-humidity        | system.atmospheric-humidity | R          |             |
+| hourXX-dew             | temperature-channel         | R          |             |
+| hourXX-precip          | precip-channel              | R          |             |
+| hourXX-precip-prob     | precip-prob-channel         | R          |             |
+| hourXX-precip-type     | precip-type-channel         | R          |             |
+| hourXX-snow            | snow-channel                | R          |             |
+| hourXX-snow-depth      | snow-channel                | R          |             |
+| hourXX-wind-gust       | system.wind-speed           | R          |             |
+| hourXX-wind-speed      | system.wind-speed           | R          |             |
+| hourXX-wind-dir        | system.wind-direction       | R          |             |
+| hourXX-pressure        | system.barometric-pressure  | R          |             |
+| hourXX-visibility      | visibility-channel          | R          |             |
+| hourXX-cloud-cover     | cloud-cover-channel         | R          |             |
+| hourXX-solar-radiation | solar-radiation-channel     | R          |             |
+| hourXX-solar-energy    | solar-energy-channel        | R          |             |
+| hourXX-uv-index        | uv-index-channel            | R          |             |
+| hourXX-severe-risk     | severe-risk-channel         | R          |             |
+| hourXX-conditions      | conditions-channel          | R          |             |
+| hourXX-icon            | icon-channel                | R          |             |
+| hourXX-stations        | stations-channel            | R          |             |
+| hourXX-source          | source-channel              | R          |             |
 
 ### `current-conditions-channel-group`
 
@@ -163,15 +163,15 @@ Thing visualcrossing:weather:all_config "Total Weather Data" @ "Weather" [ apiKe
 **Note 2: Use `docs/only_days.items` to have forecast for days but without hours or join items from `docs/Day_XX` to get hourly forecast for each day**
 
 ```java
-Group Total_Weather_Data "Total Weather Data" [ "Equipment" ] 
+Group Total_Weather_Data "Total Weather Data" [ "Equipment" ]
 
 // basic group
-Group Total_Weather_Data_Basic "Basic" (Total_Weather_Data) [ "Equipment" ] 
+Group Total_Weather_Data_Basic "Basic" (Total_Weather_Data) [ "Equipment" ]
 Number Total_Weather_Data_Basic_Cost "Cost" (Total_Weather_Data_Basic) [ "Point" ] {channel="visualcrossing:weather:default_config:basic#cost"}
 String Total_Weather_Data_Basic_Description "Description" (Total_Weather_Data_Basic) [ "Point" ] {channel="visualcrossing:weather:default_config:basic#description"}
 
 // current conditions
-Group Total_Weather_Data_Current_Conditions "Current Conditions" (Total_Weather_Data) [ "Equipment" ] 
+Group Total_Weather_Data_Current_Conditions "Current Conditions" (Total_Weather_Data) [ "Equipment" ]
 String Total_Weather_Data_Basic_Datetime "Datetime" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#datetime"}
 DateTime Total_Weather_Data_Basic_Timestamp "Timestamp" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#timestamp"}
 Number:Temperature Total_Weather_Data_Basic_Temperature "Temperature" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#temperature"}
@@ -220,6 +220,6 @@ then
             // lang - https://www.visualcrossing.com/resources/documentation/weather-api/how-to-create-or-modify-language-files/
             // dateFrom, dateTo - https://www.visualcrossing.com/resources/documentation/weather-api/using-the-time-period-parameter-to-specify-dynamic-dates-for-weather-api-requests/
             val weatherResponse2 = actions.timeline("wrocław,poland", METRIC, "pl", "last7days", "next5days")
-	} 
+	}
 end
 ```

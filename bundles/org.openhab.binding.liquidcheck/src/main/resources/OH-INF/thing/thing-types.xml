@@ -7,6 +7,7 @@
 	<thing-type id="liquidCheckDevice">
 		<label>Liquid Check Device</label>
 		<category>Sensor</category>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="content" typeId="content-channel"/>
@@ -61,18 +62,30 @@
 		<item-type>Number:Length</item-type>
 		<label>Level</label>
 		<description>Level in the container</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f m"/>
 	</channel-type>
 	<channel-type id="raw-level-channel">
 		<item-type>Number:Length</item-type>
 		<label>Level Raw Data</label>
 		<description>Level in the container as measured by the device</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.4f m"/>
 	</channel-type>
 	<channel-type id="fill-indicator-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fill Indicator</label>
 		<description>Indicates the fill level based on max content and measured content</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="measure-channel">

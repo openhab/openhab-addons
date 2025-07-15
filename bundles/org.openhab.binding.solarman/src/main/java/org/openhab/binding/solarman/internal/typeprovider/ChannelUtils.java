@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.solarman.internal.typeprovider;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricCharge;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Energy;
@@ -76,6 +77,7 @@ public class ChannelUtils {
     private static String computeNumberType(String uom) {
         return switch (uom.toUpperCase()) {
             case "A" -> CoreItemFactory.NUMBER + ":" + ElectricCurrent.class.getSimpleName();
+            case "AH" -> CoreItemFactory.NUMBER + ":" + ElectricCharge.class.getSimpleName();
             case "V" -> CoreItemFactory.NUMBER + ":" + ElectricPotential.class.getSimpleName();
             case "°C" -> CoreItemFactory.NUMBER + ":" + Temperature.class.getSimpleName();
             case "W", "KW", "VA", "KVA", "VAR", "KVAR" -> CoreItemFactory.NUMBER + ":" + Power.class.getSimpleName();
@@ -96,6 +98,7 @@ public class ChannelUtils {
     public static @Nullable Unit<?> getUnitFromDefinition(String uom) {
         return switch (uom.toUpperCase()) {
             case "A" -> Units.AMPERE;
+            case "AH" -> Units.AMPERE_HOUR;
             case "V" -> Units.VOLT;
             case "°C" -> SIUnits.CELSIUS;
             case "W" -> Units.WATT;

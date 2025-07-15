@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hydrawise.internal.discovery;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -64,7 +64,7 @@ public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryS
     public void deactivate() {
         HydrawiseAccountHandler localHandler = this.handler;
         if (localHandler != null) {
-            removeOlderResults(new Date().getTime(), localHandler.getThing().getUID());
+            removeOlderResults(Instant.now(), localHandler.getThing().getUID());
         }
     }
 

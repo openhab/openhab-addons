@@ -16,18 +16,6 @@
 		<state min="0.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Zone Temperature</label>
-		<description>Gets the temperature of this zone</description>
-		<category>heating</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
 	<channel-type id="offsetTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Thermostat Temperature Offset</label>
@@ -41,6 +29,10 @@
 		<label>Preheat</label>
 		<description>Switch the preheating of a zone ON or OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="coolingAllowed">
@@ -48,6 +40,10 @@
 		<label>Cooling Allowed</label>
 		<description>Switch the cooling allowed of a zone ON or OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="regulationControl">
@@ -55,6 +51,10 @@
 		<label>Regulation Control</label>
 		<description>Switch the regulation control of a zone to Active, Passive or Off</description>
 		<category>switch</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="active">Active</option>
@@ -64,13 +64,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Switch the Plugwise Smart plug ON or OFF</description>
-		<category>switch</category>
-	</channel-type>
-
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
@@ -78,21 +71,15 @@
 		<category>switch</category>
 	</channel-type>
 
-	<channel-type id="powerUsage">
-		<item-type>Number:Power</item-type>
-		<label>Power Usage</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state pattern="%.2f %unit%" readOnly="true"></state>
-	</channel-type>
-
 	<channel-type id="chState">
 		<item-type>Switch</item-type>
 		<label>Central Heating Active</label>
 		<description>Is the boiler active for central heating, On or OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -101,6 +88,10 @@
 		<label>Domestic Hot Water Active</label>
 		<description>Is the boiler active for domestic hot water, On or OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -109,6 +100,10 @@
 		<label>Cooling State</label>
 		<description>Is the boiler active for cooling, On or OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -117,7 +112,54 @@
 		<label>Flame State</label>
 		<description>Is the boiler's flame active, On or OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burnerStartsFailed">
+		<item-type>Number</item-type>
+		<label>Burner Starts Failed</label>
+		<description>Total count of failed burner starts</description>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burnerStarts">
+		<item-type>Number</item-type>
+		<label>Burner Starts</label>
+		<description>Total count of burner starts</description>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burnerIgnitionsFailed">
+		<item-type>Number</item-type>
+		<label>Burner Ignitions Failed</label>
+		<description>Total count of failed burner ignitions</description>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burnerOpTime">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Operation Time</label>
+		<description>Total operation time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burnerDHWOpTime">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>DHW Operation Time</label>
+		<description>Total operation time for domestic hot water</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="intendedHeatingState">
@@ -133,6 +175,10 @@
 		<label>Domestic Hot Water Comfort Mode</label>
 		<description>Is the boiler's domestic hot water mode set to comfort, On or OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -141,15 +187,19 @@
 		<label>Intended Boiler Temperature</label>
 		<description>Gets the intended temperature of this boiler</description>
 		<category>heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="modulationLevel">
-		<item-type>Number</item-type>
-		<label>Modulelation Level</label>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Modulation Level</label>
 		<description>Gets the modulation level of this boiler</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="otAppFaultCode">
@@ -209,7 +259,11 @@
 		<label>Domestic Hot Water Setpoint Temperature</label>
 		<description>Gets the temperature of the domestic hot water setpoint</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxBoilerTemperature">
@@ -217,7 +271,7 @@
 		<label>Max Boiler Temperature</label>
 		<description>Gets the maximum temperature of this boiler</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="waterPressure">
@@ -237,6 +291,10 @@
 		<label>Preset Scene</label>
 		<description>Gets or sets the preset scene of the zone</description>
 		<category>heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="home">Home</option>
@@ -249,7 +307,7 @@
 	</channel-type>
 
 	<channel-type id="valvePosition">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Valve Position</label>
 		<description>Gets the position of the valve (0% closed, 100% open)</description>
 		<category>heating</category>
@@ -257,7 +315,7 @@
 			<tag>Status</tag>
 			<tag>OpenLevel</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

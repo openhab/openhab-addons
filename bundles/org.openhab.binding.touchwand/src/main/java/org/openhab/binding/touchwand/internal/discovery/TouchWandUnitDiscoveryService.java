@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,14 +137,14 @@ public class TouchWandUnitDiscoveryService extends AbstractThingHandlerDiscovery
 
     @Override
     public void initialize() {
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
         super.initialize();
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
     }
 
     @Override

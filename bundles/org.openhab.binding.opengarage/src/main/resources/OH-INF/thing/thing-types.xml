@@ -7,7 +7,7 @@
 	<thing-type id="opengarage">
 		<label>OpenGarage</label>
 		<description>OpenGarage Controller</description>
-
+		<semantic-equipment-tag>GarageDoor</semantic-equipment-tag>
 		<channels>
 			<channel id="distance" typeId="opengarage-distance"/>
 			<channel id="status" typeId="opengarage-status"/>
@@ -77,6 +77,10 @@
 		<item-type>Number:Length</item-type>
 		<label>Distance</label>
 		<description>Distance Reading from the OG unit</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="opengarage-status" advanced="true">
@@ -100,6 +104,10 @@
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>On/Off Status of the OG unit</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<config-description>
 			<parameter name="invert" type="boolean">
 				<label>Invert Switch</label>
@@ -117,12 +125,20 @@
 		<item-type>Contact</item-type>
 		<label>Contact Status</label>
 		<description>Contact Status of the OG unit</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="opengarage-status-rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Status</label>
 		<description>Roller Shutter Status of the OG unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="opengarage-vehicle" advanced="true">
 		<item-type>String</item-type>
@@ -134,6 +150,10 @@
 		<item-type>Number</item-type>
 		<label>Vehicle Presence</label>
 		<description>Vehicle presence detection</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No vehicle detected</option>
@@ -148,6 +168,10 @@
 		<label>Text status</label>
 		<description>Text status of the current door state, including transition, using values from configuration:
 			doorOpeningState, doorOpenState, doorClosingState, doorClosedState.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

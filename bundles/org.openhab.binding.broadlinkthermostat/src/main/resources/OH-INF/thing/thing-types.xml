@@ -8,7 +8,7 @@
 	<thing-type id="floureonthermostat">
 		<label>Floureon Thermostat</label>
 		<description>A heating device thermostat</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="mode" typeId="mode"/>
@@ -29,7 +29,7 @@
 	<thing-type id="hysenthermostat">
 		<label>Hysen Thermostat</label>
 		<description>A heating device thermostat</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="mode" typeId="mode"/>
@@ -50,6 +50,7 @@
 	<thing-type id="rmuniversaldevice">
 		<label>Rm Universal Device</label>
 		<description>A universal infrared remote</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channels>
 			<channel id="learningmode" typeId="learningmode"/>
 			<channel id="savelearned" typeId="savelearned"/>
@@ -64,11 +65,19 @@
 		<label>Power</label>
 		<description>Switch display on/off and enable/disables heating</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Current mode of the thermostat</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">auto</option>
@@ -94,6 +103,10 @@
 		<label>Active</label>
 		<description>Shows if thermostat is currently actively heating</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="roomtemperature">
@@ -101,6 +114,10 @@
 		<label>Temperature</label>
 		<description>Room temperature, measured directly at the device</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="roomtemperatureexternalsensor">
@@ -108,6 +125,10 @@
 		<label>Temperature Ext. Sensor</label>
 		<description>Room temperature, measured by the external sensor</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="setpoint">
@@ -115,6 +136,10 @@
 		<label>Setpoint</label>
 		<description>Temperature setpoint that open/close valve</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 	<channel-type id="temperatureoffset">
@@ -122,6 +147,10 @@
 		<label>Temperature Offset</label>
 		<description>Manual temperature adjustment</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5" min="-2.5" max="2.5"/>
 	</channel-type>
 	<channel-type id="temperature">
@@ -129,6 +158,10 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="remotelock">
@@ -136,17 +169,29 @@
 		<label>Remote Lock</label>
 		<description>Locks the device to only allow remote actions</description>
 		<category>Lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="time">
 		<item-type>DateTime</item-type>
 		<label>Time</label>
 		<description>The time and day of week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="learningmode">
 		<item-type>Switch</item-type>
 		<label>Learning Mode</label>
 		<description>Put device in infrared learning mode when turned on</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="savelearned">
 		<item-type>String</item-type>

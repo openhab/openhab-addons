@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.RWConfiguration;
 
 /**
  * A MQTT select, following the https://www.home-assistant.io/components/select.mqtt/ specification.
@@ -27,51 +29,39 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class Select extends AbstractComponent<Select.ChannelConfiguration> {
-    public static final String SELECT_CHANNEL_ID = "select"; // Randomly chosen channel "ID"
+public class Select extends AbstractComponent<Select.Configuration> {
+    public static final String SELECT_CHANNEL_ID = "select";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Select");
+    public static class Configuration extends EntityConfiguration implements RWConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Select");
         }
 
-        protected @Nullable Boolean optimistic;
+        @Nullable
+        Value getCommandTemplate() {
+            return getOptionalValue("command_template");
+        }
 
-        @SerializedName("command_template")
-        protected @Nullable String commandTemplate;
-        @SerializedName("command_topic")
-        protected @Nullable String commandTopic;
-        @SerializedName("state_topic")
-        protected String stateTopic = "";
+        List<String> getOptions() {
+            return getStringList("options");
+        }
 
-        protected String[] options = new String[0];
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
-    public Select(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+    public Select(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
-                : channelConfiguration.stateTopic.isBlank();
+        TextValue value = new TextValue(config.getOptions().toArray(new String[0]));
 
-        if (optimistic && !channelConfiguration.stateTopic.isBlank()) {
-            throw new ConfigurationException("Component:Select does not support forced optimistic mode");
-        }
+        buildChannel(SELECT_CHANNEL_ID, ComponentChannelType.STRING, value, "Select",
+                componentContext.getUpdateListener()).stateTopic(config.getStateTopic(), config.getValueTemplate())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos(), config.getCommandTemplate())
+                .inferOptimistic(config.isOptimistic()).build();
 
-        TextValue value = new TextValue(channelConfiguration.options);
-
-        buildChannel(SELECT_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos(), channelConfiguration.commandTemplate)
-                .build();
+        finalizeChannels();
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,13 +16,13 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
  * @author Markus Pfleger - Initial contribution
  */
 public class Battery {
-    private int batteryPercent;
+    private byte batteryPercent;
 
-    public int getBatteryPercent() {
+    public byte getBatteryPercent() {
         return batteryPercent;
     }
 
-    public void setBatteryPercent(int batteryPercent) {
+    public void setBatteryPercent(byte batteryPercent) {
         this.batteryPercent = batteryPercent;
     }
 }

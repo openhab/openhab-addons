@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Awning</label>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channels>
 			<channel id="control" typeId="control"></channel>
 		</channels>

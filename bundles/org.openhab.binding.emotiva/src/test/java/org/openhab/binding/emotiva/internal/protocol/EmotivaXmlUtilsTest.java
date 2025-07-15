@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,13 +62,15 @@ class EmotivaXmlUtilsTest extends AbstractDTOTestBase {
     @Test
     void testMarshallObjectWithoutXmlElements() {
         String commands = xmlUtils.marshallEmotivaDTO("");
+
         assertThat(commands, is(""));
     }
 
     @Test
     void testMarshallNoValueDTO() {
-        EmotivaNotifyWrapper dto = new EmotivaNotifyWrapper();
+        var dto = new EmotivaNotifyWrapper();
         String xmlAsString = xmlUtils.marshallEmotivaDTO(dto);
+
         assertThat(xmlAsString, not(containsString("<emotivaNotify>")));
         assertThat(xmlAsString, containsString("<emotivaNotify/>"));
     }

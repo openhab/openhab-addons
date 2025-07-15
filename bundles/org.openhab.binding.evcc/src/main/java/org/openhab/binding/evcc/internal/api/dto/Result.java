@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,8 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Florian Hotze - Initial contribution
  * @author Luca Arnecke - update to evcc version 0.123.1
+ * @author Daniel Kötting - update to evcc version 0.133.0
+ * @author Marcel Goerentz - Replace invalid chars with hyphens in vehicles map
  */
 public class Result {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
@@ -49,14 +51,14 @@ public class Result {
     @SerializedName("batteryMode")
     private String batteryMode;
 
-    @SerializedName("gridCurrents")
-    private float[] gridCurrents;
-
-    @SerializedName("gridEnergy")
-    private float gridEnergy;
-
     @SerializedName("gridPower")
     private Float gridPower;
+
+    @SerializedName("grid")
+    private Grid grid;
+
+    @SerializedName("gridConfigured")
+    private boolean gridConfigured;
 
     @SerializedName("homePower")
     private float homePower;
@@ -165,24 +167,24 @@ public class Result {
     }
 
     /**
-     * @return grid's currents
-     */
-    public float[] getGridCurrents() {
-        return gridCurrents;
-    }
-
-    /**
-     * @return grid's energy
-     */
-    public float getGridEnergy() {
-        return gridEnergy;
-    }
-
-    /**
-     * @return grid's power or {@code null} if not available
+     * @return gridPower (before evcc version 0.133.0)
      */
     public Float getGridPower() {
         return gridPower;
+    }
+
+    /**
+     * @return all grid related values (since evcc version 0.133.0)
+     */
+    public Grid getGrid() {
+        return grid;
+    }
+
+    /**
+     * @return is grid configured (since evcc version 0.133.0)
+     */
+    public boolean getGridConfigured() {
+        return gridConfigured;
     }
 
     /**
@@ -223,8 +225,13 @@ public class Result {
     public Map<String, Vehicle> getVehicles() {
         Map<String, Vehicle> correctedMap = new HashMap<>();
         for (Entry<String, Vehicle> entry : vehicles.entrySet()) {
-            // The key from the vehicles map is used as uid, so it should not contain semicolons.
-            correctedMap.put(entry.getKey().replace(":", "-"), entry.getValue());
+            // The key from the vehicles map is used as uid, so it should not contain any disallowed chars
+            // If necessary replace the forbidden chars with hyphens
+            String key = entry.getKey();
+            if (!key.matches("[a-zA-Z0-9_-]+")) {
+                key = key.replaceAll("[^a-zA-Z0-9_-]", "-");
+            }
+            correctedMap.put(key, entry.getValue());
         }
         return correctedMap;
     }

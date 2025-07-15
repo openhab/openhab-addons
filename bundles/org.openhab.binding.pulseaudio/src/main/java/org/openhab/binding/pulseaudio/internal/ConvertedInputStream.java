@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,6 @@ public class ConvertedInputStream extends AudioStream {
             if (container.equals(AudioFormat.CONTAINER_WAVE)) {
                 AudioWaveUtils.removeFMT(innerInputStream);
             }
-
         } else {
             pcmInnerInputStream = getPCMStream(new BufferedInputStream(innerInputStream));
             var javaAudioFormat = ((AudioInputStream) pcmInnerInputStream).getFormat();

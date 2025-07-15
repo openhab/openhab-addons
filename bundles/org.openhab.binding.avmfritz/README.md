@@ -39,6 +39,11 @@ This switchable outlets [FRITZ!DECT 210](https://avm.de/produkte/fritzdect/fritz
 They support switching the outlet and reading the current power, current voltage, accumulated energy consumption and temperature.
 **NOTE:** The `voltage` channel will be added to the thing during runtime - if the interface supports it (FRITZ!OS 7 or higher).
 
+### FRITZ!Smart Energy 250
+
+This smart meter read head [FRITZ!Smart Energy 250](https://fritz.com/produkte/smart-home/fritzsmart-energy-250/) has to be connected to a FRITZ!Box by DECT protocol.
+It supports reading the current power, current voltage, accumulated energy consumption, as well as battery level and battery low indication.
+
 ### FRITZ!DECT Repeater 100
 
 This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) has to be connected to a FRITZ!Box by DECT protocol.
@@ -126,7 +131,7 @@ To do so
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
-```text
+```ini
 discovery.avmfritz:background=false
 ```
 
@@ -180,9 +185,9 @@ The AIN (actor identification number) can be found in the FRITZ!Box interface ->
 | device_locked         | Contact                  | Device is locked for switching manually (OPEN/CLOSE) - FRITZ!OS 6.90                                                                               | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 30x, Comet DECT                    |
 | temperature           | Number:Temperature       | Current measured temperature                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 30x, Comet DECT, FRITZ!DECT 440 |
 | humidity              | Number:Dimensionless     | Current measured humidity - FRITZ!OS 7.24                                                                                                          | FRITZ!DECT 440                                                                                      |
-| energy                | Number:Energy            | Accumulated energy consumption                                                                                                                     | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| power                 | Number:Power             | Current power consumption                                                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| voltage               | Number:ElectricPotential | Current voltage - FRITZ!OS 7                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
+| energy                | Number:Energy            | Accumulated energy consumption                                                                                                                     | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!Smart Energy 250                        |
+| power                 | Number:Power             | Current power consumption                                                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!Smart Energy 250                        |
+| voltage               | Number:ElectricPotential | Current voltage - FRITZ!OS 7                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!Smart Energy 250                        |
 | outlet                | Switch                   | Switchable outlet (ON/OFF)                                                                                                                         | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
 | on_off                | Switch                   | Switchable device (ON/OFF)                                                                                                                         | HAN_FUN_ON_OFF                                                                                      |
 | brightness            | Dimmer                   | Dimmable lights                                                                                                                                    | HAN_FUN_DIMMABLE_BULB                                                                               |
@@ -196,13 +201,13 @@ The AIN (actor identification number) can be found in the FRITZ!Box interface ->
 | radiator_mode         | String                   | Mode of heating thermostat (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN)                                                                                  | FRITZ!DECT 30x, Comet DECT                                                                          |
 | next_change           | DateTime                 | Next change of the Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                             | FRITZ!DECT 30x, Comet DECT                                                                          |
 | next_temp             | Number:Temperature       | Next Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                                           | FRITZ!DECT 30x, Comet DECT                                                                          |
-| battery_level         | Number                   | Battery level (in %) - FRITZ!OS 7                                                                                                                  | FRITZ!DECT 30x, Comet DECT, FRITZ!DECT 400, FRITZ!DECT 440                                          |
-| battery_low           | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 30x, Comet DECT, FRITZ!DECT 400, FRITZ!DECT 440                                          |
+| battery_level         | Number                   | Battery level (in %) - FRITZ!OS 7                                                                                                                  | FRITZ!DECT 30x, Comet DECT, FRITZ!DECT 400, FRITZ!DECT 440, FRITZ!Smart Energy 250                  |
+| battery_low           | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 30x, Comet DECT, FRITZ!DECT 400, FRITZ!DECT 440, FRITZ!Smart Energy 250                  |
 | contact_state         | Contact                  | Contact state information (OPEN/CLOSED).                                                                                                           | HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder)- FRITZ!OS 7       |
 | last_change           | DateTime                 | States the last time the button was pressed.                                                                                                       | FRITZ!DECT 400, FRITZ!DECT 440, HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7             |
 | rollershutter         | Rollershutter            | Rollershutter control and status. Accepts UP/DOWN/STOP commands and the opening level in percent. States the opening level in percent.             | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                                                |
-| obstruction_alarm     | Obstruction Alarm        | Rollershutter obstruction alarm (ON/OFF)                                                                                                         | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                                                  |
-| temperature_alarm     | Temperature Alarm        | Rollershutter temperature alarm (ON/OFF)                                                                                                    | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                                                       |
+| obstruction_alarm     | Obstruction Alarm        | Rollershutter obstruction alarm (ON/OFF)                                                                                                           | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                                                |
+| temperature_alarm     | Temperature Alarm        | Rollershutter temperature alarm (ON/OFF)                                                                                                           | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                                                |
 
 ### Triggers
 
@@ -226,7 +231,7 @@ You will find entries like the attached one.
 The `identifyer 'tmpFC0F2C-3960B7EE6'` contains the templates AINs you need for using them in rules.
 
 ```text
-Name 'Demo Template', identifyer 'tmpFC0F2C-3960B7EE6', firmware version '0.1' 
+Name 'Demo Template', identifyer 'tmpFC0F2C-3960B7EE6', firmware version '0.1'
     [aktive] ID 60013, emc 0x0, model 0x0, grouphash=0x0, devicetype 'avm_home_device_type_template', functionbitmask 0x4000, sortid 0, batt perc 255 low 255, pollinterval 0, polltimeout 0, validchangetime: 0
     --------------------
 ```
@@ -276,7 +281,7 @@ demo.items:
 
 ```java
 String CallState     "Call State [%s]"               { channel="avmfritz:fritzbox:1:call_state" }
-Call   IncomingCall  "Incoming call: [%1$s to %2$s]" { channel="avmfritz:fritzbox:1:incoming_call" } 
+Call   IncomingCall  "Incoming call: [%1$s to %2$s]" { channel="avmfritz:fritzbox:1:incoming_call" }
 Call   OutgoingCall  "Outgoing call: [%1$s to %2$s]" { channel="avmfritz:fritzbox:1:outgoing_call" }
 Call   ActiveCall    "Call established [%1$s]"       { channel="avmfritz:fritzbox:1:active_call" }
 String ApplyTemplate "Apply template"                { channel="avmfritz:fritzbox:1:apply_template" }
@@ -346,7 +351,7 @@ sitemap demo label="Main Menu" {
         Text item=COMETDECTBattery icon="battery"
         Switch item=COMETDECTBatteryLow icon="lowbattery"
     }
- 
+
     Frame label="HAN-FUN Contact" {
         Text item=HANFUNContactState
     }
