@@ -612,8 +612,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         for (Channel channel : thing.getChannels()) {
             if (!result.channels.containsKey(channel.getUID().getId())) {
                 channelsToRemove.add(channel);
-            } else {
-                result.channels.remove(channel.getUID().getId());
             }
         }
         if (!channelsToRemove.isEmpty()) {
