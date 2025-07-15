@@ -287,20 +287,20 @@
 		<label>Kilowatt Hours</label>
 		<description>kilowatt Hours reported by the indoor unit.</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%d%%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="amperes" advanced="true">
 		<item-type>Number</item-type>
 		<label>Amperes</label>
 		<description>Amperes (current) reported by the indoor unit.</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%d%%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="watts" advanced="true">
 		<item-type>Number</item-type>
 		<label>Watts</label>
 		<description>Watts reported by the indoor unit.</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%d%%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>
