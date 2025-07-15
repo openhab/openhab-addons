@@ -133,12 +133,13 @@ public class OndiloBridge {
     }
 
     private void adaptPollingToValueTime(Instant lastValueTime, int refreshInterval) {
-        // Measures are taken every 60 minutes, so we should be able to
-        // retrieve next data directly 60 minutes + buffer of 3 minutes after the last measure.
-        // This can help to avoid polling too frequently and hitting API rate limits.
-        // If the last measure was taken at 12:00, we will poll again at 13:03.
-        // This allows for a buffer in case the measure is not available immediately.
-        Instant nextValueTime = lastValueTime.plusSeconds(3780); // 60 minutes + 3 minutes
+        // Measures are taken every 60 minutes, so we should be able to retrieve next data directly 60 minutes after the
+        // last measure. For whatever reason it takes a bit longer for the measures to finally reach the cloud and be
+        // available via API. Therefore we add a buffer of 4 minutes to the next polling time.
+        // Adjusting the polling reduces the delay when new measures get available, without polling too frequently and
+        // hitting API rate limits. If the last measure was taken at 12:00, we will poll again at 13:04.
+        long secondsToAdd = TimeUnit.HOURS.toSeconds(1) + TimeUnit.MINUTES.toSeconds(4); // 1 hour + 4 minutes
+        Instant nextValueTime = lastValueTime.plusSeconds(secondsToAdd);
         Instant now = Instant.now();
         Instant scheduledTime = now.plusSeconds(refreshInterval);
         if (nextValueTime.isBefore(scheduledTime)) {
