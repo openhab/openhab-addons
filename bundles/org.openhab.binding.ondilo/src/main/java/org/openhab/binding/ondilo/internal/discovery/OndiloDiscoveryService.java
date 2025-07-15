@@ -78,10 +78,8 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
 
     protected void checkForDiscoveredPools() {
         try {
-            logger.trace("Checking for discovered Ondilo ICOs from bridgeHandler");
             Optional<List<Pool>> registeredPools = bridgeHandler.getPools();
             if (registeredPools.isPresent()) {
-                logger.trace("Found {} Ondilo ICOs from bridgeHandler", registeredPools.get().size());
                 addDiscoveredPools(registeredPools.get());
             } else {
                 logger.trace("No Ondilo ICOs found from bridgeHandler");
@@ -92,9 +90,7 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
     }
 
     protected void addDiscoveredPools(List<Pool> pools) {
-        logger.trace("Adding {} discovered Ondilo ICOs to inbox", pools.size());
         for (Pool pool : pools) {
-            logger.trace("Discovered Ondilo ICO: id={}, name={}", pool.id, pool.name);
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             ThingTypeUID thingTypeUID = THING_TYPE_ONDILO;
             ThingUID poolThingUid = new ThingUID(THING_TYPE_ONDILO, bridgeUID, String.valueOf(pool.id));
@@ -111,7 +107,6 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(poolThingUid).withThingType(thingTypeUID)
                     .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(ONDILO_ID)
                     .withLabel("Ondilo ICO: " + pool.name).build();
-            logger.trace("Registering discovered Ondilo ICO ThingUID: {}", poolThingUid);
             thingDiscovered(discoveryResult);
         }
     }

@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.measure.quantity.Power;
 
@@ -88,6 +89,37 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
             verify(callback, times(74)).stateUpdated(any(), any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNode7ConfigChannelToggle() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json", false);
+
+        // Capture initial state
+        Configuration startConfiguration = handler.getThing().getConfiguration();
+        List<Channel> startChannels = handler.getThing().getChannels();
+
+        // Test flipping configAsChannel to true
+        handler.configAsChannel = true;
+        handler.initialize();
+        List<Channel> configAsChannelChannels = handler.getThing().getChannels();
+
+        // Test flipping configAsChannel back to false
+        handler.configAsChannel = false;
+        handler.initialize();
+        List<Channel> endChannels = handler.getThing().getChannels();
+
+        try {
+            assertEquals(63, startConfiguration.getProperties().size());
+            assertEquals(31, startChannels.size());
+            assertEquals(93, configAsChannelChannels.size()); // 63+31-1 as the `id` is not included in the channels
+            assertEquals(31, endChannels.size());
         } finally {
             handler.dispose();
         }
