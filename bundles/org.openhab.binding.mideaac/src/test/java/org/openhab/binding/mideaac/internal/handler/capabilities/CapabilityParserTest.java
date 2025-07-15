@@ -149,7 +149,7 @@ public class CapabilityParserTest {
     }
 
     @Test
-    void testParseWithtemperature() {
+    void testParseWithTemperature() {
         // Arrange: Create a payload with Temperature bytes
         byte[] payload = new byte[] { (byte) 0xB5, 0x08, // Header and count (7 capabilities)
                 0x12, 0x02, 0x01, 0x01, // Capability 1 (0x0212 = PRESET_ECO, value = 1)

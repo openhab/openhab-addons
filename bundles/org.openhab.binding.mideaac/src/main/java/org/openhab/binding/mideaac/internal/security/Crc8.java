@@ -64,13 +64,7 @@ public class Crc8 {
     public static int calculate(byte[] bytes) {
         int crcValue = 0;
         for (byte m : bytes) {
-            int k = (byte) (crcValue ^ m);
-            if (k > 256) {
-                k -= 256;
-            }
-            if (k < 0) {
-                k += 256;
-            }
+            int k = (crcValue ^ m) & 0xFF;
             crcValue = CRC8_854_TABLE[k];
         }
         return crcValue;

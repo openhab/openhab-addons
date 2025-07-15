@@ -4,7 +4,7 @@ This binding integrates Air Conditioners that use the Midea protocol. Midea is a
 
 An AC device is likely supported if it uses one of the following Android apps or it's iOS equivalent.
 
-| Application                                  | Comment                                  | Options      | Default |
+| Cloud Provider                               | Comment                                  | Options      | Default |
 |----------------------------------------------|------------------------------------------|--------------|---------|
 | Midea Air (com.midea.aircondition.obm)       | Full Support of key and token updates    | Midea Air    |         |
 | NetHome Plus (com.midea.aircondition)        | Full Support of key and token updates    | NetHome Plus | Yes     |
@@ -21,7 +21,7 @@ This binding supports one Thing type `ac`.
 Once the Air Conditioner is on your network activating the Inbox scan with this binding will send an IP broadcast message.
 Every responding unit gets added to the Inbox. When adding each thing, the required parameters will be populated with either
 discovered values or the default settings. For a V.3 device, in the unlikely event the defaults did not get the token and key,
-enter your cloud provider, email and password. The thing properties dropdown on the Thing UI page will show supported AC functions.
+enter your cloud provider, email and password.
 
 ## Binding Configuration
 
@@ -50,6 +50,7 @@ No binding configuration is required.
 ## Channels
 
 Following channels are available:
+Note:  After discovery, the thing properties dropdown on the Thing UI page will show what channels and modes your device supports.
 
 | Channel              | Type               | Description                                                                                            | Read only | Advanced |
 |----------------------|--------------------|--------------------------------------------------------------------------------------------------------|-----------|----------|
@@ -99,7 +100,6 @@ String operational_mode "Operational Mode"                                  { ch
 String fan_speed "Fan Speed"                                                { channel="mideaac:ac:mideaac:fan-speed" }
 String swing_mode "Swing Mode"                                              { channel="mideaac:ac:mideaac:swing-mode" }
 Number:Temperature indoor_temperature "Indoor Temperature [%.1f °F]"        { channel="mideaac:ac:mideaac:indoor-temperature" }
-Number:Temperature outdoor_temperature "Current Temperature [%.1f °F]"      { channel="mideaac:ac:mideaac:outdoor-temperature" }
 Switch eco_mode "Eco Mode"                                                  { channel="mideaac:ac:mideaac:eco-mode" }
 Switch turbo_mode "Turbo Mode"                                              { channel="mideaac:ac:mideaac:turbo-mode" }
 Switch sleep_function "Sleep function"                                      { channel="mideaac:ac:mideaac:sleep-function" }
