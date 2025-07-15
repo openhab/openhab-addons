@@ -727,15 +727,13 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected void fillDimmerSettings(int id, @Nullable ArrayList<ShellySettingsDimmer> dimmers,
-            Shelly2GetConfigLight ls) {
-        if (dimmers != null) {
+            @Nullable Shelly2GetConfigLight ls) {
+        if (dimmers != null && ls != null) {
             ShellySettingsDimmer ds = dimmers.get(id);
-            if (ds != null) {
-                ds.name = ls.name;
-                ds.autoOn = ls.autoOnDelay;
-                ds.autoOff = ls.autoOffDelay;
-                dimmers.set(id, ds);
-            }
+            ds.name = ls.name;
+            ds.autoOn = ls.autoOnDelay;
+            ds.autoOff = ls.autoOffDelay;
+            dimmers.set(id, ds);
         }
     }
 
