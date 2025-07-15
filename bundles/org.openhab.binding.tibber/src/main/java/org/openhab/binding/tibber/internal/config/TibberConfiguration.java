@@ -18,22 +18,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link TibberConfiguration} class contains fields mapping configuration parameters.
  *
  * @author Stian Kjoglum - Initial contribution
+ * @author Bernd Weymann - make configuration variables public and introduce updateHour
  */
 @NonNullByDefault
 public class TibberConfiguration {
-    private String token = "";
-    private String homeid = "";
-    private int refresh;
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getHomeid() {
-        return homeid;
-    }
-
-    public int getRefresh() {
-        return refresh;
-    }
+    public String token = "";
+    public String homeid = "";
+    public int updateHour = 13;
 }

@@ -58,8 +58,8 @@
 		<description>Control the roller shutter position (read/write)</description>
 		<category>Blinds</category>
 		<tags>
+			<tag>Control</tag>
 			<tag>OpenLevel</tag>
-			<tag>Opening</tag>
 		</tags>
 	</channel-type>
 
@@ -124,6 +124,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>The zone operation mode (read/write)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">Automatic</option>
@@ -138,6 +142,10 @@
 		<item-type>String</item-type>
 		<label>Set Fan Speed</label>
 		<description>Set speed of the Fan Coil (read/write)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">Off</option>
@@ -252,6 +260,10 @@
 		<item-type>String</item-type>
 		<label>Central Unit Mode</label>
 		<description>The Central Unit operation mode (read/write)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="WEEKLY">Weekly</option>
@@ -371,6 +383,10 @@
 		<label>Power</label>
 		<description>Current active power</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
@@ -379,6 +395,10 @@
 		<label>Energy This Month</label>
 		<description>Total energy measured for this month</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -387,6 +407,10 @@
 		<label>Energy Today</label>
 		<description>Total energy measured for today</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -463,6 +487,9 @@
 		<item-type>Switch</item-type>
 		<label>System State</label>
 		<description>Alarm system is active (ON) or inactive (OFF) (read only).</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -470,6 +497,9 @@
 		<item-type>Switch</item-type>
 		<label>Armed State</label>
 		<description>Alarm is armed (ON) or disarmed (OFF) (read only).</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -477,6 +507,10 @@
 		<item-type>Switch</item-type>
 		<label>Network State</label>
 		<description>Alarm system network state (ON = network OK, OFF = no network) (read only).</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -484,6 +518,10 @@
 		<item-type>String</item-type>
 		<label>Battery State</label>
 		<description>Alarm system battery state (read only).</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>LowBattery</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OK">Ok</option>
@@ -497,6 +535,9 @@
 		<item-type>String</item-type>
 		<label>Zone Alarm</label>
 		<description>Current alarm for the zone (read only).</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="INTRUSION">Intrusion</option>
@@ -515,6 +556,10 @@
 		<label>Zone Alarm Timestamp</label>
 		<description>Current alarm's timestamp for the zone (read only).</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -523,6 +568,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm Zone State</label>
 		<description>Alarm zone is active (ON) or inactive (OFF) (read only).</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

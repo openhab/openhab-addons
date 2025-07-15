@@ -23,5 +23,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class AmberElectricConfiguration {
     public String apiKey = "";
     public String nmi = "";
-    public long refresh = 60;
 }

@@ -7,18 +7,30 @@
 	<channel-type id="ha-color">
 		<item-type>Color</item-type>
 		<label>Color</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
 	<channel-type id="ha-dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
 	<channel-type id="ha-humidity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
@@ -31,6 +43,10 @@
 	<channel-type id="ha-location">
 		<item-type>Location</item-type>
 		<label>Location</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
@@ -40,7 +56,7 @@
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
-	<channel-type id="ha-gps-accuracy" advanced="true">
+	<channel-type id="ha-gps-accuracy">
 		<item-type>Number:Length</item-type>
 		<label>GPS Accuracy</label>
 		<description>The accuracy of the GPS fix, in meters.</description>
@@ -51,6 +67,10 @@
 	<channel-type id="ha-rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
@@ -69,6 +89,10 @@
 	<channel-type id="ha-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
@@ -87,6 +111,14 @@
 	<channel-type id="ha-dimmer-advanced" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
+		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
+	</channel-type>
+
+	<channel-type id="ha-gps-accuracy-advanced" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>GPS Accuracy</label>
+		<description>The accuracy of the GPS fix, in meters.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 

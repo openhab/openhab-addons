@@ -24,6 +24,11 @@ import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyWebSocketReal
 @NonNullByDefault
 public interface SenseEnergyWebSocketListener {
     /**
+     * called when web socket connects
+     */
+    void onWebSocketConnect();
+
+    /**
      * called when the web socket is closed
      * 
      * @param statusCode

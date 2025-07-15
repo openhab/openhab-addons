@@ -41,6 +41,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Output</label>
 		<description>Rollershutter Module's Output</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<config-description-ref uri="channel-type:nikobus:rollershutter-output"/>
 	</channel-type>
 
