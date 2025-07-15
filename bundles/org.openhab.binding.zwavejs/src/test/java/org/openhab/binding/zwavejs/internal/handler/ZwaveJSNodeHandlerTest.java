@@ -98,7 +98,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testNode7ConfigCreationFlip() {
+    public void testNode7ConfigChannelToggle() {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
