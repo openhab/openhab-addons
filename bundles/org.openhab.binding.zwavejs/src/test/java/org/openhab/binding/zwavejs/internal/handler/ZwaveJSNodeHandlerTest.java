@@ -17,7 +17,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.measure.quantity.Power;
 
@@ -115,10 +118,12 @@ public class ZwaveJSNodeHandlerTest {
         handler.initialize();
         List<Channel> endChannels = handler.getThing().getChannels();
 
+        compareChannelsAndConfig(startChannels, startConfiguration, configAsChannelChannels);
+
         try {
             assertEquals(63, startConfiguration.getProperties().size());
             assertEquals(31, startChannels.size());
-            assertEquals(93, configAsChannelChannels.size());
+            assertEquals(93, configAsChannelChannels.size()); // 63+31-1 as the `id` is not included in the channels
             assertEquals(31, endChannels.size());
         } finally {
             handler.dispose();
@@ -140,6 +145,27 @@ public class ZwaveJSNodeHandlerTest {
         } finally {
             handler.dispose();
         }
+    }
+
+    private void compareChannelsAndConfig(List<Channel> startChannels, Configuration startConfig,
+            List<Channel> configAsChannels) {
+        Set<String> startChannelIds = startChannels.stream().map(ch -> ch.getUID().getId()).collect(Collectors.toSet());
+
+        Set<String> configAsChannelIds = configAsChannels.stream().map(ch -> ch.getUID().getId())
+                .collect(Collectors.toSet());
+
+        Set<String> configPropertyKeys = startConfig.getProperties().keySet();
+
+        // Find channels that exist in start but not in configAsChannels
+        Set<String> missingChannels = new HashSet<>(startChannelIds);
+        missingChannels.removeAll(configAsChannelIds);
+
+        // Find config properties that don't have corresponding channels
+        Set<String> missingConfigChannels = new HashSet<>(configPropertyKeys);
+        missingConfigChannels.removeAll(configAsChannelIds);
+
+        System.out.println("Missing channels from configAsChannels: " + missingChannels);
+        System.out.println("Config properties without corresponding channels: " + missingConfigChannels);
     }
 
     @Test
