@@ -451,9 +451,9 @@ public class CommandHelper {
     }
 
     /**
-     * Sets the Target Humidity for Dry Mode
+     * Sets the Maximum Humidity for Dry Mode
      * 
-     * @param command Target Humidity
+     * @param command Maximum Humidity
      */
     public static CommandSet handleMaximumHumidity(Command command, Response lastResponse) {
         CommandSet commandSet = CommandSet.fromResponse(lastResponse);

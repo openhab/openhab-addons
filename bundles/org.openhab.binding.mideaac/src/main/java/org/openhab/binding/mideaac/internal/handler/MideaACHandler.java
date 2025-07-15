@@ -491,6 +491,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     }
 
     // Handle unsolicted Temperature response in room (0xA1) Humidity only for now
+    // Temperatures are updated via the poll
     @Override
     public void updateChannels(TemperatureResponse temperatureResponse) {
         updateChannel(CHANNEL_HUMIDITY, new DecimalType(temperatureResponse.getHumidity()));

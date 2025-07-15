@@ -275,7 +275,7 @@ public class CommandSet extends CommandBase {
     }
 
     /**
-     * Creates the Initial Get capability message
+     * Creates the Initial Get Capability message
      * 
      * @return Capability message
      */
