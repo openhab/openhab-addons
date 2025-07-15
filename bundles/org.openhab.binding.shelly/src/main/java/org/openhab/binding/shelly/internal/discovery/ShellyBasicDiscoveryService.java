@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.discovery;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
 
@@ -131,13 +132,10 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             api.initialize();
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
-            model = devInfo.type;
+            model = getString(devInfo.type);
             auth = getBool(devInfo.auth);
-            if (name.isEmpty() || name.startsWith("shellyplusrange")) {
+            if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
                 name = devInfo.hostname;
-            }
-            if (devInfo.name != null) {
-                deviceName = getString(devInfo.name);
             }
 
             thingType = substringBeforeLast(name, "-");
