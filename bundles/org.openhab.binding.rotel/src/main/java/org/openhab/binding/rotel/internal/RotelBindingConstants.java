@@ -345,6 +345,7 @@ public class RotelBindingConstants {
     public static final String MSG_VALUE_OFF = "off";
     public static final String MSG_VALUE_ON = "on";
     public static final String MSG_VALUE_NONE = "none";
+    public static final String MSG_VALUE_OVER = "over";
     public static final String POWER_ON = "on";
     public static final String POWER_QUICK = "quick";
     public static final String POWER_NORMAL = "normal";
