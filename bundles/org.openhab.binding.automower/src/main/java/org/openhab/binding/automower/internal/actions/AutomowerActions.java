@@ -203,7 +203,7 @@ public class AutomowerActions implements ThingActions {
 
     @RuleAction(label = "@text/action-set-work-area-label", description = "@text/action-set-work-area-desc")
     public void setWorkArea(
-            @ActionInput(name = "work-area-id-upd", label = "@text/action-input-work-area-id-upd-label", description = "@text/action-input-work-area-id-upd-desc") long workAreaId,
+            @ActionInput(name = "work-area-id", label = "@text/action-input-work-area-id-label", description = "@text/action-input-work-area-id-desc") long workAreaId,
             @ActionInput(name = "enable", label = "@text/action-input-enable-label", description = "@text/action-input-enable-desc") boolean enable,
             @ActionInput(name = "cutting-height", label = "@text/action-input-cutting-height-label", description = "@text/action-input-cutting-height-desc") byte cuttingHeight) {
         AutomowerHandler automowerHandler = handler;
@@ -236,7 +236,7 @@ public class AutomowerActions implements ThingActions {
 
     @RuleAction(label = "@text/action-set-calendartask-label", description = "@text/action-set-calendartask-desc")
     public void setCalendarTask(
-            @ActionInput(name = "work-area-id-upd", label = "@text/action-input-work-area-id-upd-label", description = "@text/action-input-work-area-id-upd-desc") @Nullable Long workAreaId,
+            @ActionInput(name = "work-area-id", label = "@text/action-input-work-area-id-label", description = "@text/action-input-work-area-id-desc") @Nullable Long workAreaId,
             @ActionInput(name = "start", label = "@text/action-input-start-label", description = "@text/action-input-start-desc") short[] start,
             @ActionInput(name = "duration", label = "@text/action-input-duration-label", description = "@text/action-input-duration-desc") short[] duration,
             @ActionInput(name = "monday", label = "@text/action-input-monday-label", description = "@text/action-input-monday-desc") boolean[] monday,
