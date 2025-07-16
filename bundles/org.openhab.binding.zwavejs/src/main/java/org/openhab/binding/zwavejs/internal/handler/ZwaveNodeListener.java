@@ -14,7 +14,6 @@ package org.openhab.binding.zwavejs.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
-import org.openhab.binding.zwavejs.internal.api.dto.Node;
 
 /**
  * The {@link ZwaveNodeListener} interface defines the methods that must be implemented by any class
@@ -58,13 +57,8 @@ public interface ZwaveNodeListener {
 
     /*
      * This method is called when a node is removed from the Z-Wave network.
-     */
-    void onNodeRemoved();
-
-    /*
-     * This method is called when a new node is added to the Z-Wave network.
      *
-     * @param node the node that has been added
+     * @param event the event that contains information about the removed node
      */
-    void onNodeAdded(Node node);
+    void onNodeRemoved(Event event);
 }
