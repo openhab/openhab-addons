@@ -31,7 +31,7 @@ This will help to add them to the binding make them available with the next vers
 
 The bridge will discover the things automatically in the background.
 
-## Bridge Configuration
+## `server` Bridge Configuration
 
 | Parameter       | Type    | Description                                              | Advanced | Required |
 |-----------------|---------|----------------------------------------------------------|----------|----------|
