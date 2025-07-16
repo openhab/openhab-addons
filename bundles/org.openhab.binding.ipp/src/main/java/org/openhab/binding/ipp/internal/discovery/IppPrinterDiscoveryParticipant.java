@@ -95,6 +95,9 @@ public class IppPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant 
             int port = service.getPort();
             String uuid = service.getPropertyString("UUID");
 
+            logger.debug("Discovered ipp printer: uid: {}, inetAddress: {}, port: {}, rp: {}, uuid: {}", uid,
+                    inetAddress, port, rp, uuid);
+
             Map<String, Object> properties = Map.of( //
                     PRINTER_PARAMETER_URL, "http://" + inetAddress + ":" + port + "/" + rp, //
                     PRINTER_PARAMETER_NAME, label, //
