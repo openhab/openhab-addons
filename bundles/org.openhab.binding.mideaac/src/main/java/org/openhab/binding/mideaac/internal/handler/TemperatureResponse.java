@@ -38,7 +38,7 @@ public class TemperatureResponse {
             logger.debug("Humidity from 0xA1: {}", getHumidity());
             logger.debug("Indoor Temperature from 0xA1: {}", getIndoorTemperature());
             logger.debug("Outdoor Temperature from 0xA1: {}", getOutdoorTemperature());
-            logger.debug("Current Work Time (minutes) from 0xA1: {}", getCurrentWorkTime());
+            logger.debug("Current Work Time (minutes) from 0xA1: {}", getCurrentWorkTime()); // Not a channel
         }
     }
 
