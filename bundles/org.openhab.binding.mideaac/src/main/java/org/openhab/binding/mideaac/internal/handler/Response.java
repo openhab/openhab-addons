@@ -65,10 +65,10 @@ public class Response {
             logger.debug("Eco Mode: {}", getEcoMode());
             logger.debug("Indoor Temperature: {}", getIndoorTemperature());
             logger.debug("Outdoor Temperature: {}", getOutdoorTemperature());
-            logger.debug("LED Display: {}", getDisplayOn());
         }
 
         if (logger.isTraceEnabled()) {
+            logger.trace("LED Display: {}", getDisplayOn());
             logger.trace("Prompt Tone: {}", getPromptTone());
             logger.trace("Appliance Error: {}", getApplianceError());
             logger.trace("Auxiliary Heat: {}", getAuxHeat());
