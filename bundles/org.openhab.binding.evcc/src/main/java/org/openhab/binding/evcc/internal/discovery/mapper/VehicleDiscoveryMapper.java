@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.evcc.internal.discovery.mapper;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_ID;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_TYPE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,8 +32,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link VehicleDiscoveryMapper} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link VehicleDiscoveryMapper} is responsible for mapping the discovered vehicles to discovery results
+ *
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -52,8 +55,8 @@ public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_VEHICLE, bridgeHandler.getThing().getUID(),
                     Utils.sanatizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Vehicle - " + title)
-                    .withBridge(bridgeHandler.getThing().getUID()).withProperty("type", "vehicle")
-                    .withProperty("id", id).withRepresentationProperty("id").build();
+                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, "vehicle")
+                    .withProperty(PROPERTY_ID, id).withRepresentationProperty(PROPERTY_ID).build();
 
             results.add(result);
         }

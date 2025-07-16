@@ -4,11 +4,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="server">
-		<label>Bridge</label>
+		<label>Server</label>
 		<description>Connection to evcc instance</description>
 		<config-description>
 			<parameter name="schema" type="text">
-				<label>Protocol schema</label>
+				<label>Protocol Schema</label>
 				<description>The protocol schema that should be used to connect to your instance</description>
 				<default>http</default>
 				<options>

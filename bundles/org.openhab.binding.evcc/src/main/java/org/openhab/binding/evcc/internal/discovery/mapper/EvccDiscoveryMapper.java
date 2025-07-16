@@ -21,12 +21,18 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccDiscoveryMapper} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link EvccDiscoveryMapper} is responsible mapping discovered things to discovery results
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public interface EvccDiscoveryMapper {
+    /**
+     * This method returns the discovered things from the JSON response
+     * 
+     * @param root the JSON response from the API
+     * @param bridgeHandler the bridge handler
+     * @return Collection of discovery results
+     */
     Collection<DiscoveryResult> discover(JsonObject root, EvccBridgeHandler bridgeHandler);
 }

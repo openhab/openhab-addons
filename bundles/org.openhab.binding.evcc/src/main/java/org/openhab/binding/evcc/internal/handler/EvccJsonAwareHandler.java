@@ -17,12 +17,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccJsonAwareHandler} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link EvccJsonAwareHandler} is responsible for sharing the evcc api response
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public interface EvccJsonAwareHandler {
+    /**
+     * This method shall update the channels from the JSON received from the evcc API
+     * 
+     * @param root the responded JSON
+     */
     void updateFromEvccState(JsonObject root);
 }

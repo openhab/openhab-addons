@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.discovery.mapper;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,8 +28,7 @@ import org.openhab.core.thing.ThingUID;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link SiteDiscoveryMapper} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link SiteDiscoveryMapper} is responsible for mapping the discovered site to a discovery result
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -43,8 +44,8 @@ public class SiteDiscoveryMapper implements EvccDiscoveryMapper {
         String siteTitle = root.get("siteTitle").getAsString();
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_SITE, bridgeHandler.getThing().getUID(), "site");
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Site - " + siteTitle)
-                .withBridge(bridgeHandler.getThing().getUID()).withProperty("type", "site")
-                .withProperty("siteTitle", siteTitle).withRepresentationProperty("siteTitle").build();
+                .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, "site")
+                .withProperty(PROPERTY_SITE_TITLE, siteTitle).withRepresentationProperty(PROPERTY_SITE_TITLE).build();
         results.add(result);
         return results;
     }

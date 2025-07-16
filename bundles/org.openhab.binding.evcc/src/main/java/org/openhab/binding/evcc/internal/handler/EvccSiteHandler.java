@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -29,8 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccSiteHandler} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link EvccSiteHandler} is responsible for fetching the data from the API response for Site things
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -59,6 +56,8 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             String url = endpoint + "/" + datapoint + "/" + value;
             logger.debug("Sendig command to this url: {}", url);
             sendCommand(url);
+        } else {
+            super.handleCommand(channelUID, command);
         }
     }
 
@@ -77,13 +76,12 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             return;
         }
         endpoint = bridgeHandler.getBaseURL();
-        Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
-        if (stateOpt.isEmpty()) {
+        JsonObject state = bridgeHandler.getCachedEvccState();
+        if (state.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
-        JsonObject state = stateOpt.get();
         if (state.has("gridConfigured")) {
             modifyJSON(state);
         }

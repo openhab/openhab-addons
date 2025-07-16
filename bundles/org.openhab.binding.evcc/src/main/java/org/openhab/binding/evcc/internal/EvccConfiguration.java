@@ -15,10 +15,12 @@ package org.openhab.binding.evcc.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EvccConfiguration} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link EvccBindingConstants} class defines common constants, which are
+ * used across the whole binding.
  *
- * @author Marcel Goerentz - Initial contribution
+ * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - Update to evcc version 0.123.1
+ * @author Marcel Goerentz - Rework the binding
  */
 @NonNullByDefault
 public class EvccConfiguration {

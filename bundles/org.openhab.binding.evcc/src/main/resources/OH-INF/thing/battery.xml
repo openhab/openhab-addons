@@ -51,8 +51,8 @@
 		<description>Current state of charge of this battery</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Status</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -61,6 +61,10 @@
 		<label>Title</label>
 		<description>Battery name displayed in the UI</description>
 		<category>Settings</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

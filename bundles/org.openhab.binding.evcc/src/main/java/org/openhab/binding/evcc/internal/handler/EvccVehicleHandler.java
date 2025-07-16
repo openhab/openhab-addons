@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
@@ -29,8 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccVehicleHandler} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link EvccVehicleHandler} is responsible for fetching the data from the API response for Vehicle things
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -60,6 +57,8 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             String url = endpoint + "/" + vehicleId + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
             sendCommand(url);
+        } else {
+            super.handleCommand(channelUID, command);
         }
     }
 
@@ -76,13 +75,13 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             return;
         }
         endpoint = bridgeHandler.getBaseURL() + "/vehicles";
-        Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
+        JsonObject stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
-        JsonObject state = stateOpt.get().getAsJsonObject("vehicles").getAsJsonObject(vehicleId);
+        JsonObject state = stateOpt.getAsJsonObject("vehicles").getAsJsonObject(vehicleId);
         commonInitialize(state);
     }
 }

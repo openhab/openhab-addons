@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.discovery.mapper;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,8 +33,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link LoadpointDiscoveryMapper} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link LoadpointDiscoveryMapper} is responsible for mapping the discovered loadpoints to discovery results
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -52,21 +53,22 @@ public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
 
             ThingUID uid = new ThingUID("DUMMY:DUMMY:DUMMY");
             Map<String, Object> properties = new HashMap<String, Object>();
-            properties.put("index", i);
+            properties.put(PROPERTY_INDEX, i);
+            properties.put(PROPERTY_TITLE, title);
 
             if (lp.has(title) && lp.get("chargerFeatureHeating").getAsBoolean()) {
                 uid = new ThingUID(EvccBindingConstants.THING_TYPE_HEATING, bridgeHandler.getThing().getUID(),
                         Utils.sanatizeName(title));
-                properties.put("type", "heating");
+                properties.put(PROPERTY_TYPE, "heating");
             } else {
                 uid = new ThingUID(EvccBindingConstants.THING_TYPE_LOADPOINT, bridgeHandler.getThing().getUID(),
                         Utils.sanatizeName(title));
-                properties.put("type", "loadpoint");
+                properties.put(PROPERTY_TYPE, "loadpoint");
             }
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Loadpoint - " + title)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperties(properties)
-                    .withRepresentationProperty("index").build();
+                    .withRepresentationProperty(PROPERTY_TITLE).build();
 
             results.add(result);
         }

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -25,8 +24,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.binding.evcc.internal.EvccConfiguration;
 import org.openhab.binding.evcc.internal.discovery.EvccDiscoveryService;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -59,17 +58,12 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     private final CopyOnWriteArrayList<EvccJsonAwareHandler> listeners = new CopyOnWriteArrayList<>();
     private @Nullable ScheduledFuture<?> pollJob;
     private volatile JsonObject lastState = new JsonObject();
-    private final String endpoint;
+    private String endpoint = "";
 
     public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         httpClient = httpClientFactory.getCommonHttpClient();
-        Configuration config = bridge.getConfiguration();
-        String host = String.valueOf(config.get("host"));
-        int port = ((BigDecimal) config.get("port")).intValue();
-        String schema = String.valueOf(config.get("schema"));
-        endpoint = schema + "://" + host + ":" + port + "/api/state";
     }
 
     @Override
@@ -79,9 +73,11 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        EvccConfiguration config = getConfigAs(EvccConfiguration.class);
+        endpoint = config.schema + "://" + config.host + ":" + config.port + "/api/state";
         httpClient = httpClientFactory.getCommonHttpClient();
 
-        startPolling();
+        startPolling(config.refreshInterval);
 
         fetchEvccState().ifPresent(state -> {
             this.lastState = state;
@@ -105,8 +101,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         return endpoint.substring(0, endpoint.lastIndexOf("/"));
     }
 
-    private void startPolling() {
-        int refreshInterval = ((BigDecimal) getConfig().get("pollInterval")).intValue();
+    private void startPolling(int refreshInterval) {
         if (refreshInterval <= 0) {
             refreshInterval = 30;
         }
@@ -115,7 +110,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
                 this.lastState = state;
                 notifyListeners(state);
             });
-        }, 0, refreshInterval, TimeUnit.SECONDS);
+        }, refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
 
     public Optional<JsonObject> fetchEvccState() {
@@ -136,11 +131,12 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                logger.warn("EVCC API-Fehler: HTTP {}", response.getStatus());
+                logger.warn("evcc request error: HTTP {}", response.getStatus());
             }
 
         } catch (Exception e) {
-            logger.error("EVCC Bridge konnte API nicht abrufen", e);
+            logger.error("Bridge couldn't fetch state from evcc instance");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
 
         return Optional.empty();
@@ -152,16 +148,14 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
                 listener.updateFromEvccState(state);
             } catch (Exception e) {
                 if (listener instanceof BaseThingHandler handler) {
-                    logger.warn("Listener {} konnte EVCC-State nicht verarbeiten", handler.getThing().getUID(), e);
-                } else {
-                    logger.warn("Ein Listener konnte EVCC-State nicht verarbeiten", e);
+                    logger.warn("Listener {} couldn't parse evcc state", handler.getThing().getUID(), e);
                 }
             }
         }
     }
 
-    public Optional<JsonObject> getCachedEvccState() {
-        return Optional.ofNullable(lastState);
+    public JsonObject getCachedEvccState() {
+        return lastState;
     }
 
     public void register(EvccJsonAwareHandler handler) {

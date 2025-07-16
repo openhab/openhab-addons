@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -21,17 +23,27 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Florian Hotze - Initial contribution
  * @author Luca Arnecke - Update to evcc version 0.123.1
+ * @author Marcel Goerentz - Reworked the binding
  */
 @NonNullByDefault
 public class EvccBindingConstants {
 
     public static final String BINDING_ID = "evcc";
 
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "server");
+    public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
     public static final ThingTypeUID THING_TYPE_SITE = new ThingTypeUID(BINDING_ID, "site");
     public static final ThingTypeUID THING_TYPE_LOADPOINT = new ThingTypeUID(BINDING_ID, "loadpoint");
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
     public static final ThingTypeUID THING_TYPE_PV = new ThingTypeUID(BINDING_ID, "pv");
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
     public static final ThingTypeUID THING_TYPE_HEATING = new ThingTypeUID(BINDING_ID, "heating");
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SITE, THING_TYPE_VEHICLE,
+            THING_TYPE_LOADPOINT, THING_TYPE_BATTERY, THING_TYPE_PV, THING_TYPE_HEATING);
+
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_INDEX = "index";
+    public static final String PROPERTY_TYPE = "type";
+    public static final String PROPERTY_TITLE = "title";
+    public static final String PROPERTY_SITE_TITLE = "siteTitle";
 }

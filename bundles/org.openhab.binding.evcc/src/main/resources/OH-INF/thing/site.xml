@@ -60,7 +60,7 @@
 			<tag>Switch</tag>
 			<tag>Status</tag>
 		</tags>
-		<state readOnly="true">
+		<state pattern="%.0f" readOnly="true">
 			<options>
 				<option value="ON">Active</option>
 				<option value="OFF">Inactive</option>
@@ -80,6 +80,20 @@
 		<item-type>String</item-type>
 		<label>Battery Mode</label>
 		<description>Current battery mode for the site</description>
+		<category>Battery</category>
+		<state readOnly="true">
+			<options>
+				<option value="unknow">Unknown</option>
+				<option value="normal">Normal</option>
+				<option value="hold">Locked</option>
+				<option value="charge">Charging</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="site-battery-mode-external">
+		<item-type>String</item-type>
+		<label>Battery Mode</label>
+		<description>Current battery mode cached from external</description>
 		<category>Battery</category>
 		<state readOnly="true">
 			<options>
@@ -218,7 +232,7 @@
 		<label>Interval</label>
 		<description>Refresh interval configured for evcc</description>
 		<category>Settings</category>
-		<state readOnly="true"></state>
+		<state pattern="%.0f" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="site-pv-energy">
 		<item-type>Number:Energy</item-type>
@@ -300,7 +314,12 @@
 			<tag>Switch</tag>
 			<tag>Status</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="ON">True</option>
+				<option value="OFF">False</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="site-tariff-co2">
 		<item-type>Number:EmissionIntensity</item-type>
@@ -348,10 +367,15 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-tariff-solar">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Solar Tariff</label>
-		<description>Solar Tariff</description>
-		<state pattern="%.2f %unit%" readOnly="true"/>
+		<description>Current solar power forecast</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Power</tag>
+			<tag>Forecast</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-site-title">
 		<item-type>String</item-type>

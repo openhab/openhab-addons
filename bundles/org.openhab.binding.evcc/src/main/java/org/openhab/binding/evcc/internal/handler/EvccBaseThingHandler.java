@@ -50,6 +50,8 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +60,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccBaseThingHandler} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link EvccBaseThingHandler} is responsible for building a base class with common methods for the thing handlers
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -141,6 +142,37 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             bridgeHandler.unregister(this);
         }
         isInitialized = false;
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            String key = getKeyFromChannelUID(channelUID);
+            if (bridgeHandler != null) {
+                JsonObject state = bridgeHandler.getCachedEvccState();
+                JsonElement value = state.get(key);
+                String itemType = getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId()));
+                setItemValue(itemType, channelUID, value);
+            }
+        }
+    }
+
+    private String getKeyFromChannelUID(ChannelUID channelUID) {
+        String[] splittedId = channelUID.getIdWithoutGroup().split("-");
+        String[] parts = IntStream.range(1, splittedId.length).mapToObj(i -> splittedId[i]).toArray(String[]::new);
+
+        StringBuilder camelCase = new StringBuilder();
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            if (i == 0) {
+                camelCase.append(part.toLowerCase());
+            } else {
+                camelCase.append(part.substring(0, 1).toUpperCase());
+                camelCase.append(part.substring(1).toLowerCase());
+            }
+        }
+
+        return camelCase.toString();
     }
 
     private String getItemType(ChannelTypeUID channelTypeUID) {
@@ -249,11 +281,11 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    logger.warn("EVCC API-Fehler: HTTP {}", response.getStatus());
+                    logger.warn("evcc API error: HTTP {}", response.getStatus());
                 }
 
             } catch (Exception e) {
-                logger.error("EVCC Bridge konnte API nicht abrufen", e);
+                logger.error("evcc bridge couldn't call the API", e);
             }
         }
     }
@@ -279,8 +311,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     if (bridge == null) {
                         break;
                     }
-                    logger.debug("Bridge {} ist wieder ONLINE – initialisiere EVCC-Site-Handler neu…", bridge.getUID());
-                    initialize(); // explizit neue Initialisierung starten
+                    logger.debug("Bridge {} is ONLINE again, initialize evcc {} again...", bridge.getUID(),
+                            getThing().getUID().getId());
+                    initialize();
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.discovery.mapper;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,8 +31,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link BatteryDiscoveryMapper} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link BatteryDiscoveryMapper} iis responsible for mapping the discovered batteries to discovery results
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -51,9 +52,9 @@ public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_BATTERY, bridgeHandler.getThing().getUID(),
                     Utils.sanatizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Battery - " + title)
-                    .withBridge(bridgeHandler.getThing().getUID()).withProperty("index", i)
-                    .withProperty("type", "battery").withRepresentationProperty("index").build();
-
+                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_INDEX, i)
+                    .withProperty(PROPERTY_TYPE, "battery").withProperty(PROPERTY_TITLE, title)
+                    .withRepresentationProperty(PROPERTY_TITLE).build();
             results.add(result);
         }
         return results;

@@ -13,7 +13,6 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
@@ -30,8 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccLoadpointHandler} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link EvccLoadpointHandler} is responsible for fetching the data from the API response for Loadpoint things
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -53,13 +51,13 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         super.initialize();
         if (bridgeHandler != null) {
             endpoint = bridgeHandler.getBaseURL() + "/loadpoints/" + (index + 1);
-            Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
+            JsonObject stateOpt = bridgeHandler.getCachedEvccState();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
 
-            JsonObject state = stateOpt.get().getAsJsonArray("loadpoints").get(index).getAsJsonObject();
+            JsonObject state = stateOpt.getAsJsonArray("loadpoints").get(index).getAsJsonObject();
 
             // For backward compatibility add these elements if present
             if (state.has("vehiclePresent")) {
@@ -99,6 +97,8 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             String url = endpoint + "/" + datapoint + "/" + value;
             logger.debug("Sendig command to this url: {}", url);
             sendCommand(url);
+        } else {
+            super.handleCommand(channelUID, command);
         }
     }
 
@@ -110,7 +110,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     public void updateJSON(JsonObject state) {
         if (state.has("chargeCurrent")) {
-            // This is for backward compatibility with older EVCC versions
+            // This is for backward compatibility with older evcc versions
             state.addProperty("offeredCurrent", state.get("chargeCurrent").getAsDouble());
             state.remove("chargeCurrent");
         }

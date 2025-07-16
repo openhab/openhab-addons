@@ -36,10 +36,11 @@ import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+
 /**
- * The {@link EvccDiscoveryService} is responsible for creating the bridge and thing
- * handlers.
- *
+ * The {@link EvccDiscoveryService} is responsible for scanning the API response for things
+ * 
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
@@ -47,16 +48,14 @@ import org.slf4j.LoggerFactory;
 public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<EvccBridgeHandler> {
 
     private static final int TIMEOUT = 5;
-    private static final int SCAN_INTERVAL = 5; // We scan every 5 seconds since we are using the cached response
+    private static final int SCAN_INTERVAL_IN_SECONDS = 5; // We can scan every 5 seconds since we are using the cached
+                                                           // response
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<EvccDiscoveryMapper> mappers = List.of(new LoadpointDiscoveryMapper(),
             new VehicleDiscoveryMapper(), new BatteryDiscoveryMapper(), new SiteDiscoveryMapper(),
             new PvDiscoveryMapper());
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_LOADPOINT, THING_TYPE_VEHICLE,
-            THING_TYPE_BATTERY, THING_TYPE_SITE, THING_TYPE_PV, THING_TYPE_HEATING);
 
     private @Nullable ScheduledFuture<?> evccDiscoveryJob;
 
@@ -65,26 +64,17 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     }
 
     @Override
-    public void activate() {
-        super.activate();
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
     protected void startScan() {
-        logger.debug("Starte EVCC Discovery…");
-        thingHandler.getCachedEvccState().ifPresent(state -> {
+        logger.debug("Start evcc Discovery…");
+        JsonObject state = thingHandler.getCachedEvccState();
+        if (!state.isEmpty()) {
             for (EvccDiscoveryMapper mapper : mappers) {
                 mapper.discover(state, thingHandler).forEach(thing -> {
                     logger.debug("Thing discovered {}", thing);
                     thingDiscovered(thing);
                 });
             }
-        });
+        }
     }
 
     @Override
@@ -95,20 +85,15 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start evcc background discovery");
-        boolean setUpBackgroundScan = false;
-        if (evccDiscoveryJob == null) {
-            setUpBackgroundScan = true;
-        } else {
-            setUpBackgroundScan = evccDiscoveryJob.isCancelled();
-        }
-        if (setUpBackgroundScan) {
-            evccDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> startScan(), 0, SCAN_INTERVAL, TimeUnit.SECONDS);
+        if (evccDiscoveryJob == null || evccDiscoveryJob.isCancelled()) {
+            evccDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> startScan(), 0, SCAN_INTERVAL_IN_SECONDS,
+                    TimeUnit.SECONDS);
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Stop WeMo device background discovery");
+        logger.debug("Stop evcc device background discovery");
         Optional.ofNullable(evccDiscoveryJob).ifPresent(backgroundScan -> {
             backgroundScan.cancel(isBackgroundDiscoveryEnabled());
         });

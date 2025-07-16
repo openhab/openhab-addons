@@ -15,15 +15,16 @@ package org.openhab.binding.evcc.internal.discovery;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Utils} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link Utils} provides utility functions
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public class Utils {
     /**
-     * 
+     * This method will check if the string for regex:[a-zA-Z0-9_-]+ and will replace those with - as well as german
+     * "umlaut"s
+     * It returns the original string if the regex doesn't match, otherwise the revised string
      */
     public static String sanatizeName(String name) {
         if (!name.matches("[a-zA-Z0-9_-]+")) {

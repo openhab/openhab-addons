@@ -14,8 +14,6 @@ package org.openhab.binding.evcc.internal;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.handler.EvccBatteryHandler;
@@ -42,6 +40,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Florian Hotze - Initial contribution
+ * @author Marcel Goerentz - Rework the binding
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.evcc", service = ThingHandlerFactory.class)
@@ -50,9 +49,6 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
 
     private final ChannelTypeRegistry channelTypeRegistry;
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_SITE,
-            THING_TYPE_VEHICLE, THING_TYPE_LOADPOINT, THING_TYPE_BATTERY, THING_TYPE_PV, THING_TYPE_HEATING);
 
     @Activate
     public EvccHandlerFactory(@Reference HttpClientFactory httpClientFactory,
@@ -63,14 +59,14 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID) || THING_TYPE_SERVER.equals(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID type = thing.getThingTypeUID();
 
-        if (THING_TYPE_BRIDGE.equals(type) && thing instanceof Bridge) {
+        if (THING_TYPE_SERVER.equals(type)) {
             return new EvccBridgeHandler((Bridge) thing, httpClientFactory);
         }
 

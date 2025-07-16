@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.discovery.mapper;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,8 +31,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link PvDiscoveryMapper} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link PvDiscoveryMapper} is responsible for mapping the discovered photovoltaics to discovery results
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -51,8 +52,9 @@ public class PvDiscoveryMapper implements EvccDiscoveryMapper {
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_PV, bridgeHandler.getThing().getUID(),
                     Utils.sanatizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc PV - " + title)
-                    .withBridge(bridgeHandler.getThing().getUID()).withProperty("index", i).withProperty("type", "pv")
-                    .withRepresentationProperty("index").build();
+                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_INDEX, i)
+                    .withProperty(PROPERTY_TYPE, "pv").withProperty(PROPERTY_TITLE, title)
+                    .withRepresentationProperty(PROPERTY_TITLE).build();
 
             results.add(result);
         }

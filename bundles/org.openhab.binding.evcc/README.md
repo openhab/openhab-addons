@@ -19,50 +19,68 @@ This will help to add them to the binding make them available with the next vers
 
 ## Supported Things
 
-- `server`: A running evcc instance.
+- `server`: A running evcc instance. It will be used as the bridge for the other things
+- `battery`: A battery configured in your evcc instance.
+- `heating`: A heating loadpoint configured in your evcc instance.
+- `loadpoint`: A loadpoint configured in your evcc instance.
+- `pv`: A photovoltaic system configured in your evcc instance.
+- `site`: The relevant site data from your evcc instance.
+- `vehicle`: A vehicle configured in your evcc instance
 
 ## Discovery
 
 The bridge will discover the things automatically in the background.
 
-## Thing Configuration
-
-### `server` Thing Configuration
+## Bridge Configuration
 
 | Parameter       | Type    | Description                                              | Advanced | Required |
 |-----------------|---------|----------------------------------------------------------|----------|----------|
 | schema          | String  | Schema to connect to your instance (http or https)       | No       | Yes      |
 | host            | String  | IP or hostname running your  evcc instance               | No       | Yes      |
-| port            | Integer | Port of your evcc instance                               | No       | Yes      |
-| refreshInterval | Number  | Interval the status is polled in seconds (minimum is 15) | No       | Yes      |
+| port            | Integer | Port of your evcc instance                               | Yes      | Yes      |
+| refreshInterval | Number  | Interval the status is polled in seconds (minimum is 15) | Yes      | Yes      |
 
 Default value for _refreshInterval_ is 30 seconds.
 
-### Thing(s)
+## Thing(s) Configuration
 
+The Things don't have a configuration. They will be set up automatically when a bridge has been configured.
+You can add them via file configuration or in the openHAB UI.
 
-### Channels and Items
+## Channels
 
-Channels will be created dynamically!
+evcc Things can have several channels based correspondig on their capabilities.
+These channels are dynamically added to the Thing during their initialization; therefore, there is no list of possible channels in this documentation.
 
-## Example file creation
+## Full Example
+
+### `demo.things` Example
 
 ```java
-Bridge evcc:bridge:demo "Demo" [schema="https", url="demo.evcc.io", port=80, refreshInterval=30] {
+Bridge evcc:bridge:demo-server "Demo" [schema="https", url="demo.evcc.io", port=80, refreshInterval=30] {
     // This thing will only exist once per evcc instance
-    Thing site demo_site "Site - evcc Demo"
+    Thing site demo-site "Site - evcc Demo"
     // You can define as many Battery things as you have batteries configured in your evcc instance
-    Thing battery demo_battery "Battery - evcc Demo Battery 1"
+    Thing battery demo-battery1 "Battery - evcc Demo Battery 1"
     ..
     // You can define as many PV things as you have photovoltaics configured in your evcc instance
-    Thing pv demo_pv "PV - evcc Demo Photovoltaik 1"
+    Thing pv demo-pv1 "PV - evcc Demo Photovoltaik 1"
     ..
     // You can define as many Loadpoint things as you have loadpoints configured in your evcc instance
-    Thing loadpoint demo_loadpoint_carport "Loadpoint - evcc Demo Loadpoint 1"
+    Thing loadpoint demo-loadpoint-carport "Loadpoint - evcc Demo Loadpoint 1"
     ..
     // You can define as many Vehicle things as you have vehicles configured in your evcc instance
-    Thing vehicle demo_vehicle_1 "Vehicle - evcc Demo Vehicle 1"
+    Thing vehicle demo-vehicle1 "Vehicle - evcc Demo Vehicle 1"
     ..
 }
 ```
 
+### `demo.items` Example
+
+```java
+Number GridPower "Grid Power" { channel="evcc:site:demo-server:demo-site:site-grid-power" }
+```
+
+## Troubleshooting
+
+If you need additional data that can be read out of the API response please reach out to the openHAB community.

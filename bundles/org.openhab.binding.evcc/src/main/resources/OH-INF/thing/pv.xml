@@ -21,7 +21,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.0f W" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pv-title">
 		<item-type>String</item-type>

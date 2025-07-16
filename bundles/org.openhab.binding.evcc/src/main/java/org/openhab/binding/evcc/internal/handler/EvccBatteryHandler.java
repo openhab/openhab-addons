@@ -13,21 +13,17 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
-import org.openhab.core.types.Command;
 
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccBatteryHandler} is responsible for creating the bridge and thing
- * handlers.
+ * The {@link EvccBatteryHandler} is responsible for fetching the data from the API response for Battery things
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -50,19 +46,14 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
             return;
         }
         // endpoint = bridgeHandler.getBaseURL(); // Currenlty there is no endpoint
-        Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
+        JsonObject stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
-        JsonObject state = stateOpt.get().getAsJsonArray("battery").get(index).getAsJsonObject();
+        JsonObject state = stateOpt.getAsJsonArray("battery").get(index).getAsJsonObject();
         commonInitialize(state);
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // No-op right now!
     }
 
     @Override
