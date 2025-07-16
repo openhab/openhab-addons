@@ -10,11 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercedesme.internal.server;
+package org.openhab.binding.mercedesme.internal.api;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -40,12 +40,14 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.jcp.xml.dsig.internal.dom.Utils;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.api.Websocket.WebsocketState;
+import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.slf4j.Logger;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.storage.Storage;
 import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
@@ -53,13 +55,14 @@ import com.daimler.mbcarkit.proto.VehicleEvents;
 import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 
 /**
- * {@link MBWebsocket} as socket endpoint to communicate with Mercedes
+ * {@link Websocket} as socket endpoint to communicate with Mercedes
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Remove loop cpaturing scheduler thread
  */
 @WebSocket
 @NonNullByDefault
-public class MBWebsocket {
+public class Websocket extends RestApi {
     // timeout stays unlimited until binding decides to close
     private static final int CONNECT_TIMEOUT_MS = 0;
     // standard runtime of Websocket
@@ -71,10 +74,9 @@ public class MBWebsocket {
     // additional 5 minutes after keep alive
     private static final int KEEP_ALIVE_ADDON = 5 * 60 * 1000;
 
-    private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
-    private final Map<String, Instant> pingPongMap = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(Websocket.class);
     private final AccountHandler accountHandler;
-    private final HttpClient httpClient;
+    private final Map<String, Instant> pingPongMap = new HashMap<>();
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getPoolBasedSequentialScheduledExecutorService("mercedesme-websocket", null);
 
@@ -94,15 +96,16 @@ public class MBWebsocket {
         STARTED
     }
 
-    public MBWebsocket(AccountHandler accountHandler, HttpClient httpClient) {
-        this.accountHandler = accountHandler;
-        this.httpClient = httpClient;
+    public Websocket(AccountHandler atrl, HttpClient hc, AccountConfiguration ac, LocaleProvider l,
+            Storage<String> store) {
+        super(atrl, hc, ac, l, store);
+        accountHandler = atrl;
     }
 
     /**
      * Regular update call from AccountHandler to refresh data according to refreshInterval
      */
-    public void update() {
+    public void websocketUpdate() {
         scheduler.execute(this::doRefresh);
     }
 
@@ -128,15 +131,17 @@ public class MBWebsocket {
      *
      * @param command to be sent
      */
-    public void addCommand(ClientMessage command) {
+    public void websocketAddCommand(ClientMessage command) {
         commandQueue.add(command);
+        // add time to execute command and websocket can cover updates
+        runTill = Instant.now().plusMillis(ADDON_MESSAGE_TIME_MS);
         scheduler.execute(this::doRefresh);
     }
 
     /**
      * Dispose websocket in case of disposed AccountHandler. Cleanup stored files and stop web socket client.
      */
-    public void dispose(boolean disposed) {
+    public void websocketDispose(boolean disposed) {
         this.disposed = disposed;
         if (disposed) {
             runTill = Instant.MIN;
@@ -154,7 +159,7 @@ public class MBWebsocket {
      *
      * @param alive
      */
-    public void keepAlive(boolean alive) {
+    public void websocketKeepAlive(boolean alive) {
         if (!keepAlive) {
             if (alive) {
                 logger.trace("WebSocket - keep alive start");
@@ -205,23 +210,21 @@ public class MBWebsocket {
             WebSocketClient client = new WebSocketClient(httpClient);
             try {
                 client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
-                ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
-                String websocketURL = accountHandler.getWSUri();
+                ClientUpgradeRequest request = getClientUpgradeRequest();
+                String websocketURL = Utils.getWebsocketServer(config.region);
                 if (Constants.JUNIT_TOKEN.equals(request.getHeader("Authorization"))) {
                     // avoid unit test requesting real web socket - simply return
                     return;
                 }
                 logger.trace("Websocket start {} max message size {}", websocketURL, client.getMaxBinaryMessageSize());
+                runTill = Instant.now().plusMillis(WS_RUNTIME_MS);
                 client.start();
                 client.connect(this, new URI(websocketURL), request);
                 webSocketClient = Optional.of(client);
-                runTill = Instant.now().plusMillis(WS_RUNTIME_MS);
                 state = WebsocketState.STARTED;
             } catch (Exception e) {
                 // catch Exceptions of start stop and declare communication error
-                accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/mercedesme.account.status.websocket-failure");
-                logger.warn("Websocket handling exception: {}", e.getMessage());
+                accountHandler.handleWebsocketError(e);
             }
         }
     }
@@ -235,33 +238,37 @@ public class MBWebsocket {
      * In case of other state it will start the web socket connection.
      */
     private void doRefresh() {
-        if (!disposed) {
-            if (state == WebsocketState.CONNECTED) {
-                logger.trace("Refresh: Websocket fine - state {}", state);
-                if (sendMessage()) {
-                    // add additional runtime to execute and finish command
-                    runTill = runTill.plusMillis(ADDON_MESSAGE_TIME_MS);
-                }
-                ping();
-                if (keepAlive || Instant.now().isBefore(runTill)) {
-                    // doRefresh is called by AccountHandler, websocket endpoint onConnect and addCommand. To avoid
-                    // multiple future calls cancel the current running or future schedule calls.
-                    refresher.ifPresent(job -> {
-                        job.cancel(false);
-                    });
-                    refresher = Optional
-                            .of(scheduler.schedule(this::doRefresh, CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS));
-                } else {
-                    // run time is over - disconnect
-                    logger.debug("Websocket run time is over - disconnect");
-                    scheduler.execute(this::stop);
-                }
-            } else {
+        if (disposed) {
+            logger.trace("Refresh: Websocket disposed - state {}", state);
+            return;
+        }
+
+        switch (state) {
+            case CONNECTED:
+                handleConnectedState();
+                break;
+            default:
                 logger.trace("Refresh: Websocket needs to be started - state {}", state);
                 scheduler.execute(this::start);
-            }
+                break;
+        }
+    }
+
+    private void handleConnectedState() {
+        logger.trace("Refresh: Websocket fine - state {}", state);
+        if (sendMessage()) {
+            // add additional runtime to execute and finish command
+            runTill = runTill.plusMillis(ADDON_MESSAGE_TIME_MS);
+        }
+        sendPing();
+        if (keepAlive || Instant.now().isBefore(runTill)) {
+            // doRefresh is called by AccountHandler, websocket endpoint onConnect and addCommand. To avoid
+            // multiple future calls cancel the current running or future schedule calls.
+            refresher.ifPresent(job -> job.cancel(false));
+            refresher = Optional.of(scheduler.schedule(this::doRefresh, CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS));
         } else {
-            logger.trace("Refresh: Websocket disposed - state {}", state);
+            logger.debug("Websocket run time is over - disconnect");
+            scheduler.execute(this::stop);
         }
     }
 
@@ -271,7 +278,7 @@ public class MBWebsocket {
     private void disconnect() {
         session.ifPresent(session -> {
             // close session normally
-            session.close(1000, "Websocket closed by binding");
+            session.close(1000, "Client shutdown");
         });
     }
 
@@ -300,8 +307,7 @@ public class MBWebsocket {
     /**
      * Ping the server to keep the connection alive and to check if the connection is still valid.
      */
-    private void ping() {
-        logger.trace("Websocket ping {}", Instant.now().toString());
+    private void sendPing() {
         session.ifPresent(session -> {
             try {
                 String pingId = UUID.randomUUID().toString();
@@ -311,6 +317,48 @@ public class MBWebsocket {
                 logger.warn("Websocket ping failed {}", e.getMessage());
             }
         });
+    }
+
+    private void handlePong(Frame frame) {
+        ByteBuffer buffer = frame.getPayload();
+        byte[] bytes = new byte[frame.getPayloadLength()];
+        for (int i = 0; i < frame.getPayloadLength(); i++) {
+            bytes[i] = buffer.get(i);
+        }
+        String paylodString = new String(bytes);
+        Instant sent = pingPongMap.remove(paylodString);
+        if (sent == null) {
+            logger.debug("Websocket receiced pong without ping {}", paylodString);
+        }
+    }
+
+    private void handlePing(Frame frame) {
+        session.ifPresentOrElse((session) -> {
+            ByteBuffer buffer = frame.getPayload();
+            try {
+                session.getRemote().sendPong(buffer);
+            } catch (IOException e) {
+                logger.warn("Websocket onPing answer exception {}", e.getMessage());
+            }
+        }, () -> {
+            logger.debug("Websocket onPing answer cannot be initiated");
+        });
+    }
+
+    private ClientUpgradeRequest getClientUpgradeRequest() {
+        ClientUpgradeRequest request = new ClientUpgradeRequest();
+        request.setHeader("Authorization", getToken());
+        request.setHeader("X-SessionId", UUID.randomUUID().toString());
+        request.setHeader("X-TrackingId", UUID.randomUUID().toString());
+        request.setHeader("Ris-Os-Name", Constants.RIS_OS_NAME);
+        request.setHeader("Ris-Os-Version", Constants.RIS_OS_VERSION);
+        request.setHeader("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
+        request.setHeader("X-Locale",
+                localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry()); // de-DE
+        request.setHeader("User-Agent", Utils.getApplication(config.region));
+        request.setHeader("X-Applicationname", Utils.getUserAgent(config.region));
+        request.setHeader("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
+        return request;
     }
 
     /**
@@ -325,10 +373,9 @@ public class MBWebsocket {
                 int offsetLength = length - offset;
                 message = new byte[offsetLength];
                 System.arraycopy(blob, offset, message, 0, offsetLength);
-
             }
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(message);
-            logger.trace("WebSocket - Message {}", pm.getMsgCase());
+            logger.trace("Websocket Message {} size {}", pm.getMsgCase(), pm.getAllFields().size());
             accountHandler.enqueueMessage(pm);
             /**
              * https://community.openhab.org/t/mercedes-me/136866/12
@@ -351,27 +398,9 @@ public class MBWebsocket {
     @OnWebSocketFrame
     public void onFrame(Frame frame) {
         if (Frame.Type.PONG.equals(frame.getType())) {
-            ByteBuffer buffer = frame.getPayload();
-            byte[] bytes = new byte[frame.getPayloadLength()];
-            for (int i = 0; i < frame.getPayloadLength(); i++) {
-                bytes[i] = buffer.get(i);
-            }
-            String payloadString = new String(bytes);
-            Instant sent = pingPongMap.remove(payloadString);
-            if (sent == null) {
-                logger.debug("Websocket received pong without ping {}", payloadString);
-            }
+            handlePong(frame);
         } else if (Frame.Type.PING.equals(frame.getType())) {
-            session.ifPresentOrElse((session) -> {
-                ByteBuffer buffer = frame.getPayload();
-                try {
-                    session.getRemote().sendPong(buffer);
-                } catch (IOException e) {
-                    logger.warn("Websocket onPing answer exception {}", e.getMessage());
-                }
-            }, () -> {
-                logger.debug("Websocket onPing answer cannot be initiated");
-            });
+            handlePing(frame);
         }
     }
 
@@ -380,7 +409,7 @@ public class MBWebsocket {
         this.session = Optional.of(session);
         state = WebsocketState.CONNECTED;
         pingPongMap.clear();
-        accountHandler.updateStatus(ThingStatus.ONLINE);
+        accountHandler.handleConnected();
         logger.trace("Websocket connected - state {}", state);
         // websocket client is started and connected - time to refresh
         scheduler.execute(this::doRefresh);
@@ -402,8 +431,9 @@ public class MBWebsocket {
         state = WebsocketState.DISCONNECTED;
         pingPongMap.clear();
         if (throwable != null) {
-            accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/mercedesme.account.status.websocket-failure [\"" + throwable.getMessage() + "\"]");
+            logger.info("Websocket onClosedSession exception: {} - try to resume login", throwable.getMessage());
+            accountHandler.handleWebsocketError(throwable);
+            accountHandler.authorize();
         }
         // stop web socket client for closed session
         scheduler.execute(this::stop);
