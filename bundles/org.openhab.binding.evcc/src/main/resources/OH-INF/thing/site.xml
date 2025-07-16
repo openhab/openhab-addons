@@ -5,27 +5,26 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="site" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
-
 		<label>Site</label>
 		<description>The site configured in your evcc instance</description>
 	</thing-type>
-	<channel-type id="siteAvailableVersion">
+	<channel-type id="site-available-version">
 		<item-type>String</item-type>
 		<label>Available Version</label>
 		<description>Available evcc update version</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteBatteryCapacity">
+	<channel-type id="site-battery-capacity">
 		<item-type>Number:Energy</item-type>
 		<label>Site Battery Capacity</label>
 		<description>Accumulated battery capacity for this site</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteBatteryDischargeControl">
+	<channel-type id="site-battery-discharge-control">
 		<item-type>Switch</item-type>
 		<label>Battery Discharge Control</label>
 		<description>Enable or disable battery discharge control</description>
@@ -41,7 +40,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="siteBatteryEnergy">
+	<channel-type id="site-battery-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy</label>
 		<description>Energy provided from the battery(ies)</description>
@@ -52,7 +51,7 @@
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteBatteryGridChargeActive">
+	<channel-type id="site-battery-grid-charge-active">
 		<item-type>Switch</item-type>
 		<label>Battery Grid Charging Active</label>
 		<description>Indicates whether the battery gets charged from the grid or not</description>
@@ -68,7 +67,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="siteBatteryGridChargeLimit">
+	<channel-type id="site-battery-grid-charge-limit">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Grid Charging Limit</label>
 		<description>Below this smart cost limit the charging from grid will start (currency or co2)</description>
@@ -77,7 +76,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteBatteryMode">
+	<channel-type id="site-battery-mode">
 		<item-type>String</item-type>
 		<label>Battery Mode</label>
 		<description>Current battery mode for the site</description>
@@ -91,7 +90,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="siteBatteryPower">
+	<channel-type id="site-battery-power">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
 		<description>Accumulated power distributed by the battery(ies)</description>
@@ -102,7 +101,7 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteBatterySoc">
+	<channel-type id="site-battery-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery SoC</label>
 		<description>Current state of charge of battery(ies)</description>
@@ -113,7 +112,7 @@
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteBufferSoc">
+	<channel-type id="site-buffer-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Buffer SoC</label>
 		<description>Until this state of charge the discharging of a house battery is allowed in "pv" mode, when there is
@@ -122,7 +121,7 @@
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
-	<channel-type id="siteBufferStartSoc">
+	<channel-type id="site-buffer-start-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Buffer Start SoC</label>
 		<description>State of charge for which a charging session in "pv" mode is started, even if there is insufficient solar
@@ -131,14 +130,14 @@
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
-	<channel-type id="siteCurrency">
+	<channel-type id="site-currency">
 		<item-type>String</item-type>
 		<label>Currency</label>
 		<description>Current configured currency</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteDemoMode">
+	<channel-type id="site-demo-mode">
 		<item-type>Switch</item-type>
 		<label>Demo Mode</label>
 		<description>Indicates whether demo mode is active or not</description>
@@ -150,7 +149,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="siteEebus">
+	<channel-type id="site-eebus">
 		<item-type>Switch</item-type>
 		<label>EEBUS</label>
 		<description>Indicates whether EEBUS is configured or not</description>
@@ -161,19 +160,19 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="siteGreenShareHome">
+	<channel-type id="site-green-share-home">
 		<item-type>Number</item-type>
 		<label>Green Share Home</label>
 		<description>Indicates whether green power is available for home</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteGreenShareLoadpoints">
+	<channel-type id="site-green-share-loadpoints">
 		<item-type>Number</item-type>
 		<label>Green Share Loadpoints</label>
 		<description>Indicates whether green power is available for loadpoints</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteGridPower">
+	<channel-type id="site-grid-power">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power</label>
 		<description>Current power from grid (negative means feed-in)</description>
@@ -184,7 +183,7 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteHomePower">
+	<channel-type id="site-home-power">
 		<item-type>Number:Power</item-type>
 		<label>Home Power</label>
 		<description>Current power consumption by home</description>
@@ -195,7 +194,7 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteMessaging">
+	<channel-type id="site-messaging">
 		<item-type>Switch</item-type>
 		<label>Site Messaging</label>
 		<description>Indicates whether messaging has been configured or not</description>
@@ -206,7 +205,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="sitePrioritySoc">
+	<channel-type id="site-priority-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Priority SoC</label>
 		<description>State of charge for which the battery has priority over charging the vehicle when charging mode is "pv"
@@ -214,21 +213,21 @@
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
-	<channel-type id="siteInterval">
+	<channel-type id="site-interval">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Interval</label>
 		<description>Refresh interval configured for evcc</description>
 		<category>Settings</category>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="sitePvEnergy">
+	<channel-type id="site-pv-energy">
 		<item-type>Number:Energy</item-type>
 		<label>PV Energy</label>
 		<description>Accumulated energy provided through photovoltaic systems</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sitePvPower">
+	<channel-type id="site-pv-power">
 		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
 		<description>Accumulated current power from photovoltaic systems</description>
@@ -239,7 +238,7 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteResidualPower">
+	<channel-type id="site-residual-power">
 		<item-type>Number:Power</item-type>
 		<label>Grid Residual Power</label>
 		<description>Target operating point of the surplus regulation at the grid connection (grid meter)
@@ -251,7 +250,7 @@
 		</tags>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
-	<channel-type id="siteSmartCostAvailable">
+	<channel-type id="site-smart-cost-available">
 		<item-type>Switch</item-type>
 		<label>Smart Cost Available</label>
 		<description>Indicates whether smart costs are available or not</description>
@@ -266,7 +265,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="siteSmartCostType">
+	<channel-type id="site-smart-cost-type">
 		<item-type>String</item-type>
 		<label>Smart Cost Type</label>
 		<description>Indicates the smart cost type (price or co2)</description>
@@ -278,7 +277,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="siteSmartFeedInPriorityAvailable">
+	<channel-type id="site-smart-feed-in-priority-available">
 		<item-type>Switch</item-type>
 		<label>Smart Feed In Priority Available</label>
 		<description>Indicates whether there is priority for smart feed in or not</description>
@@ -293,7 +292,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="siteStartup">
+	<channel-type id="site-startup">
 		<item-type>Switch</item-type>
 		<label>Start up</label>
 		<description>Indicates wether restart is needed or not</description>
@@ -303,64 +302,64 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteTariffCo2">
+	<channel-type id="site-tariff-co2">
 		<item-type>Number:EmissionIntensity</item-type>
 		<label>CO2 Concentration</label>
 		<description>Indicates the current carbon dioxide concentration per kWh</description>
 		<category>co2</category>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="siteTariffCo2Home">
+	<channel-type id="site-tariff-co2-home">
 		<item-type>Number:EmissionIntensity</item-type>
 		<label>CO2 Concentration Home</label>
 		<description>Indicates the current carbon dioxide concentration per kWh for your home</description>
 		<category>co2</category>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="siteTariffCo2Loadpoints">
+	<channel-type id="site-tariff-co2-loadpoints">
 		<item-type>Number:EmissionIntensity</item-type>
 		<label>CO2 Concentration Loadpoints</label>
 		<description>Indicates the current carbon dioxide concentration per kWh for your loadpoints</description>
 		<category>co2</category>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="siteTariffFeedIn">
+	<channel-type id="site-tariff-feed-in">
 		<item-type>Number:Currency</item-type>
 		<label>Feed in price per kWh</label>
 		<description>Indicates the current price per kWh for feed-in to the grid</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteTariffGrid">
+	<channel-type id="site-tariff-grid">
 		<item-type>Number:Currency</item-type>
 		<label>Grid Price</label>
 		<description>Indicates the current price per kWh for consuming from the grid</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteTariffPriceHome">
+	<channel-type id="site-tariff-price-home">
 		<item-type>Number:Currency</item-type>
 		<label>Home Price</label>
 		<description>Indicates the current price per kWh for your home</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteTariffPriceLoadpoints">
+	<channel-type id="site-tariff-price-loadpoints">
 		<item-type>Number:Currency</item-type>
 		<label>Loadpoint price per kWh</label>
 		<description>Indicates the current price per kWh for loadpoints</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteTariffSolar">
+	<channel-type id="site-tariff-solar">
 		<item-type>Number</item-type>
 		<label>Solar Tariff</label>
 		<description>Solar Tariff</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteSiteTitle">
+	<channel-type id="site-site-title">
 		<item-type>String</item-type>
 		<label>Site Title</label>
 		<description>Name of the site as displayed in the UI</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="siteVersion">
+	<channel-type id="site-version">
 		<item-type>String</item-type>
 		<label>Version</label>
 		<description>Current evcc version</description>

@@ -19,7 +19,7 @@ This will help to add them to the binding make them available with the next vers
 
 ## Supported Things
 
-- `device`: A running evcc instance.
+- `server`: A running evcc instance.
 
 ## Discovery
 
@@ -27,7 +27,7 @@ The bridge will discover the things automatically in the background.
 
 ## Thing Configuration
 
-### `device` Thing Configuration
+### `server` Thing Configuration
 
 | Parameter       | Type    | Description                                              | Advanced | Required |
 |-----------------|---------|----------------------------------------------------------|----------|----------|
@@ -38,21 +38,31 @@ The bridge will discover the things automatically in the background.
 
 Default value for _refreshInterval_ is 30 seconds.
 
-## Channels
-
-Channels will be created dynamically
-
-## Full Example
-
 ### Thing(s)
 
+
+### Channels and Items
+
+Channels will be created dynamically!
+
+## Example file creation
+
 ```java
-Bridge evcc:bridge:demo "evcc Demo" [url="https://demo.evcc.io", refreshInterval=30]
-Thing evcc:site:demo:demo_site "evcc Site - evcc Demo"
-Thing evcc:battery:demo:demo_battery "evcc Battery - evcc Demo Battery"
-Thing evcc:pv:demo:demo_bpv "evcc PV - evcc Demo Photovoltaik"
-Thing evcc:loadpoint:demo:demo_loadpoint_carport "evcc Loadpoint - evcc Demo Loadpoint 1"
-Thing evcc:loadpoint:demo:demo_loadpoint_garage "evcc Battery - evcc Demo Loadpoint 2"
-Thing evcc:vehicle:demo:demo_vehicle_1 "evcc Battery - evcc Demo Vehicle 1"
-Thing evcc:vehicle:demo:demo_vehicle_2 "evcc Battery - evcc Demo Vehicle 2"
+Bridge evcc:bridge:demo "Demo" [schema="https", url="demo.evcc.io", port=80, refreshInterval=30] {
+    // This thing will only exist once per evcc instance
+    Thing site demo_site "Site - evcc Demo"
+    // You can define as many Battery things as you have batteries configured in your evcc instance
+    Thing battery demo_battery "Battery - evcc Demo Battery 1"
+    ..
+    // You can define as many PV things as you have photovoltaics configured in your evcc instance
+    Thing pv demo_pv "PV - evcc Demo Photovoltaik 1"
+    ..
+    // You can define as many Loadpoint things as you have loadpoints configured in your evcc instance
+    Thing loadpoint demo_loadpoint_carport "Loadpoint - evcc Demo Loadpoint 1"
+    ..
+    // You can define as many Vehicle things as you have vehicles configured in your evcc instance
+    Thing vehicle demo_vehicle_1 "Vehicle - evcc Demo Vehicle 1"
+    ..
+}
 ```
+

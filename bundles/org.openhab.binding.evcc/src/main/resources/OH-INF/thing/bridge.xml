@@ -3,8 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<bridge-type id="bridge">
-		<label>evcc Bridge</label>
+	<bridge-type id="server">
+		<label>Bridge</label>
 		<description>Connection to evcc instance</description>
 		<config-description>
 			<parameter name="schema" type="text">
@@ -21,11 +21,13 @@
 				<description>Address of your evcc instance, for example evcc.local or 192.168.1.2</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
+				<advanced>true</advanced>
 				<label>Port</label>
 				<default>7070</default>
 				<description>HTTP-Port of your instance (Default: 7070)</description>
 			</parameter>
 			<parameter name="pollInterval" type="integer" required="false">
+				<advanced>true</advanced>
 				<label>Polling interval</label>
 				<default>30</default>
 				<description>How often should the state be polled? (in seconds, default is 30s)</description>

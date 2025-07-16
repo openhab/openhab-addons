@@ -15,7 +15,7 @@ package org.openhab.binding.evcc.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EvccBridgeHandler} is responsible for creating the bridge and thing
+ * The {@link EvccConfiguration} is responsible for creating the bridge and thing
  * handlers.
  *
  * @author Marcel Goerentz - Initial contribution
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class EvccConfiguration {
     public String host = "";
-    public int refreshInterval = 0;
-    public String schema = "";
+    public int refreshInterval = 30;
+    public int port = 7070;
+    public String schema = "http";
 }

@@ -20,10 +20,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -96,22 +96,18 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, thingKey);
             String itemType = getItemType(channelTypeUID);
-            if ("Unknown".equals(itemType)) {
+
+            if (!"Unknown".equals(itemType)) {
+                Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), thingKey))
+                        .withType(channelTypeUID).withAcceptedItemType(itemType).build();
+                ChannelUID channelUID = channel.getUID();
+                setItemValue(itemType, channelUID, value);
+                if (!getThing().getChannels().stream().anyMatch(c -> c.getUID().equals(channel.getUID()))) {
+                    builder.withChannel(channel);
+                }
+            } else {
                 logUnknownChannelXml(thingKey, "Hint for type: " + value.toString());
-                continue;
             }
-
-            Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), thingKey))
-                    .withType(channelTypeUID).withAcceptedItemType(itemType).build();
-
-            ChannelUID channelUID = channel.getUID();
-
-            setItemValue(itemType, channelUID, value);
-
-            if (!getThing().getChannels().stream().anyMatch(c -> c.getUID().equals(channel.getUID()))) {
-                builder.withChannel(channel);
-            }
-
         }
 
         updateThing(builder.build());
@@ -158,7 +154,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         return "Unknown";
     }
 
-    private boolean setItemValue(String itemType, ChannelUID channelUID, JsonElement value) {
+    private void setItemValue(String itemType, ChannelUID channelUID, JsonElement value) {
         switch (itemType) {
             case "Number":
             case "Number:Currency":
@@ -181,20 +177,30 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 break;
             default:
                 logUnknownChannelXml(channelUID.getId(), "Hint for type: " + value.toString());
-                return false;
         }
-        return true;
     }
 
     public static String capitalizeWords(String input) {
-        return Arrays.stream(input.split("(?=[A-Z])")) // split before uppercase
-                .map((String s) -> s.substring(0, 1).toUpperCase() + s.substring(1)) // capitalize each
-                .collect(Collectors.joining(" "));
+        String[] allParts = input.split("-");
+        String[] parts = IntStream.range(1, allParts.length).mapToObj(i -> allParts[i]).toArray(String[]::new);
+        StringJoiner joiner = new StringJoiner(" ");
+
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                joiner.add(Character.toUpperCase(part.charAt(0)) + part.substring(1));
+            }
+        }
+
+        return joiner.toString();
+    }
+
+    public static String sanatizeChannels(String input) {
+        return input.replaceAll("(?<!^)(?=[A-Z])", "-");
     }
 
     private String getThingKey(String key) {
         Map<String, String> props = getThing().getProperties();
-        return props.get("type") + key.substring(0, 1).toUpperCase() + key.substring(1);
+        return (props.get("type") + "-" + sanatizeChannels(key)).toLowerCase();
     }
 
     @Override
@@ -202,8 +208,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         if (!isInitialized) {
             return;
         }
-        ThingBuilder builder = editThing();
-        boolean channelAdded = false;
 
         for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : root.entrySet()) {
             String key = entry.getKey();
@@ -220,22 +224,12 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             ChannelUID channelUID = channelUID(thingKey);
             Channel existingChannel = getThing().getChannel(channelUID.getId());
             if (existingChannel == null) {
-                ChannelTypeUID typeUID = new ChannelTypeUID(BINDING_ID, thingKey);
-                Channel newChannel = ChannelBuilder.create(channelUID).withType(typeUID).build();
-                builder.withChannel(newChannel);
-                channelAdded = true;
-                logger.debug("Dynamisch neuen Channel hinzugefügt: {}", thingKey);
-            }
-
-            if (!setItemValue(getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId())), channelUID, value)) {
+                logUnknownChannelXml(channelUID.getId(), "Hint for type: " + value.toString());
                 continue;
             }
-        }
 
-        if (channelAdded) {
-            updateThing(builder.build());
+            setItemValue(getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId())), channelUID, value);
         }
-
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -312,11 +306,12 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 Files.createDirectories(filePath.getParent());
             }
 
-            // Check if file exists and contains the snippet
+            // Check if file exists and contains the ID
             if (Files.exists(filePath)) {
                 String content = Files.readString(filePath, StandardCharsets.UTF_8);
-                if (content.contains(xmlSnippet)) {
-                    logger.trace("Channel definition already exists in file: {}", key);
+                String idPattern = String.format("id=\"%s\"", key);
+                if (content.contains(idPattern)) {
+                    logger.trace("Channel ID '{}' already exists in file.", key);
                     return;
                 }
             }

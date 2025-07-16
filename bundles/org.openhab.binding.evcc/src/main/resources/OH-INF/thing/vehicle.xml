@@ -5,13 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="vehicle" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
-
 		<label>Vehicle</label>
 		<description>A vehicle configured in your evcc instance</description>
+		<representation-property>id</representation-property>
 	</thing-type>
-	<channel-type id="vehicleCapacity">
+	<channel-type id="vehicle-capacity">
 		<item-type>Number:Energy</item-type>
 		<label>Vehicle Capacity</label>
 		<description>Capacity of vehicle battery</description>
@@ -22,13 +22,13 @@
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="vehicleIcon">
+	<channel-type id="vehicle-icon">
 		<item-type>String</item-type>
 		<label>Vehicle Icon</label>
 		<description>Used icon for this vehicle in the UI</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="vehicleLimitSoc">
+	<channel-type id="vehicle-limit-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Vehicle Limit SoC</label>
 		<description>State of charge to which the vehicle is charged</description>
@@ -40,7 +40,7 @@
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="vehicleMinSoc">
+	<channel-type id="vehicle-min-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Vehicle Min SoC</label>
 		<description>Minimum state of charge a vehicle should have (fast charging until this limit)</description>
@@ -52,7 +52,7 @@
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="vehicleMaxCurrent">
+	<channel-type id="vehicle-max-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Vehicle Max Current</label>
 		<description>Maximum allowed current that can be provided to charge the vehicle</description>
@@ -63,7 +63,7 @@
 		</tags>
 		<state min="6" step="1" max="32" readOnly="true"/>
 	</channel-type>
-	<channel-type id="vehicleMinCurrent">
+	<channel-type id="vehicle-min-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Vehicle Min Current</label>
 		<description>Minimum current thats need to provided to charge the vehicle</description>
@@ -75,13 +75,13 @@
 		<state min="6" step="1" max="32" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="vehiclePlanPrecondition">
+	<channel-type id="vehicle-plan-precondition">
 		<item-type>Number:Time</item-type>
 		<label>Plan Precondition Duration</label>
 		<description>Plan Precondition Duration</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="vehiclePlanSoc">
+	<channel-type id="vehicle-plan-soc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Planned SoC</label>
 		<description>Planned state of charge to which the vehicle will be charged (can be greater than the Vehicle Limit SoC)</description>
@@ -91,13 +91,13 @@
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="vehiclePlanTime">
+	<channel-type id="vehicle-plan-time">
 		<item-type>DateTime</item-type>
 		<label>Plan Datetime</label>
 		<description>Planned date and time when the chaging should be started</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="vehicleTitle">
+	<channel-type id="vehicle-title">
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
 		<description>Name of the vehicle as diplayed in the UI</description>

@@ -5,11 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="heating" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 
 		<label>Heating - Loadpoint</label>
 		<description>A heating loadpoint configured in your evcc instance</description>
+		<representation-property>index</representation-property>
 	</thing-type>
-	<!-- This thing is currently using the chame channels as a loadpoint does -->
+	<!-- This thing is currently using the same channels as a loadpoint does -->
 </thing:thing-descriptions>
