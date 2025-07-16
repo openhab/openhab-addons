@@ -213,7 +213,7 @@
 	</channel-type>
 	<channel-type id="loadpoint-connected-duration">
 		<item-type>Number:Time</item-type>
-		<label>Vehicle Connected Duration</label>
+		<label>Vehicle Conn. Duration</label>
 		<description>Duration the vehicle is connected to the loadpoint</description>
 		<category>Time</category>
 		<tags>

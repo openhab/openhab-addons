@@ -269,8 +269,8 @@
 		<label>Smart Cost Available</label>
 		<description>Indicates whether smart costs are available or not</description>
 		<tags>
-			<tag>Switch</tag>
 			<tag>Status</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -296,8 +296,8 @@
 		<label>Smart Feed In Priority Available</label>
 		<description>Indicates whether there is priority for smart feed in or not</description>
 		<tags>
-			<tag>Switch</tag>
 			<tag>Status</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -311,8 +311,8 @@
 		<label>Start up</label>
 		<description>Indicates wether restart is needed or not</description>
 		<tags>
-			<tag>Switch</tag>
 			<tag>Status</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -326,6 +326,10 @@
 		<label>CO2 Concentration</label>
 		<description>Indicates the current carbon dioxide concentration per kWh</description>
 		<category>co2</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="site-tariff-co2-home">
@@ -333,6 +337,10 @@
 		<label>CO2 Concentration Home</label>
 		<description>Indicates the current carbon dioxide concentration per kWh for your home</description>
 		<category>co2</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="site-tariff-co2-loadpoints">
@@ -340,6 +348,10 @@
 		<label>CO2 Concentration Loadpoints</label>
 		<description>Indicates the current carbon dioxide concentration per kWh for your loadpoints</description>
 		<category>co2</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="site-tariff-feed-in">
@@ -372,8 +384,8 @@
 		<description>Current solar power forecast</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Power</tag>
 			<tag>Forecast</tag>
+			<tag>Power</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
