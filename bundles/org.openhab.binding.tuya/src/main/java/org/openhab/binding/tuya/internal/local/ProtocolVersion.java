@@ -26,7 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum ProtocolVersion {
     V3_1("3.1"),
     V3_3("3.3"),
-    V3_4("3.4");
+    V3_4("3.4"),
+    V3_5("3.5");
 
     private final String versionString;
 

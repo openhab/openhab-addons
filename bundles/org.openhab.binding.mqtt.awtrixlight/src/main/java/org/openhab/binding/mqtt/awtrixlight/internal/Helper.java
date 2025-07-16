@@ -67,9 +67,11 @@ public class Helper {
 
         String[] pixelStrings = cutBrackets.split(",");
         int[] values = Arrays.stream(pixelStrings).mapToInt(Integer::parseInt).toArray();
+
+        int numPixels = SCREEN_HEIGHT * SCREEN_WIDTH;
         int[][] pixels = new int[SCREEN_HEIGHT][SCREEN_WIDTH];
-        for (int i = 0; i < 256; i++) {
-            pixels[i / 32][i % 32] = values[i];
+        for (int i = 0; i < numPixels; i++) {
+            pixels[i / SCREEN_WIDTH][i % SCREEN_WIDTH] = values[i];
         }
 
         // Resize and add gaps between pixels
@@ -97,7 +99,7 @@ public class Helper {
             }
         }
 
-        byte[] bytes = new byte[256];
+        byte[] bytes = null;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(image, "png", baos);

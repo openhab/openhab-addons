@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.tuya.internal;
 
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.SCHEMAS;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_PROJECT;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_DEVICE;
 
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -96,8 +101,18 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_PROJECT.equals(thingTypeUID)) {
             return new ProjectHandler(thing, httpClient, storage, gson);
         } else if (THING_TYPE_TUYA_DEVICE.equals(thingTypeUID)) {
-            return new TuyaDeviceHandler(thing, gson.fromJson(storage.get(thing.getUID().getId()), STORAGE_TYPE), gson,
-                    dynamicCommandDescriptionProvider, eventLoopGroup, udpDiscoveryListener);
+            // stored schemas are usually more complete
+            Map<String, SchemaDp> schemaDps = SCHEMAS.get(thing.getConfiguration().get("productId"));
+            if (schemaDps == null) {
+                // fallback to retrieved schema
+                List<SchemaDp> listDps = Objects.requireNonNullElse(
+                        gson.fromJson(storage.get(thing.getUID().getId()), STORAGE_TYPE), //
+                        List.of());
+                schemaDps = listDps.stream()
+                        .collect(Collectors.toMap(s -> s.code, s -> s, (e1, e2) -> e1, LinkedHashMap::new));
+            }
+            return new TuyaDeviceHandler(thing, schemaDps, gson, dynamicCommandDescriptionProvider, eventLoopGroup,
+                    udpDiscoveryListener);
         }
 
         return null;

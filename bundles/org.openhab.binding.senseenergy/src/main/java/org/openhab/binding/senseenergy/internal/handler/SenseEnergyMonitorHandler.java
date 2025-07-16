@@ -16,6 +16,7 @@ import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstan
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +27,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.measure.Unit;
@@ -170,7 +170,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             this.solarConfigured = apiMonitor.solarConfigured;
             apiMonitorStatus = getApi().getMonitorStatus(id);
             refreshDevices();
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
+        } catch (SenseEnergyApiException e) {
             handleApiException(e);
             return;
         }
@@ -192,7 +192,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
         try {
             webSocket.start(id, getApi().getAccessToken());
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException | IOException | URISyntaxException e) {
             handleApiException(e);
             return;
         }
@@ -221,7 +221,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             logger.debug("heartbeat: webSocket not running");
             try {
                 webSocket.restart(getApi().getAccessToken());
-            } catch (Exception e) {
+            } catch (InterruptedException | ExecutionException | IOException | URISyntaxException e) {
                 handleApiException(e);
             }
         }
@@ -230,17 +230,27 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     }
 
     public void handleApiException(Exception e) {
-        ThingStatusDetail statusDetail = ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
-
         if (e instanceof SenseEnergyApiException apiException) {
-            statusDetail = apiException.isConfigurationIssue() ? ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR
-                    : ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
+            switch (apiException.severity) {
+                case TRANSIENT:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                    break;
+                case CONFIG:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                    break;
+                case FATAL:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getMessage());
+                    break;
+                case DATA:
+                    logger.warn("Data exception: {}", e.toString());
+                    break;
+                default:
+                    logger.warn("SenseEnergyApiException: {}", e.toString());
+                    break;
+            }
         } else {
-            logger.debug("Unhandled Exception", e);
-            statusDetail = ThingStatusDetail.OFFLINE.NONE;
+            logger.warn("Unhandled Exception", e);
         }
-
-        updateStatus(ThingStatus.OFFLINE, statusDetail, e.getLocalizedMessage());
     }
 
     @Override
@@ -355,13 +365,14 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
      * Refreshes the list of devices by retrieving them from the API and then updating the map of DeviceTypes.
      */
     private void refreshDevices() {
+        logger.trace("refreshDevices");
         try {
             senseDevices = getApi().getDevices(id);
 
             senseDevices.entrySet().stream() //
                     .filter(e -> !senseDevicesType.containsKey(e.getKey())) //
                     .forEach(e -> senseDevicesType.put(e.getKey(), deduceDeviceType(e.getValue())));
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
+        } catch (SenseEnergyApiException e) {
             handleApiException(e);
         }
     }
@@ -538,11 +549,11 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
                 .isPresent();
 
         if (childOnline && !datagram.isRunning()) {
-            datagram.stop();
             try {
                 datagram.start(SENSE_DATAGRAM_BCAST_PORT, datagramListenerThreadName);
             } catch (IOException e) {
-                handleApiException(e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                logger.warn("Unable to start datagram: {}", e.getLocalizedMessage());
             }
         }
 
@@ -605,14 +616,25 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     /***** SenseEnergyeWSListener interfaces *****/
 
     @Override
+    public void onWebSocketConnect() {
+    }
+
+    @Override
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
         logger.debug("onWebSocketClose ({}), {}", statusCode, reason);
-        // will restart on heartbeat
+        try {
+            webSocket.restartWithBackoff(getApi().getAccessToken());
+        } catch (InterruptedException | ExecutionException | IOException | URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.warn("Exeception when restarting webSocket: {}", e.getMessage());
+            // will retry at next heartbeat
+        }
     }
 
     @Override
     public void onWebSocketError(String msg) {
-        // no action - let heartbeat restart webSocket
+        logger.debug("onWebSocketError {}", msg);
+        // restart will occur on onWebSocketClose
     }
 
     @Override

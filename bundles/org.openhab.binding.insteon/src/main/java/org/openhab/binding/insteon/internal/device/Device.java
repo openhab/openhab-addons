@@ -66,7 +66,7 @@ public interface Device {
      *
      * @param delay scheduling delay (in milliseconds)
      */
-    public void doPoll(long delay);
+    public void poll(long delay);
 
     /**
      * Handles an incoming message for this device
@@ -80,14 +80,14 @@ public interface Device {
      *
      * @param msg the message to be sent
      * @param feature device feature associated to the message
-     * @param delay time (in milliseconds) to delay before sending message
+     * @param delay delay (in milliseconds) before sending message
      */
     public void sendMessage(Msg msg, DeviceFeature feature, long delay);
 
     /**
      * Handles next request for this device
      *
-     * @return time (in milliseconds) before processing the subsequent request
+     * @return delay (in milliseconds) before processing the subsequent request
      */
     public long handleNextRequest();
 

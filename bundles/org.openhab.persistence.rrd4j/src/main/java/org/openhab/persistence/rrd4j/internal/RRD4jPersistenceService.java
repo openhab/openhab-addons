@@ -488,7 +488,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         ConsolFun consolFun = getConsolidationFunction(db);
                         FetchRequest request = db.createFetchRequest(consolFun, end, end, 1);
                         Archive archive = db.findMatchingArchive(request);
-                        start = archive.getStartTime() - archive.getArcStep();
+                        long arcStep = archive.getArcStep();
+                        start = archive.getStartTime() - arcStep;
+                        end = end % arcStep == 0 ? end : (end / arcStep + 1) * arcStep; // Make sure end is aligned with
+                                                                                        // matching archive
                     }
                 } else {
                     throw new UnsupportedOperationException(
@@ -510,12 +513,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             FetchData result = request.fetchData();
 
             List<HistoricItem> items = new ArrayList<>();
-            long ts = result.getFirstTimestamp();
             long step = result.getRowCount() > 1 ? result.getStep() : 0;
 
             double prevValue = Double.NaN;
             State prevState = null;
             double[] values = result.getValues(DATASOURCE_STATE);
+            // Descending order shall start with the last timestamp and go backward
+            long ts = (ordering == Ordering.DESCENDING) ? result.getLastTimestamp() : result.getFirstTimestamp();
             step = (ordering == Ordering.DESCENDING) ? -1 * step : step;
             int startIndex = (ordering == Ordering.DESCENDING) ? values.length - 1 : 0;
             int endIndex = (ordering == Ordering.DESCENDING) ? -1 : values.length;

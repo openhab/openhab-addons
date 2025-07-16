@@ -140,6 +140,10 @@
 		<item-type>String</item-type>
 		<label>Away Mode</label>
 		<description>Current Away Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="home">Home</option>
@@ -200,6 +204,10 @@
 		<item-type>String</item-type>
 		<label>Schedule Mode</label>
 		<description>Current Schedule Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="disabled">Disabled</option>

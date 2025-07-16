@@ -14,17 +14,17 @@ The other app (and/or tuya-mqtt) must be closed in order for this binding to ope
 
 ## Supported Things
 
-There are two things: `project` and `tuyadevice`.
+There are two things: `project` and `tuyaDevice`.
 
 The `project` thing represents a Tuya developer portal cloud project (see below).
 `project` things must be configured manually and are needed for discovery only.
 
-`tuyadevice` things represent a single device.
+`tuyaDevice` things represent a single device.
 They can be configured manually or by discovery.
 
 ## Discovery
 
-Discovery is supported for `tuyadevice` things.
+Discovery is supported for `tuyaDevice` things.
 By using discovery all necessary setting of the device are retrieved from your cloud account.
 
 ## Thing Configuration
@@ -108,9 +108,9 @@ The `dp2` parameter identifies the ON/OFF switch that is usually available on di
 The `reversed` parameter changes the direction of the scale (e.g. 0 becomes 100, 100 becomes 0).
 It defaults to `false`.
 
-### Type `number`
+### Type `number/quantity`
 
-The `number` channel has two additional mandatory parameters `min` and `max`.
+The `number` and `quantity` channels have two additional mandatory parameters `min` and `max`.
 The `min` and `max` parameters define the range allowed (e.g. 0-86400 for turn-off "countdown").
 
 ### Type `string`

@@ -13,13 +13,14 @@
 package org.openhab.binding.goecharger.internal.handler;
 
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.*;
+import static org.openhab.binding.goecharger.internal.api.GoEStatusV2ApiKeys.ALW;
+import static org.openhab.binding.goecharger.internal.api.GoEStatusV2ApiKeys.AMP;
+import static org.openhab.binding.goecharger.internal.api.GoEStatusV2ApiKeys.DWO;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -253,33 +254,34 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
 
         switch (channelUID.getId()) {
             case MAX_CURRENT:
-                key = "amp";
+                key = AMP;
                 if (command instanceof DecimalType decimalCommand) {
                     value = String.valueOf(decimalCommand.intValue());
-                } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
+                } else if (command instanceof QuantityType<?> quantityCommand) {
+                    value = String.valueOf(Objects.requireNonNull(quantityCommand.toUnit(Units.AMPERE)).intValue());
                 }
                 break;
             case MAX_CURRENT_TEMPORARY:
                 key = "amx";
                 if (command instanceof DecimalType decimalCommand) {
                     value = String.valueOf(decimalCommand.intValue());
-                } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
+                } else if (command instanceof QuantityType<?> quantityCommand) {
+                    value = String.valueOf(Objects.requireNonNull(quantityCommand.toUnit(Units.AMPERE)).intValue());
                 }
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
-                key = "dwo";
+                key = DWO;
                 var multiplier = 10;
                 if (command instanceof DecimalType decimalCommand) {
                     value = String.valueOf(decimalCommand.intValue() * multiplier);
-                } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(
-                            ((QuantityType<Energy>) command).toUnit(Units.KILOWATT_HOUR).intValue() * multiplier);
+                } else if (command instanceof QuantityType<?> quantityCommand) {
+                    value = String
+                            .valueOf(Objects.requireNonNull(quantityCommand.toUnit(Units.KILOWATT_HOUR)).intValue()
+                                    * multiplier);
                 }
                 break;
             case ALLOW_CHARGING:
-                key = "alw";
+                key = ALW;
                 if (command instanceof OnOffType) {
                     value = command == OnOffType.ON ? "1" : "0";
                 }
@@ -319,12 +321,12 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
     }
 
     private String getReadUrl() {
-        return GoEChargerBindingConstants.API_URL.replace("%IP%", config.ip.toString());
+        return GoEChargerBindingConstants.API_URL.replace("%IP%", Objects.requireNonNull(config.ip));
     }
 
     private String getWriteUrl(String key, String value) {
-        return GoEChargerBindingConstants.MQTT_URL.replace("%IP%", config.ip.toString()).replace("%KEY%", key)
-                .replace("%VALUE%", value);
+        return GoEChargerBindingConstants.MQTT_URL.replace("%IP%", Objects.requireNonNull(config.ip))
+                .replace("%KEY%", key).replace("%VALUE%", value);
     }
 
     private void sendData(String key, String value) {
@@ -366,8 +368,8 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
      */
     @Nullable
     @Override
-    protected GoEStatusResponseBaseDTO getGoEData()
-            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+    protected GoEStatusResponseBaseDTO getGoEData() throws InterruptedException, TimeoutException, ExecutionException,
+            JsonSyntaxException, IllegalArgumentException {
         String urlStr = getReadUrl();
         logger.trace("GET URL = {}", urlStr);
 

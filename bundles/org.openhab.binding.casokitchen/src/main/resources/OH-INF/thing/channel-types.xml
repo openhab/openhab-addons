@@ -28,6 +28,10 @@
 		<item-type>Switch</item-type>
 		<label>Light Switch</label>
 		<description>Switching lights on and off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="hint">

@@ -10,12 +10,20 @@
 		<item-type>String</item-type>
 		<label>Alarm</label>
 		<description>Current alarm description, if any</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="alert">
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<description>Current alert description, if any, to notify a shortage of salt</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="flow" advanced="true">
@@ -34,6 +42,10 @@
 		<item-type>String</item-type>
 		<label>Cycle</label>
 		<description>Indicates the stage of the regeneration cycle</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="time" advanced="true">
@@ -52,6 +64,10 @@
 		<item-type>Number</item-type>
 		<label>Water Hardness</label>
 		<description>Water hardness expressed using the chosen hardness unit</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="cylinderstate">
@@ -70,27 +86,47 @@
 		<item-type>Switch</item-type>
 		<label>Regenerate Now</label>
 		<description>Start immediate regeneration</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="regeneratelater">
 		<item-type>Switch</item-type>
 		<label>Regenerate Later</label>
 		<description>Start a delayed regeneration</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="multiregenerate">
 		<item-type>Switch</item-type>
 		<label>Start Multi-regeneration</label>
 		<description>Start a multi-regeneration</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="consumption" advanced="true">
 		<item-type>Number</item-type>
 		<label>Water Consumption</label>
 		<description>Water consumption, in l</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state pattern="%d l" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pressure">
 		<item-type>Number</item-type>
 		<label>Water Pressure</label>
 		<description>Water pressure, in bar</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f bar" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="number" advanced="true">

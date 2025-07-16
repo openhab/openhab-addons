@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.fenecon.internal;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.fenecon.internal.api.AddressComponentChannelUtil;
 import org.openhab.binding.fenecon.internal.api.BatteryPower;
 import org.openhab.binding.fenecon.internal.api.FeneconController;
 import org.openhab.binding.fenecon.internal.api.FeneconResponse;
@@ -29,6 +30,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -71,18 +73,21 @@ public class FeneconHandler extends BaseThingHandler {
     }
 
     private void pollingCode() {
-        for (String eachChannel : FeneconBindingConstants.ADDRESSES) {
+        List<String> componentRequests = AddressComponentChannelUtil
+                .createComponentRequests(FeneconBindingConstants.ADDRESSES);
+
+        for (String eachComponentRequest : componentRequests) {
             try {
                 @SuppressWarnings("null")
-                Optional<FeneconResponse> response = feneconController.requestChannel(eachChannel);
+                List<FeneconResponse> responses = feneconController.requestChannel(eachComponentRequest);
 
-                if (response.isPresent()) {
-                    processDataPoint(response.get());
+                for (FeneconResponse eachResponse : responses) {
+                    processDataPoint(eachResponse);
                 }
 
                 updateStatus(ThingStatus.ONLINE);
             } catch (FeneconException err) {
-                logger.trace("FENECON - connection problem on FENECON channel {}", eachChannel, err);
+                logger.trace("FENECON - connection problem on FENECON channel {}", eachComponentRequest, err);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, err.getMessage());
                 return;
             }
@@ -166,6 +171,102 @@ public class FeneconHandler extends BaseThingHandler {
                 // "address":"_sum/GridBuyActiveEnergy","type":"LONG","accessMode":"RO","text":"","unit":"Wh_Σ","value":1105}
                 updateState(FeneconBindingConstants.IMPORTED_FROM_GRID_ENERGY_CHANNEL,
                         new QuantityType<>(Integer.valueOf(response.value()), Units.WATT_HOUR));
+                break;
+            case FeneconBindingConstants.FEMS_VERSION_ADDRESS:
+                // { "address": "_meta/Version","type": "STRING", "accessMode": "RO", "text": "", "unit": "", "value":
+                // "2025.2.3"}
+                updateState(FeneconBindingConstants.FEMS_VERSION_CHANNEL, new StringType(response.value()));
+                break;
+            case FeneconBindingConstants.BATT_INVERTER_AIR_TEMP_ADDRESS:
+                // {"address": "batteryInverter0/AirTemperature","type": "INTEGER","accessMode": "RO", "text": "",
+                // "unit": "C", "value": 41 }
+                updateState(FeneconBindingConstants.BATT_INVERTER_AIR_TEMP_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), SIUnits.CELSIUS));
+                break;
+            case FeneconBindingConstants.BATT_INVERTER_RADIATOR_TEMP_ADDRESS:
+                // {"address": "batteryInverter0/RadiatorTemperature","type": "INTEGER", "accessMode": "RO", "text": "",
+                // "unit": "C", "value": 37 }
+                updateState(FeneconBindingConstants.BATT_INVERTER_RADIATOR_TEMP_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), SIUnits.CELSIUS));
+                break;
+            case FeneconBindingConstants.BATT_INVERTER_BMS_PACK_TEMP_ADDRESS:
+                // {"address": "batteryInverter0/BmsPackTemperature", "type": "INTEGER", "accessMode": "RO", "text": "",
+                // "unit": "C", "value": 26 }
+                updateState(FeneconBindingConstants.BATT_INVERTER_BMS_PACK_TEMP_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), SIUnits.CELSIUS));
+                break;
+            case FeneconBindingConstants.BATT_TOWER_PACK_VOLTAGE_ADDRESS:
+                // {"address": "battery0/Tower0PackVoltage", "type": "INTEGER", "accessMode": "RO", "text": "", "unit":
+                // "", "value": 2749 }
+                // Tower pack voltage in mV
+                updateState(FeneconBindingConstants.BATT_TOWER_PACK_VOLTAGE_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()) / 1000.0, Units.VOLT));
+                break;
+            case FeneconBindingConstants.BATT_TOWER_CURRENT_ADDRESS:
+                // {"address": "battery0/Current", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "A",
+                // "value": 9 }
+                updateState(FeneconBindingConstants.BATT_TOWER_CURRENT_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.AMPERE));
+                break;
+            case FeneconBindingConstants.BATT_SOH_ADDRESS:
+                // { "address": "battery0/Soh", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "%", "value":
+                // 100 }
+                updateState(FeneconBindingConstants.BATT_SOH_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.PERCENT));
+                break;
+            case FeneconBindingConstants.CHARGER0_ACTUAL_POWER_ADDRESS:
+                // { "address": "charger0/ActualPower", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "W",
+                // "value": 312 }
+                updateState(FeneconBindingConstants.CHARGER0_ACTUAL_POWER_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
+                break;
+            case FeneconBindingConstants.CHARGER1_ACTUAL_POWER_ADDRESS:
+                // { "address": "charger1/ActualPower", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "W",
+                // "value": 33 }
+                updateState(FeneconBindingConstants.CHARGER1_ACTUAL_POWER_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
+                break;
+            case FeneconBindingConstants.CHARGER2_ACTUAL_POWER_ADDRESS:
+                // { "address": "charger2/ActualPower", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "W",
+                // "value": 412 }
+                updateState(FeneconBindingConstants.CHARGER2_ACTUAL_POWER_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
+                break;
+            case FeneconBindingConstants.CHARGER0_VOLTAGE_ADDRESS:
+                // { "address": "charger0/Voltage", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "mV",
+                // "value": 193000 }
+                updateState(FeneconBindingConstants.CHARGER0_VOLTAGE_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()) / 1000.0, Units.VOLT));
+                break;
+            case FeneconBindingConstants.CHARGER1_VOLTAGE_ADDRESS:
+                // { "address": "charger1/Voltage", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "mV",
+                // "value": 193000 }
+                updateState(FeneconBindingConstants.CHARGER1_VOLTAGE_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()) / 1000.0, Units.VOLT));
+                break;
+            case FeneconBindingConstants.CHARGER2_VOLTAGE_ADDRESS:
+                // { "address": "charger2/Voltage", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "mV",
+                // "value": 193000 }
+                updateState(FeneconBindingConstants.CHARGER2_VOLTAGE_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()) / 1000.0, Units.VOLT));
+                break;
+            case FeneconBindingConstants.CHARGER0_CURRENT_ADDRESS:
+                // {"address": "charger0/Current", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "mA",
+                // "value": 1200 },
+                updateState(FeneconBindingConstants.CHARGER0_CURRENT_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()) / 1000.0, Units.AMPERE));
+                break;
+            case FeneconBindingConstants.CHARGER1_CURRENT_ADDRESS:
+                // {"address": "charger1/Current", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "mA",
+                // "value": 1000 },
+                updateState(FeneconBindingConstants.CHARGER1_CURRENT_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()) / 1000.0, Units.AMPERE));
+                break;
+            case FeneconBindingConstants.CHARGER2_CURRENT_ADDRESS:
+                // {"address": "charger2/Current", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "mA",
+                // "value": 1100 },
+                updateState(FeneconBindingConstants.CHARGER2_CURRENT_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()) / 1000.0, Units.AMPERE));
                 break;
             default:
                 logger.trace("FENECON - No channel ID to address {} found.", response.address());

@@ -38,18 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShutterControlHandler extends BoschSHCDeviceHandler {
-    /**
-     * Utility functions to convert data between Bosch things and openHAB items
-     */
-    static final class DataConversion {
-        public static int levelToOpenPercentage(double level) {
-            return (int) Math.round((1 - level) * 100);
-        }
-
-        public static double openPercentageToLevel(double openPercentage) {
-            return (100 - openPercentage) / 100.0;
-        }
-    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -74,13 +62,13 @@ public class ShutterControlHandler extends BoschSHCDeviceHandler {
         if (command instanceof UpDownType upDownCommand) {
             // Set full close/open as target state
             ShutterControlServiceState state = new ShutterControlServiceState();
-            if (upDownCommand == UpDownType.UP) {
-                state.level = 1.0;
-            } else if (upDownCommand == UpDownType.DOWN) {
-                state.level = 0.0;
-            } else {
-                logger.warn("Received unknown UpDownType command: {}", upDownCommand);
-                return;
+            switch (upDownCommand) {
+                case UpDownType.UP -> state.level = 1.0;
+                case UpDownType.DOWN -> state.level = 0.0;
+                default -> {
+                    logger.warn("Received unknown UpDownType command: {}", upDownCommand);
+                    return;
+                }
             }
             this.updateServiceState(this.shutterControlService, state);
         } else if (command instanceof StopMoveType stopMoveCommand) {
@@ -92,16 +80,24 @@ public class ShutterControlHandler extends BoschSHCDeviceHandler {
             }
         } else if (command instanceof PercentType percentCommand) {
             // Set specific level
-            double level = DataConversion.openPercentageToLevel(percentCommand.doubleValue());
+            double level = openPercentageToLevel(percentCommand.doubleValue());
             this.updateServiceState(this.shutterControlService, new ShutterControlServiceState(level));
         }
+    }
+
+    private double openPercentageToLevel(double openPercentage) {
+        return (100 - openPercentage) / 100.0;
     }
 
     private void updateChannels(ShutterControlServiceState state) {
         if (state.level != null) {
             // Convert level to open ratio
-            int openPercentage = DataConversion.levelToOpenPercentage(state.level);
+            int openPercentage = levelToOpenPercentage(state.level);
             updateState(CHANNEL_LEVEL, new PercentType(openPercentage));
         }
+    }
+
+    private int levelToOpenPercentage(double level) {
+        return (int) Math.round((1 - level) * 100);
     }
 }

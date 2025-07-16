@@ -56,6 +56,7 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
     private final Map<String, DeviceInfoSubscriber> deviceListeners = new HashMap<>();
 
     private @NonNullByDefault({}) Channel encryptedChannel;
+    private @NonNullByDefault({}) Channel encryptedChannel35;
     private @NonNullByDefault({}) Channel rawChannel;
     private final EventLoopGroup group;
     private boolean deactivate = false;
@@ -79,6 +80,12 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
                     }
                 });
 
+        ChannelFuture futureEncrypted35 = b.bind(7000).addListener(this).sync();
+        encryptedChannel35 = futureEncrypted35.channel();
+        encryptedChannel35.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
+        encryptedChannel35.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_5);
+        encryptedChannel35.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
+
         ChannelFuture futureEncrypted = b.bind(6667).addListener(this).sync();
         encryptedChannel = futureEncrypted.channel();
         encryptedChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
@@ -95,9 +102,11 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
     public void deactivate() {
         deactivate = true;
         encryptedChannel.pipeline().fireUserEventTriggered(new UserEventHandler.DisposeEvent());
+        encryptedChannel35.pipeline().fireUserEventTriggered(new UserEventHandler.DisposeEvent());
         rawChannel.pipeline().fireUserEventTriggered(new UserEventHandler.DisposeEvent());
         try {
             encryptedChannel.closeFuture().sync();
+            encryptedChannel35.closeFuture().sync();
             rawChannel.closeFuture().sync();
         } catch (InterruptedException e) {
             // do nothing

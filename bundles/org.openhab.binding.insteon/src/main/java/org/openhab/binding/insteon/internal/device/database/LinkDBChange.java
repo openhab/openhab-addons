@@ -33,7 +33,7 @@ public class LinkDBChange extends DatabaseChange<LinkDBRecord> {
 
     @Override
     public LinkDBRecord getRecord() {
-        return type == ChangeType.DELETE ? LinkDBRecord.asInactive(record) : record;
+        return type == ChangeType.DELETE ? record.asInactive() : record;
     }
 
     /**
@@ -59,7 +59,7 @@ public class LinkDBChange extends DatabaseChange<LinkDBRecord> {
      * @return the link db change
      */
     public static LinkDBChange forModify(LinkDBRecord record, byte[] data) {
-        return new LinkDBChange(LinkDBRecord.withNewData(data, record), ChangeType.MODIFY);
+        return new LinkDBChange(record.withNewData(data), ChangeType.MODIFY);
     }
 
     /**

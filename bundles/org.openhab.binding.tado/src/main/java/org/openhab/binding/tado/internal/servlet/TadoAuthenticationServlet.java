@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tado.internal.handler.TadoHandlerFactory;
 import org.openhab.core.auth.client.oauth2.DeviceCodeResponseDTO;
 import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 
 /**
  * The {@link TadoAuthenticationServlet} manages the authorization with the Tado API.
@@ -43,8 +44,9 @@ public class TadoAuthenticationServlet extends HttpServlet {
     private static final String HTML_AUTH_ERROR_TEMPLATE = "<span style=\"color: #ff0000\">$REPLACE$</span>";
     private static final String HTML_AUTH_START_TEMPLATE = "<a href=\"$REPLACE$\"><span style=\"color: #cc3300\">click to authenticate</span></a>";
 
-    private static final String PARAM_NAME = "oauth";
-    private static final String PARAM_VALUE = "start";
+    public static final String PARAM_NAME_USER = "user";
+    private static final String PARAM_NAME_OAUTH = "oauth";
+    private static final String PARAM_VALUE_START = "start";
 
     private static final String ERROR_BAD_URL = "no verification uri";
 
@@ -76,8 +78,9 @@ public class TadoAuthenticationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // if the query string is "?oauth=start" then serve the user authentication page
-        if (PARAM_VALUE.equals(request.getParameter(PARAM_NAME)) && tadoHandlerFactory.hasOAuthClientService()) {
+        // if the query string contains "oauth=start" then serve the user authentication page
+        if (PARAM_VALUE_START.equals(request.getParameter(PARAM_NAME_OAUTH))
+                && tadoHandlerFactory.hasOAuthClientService(request.getParameter(PARAM_NAME_USER))) {
             serveUserAuthenticationPage(request, response);
         } else {
             serveStatusPage(request, response);
@@ -100,24 +103,25 @@ public class TadoAuthenticationServlet extends HttpServlet {
     private void serveStatusPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String dynamicHtml = null;
 
-        if (!tadoHandlerFactory.hasOAuthClientService()) {
+        if (!tadoHandlerFactory.hasOAuthClientService(request.getParameter(PARAM_NAME_USER))) {
             dynamicHtml = HTML_AUTH_NOT_REQUIRED;
         }
 
         if (dynamicHtml == null) {
             try {
-                if (tadoHandlerFactory.getAccessTokenResponse() != null) {
+                if (tadoHandlerFactory.getAccessTokenResponse(request.getParameter(PARAM_NAME_USER)) != null) {
                     dynamicHtml = HTML_AUTH_PASSED;
                 }
-            } catch (OAuthException e) {
-                dynamicHtml = HTML_AUTH_ERROR_TEMPLATE.replace(REPLACE_TAG,
-                        e.getMessage() instanceof String exception ? exception : e.getClass().getName());
+            } catch (OAuthException | OAuthResponseException e) {
+                // error already logged => fall through
             }
         }
 
         if (dynamicHtml == null) {
             if (request.getRequestURL() instanceof StringBuffer baseUrl) {
-                String dynamicUrl = baseUrl.append("?").append(PARAM_NAME).append("=").append(PARAM_VALUE).toString();
+                String dynamicUrl = baseUrl.append("?").append(PARAM_NAME_OAUTH).append("=").append(PARAM_VALUE_START)
+                        .append("&").append(PARAM_NAME_USER).append("=").append(request.getParameter(PARAM_NAME_USER))
+                        .toString();
                 dynamicHtml = HTML_AUTH_START_TEMPLATE.replace(REPLACE_TAG, dynamicUrl);
             } else {
                 dynamicHtml = HTML_AUTH_ERROR_TEMPLATE.replace(REPLACE_TAG, ERROR_BAD_URL);
@@ -145,7 +149,8 @@ public class TadoAuthenticationServlet extends HttpServlet {
         String dynamicHtml = null;
 
         try {
-            DeviceCodeResponseDTO deviceCodeResponse = tadoHandlerFactory.getDeviceCodeResponse();
+            DeviceCodeResponseDTO deviceCodeResponse = tadoHandlerFactory
+                    .getDeviceCodeResponse(request.getParameter(PARAM_NAME_USER));
             String userVerificationUri = deviceCodeResponse.getVerificationUriComplete();
             if (userVerificationUri != null && !userVerificationUri.isBlank()) {
                 response.sendRedirect(userVerificationUri);

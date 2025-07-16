@@ -13,10 +13,12 @@
 package org.openhab.binding.avmfritz.internal.discovery;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
 import java.io.StringReader;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,6 +41,8 @@ import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultFlag;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 
@@ -69,7 +73,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         }
 
         @Override
-        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
                 @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
             return List.of();
         }
@@ -79,7 +83,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
     @BeforeEach
     public void setUp() {
         super.setUp();
-        discovery = new AVMFritzDiscoveryService();
+        discovery = new AVMFritzDiscoveryService(mock(LocaleProvider.class), mock(TranslationProvider.class));
         discovery.setThingHandler(bridgeHandler);
         discovery.addDiscoveryListener(listener);
     }
@@ -91,7 +95,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
 
     @Test
     public void correctSupportedTypes() {
-        assertEquals(19, discovery.getSupportedThingTypes().size());
+        assertEquals(22, discovery.getSupportedThingTypes().size());
         assertTrue(discovery.getSupportedThingTypes().contains(DECT100_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT200_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT210_THING_TYPE));
@@ -109,8 +113,11 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_BLINDS_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_COLOR_BULB_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_DIMMABLE_BULB_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_SENSOR_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_HOST_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_HEATING_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_SWITCH_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(SMART_ENERGY_250_THING_TYPE));
     }
 
     @SuppressWarnings("null")
@@ -185,6 +192,66 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertEquals("FRITZ!DECT Repeater 100", discoveryResult.getProperties().get(PRODUCT_NAME));
         assertEquals("087610954669", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
         assertEquals("03.86", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
+        assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
+
+        final String deviceNotPresentXml = xml.replace("<present>1</present>", "<present>0</present>");
+        devices = (DeviceListModel) u.unmarshal(new StringReader(deviceNotPresentXml));
+        assertNotNull(devices);
+        assertEquals(1, devices.getDevicelist().size());
+
+        device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+        assertEquals(0, device.getPresent());
+
+        discovery.onDeviceAdded(device);
+        assertNull(discoveryResult);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void validSmart250DiscoveryResult() throws JAXBException, XMLStreamException {
+        //@formatter:off
+        final String xml = """
+                <devicelist version="1">
+                    <device identifier="12345-6789012-0" id="23" functionbitmask="130" fwversion="03.65" manufacturer="AVM" productname="FRITZ!Smart Energy 250">
+                        <present>1</present>
+                        <txbusy>0</txbusy>
+                        <name>FRITZ!Smart Energy 250 #8</name>
+                        <battery>90</battery>
+                        <batterylow>0</batterylow>
+                        <powermeter>
+                            <voltage>0</voltage>
+                            <power>532000</power>
+                            <energy>5921</energy>
+                        </powermeter>
+                    </device>
+                </devicelist>
+            """;
+        //@formatter:on
+
+        XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = u.unmarshal(xsr, DeviceListModel.class).getValue();
+
+        assertNotNull(devices);
+        assertEquals(1, devices.getDevicelist().size());
+
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+        assertEquals(1, device.getPresent());
+
+        discovery.onDeviceAdded(device);
+        assertNotNull(discoveryResult);
+
+        assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
+        assertEquals(new ThingUID("avmfritz:FRITZ_Smart_Energy_250:1:12345_6789012_0"), discoveryResult.getThingUID());
+        assertEquals(SMART_ENERGY_250_THING_TYPE, discoveryResult.getThingTypeUID());
+        assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
+        assertEquals("12345-6789012-0", discoveryResult.getProperties().get(CONFIG_AIN));
+        assertEquals("AVM", discoveryResult.getProperties().get(PROPERTY_VENDOR));
+        assertEquals("FRITZ!Smart Energy 250", discoveryResult.getProperties().get(PRODUCT_NAME));
+        assertEquals("12345-6789012-0", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
+        assertEquals("03.65", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
         assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
 
         final String deviceNotPresentXml = xml.replace("<present>1</present>", "<present>0</present>");
