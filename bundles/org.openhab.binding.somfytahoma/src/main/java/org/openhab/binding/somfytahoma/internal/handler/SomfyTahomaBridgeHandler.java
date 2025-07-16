@@ -315,12 +315,6 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void doOAuthLogin() throws ExecutionException, InterruptedException, TimeoutException {
-        lastLoginTimestamp = Instant.now();
-
-        loginTahoma();
-    }
-
     private boolean loginCozyTouch()
             throws ExecutionException, InterruptedException, TimeoutException, JsonSyntaxException {
         logger.debug("CozyTouch Oauth2 authentication flow");
@@ -602,7 +596,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
         if (tokenNeedsRefresh()) {
             logger.debug("The access token expires soon, refreshing the cloud access token");
-            refreshToken();
+            reLogin();
         }
 
         List<SomfyTahomaEvent> events = getEvents();
@@ -612,19 +606,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void refreshToken() {
-        try {
-            doOAuthLogin();
-        } catch (ExecutionException | TimeoutException e) {
-            logger.debug("Token refresh failed");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
     private boolean tokenNeedsRefresh() {
         return !thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)
-                && Instant.now().plusSeconds(thingConfig.getRefresh()).isAfter(tokenExpirationTime);
+                && Instant.now().plusSeconds(thingConfig.getRefresh()).isAfter(tokenExpirationTime)
+                && !isDevModeReady();
     }
 
     private void processEvent(SomfyTahomaEvent event) {
