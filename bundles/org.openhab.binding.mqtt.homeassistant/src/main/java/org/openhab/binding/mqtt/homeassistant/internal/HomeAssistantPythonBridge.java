@@ -53,7 +53,8 @@ public class HomeAssistantPythonBridge {
         VirtualFileSystem vfs = VirtualFileSystem.newBuilder().resourceLoadingClass(HomeAssistantPythonBridge.class)
                 .build();
 
-        context = GraalPyResources.contextBuilder(vfs).logHandler(new LogHandler(logger)).build();
+        context = GraalPyResources.contextBuilder(vfs).logHandler(new LogHandler(logger))
+                .option("engine.WarnInterpreterOnly", "false").build();
 
         Value bindings = context.getBindings(PYTHON);
 
