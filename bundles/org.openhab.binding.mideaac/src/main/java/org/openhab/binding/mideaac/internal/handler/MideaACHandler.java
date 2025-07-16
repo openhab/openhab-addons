@@ -490,26 +490,24 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         updateChannel(CHANNEL_HUMIDITY, new DecimalType(humidityResponse.getHumidity()));
     }
 
-    // Handle unsolicted Temperature response in room (0xA1) Humidity only for now
-    // Temperatures are updated via the poll
+    // Handle unsolicted Temperature and Humidity response in room (0xA1)
+    // Temperatures are also updated via the poll
     @Override
     public void updateChannels(TemperatureResponse temperatureResponse) {
         updateChannel(CHANNEL_HUMIDITY, new DecimalType(temperatureResponse.getHumidity()));
 
-        // QuantityType<Temperature> outdoorTemperature = new
-        // QuantityType<Temperature>(temperatureResponse.getOutdoorTemperature(),
-        // SIUnits.CELSIUS);
-        // QuantityType<Temperature> indoorTemperature = new
-        // QuantityType<Temperature>(temperatureResponse.getIndoorTemperature(),
-        // SIUnits.CELSIUS);
+        QuantityType<Temperature> outdoorTemperature = new QuantityType<Temperature>(
+                temperatureResponse.getOutdoorTemperature(), SIUnits.CELSIUS);
+        QuantityType<Temperature> indoorTemperature = new QuantityType<Temperature>(
+                temperatureResponse.getIndoorTemperature(), SIUnits.CELSIUS);
 
-        // if (imperialUnits) {
-        // indoorTemperature = Objects.requireNonNull(indoorTemperature.toUnit(ImperialUnits.FAHRENHEIT));
-        // outdoorTemperature = Objects.requireNonNull(outdoorTemperature.toUnit(ImperialUnits.FAHRENHEIT));
-        // }
+        if (imperialUnits) {
+            indoorTemperature = Objects.requireNonNull(indoorTemperature.toUnit(ImperialUnits.FAHRENHEIT));
+            outdoorTemperature = Objects.requireNonNull(outdoorTemperature.toUnit(ImperialUnits.FAHRENHEIT));
+        }
 
-        // updateChannel(CHANNEL_INDOOR_TEMPERATURE, indoorTemperature);
-        // updateChannel(CHANNEL_OUTDOOR_TEMPERATURE, outdoorTemperature);
+        updateChannel(CHANNEL_INDOOR_TEMPERATURE, indoorTemperature);
+        updateChannel(CHANNEL_OUTDOOR_TEMPERATURE, outdoorTemperature);
     }
 
     @Override
