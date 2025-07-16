@@ -20,6 +20,7 @@ public class Event {
     public String event;
     public int nodeId;
     public Args args;
+    public Node node;
 
     enum Source {
         driver,

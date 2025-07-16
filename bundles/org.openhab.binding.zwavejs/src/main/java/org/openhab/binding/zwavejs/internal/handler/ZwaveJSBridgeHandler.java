@@ -182,6 +182,17 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                         nodeListener.onNodeDead(eventMsg.event);
                     }
                     break;
+                case "node removed":
+                    if (nodeListener != null) {
+                        nodeListener.onNodeRemoved(eventMsg.event);
+                    }
+                    break;
+                case "node added":
+                    final NodeDiscoveryService discovery = discoveryService;
+                    if (discovery != null) {
+                        discovery.addNodeDiscovery(eventMsg.event.node);
+                    }
+                    break;
                 default:
                     logger.trace("Unhandled event type: {}", eventType);
             }
@@ -246,7 +257,10 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
 
             final ZwaveNodeListener nodeListener = nodeListeners.get(nodeId);
             if (nodeListener != null) {
-                nodeListener.onNodeRemoved();
+                Event event = new Event();
+                event.nodeId = nodeId;
+                event.event = "node removed";
+                nodeListener.onNodeRemoved(event);
             }
 
             if (discovery != null) {
