@@ -14,7 +14,6 @@ package org.openhab.binding.ondilo.internal;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.dto.LastMeasure;
 import org.openhab.binding.ondilo.internal.dto.Pool;
+import org.openhab.binding.ondilo.internal.dto.PoolConfiguration;
+import org.openhab.binding.ondilo.internal.dto.PoolInfo;
 import org.openhab.binding.ondilo.internal.dto.Recommendation;
+import org.openhab.binding.ondilo.internal.dto.UserInfo;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.slf4j.Logger;
@@ -45,6 +47,7 @@ public class OndiloBridge {
     private final Logger logger = LoggerFactory.getLogger(OndiloBridge.class);
     private final ScheduledExecutorService scheduler;
     private final int refreshInterval;
+    private final OndiloBridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> ondiloBridgePollingJob;
     private @Nullable List<Pool> pools;
     public @Nullable OndiloApiClient apiClient;
@@ -54,10 +57,11 @@ public class OndiloBridge {
     // last measure. For whatever reason it takes a bit longer for the measures to finally reach the cloud and be
     // available via API. Therefore we add a buffer of 4 minutes to the next polling time.
     // If the last measure was taken at 12:00, we will poll again at 13:04.
-    private static final int DEFAULT_REFRESH_INTERVAL = 64;
+    private static final Duration TARGET_REFRESH_INTERVAL = Duration.ofMinutes(60 + 4);
 
     public OndiloBridge(OndiloBridgeHandler bridgeHandler, OAuthClientService oAuthService,
             AccessTokenResponse accessTokenResponse, int refreshInterval, ScheduledExecutorService scheduler) {
+        this.bridgeHandler = bridgeHandler;
         this.scheduler = scheduler;
         this.refreshInterval = refreshInterval;
 
@@ -81,7 +85,7 @@ public class OndiloBridge {
 
     private void startOndiloBridgePolling(Integer refreshInterval) {
         if (ondiloBridgePollingJob == null) {
-            ondiloBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollOndiloICOs(), 1, refreshInterval,
+            ondiloBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollOndiloICOs(), 10, refreshInterval,
                     TimeUnit.SECONDS);
         } else {
             logger.warn("Ondilo bridge polling job is already running, not starting a new one");
@@ -100,10 +104,22 @@ public class OndiloBridge {
         try {
             OndiloApiClient apiClient = this.apiClient;
             if (apiClient != null) {
+                String userInfoJson = apiClient.get("/user/info");
+                logger.trace("userInfo: {}", userInfoJson);
+                // Parse JSON to DTO
+                Gson gson = new Gson();
+                UserInfo userInfo = gson.fromJson(userInfoJson, new TypeToken<UserInfo>() {
+                }.getType());
+                if (userInfo != null) {
+                    bridgeHandler.updateUserInfo(userInfo);
+                }
+
+                // Pause for 1 second between polls in order to keep API rate limits
+                Thread.sleep(1000);
+
                 String poolsJson = apiClient.get("/pools");
                 logger.trace("Ondilo ICOs: {}", poolsJson);
                 // Parse JSON to DTO
-                Gson gson = new Gson();
                 List<Pool> pools = gson.fromJson(poolsJson, new TypeToken<List<Pool>>() {
                 }.getType());
                 if (pools != null && !pools.isEmpty()) {
@@ -111,17 +127,9 @@ public class OndiloBridge {
                     // Poll last measures and recommendations for each pool
                     Instant lastValueTime = null;
                     for (Pool pool : pools) {
-                        try {
-                            // Pause for 1 second between polls in order to keep API rate limits
-                            Thread.sleep(1000);
-                            Instant valueTime = pollOndiloICO(pool.id);
-                            if (lastValueTime == null || (valueTime != null && valueTime.isBefore(lastValueTime))) {
-                                lastValueTime = valueTime;
-                            }
-                        } catch (InterruptedException ie) {
-                            Thread.currentThread().interrupt();
-                            logger.warn("Polling pause interrupted: {}", ie.getMessage());
-                            break;
+                        Instant valueTime = pollOndiloICO(pool.id);
+                        if (lastValueTime == null || (valueTime != null && valueTime.isBefore(lastValueTime))) {
+                            lastValueTime = valueTime;
                         }
                     }
                     if (lastValueTime != null) {
@@ -136,13 +144,16 @@ public class OndiloBridge {
             }
         } catch (RuntimeException e) {
             logger.warn("Unexpected error in polling job: {}", e.getMessage(), e);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            logger.warn("Polling pause interrupted: {}", ie.getMessage());
         }
     }
 
     private void adaptPollingToValueTime(Instant lastValueTime, int refreshInterval) {
         // Adjusting the polling reduces the delay when new measures get available, without polling too frequently and
         // hitting API rate limits.
-        Instant nextValueTime = lastValueTime.plus(DEFAULT_REFRESH_INTERVAL, ChronoUnit.MINUTES);
+        Instant nextValueTime = lastValueTime.plus(TARGET_REFRESH_INTERVAL);
         Instant now = Instant.now();
         Instant scheduledTime = now.plusSeconds(refreshInterval);
         if (nextValueTime.isBefore(scheduledTime)) {
@@ -159,11 +170,14 @@ public class OndiloBridge {
         }
     }
 
-    public @Nullable Instant pollOndiloICO(int id) {
+    public @Nullable Instant pollOndiloICO(int id) throws InterruptedException {
         OndiloHandler ondiloHandler = getOndiloHandlerForPool(id);
         OndiloApiClient apiClient = this.apiClient;
         Instant lastValueTime = null;
         if (ondiloHandler != null && apiClient != null) {
+            // Pause for 1 second between polls in order to keep API rate limits
+            Thread.sleep(1000);
+
             String poolsJson = apiClient.get("/pools/" + id
                     + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi");
             logger.trace("LastMeasures: {}", poolsJson);
@@ -184,6 +198,9 @@ public class OndiloBridge {
                     }
                 }
             }
+
+            // Pause for 1 second between polls in order to keep API rate limits
+            Thread.sleep(1000);
 
             String recommendationsJson = apiClient.get("/pools/" + id + "/recommendations");
             logger.trace("recommendations: {}", recommendationsJson);
@@ -213,6 +230,32 @@ public class OndiloBridge {
                     logger.trace("Latest Recommentation: id={}, title={}", recommendation.id, recommendation.title);
                 }
                 ondiloHandler.updateRecommendationChannels(recommendation);
+            }
+
+            // Pause for 1 second between polls in order to keep API rate limits
+            Thread.sleep(1000);
+
+            String poolInfoJson = apiClient.get("/pools/" + id + "/device");
+            logger.trace("poolInfo: {}", poolInfoJson);
+            // Parse JSON to DTO
+            PoolInfo poolInfo = gson.fromJson(poolInfoJson, new TypeToken<PoolInfo>() {
+            }.getType());
+            if (poolInfo != null) {
+                ondiloHandler.updatePoolInfo(poolInfo);
+            }
+
+            // Pause for 1 second between polls in order to keep API rate limits
+            Thread.sleep(1000);
+
+            String poolConfigurationJson = apiClient.get("/pools/" + id + "/configuration");
+            logger.trace("poolConfiguration: {}", poolConfigurationJson);
+            // Parse JSON to DTO
+            PoolConfiguration poolConfiguration = gson.fromJson(poolConfigurationJson,
+                    new TypeToken<PoolConfiguration>() {
+                    }.getType());
+            if (poolConfiguration != null) {
+                ondiloHandler.updatePoolConfiguration(poolConfiguration);
+                ondiloHandler.updatePoolInfo(poolConfiguration);
             }
         } else {
             logger.debug("No OndiloHandler found for Ondilo ICO with ID: {}", id);

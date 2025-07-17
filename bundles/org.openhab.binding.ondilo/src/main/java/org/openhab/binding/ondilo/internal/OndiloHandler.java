@@ -17,6 +17,7 @@ import static org.openhab.binding.ondilo.internal.OndiloBindingConstants.*;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,7 +25,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.dto.LastMeasure;
+import org.openhab.binding.ondilo.internal.dto.Pool;
+import org.openhab.binding.ondilo.internal.dto.PoolConfiguration;
+import org.openhab.binding.ondilo.internal.dto.PoolInfo;
 import org.openhab.binding.ondilo.internal.dto.Recommendation;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -52,14 +57,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OndiloHandler extends BaseThingHandler {
     private static final String NO_ID = "NO_ID";
+
     private final Logger logger = LoggerFactory.getLogger(OndiloHandler.class);
+    private final LocaleProvider localeProvider;
+    private final int configPoolId;
+
     private int recommendationId; // Used to track the last recommendation ID processed
     private AtomicReference<String> ondiloId = new AtomicReference<>(NO_ID);
-    private final int configPoolId;
+
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
 
-    public OndiloHandler(Thing thing) {
+    public OndiloHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
+
+        this.localeProvider = localeProvider;
 
         OndiloConfiguration currentConfig = getConfigAs(OndiloConfiguration.class);
         this.configPoolId = currentConfig.id;
@@ -221,6 +232,52 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_STATUS, new StringType(recommendation.status.name()));
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, new DateTimeType(recommendation.deadline));
         this.recommendationId = recommendation.id; // Update last processed recommendation ID
+    }
+
+    public void updatePool(Pool pool) {
+        Map<String, String> properties = editProperties();
+        properties.put(ONDILO_ID, String.valueOf(pool.id));
+        properties.put(ONDILO_NAME, pool.name);
+        properties.put(ONDILO_TYPE, pool.type);
+        properties.put(ONDILO_VOLUME, pool.getVolume());
+        properties.put(ONDILO_DISINFECTION, pool.getDisinfection());
+        properties.put(ONDILO_ADDRESS, pool.getAddress());
+        properties.put(ONDILO_LOCATION, pool.getLocation());
+        updateProperties(properties);
+    }
+
+    public void updatePoolInfo(PoolInfo poolInfo) {
+        Map<String, String> properties = editProperties();
+        properties.put(ONDILO_INFO_UUID, poolInfo.uuid);
+        properties.put(ONDILO_INFO_SERIAL_NUMBER, poolInfo.serialNumber);
+        properties.put(ONDILO_INFO_SW_VERSION, poolInfo.swVersion);
+        updateProperties(properties);
+    }
+
+    public void updatePoolInfo(PoolConfiguration poolConfiguration) {
+        Map<String, String> properties = editProperties();
+        properties.put(ONDILO_INFO_POOL_GUY_NUMBER, poolConfiguration.poolGuyNumber);
+        properties.put(ONDILO_INFO_MAINTENANCE_DAY, poolConfiguration.getMaintenanceDay(localeProvider.getLocale()));
+        updateProperties(properties);
+    }
+
+    public void updatePoolConfiguration(PoolConfiguration poolConfiguration) {
+        updateState(CHANNEL_CONFIGURATION_TEMPERATURE_LOW,
+                new QuantityType<>(poolConfiguration.temperatureLow, SIUnits.CELSIUS));
+        updateState(CHANNEL_CONFIGURATION_TEMPERATURE_HIGH,
+                new QuantityType<>(poolConfiguration.temperatureHigh, SIUnits.CELSIUS));
+        updateState(CHANNEL_CONFIGURATION_PH_LOW, new DecimalType(poolConfiguration.phLow));
+        updateState(CHANNEL_CONFIGURATION_PH_HIGH, new DecimalType(poolConfiguration.phHigh));
+        updateState(CHANNEL_CONFIGURATION_ORP_LOW, new QuantityType<>(poolConfiguration.orpLow / 1000.0, Units.VOLT));
+        updateState(CHANNEL_CONFIGURATION_ORP_HIGH, new QuantityType<>(poolConfiguration.orpHigh / 1000.0, Units.VOLT));
+        updateState(CHANNEL_CONFIGURATION_SALT_LOW,
+                new QuantityType<>(poolConfiguration.saltLow * 0.001, Units.KILOGRAM_PER_CUBICMETRE));
+        updateState(CHANNEL_CONFIGURATION_SALT_HIGH,
+                new QuantityType<>(poolConfiguration.saltHigh * 0.001, Units.KILOGRAM_PER_CUBICMETRE));
+        updateState(CHANNEL_CONFIGURATION_TDS_LOW,
+                new QuantityType<>(poolConfiguration.tdsLow, Units.PARTS_PER_MILLION));
+        updateState(CHANNEL_CONFIGURATION_TDS_HIGH,
+                new QuantityType<>(poolConfiguration.tdsHigh, Units.PARTS_PER_MILLION));
     }
 
     @Nullable

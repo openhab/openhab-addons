@@ -5,6 +5,7 @@ This binding integrates Ondilo ICO pool monitoring devices with openHAB, allowin
 ## Supported Things
 
 `account:` Represents your Ondilo Account (authentication using OAuth2 flow)
+
 `ondilo:` Represents an individual Ondilo ICO device
 
 Ondilo ICO Pool as well as Spa devices are supported.
@@ -35,8 +36,9 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 - 5 requests per second
 - 30 requests per hour
 
-`account` Thing performs 1 request per cycle - 4 per hour per Ondilo Account with default interval.
-`ondilo` Thing performs 2 requests per cycle - 8 per hour per Ondilo ICO with default interval.
+`account` Thing performs 2 request per cycle - 8 per hour per Ondilo Account with default interval.
+
+`ondilo` Thing performs 4 requests per cycle - 16 per hour per Ondilo ICO with default interval.
 
 ## Channels
 
@@ -54,7 +56,7 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 | ph                        | Number                  | false    | R      | pH value of the pool water                             |
 | orp                       | Number:ElectricPotential| false    | R      | Oxidation-reduction potential (ORP)                    |
 | salt                      | Number:Density          | false    | R      | Salt concentration in the pool (salt pools only)       |
-| tds                       | Number:Density          | false    | R      | Total dissolved solids in the pool (chlor pools only ) |
+| tds                       | Number:Density          | false    | R      | Total dissolved solids in the pool (chlor pools only)  |
 | battery                   | Number:Dimensionless    | false    | R      | Battery level of the device                            |
 | rssi                      | Number:Dimensionless    | false    | R      | Signal strength (RSSI)                                 |
 | value-time                | DateTime                | true     | R      | Timestamp of the set of measures                       |
@@ -71,13 +73,28 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 | recommendation-status     | String                  | false    | R/W    | Status of the current recommendation (`waiting`/`ok`)<br/>`sendCommand("ok")` to validate current `waiting` recommendation |
 | recommendation-deadline   | String                  | true     | R      | Deadline of the current recommendation                 |
 
+### Configuration Channels
+
+| Channel ID                | Type           | Advanced | Access | Description                                   |
+|---------------------------|----------------|----------|--------|-----------------------------------------------|
+| temperature-low           | Number         | true     | R      | Minimum water temperature                     |
+| temperature-high          | Number         | true     | R      | Maximum water temperature                     |
+| ph-low                    | Number         | true     | R      | Minimum pH value                              |
+| ph-high                   | Number         | true     | R      | Maximum pH value                              |
+| orp-low                   | Number         | true     | R      | Minimum ORP value                             |
+| orp-high                  | Number         | true     | R      | Maximum ORP value                             |
+| salt-low                  | Number         | true     | R      | Minimum salt concentration (salt pools only)  |
+| salt-high                 | Number         | true     | R      | Maximum salt concentration (salt pools only)  |
+| tds-low                   | Number         | true     | R      | Minimum TDS value (chlor pools only)          |
+| tds-high                  | Number         | true     | R      | Maximum TDS value (chlor pools only)          |
+
 ## Full Example
 
 ### Thing Configuration
 
 ```Java
 Bridge ondilo:account:ondiloAccount [ url="http://localhost:8080", refreshInterval=900 ] {
-    Thing ondilo "<id_received_from_discovery>" [ id="<id_received_from_discovery>" ] {
+    Thing ondilo 12345 [ id=12345 ] {   // 12345 is an example of the id recieved via discovery
     }
 ```
 

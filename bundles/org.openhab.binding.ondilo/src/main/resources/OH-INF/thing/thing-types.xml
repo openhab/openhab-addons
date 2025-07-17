@@ -14,6 +14,10 @@
 			<channel id="poll-update" typeId="poll-update"/>
 		</channels>
 
+		<properties>
+			<property name="userInfo"/>
+		</properties>
+
 		<config-description>
 			<parameter name="url" type="text" required="true">
 				<label>openHAB URL</label>
@@ -42,6 +46,7 @@
 		<channel-groups>
 			<channel-group id="measure" typeId="measure"/>
 			<channel-group id="recommendation" typeId="recommendation"/>
+			<channel-group id="configuration" typeId="configuration"/>
 		</channel-groups>
 
 		<properties>
@@ -51,6 +56,12 @@
 			<property name="disinfection"/>
 			<property name="address"/>
 			<property name="location"/>
+			<property name="uuid"/>
+			<property name="serialNumber"/>
+			<property name="swVersion"/>
+			<property name="poolGuyNumber"/>
+			<property name="maintenanceDay"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -85,6 +96,37 @@
 			<channel id="updated-at" typeId="updated-at"/>
 			<channel id="status" typeId="status"/>
 			<channel id="deadline" typeId="deadline"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="configuration">
+		<label>Configurations</label>
+		<channels>
+			<channel id="temperature-low" typeId="temperature-low-high"/>
+			<channel id="temperature-high" typeId="temperature-low-high">
+				<label>Maximum Water Temperature</label>
+				<description>Maximum water temperature</description>
+			</channel>
+			<channel id="ph-low" typeId="ph-low-high"/>
+			<channel id="ph-high" typeId="ph-low-high">
+				<label>Maximum PH Level</label>
+				<description>Maximum PH level</description>
+			</channel>
+			<channel id="orp-low" typeId="orp-low-high"/>
+			<channel id="orp-high" typeId="orp-low-high">
+				<label>Maximum ORP</label>
+				<description>Maximum Oxidation-Reduction Potential (ORP)</description>
+			</channel>
+			<channel id="salt-low" typeId="salt-low-high"/>
+			<channel id="salt-high" typeId="salt-low-high">
+				<label>Maximum Salt Level</label>
+				<description>Maximum salt level</description>
+			</channel>
+			<channel id="tds-low" typeId="tds-low-high"/>
+			<channel id="tds-high" typeId="tds-low-high">
+				<label>Maximum TDS</label>
+				<description>Maximum Total Dissolved Solids (TDS)</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -239,5 +281,53 @@
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Configuration Channel Types -->
+	<channel-type id="temperature-low-high" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Minimum Water Temperature</label>
+		<description>Minimum water temperature</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ph-low-high" advanced="true">
+		<item-type>Number</item-type>
+		<label>Minimum PH Level</label>
+		<description>Minimum PH level</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="orp-low-high" advanced="true">
+		<item-type unitHint="mV">Number:ElectricPotential</item-type>
+		<label>Minimum ORP</label>
+		<description>Minimum Oxidation-Reduction Potential (ORP)</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="salt-low-high" advanced="true">
+		<item-type unitHint="mg/l">Number:Density</item-type>
+		<label>Minimum Salt Level</label>
+		<description>Minimum salt level</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="tds-low-high" advanced="true">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>Minimum TDS</label>
+		<description>Minimum Total Dissolved Solids (TDS)</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>
