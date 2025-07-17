@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="channel-type:tuya:color">
+		<parameter name="dp" type="integer" required="true">
+			<label>Color DP</label>
+		</parameter>
+		<parameter name="dp2" type="integer">
+			<label>Switch DP</label>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:tuya:switch">
+		<parameter name="dp" type="integer" required="true">
+			<label>DP</label>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:tuya:dimmer">
+		<parameter name="dp" type="integer" required="true">
+			<label>Value DP</label>
+		</parameter>
+		<parameter name="dp2" type="integer">
+			<label>Switch DP</label>
+			<description>Set only on brightness channels.</description>
+		</parameter>
+		<parameter name="min" type="integer">
+			<label>Minimum</label>
+		</parameter>
+		<parameter name="max" type="integer">
+			<label>Maximum</label>
+		</parameter>
+		<parameter name="reversed" type="boolean">
+			<label>Reversed</label>
+			<description>Changes the direction of the scale (e.g. 0 becomes 100, 100 becomes 0).</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:tuya:number">
+		<parameter name="dp" type="integer" required="true">
+			<label>DP</label>
+		</parameter>
+		<parameter name="min" type="integer">
+			<label>Minimum</label>
+		</parameter>
+		<parameter name="max" type="integer">
+			<label>Maximum</label>
+		</parameter>
+		<parameter name="sendAsString" type="boolean">
+			<label>Send As String</label>
+			<description>Send the value as string instead of number.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:tuya:quantity">
+		<parameter name="dp" type="integer" required="true">
+			<label>DP</label>
+		</parameter>
+		<parameter name="min" type="integer">
+			<label>Minimum</label>
+		</parameter>
+		<parameter name="max" type="integer">
+			<label>Maximum</label>
+		</parameter>
+		<parameter name="sendAsString" type="boolean">
+			<label>Send As String</label>
+			<description>Send the value as string instead of number.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:tuya:string">
+		<parameter name="dp" type="integer" required="true">
+			<label>DP</label>
+		</parameter>
+		<parameter name="range" type="text">
+			<label>Range</label>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
