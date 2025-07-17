@@ -39,7 +39,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `username`        | The username to authenticate with the inverter settings for battery control    | No       |
 | `password`        | The password to authenticate with the inverter settings for battery control    | No       |
 | `refreshInterval` | Refresh interval in seconds                                                    | No       |
-| `scheme`          | Set the protocol scheme that is used to connect to your device (default: http)  | No       |
+| `scheme`          | Set the protocol scheme that is used to connect to your device (default: http) | No       |
 
 ### Powerinverter Thing Configuration
 

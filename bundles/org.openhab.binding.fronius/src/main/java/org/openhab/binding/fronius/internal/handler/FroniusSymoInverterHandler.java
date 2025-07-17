@@ -367,6 +367,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     /**
      * Make the PowerFlowRealtimeDataRequest
      *
+     * @param scheme http or https
      * @param ip address of the device
      * @return {PowerFlowRealtimeResponse} the object representation of the json response
      */

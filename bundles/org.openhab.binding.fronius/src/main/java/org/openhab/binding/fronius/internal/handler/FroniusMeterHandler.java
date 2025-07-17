@@ -168,6 +168,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
     /**
      * Make the MeterRealtimeData request
      *
+     * @param scheme http or https
      * @param ip address of the device
      * @param deviceId of the device
      * @return {MeterRealtimeResponse} the object representation of the json response

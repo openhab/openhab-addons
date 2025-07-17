@@ -143,6 +143,7 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
     /**
      * Make the OhmpilotRealtimeData request
      *
+     * @param scheme http or https
      * @param ip address of the device
      * @param deviceId of the device
      * @return {OhmpilotRealtimeResponse} the object representation of the json response
