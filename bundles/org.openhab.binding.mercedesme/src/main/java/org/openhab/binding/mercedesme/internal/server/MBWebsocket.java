@@ -16,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -43,10 +43,10 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
-import org.openhab.binding.mercedesme.internal.server.MBWebsocket.WebsocketState;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
@@ -348,9 +348,9 @@ public class MBWebsocket {
              * 3. VehicleHandler responsible to update channels
              */
         } catch (IOException e) {
-            logger.warn("IOException decoding message {}", e.getMessage());
+            logger.debug("IOException decoding message {}", e.getMessage());
         } catch (Error err) {
-            logger.warn("Error decoding message {}", err.getMessage());
+            logger.debug("Error decoding message {}", err.getMessage());
         }
     }
 
