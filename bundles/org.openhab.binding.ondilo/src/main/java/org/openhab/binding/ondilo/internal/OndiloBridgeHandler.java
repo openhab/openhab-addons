@@ -18,14 +18,13 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ondilo.internal.dto.Pool;
+import org.openhab.binding.ondilo.internal.dto.Pools;
 import org.openhab.binding.ondilo.internal.dto.UserInfo;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -175,14 +174,14 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public Optional<List<Pool>> getPools() {
+    public Optional<Pools> getPools() {
         OndiloBridge bridge = this.bridge;
         if (bridge == null) {
             logger.trace("Bridge is null, return empty list");
             return Optional.empty();
         } else {
-            List<Pool> currentPools = bridge.getPools();
-            if (currentPools == null || currentPools.isEmpty()) {
+            Pools currentPools = bridge.getPools();
+            if (currentPools == null || currentPools.pools.isEmpty()) {
                 logger.trace("No Ondilo ICOs available, return empty list");
                 return Optional.empty();
             } else {

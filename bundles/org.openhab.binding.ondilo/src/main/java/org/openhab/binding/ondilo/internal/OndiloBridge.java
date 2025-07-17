@@ -15,7 +15,6 @@ package org.openhab.binding.ondilo.internal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -24,18 +23,18 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.dto.LastMeasure;
+import org.openhab.binding.ondilo.internal.dto.LastMeasures;
 import org.openhab.binding.ondilo.internal.dto.Pool;
 import org.openhab.binding.ondilo.internal.dto.PoolConfiguration;
 import org.openhab.binding.ondilo.internal.dto.PoolInfo;
+import org.openhab.binding.ondilo.internal.dto.Pools;
 import org.openhab.binding.ondilo.internal.dto.Recommendation;
+import org.openhab.binding.ondilo.internal.dto.Recommendations;
 import org.openhab.binding.ondilo.internal.dto.UserInfo;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link OndiloBridge} handles OAuth2 authentication for Ondilo API.
@@ -49,7 +48,7 @@ public class OndiloBridge {
     private final int refreshInterval;
     private final OndiloBridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> ondiloBridgePollingJob;
-    private @Nullable List<Pool> pools;
+    private @Nullable Pools pools;
     public @Nullable OndiloApiClient apiClient;
     private Map<Integer, OndiloHandler> ondiloHandlers = new HashMap<>();
 
@@ -104,29 +103,16 @@ public class OndiloBridge {
         try {
             OndiloApiClient apiClient = this.apiClient;
             if (apiClient != null) {
-                String userInfoJson = apiClient.get("/user/info");
-                logger.trace("userInfo: {}", userInfoJson);
-                // Parse JSON to DTO
-                Gson gson = new Gson();
-                UserInfo userInfo = gson.fromJson(userInfoJson, new TypeToken<UserInfo>() {
-                }.getType());
+                UserInfo userInfo = apiClient.request("GET", "/user/info", UserInfo.class);
                 if (userInfo != null) {
                     bridgeHandler.updateUserInfo(userInfo);
                 }
-
-                // Pause for 1 second between polls in order to keep API rate limits
-                Thread.sleep(1000);
-
-                String poolsJson = apiClient.get("/pools");
-                logger.trace("Ondilo ICOs: {}", poolsJson);
-                // Parse JSON to DTO
-                List<Pool> pools = gson.fromJson(poolsJson, new TypeToken<List<Pool>>() {
-                }.getType());
-                if (pools != null && !pools.isEmpty()) {
-                    logger.trace("Polled {} Ondilo ICOs", pools.size());
+                Pools pools = apiClient.request("GET", "/pools", Pools.class);
+                if (pools != null && !pools.pools.isEmpty()) {
+                    logger.trace("Polled {} Ondilo ICOs", pools.pools.size());
                     // Poll last measures and recommendations for each pool
                     Instant lastValueTime = null;
-                    for (Pool pool : pools) {
+                    for (Pool pool : pools.pools) {
                         Instant valueTime = pollOndiloICO(pool.id);
                         if (lastValueTime == null || (valueTime != null && valueTime.isBefore(lastValueTime))) {
                             lastValueTime = valueTime;
@@ -144,9 +130,6 @@ public class OndiloBridge {
             }
         } catch (RuntimeException e) {
             logger.warn("Unexpected error in polling job: {}", e.getMessage(), e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Polling pause interrupted: {}", e.getMessage());
         }
     }
 
@@ -170,27 +153,20 @@ public class OndiloBridge {
         }
     }
 
-    public @Nullable Instant pollOndiloICO(int id) throws InterruptedException {
+    public @Nullable Instant pollOndiloICO(int id) {
         OndiloHandler ondiloHandler = getOndiloHandlerForPool(id);
         OndiloApiClient apiClient = this.apiClient;
         Instant lastValueTime = null;
         if (ondiloHandler != null && apiClient != null) {
-            // Pause for 1 second between polls in order to keep API rate limits
-            Thread.sleep(1000);
+            LastMeasures lastMeasures = apiClient.request("GET", "/pools/" + id
+                    + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi",
+                    LastMeasures.class);
 
-            String poolsJson = apiClient.get("/pools/" + id
-                    + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi");
-            logger.trace("LastMeasures: {}", poolsJson);
-            // Parse JSON to DTO
-            Gson gson = new Gson();
-            List<LastMeasure> lastMeasures = gson.fromJson(poolsJson, new TypeToken<List<LastMeasure>>() {
-            }.getType());
-
-            if (lastMeasures == null || lastMeasures.isEmpty()) {
+            if (lastMeasures == null || lastMeasures.lastMeasures.isEmpty()) {
                 logger.warn("No lastMeasures available for Ondilo ICO with ID: {}", id);
                 ondiloHandler.clearLastMeasuresChannels();
             } else {
-                for (LastMeasure lastMeasure : lastMeasures) {
+                for (LastMeasure lastMeasure : lastMeasures.lastMeasures) {
                     logger.trace("LastMeasure: type={}, value={}", lastMeasure.dataType, lastMeasure.value);
                     Instant valueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasure);
                     if (lastValueTime == null || valueTime.isBefore(lastValueTime)) {
@@ -199,22 +175,15 @@ public class OndiloBridge {
                 }
             }
 
-            // Pause for 1 second between polls in order to keep API rate limits
-            Thread.sleep(1000);
+            Recommendations recommendations = apiClient.request("GET", "/pools/" + id + "/recommendations",
+                    Recommendations.class);
 
-            String recommendationsJson = apiClient.get("/pools/" + id + "/recommendations");
-            logger.trace("recommendations: {}", recommendationsJson);
-            // Parse JSON to DTO
-            List<Recommendation> recommendations = gson.fromJson(recommendationsJson,
-                    new TypeToken<List<Recommendation>>() {
-                    }.getType());
-
-            if (recommendations == null || recommendations.isEmpty()) {
+            if (recommendations == null || recommendations.recommendations.isEmpty()) {
                 logger.trace("No Recommendations available for Ondilo ICO with ID: {}", id);
                 ondiloHandler.clearRecommendationChannels();
             } else {
                 Recommendation waitingRecommendation = null;
-                for (Recommendation rec : recommendations) {
+                for (Recommendation rec : recommendations.recommendations) {
                     if (rec.status == Recommendation.Status.waiting) {
                         waitingRecommendation = rec;
                         break;
@@ -226,33 +195,19 @@ public class OndiloBridge {
                             waitingRecommendation.title);
                     recommendation = waitingRecommendation;
                 } else {
-                    recommendation = recommendations.get(0);
+                    recommendation = recommendations.recommendations.get(0);
                     logger.trace("Latest Recommentation: id={}, title={}", recommendation.id, recommendation.title);
                 }
                 ondiloHandler.updateRecommendationChannels(recommendation);
             }
 
-            // Pause for 1 second between polls in order to keep API rate limits
-            Thread.sleep(1000);
-
-            String poolInfoJson = apiClient.get("/pools/" + id + "/device");
-            logger.trace("poolInfo: {}", poolInfoJson);
-            // Parse JSON to DTO
-            PoolInfo poolInfo = gson.fromJson(poolInfoJson, new TypeToken<PoolInfo>() {
-            }.getType());
+            PoolInfo poolInfo = apiClient.request("GET", "/pools/" + id + "/device", PoolInfo.class);
             if (poolInfo != null) {
                 ondiloHandler.updatePoolInfo(poolInfo);
             }
 
-            // Pause for 1 second between polls in order to keep API rate limits
-            Thread.sleep(1000);
-
-            String poolConfigurationJson = apiClient.get("/pools/" + id + "/configuration");
-            logger.trace("poolConfiguration: {}", poolConfigurationJson);
-            // Parse JSON to DTO
-            PoolConfiguration poolConfiguration = gson.fromJson(poolConfigurationJson,
-                    new TypeToken<PoolConfiguration>() {
-                    }.getType());
+            PoolConfiguration poolConfiguration = apiClient.request("GET", "/pools/" + id + "/configuration",
+                    PoolConfiguration.class);
             if (poolConfiguration != null) {
                 ondiloHandler.updatePoolConfiguration(poolConfiguration);
                 ondiloHandler.updatePoolInfo(poolConfiguration);
@@ -266,7 +221,8 @@ public class OndiloBridge {
     public void validateRecommendation(int poolId, int recommendationId) {
         OndiloApiClient apiClient = this.apiClient;
         if (apiClient != null) {
-            String response = apiClient.put("/pools/" + poolId + "/recommendations/" + recommendationId);
+            String response = apiClient.request("PUT", "/pools/" + poolId + "/recommendations/" + recommendationId,
+                    String.class);
             if (response != null && "\"Done\"".equals(response.trim())) {
                 logger.trace("Validated Recommendation successfully");
             } else {
@@ -277,7 +233,7 @@ public class OndiloBridge {
         }
     }
 
-    public @Nullable List<Pool> getPools() {
+    public @Nullable Pools getPools() {
         return pools;
     }
 
