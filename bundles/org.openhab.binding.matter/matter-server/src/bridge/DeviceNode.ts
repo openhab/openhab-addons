@@ -99,12 +99,13 @@ export class DeviceNode {
         if (this.server.lifecycle.isOnline) {
             throw new Error("Server is already started, not starting");
         }
-        this.server.events.commissioning.enabled$Changed.on(async () => {
-            logger.info(`Commissioning state changed to ${this.server?.state.commissioning.enabled}`);
-            this.#sendCommissioningStatus();
-        });
-        this.server.lifecycle.online.on(() => {
+        this.server.lifecycle.online.once(() => {
             logger.info(`Bridge online`);
+            this.server?.events.commissioning.enabled$Changed.on(async () => {
+                logger.info(`Commissioning state changed to ${this.server?.state.commissioning.enabled}`);
+                this.inCommissioning = this.server?.state.commissioning.enabled ?? false;
+                this.#sendCommissioningStatus();
+            });
             this.#sendCommissioningStatus();
         });
         logger.info(this.server);
@@ -193,20 +194,14 @@ export class DeviceNode {
         logger.debug("opening basic commissioning window");
         await dc.allowBasicCommissioning(() => {
             logger.debug("commissioning window closed");
-            this.inCommissioning = false;
-            this.#sendCommissioningStatus();
         });
-        this.inCommissioning = true;
         logger.debug("basic commissioning window open");
-        this.#sendCommissioningStatus();
     }
 
     async closeCommissioningWindow() {
         const server = this.#getStartedServer();
         if (!server.state.commissioning.commissioned) {
-            logger.debug("bridge is not commissioned, not closing commissioning window");
-            this.#sendCommissioningStatus();
-            return;
+            throw new Error("Bridge is not commissioned, not closing commissioning window");
         }
         const dc = server.env.get(DeviceCommissioner);
         logger.debug("closing basic commissioning window");

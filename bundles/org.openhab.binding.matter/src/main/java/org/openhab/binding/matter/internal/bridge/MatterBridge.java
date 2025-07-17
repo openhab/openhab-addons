@@ -104,6 +104,7 @@ public class MatterBridge implements MatterClientListener {
     private @Nullable ScheduledFuture<?> modifyFuture;
     private @Nullable ScheduledFuture<?> reconnectFuture;
     private RunningState runningState = RunningState.Stopped;
+    private boolean commissioningWindowOpen = false;
 
     @Activate
     public MatterBridge(final @Reference ItemRegistry itemRegistry, final @Reference MetadataRegistry metadataRegistry,
@@ -228,7 +229,9 @@ public class MatterBridge implements MatterClientListener {
             stopClient();
             scheduleConnect();
         } else {
-            manageCommissioningWindow(settings.openCommissioningWindow);
+            if (settings.openCommissioningWindow != commissioningWindowOpen) {
+                manageCommissioningWindow(settings.openCommissioningWindow);
+            }
         }
     }
 
@@ -276,9 +279,11 @@ public class MatterBridge implements MatterClientListener {
         } else if (message instanceof BridgeEventTriggered bridgeEventTriggered) {
             switch (bridgeEventTriggered.data.eventName) {
                 case "commissioningWindowOpen":
+                    commissioningWindowOpen = true;
                     updateConfig(Map.of("openCommissioningWindow", true));
                     break;
                 case "commissioningWindowClosed":
+                    commissioningWindowOpen = false;
                     updateConfig(Map.of("openCommissioningWindow", false));
                     break;
                 default:
@@ -497,24 +502,28 @@ public class MatterBridge implements MatterClientListener {
         if (runningState != RunningState.Running) {
             return;
         }
-        if (open) {
+        if (open && !commissioningWindowOpen) {
             try {
                 client.openCommissioningWindow().get();
+                commissioningWindowOpen = true;
             } catch (CancellationException | InterruptedException | ExecutionException e) {
                 logger.debug("Could not open commissioning window", e);
             }
-        } else {
+        } else if (!open && commissioningWindowOpen) {
             try {
                 client.closeCommissioningWindow().get();
+                commissioningWindowOpen = false;
             } catch (CancellationException | InterruptedException | ExecutionException e) {
                 logger.debug("Could not close commissioning window", e);
             }
         }
+        updateConfig(Map.of("openCommissioningWindow", commissioningWindowOpen));
     }
 
     private void updatePairingCodes() {
         try {
             BridgeCommissionState state = client.getCommissioningState().get();
+            commissioningWindowOpen = state.commissioningWindowOpen;
             updateConfig(Map.of("manualPairingCode", state.pairingCodes.manualPairingCode, "qrCode",
                     state.pairingCodes.qrPairingCode, "openCommissioningWindow", state.commissioningWindowOpen));
         } catch (CancellationException | InterruptedException | ExecutionException | JsonParseException e) {
@@ -540,6 +549,8 @@ public class MatterBridge implements MatterClientListener {
     private void updateRunningState(RunningState newState, @Nullable String message) {
         runningState = newState;
         updateConfig(Map.of("runningState", runningState.toString() + (message != null ? ": " + message : "")));
+        // log to INFO here as there is not many places for feedback for IO services
+        logger.info("Matter Bridge State: {} {}", runningState, message != null ? ": " + message : "");
     }
 
     /**
