@@ -37,8 +37,8 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 
 Example using default interval:
 
-- `account` Thing performs 2 request per cycle - 8 per hour per Ondilo Account
-- `ondilo` Thing performs 4 requests per cycle - 16 per hour per Ondilo ICO
+- `account` Thing performs 2 request per cycle - 8 requests per hour per Ondilo Account
+- `ondilo` Thing performs 4 requests per cycle - 16 requests per hour per Ondilo ICO
 
 ## Channels
 
