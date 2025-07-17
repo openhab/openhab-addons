@@ -15,13 +15,13 @@
   <name>openHAB Add-ons :: Bundles :: XMPPClient Binding</name>
 
   <properties>
-    <smack.version>4.3.3</smack.version>
+    <smack.version>4.4.8</smack.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-java7</artifactId>
+      <artifactId>smack-java8</artifactId>
       <version>${smack.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -52,7 +52,7 @@
     <dependency>
       <groupId>org.minidns</groupId>
       <artifactId>minidns-core</artifactId>
-      <version>0.3.3</version>
+      <version>1.1.1</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
