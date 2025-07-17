@@ -46,4 +46,19 @@ public class EvccBindingConstants {
     public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_TITLE = "title";
     public static final String PROPERTY_SITE_TITLE = "siteTitle";
+
+    public static final String API_PATH_LOADPOINTS = "/loadpoints";
+    public static final String API_PATH_VEHICLES = "/vehicles";
+
+    public static final String PROPERTY_TYPE_BATTERY = "battery";
+    public static final String PROPERTY_TYPE_HEATING = "heating";
+    public static final String PROPERTY_TYPE_LOADPOINT = "loadpoint";
+    public static final String PROPERTY_TYPE_PV = "pv";
+    public static final String PROPERTY_TYPE_SITE = "site";
+    public static final String PROPERTY_TYPE_VEHICLE = "vehicle";
+
+    public static final String JSON_MEMBER_BATTERY = "battery";
+    public static final String JSON_MEMBER_LOADPOINTS = "loadpoints";
+    public static final String JSON_MEMBER_PV = "pv";
+    public static final String JSON_MEMBER_VEHICLES = "vehicles";
 }

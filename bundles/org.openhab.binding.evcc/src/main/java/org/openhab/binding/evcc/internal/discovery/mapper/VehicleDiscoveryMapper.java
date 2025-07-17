@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.evcc.internal.discovery.mapper;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.JSON_MEMBER_VEHICLES;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_ID;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_TYPE;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_TYPE_VEHICLE;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,9 +43,9 @@ import com.google.gson.JsonObject;
 public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject root, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonObject vehicles = root.getAsJsonObject("vehicles");
+        JsonObject vehicles = state.getAsJsonObject(JSON_MEMBER_VEHICLES);
         if (vehicles == null) {
             return results;
         }
@@ -54,8 +56,8 @@ public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
 
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_VEHICLE, bridgeHandler.getThing().getUID(),
                     Utils.sanatizeName(title));
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Vehicle - " + title)
-                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, "vehicle")
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
+                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_TYPE_VEHICLE)
                     .withProperty(PROPERTY_ID, id).withRepresentationProperty(PROPERTY_ID).build();
 
             results.add(result);

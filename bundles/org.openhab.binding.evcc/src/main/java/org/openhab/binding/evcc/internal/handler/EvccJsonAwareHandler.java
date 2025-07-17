@@ -26,7 +26,15 @@ public interface EvccJsonAwareHandler {
     /**
      * This method shall update the channels from the JSON received from the evcc API
      * 
-     * @param root the responded JSON
+     * @param state the responded JSON
      */
-    void updateFromEvccState(JsonObject root);
+    void updateFromEvccState(JsonObject state);
+
+    /**
+     * This method shall return the to the thing correspondig JSON object
+     * 
+     * @param state the cached API JSON response
+     * @return to the thing corresponding JSON object
+     */
+    JsonObject getStatefromCachedState(JsonObject state);
 }

@@ -43,7 +43,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
-            String datapoint = channelUID.getId().toLowerCase();
+            String datapoint = getKeyFromChannelUID(channelUID).toLowerCase();
             String value = "";
             if (command instanceof OnOffType) {
                 value = command == OnOffType.ON ? "true" : "false";
@@ -62,11 +62,11 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject root) {
-        if (root.has("gridConfigured")) {
-            modifyJSON(root);
+    public void updateFromEvccState(JsonObject state) {
+        if (state.has("gridConfigured")) {
+            modifyJSON(state);
         }
-        super.updateFromEvccState(root);
+        super.updateFromEvccState(state);
     }
 
     @Override
@@ -91,5 +91,13 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     private void modifyJSON(JsonObject state) {
         state.add("gridPower", state.getAsJsonObject("grid").get("power"));
         state.remove("gridConfigured");
+    }
+
+    @Override
+    public JsonObject getStatefromCachedState(JsonObject state) {
+        if (state.has("gridConfigured")) {
+            modifyJSON(state);
+        }
+        return state;
     }
 }

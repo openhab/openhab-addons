@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.BINDING_ID;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -101,8 +101,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             if (!"Unknown".equals(itemType)) {
                 Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), thingKey))
                         .withType(channelTypeUID).withAcceptedItemType(itemType).build();
-                ChannelUID channelUID = channel.getUID();
-                setItemValue(itemType, channelUID, value);
                 if (!getThing().getChannels().stream().anyMatch(c -> c.getUID().equals(channel.getUID()))) {
                     builder.withChannel(channel);
                 }
@@ -149,15 +147,17 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         if (command instanceof RefreshType) {
             String key = getKeyFromChannelUID(channelUID);
             if (bridgeHandler != null) {
-                JsonObject state = bridgeHandler.getCachedEvccState();
-                JsonElement value = state.get(key);
-                String itemType = getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId()));
-                setItemValue(itemType, channelUID, value);
+                JsonObject state = getStatefromCachedState(bridgeHandler.getCachedEvccState());
+                if (!state.isEmpty()) {
+                    JsonElement value = state.get(key);
+                    String itemType = getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId()));
+                    setItemValue(itemType, channelUID, value);
+                }
             }
         }
     }
 
-    private String getKeyFromChannelUID(ChannelUID channelUID) {
+    protected String getKeyFromChannelUID(ChannelUID channelUID) {
         String[] splittedId = channelUID.getIdWithoutGroup().split("-");
         String[] parts = IntStream.range(1, splittedId.length).mapToObj(i -> splittedId[i]).toArray(String[]::new);
 
@@ -187,6 +187,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     private void setItemValue(String itemType, ChannelUID channelUID, JsonElement value) {
+        if (value.isJsonNull()) {
+            return;
+        }
         switch (itemType) {
             case "Number":
             case "Number:Currency":
@@ -236,12 +239,12 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     @Override
-    public void updateFromEvccState(JsonObject root) {
+    public void updateFromEvccState(JsonObject state) {
         if (!isInitialized) {
             return;
         }
 
-        for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : root.entrySet()) {
+        for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : state.entrySet()) {
             String key = entry.getKey();
             JsonElement value = entry.getValue();
             if (null == key || value == null) {

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,7 +37,7 @@ public class EvccPvHandler extends EvccBaseThingHandler {
     public EvccPvHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
         Map<String, String> props = thing.getProperties();
-        String indexString = props.getOrDefault("index", "0");
+        String indexString = props.getOrDefault(PROPERTY_INDEX, "0");
         index = Integer.parseInt(indexString);
     }
 
@@ -52,13 +54,18 @@ public class EvccPvHandler extends EvccBaseThingHandler {
             return;
         }
 
-        JsonObject state = stateOpt.getAsJsonArray("pv").get(index).getAsJsonObject();
+        JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
         commonInitialize(state);
     }
 
     @Override
-    public void updateFromEvccState(JsonObject json) {
-        json = json.getAsJsonArray("pv").get(index).getAsJsonObject();
-        super.updateFromEvccState(json);
+    public void updateFromEvccState(JsonObject state) {
+        state = state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
+        super.updateFromEvccState(state);
+    }
+
+    @Override
+    public JsonObject getStatefromCachedState(JsonObject state) {
+        return state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
     }
 }

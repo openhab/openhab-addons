@@ -39,9 +39,9 @@ import com.google.gson.JsonObject;
 public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject root, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonArray batteries = root.getAsJsonArray("battery");
+        JsonArray batteries = state.getAsJsonArray(JSON_MEMBER_BATTERY);
         if (batteries == null) {
             return results;
         }
@@ -51,9 +51,9 @@ public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
 
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_BATTERY, bridgeHandler.getThing().getUID(),
                     Utils.sanatizeName(title));
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Battery - " + title)
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_INDEX, i)
-                    .withProperty(PROPERTY_TYPE, "battery").withProperty(PROPERTY_TITLE, title)
+                    .withProperty(PROPERTY_TYPE, PROPERTY_TYPE_BATTERY).withProperty(PROPERTY_TITLE, title)
                     .withRepresentationProperty(PROPERTY_TITLE).build();
             results.add(result);
         }

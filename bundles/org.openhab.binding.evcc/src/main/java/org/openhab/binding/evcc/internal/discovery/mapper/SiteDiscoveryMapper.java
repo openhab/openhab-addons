@@ -36,15 +36,15 @@ import com.google.gson.JsonObject;
 public class SiteDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject root, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        if (!root.has("siteTitle")) {
+        if (!state.has("siteTitle")) {
             return results;
         }
-        String siteTitle = root.get("siteTitle").getAsString();
+        String siteTitle = state.get("siteTitle").getAsString();
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_SITE, bridgeHandler.getThing().getUID(), "site");
-        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Site - " + siteTitle)
-                .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, "site")
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(siteTitle)
+                .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_TYPE_SITE)
                 .withProperty(PROPERTY_SITE_TITLE, siteTitle).withRepresentationProperty(PROPERTY_SITE_TITLE).build();
         results.add(result);
         return results;

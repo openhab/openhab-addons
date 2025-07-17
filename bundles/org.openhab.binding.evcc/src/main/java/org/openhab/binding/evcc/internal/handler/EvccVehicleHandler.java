@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
@@ -43,13 +45,13 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        vehicleId = thing.getProperties().get("id");
+        vehicleId = thing.getProperties().get(PROPERTY_ID);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
-            String datapoint = channelUID.getId().replace("vehicle", "").toLowerCase();
+            String datapoint = getKeyFromChannelUID(channelUID).toLowerCase();
             String value = command.toString();
             if (value.contains(" ")) {
                 value = value.substring(0, command.toString().indexOf(" "));
@@ -63,9 +65,9 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject root) {
-        root = root.getAsJsonObject("vehicles").getAsJsonObject(vehicleId);
-        super.updateFromEvccState(root);
+    public void updateFromEvccState(JsonObject state) {
+        state = state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
+        super.updateFromEvccState(state);
     }
 
     @Override
@@ -74,14 +76,19 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        endpoint = bridgeHandler.getBaseURL() + "/vehicles";
+        endpoint = bridgeHandler.getBaseURL() + API_PATH_VEHICLES;
         JsonObject stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
-        JsonObject state = stateOpt.getAsJsonObject("vehicles").getAsJsonObject(vehicleId);
+        JsonObject state = stateOpt.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
         commonInitialize(state);
+    }
+
+    @Override
+    public JsonObject getStatefromCachedState(JsonObject state) {
+        return state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
     }
 }

@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
 import com.google.gson.JsonObject;
@@ -28,37 +24,19 @@ import com.google.gson.JsonObject;
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccHeatingHandler extends EvccBaseThingHandler {
-
-    private final int index;
+public class EvccHeatingHandler extends EvccLoadpointHandler {
 
     public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        Map<String, String> props = thing.getProperties();
-        String indexString = props.getOrDefault("index", "0");
-        index = Integer.parseInt(indexString);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        if (bridgeHandler == null) {
-            return;
-        }
-        endpoint = bridgeHandler.getBaseURL() + "/loadpoints/" + index;
-        JsonObject stateOpt = bridgeHandler.getCachedEvccState();
-        if (stateOpt.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            return;
-        }
-
-        JsonObject state = stateOpt.getAsJsonArray("loadpoints").get(index).getAsJsonObject();
-        commonInitialize(state);
     }
 
     @Override
-    public void updateFromEvccState(JsonObject root) {
-        root = root.getAsJsonArray("loadpoints").get(index).getAsJsonObject();
-        super.updateFromEvccState(root);
+    public void updateFromEvccState(JsonObject state) {
+        super.updateFromEvccState(state);
     }
 }

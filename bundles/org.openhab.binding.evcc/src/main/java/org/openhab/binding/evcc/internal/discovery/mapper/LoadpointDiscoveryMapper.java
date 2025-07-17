@@ -41,9 +41,9 @@ import com.google.gson.JsonObject;
 public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject root, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonArray loadpoints = root.getAsJsonArray("loadpoints");
+        JsonArray loadpoints = state.getAsJsonArray(JSON_MEMBER_LOADPOINTS);
         if (loadpoints == null) {
             return results;
         }
@@ -59,14 +59,14 @@ public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
             if (lp.has(title) && lp.get("chargerFeatureHeating").getAsBoolean()) {
                 uid = new ThingUID(EvccBindingConstants.THING_TYPE_HEATING, bridgeHandler.getThing().getUID(),
                         Utils.sanatizeName(title));
-                properties.put(PROPERTY_TYPE, "heating");
+                properties.put(PROPERTY_TYPE, PROPERTY_TYPE_HEATING);
             } else {
                 uid = new ThingUID(EvccBindingConstants.THING_TYPE_LOADPOINT, bridgeHandler.getThing().getUID(),
                         Utils.sanatizeName(title));
-                properties.put(PROPERTY_TYPE, "loadpoint");
+                properties.put(PROPERTY_TYPE, PROPERTY_TYPE_LOADPOINT);
             }
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Loadpoint - " + title)
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperties(properties)
                     .withRepresentationProperty(PROPERTY_TITLE).build();
 

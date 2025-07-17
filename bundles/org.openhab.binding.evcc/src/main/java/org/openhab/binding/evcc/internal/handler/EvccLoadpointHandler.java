@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,12 +39,12 @@ import com.google.gson.JsonObject;
 public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccLoadpointHandler.class);
-    private final int index;
+    protected final int index;
 
     public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
         Map<String, String> props = thing.getProperties();
-        String indexString = props.getOrDefault("index", "0");
+        String indexString = props.getOrDefault(PROPERTY_INDEX, "0");
         index = Integer.parseInt(indexString);
     }
 
@@ -50,14 +52,14 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         if (bridgeHandler != null) {
-            endpoint = bridgeHandler.getBaseURL() + "/loadpoints/" + (index + 1);
+            endpoint = bridgeHandler.getBaseURL() + API_PATH_LOADPOINTS + "/" + (index + 1);
             JsonObject stateOpt = bridgeHandler.getCachedEvccState();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonArray("loadpoints").get(index).getAsJsonObject();
+            JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
 
             // For backward compatibility add these elements if present
             if (state.has("vehiclePresent")) {
@@ -78,7 +80,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
-            String datapoint = channelUID.getId().replace("loadpoint", "").toLowerCase();
+            String datapoint = getKeyFromChannelUID(channelUID).toLowerCase();
             // Special Handling for enbale and disable endpoints
             if (datapoint.contains("enable")) {
                 datapoint += "/enable/" + datapoint.replace("enable", "");
@@ -103,9 +105,9 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject root) {
-        root = root.getAsJsonArray("loadpoints").get(index).getAsJsonObject();
-        super.updateFromEvccState(root);
+    public void updateFromEvccState(JsonObject state) {
+        state = state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
+        super.updateFromEvccState(state);
     }
 
     public void updateJSON(JsonObject state) {
@@ -114,5 +116,10 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             state.addProperty("offeredCurrent", state.get("chargeCurrent").getAsDouble());
             state.remove("chargeCurrent");
         }
+    }
+
+    @Override
+    public JsonObject getStatefromCachedState(JsonObject state) {
+        return state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
     }
 }

@@ -30,9 +30,9 @@ public interface EvccDiscoveryMapper {
     /**
      * This method returns the discovered things from the JSON response
      * 
-     * @param root the JSON response from the API
+     * @param state the JSON response from the API
      * @param bridgeHandler the bridge handler
      * @return Collection of discovery results
      */
-    Collection<DiscoveryResult> discover(JsonObject root, EvccBridgeHandler bridgeHandler);
+    Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler);
 }

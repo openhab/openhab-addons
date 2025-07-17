@@ -39,9 +39,9 @@ import com.google.gson.JsonObject;
 public class PvDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject root, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonArray pvs = root.getAsJsonArray("pv");
+        JsonArray pvs = state.getAsJsonArray(JSON_MEMBER_PV);
         if (pvs == null) {
             return results;
         }
@@ -51,9 +51,9 @@ public class PvDiscoveryMapper implements EvccDiscoveryMapper {
 
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_PV, bridgeHandler.getThing().getUID(),
                     Utils.sanatizeName(title));
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc PV - " + title)
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_INDEX, i)
-                    .withProperty(PROPERTY_TYPE, "pv").withProperty(PROPERTY_TITLE, title)
+                    .withProperty(PROPERTY_TYPE, PROPERTY_TYPE_PV).withProperty(PROPERTY_TITLE, title)
                     .withRepresentationProperty(PROPERTY_TITLE).build();
 
             results.add(result);
