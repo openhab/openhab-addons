@@ -249,6 +249,14 @@ public class ClimateTests extends AbstractComponentTests {
         assertState(component, Climate.MODE_CH_ID, new StringType("heat"));
         assertState(component, Climate.TEMPERATURE_CH_ID, QuantityType.valueOf(24, SIUnits.CELSIUS));
         assertState(component, Climate.PRESET_MODE_CH_ID, new StringType("manual"));
+        TextValue presetModes = (TextValue) component.getChannel(Climate.PRESET_MODE_CH_ID).getState().getCache();
+        Set<String> presets = presetModes.getStates().keySet();
+        assertThat(presets.size(), is(5));
+        assertThat(presets.contains("none"), is(true));
+        assertThat(presets.contains("auto"), is(true));
+        assertThat(presets.contains("manual"), is(true));
+        assertThat(presets.contains("off"), is(true));
+        assertThat(presets.contains("on"), is(true));
         component.getChannel(Climate.PRESET_MODE_CH_ID).getState().publishValue(new StringType("on"));
         assertPublished("zigbee2mqtt/th2/set/preset", "on");
     }
