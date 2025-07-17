@@ -205,6 +205,9 @@ These actions will send a message to all chat ids configured for this bot.
 | sendTelegramPhoto(String photoURL, String caption, String username, String password) | Sends a picture which is downloaded from a username/password protected http/https address. |
 | sendTelegramAnimation(String animationURL, String caption) | Send animation files either GIF or H.264/MPEG-4 AVC video without sound. |
 | sendTelegramVideo(String videoURL, String caption) | Send MP4 video files up to 50MB. |
+| sendKeyboard(Long chatId, String message, String replyId, boolean oneTimeKeyboard, String[]... buttons) | Send a custom keyboard with multiple rows of buttons. |
+| sendKeyboard(Long chatId, String message, String replyId, boolean oneTimeKeyboard, String... buttons)| Send a custom keyboard with a single row of buttons. |
+| removeKeyboard(boolean isSelective) | Remove a custom keyboard. |
 
 **Note:** In actions that require a file URL, the following formats are acceptable:
 
