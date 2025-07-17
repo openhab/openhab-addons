@@ -1,7 +1,5 @@
 # evcc Binding
 
-![](doc/evcc-hero.svg)
-
 This binding integrates [evcc](https://evcc.io), an extensible **E**lectric **V**ehicle **C**harge **C**ontroller and home energy management system.
 The binding is compatible to evcc [version 0.123.1](https://github.com/evcc-io/evcc/releases/tag/0.123.1) or newer and was tested with [version 0.205.0](https://github.com/evcc-io/evcc/releases/tag/0.205.0).
 
@@ -57,7 +55,7 @@ These channels are dynamically added to the Thing during their initialization; t
 ### `demo.things` Example
 
 ```java
-Bridge evcc:bridge:demo-server "Demo" [schema="https", url="demo.evcc.io", port=80, refreshInterval=30] {
+Bridge evcc:server:demo-server "Demo" [schema="https", url="demo.evcc.io", port=80, refreshInterval=30] {
     // This thing will only exist once per evcc instance
     Thing site demo-site "Site - evcc Demo"
     // You can define as many Battery things as you have batteries configured in your evcc instance
