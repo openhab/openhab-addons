@@ -301,7 +301,7 @@
 		<getAction name="GetInfo" argument="NewEnable"/>
 	</channel>
 	<channel name="dslStatus" label="DSL Status">
-		<item type="Switch"/>
+		<item type="String"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewStatus"/>
