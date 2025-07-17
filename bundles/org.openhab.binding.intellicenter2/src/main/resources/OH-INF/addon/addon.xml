@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="intellicenter2" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0">
+
+	<type>binding</type>
+	<name>Intellicenter2</name>
+	<description>Binding for the Pentair IntelliCenter2</description>
+	<connection>hybrid</connection>
+
+</addon:addon>
