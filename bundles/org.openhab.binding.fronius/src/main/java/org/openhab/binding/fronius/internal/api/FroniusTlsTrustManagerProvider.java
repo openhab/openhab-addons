@@ -20,7 +20,6 @@ import javax.net.ssl.X509ExtendedTrustManager;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.net.http.PEMTrustManager;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
-import org.osgi.service.component.annotations.Component;
 
 /**
  * Provides a TrustManager to allow secure connections to any Fronius device.
