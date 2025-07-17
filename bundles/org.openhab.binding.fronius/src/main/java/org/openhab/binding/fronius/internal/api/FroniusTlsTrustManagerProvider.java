@@ -27,7 +27,6 @@ import org.osgi.service.component.annotations.Component;
  * 
  * @author Leo Siepel - Initial contribution
  */
-@Component
 @NonNullByDefault
 public class FroniusTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
