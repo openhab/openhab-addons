@@ -94,7 +94,7 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 
 ```Java
 Bridge ondilo:account:ondiloAccount [ url="http://localhost:8080", refreshInterval=900 ] {
-    Thing ondilo 12345 [ id=12345 ] {   // 12345 is an example of the id recieved via discovery
+    Thing ondilo 12345 [ id=12345 ] {   // 12345 is an example of the id received via discovery
     }
 ```
 
@@ -141,3 +141,4 @@ sitemap demo label="Ondilo ICO" {
 
 - [Ondilo API Documentation](https://interop.ondilo.com/docs/api/customer/v1)
 - [openHAB Community Forum](https://community.openhab.org/t/request-ondilo-binding/98164)
+- [Pool Monitor Card Widget](https://community.openhab.org/t/pool-monitor-card/164693)

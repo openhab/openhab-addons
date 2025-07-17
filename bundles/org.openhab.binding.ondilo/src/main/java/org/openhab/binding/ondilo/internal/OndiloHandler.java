@@ -236,28 +236,28 @@ public class OndiloHandler extends BaseThingHandler {
 
     public void updatePool(Pool pool) {
         Map<String, String> properties = editProperties();
-        properties.put(ONDILO_ID, String.valueOf(pool.id));
-        properties.put(ONDILO_NAME, pool.name);
-        properties.put(ONDILO_TYPE, pool.type);
-        properties.put(ONDILO_VOLUME, pool.getVolume());
-        properties.put(ONDILO_DISINFECTION, pool.getDisinfection());
-        properties.put(ONDILO_ADDRESS, pool.getAddress());
-        properties.put(ONDILO_LOCATION, pool.getLocation());
+        properties.put(PROPERTY_ONDILO_ID, String.valueOf(pool.id));
+        properties.put(PROPERTY_ONDILO_NAME, pool.name);
+        properties.put(PROPERTY_ONDILO_TYPE, pool.type);
+        properties.put(PROPERTY_ONDILO_VOLUME, pool.getVolume());
+        properties.put(PROPERTY_ONDILO_DISINFECTION, pool.getDisinfection());
+        properties.put(PROPERTY_ONDILO_ADDRESS, pool.getAddress());
+        properties.put(PROPERTY_ONDILO_LOCATION, pool.getLocation());
         updateProperties(properties);
     }
 
     public void updatePoolInfo(PoolInfo poolInfo) {
         Map<String, String> properties = editProperties();
-        properties.put(ONDILO_INFO_UUID, poolInfo.uuid);
-        properties.put(ONDILO_INFO_SERIAL_NUMBER, poolInfo.serialNumber);
-        properties.put(ONDILO_INFO_SW_VERSION, poolInfo.swVersion);
+        properties.put(PROPERTY_ONDILO_INFO_UUID, poolInfo.uuid);
+        properties.put(PROPERTY_ONDILO_INFO_SERIAL_NUMBER, poolInfo.serialNumber);
+        properties.put(PROPERTY_ONDILO_INFO_SW_VERSION, poolInfo.swVersion);
         updateProperties(properties);
     }
 
     public void updatePoolInfo(PoolConfiguration poolConfiguration) {
         Map<String, String> properties = editProperties();
-        properties.put(ONDILO_INFO_POOL_GUY_NUMBER, poolConfiguration.poolGuyNumber);
-        properties.put(ONDILO_INFO_MAINTENANCE_DAY, poolConfiguration.getMaintenanceDay(localeProvider.getLocale()));
+        properties.put(PROPERTY_ONDILO_INFO_POOL_GUY_NUMBER, poolConfiguration.poolGuyNumber);
+        properties.put(PROPERTY_ONDILO_INFO_MAINTENANCE_DAY, poolConfiguration.getMaintenanceDay(localeProvider.getLocale()));
         updateProperties(properties);
     }
 

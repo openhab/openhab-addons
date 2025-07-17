@@ -136,7 +136,7 @@
 		<label>Poll Update</label>
 		<description>Poll status update from the cloud (get latest measures, not a trigger for new measures)</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 		</tags>
 	</channel-type>
 
@@ -158,7 +158,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="orp">
 		<item-type unitHint="mV">Number:ElectricPotential</item-type>
@@ -289,7 +289,7 @@
 		<label>Minimum Water Temperature</label>
 		<description>Minimum water temperature</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -299,16 +299,16 @@
 		<label>Minimum PH Level</label>
 		<description>Minimum PH level</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 		</tags>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="orp-low-high" advanced="true">
 		<item-type unitHint="mV">Number:ElectricPotential</item-type>
 		<label>Minimum ORP</label>
 		<description>Minimum Oxidation-Reduction Potential (ORP)</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -317,7 +317,7 @@
 		<label>Minimum Salt Level</label>
 		<description>Minimum salt level</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -326,7 +326,7 @@
 		<label>Minimum TDS</label>
 		<description>Minimum Total Dissolved Solids (TDS)</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

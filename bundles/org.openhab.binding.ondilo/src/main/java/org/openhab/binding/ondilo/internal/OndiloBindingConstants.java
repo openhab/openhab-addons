@@ -31,24 +31,24 @@ public class OndiloBindingConstants {
     public static final ThingTypeUID THING_TYPE_ONDILO = new ThingTypeUID(BINDING_ID, "ondilo");
 
     // Bridge Properties
-    public static final String USER_INFO = "userInfo";
+    public static final String PROPERTY_BRIDGE_USER_INFO = "userInfo";
 
     // Bridge Channel ids
     public static final String CHANNEL_POLL_UPDATE = "poll-update";
 
     // Ondilo Thing Properties
-    public static final String ONDILO_ID = "id";
-    public static final String ONDILO_NAME = "name";
-    public static final String ONDILO_TYPE = "type";
-    public static final String ONDILO_VOLUME = "volume";
-    public static final String ONDILO_DISINFECTION = "disinfection";
-    public static final String ONDILO_ADDRESS = "address";
-    public static final String ONDILO_LOCATION = "location";
-    public static final String ONDILO_INFO_UUID = "uuid";
-    public static final String ONDILO_INFO_SERIAL_NUMBER = "serialNumber";
-    public static final String ONDILO_INFO_SW_VERSION = "swVersion";
-    public static final String ONDILO_INFO_POOL_GUY_NUMBER = "poolGuyNumber";
-    public static final String ONDILO_INFO_MAINTENANCE_DAY = "maintenanceDay";
+    public static final String PROPERTY_ONDILO_ID = "id";
+    public static final String PROPERTY_ONDILO_NAME = "name";
+    public static final String PROPERTY_ONDILO_TYPE = "type";
+    public static final String PROPERTY_ONDILO_VOLUME = "volume";
+    public static final String PROPERTY_ONDILO_DISINFECTION = "disinfection";
+    public static final String PROPERTY_ONDILO_ADDRESS = "address";
+    public static final String PROPERTY_ONDILO_LOCATION = "location";
+    public static final String PROPERTY_ONDILO_INFO_UUID = "uuid";
+    public static final String PROPERTY_ONDILO_INFO_SERIAL_NUMBER = "serialNumber";
+    public static final String PROPERTY_ONDILO_INFO_SW_VERSION = "swVersion";
+    public static final String PROPERTY_ONDILO_INFO_POOL_GUY_NUMBER = "poolGuyNumber";
+    public static final String PROPERTY_ONDILO_INFO_MAINTENANCE_DAY = "maintenanceDay";
 
     // Ondilo Thing Measures Channel ids
     public static final String GROUP_MEASURES = "measure#";

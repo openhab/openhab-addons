@@ -144,9 +144,9 @@ public class OndiloBridge {
             }
         } catch (RuntimeException e) {
             logger.warn("Unexpected error in polling job: {}", e.getMessage(), e);
-        } catch (InterruptedException ie) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.warn("Polling pause interrupted: {}", ie.getMessage());
+            logger.debug("Polling pause interrupted: {}", e.getMessage());
         }
     }
 

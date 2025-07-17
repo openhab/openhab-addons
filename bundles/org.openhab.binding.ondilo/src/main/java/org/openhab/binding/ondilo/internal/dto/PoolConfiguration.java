@@ -75,10 +75,10 @@ public class PoolConfiguration {
     public String poolGuyNumber;
 
     @SerializedName("maintenance_day")
-    public Integer maintenanceDay;
+    public int maintenanceDay;
 
     public String getMaintenanceDay(Locale locale) {
-        DayOfWeek dayOfWeek = DayOfWeek.of((maintenanceDay % 7) + 1); // 1=Monday, ..., 7=Sunday
+        DayOfWeek dayOfWeek = DayOfWeek.of((maintenanceDay % 7) + 1); // Change from week start Sunday to Monday
         return dayOfWeek.getDisplayName(TextStyle.FULL, locale);
     }
 }

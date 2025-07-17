@@ -193,7 +193,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
 
     public void updateUserInfo(UserInfo userInfo) {
         Map<String, String> properties = editProperties();
-        properties.put(USER_INFO, userInfo.getUserInfo());
+        properties.put(PROPERTY_BRIDGE_USER_INFO, userInfo.getUserInfo());
         updateProperties(properties);
     }
 
