@@ -59,7 +59,7 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(FroniusBridgeHandler.class);
     private final Set<FroniusBaseThingHandler> services = new HashSet<>();
     private @Nullable ScheduledFuture<?> refreshJob;
-    private ServiceRegistration<?> tlsProviderService;
+    private @Nullable ServiceRegistration<?> tlsProviderService;
 
     public FroniusBridgeHandler(Bridge bridge) {
         super(bridge);
