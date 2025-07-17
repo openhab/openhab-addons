@@ -103,10 +103,12 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
         }
 
         if (validConfig) {
-            try {
-                setupTlsTrustManager(hostname);
-            } catch (CertificateException | IOException e) {
-                logger.error("Error setting up TLS trust manager for host '{}': {}", hostname, e.getMessage());
+            if ("https".equals(config.scheme)) {
+                try {
+                    setupTlsTrustManager(hostname);
+                } catch (CertificateException | IOException e) {
+                    logger.error("Error setting up TLS trust manager for host '{}': {}", hostname, e.getMessage());
+                }
             }
             startAutomaticRefresh();
         } else {
