@@ -16,13 +16,12 @@
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-jid/1.0.3</bundle>
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/1.0.3</bundle>
 		<bundle dependency="true">mvn:org.minidns/minidns-core/1.1.1</bundle>
-		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk15on/1.65</bundle>
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-core/4.4.8</bundle>
-		<bundle dependency="true">mvn:com.google.guava/guava/28.2-jre</bundle>
-		<bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.10</bundle>
-		<bundle dependency="true">mvn:org.xmlunit/xmlunit-core/2.6.2</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk15on/1.70</bundle>
+		<bundle dependency="true">wrap:mvn:org.igniterealtime.smack/smack-core/4.4.8$Import-Package=!sun.security.pkcs11,org.jivesoftware.*&amp;overwrite=merge</bundle>
+		<bundle dependency="true">wrap:mvn:org.hsluv/hsluv/0.2</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-sasl-javax/4.4.8</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-xmlparser-stax/4.4.8</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-streammanagement/4.4.4</bundle>
 		<!-- FIXME: implicit dependencies required at runtime but not automatically installed, this is a workaround -->
 		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-resolver-javax/4.4.8</bundle>
 		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-java8/4.4.8</bundle>

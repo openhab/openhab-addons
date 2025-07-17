@@ -16,6 +16,7 @@
 
   <properties>
     <smack.version>4.4.8</smack.version>
+    <bnd.importpackage>!sun.security.*</bnd.importpackage>
   </properties>
 
   <dependencies>
