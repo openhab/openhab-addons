@@ -98,35 +98,35 @@ public class FroniusBindingConstants {
     public static final String OHMPILOT_STATE_CODE = "statecode";
 
     // List of all Urls
-    public static final String INVERTER_REALTIME_DATA_URL = "%SCHEMA%://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
-    public static final String POWERFLOW_REALTIME_DATA_URL = "%SCHEMA%://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
-    public static final String METER_REALTIME_DATA_URL = "%SCHEMA%://%IP%/solar_api/v1/GetMeterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=MeterRealtimeData";
-    public static final String OHMPILOT_REALTIME_DATA_URL = "%SCHEMA%://%IP%/solar_api/v1/GetOhmPilotRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%";
+    public static final String INVERTER_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
+    public static final String POWERFLOW_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
+    public static final String METER_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetMeterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=MeterRealtimeData";
+    public static final String OHMPILOT_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetOhmPilotRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%";
 
     public static final int API_TIMEOUT = 5000;
     public static final int DEFAULT_REFRESH_PERIOD = 10;
 
-    public static String getInverterDataUrl(String schema, String ip, int deviceId) {
-        return parseUrl(INVERTER_REALTIME_DATA_URL, schema, ip, deviceId);
+    public static String getInverterDataUrl(String scheme, String ip, int deviceId) {
+        return parseUrl(INVERTER_REALTIME_DATA_URL, scheme, ip, deviceId);
     }
 
-    public static String getPowerFlowDataUrl(String schema, String ip) {
-        return parseUrl(POWERFLOW_REALTIME_DATA_URL, schema, ip);
+    public static String getPowerFlowDataUrl(String scheme, String ip) {
+        return parseUrl(POWERFLOW_REALTIME_DATA_URL, scheme, ip);
     }
 
-    public static String getMeterDataUrl(String schema, String ip, int deviceId) {
-        return parseUrl(METER_REALTIME_DATA_URL, schema, ip, deviceId);
+    public static String getMeterDataUrl(String scheme, String ip, int deviceId) {
+        return parseUrl(METER_REALTIME_DATA_URL, scheme, ip, deviceId);
     }
 
-    public static String getOhmPilotDataUrl(String schema, String ip, int deviceId) {
-        return parseUrl(OHMPILOT_REALTIME_DATA_URL, schema, ip, deviceId);
+    public static String getOhmPilotDataUrl(String scheme, String ip, int deviceId) {
+        return parseUrl(OHMPILOT_REALTIME_DATA_URL, scheme, ip, deviceId);
     }
 
-    public static String parseUrl(String schema, String url, String ip) {
-        return url.replace("%schema%", schema).replace("%IP%", ip.trim());
+    public static String parseUrl(String url, String scheme, String ip) {
+        return url.replace("%SCHEME%", scheme).replace("%IP%", ip.trim());
     }
 
-    public static String parseUrl(String schema, String url, String ip, int deviceId) {
-        return parseUrl(schema, url, ip).replace("%DEVICEID%", Integer.toString(deviceId));
+    public static String parseUrl(String url, String scheme, String ip, int deviceId) {
+        return parseUrl(url, scheme, ip).replace("%DEVICEID%", Integer.toString(deviceId));
     }
 }

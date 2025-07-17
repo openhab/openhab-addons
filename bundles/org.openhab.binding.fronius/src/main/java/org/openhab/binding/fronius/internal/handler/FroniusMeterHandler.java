@@ -155,7 +155,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      */
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
             throws FroniusCommunicationException {
-        MeterRealtimeResponse meterRealtimeResponse = getMeterRealtimeData(bridgeConfiguration.schema,
+        MeterRealtimeResponse meterRealtimeResponse = getMeterRealtimeData(bridgeConfiguration.scheme,
                 bridgeConfiguration.hostname, config.deviceId);
         MeterRealtimeBody meterRealtimeBody = meterRealtimeResponse.getBody();
         if (meterRealtimeBody == null) {
@@ -172,9 +172,9 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {MeterRealtimeResponse} the object representation of the json response
      */
-    private MeterRealtimeResponse getMeterRealtimeData(String schema, String ip, int deviceId)
+    private MeterRealtimeResponse getMeterRealtimeData(String scheme, String ip, int deviceId)
             throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.getMeterDataUrl(schema, ip, deviceId);
+        String location = FroniusBindingConstants.getMeterDataUrl(scheme, ip, deviceId);
         return collectDataFromUrl(MeterRealtimeResponse.class, location);
     }
 }

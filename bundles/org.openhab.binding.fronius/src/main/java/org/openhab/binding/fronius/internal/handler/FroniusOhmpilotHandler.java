@@ -130,7 +130,7 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
      */
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
             throws FroniusCommunicationException {
-        OhmpilotRealtimeResponse ohmpilotRealtimeResponse = getOhmpilotRealtimeData(bridgeConfiguration.schema,
+        OhmpilotRealtimeResponse ohmpilotRealtimeResponse = getOhmpilotRealtimeData(bridgeConfiguration.scheme,
                 bridgeConfiguration.hostname, config.deviceId);
         OhmpilotRealtimeBody ohmpilotRealtimeBody = ohmpilotRealtimeResponse.getBody();
         if (ohmpilotRealtimeBody == null) {
@@ -147,9 +147,9 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {OhmpilotRealtimeResponse} the object representation of the json response
      */
-    private OhmpilotRealtimeResponse getOhmpilotRealtimeData(String schema, String ip, int deviceId)
+    private OhmpilotRealtimeResponse getOhmpilotRealtimeData(String scheme, String ip, int deviceId)
             throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.getOhmPilotDataUrl(schema, ip, deviceId);
+        String location = FroniusBindingConstants.getOhmPilotDataUrl(scheme, ip, deviceId);
         return collectDataFromUrl(OhmpilotRealtimeResponse.class, location);
     }
 }
