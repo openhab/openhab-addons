@@ -4,9 +4,8 @@ This binding integrates Ondilo ICO pool monitoring devices with openHAB, allowin
 
 ## Supported Things
 
-`account:` Represents your Ondilo Account (authentication using OAuth2 flow)
-
-`ondilo:` Represents an individual Ondilo ICO device
+- `account:` Represents your Ondilo Account (authentication using OAuth2 flow)
+- `ondilo:` Represents an individual Ondilo ICO device
 
 Ondilo ICO Pool as well as Spa devices are supported.
 Chlor as well as salt water.
@@ -21,7 +20,7 @@ Each Ondilo ICO will appear as a new Thing in the inbox.
 ### `account` Thing Configuration
 
 - **url**: The URL of the openHAB instance. Required for the redirect during OAuth2 authentication flow (e.g. `http://localhost:8080`)
-- **refreshInterval**: Polling interval in seconds (default: `900 s`).
+- **refreshInterval**: Polling interval in seconds (default: `900 s`)
 
 ### `ondilo` Thing Configuration
 
@@ -36,9 +35,10 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 - 5 requests per second
 - 30 requests per hour
 
-`account` Thing performs 2 request per cycle - 8 per hour per Ondilo Account with default interval.
+Example using default interval:
 
-`ondilo` Thing performs 4 requests per cycle - 16 per hour per Ondilo ICO with default interval.
+- `account` Thing performs 2 request per cycle - 8 per hour per Ondilo Account
+- `ondilo` Thing performs 4 requests per cycle - 16 per hour per Ondilo ICO
 
 ## Channels
 

@@ -57,8 +57,6 @@
 			<property name="address"/>
 			<property name="location"/>
 			<property name="uuid"/>
-			<property name="serialNumber"/>
-			<property name="swVersion"/>
 			<property name="poolGuyNumber"/>
 			<property name="maintenanceDay"/>
 			<property name="thingTypeVersion">1</property>

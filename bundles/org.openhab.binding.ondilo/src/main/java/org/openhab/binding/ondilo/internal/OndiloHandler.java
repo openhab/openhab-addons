@@ -249,15 +249,16 @@ public class OndiloHandler extends BaseThingHandler {
     public void updatePoolInfo(PoolInfo poolInfo) {
         Map<String, String> properties = editProperties();
         properties.put(PROPERTY_ONDILO_INFO_UUID, poolInfo.uuid);
-        properties.put(PROPERTY_ONDILO_INFO_SERIAL_NUMBER, poolInfo.serialNumber);
-        properties.put(PROPERTY_ONDILO_INFO_SW_VERSION, poolInfo.swVersion);
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, poolInfo.serialNumber);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, poolInfo.swVersion);
         updateProperties(properties);
     }
 
     public void updatePoolInfo(PoolConfiguration poolConfiguration) {
         Map<String, String> properties = editProperties();
         properties.put(PROPERTY_ONDILO_INFO_POOL_GUY_NUMBER, poolConfiguration.poolGuyNumber);
-        properties.put(PROPERTY_ONDILO_INFO_MAINTENANCE_DAY, poolConfiguration.getMaintenanceDay(localeProvider.getLocale()));
+        properties.put(PROPERTY_ONDILO_INFO_MAINTENANCE_DAY,
+                poolConfiguration.getMaintenanceDay(localeProvider.getLocale()));
         updateProperties(properties);
     }
 

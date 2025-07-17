@@ -45,8 +45,6 @@ public class OndiloBindingConstants {
     public static final String PROPERTY_ONDILO_ADDRESS = "address";
     public static final String PROPERTY_ONDILO_LOCATION = "location";
     public static final String PROPERTY_ONDILO_INFO_UUID = "uuid";
-    public static final String PROPERTY_ONDILO_INFO_SERIAL_NUMBER = "serialNumber";
-    public static final String PROPERTY_ONDILO_INFO_SW_VERSION = "swVersion";
     public static final String PROPERTY_ONDILO_INFO_POOL_GUY_NUMBER = "poolGuyNumber";
     public static final String PROPERTY_ONDILO_INFO_MAINTENANCE_DAY = "maintenanceDay";
 
