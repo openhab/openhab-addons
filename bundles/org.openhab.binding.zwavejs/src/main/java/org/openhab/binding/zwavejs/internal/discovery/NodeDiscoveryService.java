@@ -101,7 +101,11 @@ public class NodeDiscoveryService extends AbstractThingHandlerDiscoveryService<Z
         removeOlderResults(getTimestampOfLastScan(), getBridgeUID());
     }
 
-    public void addNodeDiscovery(Node node) {
+    public void addNodeDiscovery(@Nullable Node node) {
+        if (node == null) {
+            logger.warn("Node discovery called with empty node.");
+            return;
+        }
         ThingUID thingUID = getThingUID(node.nodeId);
         ThingTypeUID thingTypeUID = THING_TYPE_NODE;
         logger.trace("Node {}. addNodeDiscovery", node.nodeId);
