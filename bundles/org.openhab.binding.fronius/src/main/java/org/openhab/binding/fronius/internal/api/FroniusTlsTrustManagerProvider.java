@@ -23,7 +23,7 @@ import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Provides a TrustManager to allow secure connections to any Fronius device
+ * Provides a TrustManager to allow secure connections to any Fronius device.
  * 
  * @author Leo Siepel - Initial contribution
  */
