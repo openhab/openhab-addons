@@ -15,6 +15,7 @@ package org.openhab.binding.ondilo.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -60,7 +61,7 @@ public class OndiloApiClient {
     }
 
     @Nullable
-    public synchronized <T> T request(String requestMethod, String endpoint, Class<T> type) {
+    public synchronized <T> T request(String requestMethod, String endpoint, Type type) {
         // Enforce API rate limit: at least 200ms between requests
         long now = System.currentTimeMillis();
         long wait = lastRequestTime + MIN_REQUEST_INTERVAL_MS - now;
@@ -88,13 +89,9 @@ public class OndiloApiClient {
             if (responseCode == 200) {
                 try (InputStream is = conn.getInputStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
                     String response = scanner.useDelimiter("\\A").next();
-                    if (type == String.class) {
-                        return type.cast(response);
-                    } else {
-                        // Parse JSON to DTO
-                        Gson gson = new Gson();
-                        return gson.fromJson(response, type);
-                    }
+                    // Parse JSON to DTO
+                    Gson gson = new Gson();
+                    return gson.fromJson(response, type);
                 }
             } else {
                 logger.warn("Ondilo API request failed with code: {}", responseCode);

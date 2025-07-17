@@ -15,6 +15,7 @@ package org.openhab.binding.ondilo.internal.discovery;
 import static org.openhab.binding.ondilo.internal.OndiloBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +27,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.OndiloBridgeHandler;
 import org.openhab.binding.ondilo.internal.dto.Pool;
-import org.openhab.binding.ondilo.internal.dto.Pools;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -78,7 +78,7 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
 
     protected void checkForDiscoveredPools() {
         try {
-            Optional<Pools> registeredPools = bridgeHandler.getPools();
+            Optional<List<Pool>> registeredPools = bridgeHandler.getPools();
             if (registeredPools.isPresent()) {
                 addDiscoveredPools(registeredPools.get());
             } else {
@@ -89,8 +89,8 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    protected void addDiscoveredPools(Pools pools) {
-        for (Pool pool : pools.pools) {
+    protected void addDiscoveredPools(List<Pool> pools) {
+        for (Pool pool : pools) {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             ThingTypeUID thingTypeUID = THING_TYPE_ONDILO;
             ThingUID poolThingUid = new ThingUID(THING_TYPE_ONDILO, bridgeUID, String.valueOf(pool.id));

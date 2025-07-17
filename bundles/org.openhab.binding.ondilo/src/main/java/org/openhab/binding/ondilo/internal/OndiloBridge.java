@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.ondilo.internal;
 
+import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -23,18 +25,17 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.dto.LastMeasure;
-import org.openhab.binding.ondilo.internal.dto.LastMeasures;
 import org.openhab.binding.ondilo.internal.dto.Pool;
 import org.openhab.binding.ondilo.internal.dto.PoolConfiguration;
 import org.openhab.binding.ondilo.internal.dto.PoolInfo;
-import org.openhab.binding.ondilo.internal.dto.Pools;
 import org.openhab.binding.ondilo.internal.dto.Recommendation;
-import org.openhab.binding.ondilo.internal.dto.Recommendations;
 import org.openhab.binding.ondilo.internal.dto.UserInfo;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link OndiloBridge} handles OAuth2 authentication for Ondilo API.
@@ -48,7 +49,7 @@ public class OndiloBridge {
     private final int refreshInterval;
     private final OndiloBridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> ondiloBridgePollingJob;
-    private @Nullable Pools pools;
+    private @Nullable List<Pool> pools;
     public @Nullable OndiloApiClient apiClient;
     private Map<Integer, OndiloHandler> ondiloHandlers = new HashMap<>();
 
@@ -103,16 +104,21 @@ public class OndiloBridge {
         try {
             OndiloApiClient apiClient = this.apiClient;
             if (apiClient != null) {
-                UserInfo userInfo = apiClient.request("GET", "/user/info", UserInfo.class);
+                Type type = new TypeToken<UserInfo>() {
+                }.getType();
+                UserInfo userInfo = apiClient.request("GET", "/user/info", type);
                 if (userInfo != null) {
                     bridgeHandler.updateUserInfo(userInfo);
                 }
-                Pools pools = apiClient.request("GET", "/pools", Pools.class);
-                if (pools != null && !pools.pools.isEmpty()) {
-                    logger.trace("Polled {} Ondilo ICOs", pools.pools.size());
+
+                type = new TypeToken<List<Pool>>() {
+                }.getType();
+                List<Pool> pools = apiClient.request("GET", "/pools", type);
+                if (pools != null && !pools.isEmpty()) {
+                    logger.trace("Polled {} Ondilo ICOs", pools.size());
                     // Poll last measures and recommendations for each pool
                     Instant lastValueTime = null;
-                    for (Pool pool : pools.pools) {
+                    for (Pool pool : pools) {
                         Instant valueTime = pollOndiloICO(pool.id);
                         if (lastValueTime == null || (valueTime != null && valueTime.isBefore(lastValueTime))) {
                             lastValueTime = valueTime;
@@ -158,15 +164,17 @@ public class OndiloBridge {
         OndiloApiClient apiClient = this.apiClient;
         Instant lastValueTime = null;
         if (ondiloHandler != null && apiClient != null) {
-            LastMeasures lastMeasures = apiClient.request("GET", "/pools/" + id
+            Type type = new TypeToken<List<LastMeasure>>() {
+            }.getType();
+            List<LastMeasure> lastMeasures = apiClient.request("GET", "/pools/" + id
                     + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi",
-                    LastMeasures.class);
+                    type);
 
-            if (lastMeasures == null || lastMeasures.lastMeasures.isEmpty()) {
+            if (lastMeasures == null || lastMeasures.isEmpty()) {
                 logger.warn("No lastMeasures available for Ondilo ICO with ID: {}", id);
                 ondiloHandler.clearLastMeasuresChannels();
             } else {
-                for (LastMeasure lastMeasure : lastMeasures.lastMeasures) {
+                for (LastMeasure lastMeasure : lastMeasures) {
                     logger.trace("LastMeasure: type={}, value={}", lastMeasure.dataType, lastMeasure.value);
                     Instant valueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasure);
                     if (lastValueTime == null || valueTime.isBefore(lastValueTime)) {
@@ -175,15 +183,16 @@ public class OndiloBridge {
                 }
             }
 
-            Recommendations recommendations = apiClient.request("GET", "/pools/" + id + "/recommendations",
-                    Recommendations.class);
+            type = new TypeToken<List<Recommendation>>() {
+            }.getType();
+            List<Recommendation> recommendations = apiClient.request("GET", "/pools/" + id + "/recommendations", type);
 
-            if (recommendations == null || recommendations.recommendations.isEmpty()) {
+            if (recommendations == null || recommendations.isEmpty()) {
                 logger.trace("No Recommendations available for Ondilo ICO with ID: {}", id);
                 ondiloHandler.clearRecommendationChannels();
             } else {
                 Recommendation waitingRecommendation = null;
-                for (Recommendation rec : recommendations.recommendations) {
+                for (Recommendation rec : recommendations) {
                     if (rec.status == Recommendation.Status.waiting) {
                         waitingRecommendation = rec;
                         break;
@@ -195,13 +204,15 @@ public class OndiloBridge {
                             waitingRecommendation.title);
                     recommendation = waitingRecommendation;
                 } else {
-                    recommendation = recommendations.recommendations.get(0);
+                    recommendation = recommendations.get(0);
                     logger.trace("Latest Recommentation: id={}, title={}", recommendation.id, recommendation.title);
                 }
                 ondiloHandler.updateRecommendationChannels(recommendation);
             }
 
-            PoolInfo poolInfo = apiClient.request("GET", "/pools/" + id + "/device", PoolInfo.class);
+            type = new TypeToken<PoolInfo>() {
+            }.getType();
+            PoolInfo poolInfo = apiClient.request("GET", "/pools/" + id + "/device", type);
             if (poolInfo != null) {
                 ondiloHandler.updatePoolInfo(poolInfo);
             }
@@ -221,9 +232,11 @@ public class OndiloBridge {
     public void validateRecommendation(int poolId, int recommendationId) {
         OndiloApiClient apiClient = this.apiClient;
         if (apiClient != null) {
+            Type type = new TypeToken<String>() {
+            }.getType();
             String response = apiClient.request("PUT", "/pools/" + poolId + "/recommendations/" + recommendationId,
-                    String.class);
-            if (response != null && "\"Done\"".equals(response.trim())) {
+                    type);
+            if (response != null && "Done".equals(response.trim())) {
                 logger.trace("Validated Recommendation successfully");
             } else {
                 logger.warn("Failed to validate Recommendation, API response: {}", response);
@@ -233,7 +246,7 @@ public class OndiloBridge {
         }
     }
 
-    public @Nullable Pools getPools() {
+    public @Nullable List<Pool> getPools() {
         return pools;
     }
 
