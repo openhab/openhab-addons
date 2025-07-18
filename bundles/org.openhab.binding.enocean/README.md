@@ -94,7 +94,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | environmentalSensor             | A5-13             | 0x01-02                 | temperature, windspeed, illumination, rainStatus            | FWS61                   | Discovery |
 | centralCommand                  | A5-38             | 0x08                    | dimmer, generalSwitch                                       | Eltako FUD14, FSR14     | Teach-in  |
 | rollershutter                   | A5-3F/D2-05/A5-38 | 0x7F/00/08              | rollershutter                                               | Eltako FSB14 / FJ62, NodOn SIN-2-RS-01| Teach-in/Discovery |
-| measurementSwitch               | D2-01             | 0x00-0F,11,12           | generalSwitch(/A/B), instantpower, totalusage, repeaterMode | NodOn In Wall Switch    | Discovery |
+| measurementSwitch               | D2-01             | 0x00-0F,11,12           | generalSwitch(/A/B), dimmer, pilotWire, instantpower, totalusage, repeaterMode | NodOn In Wall Switch    | Discovery |
 | windowSashHandleSensor          | D2-06             | 0x50                    | windowHandleState, windowSashState, batteryLevel, batteryLow, windowBreachEvent, windowCalibrationState, windowCalibrationStep | Siegenia Senso Secure | Discovery |
 | multiFunctionSmokeDetector      | D2-14/F6-05       | 0x30/02                 | smokeDetection, batteryLow                                  | Insafe+, Afriso ASD     | Discovery |
 | heatRecoveryVentilation         | D2-50             | 0x00,01,10,11           | a lot of different state channels                           | Dimplex DL WE2          | Discovery |
@@ -302,6 +302,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | generalSwitch(/A/B)               | Switch                    | Switch something (channel A/B) ON/OFF |
 | rollershutter                     | Rollershutter             | Shut time (shutTime) in seconds can be configured |
 | angle                             | Number:Angle              | The angle for blinds |
+| pilotWire                         | Number                    | Device mode: 1 - Off, 2 - Comfort, 3 - Eco, 4 - Anti-freeze, 5 - Comfort1, 6 - Comfort2
 | instantpower                      | Number:Power              | Instant power consumption in Watts |
 | totalusage                        | Number:Energy             | Used energy in Kilowatt hours |
 | teachInCMD                        | Switch                    | Sends a teach-in msg, content can configured with parameter teachInMSG |
