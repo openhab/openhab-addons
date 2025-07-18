@@ -348,9 +348,9 @@ public class MBWebsocket {
              * 3. VehicleHandler responsible to update channels
              */
         } catch (IOException e) {
-            logger.debug("IOException decoding message {}", e.getMessage());
+            logger.warn("IOException decoding message {}", e.getMessage());
         } catch (Error err) {
-            logger.debug("Error decoding message {}", err.getMessage());
+            logger.warn("Error decoding message {}", err.getMessage());
         }
     }
 
