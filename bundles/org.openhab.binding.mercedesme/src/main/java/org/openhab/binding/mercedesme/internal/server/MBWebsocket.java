@@ -13,7 +13,6 @@
 package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -83,7 +82,6 @@ public class MBWebsocket {
     private Optional<WebSocketClient> webSocketClient = Optional.empty();
     private Optional<Session> session = Optional.empty();
     private List<ClientMessage> commandQueue = new ArrayList<>();
-    private List<File> fileDumps = new ArrayList<>();
     private Instant runTill = Instant.now();
     private WebsocketState state = WebsocketState.STOPPED;
     private boolean keepAlive = false;
@@ -143,10 +141,6 @@ public class MBWebsocket {
         if (disposed) {
             runTill = Instant.MIN;
             keepAlive = false;
-            fileDumps.forEach(file -> {
-                file.delete();
-            });
-            fileDumps.clear();
             refresher.ifPresent(job -> {
                 job.cancel(false);
                 refresher = Optional.empty();
