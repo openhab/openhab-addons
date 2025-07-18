@@ -31,6 +31,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openhab.binding.mspa.internal.MSpaConstants.ServiceRegion;
 import org.openhab.binding.mspa.internal.MSpaUtils;
 import org.openhab.binding.mspa.internal.config.MSpaOwnerAccountConfiguration;
 import org.openhab.binding.mspa.internal.config.MSpaVisitorAccountConfiguration;
@@ -163,11 +164,11 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
     }
 
     public Request getRequest(HttpMethod method, String endPoint) {
-        String region = "ROW";
+        ServiceRegion region = ServiceRegion.ROW; // default region;
         if (ownerConfig.isPresent()) {
-            region = ownerConfig.get().region;
+            region = ServiceRegion.valueOf(ownerConfig.get().region);
         } else if (visitorConfig.isPresent()) {
-            region = visitorConfig.get().region;
+            region = ServiceRegion.valueOf(visitorConfig.get().region);
         }
         long timestamp = Instant.now().getEpochSecond();
         String nonce = UUID.randomUUID().toString().replace("-", EMPTY);

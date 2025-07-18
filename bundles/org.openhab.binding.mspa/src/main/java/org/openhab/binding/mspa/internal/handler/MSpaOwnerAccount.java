@@ -26,6 +26,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONObject;
+import org.openhab.binding.mspa.internal.MSpaConstants.ServiceRegion;
 import org.openhab.binding.mspa.internal.MSpaUtils;
 import org.openhab.binding.mspa.internal.config.MSpaOwnerAccountConfiguration;
 import org.openhab.binding.mspa.internal.discovery.MSpaDiscoveryService;
@@ -77,7 +78,7 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
         JSONObject body = new JSONObject();
         body.put("account", ownerConfig.get().email);
         body.put("password", MSpaUtils.getPasswordHash(ownerConfig.get().password));
-        body.put("app_id", APP_IDS.get(ownerConfig.get().region));
+        body.put("app_id", APP_IDS.get(ServiceRegion.valueOf(ownerConfig.get().region)));
         body.put("registration_id", EMPTY);
         body.put("push_type", "android");
         tokenRequest.content(new StringContentProvider(body.toString(), "utf-8"));

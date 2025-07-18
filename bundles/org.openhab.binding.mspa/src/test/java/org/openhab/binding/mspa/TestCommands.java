@@ -41,7 +41,7 @@ import org.openhab.core.thing.internal.ThingImpl;
 @NonNullByDefault
 class TestCommands {
 
-    JSONObject getReuqetBody(String fileName) {
+    JSONObject getRequestBody(String fileName) {
         try {
             String content = new String(Files.readAllBytes(Paths.get("src/test/resources/" + fileName)));
             JSONObject json = new JSONObject(content);

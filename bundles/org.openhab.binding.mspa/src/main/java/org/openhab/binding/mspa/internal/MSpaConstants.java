@@ -36,20 +36,24 @@ public class MSpaConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OWNER_ACCOUNT,
             THING_TYPE_VISITOR_ACCOUNT, THING_TYPE_POOL);
 
-    public static final String REGION_ROW = "ROW";
-    public static final String REGION_US = "US";
-    public static final String REGION_CHINA = "CH";
+    public static enum ServiceRegion {
+        ROW,
+        US,
+        CH
+    };
 
-    public static final Map<String, String> HOSTS = Map.of(REGION_ROW, "https://api.iot.the-mspa.com", REGION_US,
-            "https://api.usiot.the-mspa.com", REGION_CHINA, "https://api.mspa.mxchip.com.cn");
-    public static final Map<String, String> WSS_HOSTS = Map.of(REGION_ROW,
-            "wss://xvvfjuknsi.execute-api.eu-central-1.amazonaws.com/production/", REGION_US,
-            "wss://27n7hwtf73.execute-api.us-east-1.amazonaws.com/production", REGION_CHINA,
+    public static final Map<ServiceRegion, String> HOSTS = Map.of(ServiceRegion.ROW, "https://api.iot.the-mspa.com",
+            ServiceRegion.US, "https://api.usiot.the-mspa.com", ServiceRegion.CH, "https://api.mspa.mxchip.com.cn");
+    public static final Map<ServiceRegion, String> WSS_HOSTS = Map.of(ServiceRegion.ROW,
+            "wss://xvvfjuknsi.execute-api.eu-central-1.amazonaws.com/production/", ServiceRegion.US,
+            "wss://27n7hwtf73.execute-api.us-east-1.amazonaws.com/production", ServiceRegion.CH,
             "wss://w7vvlxl4dk.execute-api.eu-west-1.amazonaws.com/press_test/");
-    public static final Map<String, String> APP_IDS = Map.of(REGION_ROW, "e1c8e068f9ca11eba4dc0242ac120002", REGION_US,
-            "e1c8e068f9ca11eba4dc0242ac120002", REGION_CHINA, "e1c8e068f9ca11eba4dc0242ac120002");
-    public static final Map<String, String> APP_SECRETS = Map.of(REGION_ROW, "87025c9ecd18906d27225fe79cb68349",
-            REGION_US, "87025c9ecd18906d27225fe79cb68349", REGION_CHINA, "87025c9ecd18906d27225fe79cb68349");
+    public static final Map<ServiceRegion, String> APP_IDS = Map.of(ServiceRegion.ROW,
+            "e1c8e068f9ca11eba4dc0242ac120002", ServiceRegion.US, "e1c8e068f9ca11eba4dc0242ac120002", ServiceRegion.CH,
+            "e1c8e068f9ca11eba4dc0242ac120002");
+    public static final Map<ServiceRegion, String> APP_SECRETS = Map.of(ServiceRegion.ROW,
+            "87025c9ecd18906d27225fe79cb68349", ServiceRegion.US, "87025c9ecd18906d27225fe79cb68349", ServiceRegion.CH,
+            "87025c9ecd18906d27225fe79cb68349");
 
     public static final String ENDPOINT_TOKEN = "/api/enduser/get_token/";
     public static final String ENDPOINT_VISITOR = "/api/enduser/visitor/";

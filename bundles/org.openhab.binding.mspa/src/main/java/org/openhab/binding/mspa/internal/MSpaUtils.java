@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.openhab.binding.mspa.internal.MSpaConstants.ServiceRegion;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,7 @@ public class MSpaUtils {
      * @param region to sign
      * @return signature of the 3 above parameters as upper case md5 hash
      */
-    public static String getSignature(String nonce, long timestamp, String region) {
+    public static String getSignature(String nonce, long timestamp, ServiceRegion region) {
         String appId = APP_IDS.get(region);
         String appSecret = APP_SECRETS.get(region);
         if (appId != null && appSecret != null) {

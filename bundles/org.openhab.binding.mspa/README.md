@@ -101,12 +101,12 @@ Channels for `pool`
 ### `demo.things` Example
 
 ```java
-Bridge mspa:owner-account:4711  "MSpa Account"      [ email="YOUR_MAIL_ADDRESS",password="YOUR_PASSWORD", region="ROW"] {
-         Thing pool 4712        "MSpa Pool OLSO"    [ deviceId="YOUR_DEVICE_ID", productId="YOUR_PRODUCT_ID"]
+Bridge mspa:owner-account:4711  "MSpa Account"      [ email="YOUR_MAIL_ADDRESS", password="YOUR_PASSWORD", region="ROW"] {
+         Thing pool 4712        "MSpa Pool OSLO"    [ deviceId="YOUR_DEVICE_ID", productId="YOUR_PRODUCT_ID"]
 }
 ```
 
-### `demo.items` Exmaple
+### `demo.items` Example
 
 ```java
 Switch                  MSPA_OSLO_Heater                    {channel="mspa:pool:4711:4712:heater" }

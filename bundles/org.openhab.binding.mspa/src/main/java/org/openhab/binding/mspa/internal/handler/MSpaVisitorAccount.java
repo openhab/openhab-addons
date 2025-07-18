@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONObject;
+import org.openhab.binding.mspa.internal.MSpaConstants.ServiceRegion;
 import org.openhab.binding.mspa.internal.MSpaUtils;
 import org.openhab.binding.mspa.internal.config.MSpaVisitorAccountConfiguration;
 import org.openhab.binding.mspa.internal.discovery.MSpaDiscoveryService;
@@ -135,7 +136,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
         Request tokenRequest = getRequest(HttpMethod.POST, ENDPOINT_VISITOR);
         JSONObject body = new JSONObject();
         body.put("visitor_id", visitorConfig.get().visitorId);
-        body.put("app_id", APP_IDS.get(visitorConfig.get().region));
+        body.put("app_id", APP_IDS.get(ServiceRegion.valueOf(visitorConfig.get().region)));
         body.put("registration_id", "");
         body.put("push_type", "android");
         body.put("lan_code", "EN");

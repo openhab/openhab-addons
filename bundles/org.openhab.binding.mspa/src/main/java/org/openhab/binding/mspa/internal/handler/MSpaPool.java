@@ -80,10 +80,8 @@ public class MSpaPool extends BaseThingHandler {
         this.unitProvider = unitProvider;
     }
 
-    @SuppressWarnings("unchecked")
     public Optional<JSONObject> createCommandBody(String channelId, Command command) {
         String commandDetail = UNKNOWN;
-
         if (command instanceof OnOffType onOff) {
             int on = OnOffType.ON.equals(onOff) ? 1 : 0;
             commandDetail = switch (channelId) {
@@ -101,7 +99,7 @@ public class MSpaPool extends BaseThingHandler {
                 case CHANNEL_BUBBLE_LEVEL -> "\"bubble_level\":" + Math.min(Math.max(1, decimal.intValue()), 3);
                 default -> UNKNOWN;
             };
-        } else if (command instanceof QuantityType qt) {
+        } else if (command instanceof QuantityType<?> qt) {
             /**
              * Water temperature handling by MSpa is proprietary. Values from / to device are based on °C but values
              * are times two! Conversion to °F for command needs separate handling.

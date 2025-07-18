@@ -75,45 +75,36 @@
 			<channel id="target-temperature" typeId="set-temperature">
 				<label>Target Water Temperature</label>
 				<description>Temperature to reach with heating</description>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="heater" typeId="switch">
 				<label>Heater</label>
 				<description>Control water heating</description>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="jet-stream" typeId="switch">
 				<label>Jet Stream</label>
 				<description>Control jet stream for massage</description>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="bubbles" typeId="switch">
 				<label>Bubbles</label>
 				<description>Switch bubbles on/off</description>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="bubble-level" typeId="bubble-level">
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="circulation" typeId="switch">
 				<label>Circulation Pump</label>
 				<description>Water circulation for filtering</description>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="uvc" typeId="switch">
 				<label>UVC Cleaning</label>
 				<description>Eliminate germs with ultraviolet-C water cleaning</description>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="ozone" typeId="switch">
 				<label>Ozone Cleaning</label>
 				<description>Disinfect with ozone water cleaning</description>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="lock" typeId="lock">
 				<label>Lock Panel</label>
 				<description>Lock physical panel for inputs</description>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 		</channels>
 

@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mspa.internal.MSpaCommandOptionProvider;
+import org.openhab.binding.mspa.internal.MSpaConstants.ServiceRegion;
 import org.openhab.binding.mspa.internal.MSpaUtils;
 import org.openhab.binding.mspa.internal.discovery.MSpaDiscoveryService;
 import org.openhab.binding.mspa.internal.handler.MSpaOwnerAccount;
@@ -63,7 +64,7 @@ class TestMessages {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
             JSONObject json = new JSONObject(content);
             String calculatedSignature = MSpaUtils.getSignature(json.getString("nonce"), json.getLong("ts"),
-                    REGION_ROW);
+                    ServiceRegion.ROW);
             String requiredSignature = json.getString("sign");
             assertEquals(requiredSignature, calculatedSignature, "Signature check");
         } catch (IOException e) {
