@@ -16,7 +16,7 @@
 
   <properties>
     <smack.version>4.5.0-beta2</smack.version>
-    <bnd.importpackage>!sun.security.*</bnd.importpackage>
+    <bnd.importpackage>sun.security.*;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>
