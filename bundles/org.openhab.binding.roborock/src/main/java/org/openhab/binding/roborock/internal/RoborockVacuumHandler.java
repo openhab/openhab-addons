@@ -267,7 +267,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         initTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
-        initTask.submit();
+        initTask.schedule(15);
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -324,7 +324,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
         if (scheduleReconnection) {
             SchedulerTask connectTask = initTask;
-            connectTask.schedule(5);
+            connectTask.schedule(30);
         }
     }
 
@@ -393,7 +393,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             } catch (UnsupportedEncodingException e) {
                                 logger.debug("UnsupportedEncodingException");
                             }
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Communication error, Roborock API reports vacuum offline.");
                         }
+
                     }
                 }
             }
