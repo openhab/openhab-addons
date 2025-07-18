@@ -13,22 +13,19 @@
 package org.openhab.binding.evcc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link EvccConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EvccBindingConstants} class defines common constants, which are
+ * used across the whole binding.
  *
  * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - Update to evcc version 0.123.1
+ * @author Marcel Goerentz - Rework the binding
  */
 @NonNullByDefault
 public class EvccConfiguration {
-
-    /**
-     * URL of the evcc instance, e.g. https://demo.evcc.io
-     */
-    public @Nullable String url;
-    /**
-     * Interval for state fetching in seconds.
-     */
-    public int refreshInterval = 60;
+    public String host = "";
+    public int refreshInterval = 30;
+    public int port = 7070;
+    public String schema = "http";
 }
