@@ -28,6 +28,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Patrik Gfeller - Initial Contribution
@@ -37,6 +39,8 @@ class ServerDiscoveryHelper {
     private static final int DISCOVERY_PORT = 7359;
     private static final int TIMEOUT_MS = 2000;
     private static final String DISCOVERY_MESSAGE = "who is JellyfinServer?";
+
+    private final Logger logger = LoggerFactory.getLogger(ServerDiscoveryHelper.class);
 
     private final List<ServerDiscoveryResult> serverList = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
@@ -49,6 +53,7 @@ class ServerDiscoveryHelper {
             while (interfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = interfaces.nextElement();
                 if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                    logger.trace("Interface {} ignored.", networkInterface.getDisplayName());
                     continue;
                 }
 
@@ -62,7 +67,7 @@ class ServerDiscoveryHelper {
             // Give some time for responses to come back
             Thread.sleep(TIMEOUT_MS + 500); // Wait a bit longer than the timeout
         } catch (SocketException | InterruptedException e) {
-            System.err.println("Error during network interface enumeration or sleep: " + e.getMessage());
+            logger.error("Error during network interface enumeration or sleep: {}", e.getMessage());
         } finally {
             executorService.shutdown();
         }
@@ -78,7 +83,7 @@ class ServerDiscoveryHelper {
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcastAddress, DISCOVERY_PORT);
             socket.send(sendPacket);
 
-            System.out.println("Sent discovery packet to " + broadcastAddress.getHostAddress() + ":" + DISCOVERY_PORT);
+            logger.trace("Sent discovery packet to {}:{}", broadcastAddress.getHostAddress(), DISCOVERY_PORT);
 
             // Listen for responses
             byte[] receiveData = new byte[1024];
@@ -88,19 +93,19 @@ class ServerDiscoveryHelper {
                     socket.receive(receivePacket);
                     String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
 
-                    System.out.println("Discovered Jellyfin Server: " + response);
+                    logger.debug("Discovered Jellyfin Server: {}", response);
 
                     serverList.add(ServerDiscoveryResult.fromJson(response));
                 } catch (SocketTimeoutException e) {
                     // No more responses within the timeout
                     break;
                 } catch (IOException e) {
-                    System.err.println("Error receiving discovery response: " + e.getMessage());
+                    logger.error("Error receiving discovery response: {}", e.getMessage());
                     break;
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error creating or sending discovery socket: " + e.getMessage());
+            logger.error("Error creating or sending discovery socket: {}", e.getMessage());
         }
     }
 }
