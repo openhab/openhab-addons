@@ -34,7 +34,6 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
@@ -109,10 +108,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     private final Map<String, SchemaDp> schemaDps;
     private boolean oldColorMode = false;
 
-    private @Nullable ScheduledFuture<?> reconnectFuture;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> irLearnJob;
-    private boolean disposing = false;
 
     private final Map<Integer, String> dpToChannelId = new HashMap<>();
     private final Map<Integer, List<String>> dp2ToChannelId = new HashMap<>();
@@ -136,17 +133,13 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
     @Override
     public void processDeviceStatus(Map<Integer, Object> deviceStatus) {
-        logger.trace("'{}' received status message '{}'", thing.getUID(), deviceStatus);
-
+        // Older devices may need to use the control method to request device status.
         if (deviceStatus.isEmpty()) {
-            // if status is empty -> need to use control method to request device status
-            Map<Integer, @Nullable Object> commandRequest = new HashMap<>();
-            dpToChannelId.keySet().forEach(dp -> commandRequest.put(dp, null));
-            dp2ToChannelId.keySet().forEach(dp -> commandRequest.put(dp, null));
-
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null) {
-                tuyaDevice.set(commandRequest);
+                logger.debug("'{}' switching to control instead of query", thing.getUID());
+                tuyaDevice.setQueryUsesControl();
+                tuyaDevice.requestStatus(List.of());
             }
             return;
         }
@@ -253,14 +246,26 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     @Override
     public void connectionStatus(boolean status) {
         if (status) {
-            updateStatus(ThingStatus.ONLINE);
-            int pollingInterval = configuration.pollingInterval;
+            logger.debug("{}: connected", thing.getUID().getId());
+
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+
             TuyaDevice tuyaDevice = this.tuyaDevice;
-            if (tuyaDevice != null && pollingInterval > 0) {
-                pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                    tuyaDevice.refreshStatus(
-                            Stream.concat(dpToChannelId.keySet().stream(), dp2ToChannelId.keySet().stream()).toList());
-                }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
+            if (tuyaDevice != null) {
+                // When we first connect the device state is unknown so we want to know everything
+                // it is willing to tell us.
+                tuyaDevice.requestStatus(List.of());
+
+                if (pollingJob == null) {
+                    int pollingInterval = configuration.pollingInterval;
+                    if (pollingInterval > 0) {
+                        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                            tuyaDevice.refreshStatus(List.of());
+                        }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
+                    }
+                } else {
+                    logger.debug("{}: polling job already exists?!?", thing.getUID().getId());
+                }
             }
 
             // start learning code if thing is online and presents 'ir-code' channel
@@ -268,19 +273,16 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     .map(Map.Entry::getKey).findAny().map(channelIdToConfiguration::get)
                     .ifPresent(irCodeChannelConfig -> irStartLearning(irCodeChannelConfig.activeListen));
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("{}: disconnected", thing.getUID().getId());
+
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Waiting for device wake up");
+
             ScheduledFuture<?> pollingJob = this.pollingJob;
             if (pollingJob != null) {
                 pollingJob.cancel(true);
                 this.pollingJob = null;
             }
-            TuyaDevice tuyaDevice = this.tuyaDevice;
-            ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
-            // only re-connect if a device is present, we are not disposing the thing and either the reconnectFuture is
-            // empty or already done
-            if (tuyaDevice != null && !disposing && (reconnectFuture == null || reconnectFuture.isDone())) {
-                this.reconnectFuture = scheduler.schedule(this::connectDevice, 5000, TimeUnit.MILLISECONDS);
-            }
+
             if (channelIdToChannelTypeUID.containsValue(CHANNEL_TYPE_UID_IR_CODE)) {
                 irStopLearning();
             }
@@ -447,24 +449,22 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
     @Override
     public void dispose() {
-        disposing = true;
-        ScheduledFuture<?> future = reconnectFuture;
+        logger.debug("{}: dispose", thing.getUID().getId());
+
+        ScheduledFuture<?> future = this.pollingJob;
         if (future != null) {
+            this.pollingJob = null;
             future.cancel(true);
         }
-        future = this.pollingJob;
-        if (future != null) {
-            future.cancel(true);
-        }
-        if (configuration.ip.isEmpty()) {
-            // unregister listener only if IP is not fixed
-            udpDiscoveryListener.unregisterListener(this);
-        }
+
+        udpDiscoveryListener.unregisterListener(this);
+
         TuyaDevice tuyaDevice = this.tuyaDevice;
         if (tuyaDevice != null) {
-            tuyaDevice.dispose();
             this.tuyaDevice = null;
+            tuyaDevice.dispose();
         }
+
         irStopLearning();
 
         dpToChannelId.clear();
@@ -485,27 +485,45 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         thing.getChannels().forEach(this::configureChannel);
 
         if (!configuration.ip.isBlank()) {
-            deviceInfoChanged(new DeviceInfo(configuration.ip, configuration.protocol));
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Waiting for device wake up");
+
+            this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
+                    configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.protocol);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for IP address");
-            udpDiscoveryListener.registerListener(configuration.deviceId, this);
         }
 
-        disposing = false;
+        udpDiscoveryListener.registerListener(configuration.deviceId, this);
     }
 
     @Override
     public void deviceInfoChanged(DeviceInfo deviceInfo) {
-        logger.info("Configuring IP address '{}' for thing '{}'.", deviceInfo, thing.getUID());
+        if (!configuration.ip.equals(deviceInfo.ip) || !configuration.protocol.equals(deviceInfo.protocolVersion)) {
+            logger.info("Configuring IP address '{}' for thing '{}'.", deviceInfo, thing.getUID());
 
-        TuyaDevice tuyaDevice = this.tuyaDevice;
-        if (tuyaDevice != null) {
-            tuyaDevice.dispose();
+            TuyaDevice tuyaDevice = this.tuyaDevice;
+            if (tuyaDevice != null) {
+                this.tuyaDevice = null;
+                tuyaDevice.dispose();
+            }
+
+            try {
+                Configuration newConfig = editConfiguration();
+                newConfig.put("ip", deviceInfo.ip);
+                newConfig.put("protocol", deviceInfo.protocolVersion);
+                updateConfiguration(newConfig);
+
+                configuration.ip = deviceInfo.ip;
+                configuration.protocol = deviceInfo.protocolVersion;
+
+                this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
+                        configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip,
+                        configuration.protocol);
+            } catch (IllegalArgumentException e) {
+                logger.warn("{}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
-        updateStatus(ThingStatus.UNKNOWN);
-
-        this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
-                configuration.localKey.getBytes(StandardCharsets.UTF_8), deviceInfo.ip, deviceInfo.protocolVersion);
     }
 
     private void addChannels() {
@@ -653,17 +671,6 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         if (CHANNEL_TYPE_UID_IR_CODE.equals(channelTypeUID)) {
             irStartLearning(configuration.activeListen);
         }
-    }
-
-    private void connectDevice() {
-        TuyaDevice tuyaDevice = this.tuyaDevice;
-        if (tuyaDevice == null) {
-            logger.warn("Cannot connect {} because the device is not set.", thing.getUID());
-            return;
-        }
-        // clear the future here because timing issues can prevent the next attempt if we fail again
-        reconnectFuture = null;
-        tuyaDevice.connect();
     }
 
     private List<CommandOption> toCommandOptionList(List<String> options) {
