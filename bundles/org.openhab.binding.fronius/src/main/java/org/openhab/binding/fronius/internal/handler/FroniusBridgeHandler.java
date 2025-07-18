@@ -14,6 +14,8 @@ package org.openhab.binding.fronius.internal.handler;
 
 import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
 
+import java.io.IOException;
+import java.security.cert.CertificateException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +28,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
+import org.openhab.binding.fronius.internal.api.FroniusTlsTrustManagerProvider;
+import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -34,6 +38,9 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +59,25 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(FroniusBridgeHandler.class);
     private final Set<FroniusBaseThingHandler> services = new HashSet<>();
     private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ServiceRegistration<?> tlsProviderService;
 
     public FroniusBridgeHandler(Bridge bridge) {
         super(bridge);
+    }
+
+    private void setupTlsTrustManager(String host) throws CertificateException, IOException {
+        FroniusTlsTrustManagerProvider trustManagerProvider = new FroniusTlsTrustManagerProvider(host);
+        BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        this.tlsProviderService = context.registerService(TlsTrustManagerProvider.class.getName(), trustManagerProvider,
+                null);
+    }
+
+    private void unregisterTlsTrustManager() {
+        ServiceRegistration<?> tlsProviderService = this.tlsProviderService;
+        if (tlsProviderService != null) {
+            tlsProviderService.unregister();
+            this.tlsProviderService = null;
+        }
     }
 
     @Override
@@ -80,6 +103,13 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
         }
 
         if (validConfig) {
+            if ("https".equals(config.scheme)) {
+                try {
+                    setupTlsTrustManager(hostname);
+                } catch (CertificateException | IOException e) {
+                    logger.error("Error setting up TLS trust manager for host '{}': {}", hostname, e.getMessage());
+                }
+            }
             startAutomaticRefresh();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
@@ -93,6 +123,7 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
             localRefreshJob.cancel(true);
             refreshJob = null;
         }
+        unregisterTlsTrustManager();
     }
 
     @Override

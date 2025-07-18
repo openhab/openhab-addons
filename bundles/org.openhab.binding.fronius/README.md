@@ -39,6 +39,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `username`        | The username to authenticate with the inverter settings for battery control    | No       |
 | `password`        | The password to authenticate with the inverter settings for battery control    | No       |
 | `refreshInterval` | Refresh interval in seconds                                                    | No       |
+| `scheme`          | Set the protocol scheme that is used to connect to your device (default: http) | No       |
 
 ### Powerinverter Thing Configuration
 
@@ -216,7 +217,7 @@ froniusInverterActions.setBackupReservedBatteryCapacity(50);
 demo.things:
 
 ```java
-Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5, username="customer", password="someSecretPassword"] {
+Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5, username="customer", password="someSecretPassword", scheme="http"] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
     Thing ohmpilot myohmpilot [deviceId=0]
