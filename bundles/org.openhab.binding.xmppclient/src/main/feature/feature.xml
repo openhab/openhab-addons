@@ -4,25 +4,22 @@
 
 	<feature name="openhab-binding-xmppclient" description="XMPP Client Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<exclusions>
-			<exclusion>sun.security.pkcs11</exclusion>
-		</exclusions>
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-extensions/4.5.0-beta2</bundle><!---->
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-experimental/4.5.0-beta2</bundle><!---->
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-im/4.5.0-beta2</bundle><!---->
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-tcp/4.5.0-beta2</bundle><!---->
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-xmlparser/4.5.0-beta2</bundle><!---->
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-streammanagement/4.5.0-beta2</bundle><!---->
-		<bundle dependency="true">mvn:org.jxmpp/jxmpp-core/1.1.0</bundle><!---->
-		<bundle dependency="true">mvn:org.jxmpp/jxmpp-jid/1.1.0</bundle><!---->
-		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/1.1.0</bundle><!---->
-		<bundle dependency="true">wrap:mvn:org.hsluv/hsluv/0.2</bundle><!---->
-		<bundle dependency="true">mvn:org.minidns/minidns-core/1.1.1</bundle><!---->
-		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk18on/1.73</bundle><!---->
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-extensions/4.5.0-beta2</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-experimental/4.5.0-beta2</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-im/4.5.0-beta2</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-tcp/4.5.0-beta2</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-xmlparser/4.5.0-beta2</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-streammanagement/4.5.0-beta2</bundle>
+		<bundle dependency="true">mvn:org.jxmpp/jxmpp-core/1.1.0</bundle>
+		<bundle dependency="true">mvn:org.jxmpp/jxmpp-jid/1.1.0</bundle>
+		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/1.1.0</bundle>
+		<bundle dependency="true">wrap:mvn:org.hsluv/hsluv/0.2</bundle>
+		<bundle dependency="true">mvn:org.minidns/minidns-core/1.1.1</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk18on/1.73</bundle>
 		<bundle dependency="true">wrap:mvn:org.igniterealtime.smack/smack-core/4.5.0-beta2$Import-Package=!sun.security.pkcs11,org.*&amp;overwrite=merge</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-sasl-javax/4.5.0-beta2</bundle>
-		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/1.1.4c_7</bundle>
 		<!-- FIXME: implicit dependencies required at runtime but not automatically installed, this is a workaround -->
+		<bundle start-level="80">wrap:mvn:org.hsluv/hsluv/0.2</bundle>
 		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-resolver-javax/4.5.0-beta2</bundle>
 		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-java8/4.5.0-beta2</bundle><!---->
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.xmppclient/${project.version}</bundle>
