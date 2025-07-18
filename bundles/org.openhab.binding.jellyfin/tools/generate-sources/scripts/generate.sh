@@ -51,8 +51,11 @@ fi
 LATEST=$(curl -sL https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json | jq -r .info.version)
 echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m"
 
-VERSIONS=("10.8.13" "10.10.7")
-VERSION_ALIAS=("legacy" "current")
+# VERSIONS=("10.8.13" "10.10.7")
+# VERSION_ALIAS=("legacy" "current")
+VERSIONS=("10.10.7")
+VERSION_ALIAS=("current")
+
 
 DOCKER_VOLUME_WORK="/work"
 
