@@ -92,7 +92,7 @@ public class MBWebsocket {
         DISCONNECTED,
         CONNECTED,
         STARTED
-    };
+    }
 
     public MBWebsocket(AccountHandler accountHandler, HttpClient httpClient) {
         this.accountHandler = accountHandler;
@@ -356,10 +356,10 @@ public class MBWebsocket {
             for (int i = 0; i < frame.getPayloadLength(); i++) {
                 bytes[i] = buffer.get(i);
             }
-            String paylodString = new String(bytes);
-            Instant sent = pingPongMap.remove(paylodString);
+            String payloadString = new String(bytes);
+            Instant sent = pingPongMap.remove(payloadString);
             if (sent == null) {
-                logger.debug("Websocket receiced pong without ping {}", paylodString);
+                logger.debug("Websocket received pong without ping {}", payloadString);
             }
         } else if (Frame.Type.PING.equals(frame.getType())) {
             session.ifPresentOrElse((session) -> {
