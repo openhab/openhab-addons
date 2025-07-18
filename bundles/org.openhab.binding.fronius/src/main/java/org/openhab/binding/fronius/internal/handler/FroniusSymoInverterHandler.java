@@ -359,18 +359,21 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      */
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
             throws FroniusCommunicationException {
-        inverterRealtimeResponse = getRealtimeData(bridgeConfiguration.hostname, config.deviceId);
-        powerFlowResponse = getPowerFlowRealtime(bridgeConfiguration.hostname);
+        inverterRealtimeResponse = getRealtimeData(bridgeConfiguration.scheme, bridgeConfiguration.hostname,
+                config.deviceId);
+        powerFlowResponse = getPowerFlowRealtime(bridgeConfiguration.scheme, bridgeConfiguration.hostname);
     }
 
     /**
      * Make the PowerFlowRealtimeDataRequest
      *
+     * @param scheme http or https
      * @param ip address of the device
      * @return {PowerFlowRealtimeResponse} the object representation of the json response
      */
-    private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.getPowerFlowDataUrl(ip);
+    private PowerFlowRealtimeResponse getPowerFlowRealtime(String scheme, String ip)
+            throws FroniusCommunicationException {
+        String location = FroniusBindingConstants.getPowerFlowDataUrl(scheme, ip);
         return collectDataFromUrl(PowerFlowRealtimeResponse.class, location);
     }
 
@@ -381,8 +384,9 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {InverterRealtimeResponse} the object representation of the json response
      */
-    private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.getInverterDataUrl(ip, deviceId);
+    private InverterRealtimeResponse getRealtimeData(String scheme, String ip, int deviceId)
+            throws FroniusCommunicationException {
+        String location = FroniusBindingConstants.getInverterDataUrl(scheme, ip, deviceId);
         return collectDataFromUrl(InverterRealtimeResponse.class, location);
     }
 
