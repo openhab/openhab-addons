@@ -50,16 +50,21 @@ Example using default interval:
 
 ### Measures Channels
 
-| Channel ID                | Type                    | Advanced | Access | Description                                            |
-|---------------------------|-------------------------|----------|--------|--------------------------------------------------------|
-| temperature               | Number:Temperature      | false    | R      | Water temperature in the pool                          |
-| ph                        | Number                  | false    | R      | pH value of the pool water                             |
-| orp                       | Number:ElectricPotential| false    | R      | Oxidation-reduction potential (ORP)                    |
-| salt                      | Number:Density          | false    | R      | Salt concentration in the pool (salt pools only)       |
-| tds                       | Number:Density          | false    | R      | Total dissolved solids in the pool (chlor pools only)  |
-| battery                   | Number:Dimensionless    | false    | R      | Battery level of the device                            |
-| rssi                      | Number:Dimensionless    | false    | R      | Signal strength (RSSI)                                 |
-| value-time                | DateTime                | true     | R      | Timestamp of the set of measures                       |
+| Channel ID                | Type                     | Advanced | Access | Description                                            |
+|---------------------------|--------------------------|----------|--------|--------------------------------------------------------|
+| temperature               | Number:Temperature       | false    | R      | Water temperature in the pool                          |
+| temperature-trend         | Number:Temperature       | true     | R      | Change in water temperature since last measure         |
+| ph                        | Number                   | false    | R      | pH value of the pool water                             |
+| ph-trend                  | Number                   | true     | R      | Change in pH value since last measure                  |
+| orp                       | Number:ElectricPotential | false    | R      | Oxidation-reduction potential (ORP)                    |
+| orp-trend                 | Number:ElectricPotential | true     | R      | Change in ORP since last measure                       |
+| salt                      | Number:Density           | false    | R      | Salt concentration in the pool (salt pools only)       |
+| salt-trend                | Number:Density           | true     | R      | Change in salt concentration since last measure        |
+| tds                       | Number:Density           | false    | R      | Total dissolved solids in the pool (chlor pools only)  |
+| tds-trend                 | Number:Density           | true     | R      | Change in TDS since last measure                       |
+| battery                   | Number:Dimensionless     | false    | R      | Battery level of the device                            |
+| rssi                      | Number:Dimensionless     | false    | R      | Signal strength (RSSI)                                 |
+| value-time                | DateTime                 | true     | R      | Timestamp of the set of measures                       |
 
 ### Recommendations Channels
 

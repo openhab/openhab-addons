@@ -157,7 +157,7 @@
 	<channel-type id="temperature-trend" advanced="true">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Water Temperature Delta</label>
-		<description>Delta of Water temperature compared to last measure</description>
+		<description>Change in water temperature since last measure</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
@@ -176,7 +176,7 @@
 	<channel-type id="ph-trend" advanced="true">
 		<item-type>Number</item-type>
 		<label>PH Level Delta</label>
-		<description>Delta of PH level compared to last measure</description>
+		<description>Change in PH level since last measure</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
@@ -194,7 +194,7 @@
 	<channel-type id="orp-trend" advanced="true">
 		<item-type unitHint="mV">Number:ElectricPotential</item-type>
 		<label>ORP Delta</label>
-		<description>Delta of ORP compared to last measure</description>
+		<description>Change in ORP since last measure</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
@@ -212,7 +212,7 @@
 	<channel-type id="salt-trend" advanced="true">
 		<item-type unitHint="mg/l">Number:Density</item-type>
 		<label>Salt Delta</label>
-		<description>Delta of Salt level compared to last measure</description>
+		<description>Change in salt level since last measure</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
@@ -230,7 +230,7 @@
 	<channel-type id="tds-trend" advanced="true">
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>TDS Delta</label>
-		<description>Delta of TDS compared to last measure</description>
+		<description>Change in TDS since last measure</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
