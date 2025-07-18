@@ -5,6 +5,22 @@
 
 	<thing-type uid="ondilo:ondilo">
 		<instruction-set targetVersion="1">
+			<add-channel id="temperature-trend" groupIds="measure">
+				<type>ondilo:temperature-trend</type>
+			</add-channel>
+			<add-channel id="ph-trend" groupIds="measure">
+				<type>ondilo:ph-trend</type>
+			</add-channel>
+			<add-channel id="orp-trend" groupIds="measure">
+				<type>ondilo:orp-trend</type>
+			</add-channel>
+			<add-channel id="salt-trend" groupIds="measure">
+				<type>ondilo:salt-trend</type>
+			</add-channel>
+			<add-channel id="tds-trend" groupIds="measure">
+				<type>ondilo:tds-trend</type>
+			</add-channel>
+
 			<add-channel id="temperature-low" groupIds="configuration">
 				<type>ondilo:temperature-low-high</type>
 			</add-channel>

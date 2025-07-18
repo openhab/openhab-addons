@@ -52,10 +52,15 @@ public class OndiloBindingConstants {
     public static final String GROUP_MEASURES = "measure#";
 
     public static final String CHANNEL_TEMPERATURE = GROUP_MEASURES + "temperature";
+    public static final String CHANNEL_TEMPERATURE_TREND = GROUP_MEASURES + "temperature-trend";
     public static final String CHANNEL_PH = GROUP_MEASURES + "ph";
+    public static final String CHANNEL_PH_TREND = GROUP_MEASURES + "ph-trend";
     public static final String CHANNEL_ORP = GROUP_MEASURES + "orp";
+    public static final String CHANNEL_ORP_TREND = GROUP_MEASURES + "orp-trend";
     public static final String CHANNEL_SALT = GROUP_MEASURES + "salt";
+    public static final String CHANNEL_SALT_TREND = GROUP_MEASURES + "salt-trend";
     public static final String CHANNEL_TDS = GROUP_MEASURES + "tds";
+    public static final String CHANNEL_TDS_TREND = GROUP_MEASURES + "tds-trend";
     public static final String CHANNEL_BATTERY = GROUP_MEASURES + "battery";
     public static final String CHANNEL_RSSI = GROUP_MEASURES + "rssi";
     public static final String CHANNEL_VALUE_TIME = GROUP_MEASURES + "value-time";

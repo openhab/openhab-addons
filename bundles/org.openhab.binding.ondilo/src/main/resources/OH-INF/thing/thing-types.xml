@@ -74,10 +74,15 @@
 		<label>Measures</label>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-trend" typeId="temperature-trend"/>
 			<channel id="ph" typeId="ph"/>
+			<channel id="ph-trend" typeId="ph-trend"/>
 			<channel id="orp" typeId="orp"/>
+			<channel id="orp-trend" typeId="orp-trend"/>
 			<channel id="salt" typeId="salt"/>
+			<channel id="sal-trend" typeId="salt-trend"/>
 			<channel id="tds" typeId="tds"/>
+			<channel id="tds-trend" typeId="tds-trend"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="value-time" typeId="value-time"/>
@@ -149,6 +154,16 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
+	<channel-type id="temperature-trend" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Water Temperature Delta</label>
+		<description>Delta of Water temperature compared to last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.1f %unit%"/>
+	</channel-type>
 	<channel-type id="ph">
 		<item-type>Number</item-type>
 		<label>PH Level</label>
@@ -157,6 +172,15 @@
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+	<channel-type id="ph-trend" advanced="true">
+		<item-type>Number</item-type>
+		<label>PH Level Delta</label>
+		<description>Delta of PH level compared to last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.2f"/>
 	</channel-type>
 	<channel-type id="orp">
 		<item-type unitHint="mV">Number:ElectricPotential</item-type>
@@ -167,6 +191,15 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
+	<channel-type id="orp-trend" advanced="true">
+		<item-type unitHint="mV">Number:ElectricPotential</item-type>
+		<label>ORP Delta</label>
+		<description>Delta of ORP compared to last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.1f %unit%"/>
+	</channel-type>
 	<channel-type id="salt">
 		<item-type unitHint="mg/l">Number:Density</item-type>
 		<label>Salt</label>
@@ -176,6 +209,15 @@
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
+	<channel-type id="salt-trend" advanced="true">
+		<item-type unitHint="mg/l">Number:Density</item-type>
+		<label>Salt Delta</label>
+		<description>Delta of Salt level compared to last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.0f %unit%"/>
+	</channel-type>
 	<channel-type id="tds">
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>TDS</label>
@@ -184,6 +226,15 @@
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="tds-trend" advanced="true">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>TDS Delta</label>
+		<description>Delta of TDS compared to last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.1f %unit%"/>
 	</channel-type>
 	<channel-type id="rssi">
 		<item-type>Number</item-type>

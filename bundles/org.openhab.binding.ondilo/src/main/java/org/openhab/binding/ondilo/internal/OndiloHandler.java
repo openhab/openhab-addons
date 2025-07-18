@@ -22,6 +22,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.dto.LastMeasure;
@@ -66,6 +68,18 @@ public class OndiloHandler extends BaseThingHandler {
     private AtomicReference<String> ondiloId = new AtomicReference<>(NO_ID);
 
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
+
+    // Store last value and valueTime for trend calculation
+    private Double lastTemperature = Double.NaN;
+    private @Nullable Instant lastTemperatureTime = null;
+    private Double lastPh = Double.NaN;
+    private @Nullable Instant lastPhTime = null;
+    private Double lastOrp = Double.NaN;
+    private @Nullable Instant lastOrpTime = null;
+    private Double lastSalt = Double.NaN;
+    private @Nullable Instant lastSaltTime = null;
+    private Double lastTds = Double.NaN;
+    private @Nullable Instant lastTdsTime = null;
 
     public OndiloHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
@@ -180,45 +194,57 @@ public class OndiloHandler extends BaseThingHandler {
         this.recommendationId = 0; // Reset last processed recommendation ID
     }
 
-    public Instant updateLastMeasuresChannels(LastMeasure lastMeasures) {
-        /*
-         * The measures are received using the following units:
-         * - Temperature: Celsius degrees (°C)
-         * - ORP: millivolts (mV)
-         * - Salt: milligrams per liter (mg/l)
-         * - TDS: parts per million (ppm)
-         * - Battery and RSSI: percent (%)
-         */
-        switch (lastMeasures.dataType) {
+    private void updateTrendChannel(String channel, String trendChannel, double value, @Nullable Instant lastValueTime,
+            Double lastValue, Instant valueTime, Object unitOrType) {
+        if (lastValueTime != null && !lastValueTime.equals(valueTime)) {
+            double delta = value - lastValue;
+            if (unitOrType instanceof Unit<?>) {
+                updateState(trendChannel, new QuantityType<>(delta, (Unit<?>) unitOrType));
+            } else {
+                updateState(trendChannel, new DecimalType(delta));
+            }
+        } else {
+            updateState(trendChannel, UnDefType.UNDEF);
+        }
+        updateState(channel, unitOrType instanceof Unit<?> ? new QuantityType<>(value, (Unit<?>) unitOrType)
+                : new DecimalType(value));
+        lastValue = value;
+        lastValueTime = valueTime;
+    }
+
+    public Instant updateLastMeasuresChannels(LastMeasure lastMeasure) {
+        Instant valueTime = parseUtcTimeToInstant(lastMeasure.valueTime);
+        switch (lastMeasure.dataType) {
             case "temperature":
-                updateState(CHANNEL_TEMPERATURE, new QuantityType<>(lastMeasures.value, SIUnits.CELSIUS));
+                updateTrendChannel(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_TREND, lastMeasure.value,
+                        lastTemperatureTime, lastTemperature, valueTime, SIUnits.CELSIUS);
                 break;
             case "ph":
-                updateState(CHANNEL_PH, new DecimalType(lastMeasures.value));
+                updateTrendChannel(CHANNEL_PH, CHANNEL_PH_TREND, lastMeasure.value, lastPhTime, lastPh, valueTime,
+                        DecimalType.class);
                 break;
             case "orp":
-                updateState(CHANNEL_ORP, new QuantityType<>(lastMeasures.value / 1000.0, Units.VOLT));
-                // Convert mV to V
+                updateTrendChannel(CHANNEL_ORP, CHANNEL_ORP_TREND, lastMeasure.value / 1000.0, lastOrpTime,
+                        lastOrp / 1000.0, valueTime, Units.VOLT); // Convert mV to V
                 break;
             case "salt":
-                updateState(CHANNEL_SALT,
-                        new QuantityType<>(lastMeasures.value * 0.001, Units.KILOGRAM_PER_CUBICMETRE));
-                // Convert mg/l to kg/m³
+                updateTrendChannel(CHANNEL_SALT, CHANNEL_SALT_TREND, lastMeasure.value * 0.001, lastSaltTime,
+                        lastSalt * 0.001, valueTime, Units.KILOGRAM_PER_CUBICMETRE); // Convert mg/l to kg/m³
                 break;
             case "tds":
-                updateState(CHANNEL_TDS, new QuantityType<>(lastMeasures.value, Units.PARTS_PER_MILLION));
+                updateTrendChannel(CHANNEL_TDS, CHANNEL_TDS_TREND, lastMeasure.value, lastTdsTime, lastTds, valueTime,
+                        Units.PARTS_PER_MILLION);
                 break;
             case "battery":
-                updateState(CHANNEL_BATTERY, new QuantityType<>(lastMeasures.value, Units.PERCENT));
+                updateState(CHANNEL_BATTERY, new QuantityType<>(lastMeasure.value, Units.PERCENT));
                 break;
             case "rssi":
-                updateState(CHANNEL_RSSI, new DecimalType(lastMeasures.value));
+                updateState(CHANNEL_RSSI, new DecimalType(lastMeasure.value));
                 break;
             default:
-                logger.warn("Unknown data type: {}", lastMeasures.dataType);
+                logger.warn("Unknown data type: {}", lastMeasure.dataType);
         }
         // Update value time channel (expect that it is the same for all measures)
-        Instant valueTime = parseUtcTimeToInstant(lastMeasures.valueTime);
         updateState(CHANNEL_VALUE_TIME, new DateTimeType(valueTime));
         return valueTime;
     }
