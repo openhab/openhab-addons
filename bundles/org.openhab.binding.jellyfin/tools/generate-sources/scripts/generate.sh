@@ -51,8 +51,6 @@ fi
 LATEST=$(curl -sL https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json | jq -r .info.version)
 echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m"
 
-# VERSIONS=("10.8.13" "10.10.7" "10.11.0")
-# VERSION_ALIAS=("legacy" "current" "next")
 VERSIONS=("10.8.13" "10.10.7")
 VERSION_ALIAS=("legacy" "current")
 
@@ -62,6 +60,7 @@ ROOT=$(pwd)
 
 OPENAPI_JAVA_CONFIG="tools/generate-sources/scripts/java.config.json"
 OPENAPI_SPECIFICATION_DIR="tools/generate-sources/scripts/specifications"
+FILENAME_ENDPOINTS=logs/endpoints/${i}.txt
 
 if ! npx list openapi-filter &>/dev/null; then
     echo "ℹ️  - Installing openapi-filter@3.2.3"
@@ -84,6 +83,9 @@ for i in "${VERSIONS[@]}"; do
 
     FILENAME_JSON=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/json/jellyfin-openapi-${i}.json
     FILENAME_YAML=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/yaml/jellyfin-openapi-${i}.yaml
+
+    mkdir -p logs/endpoints
+    jq ".paths | to_entries[] | {path: .key, methods: (.value | keys)}" ${FILENAME_JSON} | grep \"path\" >logs/endpoints/${i}.txt
 
     if [ ! -e "${FILENAME_JSON}" ]; then
         echo "  ⏬ - Downloading OPENAPI definition for Version ${i}"
