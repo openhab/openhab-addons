@@ -34,7 +34,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.zip.CRC32;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -218,7 +217,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         initTask.setNamePrefix(getThing().getUID().getId());
         mqttConnectTask.setNamePrefix(getThing().getUID().getId());
         initTask.submit();
-        schedulePoll();
+        // schedulePoll();
     }
 
     private void schedulePoll() {
@@ -238,9 +237,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 && (((lastMQTTPublishTimestamp - lastMQTTMessageTimestamp) / 1000) > 300)) {
             logger.trace("MQTT Message - Last Publish {}, last Message {}", lastMQTTPublishTimestamp,
                     lastMQTTMessageTimestamp);
-            logger.debug("MQTT message - more than 5 minutes since Publish and no response, kick MQTT connection");
-            teardownAndScheduleReconnection();
-            lastMQTTMessageTimestamp = System.currentTimeMillis();
+            logger.debug("MQTT message - more than 5 minutes since Publish and no response");
+            // teardownAndScheduleReconnection();
+            // lastMQTTMessageTimestamp = System.currentTimeMillis();
+        } else if (this.mqttClient == null) {
+            // teardownAndScheduleReconnection();
+            mqttConnectTask.schedule(280);
         }
     }
 
@@ -319,8 +321,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
         if (scheduleReconnection) {
             initTask.submit();
-            SchedulerTask connectTask = mqttConnectTask;
-            connectTask.schedule(5);
         }
     }
 
@@ -374,12 +374,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                         ctx.getCause().getMessage());
                 String errorMessage = ctx.getCause().getMessage();
                 if (errorMessage.contains("NOT_AUTHORIZED")) {
-                    logger.trace("MQTT can't connect due to being unauthorised. Clear credentials");
-                    sessionStorage.put("token", null);
-                    sessionStorage.put("rriot", null);
+                    logger.trace("MQTT can't connect due to being unauthorised. Pause and reconnect.");
+                    // sessionStorage.put("token", null);
+                    // sessionStorage.put("rriot", null);
                 }
-                onEventStreamFailure(ctx.getCause());
-                teardownAndScheduleReconnection();
+                mqttConnectTask.cancel();
+                mqttConnectTask.schedule(60);
             }
         };
 
@@ -400,42 +400,47 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         try {
             this.mqttClient = client;
             client.connectWith().keepAlive(60).send();
-            // client.get();
+            logger.debug("Established MQTT connection.");
 
-            final Consumer<@Nullable Mqtt5Publish> eventCallback = publish -> {
-                if (publish == null) {
-                    return;
-                }
-                String receivedTopic = publish.getTopic().toString();
+            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/";
 
-                String destination = receivedTopic.substring(receivedTopic.lastIndexOf('/') + 1);
-                logger.debug("Received MQTT message for device {}", destination);
-                lastMQTTMessageTimestamp = System.currentTimeMillis();
-                // check list of child handlers and send message to the right one
-                for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
-                    if (entry.getKey().getUID().getAsString().contains(destination)) {
-                        logger.trace("Submit response to child {} -> {}", destination, entry.getKey().getUID());
-                        byte[] payload = publish.getPayloadAsBytes();
-
-                        entry.getValue().handleMessage(payload);
-                        return;
-                    }
-                }
-            };
-
-            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
-
-            client.subscribeWith().topicFilter(topic).callback(eventCallback).send().get();
-            logger.debug("Established MQTT connection, subscribed to topic {}", topic);
+            for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
+                logger.info("Subscribing to MQTT topic for deviceID = {}", entry.getKey().getUID().getId());
+                client.subscribeWith().topicFilter(topic + entry.getKey().getUID().getId())
+                        .callback(this::handleMessage).send().get();
+            }
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             boolean isAuthFailure = cause instanceof Mqtt5ConnAckException connAckException
                     && connAckException.getMqttMessage().getReasonCode() == Mqtt5ConnAckReasonCode.NOT_AUTHORIZED;
-            teardownAndScheduleReconnection();
+            // teardownAndScheduleReconnection();
+            mqttConnectTask.cancel();
+            mqttConnectTask.schedule(280);
             if (isAuthFailure) {
                 logger.debug("Authorization failure.");
             }
             throw new RoborockCommunicationException(e);
+        }
+    }
+
+    public void handleMessage(@Nullable Mqtt5Publish publish) {
+        if (publish == null) {
+            return;
+        }
+        String receivedTopic = publish.getTopic().toString();
+
+        String destination = receivedTopic.substring(receivedTopic.lastIndexOf('/') + 1);
+        logger.debug("Received MQTT message for device {}", destination);
+        lastMQTTMessageTimestamp = System.currentTimeMillis();
+        // check list of child handlers and send message to the right one
+        for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
+            if (entry.getKey().getUID().getAsString().contains(destination)) {
+                logger.trace("Submit response to child {} -> {}", destination, entry.getKey().getUID());
+                byte[] payload = publish.getPayloadAsBytes();
+
+                entry.getValue().handleMessage(payload);
+                return;
+            }
         }
     }
 
@@ -555,7 +560,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     public void onEventStreamFailure(Throwable error) {
         logger.debug("Device connection failed, reconnecting", error);
-        teardownAndScheduleReconnection();
+        // mqttConnectTask.schedule(280);
     }
 
     @Override
