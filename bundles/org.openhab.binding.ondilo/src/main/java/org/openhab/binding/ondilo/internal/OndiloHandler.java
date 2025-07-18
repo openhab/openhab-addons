@@ -70,15 +70,15 @@ public class OndiloHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
 
     // Store last value and valueTime for trend calculation
-    private Double lastTemperature = Double.NaN;
+    private double lastTemperature = Double.NaN;
     private @Nullable Instant lastTemperatureTime = null;
-    private Double lastPh = Double.NaN;
+    private double lastPh = Double.NaN;
     private @Nullable Instant lastPhTime = null;
-    private Double lastOrp = Double.NaN;
+    private double lastOrp = Double.NaN;
     private @Nullable Instant lastOrpTime = null;
-    private Double lastSalt = Double.NaN;
+    private double lastSalt = Double.NaN;
     private @Nullable Instant lastSaltTime = null;
-    private Double lastTds = Double.NaN;
+    private double lastTds = Double.NaN;
     private @Nullable Instant lastTdsTime = null;
 
     public OndiloHandler(Thing thing, LocaleProvider localeProvider) {
@@ -208,8 +208,6 @@ public class OndiloHandler extends BaseThingHandler {
         }
         updateState(channel, unitOrType instanceof Unit<?> ? new QuantityType<>(value, (Unit<?>) unitOrType)
                 : new DecimalType(value));
-        lastValue = value;
-        lastValueTime = valueTime;
     }
 
     public Instant updateLastMeasuresChannels(LastMeasure lastMeasure) {
@@ -217,23 +215,33 @@ public class OndiloHandler extends BaseThingHandler {
         switch (lastMeasure.dataType) {
             case "temperature":
                 updateTrendChannel(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_TREND, lastMeasure.value,
-                        lastTemperatureTime, lastTemperature, valueTime, SIUnits.CELSIUS);
+                        this.lastTemperatureTime, this.lastTemperature, valueTime, SIUnits.CELSIUS);
+                this.lastTemperature = lastMeasure.value;
+                this.lastTemperatureTime = valueTime;
                 break;
             case "ph":
-                updateTrendChannel(CHANNEL_PH, CHANNEL_PH_TREND, lastMeasure.value, lastPhTime, lastPh, valueTime,
-                        DecimalType.class);
+                updateTrendChannel(CHANNEL_PH, CHANNEL_PH_TREND, lastMeasure.value, this.lastPhTime, this.lastPh,
+                        valueTime, DecimalType.class);
+                this.lastPh = lastMeasure.value;
+                this.lastPhTime = valueTime;
                 break;
             case "orp":
-                updateTrendChannel(CHANNEL_ORP, CHANNEL_ORP_TREND, lastMeasure.value / 1000.0, lastOrpTime,
-                        lastOrp / 1000.0, valueTime, Units.VOLT); // Convert mV to V
+                updateTrendChannel(CHANNEL_ORP, CHANNEL_ORP_TREND, lastMeasure.value / 1000.0, this.lastOrpTime,
+                        this.lastOrp / 1000.0, valueTime, Units.VOLT); // Convert mV to V
+                this.lastOrp = lastMeasure.value;
+                this.lastOrpTime = valueTime;
                 break;
             case "salt":
-                updateTrendChannel(CHANNEL_SALT, CHANNEL_SALT_TREND, lastMeasure.value * 0.001, lastSaltTime,
-                        lastSalt * 0.001, valueTime, Units.KILOGRAM_PER_CUBICMETRE); // Convert mg/l to kg/m³
+                updateTrendChannel(CHANNEL_SALT, CHANNEL_SALT_TREND, lastMeasure.value * 0.001, this.lastSaltTime,
+                        this.lastSalt * 0.001, valueTime, Units.KILOGRAM_PER_CUBICMETRE); // Convert mg/l to kg/m³
+                this.lastSalt = lastMeasure.value;
+                this.lastSaltTime = valueTime;
                 break;
             case "tds":
-                updateTrendChannel(CHANNEL_TDS, CHANNEL_TDS_TREND, lastMeasure.value, lastTdsTime, lastTds, valueTime,
-                        Units.PARTS_PER_MILLION);
+                updateTrendChannel(CHANNEL_TDS, CHANNEL_TDS_TREND, lastMeasure.value, this.lastTdsTime, this.lastTds,
+                        valueTime, Units.PARTS_PER_MILLION);
+                this.lastTds = lastMeasure.value;
+                this.lastTdsTime = valueTime;
                 break;
             case "battery":
                 updateState(CHANNEL_BATTERY, new QuantityType<>(lastMeasure.value, Units.PERCENT));
