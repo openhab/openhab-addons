@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 import org.openhab.core.util.StringUtils;
 
@@ -25,6 +26,7 @@ import org.openhab.core.util.StringUtils;
  *
  * @author Andreas Berger - Initial contribution
  */
+@NonNullByDefault
 public class DebugDetails {
     final byte[] data;
 
