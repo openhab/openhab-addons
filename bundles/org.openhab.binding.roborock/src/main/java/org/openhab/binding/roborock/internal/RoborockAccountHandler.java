@@ -399,7 +399,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
         try {
             this.mqttClient = client;
-            client.connectWith().keepAlive(60).send();
+            // client.connectWith().keepAlive(60).send();
+            client.connect().get();
             logger.debug("Established MQTT connection.");
 
             String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/";
@@ -425,6 +426,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     public void handleMessage(@Nullable Mqtt5Publish publish) {
         if (publish == null) {
+            logger.debug("handleMessage - null publish received");
             return;
         }
         String receivedTopic = publish.getTopic().toString();
