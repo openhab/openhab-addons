@@ -12,16 +12,18 @@
  */
 package org.openhab.binding.ftpupload.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for FtpUpload device.
  *
  * @author Pauli Anttila - Initial contribution
  */
-
+@NonNullByDefault
 public class FtpUploadConfig {
 
-    public String userName;
-    public String password;
+    public String userName = "";
+    public String password = "";
 
     @Override
     public String toString() {
