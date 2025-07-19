@@ -38,8 +38,8 @@ public class A5_09_0C extends A5_09_05 {
     protected String[] getVOCIdentifications() {
         String[] parentVOCIds = super.getVOCIdentifications();
         int parentVOCIdsLength = parentVOCIds.length - 2;
-        String[] additionalVOCIds = new String[] { "Naphthalene", "4-Phenylcyclohexene", "Limonene", "Trichloroethylene",
-            "Isovaleric acid", "Indole", "Cadaverine", "Putrescine", "Caproic acid", "Ozone" };
+        String[] additionalVOCIds = new String[] { "Naphthalene", "4-Phenylcyclohexene", "Limonene",
+                "Trichloroethylene", "Isovaleric acid", "Indole", "Cadaverine", "Putrescine", "Caproic acid", "Ozone" };
         String[] combinedVOCIds = new String[parentVOCIdsLength + additionalVOCIds.length];
 
         System.arraycopy(parentVOCIds, 0, combinedVOCIds, 0, parentVOCIdsLength);
