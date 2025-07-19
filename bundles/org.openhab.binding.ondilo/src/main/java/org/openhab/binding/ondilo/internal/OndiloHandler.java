@@ -17,14 +17,21 @@ import static org.openhab.binding.ondilo.internal.OndiloBindingConstants.*;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.dto.LastMeasure;
+import org.openhab.binding.ondilo.internal.dto.Pool;
+import org.openhab.binding.ondilo.internal.dto.PoolConfiguration;
+import org.openhab.binding.ondilo.internal.dto.PoolInfo;
 import org.openhab.binding.ondilo.internal.dto.Recommendation;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -52,14 +59,32 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OndiloHandler extends BaseThingHandler {
     private static final String NO_ID = "NO_ID";
+
     private final Logger logger = LoggerFactory.getLogger(OndiloHandler.class);
+    private final LocaleProvider localeProvider;
+    private final int configPoolId;
+
     private int recommendationId; // Used to track the last recommendation ID processed
     private AtomicReference<String> ondiloId = new AtomicReference<>(NO_ID);
-    private final int configPoolId;
+
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
 
-    public OndiloHandler(Thing thing) {
+    // Store last value and valueTime for trend calculation
+    private double lastTemperature = Double.NaN;
+    private @Nullable Instant lastTemperatureTime = null;
+    private double lastPh = Double.NaN;
+    private @Nullable Instant lastPhTime = null;
+    private double lastOrp = Double.NaN;
+    private @Nullable Instant lastOrpTime = null;
+    private double lastSalt = Double.NaN;
+    private @Nullable Instant lastSaltTime = null;
+    private double lastTds = Double.NaN;
+    private @Nullable Instant lastTdsTime = null;
+
+    public OndiloHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
+
+        this.localeProvider = localeProvider;
 
         OndiloConfiguration currentConfig = getConfigAs(OndiloConfiguration.class);
         this.configPoolId = currentConfig.id;
@@ -169,45 +194,65 @@ public class OndiloHandler extends BaseThingHandler {
         this.recommendationId = 0; // Reset last processed recommendation ID
     }
 
-    public Instant updateLastMeasuresChannels(LastMeasure lastMeasures) {
-        /*
-         * The measures are received using the following units:
-         * - Temperature: Celsius degrees (°C)
-         * - ORP: millivolts (mV)
-         * - Salt: milligrams per liter (mg/l)
-         * - TDS: parts per million (ppm)
-         * - Battery and RSSI: percent (%)
-         */
-        switch (lastMeasures.dataType) {
+    private void updateTrendChannel(String channel, String trendChannel, double value, @Nullable Instant lastValueTime,
+            double lastValue, Instant valueTime, Object unitOrType) {
+        if (lastValueTime != null && !lastValueTime.equals(valueTime)) {
+            double delta = value - lastValue;
+            if (unitOrType instanceof Unit<?>) {
+                updateState(trendChannel, new QuantityType<>(delta, (Unit<?>) unitOrType));
+            } else {
+                updateState(trendChannel, new DecimalType(delta));
+            }
+        } else {
+            updateState(trendChannel, UnDefType.UNDEF);
+        }
+        updateState(channel, unitOrType instanceof Unit<?> ? new QuantityType<>(value, (Unit<?>) unitOrType)
+                : new DecimalType(value));
+    }
+
+    public Instant updateLastMeasuresChannels(LastMeasure lastMeasure) {
+        Instant valueTime = parseUtcTimeToInstant(lastMeasure.valueTime);
+        switch (lastMeasure.dataType) {
             case "temperature":
-                updateState(CHANNEL_TEMPERATURE, new QuantityType<>(lastMeasures.value, SIUnits.CELSIUS));
+                updateTrendChannel(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_TREND, lastMeasure.value,
+                        this.lastTemperatureTime, this.lastTemperature, valueTime, SIUnits.CELSIUS);
+                this.lastTemperature = lastMeasure.value;
+                this.lastTemperatureTime = valueTime;
                 break;
             case "ph":
-                updateState(CHANNEL_PH, new DecimalType(lastMeasures.value));
+                updateTrendChannel(CHANNEL_PH, CHANNEL_PH_TREND, lastMeasure.value, this.lastPhTime, this.lastPh,
+                        valueTime, DecimalType.class);
+                this.lastPh = lastMeasure.value;
+                this.lastPhTime = valueTime;
                 break;
             case "orp":
-                updateState(CHANNEL_ORP, new QuantityType<>(lastMeasures.value / 1000.0, Units.VOLT));
-                // Convert mV to V
+                updateTrendChannel(CHANNEL_ORP, CHANNEL_ORP_TREND, lastMeasure.value / 1000.0, this.lastOrpTime,
+                        this.lastOrp / 1000.0, valueTime, Units.VOLT); // Convert mV to V
+                this.lastOrp = lastMeasure.value;
+                this.lastOrpTime = valueTime;
                 break;
             case "salt":
-                updateState(CHANNEL_SALT,
-                        new QuantityType<>(lastMeasures.value * 0.001, Units.KILOGRAM_PER_CUBICMETRE));
-                // Convert mg/l to kg/m³
+                updateTrendChannel(CHANNEL_SALT, CHANNEL_SALT_TREND, lastMeasure.value * 0.001, this.lastSaltTime,
+                        this.lastSalt * 0.001, valueTime, Units.KILOGRAM_PER_CUBICMETRE); // Convert mg/l to kg/m³
+                this.lastSalt = lastMeasure.value;
+                this.lastSaltTime = valueTime;
                 break;
             case "tds":
-                updateState(CHANNEL_TDS, new QuantityType<>(lastMeasures.value, Units.PARTS_PER_MILLION));
+                updateTrendChannel(CHANNEL_TDS, CHANNEL_TDS_TREND, lastMeasure.value, this.lastTdsTime, this.lastTds,
+                        valueTime, Units.PARTS_PER_MILLION);
+                this.lastTds = lastMeasure.value;
+                this.lastTdsTime = valueTime;
                 break;
             case "battery":
-                updateState(CHANNEL_BATTERY, new QuantityType<>(lastMeasures.value, Units.PERCENT));
+                updateState(CHANNEL_BATTERY, new QuantityType<>(lastMeasure.value, Units.PERCENT));
                 break;
             case "rssi":
-                updateState(CHANNEL_RSSI, new DecimalType(lastMeasures.value));
+                updateState(CHANNEL_RSSI, new DecimalType(lastMeasure.value));
                 break;
             default:
-                logger.warn("Unknown data type: {}", lastMeasures.dataType);
+                logger.warn("Unknown data type: {}", lastMeasure.dataType);
         }
         // Update value time channel (expect that it is the same for all measures)
-        Instant valueTime = parseUtcTimeToInstant(lastMeasures.valueTime);
         updateState(CHANNEL_VALUE_TIME, new DateTimeType(valueTime));
         return valueTime;
     }
@@ -221,6 +266,53 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_STATUS, new StringType(recommendation.status.name()));
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, new DateTimeType(recommendation.deadline));
         this.recommendationId = recommendation.id; // Update last processed recommendation ID
+    }
+
+    public void updatePool(Pool pool) {
+        Map<String, String> properties = editProperties();
+        properties.put(PROPERTY_ONDILO_ID, String.valueOf(pool.id));
+        properties.put(PROPERTY_ONDILO_NAME, pool.name);
+        properties.put(PROPERTY_ONDILO_TYPE, pool.type);
+        properties.put(PROPERTY_ONDILO_VOLUME, pool.getVolume());
+        properties.put(PROPERTY_ONDILO_DISINFECTION, pool.getDisinfection());
+        properties.put(PROPERTY_ONDILO_ADDRESS, pool.getAddress());
+        properties.put(PROPERTY_ONDILO_LOCATION, pool.getLocation());
+        updateProperties(properties);
+    }
+
+    public void updatePoolInfo(PoolInfo poolInfo) {
+        Map<String, String> properties = editProperties();
+        properties.put(PROPERTY_ONDILO_INFO_UUID, poolInfo.uuid);
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, poolInfo.serialNumber);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, poolInfo.swVersion);
+        updateProperties(properties);
+    }
+
+    public void updatePoolInfo(PoolConfiguration poolConfiguration) {
+        Map<String, String> properties = editProperties();
+        properties.put(PROPERTY_ONDILO_INFO_POOL_GUY_NUMBER, poolConfiguration.poolGuyNumber);
+        properties.put(PROPERTY_ONDILO_INFO_MAINTENANCE_DAY,
+                poolConfiguration.getMaintenanceDay(localeProvider.getLocale()));
+        updateProperties(properties);
+    }
+
+    public void updatePoolConfiguration(PoolConfiguration poolConfiguration) {
+        updateState(CHANNEL_CONFIGURATION_TEMPERATURE_LOW,
+                new QuantityType<>(poolConfiguration.temperatureLow, SIUnits.CELSIUS));
+        updateState(CHANNEL_CONFIGURATION_TEMPERATURE_HIGH,
+                new QuantityType<>(poolConfiguration.temperatureHigh, SIUnits.CELSIUS));
+        updateState(CHANNEL_CONFIGURATION_PH_LOW, new DecimalType(poolConfiguration.phLow));
+        updateState(CHANNEL_CONFIGURATION_PH_HIGH, new DecimalType(poolConfiguration.phHigh));
+        updateState(CHANNEL_CONFIGURATION_ORP_LOW, new QuantityType<>(poolConfiguration.orpLow / 1000.0, Units.VOLT));
+        updateState(CHANNEL_CONFIGURATION_ORP_HIGH, new QuantityType<>(poolConfiguration.orpHigh / 1000.0, Units.VOLT));
+        updateState(CHANNEL_CONFIGURATION_SALT_LOW,
+                new QuantityType<>(poolConfiguration.saltLow * 0.001, Units.KILOGRAM_PER_CUBICMETRE));
+        updateState(CHANNEL_CONFIGURATION_SALT_HIGH,
+                new QuantityType<>(poolConfiguration.saltHigh * 0.001, Units.KILOGRAM_PER_CUBICMETRE));
+        updateState(CHANNEL_CONFIGURATION_TDS_LOW,
+                new QuantityType<>(poolConfiguration.tdsLow, Units.PARTS_PER_MILLION));
+        updateState(CHANNEL_CONFIGURATION_TDS_HIGH,
+                new QuantityType<>(poolConfiguration.tdsHigh, Units.PARTS_PER_MILLION));
     }
 
     @Nullable
