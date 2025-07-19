@@ -239,7 +239,7 @@
 		<category>Flow</category>
 		<tags>
 			<tag>Measurement</tag>
-            <tag>Level</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -472,10 +472,10 @@
 	<channel-type id="hp1-flow-rate-type">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Heat Pump 1 Flow Rate</label>
-        <category>Flow</category>
+		<category>Flow</category>
 		<tags>
 			<tag>Measurement</tag>
-            <tag>Level</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -488,7 +488,7 @@
 		<label>Operation Mode</label>
 		<tags>
 			<tag>Control</tag>
-            <tag>Mode</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -544,7 +544,7 @@
 		<label>Operating Mode</label>
 		<tags>
 			<tag>Control</tag>
-            <tag>Mode</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -763,7 +763,7 @@
 		<label>Currently Heating</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -772,7 +772,7 @@
 		<label>Currently Heating Water</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -781,7 +781,7 @@
 		<label>Currently Cooling</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -790,7 +790,7 @@
 		<label>Currently Pumping</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -799,7 +799,7 @@
 		<label>Summer Operation Mode</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -810,7 +810,7 @@
 		<label>HC1 Pump Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -819,7 +819,7 @@
 		<label>HC2 Pump Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -828,7 +828,7 @@
 		<label>Heat-Up Program Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -837,7 +837,7 @@
 		<label>Electric Reheating Stages Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -846,7 +846,7 @@
 		<label>Currently Heating</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -855,7 +855,7 @@
 		<label>Currently Heating Hot Water</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -864,7 +864,7 @@
 		<label>Compressor Running</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -873,7 +873,7 @@
 		<label>Summer Mode Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -882,7 +882,7 @@
 		<label>Currently Cooling</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -891,7 +891,7 @@
 		<label>Min. One IWS In Defrosting Mode</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -900,7 +900,7 @@
 		<label>Silent Mode 1 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -909,7 +909,7 @@
 		<label>Silent Mode 2 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -918,7 +918,7 @@
 		<label>Power Off</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -929,7 +929,7 @@
 		<label>Compressor 1 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -938,7 +938,7 @@
 		<label>Compressor 2 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -947,7 +947,7 @@
 		<label>Compressor 3 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -956,7 +956,7 @@
 		<label>Compressor 4 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -965,7 +965,7 @@
 		<label>Compressor 5 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -974,7 +974,7 @@
 		<label>Compressor 6 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -983,7 +983,7 @@
 		<label>Buffer Charging Pump 1 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -992,7 +992,7 @@
 		<label>Buffer Charging Pump 2 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1001,7 +1001,7 @@
 		<label>Buffer Charging Pump 3 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1010,7 +1010,7 @@
 		<label>Buffer Charging Pump 4 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1019,7 +1019,7 @@
 		<label>Buffer Charging Pump 5 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1028,7 +1028,7 @@
 		<label>Buffer Charging Pump 6 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1037,7 +1037,7 @@
 		<label>Electric Reheating Stage 1 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1046,7 +1046,7 @@
 		<label>Electric Reheating Stage 2 Active</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>OpenState</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1056,7 +1056,7 @@
 		<label>Fault Status</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>Mode</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1070,7 +1070,7 @@
 		<label>Bus Status</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>Mode</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1087,7 +1087,7 @@
 		<label>Defrost Initiated</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>Mode</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1101,7 +1101,7 @@
 		<label>Active Error</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>Mode</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true" pattern="%u"/>
 	</channel-type>
@@ -1417,7 +1417,7 @@
 		<label>SG Ready On/Off Switch</label>
 		<tags>
 			<tag>Control</tag>
-            <tag>Mode</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -1436,7 +1436,7 @@
 		</description>
 		<tags>
 			<tag>Control</tag>
-            <tag>Mode</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
 			<options>
