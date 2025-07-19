@@ -24,11 +24,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiver;
-import org.openhab.binding.freebox.internal.api.model.FreeboxCallEntry;
-import org.openhab.binding.freebox.internal.api.model.FreeboxLanHost;
-import org.openhab.binding.freebox.internal.api.model.FreeboxLanHostL3Connectivity;
-import org.openhab.binding.freebox.internal.api.model.FreeboxPhoneStatus;
+import org.openhab.binding.freebox.internal.api.dto.FreeboxAirMediaReceiver;
+import org.openhab.binding.freebox.internal.api.dto.FreeboxCallEntry;
+import org.openhab.binding.freebox.internal.api.dto.FreeboxLanHost;
+import org.openhab.binding.freebox.internal.api.dto.FreeboxLanHostL3Connectivity;
+import org.openhab.binding.freebox.internal.api.dto.FreeboxPhoneStatus;
 import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;

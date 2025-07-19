@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.freebox.internal.api;
 
-import org.openhab.binding.freebox.internal.api.model.FreeboxResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freebox.internal.api.dto.FreeboxResponse;
 
 /**
  * Exception for errors when using the Freebox API
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class FreeboxException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    protected FreeboxResponse<?> response;
+    protected @Nullable FreeboxResponse<?> response;
 
     public FreeboxException(String msg) {
         this(msg, null, null);
@@ -41,12 +44,12 @@ public class FreeboxException extends Exception {
         this(response.getMsg(), null, response);
     }
 
-    public FreeboxException(String msg, Throwable cause, FreeboxResponse<?> response) {
+    public FreeboxException(String msg, @Nullable Throwable cause, @Nullable FreeboxResponse<?> response) {
         super(msg, cause);
         this.response = response;
     }
 
-    public FreeboxResponse<?> getResponse() {
+    public @Nullable FreeboxResponse<?> getResponse() {
         return response;
     }
 
