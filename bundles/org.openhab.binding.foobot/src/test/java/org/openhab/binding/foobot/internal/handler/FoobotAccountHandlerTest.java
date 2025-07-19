@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.foobot.internal.FoobotApiConnector;
 import org.openhab.binding.foobot.internal.FoobotApiException;
-import org.openhab.binding.foobot.internal.json.FoobotDevice;
+import org.openhab.binding.foobot.internal.dto.FoobotDevice;
 import org.openhab.core.thing.Bridge;
 
 /**
