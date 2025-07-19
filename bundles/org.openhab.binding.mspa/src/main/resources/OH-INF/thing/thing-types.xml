@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mspa"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="owner-account">
+		<label>Owner Account</label>
+		<description>Owner account with email and password credentials</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>Email</label>
+				<description>Email address of your account</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access your account</description>
+			</parameter>
+			<parameter name="region" type="text" required="true">
+				<label>Region</label>
+				<description>Region where your country is located</description>
+				<options>
+					<option value="ROW">Rest of World</option>
+					<option value="US">United States</option>
+					<option value="CH">China</option>
+				</options>
+				<default>ROW</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="visitor-account">
+		<label>Visitor Account</label>
+		<description>Visitor account with access via QR code</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<config-description>
+			<parameter name="visitorId" type="text">
+				<label>Visitor ID</label>
+				<description>Random 16 digit id with lower case hex characters</description>
+			</parameter>
+			<parameter name="grantCode" type="text" required="true">
+				<context>password</context>
+				<label>Grant Code</label>
+				<description>Grant from QR code presented by MSpa-Link App</description>
+			</parameter>
+			<parameter name="region" type="text" required="true">
+				<label>Region</label>
+				<description>Region where your country is located</description>
+				<options>
+					<option value="ROW">Rest of World</option>
+					<option value="US">United States</option>
+					<option value="CH">China</option>
+				</options>
+				<default>ROW</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="pool">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owner-account"/>
+			<bridge-type-ref id="visitor-account"/>
+		</supported-bridge-type-refs>
+		<label>Pool</label>
+		<description>Pool connected with your account</description>
+		<semantic-equipment-tag>Jacuzzi</semantic-equipment-tag>
+		<channels>
+			<channel id="temperature" typeId="temperature">
+				<label>Water Temperature</label>
+				<description>Current water temperature</description>
+			</channel>
+			<channel id="target-temperature" typeId="set-temperature">
+				<label>Target Water Temperature</label>
+				<description>Temperature to reach with heating</description>
+			</channel>
+			<channel id="heater" typeId="switch">
+				<label>Heater</label>
+				<description>Control water heating</description>
+			</channel>
+			<channel id="jet-stream" typeId="switch">
+				<label>Jet Stream</label>
+				<description>Control jet stream for massage</description>
+			</channel>
+			<channel id="bubbles" typeId="switch">
+				<label>Bubbles</label>
+				<description>Switch bubbles on/off</description>
+			</channel>
+			<channel id="bubble-level" typeId="bubble-level">
+			</channel>
+			<channel id="circulation" typeId="switch">
+				<label>Circulation Pump</label>
+				<description>Water circulation for filtering</description>
+			</channel>
+			<channel id="uvc" typeId="switch">
+				<label>UVC Cleaning</label>
+				<description>Eliminate germs with ultraviolet-C water cleaning</description>
+			</channel>
+			<channel id="ozone" typeId="switch">
+				<label>Ozone Cleaning</label>
+				<description>Disinfect with ozone water cleaning</description>
+			</channel>
+			<channel id="lock" typeId="lock">
+				<label>Lock Panel</label>
+				<description>Lock physical panel for inputs</description>
+			</channel>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Identification number of your device</description>
+			</parameter>
+			<parameter name="productId" type="text" required="true">
+				<label>Product ID</label>
+				<description>Product Id of your device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="min" min="5">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in minutes.</description>
+				<default>15</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
