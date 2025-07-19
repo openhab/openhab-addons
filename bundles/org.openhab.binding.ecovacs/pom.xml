@@ -14,19 +14,14 @@
 
   <name>openHAB Add-ons :: Bundles :: Ecovacs Binding</name>
   <properties>
-    <smack.version>4.3.3</smack.version>
+    <smack.version>4.5.0-beta2</smack.version>
+    <bnd.importpackage>sun.security.*;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-tcp</artifactId>
-      <version>${smack.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-im</artifactId>
+      <artifactId>smack-java8</artifactId>
       <version>${smack.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -38,7 +33,19 @@
     </dependency>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-java7</artifactId>
+      <artifactId>smack-im</artifactId>
+      <version>${smack.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-tcp</artifactId>
+      <version>${smack.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-experimental</artifactId>
       <version>${smack.version}</version>
       <scope>provided</scope>
     </dependency>
