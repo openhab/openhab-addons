@@ -312,7 +312,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         });
     }
 
-    synchronized private void bundler(Console console, String[] args) {
+    private synchronized void bundler(Console console, String[] args) {
         final File gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfile();
         boolean bundleInit = args.length >= 1 && "init".equals(args[0]);
 
@@ -409,7 +409,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         Files.write(gemfilePath, outputGemfile);
     }
 
-    synchronized private void gem(Console console, String[] args) {
+    private synchronized void gem(Console console, String[] args) {
         final String GEM = """
                 require "rubygems/gem_runner"
                 Gem::GemRunner.new.run ARGV
