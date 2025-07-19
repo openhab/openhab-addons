@@ -314,10 +314,12 @@ public class LoginData {
 
     @Override
     public boolean equals(@Nullable Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         LoginData loginData = (LoginData) o;
         return Objects.equals(frc, loginData.frc) && Objects.equals(serial, loginData.serial)
                 && Objects.equals(deviceId, loginData.deviceId) && Objects.equals(refreshToken, loginData.refreshToken)
