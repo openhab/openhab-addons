@@ -56,6 +56,7 @@ Configuration:
 A list of the available IDs is available within the Wolf manual.
 
 Depending on the firmware version of the ISM8 and the connected systems, the supported IDs differ.
+
 - type="1.001"    - Please enter here the KNX type of the data point.
 You can find the data type in the Wolf ISM8 document as well.
 - write=true      - This parameter defines if the channel is bidirectional, but the parameter is optional and by default false.

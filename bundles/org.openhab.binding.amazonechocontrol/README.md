@@ -1,20 +1,20 @@
 # Amazon Echo Control Binding
 
-This binding can control Amazon Echo devices (Alexa) and Smarthome devices connected through Alexa or a skill.
+This binding can control Amazon Echo devices (Alexa) and smart home devices connected through Alexa or a skill.
 
-Upgrade notice:
+## Upgrade Notice
 
 - The `lastVoiceCommand` channel of the `amazonechocontrol` binding changed its behavior in version 5.0.0.
-Due to a wrong implementation the channel changed it's state to an empty string if the same command was received again.
-This has been corrected.
-If you want to be notified about every state update, please adjust your rule triggers to "received update".
-If you want to be notified about state changes (i.e. different commands), use "state changed".
-- The write-only channels now use `autoUpdatePolicy=veto` (i.e. they don't update the item's state when a command was send).
-- The channels `amazonMusic`, `amazonMusicTrackId`, `amazonPlaylistId`, `radio` and `radioStationId` have been removed because they are no longer supported from Amazon.
-You can use the `textCommand` channel with a value of `Play playlist CrazyMusic on AmazonMusic` instead.
+  Due to a wrong implementation, the channel changed its state to an empty string if the same command was received again.
+  This has been corrected.
+  - If you want to be notified about every state update, adjust your rule triggers to **"received update"**.
+  - If you want to be notified about state changes (i.e., different commands), use **"state changed"**.
+- The write-only channels now use `autoUpdatePolicy=veto` (i.e., they no longer update the item's state when a command is sent).
+- The channels `amazonMusic`, `amazonMusicTrackId`, `amazonPlaylistId`, `radio`, and `radioStationId` have been removed because they are no longer supported by Amazon.
+  You can use the `textCommand` channel with a value like `Play playlist CrazyMusic on AmazonMusic` instead.
 - The `lastVoiceCommand` channel will be converted to a read-only channel.
-Using commands to that channel is deprecated and will stop working in future versions.
-Please use the `textToSpeech` channel instead.
+  Using commands on that channel is deprecated and will stop working in future versions.
+  Please use the `textToSpeech` channel instead.
 
 ## What this can be used for
 

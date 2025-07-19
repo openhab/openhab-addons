@@ -20,17 +20,17 @@ You can find pricing information on the [documentation page](https://cloud.googl
 
 Before you can integrate this service with your Google Cloud Text-to-Speech, you must have a Google API Console project:
 
-1. Select or create a Google Cloud project ([link](https://console.cloud.google.com/cloud-resource-manager))
-2. Make sure that billing is enabled for your project ([link](https://cloud.google.com/billing/docs/how-to/modify-project))
-3. Enable the `Text-to-Speech API` ([link](https://console.cloud.google.com/apis/dashboard))
-  * Don't mistake with the `Speech-to-Text API`
-4. Set up authentication:
-  1. Go to the `APIs & Services` -> `Credentials` page in the GCP Console and your project ([link](https://console.cloud.google.com/apis/credentials))
-  2. From the `Create credentials` drop-down list, select `OAuth client ID`.
-  3. Select application type `Web application` and enter a name into the `Name` (e.g. `OpenHAB TTS`) field.
-  4. Add `https://www.google.com` to the `Authorized redirect URIs`.
-    * Watch out for trailing spaces in the URL! E.g. when using the copy url feature in the context menu of Google Chrome it appends a slash (`https://www.google.com` becomes `https://www.google.com`) and the steps afterwards fail.
-  5. Click Create. A pop-up appears, showing your "client ID" and "client secret".
+1. Select or create a [Google Cloud project](https://console.cloud.google.com/cloud-resource-manager).
+1. Make sure that [billing is enabled for your project](https://cloud.google.com/billing/docs/how-to/modify-project).
+1. Enable the [`Text-to-Speech API`](https://console.cloud.google.com/apis/dashboard).
+    - **Don't confuse this with the `Speech-to-Text API`**
+1. Set up authentication:
+    1. Go to the [APIs & Services → Credentials page](https://console.cloud.google.com/apis/credentials) in the GCP Console for your project.
+    1. From the **Create credentials** drop-down list, select **OAuth client ID**.
+    1. Select application type **Web application** and enter a name into the **Name** field (for example, `OpenHAB TTS`).
+    1. Add `https://www.google.com` to the **Authorized redirect URIs**.
+        - Watch out for trailing spaces in the URL! For example, when using the "Copy URL" feature in Google Chrome, it may append a slash (`https://www.google.com/`), which will cause later steps to fail.
+    1. Click **Create**. A pop-up appears, showing your **Client ID** and **Client Secret**.
 
 ## Configuration
 

@@ -97,6 +97,7 @@ For users with old table schema, one can use pre-existing policy `AmazonDynamoDB
     ]
 }
 ```
+
 <!-- markdownlint-disable ol-prefix -->
   4. Click _Next: Tags_
   5. Click _Next: Review_
