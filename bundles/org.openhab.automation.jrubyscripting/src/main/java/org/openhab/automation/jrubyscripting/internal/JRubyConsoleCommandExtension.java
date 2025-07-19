@@ -173,7 +173,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
 
     private void info(Console console) {
         File gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfile();
-        final String PRINT_VERSION_NUMBERS = """
+        final String printVersionNumbers = """
                 library_version = defined?(OpenHAB::DSL::VERSION) && OpenHAB::DSL::VERSION
 
                 puts "JRuby #{JRUBY_VERSION}"
@@ -184,7 +184,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 puts "ENV['BUNDLE_GEMFILE']: #{ENV['BUNDLE_GEMFILE']}"
                     """);
 
-        executeWithFullJRuby(console, engine -> engine.eval(PRINT_VERSION_NUMBERS));
+        executeWithFullJRuby(console, engine -> engine.eval(printVersionNumbers));
         console.println("Script path: " + scriptFileWatcher.getWatchPath());
         console.println("");
         console.println("JRuby Scripting Add-on Configuration:");
@@ -331,7 +331,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             return;
         }
 
-        final String BUNDLER = """
+        final String bundler = """
                 require "jruby"
                 JRuby.runtime.instance_config.update_native_env_enabled = false
 
@@ -363,7 +363,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         try {
             Object result = executeWithPlainJRuby(console, engine -> {
                 engine.put(ScriptEngine.ARGV, args);
-                return engine.eval(BUNDLER);
+                return engine.eval(bundler);
             });
             logger.debug("Bundler result: {}", result);
             // A null result indicates a successful creation of Gemfile.
