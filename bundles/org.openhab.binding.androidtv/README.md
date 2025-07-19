@@ -225,6 +225,7 @@ This completes the PIN process.
 Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
 
 ## Troubleshooting
+
 Some devices come with an outdated version of the "Android TV Remote Service". So in case the PIN Process does not result in a PIN
 shown on the screen, and the openHAB log shows an entry
 ```GoogleTV version on device needs to be updated```
