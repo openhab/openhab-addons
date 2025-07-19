@@ -14,6 +14,7 @@ package org.openhab.binding.feican.internal;
 
 import static org.openhab.binding.feican.internal.FeicanBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.feican.internal.handler.FeicanHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -27,6 +28,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.feican")
 public class FeicanHandlerFactory extends BaseThingHandlerFactory {
 
