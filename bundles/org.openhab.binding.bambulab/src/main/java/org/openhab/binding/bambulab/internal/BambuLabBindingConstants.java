@@ -221,8 +221,6 @@ public class BambuLabBindingConstants {
             PVA,
             HIPS;
 
-            private static final Logger log = LoggerFactory.getLogger(TrayType.class);
-
             public static Optional<TrayType> findTrayType(String name) {
                 return stream(values())//
                         .filter(t -> t.name().equalsIgnoreCase(name))//
