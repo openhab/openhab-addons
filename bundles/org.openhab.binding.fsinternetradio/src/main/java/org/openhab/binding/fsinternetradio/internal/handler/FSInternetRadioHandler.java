@@ -18,6 +18,8 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 import org.openhab.core.library.types.DecimalType;
@@ -45,21 +47,27 @@ import org.slf4j.LoggerFactory;
  * @author Mihaela Memova - removed the unused boolean parameter, changed the check for the PIN
  * @author Svilen Valkanov - changed handler initialization
  */
+@NonNullByDefault
 public class FSInternetRadioHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FSInternetRadioHandler.class);
 
-    FrontierSiliconRadio radio;
+    public @Nullable FrontierSiliconRadio radio;
     private final HttpClient httpClient;
 
     /** Job that runs {@link #updateRunnable}. */
-    private ScheduledFuture<?> updateJob;
+    private @Nullable ScheduledFuture<?> updateJob;
 
     /** Runnable for job {@link #updateJob} for periodic refresh. */
     private final Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!radio.isLoggedIn()) {
+            FrontierSiliconRadio localRadio = radio;
+            if (localRadio == null) {
+                logger.warn("Radio is not initialized, cannot update channels.");
+                return;
+            }
+            if (!localRadio.isLoggedIn()) {
                 // radio is not set, so set all channels to 'undefined'
                 for (Channel channel : getThing().getChannels()) {
                     updateState(channel.getUID(), UnDefType.UNDEF);
@@ -69,7 +77,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                 return; // if login is successful, this method is called again :-)
             }
             try {
-                final boolean radioOn = radio.getPower();
+                final boolean radioOn = localRadio.getPower();
                 for (Channel channel : getThing().getChannels()) {
                     if (!radioOn && !CHANNEL_POWER.equals(channel.getUID().getId())) {
                         // if radio is off, set all channels (except for 'POWER') to 'undefined'
@@ -82,26 +90,27 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                                 break;
                             case CHANNEL_VOLUME_ABSOLUTE:
                                 updateState(channel.getUID(),
-                                        DecimalType.valueOf(String.valueOf(radio.getVolumeAbsolute())));
+                                        DecimalType.valueOf(String.valueOf(localRadio.getVolumeAbsolute())));
                                 break;
                             case CHANNEL_VOLUME_PERCENT:
                                 updateState(channel.getUID(),
-                                        PercentType.valueOf(String.valueOf(radio.getVolumePercent())));
+                                        PercentType.valueOf(String.valueOf(localRadio.getVolumePercent())));
                                 break;
                             case CHANNEL_MODE:
-                                updateState(channel.getUID(), DecimalType.valueOf(String.valueOf(radio.getMode())));
+                                updateState(channel.getUID(),
+                                        DecimalType.valueOf(String.valueOf(localRadio.getMode())));
                                 break;
                             case CHANNEL_MUTE:
-                                updateState(channel.getUID(), OnOffType.from(radio.getMuted()));
+                                updateState(channel.getUID(), OnOffType.from(localRadio.getMuted()));
                                 break;
                             case CHANNEL_PRESET:
                                 // preset is write-only, ignore
                                 break;
                             case CHANNEL_PLAY_INFO_NAME:
-                                updateState(channel.getUID(), StringType.valueOf(radio.getPlayInfoName()));
+                                updateState(channel.getUID(), StringType.valueOf(localRadio.getPlayInfoName()));
                                 break;
                             case CHANNEL_PLAY_INFO_TEXT:
-                                updateState(channel.getUID(), StringType.valueOf(radio.getPlayInfoText()));
+                                updateState(channel.getUID(), StringType.valueOf(localRadio.getPlayInfoText()));
                                 break;
                             default:
                                 logger.warn("Ignoring unknown channel during update: {}", channel.getLabel());
@@ -167,15 +176,17 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> updateJob = this.updateJob;
         if (updateJob != null) {
             updateJob.cancel(true);
         }
-        updateJob = null;
+        this.updateJob = null;
         radio = null;
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        FrontierSiliconRadio radio = this.radio;
         if (!radio.isLoggedIn()) {
             // connection to radio is not initialized, log ignored command and set status, if it is not already offline
             logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(), command);
