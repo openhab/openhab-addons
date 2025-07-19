@@ -15,13 +15,17 @@ package org.openhab.binding.jellyfin.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Constants;
+import org.openhab.binding.jellyfin.internal.api.ApiClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link HandlerFactory} is responsible for creating things and thing
@@ -32,8 +36,17 @@ import org.osgi.service.component.annotations.Component;
  *         and respective runtime
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.jellyfin", service = ThingHandlerFactory.class)
+@Component(scope = ServiceScope.SINGLETON, configurationPid = "binding.jellyfin", service = ThingHandlerFactory.class)
 public class HandlerFactory extends BaseThingHandlerFactory {
+
+    private ApiClientFactory apiClientFactory;
+
+    @Activate
+    public HandlerFactory(@Reference final ApiClientFactory apiClientFactory) {
+        super();
+
+        this.apiClientFactory = apiClientFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,7 +58,12 @@ public class HandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (Constants.THING_TYPE_SERVER.equals(thingTypeUID)) {
-            return new ServerHandler((Bridge) thing);
+            var client = this.apiClientFactory.createApiClient();
+            var uri = thing.getProperties().get(Constants.PROPERTY_SERVER_URI);
+
+            client.updateBaseUri(uri);
+
+            return new ServerHandler((Bridge) thing, client);
         }
 
         return null;

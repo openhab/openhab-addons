@@ -10,16 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.types;
+package org.openhab.binding.jellyfin.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/**
- * Marker interface for exception handler implementations
- * 
- * @author Patrik Gfeller - Initial contribution
- */
 @NonNullByDefault
-public interface JellyfinExceptionHandler {
-    void handle(Exception exception);
+public class ApiClient extends org.openhab.binding.jellyfin.internal.api.generated.ApiClient {
+
 }
