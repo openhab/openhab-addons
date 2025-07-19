@@ -270,7 +270,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                         for (Map.Entry<String, String> consoleScript : consoles.entrySet()) {
                             String name = consoleScript.getKey();
                             String description = consoleScript.getValue();
-                            if (defaultConsole.equals(DEFAULT_CONSOLE_PATH + name) || defaultConsole.equals(name)) {
+                            if ((DEFAULT_CONSOLE_PATH + name).equals(defaultConsole) || name.equals(defaultConsole)) {
                                 description = description + " (default)";
                                 defaultConsoleInRegistry = true;
                             }
