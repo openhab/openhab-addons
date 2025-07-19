@@ -9,73 +9,109 @@
 	<channel-type id="fek-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>FEK Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>FEK Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-humidity-type">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>FEK Humidity</label>
-		<category>humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-dewpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>FEK Dewpoint Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="outdoor-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Outdoor Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hk1-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HK1 Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hk1-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HK1 Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="supply-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Supply Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="return-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Return Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="source-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Source Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="water-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Water Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="water-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Water Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -83,242 +119,364 @@
 	<channel-type id="fe7-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>FE7 Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fe7-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>FE7 Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc1-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HC1 Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc1-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HC1 Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc2-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HC2 Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc2-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HC2 Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hp-flow-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Pump Flow Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="nhz-flow-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Electric Reheating Flow Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="flow-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Flow Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fixed-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Fixed Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="buffer-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Buffer Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="buffer-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Buffer Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heating-pressure-type">
 		<item-type>Number:Pressure</item-type>
 		<label>Heating Pressure</label>
-		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="flow-rate-type">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Flow Rate</label>
-		<category>flow</category>
+		<category>Flow</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Fan Cooling Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Fan Cooling Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Area Cooling Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Area Cooling Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-thermal-collector-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Solar Thermal Collector Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-thermal-cylinder-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Solar Thermal Cylinder Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-thermal-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Solar Thermal Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="external-heat-source-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>External Heat Source Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="external-heat-source-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>External Heat Source Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="lower-application-limit-heating-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Lower Application Limit Heating</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="lower-application-limit-hotwater-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Lower Application Limit Hot Water</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="external-heat-source-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>External Heat Source Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="min-source-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Minimal Source Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="source-pressure-type">
 		<item-type>Number:Pressure</item-type>
 		<label>Source Pressure</label>
-		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hotgas-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Gas Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="high-pressure-type">
 		<item-type>Number:Pressure</item-type>
 		<label>High Pressure</label>
-		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="low-pressure-type">
 		<item-type>Number:Pressure</item-type>
 		<label>Low Pressure</label>
-		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="hp1-return-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Pump 1 Return Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-flow-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Pump 1 Flow Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-hotgas-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Pump 1 Hotgas Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-low-pressure-type">
 		<item-type>Number:Pressure</item-type>
 		<label>Heat Pump 1 Low Pressure</label>
-		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-mean-pressure-type">
 		<item-type>Number:Pressure</item-type>
 		<label>Heat Pump 1 Mean Pressure</label>
-		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-high-pressure-type">
 		<item-type>Number:Pressure</item-type>
 		<label>Heat Pump 1 High Pressure</label>
-		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-flow-rate-type">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Heat Pump 1 Flow Rate</label>
-		<category>flow</category>
+		<category>Flow</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -328,7 +486,10 @@
 	<channel-type id="operation-mode-type">
 		<item-type>Number</item-type>
 		<label>Operation Mode</label>
-		<category>settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Emergency</option>
@@ -343,25 +504,37 @@
 	<channel-type id="comfort-temperature-heating-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Comfort Temperature Heating</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="eco-temperature-heating-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Eco Temperature Heating</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="comfort-temperature-water-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Comfort Temperature Water</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="eco-temperature-water-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Eco Temperature Water</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -369,7 +542,10 @@
 	<channel-type id="operating-mode-type">
 		<item-type>Number</item-type>
 		<label>Operating Mode</label>
-		<category>heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Emergency</option>
@@ -384,115 +560,175 @@
 	<channel-type id="hc1-comfort-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HC1 Comfort Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc1-eco-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HC1 Eco Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc1-heating-curve-rise-type">
 		<item-type>Number</item-type>
 		<label>HC1 Heating Curve Rise</label>
-		<category>line</category>
+		<category>Line</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="hc2-comfort-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HC2 Comfort Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc2-eco-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>HC2 Eco Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc2-heating-curve-rise-type">
 		<item-type>Number</item-type>
 		<label>HC2 Heating Curve Rise</label>
-		<category>line</category>
+		<category>Line</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="fixed-value-operation-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Fixed Value Operation</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heating-dual-mode-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Heating DualMode Temperature (bivalence)</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-comfort-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water Comfort Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-eco-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water Eco Temperature</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-stages-type">
 		<item-type>Number</item-type>
 		<label>Hot Water Stages</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%u"/>
 	</channel-type>
 	<channel-type id="hotwater-dual-mode-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water DualMode Temperature (bivalence)</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-flow-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Area Cooling Flow Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-flow-temperature-hysteresis-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Area Cooling Flow Temperature Hysteresis</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-room-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Area Cooling Room Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-flow-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Fan Cooling Flow Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-flow-temperature-hysteresis-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Fan Cooling Flow Temperature Hysteresis</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-room-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Fan Cooling Room Temperature Set Point</label>
-		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="reset-type">
 		<item-type>Number</item-type>
 		<label>Reset</label>
-		<category>settings</category>
+		<category>Settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -505,7 +741,11 @@
 	<channel-type id="restart-isg-type">
 		<item-type>Number</item-type>
 		<label>Restart ISG</label>
-		<category>settings</category>
+		<category>Settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -521,31 +761,46 @@
 	<channel-type id="is-heating-type">
 		<item-type>Contact</item-type>
 		<label>Currently Heating</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-heating-water-type">
 		<item-type>Contact</item-type>
 		<label>Currently Heating Water</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-cooling-type">
 		<item-type>Contact</item-type>
 		<label>Currently Cooling</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-pumping-type">
 		<item-type>Contact</item-type>
 		<label>Currently Pumping</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-summer-type">
 		<item-type>Contact</item-type>
 		<label>Summer Operation Mode</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -553,79 +808,118 @@
 	<channel-type id="hc1-pump-active-type">
 		<item-type>Contact</item-type>
 		<label>HC1 Pump Active</label>
-		<category>pump</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hc2-pump-active-type">
 		<item-type>Contact</item-type>
 		<label>HC2 Pump Active</label>
-		<category>pump</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="heat-up-program-active-type">
 		<item-type>Contact</item-type>
 		<label>Heat-Up Program Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nhz-stages-running-type">
 		<item-type>Contact</item-type>
 		<label>Electric Reheating Stages Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hp-in-heating-mode-type">
 		<item-type>Contact</item-type>
 		<label>Currently Heating</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hp-in-hotwater-mode-type">
 		<item-type>Contact</item-type>
 		<label>Currently Heating Hot Water</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor-running-type">
 		<item-type>Contact</item-type>
 		<label>Compressor Running</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="summer-mode-active-type">
 		<item-type>Contact</item-type>
 		<label>Summer Mode Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="cooling-mode-active-type">
 		<item-type>Contact</item-type>
 		<label>Currently Cooling</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="min-one-iws-in-defrosting-mode-type">
 		<item-type>Contact</item-type>
 		<label>Min. One IWS In Defrosting Mode</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="silent-mode1-active-type">
 		<item-type>Contact</item-type>
 		<label>Silent Mode 1 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="silent-mode2-active-type">
 		<item-type>Contact</item-type>
 		<label>Silent Mode 2 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-off-type">
 		<item-type>Contact</item-type>
 		<label>Power Off</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -633,92 +927,137 @@
 	<channel-type id="compressor1-active-type">
 		<item-type>Contact</item-type>
 		<label>Compressor 1 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor2-active-type">
 		<item-type>Contact</item-type>
 		<label>Compressor 2 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor3-active-type">
 		<item-type>Contact</item-type>
 		<label>Compressor 3 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor4-active-type">
 		<item-type>Contact</item-type>
 		<label>Compressor 4 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor5-active-type">
 		<item-type>Contact</item-type>
 		<label>Compressor 5 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor6-active-type">
 		<item-type>Contact</item-type>
 		<label>Compressor 6 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump1-active-type">
 		<item-type>Contact</item-type>
 		<label>Buffer Charging Pump 1 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump2-active-type">
 		<item-type>Contact</item-type>
 		<label>Buffer Charging Pump 2 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump3-active-type">
 		<item-type>Contact</item-type>
 		<label>Buffer Charging Pump 3 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump4-active-type">
 		<item-type>Contact</item-type>
 		<label>Buffer Charging Pump 4 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump5-active-type">
 		<item-type>Contact</item-type>
 		<label>Buffer Charging Pump 5 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump6-active-type">
 		<item-type>Contact</item-type>
 		<label>Buffer Charging Pump 6 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nhz1-active-type">
 		<item-type>Contact</item-type>
 		<label>Electric Reheating Stage 1 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nhz2-active-type">
 		<item-type>Contact</item-type>
 		<label>Electric Reheating Stage 2 Active</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fault-status-type">
 		<item-type>Number</item-type>
 		<label>Fault Status</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No Fault</option>
@@ -729,7 +1068,10 @@
 	<channel-type id="bus-status-type">
 		<item-type>Number</item-type>
 		<label>Bus Status</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Status OK</option>
@@ -743,7 +1085,10 @@
 	<channel-type id="defrost-initiated-type">
 		<item-type>Number</item-type>
 		<label>Defrost Initiated</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">OFF</option>
@@ -754,7 +1099,10 @@
 	<channel-type id="active-error-type">
 		<item-type>Number</item-type>
 		<label>Active Error</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true" pattern="%u"/>
 	</channel-type>
 
@@ -764,49 +1112,73 @@
 	<channel-type id="production-heat-today-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heating Quantity Today</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.f %unit%"/>
 	</channel-type>
 	<channel-type id="production-heat-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heating Quantity Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-water-today-type">
 		<item-type>Number:Energy</item-type>
 		<label>Hot Water Quantity Today</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-water-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Hot Water Quantity Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-heat-today-type">
 		<item-type>Number:Energy</item-type>
 		<label>Power Consumption for Heating Today</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-heat-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Power Consumption for Heating Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-water-today-type">
 		<item-type>Number:Energy</item-type>
 		<label>Power Consumption for Hot Water Today</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-water-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Power Consumption for Hot Water Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -814,161 +1186,239 @@
 	<channel-type id="production-nhz-heat-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Electric Reheating Heat Quantity Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-nhz-water-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Electric Reheating Hot Water Quantity Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heating-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Heating Compressor Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Hot Water Compressor Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="cooling-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Cooling Compressor Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="nhz1-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Emergency Heating Stage 1 Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="nhz2-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Emergency Heating Stage 2 Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="nhz12-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Emergency Heating Stages 1+2 Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 
 	<channel-type id="hp1-production-heat-today-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Heating Quantity Today</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-production-heat-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Heating Quantity Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-production-water-today-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Hot Water Quantity Today</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-production-water-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Hot Water Quantity Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-production-nhz-heat-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Electric Reheating Heat Quantity Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-production-nhz-water-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Electric Reheating Hot Water Quantity Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-consumption-heat-today-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Power Consumption for Heating Today</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-consumption-heat-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Power Consumption for Heating Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-consumption-water-today-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Power Consumption for Hot Water Today</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-consumption-water-total-type">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Pump 1 Power Consumption for Hot Water Total</label>
-		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="hp1-cp1-heating-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Heat Pump 1 Heating Compressor 1 Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-cp2-heating-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Heat Pump 1 Heating Compressor 2 Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-cp12-heating-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Heat Pump 1 Heating Compressor 1/2 Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-cp1-hotwater-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Heat Pump 1 Hot Water Compressor 1 Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-cp2-hotwater-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Heat Pump 1 Hot Water Compressor 2 Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-cp12-hotwater-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Heat Pump 1 Hot Water Compressor 1/2 Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="hp1-cooling-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Heat Pump 1 Cooling Compressor Runtime</label>
-		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 
 	<channel-type id="sg-ready-on-off-switch-type">
 		<item-type>Number</item-type>
 		<label>SG Ready On/Off Switch</label>
-		<category>settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">On</option>
@@ -984,7 +1434,10 @@
 			Only
 			OS1 to OS4 can be used for setting. Other values are for indication.
 		</description>
-		<category>settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="-1">No lines connected</option>
@@ -999,7 +1452,10 @@
 	<channel-type id="sg-ready-operating-state-type">
 		<item-type>Number</item-type>
 		<label>SG Ready Operating State</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Switched Off</option>
@@ -1013,7 +1469,10 @@
 	<channel-type id="sg-ready-controller-identification-type">
 		<item-type>Number</item-type>
 		<label>SG Ready Controller Identification</label>
-		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="390">WPM 3</option>

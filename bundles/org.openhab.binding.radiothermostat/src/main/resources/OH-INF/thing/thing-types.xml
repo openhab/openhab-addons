@@ -10,18 +10,19 @@
 		<description>
 			CT30, CT50/3M50 or CT80 Wi-Fi Thermostat
 		</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
-			<channel id="temperature" typeId="temp-temperature"/>
+			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="fan_mode" typeId="fan_mode"/>
+			<channel id="fan_mode" typeId="fan-mode"/>
 			<channel id="program_mode" typeId="program_mode"/>
-			<channel id="set_point" typeId="temp-sp"/>
+			<channel id="set_point" typeId="temperature-setpoint"/>
 			<channel id="override" typeId="override"/>
 			<channel id="hold" typeId="hold"/>
 			<channel id="status" typeId="status"/>
-			<channel id="fan_status" typeId="fan_status"/>
+			<channel id="fan_status" typeId="fan-status"/>
 			<channel id="remote_temp" typeId="remote_temp"/>
 			<channel id="day" typeId="t_day"/>
 			<channel id="hour" typeId="t_hour"/>
@@ -37,17 +38,21 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:radiothermostat:thermostatconfig"/>
 	</thing-type>
 
-	<channel-type id="temp-temperature">
+	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The Current Temperature Reading of the Thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -56,6 +61,10 @@
 		<label>Humidity</label>
 		<description>The Current Humidity Reading of the Thermostat</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -63,6 +72,10 @@
 		<item-type>Number</item-type>
 		<label>Mode</label>
 		<description>The Current Operating Mode of the HVAC System</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Off</option>
@@ -73,10 +86,14 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="fan_mode">
+	<channel-type id="fan-mode">
 		<item-type>Number</item-type>
 		<label>Fan Mode</label>
 		<description>The Current Operating Mode of the Fan</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="program_mode" advanced="true">
@@ -94,11 +111,15 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="temp-sp">
+	<channel-type id="temperature-setpoint">
 		<item-type>Number</item-type>
 		<label>Setpoint</label>
 		<description>The Current Temperature Set Point of the Thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="35" max="95" pattern="%d"/>
 	</channel-type>
 
@@ -113,19 +134,31 @@
 		<item-type>Switch</item-type>
 		<label>Hold</label>
 		<description>Indicates If the Current Set Point Temperature Is to Be Held Indefinitely</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="status">
 		<item-type>Number</item-type>
 		<label>Status</label>
 		<description>Indicates the Current Running Status of the HVAC System</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state min="0" max="2" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="fan_status">
+	<channel-type id="fan-status">
 		<item-type>Number</item-type>
 		<label>Fan Status</label>
 		<description>Indicates the Current Fan Status of the HVAC System</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state min="0" max="2" pattern="%d"/>
 	</channel-type>
 
@@ -169,6 +202,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Today's Heating Runtime</label>
 		<description>The Number of Minutes of Heating Run-time Today</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -176,6 +213,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Today's Cooling Runtime</label>
 		<description>The Number of Minutes of Cooling Run-time Today</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -183,6 +224,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Yesterday's Heating Runtime</label>
 		<description>The Number of Minutes of Heating Run-time Yesterday</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -190,6 +235,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Yesterday's Cooling Runtime</label>
 		<description>The Number of Minutes of Cooling Run-time Yesterday</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

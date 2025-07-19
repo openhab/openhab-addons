@@ -11,6 +11,7 @@
 
 		<label>Pilight Switch</label>
 		<description>Pilight Switch</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="system.power"/>
@@ -26,6 +27,7 @@
 
 		<label>Pilight Contact</label>
 		<description>Pilight Contact</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="contact-state"/>
@@ -41,6 +43,7 @@
 
 		<label>Pilight Dimmer</label>
 		<description>Pilight Dimmer</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="dimlevel" typeId="system.brightness"/>

@@ -28,6 +28,8 @@ import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -43,6 +45,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Provide storage towards sc-plane
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.solarforecast", service = ThingHandlerFactory.class)
@@ -50,10 +53,11 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
     private Optional<PointType> location = Optional.empty();
+    private Storage<String> storage;
 
     @Activate
     public SolarForecastHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocationProvider lp,
-            final @Reference TimeZoneProvider tzp) {
+            final @Reference TimeZoneProvider tzp, final @Reference StorageService storageService) {
         timeZoneProvider = tzp;
         httpClient = hcf.getCommonHttpClient();
         Utils.setTimeZoneProvider(tzp);
@@ -61,6 +65,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         if (pt != null) {
             location = Optional.of(pt);
         }
+        storage = storageService.getStorage(SolarForecastBindingConstants.BINDING_ID);
     }
 
     @Override
@@ -78,7 +83,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         } else if (SOLCAST_SITE.equals(thingTypeUID)) {
             return new SolcastBridgeHandler((Bridge) thing, timeZoneProvider);
         } else if (SOLCAST_PLANE.equals(thingTypeUID)) {
-            return new SolcastPlaneHandler(thing, httpClient);
+            return new SolcastPlaneHandler(thing, httpClient, storage);
         }
         return null;
     }

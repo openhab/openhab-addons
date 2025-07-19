@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="frenchgovtenergydata"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="tempo">
+		<label>Tempo Tariff</label>
+		<description>Tempo usage Tariff Subscription</description>
+
+		<channels>
+			<channel id="tariff-start" typeId="timestamp"/>
+
+			<channel id="fixed-ht" typeId="price-ht">
+				<label>Fixed Price HT</label>
+				<description>Yearly fixed price excluding taxes.</description>
+			</channel>
+			<channel id="fixed-ttc" typeId="price-ttc">
+				<label>Fixed Price TTC</label>
+				<description>Yearly fixed price including taxes.</description>
+			</channel>
+
+			<channel id="blue-hc-ht" typeId="energy-price-ht">
+				<label>Blue Day Low HT</label>
+				<description>Blue day Low hours energy price in €/kWh excluding taxes.</description>
+			</channel>
+			<channel id="blue-hc-ttc" typeId="energy-price-ttc">
+				<label>Blue Day Low TTC</label>
+				<description>Blue day Low hours energy price in €/kWh including taxes.</description>
+			</channel>
+			<channel id="blue-hp-ht" typeId="energy-price-ht">
+				<label>Blue Day High HT</label>
+				<description>Blue day High hours energy price in €/kWh excluding taxes.</description>
+			</channel>
+			<channel id="blue-hp-ttc" typeId="energy-price-ttc">
+				<label>Blue Day High TTC</label>
+				<description>Blue day High hours energy price in €/kWh including taxes.</description>
+			</channel>
+
+			<channel id="white-hc-ht" typeId="energy-price-ht">
+				<label>White Day Low HT</label>
+				<description>White day Low hours energy price in €/kWh excluding taxes.</description>
+			</channel>
+			<channel id="white-hc-ttc" typeId="energy-price-ttc">
+				<label>White Day Low TTC</label>
+				<description>White day Low hours energy price in €/kWh including taxes.</description>
+			</channel>
+			<channel id="white-hp-ht" typeId="energy-price-ht">
+				<label>White Day High HT</label>
+				<description>White day High hours energy price in €/kWh excluding taxes.</description>
+			</channel>
+			<channel id="white-hp-ttc" typeId="energy-price-ttc">
+				<label>White Day High TTC</label>
+				<description>White day High hours energy price in €/kWh including taxes.</description>
+			</channel>
+
+			<channel id="red-hc-ht" typeId="energy-price-ht">
+				<label>Red Day Low HT</label>
+				<description>Red day Low hours energy price in €/kWh excluding taxes.</description>
+			</channel>
+
+			<channel id="red-hc-ttc" typeId="energy-price-ttc">
+				<label>Red Day Low TTC</label>
+				<description>Red day Low hours energy price in €/kWh including taxes.</description>
+			</channel>
+			<channel id="red-hp-ht" typeId="energy-price-ht">
+				<label>Red Day High HT</label>
+				<description>Red day High hours energy price in €/kWh excluding taxes.</description>
+			</channel>
+			<channel id="red-hp-ttc" typeId="energy-price-ttc">
+				<label>Red Day High TTC</label>
+				<description>Red day High hours energy price in €/kWh including taxes.</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="power" type="integer" min="3" max="36">
+				<default>6</default>
+				<label>Power Output</label>
+				<description>PDL power output (in kVA)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

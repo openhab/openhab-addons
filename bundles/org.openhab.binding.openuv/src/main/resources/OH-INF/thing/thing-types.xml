@@ -11,6 +11,7 @@
 			Bridge to the OpenUV Project API. In order to receive the data, you must register an account on
 			https://www.openuv.io/auth/google and get your API token.
 		</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="apikey" type="text" required="true">
@@ -30,6 +31,7 @@
 
 		<label>UV Report</label>
 		<description>Provides various UV data from the OpenUV Project for a given location.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="UVIndex" typeId="UVIndex"/>
@@ -75,6 +77,10 @@
 		<label>UV Index</label>
 		<description>UV Index</description>
 		<category>oh:openuv:uv-index</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f/16" min="0" max="16"/>
 	</channel-type>
 
@@ -91,6 +97,10 @@
 		<label>Ozone</label>
 		<description>Ozone level from OMI data</description>
 		<category>oh:openuv:ozone</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ozone</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -151,6 +161,10 @@
 		<item-type>Number</item-type>
 		<label>UV Alert</label>
 		<category>oh:openuv:uv-alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Low</option>

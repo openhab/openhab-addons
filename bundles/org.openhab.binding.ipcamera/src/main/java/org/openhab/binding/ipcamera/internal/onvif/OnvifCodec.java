@@ -115,7 +115,6 @@ public class OnvifCodec extends ChannelDuplexHandler {
     @Override
     public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
         if (requestType == RequestType.PullMessages) {
-            onvifConnection.lastPullMessageReceivedTimestamp = System.currentTimeMillis();
             onvifConnection.pullMessageRequests.decrementAndGet();
         }
     }

@@ -137,27 +137,26 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
 
     @Override
     public void store(Item item) {
-        scheduler.execute(() -> internalStore(item, null, item.getState()));
+        scheduler.execute(() -> internalStore(item, null, item.getState(), null));
     }
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        // alias is not supported
-        scheduler.execute(() -> internalStore(item, null, item.getState()));
+        scheduler.execute(() -> internalStore(item, null, item.getState(), alias));
     }
 
     @Override
     public void store(Item item, ZonedDateTime date, State state) {
-        scheduler.execute(() -> internalStore(item, date, state));
+        scheduler.execute(() -> internalStore(item, date, state, null));
     }
 
     @Override
     public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
-        // alias is not supported
-        scheduler.execute(() -> internalStore(item, date, state));
+        scheduler.execute(() -> internalStore(item, date, state, alias));
     }
 
-    private synchronized void internalStore(Item item, @Nullable ZonedDateTime date, State state) {
+    private synchronized void internalStore(Item item, @Nullable ZonedDateTime date, State state,
+            @Nullable String alias) {
         // Do not store undefined/uninitialized data
         if (state instanceof UnDefType) {
             logger.debug("JDBC::store: ignore Item '{}' because it is UnDefType", item.getName());
@@ -171,7 +170,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         }
         try {
             long timerStart = System.currentTimeMillis();
-            storeItemValue(item, state, date);
+            storeItemValue(item, state, date, alias);
             if (logger.isDebugEnabled()) {
                 logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
                         new Date(), System.currentTimeMillis() - timerStart);
@@ -190,12 +189,24 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      * Queries the {@link PersistenceService} for data with a given filter
      * criteria
      *
-     * @param filter
-     *            the filter to apply to the query
+     * @param filter the filter to apply to the query
      * @return a time series of items
      */
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        return query(filter, null);
+    }
+
+    /**
+     * Queries the {@link PersistenceService} for data with a given filter
+     * criteria
+     *
+     * @param filter the filter to apply to the query
+     * @param alias for the item
+     * @return a time series of items
+     */
+    @Override
+    public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
         if (!checkDBAccessability()) {
             logger.warn("JDBC::query: database not connected, query aborted for item '{}'", filter.getItemName());
             return List.of();
@@ -231,9 +242,11 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             }
         }
 
-        String table = itemNameToTableNameMap.get(itemName);
+        String localAlias = alias != null ? alias : itemName;
+        String table = itemNameToTableNameMap.get(localAlias);
         if (table == null) {
-            logger.debug("JDBC::query: unable to find table for item with name: '{}', no data in database.", itemName);
+            logger.debug("JDBC::query: unable to find table for item with name or alias: '{}', no data in database.",
+                    localAlias);
             return List.of();
         }
 
@@ -253,7 +266,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         }
     }
 
-    public void updateConfig(Map<Object, Object> configuration) {
+    private void updateConfig(Map<Object, Object> configuration) {
         logger.debug("JDBC::updateConfig");
 
         conf = new JdbcConfiguration(configuration);

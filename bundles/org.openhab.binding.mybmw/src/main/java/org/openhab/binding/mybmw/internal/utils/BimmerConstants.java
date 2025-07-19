@@ -28,12 +28,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - update to v2 API
+ * @author Mark Herwege - remove China
  */
 @NonNullByDefault
 public interface BimmerConstants {
 
     static final String REGION_NORTH_AMERICA = "NORTH_AMERICA";
-    static final String REGION_CHINA = "CHINA";
     static final String REGION_ROW = "ROW";
 
     static final String BRAND_BMW = "bmw";
@@ -46,29 +46,23 @@ public interface BimmerConstants {
 
     static final String EADRAX_SERVER_NORTH_AMERICA = "cocoapi.bmwgroup.us";
     static final String EADRAX_SERVER_ROW = "cocoapi.bmwgroup.com";
-    static final String EADRAX_SERVER_CHINA = "myprofile.bmw.com.cn";
     static final Map<String, String> EADRAX_SERVER_MAP = Map.of(REGION_NORTH_AMERICA, EADRAX_SERVER_NORTH_AMERICA,
-            REGION_CHINA, EADRAX_SERVER_CHINA, REGION_ROW, EADRAX_SERVER_ROW);
+            REGION_ROW, EADRAX_SERVER_ROW);
 
     static final String OCP_APIM_KEY_NORTH_AMERICA = "31e102f5-6f7e-7ef3-9044-ddce63891362";
     static final String OCP_APIM_KEY_ROW = "4f1c85a3-758f-a37d-bbb6-f8704494acfa";
     static final Map<String, String> OCP_APIM_KEYS = Map.of(REGION_NORTH_AMERICA, OCP_APIM_KEY_NORTH_AMERICA,
             REGION_ROW, OCP_APIM_KEY_ROW);
 
-    static final String CHINA_PUBLIC_KEY = "/eadrax-coas/v1/cop/publickey";
-    static final String CHINA_LOGIN = "/eadrax-coas/v2/login/pwd";
-
     // Http variables
     static final String APP_VERSION_NORTH_AMERICA = "4.9.2(36892)";
     static final String APP_VERSION_ROW = "4.9.2(36892)";
-    static final String APP_VERSION_CHINA = "4.9.2(36892)";
     static final Map<String, String> APP_VERSIONS = Map.of(REGION_NORTH_AMERICA, APP_VERSION_NORTH_AMERICA, REGION_ROW,
-            APP_VERSION_ROW, REGION_CHINA, APP_VERSION_CHINA);
+            APP_VERSION_ROW);
     static final String USER_AGENT = "Dart/2.16 (dart:io)";
     // see const.py of bimmer_constants: user-agent; brand; app_version; region
     static final String X_USER_AGENT = "android(AP2A.240605.024);%s;%s;%s";
 
-    static final String LOGIN_NONCE = "login_nonce";
     static final String AUTHORIZATION_CODE = "authorization_code";
     static final String REFRESH_TOKEN = "refresh_token";
 
@@ -82,4 +76,8 @@ public interface BimmerConstants {
     static final String API_VEHICLES = "/eadrax-vcs/v4/vehicles";
     static final String API_REMOTE_SERVICE_BASE_URL = "/eadrax-vrccs/v3/presentation/remote-commands/"; // '/{vin}/{service_type}'
     static final String API_POI = "/eadrax-dcs/v1/send-to-car/send-to-car";
+    static final String CHARGING_STATISTICS = "/eadrax-chs/v2/charging-statistics?";
+    static final String CHARGING_SESSIONS = "/eadrax-chs/v2/charging-sessions?";
+    static final String PARAM_VIN = "$vin$";
+    static final String IMAGE_URL = "/eadrax-ics/v3/presentation/vehicles/" + PARAM_VIN + "/images?carView=";
 }

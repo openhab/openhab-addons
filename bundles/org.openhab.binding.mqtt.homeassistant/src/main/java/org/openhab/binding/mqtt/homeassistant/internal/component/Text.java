@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.RWConfiguration;
 
 /**
  * A MQTT select, following the https://www.home-assistant.io/integrations/text.mqtt/ specification.
@@ -26,44 +28,36 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class Text extends AbstractComponent<Text.ChannelConfiguration> {
+public class Text extends AbstractComponent<Text.Configuration> {
     public static final String TEXT_CHANNEL_ID = "text";
 
     public static final String MODE_TEXT = "text";
     public static final String MODE_PASSWORD = "password";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Text");
+    public static class Configuration extends EntityConfiguration implements RWConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Text");
         }
 
-        @SerializedName("command_template")
-        protected @Nullable String commandTemplate;
-        @SerializedName("command_topic")
-        protected String commandTopic = "";
-        @SerializedName("state_topic")
-        protected @Nullable String stateTopic;
+        @Nullable
+        Value getCommandTemplate() {
+            return getOptionalValue("command_template");
+        }
 
-        // openHAB has no way to handle these restrictions in its UI
-        protected int min = 0; // Minimum and maximum length of the display we're controlling
-        protected int max = 255;
-        protected @Nullable String pattern; // Regular expression
-        protected String mode = MODE_TEXT; // Presumably for a password, it should mask any controls in the UI
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
-    public Text(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Text(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
         TextValue value = new TextValue();
 
-        buildChannel(TEXT_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos(), channelConfiguration.commandTemplate)
+        buildChannel(TEXT_CHANNEL_ID, ComponentChannelType.STRING, value, "Text", componentContext.getUpdateListener())
+                .stateTopic(config.getStateTopic(), config.getValueTemplate())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos(), config.getCommandTemplate())
                 .inferOptimistic(false).build();
         finalizeChannels();
     }

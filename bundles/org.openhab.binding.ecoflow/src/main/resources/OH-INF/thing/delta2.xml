@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ecoflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="delta2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ecoflow-api"/>
+		</supported-bridge-type-refs>
+
+		<label>EcoFlow Delta 2</label>
+		<description>Represents an EcoFlow Delta 2 power station</description>
+
+		<channel-groups>
+			<channel-group id="status" typeId="delta-status"/>
+			<channel-group id="battery" typeId="delta-battery-1extra"/>
+			<channel-group id="ac-input" typeId="delta-ac-input"/>
+			<channel-group id="solar-input" typeId="delta-solar-input-1pv"/>
+			<channel-group id="ac-output" typeId="delta-ac-output"/>
+			<channel-group id="dc-output" typeId="delta-dc-output"/>
+		</channel-groups>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description-ref uri="thing-type:ecoflow:device"/>
+	</thing-type>
+
+	<thing-type id="delta2-max">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ecoflow-api"/>
+		</supported-bridge-type-refs>
+
+		<label>EcoFlow Delta 2 Max</label>
+		<description>Represents an EcoFlow Delta 2 Max power station</description>
+
+		<channel-groups>
+			<channel-group id="status" typeId="delta-status"/>
+			<channel-group id="battery" typeId="delta-battery-2extra"/>
+			<channel-group id="ac-input" typeId="delta-ac-input"/>
+			<channel-group id="solar-input" typeId="delta-solar-input-2pv"/>
+			<channel-group id="ac-output" typeId="delta-ac-output"/>
+			<channel-group id="dc-output" typeId="delta-dc-output"/>
+		</channel-groups>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description-ref uri="thing-type:ecoflow:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

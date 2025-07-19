@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.console;
 
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.BINDING_ID;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.THING_TYPE_CONNECTED_DRIVE_ACCOUNT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -253,7 +252,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
 
         // ensure full path exists
         File file = new File(path);
-        file.getParentFile().mkdirs();
+        Objects.requireNonNull(file.getParentFile()).mkdirs();
 
         final byte[] contents = json.getBytes(StandardCharsets.UTF_8);
         Files.write(file.toPath(), contents);
@@ -313,8 +312,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
                         .filter(t -> THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(t.getThingTypeUID())
                                 && args[1].equals(t.getConfiguration().get("userName")))
                         .map(t -> t.getHandler()).findAny().get();
-                List<VehicleBase> vehicles = handler != null ? handler.getMyBmwProxy().get().requestVehiclesBase()
-                        : List.of();
+                List<VehicleBase> vehicles = handler.getMyBmwProxy().get().requestVehiclesBase();
                 return new StringsCompleter(
                         vehicles.stream().map(v -> v.getVin()).filter(Objects::nonNull).collect(Collectors.toList()),
                         false).complete(args, cursorArgumentIndex, cursorPosition, candidates);

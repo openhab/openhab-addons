@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -22,28 +23,32 @@ import com.google.gson.annotations.SerializedName;
  * returned by API calls
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - fix to handle new Dto format after enedis site modifications
  */
 public class ConsumptionReport {
-    public class Period {
-        public String grandeurPhysiqueEnum;
-        public ZonedDateTime dateDebut;
-        public ZonedDateTime dateFin;
+
+    public class Data {
+        public LocalDateTime dateDebut;
+        public LocalDateTime dateFin;
+        public Double valeur;
     }
 
     public class Aggregate {
-        public List<String> labels;
-        public List<Period> periodes;
-        public List<Double> datas;
+        @SerializedName("donnees")
+        public List<Data> datas;
+        public String unite;
     }
 
     public class ChronoData {
-        @SerializedName("JOUR")
+        @SerializedName("heure")
+        public Aggregate heure;
+        @SerializedName("jour")
         public Aggregate days;
-        @SerializedName("SEMAINE")
+        @SerializedName("semaine")
         public Aggregate weeks;
-        @SerializedName("MOIS")
+        @SerializedName("mois")
         public Aggregate months;
-        @SerializedName("ANNEE")
+        @SerializedName("annee")
         public Aggregate years;
     }
 
@@ -51,14 +56,10 @@ public class ConsumptionReport {
         public ChronoData aggregats;
         public String grandeurMetier;
         public String grandeurPhysique;
-        public String unite;
+        public LocalDate dateDebut;
+        public LocalDate dateFin;
     }
 
-    public class FirstLevel {
-        @SerializedName("CONS")
-        public Consumption consumptions;
-    }
-
-    @SerializedName("1")
-    public FirstLevel firstLevel;
+    @SerializedName("cons")
+    public Consumption consumptions;
 }

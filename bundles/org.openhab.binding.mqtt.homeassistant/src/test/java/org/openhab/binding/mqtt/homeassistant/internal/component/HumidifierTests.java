@@ -34,11 +34,11 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class HumidifierTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "humidifier/bedroom_humidifier";
 
-    @SuppressWarnings("null")
     @Test
     public void test() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -87,6 +87,8 @@ public class HumidifierTests extends AbstractComponentTests {
         assertChannel(component, Humidifier.TARGET_HUMIDITY_CHANNEL_ID, "bedroom_humidifier/humidity/state",
                 "bedroom_humidifier/humidity/set", "Target Humidity", NumberValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("bedroom_humidifier/on/state", "true");
         assertState(component, Humidifier.STATE_CHANNEL_ID, OnOffType.ON);
         publishMessage("bedroom_humidifier/on/state", "false");
@@ -107,9 +109,9 @@ public class HumidifierTests extends AbstractComponentTests {
         assertState(component, Humidifier.MODE_CHANNEL_ID, UnDefType.NULL);
 
         publishMessage("bedroom_humidifier/humidity/current", "35");
-        assertState(component, Humidifier.CURRENT_HUMIDITY_CHANNEL_ID, new QuantityType<>(35, Units.PERCENT));
+        assertState(component, Humidifier.CURRENT_HUMIDITY_CHANNEL_ID, QuantityType.valueOf(35, Units.PERCENT));
         publishMessage("bedroom_humidifier/humidity/state", "40");
-        assertState(component, Humidifier.TARGET_HUMIDITY_CHANNEL_ID, new QuantityType<>(40, Units.PERCENT));
+        assertState(component, Humidifier.TARGET_HUMIDITY_CHANNEL_ID, QuantityType.valueOf(40, Units.PERCENT));
 
         component.getChannel(Humidifier.STATE_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("bedroom_humidifier/on/set", "false");

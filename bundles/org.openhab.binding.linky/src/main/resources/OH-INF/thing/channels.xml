@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="tempo-value">
+		<item-type>Number</item-type>
+		<label>Tempo Color Information</label>
+		<description>This status describes the tempo color of a day.</description>
+		<state>
+			<options>
+				<option value="0">Blue</option>
+				<option value="1">White</option>
+				<option value="2">Red</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="consumption">
+		<item-type>Number:Energy</item-type>
+		<label>Total Consumption</label>
+		<description>Consumption at given time interval</description>
+		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type unitHint="kVA">Number:Power</item-type>
+		<label>Power Usage</label>
+		<description>Power usage for a period</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

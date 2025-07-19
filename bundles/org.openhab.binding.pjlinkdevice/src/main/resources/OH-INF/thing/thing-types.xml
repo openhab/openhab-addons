@@ -7,6 +7,7 @@
 	<thing-type id="pjLinkDevice">
 		<label>PJLink Device</label>
 		<description>A PJLink compatible device, e.g. a digital projector</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power"/>
@@ -88,6 +89,10 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power ON/OFF the projector</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="input">
@@ -100,18 +105,30 @@
 		<item-type>Switch</item-type>
 		<label>Audio Mute</label>
 		<description>Select the audio mute status</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="videoMute">
 		<item-type>Switch</item-type>
 		<label>Video Mute</label>
 		<description>Select the video mute status</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="audioAndVideoMute">
 		<item-type>Switch</item-type>
 		<label>Audio and Video Mute</label>
 		<description>Select the audio and video mute status</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="lampHours">

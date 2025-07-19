@@ -33,11 +33,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class InsteonScene implements Scene {
-    public static final int GROUP_MIN = 2;
-    public static final int GROUP_MAX = 254;
+    public static final int GROUP_MIN = 0;
+    public static final int GROUP_MAX = 255;
     // limit new scene group minimum to 25 matching the current Insteon app behavior
     public static final int GROUP_NEW_MIN = 25;
-    public static final int GROUP_NEW_MAX = 254;
+    public static final int GROUP_NEW_MAX = 255;
 
     private final Logger logger = LoggerFactory.getLogger(InsteonScene.class);
 
@@ -133,11 +133,10 @@ public class InsteonScene implements Scene {
      * @param entry the scene entry to add
      */
     private void addEntry(SceneEntry entry) {
-        logger.trace("adding entry to scene {}: {}", group, entry);
-
         synchronized (entries) {
             if (entries.add(entry)) {
                 entry.register();
+                logger.trace("added entry to scene {}: {}", group, entry);
             }
         }
     }
@@ -168,8 +167,6 @@ public class InsteonScene implements Scene {
      * @param address the device address
      */
     public void deleteEntries(InsteonAddress address) {
-        logger.trace("removing entries from scene {} for device {}", group, address);
-
         getEntries(address).forEach(this::deleteEntry);
     }
 
@@ -177,9 +174,7 @@ public class InsteonScene implements Scene {
      * Updates all entries for this scene
      */
     public void updateEntries() {
-        synchronized (entries) {
-            entries.clear();
-        }
+        deleteEntries();
 
         InsteonModem modem = getModem();
         if (modem != null) {
@@ -204,7 +199,7 @@ public class InsteonScene implements Scene {
 
         logger.trace("updating entries for scene {} device {}", group, address);
 
-        getEntries(address).forEach(this::deleteEntry);
+        deleteEntries(address);
 
         InsteonModem modem = getModem();
         if (modem != null) {
@@ -325,13 +320,17 @@ public class InsteonScene implements Scene {
     public class SceneEntry implements FeatureListener {
         private InsteonAddress address;
         private DeviceFeature feature;
-        private byte[] data;
+        private State onState;
+        private @Nullable RampRate rampRate;
         private State state = UnDefType.NULL;
 
         public SceneEntry(InsteonAddress address, DeviceFeature feature, byte[] data) {
             this.address = address;
             this.feature = feature;
-            this.data = data;
+            this.onState = OnLevel.getState(Byte.toUnsignedInt(data[0]), feature.getType());
+            this.rampRate = RampRate.supportsFeatureType(feature.getType())
+                    ? RampRate.valueOf(Byte.toUnsignedInt(data[1]))
+                    : null;
         }
 
         public InsteonAddress getAddress() {
@@ -340,14 +339,6 @@ public class InsteonScene implements Scene {
 
         public DeviceFeature getFeature() {
             return feature;
-        }
-
-        public State getOnState() {
-            return OnLevel.getState(Byte.toUnsignedInt(data[0]), feature.getType());
-        }
-
-        public RampRate getRampRate() {
-            return RampRate.valueOf(Byte.toUnsignedInt(data[1]));
         }
 
         public State getState() {
@@ -359,7 +350,7 @@ public class InsteonScene implements Scene {
         }
 
         public boolean isStateOn() {
-            return getOnState().equals(state);
+            return onState.equals(state);
         }
 
         public void setState(State state) {
@@ -378,9 +369,9 @@ public class InsteonScene implements Scene {
 
         @Override
         public String toString() {
-            String s = address + " " + feature.getName() + " currentState: " + state + " onState: " + getOnState();
-            if (RampRate.supportsFeatureType(feature.getType())) {
-                s += " rampRate: " + getRampRate();
+            String s = address + " " + feature.getName() + " currentState: " + state + " onState: " + onState;
+            if (rampRate != null) {
+                s += " rampRate: " + rampRate;
             }
             return s;
         }

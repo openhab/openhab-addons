@@ -54,6 +54,10 @@
 		<item-type>Number</item-type>
 		<label>Broadcast Frequency</label>
 		<description>The broadcast frequency</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state pattern="%.2f MHz" readOnly="true"></state>
 	</channel-type>
 
@@ -79,6 +83,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="btaudio">Bluetooth Audio</option>
@@ -101,6 +109,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="btaudio">Bluetooth Audio</option>
@@ -119,6 +131,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="bd/dvd">BD/DVD</option>
@@ -134,6 +150,10 @@
 		<item-type>String</item-type>
 		<label>Sound Field</label>
 		<description>Select the Sound Field for the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="pureDirect">Pure Direct</option>
@@ -153,7 +173,7 @@
 	<thing-type id="STR-DN1080">
 		<label>SONY Receiver STR-DN1080</label>
 		<description>SONY receiver STR-DN1080</description>
-
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="masterControls" id="master"/>
 			<channel-group typeId="zone1Controls" id="zone1"/>

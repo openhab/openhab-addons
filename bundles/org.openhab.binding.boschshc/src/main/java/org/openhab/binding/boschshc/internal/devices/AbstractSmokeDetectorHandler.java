@@ -52,10 +52,8 @@ public abstract class AbstractSmokeDetectorHandler extends AbstractBatteryPowere
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
 
-        switch (channelUID.getId()) {
-            case CHANNEL_SMOKE_CHECK:
-                this.handleServiceCommand(this.smokeDetectorCheckService, command);
-                break;
+        if (CHANNEL_SMOKE_CHECK.equals(channelUID.getId())) {
+            this.handleServiceCommand(this.smokeDetectorCheckService, command);
         }
     }
 

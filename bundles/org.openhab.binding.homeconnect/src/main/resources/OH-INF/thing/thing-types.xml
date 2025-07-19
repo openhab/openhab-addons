@@ -8,6 +8,7 @@
 	<bridge-type id="api_bridge">
 		<label>Home Connect API</label>
 		<description>This bridge represents the gateway to the Home Connect API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="clientId" type="text" required="true">
 				<label>Client Id</label>
@@ -34,6 +35,7 @@
 		</supported-bridge-type-refs>
 		<label>Dishwasher</label>
 		<description>Home Connect connected dishwasher (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>Dishwasher</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
@@ -66,6 +68,7 @@
 		</supported-bridge-type-refs>
 		<label>Oven</label>
 		<description>Home Connect connected oven (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>Oven</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
@@ -98,7 +101,9 @@
 		</supported-bridge-type-refs>
 		<label>Washer</label>
 		<description>Home Connect connected washing machine (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
+			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
 			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
@@ -125,6 +130,9 @@
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
 			<channel id="program_progress_state" typeId="program_progress_state"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description>
 			<parameter name="haId" type="text" required="true">
@@ -141,7 +149,9 @@
 		</supported-bridge-type-refs>
 		<label>Washer Dryer Combination</label>
 		<description>Home Connect connected combined washer dryer appliance.</description>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
+			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
 			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
@@ -165,6 +175,9 @@
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
 			<channel id="program_progress_state" typeId="program_progress_state"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description>
 			<parameter name="haId" type="text" required="true">
@@ -181,6 +194,7 @@
 		</supported-bridge-type-refs>
 		<label>Dryer</label>
 		<description>Home Connect connected dryer (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>Dryer</semantic-equipment-tag>
 		<channels>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
@@ -210,6 +224,7 @@
 		</supported-bridge-type-refs>
 		<label>Refrigerator / Freezer</label>
 		<description>Home Connect connected refrigerator/freezer (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>Refrigerator</semantic-equipment-tag>
 		<channels>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="setpoint_temperature_refrigerator" typeId="setpoint_temperature_refrigerator"/>
@@ -233,6 +248,7 @@
 		</supported-bridge-type-refs>
 		<label>Coffee Machine</label>
 		<description>Home Connect connected coffee machine (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>CoffeeMaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
@@ -262,6 +278,7 @@
 		</supported-bridge-type-refs>
 		<label>Hood</label>
 		<description>Home Connect connected kitchen hood.</description>
+		<semantic-equipment-tag>KitchenHood</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
@@ -295,6 +312,7 @@
 		</supported-bridge-type-refs>
 		<label>Cooktop</label>
 		<description>Home Connect connected kitchen cooktop (hob).</description>
+		<semantic-equipment-tag>Cooktop</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
@@ -316,6 +334,10 @@
 	<channel-type id="basic_actions_state">
 		<item-type>String</item-type>
 		<label>Program Actions</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="start">Start program</option>
@@ -328,24 +350,40 @@
 		<label>Local Control State</label>
 		<description>This status indicates whether the home appliance is currently manually controlled by the user operating
 			the home appliance, e.g. opening the door or pressing a button.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="coffeemaker_drip_tray_full_state">
 		<item-type>Switch</item-type>
 		<label>Drip Tray Full</label>
 		<description>Is coffee maker drip tray full?</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="coffeemaker_water_tank_empty_state">
 		<item-type>Switch</item-type>
 		<label>Water Tank Empty</label>
 		<description>Is coffee maker water tank empty?</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="coffeemaker_bean_container_empty_state">
 		<item-type>Switch</item-type>
 		<label>Bean Container Empty</label>
 		<description>Is coffee maker bean container is empty?</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="door_state">
@@ -354,12 +392,20 @@
 		<description>This status describes the door state of a home appliance. A status change is either triggered by the user
 			operating the home appliance locally (i.e. opening/closing door) or automatically by the home appliance (i.e. locking
 			the door).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="operation_state">
 		<item-type>String</item-type>
 		<label>Operation State</label>
 		<description>This status describes the operation state of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="remote_start_allowance_state">
@@ -368,66 +414,109 @@
 		<description>This status indicates whether the remote program start is enabled. This can happen due to a programmatic
 			change (only disabling), or manually by the user changing the flag locally on the home appliance, or automatically
 			after a certain duration - usually 24 hours.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="remote_control_active_state">
 		<item-type>Switch</item-type>
 		<label>Remote Control Activation State</label>
 		<description>This status indicates whether the allowance for remote controlling is enabled.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="active_program_state">
 		<item-type>String</item-type>
 		<label>Active Program</label>
 		<description>This status describes the active program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="selected_program_state">
 		<item-type>String</item-type>
 		<label>Selected Program</label>
 		<description>This state describes the selected program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="remaining_program_time_state">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Program Time</label>
 		<description>This status indicates the remaining program time of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="program_progress_state">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Progress State</label>
 		<description>This status describes the program progress of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="oven_current_cavity_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Cavity Temperature</label>
 		<description>This status describes the oven cavity temperature of the home appliance.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="elapsed_program_time">
 		<item-type>Number:Time</item-type>
 		<label>Elapsed Program Time</label>
 		<description>This status describes the elapsed program time of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="setpoint_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>This status describes the intended cooking compartment temperature of the home appliance.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.0f %unit%" step="1"/>
 	</channel-type>
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Selected Duration</label>
 		<description>This status describes the duration of the program of the home appliance.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%" step="60" min="60"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_temperature">
 		<item-type>String</item-type>
 		<label>Washing Program Temperature</label>
 		<description>This status describes the temperature of the washing program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="LaundryCare.Washer.EnumType.Temperature.Cold">Cold water</option>
@@ -452,6 +541,10 @@
 		<item-type>String</item-type>
 		<label>Spin Speed</label>
 		<description>This status defines the spin speed of a washer program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="LaundryCare.Washer.EnumType.SpinSpeed.Off">No spinning</option>
@@ -476,6 +569,10 @@
 		<label>i-Dos 1 Dosing Level</label>
 		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
 			supports i-Dos)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Off">Off</option>
@@ -491,6 +588,10 @@
 		<label>i-Dos 2 Dosing Level</label>
 		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
 			supports i-Dos)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Off">Off</option>
@@ -506,6 +607,10 @@
 		<label>i-Dos 1</label>
 		<description>This status indicates whether i-Dos 1 is activated for a washer program of the home appliance. (If
 			appliance supports i-Dos)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_idos2" advanced="true">
@@ -513,12 +618,20 @@
 		<label>i-Dos 2</label>
 		<description>This status indicates whether i-Dos 2 is activated for a washer program of the home appliance. (If
 			appliance supports i-Dos)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_vario_perfect" advanced="true">
 		<item-type>String</item-type>
 		<label>Vario Perfect</label>
 		<description>This status defines the vario perfect mode of a washer program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="LaundryCare.Common.EnumType.VarioPerfect.Off">Off</option>
@@ -530,18 +643,30 @@
 		<item-type>Switch</item-type>
 		<label>Less Ironing</label>
 		<description>This status indicates whether less ironing is activated for a washer program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_pre_wash" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Pre-Wash</label>
 		<description>This status indicates whether the pre-wash is activated for a washer program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_rinse_plus" advanced="true">
 		<item-type>String</item-type>
 		<label>Rinse Plus</label>
 		<description>This status defines the number of additional rinses of a washer program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="LaundryCare.Washer.EnumType.RinsePlus.Off">None</option>
@@ -556,42 +681,69 @@
 		<label>Rinse Hold</label>
 		<description>This status indicates whether the spin function is deactivated for a washer program of the home appliance
 			(washing will remain in the water after the last rinse cycle).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_soak" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Soaking</label>
 		<description>This status indicates whether the soaking is activated for a washer program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_load_recommendation" advanced="true">
 		<item-type>Number:Mass</item-type>
 		<label>Load Recommendation</label>
 		<description>This channel indicates the maximum laundry load recommended for a program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" min="0" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="program_energy" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Program Energy</label>
 		<description>This channel provides the estimated energy required in percentage for a program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="program_water" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Program Water</label>
 		<description>This channel provides the estimated water required in percentage for a program of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="setpoint_temperature_refrigerator">
 		<item-type>Number:Temperature</item-type>
 		<label>Refrigerator Temperature</label>
 		<description>Target temperature of the refrigerator compartment (Range depends on appliance - common range 2 to 8°C).</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="setpoint_temperature_freezer">
 		<item-type>Number:Temperature</item-type>
 		<label>Freezer temperature</label>
 		<description>Target temperature of the freezer compartment (Range depends on appliance - common range -16 to -24°C).</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="super_mode_refrigerator">
@@ -599,6 +751,10 @@
 		<label>Refrigerator Super Mode</label>
 		<description>The setting has no impact on setpoint temperatures but will make the fridge compartment cool to the
 			lowest possible temperature until it is disabled manually by the customer or by the HA because of a timeout.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="super_mode_freezer">
@@ -607,12 +763,20 @@
 		<description>This setting has no impact on setpoint temperatures but will make the freezer compartment cool to the
 			lowest possible temperature until it is disabled manually by the customer or by the home appliance because of a
 			timeout.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="dryer_drying_target">
 		<item-type>String</item-type>
 		<label>Drying Target</label>
 		<description>Specifies the desired dryness setting.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Moisture</tag>
+		</tags>
 		<state readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -620,33 +784,55 @@
 		<item-type>String</item-type>
 		<label>Venting Level</label>
 		<description>Current venting level of the hood.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hood_intensive_level">
 		<item-type>String</item-type>
 		<label>Intensive level</label>
 		<description>Current venting intensive level of the hood.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hood_program_state">
 		<item-type>String</item-type>
 		<label>Program Actions</label>
 		<description>Start hood program.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="functional_light_state">
 		<item-type>Switch</item-type>
 		<label>Functional Light State</label>
 		<description>This setting describes the current functional light state of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="ambient_light_state">
 		<item-type>Switch</item-type>
 		<label>Ambient Light State</label>
 		<description>This setting describes the current ambient light state of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="ambient_light_color_state">
 		<item-type>String</item-type>
 		<label>Ambient Light Color</label>
 		<description>This setting describes the color state of the ambient light.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Color</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="BSH.Common.EnumType.AmbientLightColor.CustomColor">Custom Color</option>
@@ -759,7 +945,7 @@
 		<category>Colorpicker</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

@@ -57,6 +57,10 @@
 		<label>Source</label>
 		<description>Source for this audio zone.</description>
 		<category>MediaControl</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state min="1" max="100"/>
 	</channel-type>
 

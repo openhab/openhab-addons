@@ -29,8 +29,8 @@ import tuwien.auto.calimero.link.medium.KNXMediumSettings;
 @NonNullByDefault
 public class CustomKNXNetworkLinkIP extends KNXNetworkLinkIP {
 
-    public static final int TUNNELING = KNXNetworkLinkIP.TUNNELING;
-    public static final int TUNNELINGV2 = KNXNetworkLinkIP.TunnelingV2;
+    public static final int TunnelingV1 = KNXNetworkLinkIP.TunnelingV1;
+    public static final int TunnelingV2 = KNXNetworkLinkIP.TunnelingV2;
     public static final int ROUTING = KNXNetworkLinkIP.ROUTING;
 
     CustomKNXNetworkLinkIP(final int serviceMode, KNXnetIPConnection conn, KNXMediumSettings settings)

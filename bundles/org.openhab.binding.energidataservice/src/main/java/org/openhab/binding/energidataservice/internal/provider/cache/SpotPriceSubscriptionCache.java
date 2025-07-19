@@ -20,10 +20,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
+import org.openhab.binding.energidataservice.internal.api.dto.SpotPriceRecord;
 import org.openhab.binding.energidataservice.internal.provider.subscription.SpotPriceSubscription;
 
 /**
@@ -32,9 +31,7 @@ import org.openhab.binding.energidataservice.internal.provider.subscription.Spot
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class SpotPriceSubscriptionCache extends ElectricityPriceSubscriptionCache<ElspotpriceRecord[]> {
-
-    private static final int MAX_CACHE_SIZE = 24 + 11 + NUMBER_OF_HISTORIC_HOURS;
+public class SpotPriceSubscriptionCache extends ElectricityPriceSubscriptionCache<SpotPriceRecord[]> {
 
     private final SpotPriceSubscription subscription;
 
@@ -43,25 +40,28 @@ public class SpotPriceSubscriptionCache extends ElectricityPriceSubscriptionCach
     }
 
     public SpotPriceSubscriptionCache(SpotPriceSubscription subscription, Clock clock) {
-        super(clock, MAX_CACHE_SIZE);
+        super(clock);
         this.subscription = subscription;
     }
 
     /**
-     * Convert and cache the supplied {@link ElspotpriceRecord}s.
-     * 
+     * Convert and cache the supplied {@link SpotPriceRecord}s.
+     *
      * @param records The records as received from Energi Data Service.
      * @return true if the provided records resulted in any cache changes
      */
     @Override
-    public boolean put(ElspotpriceRecord[] records) {
+    public boolean put(SpotPriceRecord[] records) {
         boolean isDKK = CURRENCY_DKK.equals(subscription.getCurrency());
         boolean anyChanges = false;
         int oldSize = priceMap.size();
-        for (ElspotpriceRecord record : records) {
-            BigDecimal newValue = (isDKK ? record.spotPriceDKK() : record.spotPriceEUR())
-                    .divide(BigDecimal.valueOf(1000));
-            BigDecimal oldValue = priceMap.put(record.hour(), newValue);
+        for (SpotPriceRecord record : records) {
+            BigDecimal spotPrice = isDKK ? record.priceDKK() : record.priceEUR();
+            if (spotPrice == null) {
+                continue;
+            }
+            BigDecimal newValue = spotPrice.divide(BigDecimal.valueOf(1000));
+            BigDecimal oldValue = priceMap.put(record.time(), newValue);
             if (oldValue == null || newValue.compareTo(oldValue) != 0) {
                 anyChanges = true;
             }
@@ -79,11 +79,13 @@ public class SpotPriceSubscriptionCache extends ElectricityPriceSubscriptionCach
      * @return true if spot prices are fully cached
      */
     public boolean arePricesFullyCached() {
-        Instant end = ZonedDateTime.of(LocalDate.now(clock), LocalTime.of(23, 0), NORD_POOL_TIMEZONE).toInstant();
-        LocalTime now = LocalTime.now(clock);
-        if (now.isAfter(DAILY_REFRESH_TIME_CET)) {
-            end = end.plus(24, ChronoUnit.HOURS);
+        LocalDate date = LocalDate.now(clock);
+
+        if (LocalTime.now(clock).isAfter(DAILY_REFRESH_TIME_CET)) {
+            date = date.plusDays(1);
         }
+
+        Instant end = ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, NORD_POOL_TIMEZONE).toInstant();
 
         return arePricesCached(end);
     }

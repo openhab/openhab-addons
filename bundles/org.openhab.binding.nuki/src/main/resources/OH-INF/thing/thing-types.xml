@@ -9,6 +9,7 @@
 		<label>Nuki Bridge</label>
 		<description>This bridge represents a Nuki Bridge on your local network. Nuki Smart Locks have to be paired via
 			Bluetooth with it.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="bridgeId"/>
 			<property name="hardwareId"/>
@@ -67,6 +68,7 @@
 		</supported-bridge-type-refs>
 		<label>Nuki Smart Lock</label>
 		<description>Nuki Smart Lock which is paired via Bluetooth to a Nuki Bridge.</description>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="lock" typeId="smartlockLock"/>
 			<channel id="lockState" typeId="smartlockState"/>
@@ -119,6 +121,7 @@
 		</supported-bridge-type-refs>
 		<label>Nuki Opener</label>
 		<description>Nuki Opener which is paired via Bluetooth to a Nuki Bridge.</description>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="openerState" typeId="openerState"/>
 			<channel id="openerMode" typeId="openerMode"/>
@@ -146,6 +149,10 @@
 		<description>Use this channel with a Switch Item to unlock and lock the door. Configure "Unlatch" to true if your Nuki
 			Smart Lock is mounted on a door lock with a knob on the outside.</description>
 		<category>Door</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">Unlocks the door</option>
@@ -160,6 +167,10 @@
 		<description>Use this channel if you want to execute other supported lock actions or to display the current lock
 			state.</description>
 		<category>Door</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Uncalibrated</option>
@@ -193,6 +204,10 @@
 		<label>Battery Charging</label>
 		<description>Use this channel to display the current state of charging</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OFF">Battery is not charging</option>
@@ -206,6 +221,10 @@
 		<label>Door State</label>
 		<description>Use this channel to display the current state of the door sensor</description>
 		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="1">Deactivated</option>

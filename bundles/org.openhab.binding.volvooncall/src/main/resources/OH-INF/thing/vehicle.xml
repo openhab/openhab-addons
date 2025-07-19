@@ -12,7 +12,7 @@
 
 		<label>Volvo Vehicle</label>
 		<description>Provides all data available on a Volvo vehicle.</description>
-
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="doors" typeId="doors"/>
 			<channel-group id="windows" typeId="windows"/>
@@ -230,6 +230,10 @@
 		<item-type>Contact</item-type>
 		<label>Door</label>
 		<description>Indicates if the door is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -237,6 +241,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Trip Duration</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -244,6 +252,10 @@
 		<item-type>Contact</item-type>
 		<label>Window</label>
 		<description>Indicates if the window is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -258,6 +270,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Average Speed</label>
 		<description>Average speed of the vehicle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -273,6 +289,10 @@
 		<label>Fuel Level</label>
 		<description>Indicates the level of fuel in the tank</description>
 		<category>oil</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -288,6 +308,10 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<category>Location</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -316,6 +340,10 @@
 		<item-type>Switch</item-type>
 		<label>Start Engine</label>
 		<description>Starts the vehicle engine</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="carLocked">
@@ -323,12 +351,20 @@
 		<label>Locked</label>
 		<description>Lock status</description>
 		<category>lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="engineRunning">
 		<item-type>Switch</item-type>
 		<label>Engine Started</label>
 		<description>Engine status (running or not)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="preclimatization">
@@ -336,6 +372,10 @@
 		<label>Preclimatization</label>
 		<description>Starts pre-climatization</description>
 		<category>heating</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Heating</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="remoteHeater">
@@ -343,6 +383,10 @@
 		<label>Remote Heater</label>
 		<description>(De)Activates remote heater</description>
 		<category>heating</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Heating</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="bulbFailure">
@@ -350,6 +394,10 @@
 		<label>Bulb Failure</label>
 		<description>At least one bulb is reported as dead</description>
 		<category>alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -358,6 +406,10 @@
 		<label>Fluid Level</label>
 		<description>Level of available fluid quantity.</description>
 		<category>alarm</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Normal</option>
@@ -371,6 +423,10 @@
 		<item-type>Number</item-type>
 		<label>Tyre Pressure</label>
 		<category>alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Normal</option>
@@ -393,6 +449,10 @@
 		<description>Indicates the level of power in the battery, or unknown in situations the API is misleading (in case of
 			PHEV / Twin Engine)</description>
 		<category>batterylevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -445,6 +505,10 @@
 		<label>Fuel Alarm</label>
 		<description>Set to 'ON' when the tank level is low</description>
 		<category>alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

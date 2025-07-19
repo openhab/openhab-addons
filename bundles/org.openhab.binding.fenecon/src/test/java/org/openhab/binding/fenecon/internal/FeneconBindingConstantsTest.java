@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.fenecon.internal.api.Address;
 
 /**
  * Test for {@link FeneconBindingConstants}.
@@ -31,18 +32,47 @@ public class FeneconBindingConstantsTest {
 
     @Test
     void checkAllAddressesAreListed() throws IllegalArgumentException, IllegalAccessException {
-        List<String> findAddresses = new ArrayList<>();
+        List<Address> findAddresses = new ArrayList<>();
 
         for (Field eachDeclaredField : FeneconBindingConstants.class.getDeclaredFields()) {
             if (eachDeclaredField.getName().endsWith("_ADDRESS")) {
                 String address = (String) eachDeclaredField.get(FeneconBindingConstants.class);
                 if (address != null) {
-                    findAddresses.add(address);
+                    findAddresses.add(new Address(address));
                 }
             }
         }
 
         assertEquals(FeneconBindingConstants.ADDRESSES.size(), findAddresses.size());
         assertTrue(findAddresses.containsAll(FeneconBindingConstants.ADDRESSES));
+    }
+
+    @Test
+    void checkAllAddressesAreUnique() throws IllegalArgumentException, IllegalAccessException {
+        List<Address> findAddresses = new ArrayList<>();
+
+        for (Field eachDeclaredField : FeneconBindingConstants.class.getDeclaredFields()) {
+            if (eachDeclaredField.getName().endsWith("_ADDRESS")) {
+                String address = (String) eachDeclaredField.get(FeneconBindingConstants.class);
+                if (address != null) {
+                    Address findAddress = new Address(address);
+                    assertFalse(findAddresses.contains(findAddress),
+                            "Duplicate address found: " + findAddress + " for field " + eachDeclaredField.getName());
+                    findAddresses.add(findAddress);
+                }
+            }
+        }
+    }
+
+    @Test
+    void checkAllAddressesConsistOfComponentAndChannel() throws IllegalArgumentException, IllegalAccessException {
+        for (Field eachDeclaredField : FeneconBindingConstants.class.getDeclaredFields()) {
+            if (eachDeclaredField.getName().endsWith("_ADDRESS")) {
+                String address = (String) eachDeclaredField.get(FeneconBindingConstants.class);
+                if (address != null) {
+                    assertDoesNotThrow(() -> new Address(address));
+                }
+            }
+        }
     }
 }

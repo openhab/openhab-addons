@@ -31,6 +31,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gree.internal.gson.GreeBaseDTO;
+import org.openhab.binding.gree.internal.gson.GreeScanResponseDTO;
 
 /**
  * The CryptoUtil class provides functionality for encrypting and decrypting
@@ -56,10 +57,10 @@ public class GreeCryptoUtil {
     }
 
     public static byte[] getGeneralKeyByteArray(EncryptionTypes encType) {
-        if (encType == EncryptionTypes.GCM) {
-            return getGCMGeneralKeyByteArray();
+        if (encType == EncryptionTypes.ECB) {
+            return getAESGeneralKeyByteArray();
         }
-        return getAESGeneralKeyByteArray();
+        return getGCMGeneralKeyByteArray();
     }
 
     public static byte[] getGCMIVByteArray() {
@@ -87,10 +88,15 @@ public class GreeCryptoUtil {
             encType = getEncryptionType(response);
         }
 
-        if (encType == EncryptionTypes.GCM) {
-            return decrypt(getGCMGeneralKeyByteArray(), response, encType);
+        // Devices with firmware version above 1.23 (encType set to COMBINED) are encrypting the scan response using
+        // AES general key and ECB encryption type (which means that it is needs to be decrypted the same way), but
+        // they are expecting the bind request to be encrypted with GCM general key and GCM encryption, and for
+        // everything else - the device's key and GCM encryption type
+        if (encType == EncryptionTypes.ECB
+                || (response instanceof GreeScanResponseDTO && encType == EncryptionTypes.COMBINED)) {
+            return decryptPack(getAESGeneralKeyByteArray(), response.pack);
         } else {
-            return decrypt(getAESGeneralKeyByteArray(), response, encType);
+            return decryptGCMPack(getGCMGeneralKeyByteArray(), response.pack, response.tag);
         }
     }
 
@@ -100,10 +106,11 @@ public class GreeCryptoUtil {
             encType = getEncryptionType(response);
         }
 
-        if (encType == EncryptionTypes.GCM) {
-            return decryptGCMPack(keyarray, response.pack, response.tag);
-        } else {
+        if (encType == EncryptionTypes.ECB
+                || (response instanceof GreeScanResponseDTO && encType == EncryptionTypes.COMBINED)) {
             return decryptPack(keyarray, response.pack);
+        } else {
+            return decryptGCMPack(keyarray, response.pack, response.tag);
         }
     }
 
@@ -120,7 +127,7 @@ public class GreeCryptoUtil {
             return new String(bytePlainText, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
                 | IllegalBlockSizeException ex) {
-            throw new GreeException("Decryption of recieved data failed", ex);
+            throw new GreeException("Decryption of received data failed", ex);
         }
     }
 
@@ -145,17 +152,18 @@ public class GreeCryptoUtil {
             return new String(bytePlainText, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | InvalidAlgorithmParameterException ex) {
-            throw new GreeException("GCM decryption of recieved data failed", ex);
+            throw new GreeException("GCM decryption of received data failed", ex);
         }
     }
 
     public static String[] encrypt(byte[] keyarray, String message, EncryptionTypes encType) throws GreeException {
-        if (encType == EncryptionTypes.GCM) {
-            return encryptGCMPack(keyarray, message);
-        } else {
+        if (encType == EncryptionTypes.ECB) {
             String[] res = new String[1];
             res[0] = encryptPack(keyarray, message);
             return res;
+        } else {
+            // for GCM and COMBINED always use GCM encription encription
+            return encryptGCMPack(keyarray, message);
         }
     }
 

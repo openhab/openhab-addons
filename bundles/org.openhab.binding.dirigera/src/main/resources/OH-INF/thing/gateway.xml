@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>DIRIGERA Gateway</label>
+		<description>IKEA Gateway for smart products</description>
+
+		<channels>
+			<channel id="custom-name" typeId="custom-name"/>
+			<channel id="location" typeId="text">
+				<label>Home Location</label>
+				<description>Location in latitude, longitude coordinates</description>
+			</channel>
+			<channel id="sunrise" typeId="datetime">
+				<label>Sunrise</label>
+				<description>Date and time of next sunrise</description>
+			</channel>
+			<channel id="sunset" typeId="datetime">
+				<label>Sunset</label>
+				<description>Date and time of next sunset</description>
+			</channel>
+			<channel id="pairing" typeId="switch">
+				<label>Pairing</label>
+				<description>Sets DIRIGERA hub into pairing mode</description>
+			</channel>
+			<channel id="ota-status" typeId="ota-status">
+				<label>OTA Status</label>
+				<description>Over-the-air overall status</description>
+			</channel>
+			<channel id="ota-state" typeId="ota-state">
+				<label>OTA State</label>
+				<description>Over-the-air current state</description>
+			</channel>
+			<channel id="ota-progress" typeId="ota-percent">
+				<label>OTA Progress</label>
+				<description>Over-the-air update progress</description>
+			</channel>
+			<channel id="statistics" typeId="text">
+				<label>Gateway Statistics</label>
+				<description>Several statistics about gateway activities</description>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:gateway"/>
+	</bridge-type>
+</thing:thing-descriptions>

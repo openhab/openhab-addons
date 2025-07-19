@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:energidataservice:service">
+		<parameter name="priceArea" type="text" required="true">
+			<label>Price Area</label>
+			<description>Price area for spot prices (same as bidding zone).</description>
+			<limitToOptions>false</limitToOptions>
+			<options>
+				<option value="DK1">West of the Great Belt</option>
+				<option value="DK2">East of the Great Belt</option>
+			</options>
+		</parameter>
+		<parameter name="currencyCode" type="text">
+			<label>Currency Code</label>
+			<description>Currency code in which to obtain spot prices.</description>
+			<default>DKK</default>
+			<options>
+				<option value="DKK">Danish Krone</option>
+				<option value="EUR">Euro</option>
+			</options>
+		</parameter>
+		<parameter name="gridCompanyGLN" type="text">
+			<label>Grid Company GLN</label>
+			<description>Global Location Number of the grid company.</description>
+			<limitToOptions>false</limitToOptions>
+			<options>
+				<option value="5790001095451">Aal Elnet</option>
+				<option value="5790000705184">Cerius</option>
+				<option value="5790000610099">Dinel</option>
+				<option value="5790002502699">El-net Kongerslev</option>
+				<option value="5790000836239">Elektrus</option>
+				<option value="5790001095277">Elinord</option>
+				<option value="5790001100520">Elnet Midt</option>
+				<option value="5790000392551">FLOW Elnet</option>
+				<option value="5790001088309">Forsyning Elnet</option>
+				<option value="5790001090166">Hammel Elforsyning Net</option>
+				<option value="5790000610839">Hurup Elværk Net</option>
+				<option value="5790000682102">Ikast El Net</option>
+				<option value="5790000704842">Konstant</option>
+				<option value="5790001090111">L-Net</option>
+				<option value="5790001089023">Midtfyns Elforsyning</option>
+				<option value="5790001089030">N1</option>
+				<option value="5790000681358">Netselskabet Elværk</option>
+				<option value="5790001088231">NKE-Elnet</option>
+				<option value="5790000610877">Nord Energi Net</option>
+				<option value="5790000395620">Nordvestjysk Elforsyning (NOE Net)</option>
+				<option value="5790000705689">Radius</option>
+				<option value="5790000681327">RAH</option>
+				<option value="5790000836727">Ravdex</option>
+				<option value="5790001095444">Sunds Net</option>
+				<option value="5790000706419">Tarm Elværk Net</option>
+				<option value="5790000392261">TREFOR El-net</option>
+				<option value="5790000706686">TREFOR El-net Øst</option>
+				<option value="5790001088217">Veksel</option>
+				<option value="5790000610976">Vores Elnet</option>
+				<option value="5790001089375">Zeanet</option>
+			</options>
+		</parameter>
+		<parameter name="energinetGLN" type="text">
+			<label>Energinet GLN</label>
+			<description>Global Location Number of Energinet.</description>
+			<advanced>true</advanced>
+			<default>5790000432752</default>
+		</parameter>
+		<parameter name="reducedElectricityTax" type="boolean">
+			<label>Reduced Electricity Tax</label>
+			<description>Reduced electricity tax applies. For electric heating customers only.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:energidataservice:datahub-price">
+		<parameter name="chargeTypeCodes" type="text">
+			<label>Charge Type Code Filters</label>
+			<description>Comma-separated list of charge type codes.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="notes" type="text">
+			<label>Note Filters</label>
+			<description>Comma-separated list of notes.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="start" type="text">
+			<label>Query Start Date</label>
+			<description>Query start date parameter expressed as either YYYY-MM-DD or dynamically as one of StartOfDay,
+				StartOfMonth or StartOfYear.</description>
+			<limitToOptions>false</limitToOptions>
+			<options>
+				<option value="StartOfDay">Start of day</option>
+				<option value="StartOfMonth">Start of month</option>
+				<option value="StartOfYear">Start of year</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="offset" type="text">
+			<label>Date Offset</label>
+			<description>Query start date offset expressed as an ISO 8601 duration.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

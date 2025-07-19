@@ -92,7 +92,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         return sendCommand(commandByte, new byte[0], purpose);
     }
 
-    private byte @Nullable [] sendCommand(byte commandByte, byte[] codeBytes, String purpose) {
+    protected byte @Nullable [] sendCommand(byte commandByte, byte[] codeBytes, String purpose) {
         try {
             ByteArrayOutputStream outputStream = buildCommandMessage(commandByte, codeBytes);
             byte[] padded = Utils.padTo(outputStream.toByteArray(), 16);
@@ -146,15 +146,13 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 return;
             }
 
-            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
-                    new StringType(message + irCommand + "..."));
-
             byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
 
             if (response == null) {
                 logger.warn("Got nothing back while getting learnt code");
                 updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
             } else {
+                logger.debug("Received response with length {}", response.length);
                 String hexString = Utils.toHexString(extractResponsePayload(response));
                 String cmdLabel = null;
                 if (replacement) {
@@ -181,7 +179,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 }
             }
         } catch (IOException e) {
-            logger.warn("Exception while attempting to check learnt code: {}", e.getMessage());
+            logger.warn("Exception while attempting to check learnt code: {}", e.getMessage(), e);
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
         }
     }
@@ -209,6 +207,8 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                         new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN));
                 sendCommand(COMMAND_BYTE_ENTER_LEARNING, "enter remote code learning mode");
+                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                        new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN + " done"));
                 break;
             }
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK: {

@@ -12,21 +12,24 @@
  */
 package org.openhab.transform.basicprofiles.internal.profiles;
 
-import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
+
+import javax.measure.MetricPrefix;
+import javax.measure.Quantity;
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Time;
+import javax.measure.spi.SystemOfUnits;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +63,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.link.ItemChannelLink;
@@ -103,7 +107,7 @@ public class StateFilterProfileTest {
         reset(mockCallback);
         reset(mockItemChannelLink);
         when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
-        when(mockItemRegistry.getItem("")).thenThrow(ItemNotFoundException.class);
+        // when(mockItemRegistry.getItem("")).thenThrow(ItemNotFoundException.class);
     }
 
     @Test
@@ -173,8 +177,21 @@ public class StateFilterProfileTest {
     }
 
     @Test
-    public void testSingleConditionMatchQuoted() throws ItemNotFoundException {
+    public void testSingleConditionMatchSingleQuoted() throws ItemNotFoundException {
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", "ItemName eq 'Value'")));
+        when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        State expectation = new StringType("NewValue");
+        profile.onStateUpdateFromHandler(expectation);
+        verify(mockCallback, times(1)).sendUpdate(eq(expectation));
+    }
+
+    @Test
+    public void testSingleConditionMatchDoubleQuoted() throws ItemNotFoundException {
+        when(mockContext.getConfiguration())
+                .thenReturn(new Configuration(Map.of("conditions", "ItemName eq \"Value\"")));
         when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
 
         StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
@@ -275,7 +292,7 @@ public class StateFilterProfileTest {
         ContactItem contactItem = new ContactItem("contactItem");
         RollershutterItem rollershutterItem = new RollershutterItem("rollershutterItem");
 
-        QuantityType q_1500W = QuantityType.valueOf("1500 W");
+        QuantityType<?> q_1500W = QuantityType.valueOf("1500 W");
         DecimalType d_1500 = DecimalType.valueOf("1500");
         StringType s_foo = StringType.valueOf("foo");
         StringType s_NULL = StringType.valueOf("NULL");
@@ -481,9 +498,9 @@ public class StateFilterProfileTest {
         ContactItem contactItem = new ContactItem("contactItem");
         ContactItem contactItem2 = new ContactItem("contactItem2");
 
-        QuantityType q_1500W = QuantityType.valueOf("1500 W");
-        QuantityType q_1_5kW = QuantityType.valueOf("1.5 kW");
-        QuantityType q_10kW = QuantityType.valueOf("10 kW");
+        QuantityType<?> q_1500W = QuantityType.valueOf("1500 W");
+        QuantityType<?> q_1_5kW = QuantityType.valueOf("1.5 kW");
+        QuantityType<?> q_10kW = QuantityType.valueOf("10 kW");
 
         DecimalType d_1500 = DecimalType.valueOf("1500");
         DecimalType d_2000 = DecimalType.valueOf("2000");
@@ -559,7 +576,7 @@ public class StateFilterProfileTest {
         StringItem stringItem = new StringItem("ItemName");
         DimmerItem dimmerItem = new DimmerItem("ItemName");
 
-        QuantityType q_1500W = QuantityType.valueOf("1500 W");
+        QuantityType<?> q_1500W = QuantityType.valueOf("1500 W");
         DecimalType d_1500 = DecimalType.valueOf("1500");
         StringType s_foo = StringType.valueOf("foo");
 
@@ -648,7 +665,6 @@ public class StateFilterProfileTest {
 
         profile.onStateUpdateFromHandler(inputState);
         reset(mockCallback);
-        when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
 
         item.setState(state);
         profile.onStateUpdateFromHandler(inputState);
@@ -657,10 +673,13 @@ public class StateFilterProfileTest {
 
     public static Stream<Arguments> testFunctions() {
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
+        NumberItem percentItem = new NumberItem("Number:Dimensionless", "percentItem", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("decimalItem");
         List<Number> numbers = List.of(1, 2, 3, 4, 5);
         List<Number> negatives = List.of(-1, -2, -3, -4, -5);
-        List<QuantityType> quantities = numbers.stream().map(n -> new QuantityType(n, Units.WATT)).toList();
+        List<QuantityType<Power>> quantities = numbers.stream().map(n -> new QuantityType<>(n, Units.WATT)).toList();
+        List<QuantityType<Dimensionless>> percentQuantities = numbers.stream()
+                .map(n -> new QuantityType<>(n, Units.PERCENT)).toList();
         List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
         List<DecimalType> negativeDecimals = negatives.stream().map(DecimalType::new).toList();
 
@@ -676,6 +695,10 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "1 <= $DELTA", decimals, DecimalType.valueOf("6"), true), //
                 Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("10"), true), //
                 Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("5.5"), false), //
+
+                // Multiple delta conditions
+                Arguments.of(decimalItem, "$DELTA >= 1, $DELTA <= 10", decimals, DecimalType.valueOf("15"), true), //
+                Arguments.of(decimalItem, "$DELTA >= 1, $DELTA <= 10", decimals, DecimalType.valueOf("16"), false), //
 
                 Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.6"), false), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.5"), true), //
@@ -705,6 +728,26 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.11"), false), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.91"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.89"), false), //
+
+                // Check against possible division-by-zero errors in $DELTA_PERCENT
+                Arguments.of(decimalItem, "> 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
+                Arguments.of(decimalItem, "< 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
+
+                // Contrast a simple comparison against a Percent QuantityType vs delta percent check
+                Arguments.of(percentItem, "> 5%", percentQuantities, QuantityType.valueOf("5.1 %"), true), //
+                Arguments.of(percentItem, "$DELTA_PERCENT > 5", percentQuantities, QuantityType.valueOf("5.1 %"),
+                        false), //
+
+                Arguments.of(percentItem, "> 5%", percentQuantities, QuantityType.valueOf("-10 %"), false), //
+                Arguments.of(percentItem, "$DELTA_PERCENT > 5", percentQuantities, QuantityType.valueOf("-10 %"), true), //
+
+                Arguments.of(percentItem, "< 200%", percentQuantities, QuantityType.valueOf("100 %"), true), //
+                Arguments.of(percentItem, "$DELTA_PERCENT < 200", percentQuantities, QuantityType.valueOf("100 %"),
+                        false), //
+
+                Arguments.of(percentItem, "< 200%", percentQuantities, QuantityType.valueOf("-100 %"), true), //
+                Arguments.of(percentItem, "$DELTA_PERCENT < 200", percentQuantities, QuantityType.valueOf("-100 %"),
+                        false), //
 
                 Arguments.of(decimalItem, "1 == $MIN", decimals, DecimalType.valueOf("20"), true), //
                 Arguments.of(decimalItem, "0 < $MIN", decimals, DecimalType.valueOf("20"), true), //
@@ -752,6 +795,68 @@ public class StateFilterProfileTest {
     @MethodSource
     public void testFunctions(Item item, String condition, List<State> states, State input, boolean expected)
             throws ItemNotFoundException {
+        internalTestFunctions(item, condition, states, input, expected);
+    }
+
+    public static Stream<Arguments> testDeltaWithRelativeUnit() {
+        NumberItem temperatureItem = new NumberItem("Number:Temperature", "temperatureItem", UNIT_PROVIDER);
+
+        State initialC = QuantityType.valueOf("5 °C");
+        State initialF = QuantityType.valueOf("5 °F");
+
+        State qty_7_C = QuantityType.valueOf("7 °C");
+        State qty_7_F = QuantityType.valueOf("7 °F");
+
+        return Stream.of( //
+                // Celsius inputs
+                // same unit
+                Arguments.of(temperatureItem, "$DELTA > 1 °C", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "1 °C < $DELTA", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 °C", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "1 °C > $DELTA", initialC, qty_7_C, false), //
+
+                // Celsius vs Fahrenheit: 2 °C = 35.6 °F (absolute), 2 °C = 3.6 °F (relative)
+                Arguments.of(temperatureItem, "$DELTA > 4 °F", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "4 °F < $DELTA", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "$DELTA < 4 °F", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "4 °F > $DELTA", initialC, qty_7_C, true), //
+
+                // Celsius vs Kelvin: °C = K in relative unit
+                Arguments.of(temperatureItem, "$DELTA > 1 K", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "1 K < $DELTA", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 K", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "1 K > $DELTA", initialC, qty_7_C, false), //
+
+                // Fahrenheit inputs
+                // same unit, in F
+                Arguments.of(temperatureItem, "$DELTA > 1 °F", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "1 °F < $DELTA", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "$DELTA < 2 °F", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "2 °F > $DELTA", initialF, qty_7_F, false), //
+
+                // Fahrenheit vs Celsius: 2 °F = -16.67 °C (absolute), 2 °F = 1.11 °C (relative)
+                Arguments.of(temperatureItem, "$DELTA > 1 °C", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "1 °C < $DELTA", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 °C", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "1 °C > $DELTA", initialF, qty_7_F, false), //
+
+                // Fahreheit vs Kelvin: 2 °F = 256.48 K (absolute), 2 °F = 1.11 K (relative)
+                Arguments.of(temperatureItem, "$DELTA > 2 K", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "2 K < $DELTA", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "$DELTA < 2 K", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "2 K > $DELTA", initialF, qty_7_F, true) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testDeltaWithRelativeUnit(Item item, String condition, State initialState, State input,
+            boolean expected) throws ItemNotFoundException {
+        internalTestFunctions(item, condition, List.of(initialState), input, expected);
+    }
+
+    private void internalTestFunctions(Item item, String condition, List<State> states, State input, boolean expected)
+            throws ItemNotFoundException {
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
         when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
         when(mockItemChannelLink.getItemName()).thenReturn(item.getName());
@@ -763,7 +868,6 @@ public class StateFilterProfileTest {
         }
 
         reset(mockCallback);
-        when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
 
         profile.onStateUpdateFromHandler(input);
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
@@ -793,5 +897,179 @@ public class StateFilterProfileTest {
 
         profile.onStateUpdateFromHandler(DecimalType.valueOf("1"));
         verify(mockCallback, times(1)).sendUpdate(DecimalType.valueOf("1"));
+    }
+
+    public static Stream<Arguments> testMixedStates() {
+        NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
+
+        List<State> states = List.of( //
+                UnDefType.UNDEF, //
+                QuantityType.valueOf(99, SIUnits.METRE), //
+                QuantityType.valueOf(1, Units.WATT), //
+                DecimalType.valueOf("2"), //
+                QuantityType.valueOf(2000, MetricPrefix.MILLI(Units.WATT)), //
+                QuantityType.valueOf(3, Units.WATT)); //
+
+        return Stream.of(
+                // average function (true)
+                Arguments.of(powerItem, "== $AVG", states, QuantityType.valueOf("2 W"), true),
+                Arguments.of(powerItem, "== $AVG", states, QuantityType.valueOf("2000 mW"), true),
+                Arguments.of(powerItem, "== $AVERAGE", states, QuantityType.valueOf("0.002 kW"), true),
+                Arguments.of(powerItem, "> $AVERAGE", states, QuantityType.valueOf("3 W"), true),
+
+                // average function (false)
+                Arguments.of(powerItem, "> $AVERAGE", states, QuantityType.valueOf("2 W"), false),
+                Arguments.of(powerItem, "== $AVERAGE", states, DecimalType.valueOf("2"), false),
+
+                // min function (true)
+                Arguments.of(powerItem, "== $MIN", states, QuantityType.valueOf("1 W"), true),
+                Arguments.of(powerItem, "== $MIN", states, QuantityType.valueOf("1000 mW"), true),
+
+                // min function (false)
+                Arguments.of(powerItem, "== $MIN", states, DecimalType.valueOf("1"), false),
+
+                // max function (true)
+                Arguments.of(powerItem, "== $MAX", states, QuantityType.valueOf("3 W"), true),
+                Arguments.of(powerItem, "== $MAX", states, QuantityType.valueOf("0.003 kW"), true),
+
+                // max function (false)
+                Arguments.of(powerItem, "== $MAX", states, DecimalType.valueOf("1"), false),
+
+                // delta function (true)
+                Arguments.of(powerItem, "$DELTA <= 1 W", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "$DELTA > 0.5 W", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "$DELTA > 0.0005 kW", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "0.5 W < $DELTA", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "500 mW < $DELTA", states, QuantityType.valueOf("4 W"), true),
+
+                // delta function (false)
+                Arguments.of(powerItem, "$DELTA > 0.5 W", states, QuantityType.valueOf("3.4 W"), false),
+                Arguments.of(powerItem, "$DELTA > 0.5", states, QuantityType.valueOf("4 W"), false),
+
+                // delta percent function (true)
+                Arguments.of(powerItem, "$DELTA_PERCENT > 30", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "30 < $DELTA_PERCENT", states, QuantityType.valueOf("4 W"), true),
+
+                // delta percent function (false)
+                Arguments.of(powerItem, "$DELTA_PERCENT > 310", states, QuantityType.valueOf("4 W"), false),
+                Arguments.of(powerItem, "310 < $DELTA_PERCENT", states, QuantityType.valueOf("4 W"), false),
+
+                // unit based comparisons (true)
+                Arguments.of(powerItem, "> 0.5 W", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "> 500 mW", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "> 0.0005 kW", states, QuantityType.valueOf("4 W"), true),
+
+                // unit based comparisons (false)
+                Arguments.of(powerItem, "> 0.5 W", states, QuantityType.valueOf("0.4 W"), false),
+                Arguments.of(powerItem, "> 500 mW", states, QuantityType.valueOf("0.4 W"), false),
+                Arguments.of(powerItem, "> 0.0005 kW", states, QuantityType.valueOf("0.4 W"), false),
+
+                // percent comparisons (true)
+                Arguments.of(powerItem, "> 30 %", states, QuantityType.valueOf("4 W"), true),
+
+                // percent comparisons (false)
+                Arguments.of(powerItem, "> 310 %", states, QuantityType.valueOf("4 W"), false) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testMixedStates(Item item, String condition, List<State> states, State input, boolean expected)
+            throws ItemNotFoundException {
+        internalTestFunctions(item, condition, states, input, expected);
+    }
+
+    /**
+     * A {@link UnitProvider} that provides Units.MIRED
+     */
+    protected static class MirekUnitProvider implements UnitProvider {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends Quantity<T>> Unit<T> getUnit(Class<T> dimension) throws IllegalArgumentException {
+            return (Unit<T>) Units.MIRED;
+        }
+
+        @Override
+        public SystemOfUnits getMeasurementSystem() {
+            return SIUnits.getInstance();
+        }
+
+        @Override
+        public Collection<Class<? extends Quantity<?>>> getAllDimensions() {
+            return Set.of();
+        }
+    }
+
+    public static Stream<Arguments> testColorTemperatureValues() {
+        NumberItem kelvinItem = new NumberItem("Number:Temperature", "kelvinItem", UNIT_PROVIDER);
+        NumberItem mirekItem = new NumberItem("Number:Temperature", "mirekItem", new MirekUnitProvider());
+
+        List<State> states = List.of( //
+                QuantityType.valueOf(500, Units.MIRED), //
+                QuantityType.valueOf(2000 + (1 * 100), Units.KELVIN), //
+                QuantityType.valueOf(1726.85 + (2 * 100), SIUnits.CELSIUS), //
+                QuantityType.valueOf(3140.33 + (3 * 180), ImperialUnits.FAHRENHEIT));
+
+        return Stream.of( //
+                // kelvin based item
+                Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf("2000 K"), true),
+                Arguments.of(kelvinItem, "== $MAX", states, QuantityType.valueOf("2300 K"), true),
+                Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(500, Units.MIRED), true),
+                Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
+                Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
+                        true),
+
+                // kelvin based item average (note: actual is 2150)
+                Arguments.of(kelvinItem, "<= $AVG", states, QuantityType.valueOf("2149 K"), true),
+                Arguments.of(kelvinItem, ">= $AVG", states, QuantityType.valueOf("2151 K"), true),
+
+                // mirek based item (note: min and max are reversed
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf("2000 K"), true),
+                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf("2300 K"), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(500, Units.MIRED), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
+                        true),
+
+                // mirek based item average (note: actual is 466.37)
+                Arguments.of(mirekItem, "<= $AVG", states, QuantityType.valueOf(466, Units.MIRED), true),
+                Arguments.of(mirekItem, ">= $AVG", states, QuantityType.valueOf(468, Units.MIRED), true) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testColorTemperatureValues(Item item, String condition, List<State> states, State input,
+            boolean expected) throws ItemNotFoundException {
+        internalTestFunctions(item, condition, states, input, expected);
+    }
+
+    public static Stream<Arguments> testTimeValues() {
+        NumberItem timeItem = new NumberItem("Number:Time", "timeItem", UNIT_PROVIDER);
+
+        QuantityType<Time> microSec = QuantityType.valueOf(1, MetricPrefix.MICRO(Units.SECOND));
+        QuantityType<Time> milliSec = QuantityType.valueOf(1, MetricPrefix.MILLI(Units.SECOND));
+        QuantityType<Time> second = QuantityType.valueOf(1000, MetricPrefix.MILLI(Units.SECOND));
+        QuantityType<Time> minute = QuantityType.valueOf(60000, MetricPrefix.MILLI(Units.SECOND));
+        QuantityType<Time> hour = QuantityType.valueOf(3600000, MetricPrefix.MILLI(Units.SECOND));
+
+        return Stream.of( //
+                Arguments.of(timeItem, "== $MIN", List.of(second, minute), QuantityType.valueOf("1 s"), true),
+                Arguments.of(timeItem, "== $MAX", List.of(second, minute), QuantityType.valueOf("1 min"), true), //
+
+                Arguments.of(timeItem, "== $MIN", List.of(microSec, milliSec), QuantityType.valueOf("1 µs"), true),
+                Arguments.of(timeItem, "== $MAX", List.of(microSec, milliSec), QuantityType.valueOf("1 ms"), true), //
+
+                Arguments.of(timeItem, "== $MIN", List.of(microSec, hour), QuantityType.valueOf("1 µs"), true),
+                Arguments.of(timeItem, "== $MAX", List.of(microSec, hour), QuantityType.valueOf("1 h"), true) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testTimeValues(Item item, String condition, List<State> states, State input, boolean expected)
+            throws ItemNotFoundException {
+        internalTestFunctions(item, condition, states, input, expected);
     }
 }

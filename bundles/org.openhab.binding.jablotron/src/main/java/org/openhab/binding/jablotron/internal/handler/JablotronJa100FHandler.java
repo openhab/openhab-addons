@@ -198,9 +198,8 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
             }
 
             // update events
-            List<JablotronHistoryDataEvent> events = sendGetEventHistory();
-            if (events != null && !events.isEmpty()) {
-                JablotronHistoryDataEvent event = events.get(0);
+            JablotronHistoryDataEvent event = sendGetEventHistory();
+            if (event != null) {
                 updateLastEvent(event);
             }
             return true;

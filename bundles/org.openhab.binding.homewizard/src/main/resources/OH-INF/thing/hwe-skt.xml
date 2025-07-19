@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homewizard"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hwe-skt">
+		<label>HomeWizard Energy Socket</label>
+		<description>This thing provides the measurement data that is available through the API of a HomeWizard
+			Energy Socket.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="energy" typeId="skt-energy-group"/>
+			<channel-group id="control" typeId="skt-control-group"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:homewizard:device"/>
+	</thing-type>
+
+	<channel-group-type id="skt-energy-group">
+		<label>Recent Measurements</label>
+		<channels>
+			<channel id="power" typeId="hw-power"/>
+			<channel id="voltage" typeId="hw-voltage"/>
+			<channel id="current" typeId="hw-current"/>
+			<channel id="energy_import" typeId="hw-energy-import"/>
+			<channel id="energy_export" typeId="hw-energy-export"/>
+			<channel id="reactive_power" typeId="hw-reactive-power"/>
+			<channel id="apparent_power" typeId="hw-apparent-power"/>
+			<channel id="power_factor" typeId="hw-power-factor"/>
+			<channel id="frequency" typeId="hw-frequency"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="skt-control-group">
+		<label>Control Device State</label>
+		<channels>
+			<channel id="power_switch" typeId="skt-power-switch"/>
+			<channel id="power_lock" typeId="skt-power-lock"/>
+			<channel id="ring_brightness" typeId="skt-ring-brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="skt-power-switch">
+		<item-type>Switch</item-type>
+		<label>Power Switch</label>
+		<description>
+			This channel provides access to the power switch of the Energy Socket.
+		</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="skt-power-lock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Power Lock</label>
+		<description>
+			This channel provides access to the power lock of the Energy Socket.
+		</description>
+	</channel-type>
+
+	<channel-type id="skt-ring-brightness">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Ring Brightness</label>
+		<description>
+			This channel provides access to the brightness of the ring of the Energy Socket.
+		</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

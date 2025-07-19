@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.folderwatcher.internal.handler.AzureBlobWatcherHandler;
 import org.openhab.binding.folderwatcher.internal.handler.FtpFolderWatcherHandler;
 import org.openhab.binding.folderwatcher.internal.handler.LocalFolderWatcherHandler;
 import org.openhab.binding.folderwatcher.internal.handler.S3BucketWatcherHandler;
@@ -42,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 public class FolderWatcherHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_FTPFOLDER,
-            THING_TYPE_LOCALFOLDER, THING_TYPE_S3BUCKET);
+            THING_TYPE_LOCALFOLDER, THING_TYPE_S3BUCKET, THING_TYPE_AZUREBLOB);
     private HttpClientFactory httpClientFactory;
 
     @Activate
@@ -65,6 +66,8 @@ public class FolderWatcherHandlerFactory extends BaseThingHandlerFactory {
             return new LocalFolderWatcherHandler(thing);
         } else if (THING_TYPE_S3BUCKET.equals(thingTypeUID)) {
             return new S3BucketWatcherHandler(thing, httpClientFactory);
+        } else if (THING_TYPE_AZUREBLOB.equals(thingTypeUID)) {
+            return new AzureBlobWatcherHandler(thing, httpClientFactory);
         }
         return null;
     }

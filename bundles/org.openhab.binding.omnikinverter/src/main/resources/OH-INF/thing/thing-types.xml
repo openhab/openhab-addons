@@ -7,6 +7,7 @@
 	<thing-type id="omnik">
 		<label>OmnikInverter Binding Thing</label>
 		<description>Thing for OmnikInverter Binding</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<channels>
 
@@ -117,42 +118,74 @@
 		<item-type>Number:Power</item-type>
 		<label>Instantaneous Power</label>
 		<description>Deprecated! See channel 'powerAC1'</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="powerAC">
 		<item-type>Number:Power</item-type>
 		<label>Instantaneous Power AC</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="voltageAC">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage AC</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="currentAC">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current AC</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="frequencyAC">
 		<item-type>Number:Frequency</item-type>
 		<label>Frequency AC</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="currentPV">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current PV</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="voltagePV">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage PV</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="energyToday">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Today</label>
 		<description>The amount of energy generated today</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="energyTotal">

@@ -20,7 +20,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantJinjaFunctionLibrary;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantStateDescriptionProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.thing.Thing;
@@ -33,7 +34,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.hubspot.jinjava.Jinjava;
+import com.google.gson.Gson;
 
 /**
  * The {@link MqttThingHandlerFactory} is responsible for creating things and thing
@@ -47,22 +48,24 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
     private final MqttChannelTypeProvider typeProvider;
     private final MqttChannelStateDescriptionProvider stateDescriptionProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
-    private final Jinjava jinjava = new Jinjava();
     private final UnitProvider unitProvider;
+    private final Gson gson;
+    private final HomeAssistantPythonBridge python;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(MqttBindingConstants.HOMEASSISTANT_MQTT_THING).collect(Collectors.toSet());
 
     @Activate
     public MqttThingHandlerFactory(final @Reference MqttChannelTypeProvider typeProvider,
-            final @Reference MqttChannelStateDescriptionProvider stateDescriptionProvider,
-            final @Reference ChannelTypeRegistry channelTypeRegistry, final @Reference UnitProvider unitProvider) {
+            final @Reference HomeAssistantStateDescriptionProvider stateDescriptionProvider,
+            final @Reference ChannelTypeRegistry channelTypeRegistry, final @Reference UnitProvider unitProvider,
+            final @Reference HomeAssistantPythonBridge python) {
         this.typeProvider = typeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeRegistry = channelTypeRegistry;
         this.unitProvider = unitProvider;
-
-        HomeAssistantJinjaFunctionLibrary.register(jinjava.getGlobalContext());
+        this.gson = new Gson();
+        this.python = python;
     }
 
     @Override
@@ -80,13 +83,13 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (supportsThingType(thingTypeUID)) {
-            return new HomeAssistantThingHandler(thing, typeProvider, stateDescriptionProvider, channelTypeRegistry,
-                    jinjava, unitProvider, 10000, 2000);
+            return new HomeAssistantThingHandler(thing, this, typeProvider, stateDescriptionProvider,
+                    channelTypeRegistry, gson, python, unitProvider, 10000, 2000);
         }
         return null;
     }
 
-    public Jinjava getJinjava() {
-        return jinjava;
+    public HomeAssistantPythonBridge getPython() {
+        return python;
     }
 }

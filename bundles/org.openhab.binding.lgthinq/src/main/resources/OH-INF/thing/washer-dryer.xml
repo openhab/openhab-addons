@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" bindingId="lgthinq"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- LG Device Type relative to Washer -->
+	<thing-type id="washer-201">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud-account"/>
+		</supported-bridge-type-refs>
+
+		<label>LGThinQ Washer</label>
+		<description>LG ThinQ Washing Machine</description>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="dashboard" typeId="wm-dashboard"/>
+			<channel-group id="rs-grp" typeId="wm-rs-grp"/>
+		</channel-groups>
+		<config-description>
+			<parameter-group name="Settings">
+				<label>Polling</label>
+				<description>Settings required to optimize the polling behaviour.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter name="pollingPeriodPowerOffSeconds" type="integer" min="10" required="true" groupName="Settings">
+				<label>Polling When Off</label>
+				<description>Seconds to wait to the next polling when device is off. Useful to save up
+					i/o and cpu when your
+					device is
+					not working. If you use only this binding to control the
+					device, you can put higher values here.
+				</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="pollingPeriodPowerOnSeconds" type="integer" min="10" required="true" groupName="Settings">
+				<label>Polling When On</label>
+				<description>Seconds to wait to the next polling for device state (dashboard channels)
+				</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="washer-tower-221">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud-account"/>
+		</supported-bridge-type-refs>
+
+		<label>LGThinQ Washer Tower</label>
+		<description>LGThinQ Washer Tower</description>
+		<channel-groups>
+			<channel-group id="dashboard" typeId="wm-dashboard"/>
+			<channel-group id="rs-grp" typeId="wm-rs-grp"/>
+		</channel-groups>
+		<config-description>
+			<parameter-group name="Settings">
+				<label>Polling</label>
+				<description>Settings required to optimize the polling behaviour.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter name="pollingPeriodPowerOffSeconds" type="integer" min="10" required="true" groupName="Settings">
+				<label>Polling When Off</label>
+				<description>Seconds to wait to the next polling when device is off. Useful to save up
+					i/o and cpu when your
+					device is
+					not working. If you use only this binding to control the
+					device, you can put higher values here.
+				</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="pollingPeriodPowerOnSeconds" type="integer" min="10" required="true" groupName="Settings">
+				<label>Polling When On</label>
+				<description>Seconds to wait to the next polling for device state (dashboard channels)
+				</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-group-type id="wm-rs-grp">
+		<label>Remote Start Options</label>
+		<description>Remote Start Actions and Options.</description>
+		<channels>
+			<channel id="rs-start-stop" typeId="rs-start-stop"/>
+			<channel id="rs-course" typeId="rs-course"/>
+			<channel id="rs-rinse" typeId="rs-rinse"/>
+			<channel id="rs-spin" typeId="rs-spin"/>
+			<channel id="rs-temperature-level" typeId="rs-temperature-level"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="wm-dashboard">
+		<label>Dashboard</label>
+		<description>This is the Displayed Information.</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="state" typeId="washer-state"/>
+			<channel id="process-state" typeId="washerdryer-process-state"/>
+			<channel id="course" typeId="washerdryer-course"/>
+			<channel id="temperature-level" typeId="washerdryer-temp-level"/>
+			<channel id="door-lock" typeId="washerdryer-door-lock"/>
+			<channel id="remain-time" typeId="washerdryer-remain-time"/>
+			<channel id="rinse" typeId="washer-rinse"/>
+			<channel id="spin" typeId="washer-spin"/>
+			<channel id="delay-time" typeId="washerdryer-delay-time"/>
+			<channel id="stand-by" typeId="washerdryer-stand-by"/>
+			<channel id="rs-flag" typeId="washerdryer-rs"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airparif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="comment">
+		<item-type>String</item-type>
+		<label>Comment</label>
+		<category>text</category>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="hazel-level">
+		<item-type>Number</item-type>
+		<label>Hazel Level</label>
+		<category>oh:airparif:hazel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="birch-level">
+		<item-type>Number</item-type>
+		<label>Birch Level</label>
+		<category>oh:airparif:birch</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="cypress-level">
+		<item-type>Number</item-type>
+		<label>Cypress</label>
+		<category>oh:airparif:cypress</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alder-level">
+		<item-type>Number</item-type>
+		<label>Alder</label>
+		<category>oh:airparif:alder</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="poplar-level">
+		<item-type>Number</item-type>
+		<label>Poplar</label>
+		<category>oh:airparif:poplar</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="ash-level">
+		<item-type>Number</item-type>
+		<label>Ash</label>
+		<category>oh:airparif:ash</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="olive-level">
+		<item-type>Number</item-type>
+		<label>Olive</label>
+		<category>oh:airparif:olive</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="urticaceae-level">
+		<item-type>Number</item-type>
+		<label>Urticacea</label>
+		<category>oh:airparif:urticaceae</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="wormwood-level">
+		<item-type>Number</item-type>
+		<label>Wormwood</label>
+		<category>oh:airparif:wormwood</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="rumex-level">
+		<item-type>Number</item-type>
+		<label>Rumex</label>
+		<category>oh:airparif:rumex</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ragweed-level">
+		<item-type>Number</item-type>
+		<label>Ragweed</label>
+		<category>oh:airparif:ragweed</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="grasses-level">
+		<item-type>Number</item-type>
+		<label>Grasses</label>
+		<category>oh:airparif:grasses</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plantain-level">
+		<item-type>Number</item-type>
+		<label>Plantain</label>
+		<category>oh:airparif:plantain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="chestnut-level">
+		<item-type>Number</item-type>
+		<label>Chestnut</label>
+		<category>oh:airparif:chestnut</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="oak-level">
+		<item-type>Number</item-type>
+		<label>Oak</label>
+		<category>oh:airparif:oak</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="linden-level">
+		<item-type>Number</item-type>
+		<label>Linden</label>
+		<category>oh:airparif:linden</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plane-level">
+		<item-type>Number</item-type>
+		<label>Plane</label>
+		<category>oh:airparif:plane</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hornbeam-level">
+		<item-type>Number</item-type>
+		<label>Hornbeam</label>
+		<category>oh:airparif:hornbeam</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="willow-level">
+		<item-type>Number</item-type>
+		<label>Willow</label>
+		<category>oh:airparif:willow</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Low</option>
+				<option value="2">Average</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ndx-value">
+		<item-type>Number</item-type>
+		<label>Measure</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mpc-value">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Measure</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="appreciation">
+		<item-type>Number</item-type>
+		<label>Air Quality</label>
+		<category>oh:airparif:aq</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Good</option>
+				<option value="1">Average</option>
+				<option value="2">Degrated</option>
+				<option value="3">Bad</option>
+				<option value="4">Very Bad</option>
+				<option value="5">Extremely Bad</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+</thing:thing-descriptions>

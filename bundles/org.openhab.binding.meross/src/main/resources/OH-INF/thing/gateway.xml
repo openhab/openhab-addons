@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meross"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>Meross Gateway</label>
+		<description>Meross Gateway</description>
+
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Meross Hostname or IP address</description>
+				<default>https://iotx-eu.meross.com</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="userEmail" type="text" required="true">
+				<context>email</context>
+				<label>Email</label>
+				<description>Email of your Meross Account</description>
+			</parameter>
+			<parameter name="userPassword" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of your Meross Account</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

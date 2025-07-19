@@ -31,11 +31,11 @@ import org.openhab.core.library.types.UpDownType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class CoverTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "cover/0x0000000000000000_cover_zigbee2mqtt";
 
-    @SuppressWarnings("null")
     @Test
     public void testStateOnly() throws InterruptedException {
         // @formatter:off
@@ -73,6 +73,8 @@ public class CoverTests extends AbstractComponentTests {
         assertChannel(component, Cover.COVER_CHANNEL_ID, "zigbee2mqtt/cover/state", "zigbee2mqtt/cover/set/state",
                 "Cover", RollershutterValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/cover/state", "closed");
         assertState(component, Cover.COVER_CHANNEL_ID, UpDownType.DOWN);
         assertState(component, Cover.STATE_CHANNEL_ID, new StringType("closed"));
@@ -88,7 +90,6 @@ public class CoverTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/cover/set/state", "STOP_");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testPositionAndState() throws InterruptedException {
         // @formatter:off
@@ -121,6 +122,8 @@ public class CoverTests extends AbstractComponentTests {
         assertChannel(component, Cover.COVER_CHANNEL_ID, "esphome/single-car-gdo/cover/door/position/state",
                 "esphome/single-car-gdo/cover/door/position/command", "Cover", RollershutterValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("esphome/single-car-gdo/cover/door/state", "closed");
         assertState(component, Cover.STATE_CHANNEL_ID, new StringType("closed"));
         publishMessage("esphome/single-car-gdo/cover/door/state", "open");
@@ -149,7 +152,6 @@ public class CoverTests extends AbstractComponentTests {
         assertPublished("esphome/single-car-gdo/cover/door/position/command", "60");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testPositionOnly() throws InterruptedException {
         // @formatter:off
@@ -176,7 +178,9 @@ public class CoverTests extends AbstractComponentTests {
         assertThat(component.getName(), is("Door"));
 
         assertChannel(component, Cover.COVER_CHANNEL_ID, "esphome/single-car-gdo/cover/door/position/state",
-                "esphome/single-car-gdo/cover/door/position/command", "Cover", RollershutterValue.class);
+                "esphome/single-car-gdo/cover/door/position/command", "Door", RollershutterValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("esphome/single-car-gdo/cover/door/position/state", "100");
         assertState(component, Cover.COVER_CHANNEL_ID, PercentType.ZERO);

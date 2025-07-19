@@ -92,6 +92,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             new AbstractMap.SimpleEntry<>("LEDVANCE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
             new AbstractMap.SimpleEntry<>("SWD", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT),
             new AbstractMap.SimpleEntry<>("SWD2", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2),
+            new AbstractMap.SimpleEntry<>("SWD2_PLUS", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_PLUS),
             new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT),
             new AbstractMap.SimpleEntry<>("WRC2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH),
             new AbstractMap.SimpleEntry<>("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2),
@@ -127,7 +128,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
     public void dispose() {
         super.dispose();
         logger.trace("dispose");
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
         thingHandler.unregisterDiscoveryListener();
 
         super.deactivate();
@@ -242,7 +243,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
         discoveryResult.withBridge(thingHandler.getThing().getUID());
 
         if (!roomName.isEmpty()) {
-            discoveryResult.withProperty("Location", roomName);
+            discoveryResult.withProperty(BoschSHCBindingConstants.PROPERTY_LOCATION, roomName);
         }
         thingDiscovered(discoveryResult.build());
 

@@ -30,11 +30,11 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class VacuumTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "vacuum/rockrobo_vacuum";
 
-    @SuppressWarnings("null")
     @Test
     public void testRoborockValetudo() {
         // @formatter:off
@@ -74,6 +74,8 @@ public class VacuumTests extends AbstractComponentTests {
                 PercentageValue.class);
         assertChannel(component, Vacuum.JSON_ATTRIBUTES_CH_ID, "valetudo/rockrobo/attributes", "", "JSON Attributes",
                 TextValue.class);
+
+        linkAllChannels(component);
 
         assertState(component, Vacuum.STATE_CH_ID, UnDefType.UNDEF);
         assertState(component, Vacuum.FAN_SPEED_CH_ID, UnDefType.UNDEF);
