@@ -474,7 +474,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             updateState(electricPowerHeatingChannel, powerDTO.electricPowerHeating);
             updateState(electricPowerDrinkingWaterChannel, powerDTO.electricPowerDrinkingwater);
             updateState(electricPowerCoolingChannel, powerDTO.electricPowerCooling);
-
         } else {
             logger.debug("Unable to get {} from provider {}", Data.DataType.POWER, powerParser.toString());
         }

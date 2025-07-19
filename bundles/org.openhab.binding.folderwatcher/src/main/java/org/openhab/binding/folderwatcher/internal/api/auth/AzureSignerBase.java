@@ -37,7 +37,6 @@ public abstract class AzureSignerBase extends SignerBase {
     protected DateTimeFormatter dateTimeFormat;
 
     public AzureSignerBase(URL endpointUrl, String httpMethod, String serviceName, String regionName) {
-
         super(PAIR_SEPARATOR, VALEU_SEPARATOR);
 
         this.endpointUrl = endpointUrl;
@@ -73,7 +72,6 @@ public abstract class AzureSignerBase extends SignerBase {
             String ContentLength, String ContentMD5, String ContentType, String Date, String IfModifiedSince,
             String IfMatch, String IfNoneMatch, String IfUnmodifiedSince, String Range, String CanonicalizedHeaders,
             String CanonicalizedResource) throws AuthException {
-
         return VERB + "\n" + ContentEncoding + "\n" + ContentLanguage + "\n" + ContentLength + "\n" + ContentMD5 + "\n"
                 + ContentType + "\n" + Date + "\n" + IfModifiedSince + "\n" + IfMatch + "\n" + IfNoneMatch + "\n"
                 + IfUnmodifiedSince + "\n" + Range + "\n" + CanonicalizedHeaders + CanonicalizedResource;
