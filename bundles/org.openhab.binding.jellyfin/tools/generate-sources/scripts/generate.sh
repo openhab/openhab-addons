@@ -56,7 +56,6 @@ echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m
 VERSIONS=("10.10.7")
 VERSION_ALIAS=("current")
 
-
 DOCKER_VOLUME_WORK="/work"
 
 ROOT=$(pwd)
@@ -65,13 +64,13 @@ OPENAPI_JAVA_CONFIG="tools/generate-sources/scripts/java.config.json"
 OPENAPI_SPECIFICATION_DIR="tools/generate-sources/scripts/specifications"
 FILENAME_ENDPOINTS=logs/endpoints/${i}.txt
 
-if ! npx list openapi-filter &>/dev/null; then
-    echo "ℹ️  - Installing openapi-filter@3.2.3"
-    npm install --save-dev --no-audit --no-fund openapi-filter@3.2.3 1>/dev/null || {
-        echo "❌ Error: Failed to install openapi-filter"
-        exit 1
-    }
-fi
+# if ! npx list openapi-filter &>/dev/null; then
+#     echo "ℹ️  - Installing openapi-filter@3.2.3"
+#     npm install --save-dev --no-audit --no-fund openapi-filter@3.2.3 1>/dev/null || {
+#         echo "❌ Error: Failed to install openapi-filter"
+#         exit 1
+#     }
+# fi
 
 OUTPUT=.
 

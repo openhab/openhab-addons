@@ -13,10 +13,12 @@
 package org.openhab.binding.jellyfin.internal.handler;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.types.JellyfinExceptionHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -38,6 +40,8 @@ import org.slf4j.LoggerFactory;
 public class ServerHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ExceptionHandler exceptionHandler;
+
+    private Optional<ApiClient> apiClient = Optional.empty();
 
     public static class TASKS {
         public static final String CONNECT = "Connect";
