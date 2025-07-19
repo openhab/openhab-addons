@@ -34,7 +34,7 @@ public class BambuLabBindingConstants {
     public static final String BINDING_ID = "bambulab";
 
     // misc consts
-    public static String NO_CAMERA_CERT = "none";
+    public static final String NO_CAMERA_CERT = "none";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID PRINTER_THING_TYPE = new ThingTypeUID(BINDING_ID, "printer");
