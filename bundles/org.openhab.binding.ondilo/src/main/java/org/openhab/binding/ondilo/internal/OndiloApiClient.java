@@ -15,7 +15,6 @@ package org.openhab.binding.ondilo.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,6 +46,7 @@ public class OndiloApiClient {
     private @Nullable String bearer;
     private @Nullable AccessTokenResponse accessTokenResponse;
     private static final String ONDILO_API_URL = "https://interop.ondilo.com/api/customer/v1";
+    private static final Gson gson = new Gson();
 
     private static long lastRequestTime = 0;
     // Minimum interval between requests in milliseconds
@@ -61,7 +61,7 @@ public class OndiloApiClient {
     }
 
     @Nullable
-    public synchronized <T> T request(String requestMethod, String endpoint, Type type) {
+    public synchronized <T> T request(String requestMethod, String endpoint, Class<T> type) {
         // Enforce API rate limit: at least 200ms between requests
         long now = System.currentTimeMillis();
         long wait = lastRequestTime + MIN_REQUEST_INTERVAL_MS - now;
@@ -74,7 +74,6 @@ public class OndiloApiClient {
                 return null;
             }
         }
-        lastRequestTime = System.currentTimeMillis();
         try {
             refreshAccessTokenIfNeeded();
             URL url = new URI(ONDILO_API_URL + endpoint).toURL();
@@ -85,12 +84,12 @@ public class OndiloApiClient {
             conn.setRequestProperty("Accept-Charset", "utf-8");
             conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
             conn.connect();
+            lastRequestTime = System.currentTimeMillis();
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
                 try (InputStream is = conn.getInputStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
                     String response = scanner.useDelimiter("\\A").next();
                     // Parse JSON to DTO
-                    Gson gson = new Gson();
                     return gson.fromJson(response, type);
                 }
             } else {
