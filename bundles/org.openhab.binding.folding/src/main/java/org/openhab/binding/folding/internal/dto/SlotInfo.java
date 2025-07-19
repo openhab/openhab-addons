@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.folding.internal.handler;
+package org.openhab.binding.folding.internal.dto;
 
 import java.util.Map;
 
