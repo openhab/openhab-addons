@@ -195,7 +195,7 @@ public class OndiloHandler extends BaseThingHandler {
     }
 
     private void updateTrendChannel(String channel, String trendChannel, double value, @Nullable Instant lastValueTime,
-            Double lastValue, Instant valueTime, Object unitOrType) {
+            double lastValue, Instant valueTime, Object unitOrType) {
         if (lastValueTime != null && !lastValueTime.equals(valueTime)) {
             double delta = value - lastValue;
             if (unitOrType instanceof Unit<?>) {

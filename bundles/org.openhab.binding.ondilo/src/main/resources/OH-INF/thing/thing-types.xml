@@ -80,7 +80,7 @@
 			<channel id="orp" typeId="orp"/>
 			<channel id="orp-trend" typeId="orp-trend"/>
 			<channel id="salt" typeId="salt"/>
-			<channel id="sal-trend" typeId="salt-trend"/>
+			<channel id="salt-trend" typeId="salt-trend"/>
 			<channel id="tds" typeId="tds"/>
 			<channel id="tds-trend" typeId="tds-trend"/>
 			<channel id="battery" typeId="system.battery-level"/>
