@@ -56,7 +56,6 @@ echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m
 VERSIONS=("10.10.7")
 VERSION_ALIAS=("current")
 
-
 DOCKER_VOLUME_WORK="/work"
 
 ROOT=$(pwd)

@@ -6,9 +6,13 @@ It is compatible with Jellyfin servers from version `10.8.1`, recommended is `10
 
 ## Discovery
 
-To discover clients, you must first configure a server (bridge).
-Servers will be discovered automatically, or can be added manually.
-After that, device discovery will detect controllable clients.
+Servers can be discovered using a local network broadcast.
+This discovery needs to be triggered manually and is designed for local networks. 
+Broadcasts typically do not traverse subnets or VLANs without specific network configurations.
+If your Jellyfin servers are on different subnets, auto-discovery will likely not work. 
+In this case you need to configure the server manually using its IP address or hostname.
+
+Once a Jellyfin server bridge has been added, clients will be detected automatically.
 
 ## Thing Types
 
