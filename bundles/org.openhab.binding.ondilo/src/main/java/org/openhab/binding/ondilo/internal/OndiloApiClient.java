@@ -46,7 +46,7 @@ public class OndiloApiClient {
     private @Nullable String bearer;
     private @Nullable AccessTokenResponse accessTokenResponse;
     private static final String ONDILO_API_URL = "https://interop.ondilo.com/api/customer/v1";
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
 
     private static long lastRequestTime = 0;
     // Minimum interval between requests in milliseconds
@@ -90,7 +90,7 @@ public class OndiloApiClient {
                 try (InputStream is = conn.getInputStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
                     String response = scanner.useDelimiter("\\A").next();
                     // Parse JSON to DTO
-                    return gson.fromJson(response, type);
+                    return GSON.fromJson(response, type);
                 }
             } else {
                 logger.warn("Ondilo API request failed with code: {}", responseCode);
