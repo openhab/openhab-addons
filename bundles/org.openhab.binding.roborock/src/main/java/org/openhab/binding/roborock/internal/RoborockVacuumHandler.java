@@ -425,8 +425,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void handleMessage(byte[] payload) {
+        logger.trace("Received MQTT message for: {}", getThing().getUID().getId());
         String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
         if (response.isEmpty()) {
+            logger.trace("MQTT message processed - invalid message format received");
             return;
         }
         logger.trace("MQTT message output: {}", response);
