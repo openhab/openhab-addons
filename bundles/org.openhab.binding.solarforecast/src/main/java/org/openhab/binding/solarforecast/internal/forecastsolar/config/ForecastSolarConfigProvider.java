@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solarforecast.internal.forecastsolar.config;
 
+import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,9 +54,9 @@ public class ForecastSolarConfigProvider implements ConfigOptionProvider {
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        if ("thing-type:solarforecast:adjustable-fs-plane".equals(uri.toString())
-                || "thing-type:solarforecast:smart-fs-plane".equals(uri.toString())) {
-            if ("calculationItemPersistence".equals(param)) {
+        if (ADJUSTABLE_FORECAST_SOLAR_PLANE_URI.equals(uri.toString())
+                || SMART_FORECAST_SOLAR_PLANE_URI.equals(uri.toString())) {
+            if (CONFIG_ITEM_PERSISTENCE.equals(param)) {
                 Collection<ParameterOption> options = new ArrayList<>();
                 Collection<PersistenceService> services = persistenceServiceRegistry.getAll();
                 services.forEach(service -> {

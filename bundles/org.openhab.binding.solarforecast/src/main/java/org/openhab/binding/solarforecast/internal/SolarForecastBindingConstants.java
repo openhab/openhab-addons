@@ -42,14 +42,20 @@ public class SolarForecastBindingConstants {
             "adjustable-fs-site");
     public static final ThingTypeUID ADJUSTABLE_FORECAST_SOLAR_PLANE = new ThingTypeUID(BINDING_ID,
             "adjustable-fs-plane");
+    public static final String ADJUSTABLE_FORECAST_SOLAR_PLANE_URI = "thing-type:"
+            + ADJUSTABLE_FORECAST_SOLAR_PLANE.getAsString();
     public static final ThingTypeUID SMART_FORECAST_SOLAR_SITE = new ThingTypeUID(BINDING_ID, "smart-fs-site");
     public static final ThingTypeUID SMART_FORECAST_SOLAR_PLANE = new ThingTypeUID(BINDING_ID, "smart-fs-plane");
+    public static final String SMART_FORECAST_SOLAR_PLANE_URI = "thing-type:"
+            + SMART_FORECAST_SOLAR_PLANE.getAsString();
     public static final ThingTypeUID SOLCAST_SITE = new ThingTypeUID(BINDING_ID, "sc-site");
     public static final ThingTypeUID SOLCAST_PLANE = new ThingTypeUID(BINDING_ID, "sc-plane");
     public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_SITE,
             ADJUSTABLE_FORECAST_SOLAR_SITE, SMART_FORECAST_SOLAR_SITE, FORECAST_SOLAR_PLANE,
             ADJUSTABLE_FORECAST_SOLAR_PLANE, SMART_FORECAST_SOLAR_PLANE, SOLCAST_SITE, SOLCAST_PLANE);
     public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
+
+    public static final String CONFIG_ITEM_PERSISTENCE = "calculationItemPersistence";
 
     // Channel groups
     public static final String GROUP_AVERAGE = "average";

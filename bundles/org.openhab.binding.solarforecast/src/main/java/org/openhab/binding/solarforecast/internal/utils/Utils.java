@@ -252,7 +252,6 @@ public class Utils {
      * @param historicItems the iterable of historic items containing power states
      * @return the total energy produced in kWh, 0 if unit doesn't match
      */
-    @SuppressWarnings("unchecked")
     private static double powerCalculationTillNow(Iterable<HistoricItem> historicItems) {
         double total = 0;
         double lastPowerValue = -1;
@@ -260,7 +259,7 @@ public class Utils {
         for (HistoricItem historicItem : historicItems) {
             State powerState = historicItem.getState();
             if (powerState instanceof QuantityType<?> qs) {
-                QuantityType<Power> powerKWState = (QuantityType<Power>) qs.toInvertibleUnit(KILOWATT_UNIT);
+                QuantityType<?> powerKWState = qs.toInvertibleUnit(KILOWATT_UNIT);
                 if (powerKWState != null) {
                     lastPowerValue = powerKWState.doubleValue();
                 } else {
