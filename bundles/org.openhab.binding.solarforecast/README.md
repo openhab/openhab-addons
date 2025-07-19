@@ -107,7 +107,7 @@ Scenarios are clustered in groups:
 | energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          |                |
 | energy-today            | Number:Energy | kWh  | Today's forecast in total                       |                |
 
-For `TimeSeries` channels default `RR4Dj` item persistence doesn't work.
+For `TimeSeries` channels default `RRD4j` item persistence doesn't work.
 You need to to configure persistence service capable of storing future values like  `In Memory`, `InfluxDB` or similar.
 
 Technical channels observing the update behavior are reported in `update` group.
@@ -204,7 +204,6 @@ This is mandatory for `adjustable-fs-plane` and `smart-fs-plane`.
 Values without unit will be rejected.  
 The name `calculationItemName` shall be the calculation item directly corresponding to this plane.
 
-
 The `calculationItemPersistence` shall point to the persitence service storing the calculation item values.
 All installed persistence services are given as options.
 
@@ -212,7 +211,6 @@ Parameter `holdingTime` defines the time between the first forecast prediciton a
 The correction shall not start at *early stages*.
 Rationale: If correction starts too early values may differ a lot. 
 E.g. forecast predicts 0.1 kWh but real production is 0.001 kWh results into [massive correction factors](https://doc.forecast.solar/actual).
-
 
 ## ForecastSolar Channels
 
