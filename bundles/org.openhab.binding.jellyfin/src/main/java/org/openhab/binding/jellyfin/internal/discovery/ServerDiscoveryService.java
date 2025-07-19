@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.jellyfin.internal.BindingConfiguration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -27,7 +28,10 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,14 +46,19 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.jellyfin")
 public class ServerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(ServerDiscoveryService.class);
+    private final ConfigurationAdmin configurationService;
 
-    public ServerDiscoveryService() throws IllegalArgumentException {
+    @Activate
+    public ServerDiscoveryService(final @Reference ConfigurationAdmin configurationService)
+            throws IllegalArgumentException {
         super(Set.of(Constants.THING_TYPE_SERVER), 60, false);
+        this.configurationService = configurationService;
     }
 
     @Override
     protected synchronized void startScan() {
-        ServerDiscoveryHelper discoverer = new ServerDiscoveryHelper();
+        var configuration = BindingConfiguration.getConfiguration(configurationService);
+        ServerDiscovery discoverer = new ServerDiscovery(configuration.discoveryPort, configuration.discoveryTimeout);
 
         List<ServerDiscoveryResult> servers = discoverer.discoverServers();
 
@@ -74,8 +83,9 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>();
 
         try {
+            var uri = server.getAddress();
             var client = new ApiClient();
-            client.updateBaseUri(server.getAddress());
+            client.updateBaseUri(uri);
 
             var systemApi = new SystemApi(client);
             var systemInformation = systemApi.getPublicSystemInfo();
@@ -83,11 +93,11 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, systemInformation.getId());
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemInformation.getVersion());
             properties.put(Thing.PROPERTY_VENDOR, "https://jellyfin.org");
-        } catch (ApiException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
+            properties.put(Constants.PROPERTY_SERVER_URI, uri);
+        } catch (ApiException e) {
+            logger.warn("Unable to get device properties: {}", e);
+        }
         return properties;
     }
 }

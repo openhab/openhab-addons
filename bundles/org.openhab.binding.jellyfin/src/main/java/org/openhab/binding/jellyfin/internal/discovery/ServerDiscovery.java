@@ -35,17 +35,23 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial Contribution
  */
 @NonNullByDefault
-class ServerDiscoveryHelper {
-    private static final int DISCOVERY_PORT = 7359;
-    private static final int TIMEOUT_MS = 2000;
+class ServerDiscovery {
     private static final String DISCOVERY_MESSAGE = "who is JellyfinServer?";
 
-    private final Logger logger = LoggerFactory.getLogger(ServerDiscoveryHelper.class);
+    private final Logger logger = LoggerFactory.getLogger(ServerDiscovery.class);
 
     private final List<ServerDiscoveryResult> serverList = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public List<ServerDiscoveryResult> discoverServers() {
+    private final int port;
+    private final int timeout;
+
+    ServerDiscovery(int port, int timeout) {
+        this.port = port;
+        this.timeout = timeout;
+    }
+
+    List<ServerDiscoveryResult> discoverServers() {
         serverList.clear();
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -64,8 +70,7 @@ class ServerDiscoveryHelper {
                     }
                 }
             }
-            // Give some time for responses to come back
-            Thread.sleep(TIMEOUT_MS + 500); // Wait a bit longer than the timeout
+            Thread.sleep(this.timeout);
         } catch (SocketException | InterruptedException e) {
             logger.error("Error during network interface enumeration or sleep: {}", e.getMessage());
         } finally {
@@ -77,13 +82,13 @@ class ServerDiscoveryHelper {
     private void sendDiscoveryPacket(InetAddress broadcastAddress) {
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(true);
-            socket.setSoTimeout(TIMEOUT_MS); // Set a timeout for receiving responses
+            socket.setSoTimeout(this.timeout); // Set a timeout for receiving responses
 
             byte[] sendData = DISCOVERY_MESSAGE.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcastAddress, DISCOVERY_PORT);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcastAddress, this.port);
             socket.send(sendPacket);
 
-            logger.trace("Sent discovery packet to {}:{}", broadcastAddress.getHostAddress(), DISCOVERY_PORT);
+            logger.trace("Sent discovery packet to {}:{}", broadcastAddress.getHostAddress(), this.port);
 
             // Listen for responses
             byte[] receiveData = new byte[1024];

@@ -28,6 +28,11 @@ import org.openhab.core.thing.ThingTypeUID;
 public class Constants {
 
     static final String BINDING_ID = "jellyfin";
+    static final String BINDING_PID = "binding.jellyfin";
+
+    // Property names
+    public static final String PROPERTY_API_VERSION = "apiVersion";
+    public static final String PROPERTY_SERVER_URI = "uri";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
