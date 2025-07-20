@@ -27,7 +27,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 /**
  *
  * @author Alexander Drent - Initial contribution
- *
+ *         For Unit test only
  */
 @NonNullByDefault
 public class DummyThing implements Thing {

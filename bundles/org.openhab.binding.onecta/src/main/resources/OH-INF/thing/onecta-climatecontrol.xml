@@ -32,7 +32,7 @@
 				<description>Diakin unit</description>
 			</parameter>
 			<parameter name="refreshDelay" type="integer" unit="s" min="5">
-				<label>Refresh delay.</label>
+				<label>Refresh delay</label>
 				<description>Channel refresh delay after update command in sec</description>
 				<default>15</default>
 			</parameter>
@@ -1777,7 +1777,7 @@
 	</channel-type>
 	<channel-type id="acunit-demand-control-fixed-value">
 		<item-type>Number</item-type>
-		<label>Demand Control fixed Value</label>
+		<label>Demand control fixed value</label>
 		<description>Value of fixed demand control. Only available when Demand Control is set to FIXED</description>
 		<category>Demand Control</category>
 		<state pattern="%d %%"/>

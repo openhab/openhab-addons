@@ -95,8 +95,8 @@
 
 	<channel-type id="gw-serial-number">
 		<item-type>String</item-type>
-		<label>Serialnumber</label>
-		<description>Serialnumber</description>
+		<label>Serial number</label>
+		<description>Serial number</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -117,8 +117,8 @@
 
 	<channel-type id="gw-wifi-connection-ssid">
 		<item-type>String</item-type>
-		<label>WiFi Connection SSID</label>
-		<description>WiFi Connection SSID</description>
+		<label>WiFi connection SSID</label>
+		<description>WiFi connection SSID</description>
 		<category>network</category>
 		<state readOnly="true"/>
 	</channel-type>
