@@ -70,6 +70,7 @@ public class PlexPlayerHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Received command {} on channel {}", command, channelUID);
         if (command instanceof RefreshType) {
             logger.debug("REFRESH not implemented");
             return;
