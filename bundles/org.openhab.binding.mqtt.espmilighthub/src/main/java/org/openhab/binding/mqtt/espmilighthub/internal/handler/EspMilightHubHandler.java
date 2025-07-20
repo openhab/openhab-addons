@@ -322,17 +322,14 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
         PercentType[] xyCoordinates = hsb.toXY();
         var normalizedX = xyCoordinates[0].toBigDecimal().divide(BIG_DECIMAL_100);
         var normalizedY = xyCoordinates[1].toBigDecimal().divide(BIG_DECIMAL_100);
-        var chromaticityU = BIG_DECIMAL_4.multiply(normalizedX).divide(
-            BIG_DECIMAL_2.multiply(normalizedX).negate().add(BIG_DECIMAL_12.multiply(normalizedY).add(BIG_DECIMAL_3)),
-            MathContext.DECIMAL128);
-        var chromaticityV = BIG_DECIMAL_6.multiply(normalizedY).divide(
-            BIG_DECIMAL_2.multiply(normalizedX).negate().add(BIG_DECIMAL_12.multiply(normalizedY).add(BIG_DECIMAL_3)),
-            MathContext.DECIMAL128);
+        var chromaticityU = BIG_DECIMAL_4.multiply(normalizedX).divide(BIG_DECIMAL_2.multiply(normalizedX).negate()
+                .add(BIG_DECIMAL_12.multiply(normalizedY).add(BIG_DECIMAL_3)), MathContext.DECIMAL128);
+        var chromaticityV = BIG_DECIMAL_6.multiply(normalizedY).divide(BIG_DECIMAL_2.multiply(normalizedX).negate()
+                .add(BIG_DECIMAL_12.multiply(normalizedY).add(BIG_DECIMAL_3)), MathContext.DECIMAL128);
         var distanceFromPlanckian = chromaticityU.subtract(BIG_DECIMAL_0292).pow(2)
-            .add(chromaticityV.subtract(BIG_DECIMAL_024).pow(2))
-            .sqrt(MathContext.DECIMAL128);
-        var angle = new BigDecimal(
-            Math.acos(chromaticityU.subtract(BIG_DECIMAL_0292).divide(distanceFromPlanckian, MathContext.DECIMAL128).doubleValue()));
+                .add(chromaticityV.subtract(BIG_DECIMAL_024).pow(2)).sqrt(MathContext.DECIMAL128);
+        var angle = new BigDecimal(Math.acos(chromaticityU.subtract(BIG_DECIMAL_0292)
+                .divide(distanceFromPlanckian, MathContext.DECIMAL128).doubleValue()));
         BigDecimal planckianOffset = polynomialFit(angle, CORM_COEFFICIENTS);
         return distanceFromPlanckian.subtract(planckianOffset);
     }
