@@ -94,64 +94,108 @@
 		<item-type>String</item-type>
 		<label>Playing Item Id</label>
 		<description>Id of the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playing-item-name-channel">
 		<item-type>String</item-type>
 		<label>Playing Item Name</label>
 		<description>Name of the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playing-item-series-name-channel">
 		<item-type>String</item-type>
 		<label>Playing Item Series Name</label>
 		<description>Name of the item's series currently playing, only have value when item is an episode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playing-item-season-name-channel">
 		<item-type>String</item-type>
 		<label>Playing Item Season Name</label>
 		<description>Name of the item's season currently playing, only have value when item is an episode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playing-item-season-channel">
 		<item-type>Number</item-type>
 		<label>Playing Item Season</label>
 		<description>Number of the item's season currently playing, only have value when item is an episode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playing-item-episode-channel">
 		<item-type>Number</item-type>
 		<label>Playing Item Episode</label>
 		<description>Number of the episode item currently playing, only have value when item is an episode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playing-item-genders-channel">
 		<item-type>String</item-type>
 		<label>Playing Item Genders</label>
 		<description>Coma separate list genders of the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playing-item-type-channel">
 		<item-type>String</item-type>
 		<label>Playing Item Type</label>
 		<description>Type of the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playing-item-percentage-channel">
 		<item-type>Dimmer</item-type>
 		<label>Playing Item Percentage</label>
 		<description>Played percentage for the item currently playing, allow seek</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Progress</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="playing-item-second-channel">
 		<item-type>Number</item-type>
 		<label>Playing Item Second</label>
 		<description>Current second for the item currently playing, allow seek</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Progress</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="playing-item-total-seconds-channel">
 		<item-type>Number</item-type>
 		<label>Playing Item Total Seconds</label>
 		<description>Total seconds for the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="play-by-terms-channel">
@@ -173,6 +217,10 @@
 		<item-type>String</item-type>
 		<label>Browse By Terms</label>
 		<description>Browse media by terms, works for series, episodes and movies</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="play-by-id-channel">
 		<item-type>String</item-type>

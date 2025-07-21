@@ -509,7 +509,7 @@ public class DeviceCommand extends InsteonCommand {
                 console.println("There are no missing links for device " + device.getAddress() + ".");
             } else {
                 if (!deviceLinks.isEmpty()) {
-                    if (!device.isAwake() || !device.isResponding()) {
+                    if (!device.isAwake() || !device.isOnline()) {
                         console.println("Scheduling " + deviceLinks.size() + " missing links for device "
                                 + device.getAddress() + " to be added to its link database the next time it is "
                                 + (device.isBatteryPowered() ? "awake" : "online") + ".");
@@ -608,7 +608,7 @@ public class DeviceCommand extends InsteonCommand {
                     + ".");
         } else {
             int count = device.getLinkDB().getChanges().size();
-            if (!device.isAwake() || !device.isResponding() || !getModem().getDB().isComplete()) {
+            if (!device.isAwake() || !device.isOnline() || !getModem().getDB().isComplete()) {
                 console.println("Scheduling " + count + " pending changes for device " + device.getAddress()
                         + " to be applied to its link database the next time it is "
                         + (device.isBatteryPowered() ? "awake" : "online") + ".");
@@ -716,13 +716,13 @@ public class DeviceCommand extends InsteonCommand {
             device.getLinkDB().setReload(true);
             device.resetFeaturesQueryStatus();
 
-            if (!device.isAwake() || !device.isResponding() || !getModem().getDB().isComplete() || !immediate) {
+            if (!device.isAwake() || !device.isOnline() || !getModem().getDB().isComplete() || !immediate) {
                 console.println("The device " + device.getAddress()
                         + " is scheduled to be refreshed the next time it is "
-                        + (device.isBatteryPowered() ? "awake" : !device.isResponding() ? "online" : "polled") + ".");
+                        + (device.isBatteryPowered() ? "awake" : !device.isOnline() ? "online" : "polled") + ".");
             } else {
                 console.println("Refreshing device " + device.getAddress() + "...");
-                device.doPoll(0L);
+                device.poll(0L);
             }
         }
     }

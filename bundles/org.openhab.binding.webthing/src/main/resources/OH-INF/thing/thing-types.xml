@@ -36,24 +36,39 @@
 		<item-type>Contact</item-type>
 		<label>Webthing Binding Channel</label>
 		<description>Contact channel for Webthing Binding</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Webthing Binding Channel</label>
 		<description>Switch channel for Webthing Binding</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Webthing Binding Channel</label>
 		<description>Color channel for Webthing Binding</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Webthing Binding Channel</label>
 		<description>Dimmer channel for Webthing Binding</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 

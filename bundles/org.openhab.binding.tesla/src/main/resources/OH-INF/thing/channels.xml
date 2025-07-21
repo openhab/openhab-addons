@@ -32,12 +32,20 @@
 		<item-type>Location</item-type>
 		<label>Route Location</label>
 		<description>Location of the destination</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="distancetoarrival">
 		<item-type>Number:Length</item-type>
 		<label>Distance To Arrival</label>
 		<description>Distance to drive to the destination (in miles)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="minutestoarrival">
@@ -45,6 +53,10 @@
 		<label>Minutes To Arrival</label>
 		<description>Minutes to drive to the destination</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="trafficminutesdelay">
@@ -59,6 +71,10 @@
 		<item-type>Switch</item-type>
 		<label>Auto Conditioning</label>
 		<description>Turns on auto-conditioning (a/c or heating)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="autoparkstate" advanced="true">
 		<item-type>String</item-type>
@@ -94,6 +110,10 @@
 		<item-type>Number</item-type>
 		<label>Battery Level</label>
 		<description>State of the battery in %</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batteryrange" advanced="true">
@@ -231,6 +251,10 @@
 		<item-type>String</item-type>
 		<label>Charging State</label>
 		<description>“Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Starting">Starting</option>
@@ -287,23 +311,39 @@
 		<item-type>Switch</item-type>
 		<label>Climate</label>
 		<description>Climate status indicator</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="driverfrontdoor" advanced="true">
 		<item-type>Contact</item-type>
 		<label>Driver Front Door</label>
 		<description>Indicates if the front door at the driver's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="doorlock">
 		<item-type>Switch</item-type>
 		<label>Door Lock</label>
 		<description>Lock or unlock the car</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="driverreardoor" advanced="true">
 		<item-type>Contact</item-type>
 		<label>Driver Rear Door</label>
 		<description>Indicates if the rear door at the driver's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="drivertemp" advanced="true">
@@ -351,6 +391,10 @@
 		<item-type>Switch</item-type>
 		<label>Front Trunk</label>
 		<description>Indicates if the front trunk is opened, or open the front trunk when ON is received</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="gpstimestamp" advanced="true">
 		<item-type>DateTime</item-type>
@@ -390,6 +434,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Inside Temperature</label>
 		<description>Indicates the inside temperature of the vehicle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="lefttempdirection" advanced="true">
@@ -408,6 +456,10 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>The actual position of the vehicle</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="leftseatheater" advanced="true">
@@ -492,6 +544,10 @@
 		<item-type>Number:Length</item-type>
 		<label>Odometer</label>
 		<description>Odometer of the vehicle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="outsidetemp" advanced="true">
@@ -516,12 +572,20 @@
 		<item-type>Contact</item-type>
 		<label>Passenger Front Door</label>
 		<description>Indicates if the front door at the passenger's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="passengerreardoor" advanced="true">
 		<item-type>Contact</item-type>
 		<label>Passenger Rear Door</label>
 		<description>Indicates if the rear door at the passenger's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power" advanced="true">
@@ -646,6 +710,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Speed</label>
 		<description>Vehicle speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="state" advanced="true">
@@ -664,6 +732,10 @@
 		<item-type>String</item-type>
 		<label>Sunroof State</label>
 		<description>Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="close">close</option>
@@ -675,6 +747,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Sunroof</label>
 		<description>Indicates the opening state of the sunroof (0% closed, 100% fully open)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="combinedtemp" advanced="true">

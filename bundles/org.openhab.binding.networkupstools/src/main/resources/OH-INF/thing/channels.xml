@@ -8,12 +8,19 @@
 		<item-type>String</item-type>
 		<label>UPS Alarm</label>
 		<description>UPS alarms</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="ups-load" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>UPS Load</label>
 		<description>Load on UPS (percent)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="ups-power" advanced="true">
@@ -26,12 +33,20 @@
 		<item-type>Number:Power</item-type>
 		<label>UPS Realpower</label>
 		<description>Current value of real power (Watts)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="ups-status">
 		<item-type>String</item-type>
 		<label>UPS Status</label>
 		<description>Status of the UPS: OFF, OL,OB,LB,RB,OVER,TRIM,BOOST,CAL,BYPASS,NULL</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OFF">Off</option>
@@ -69,6 +84,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Input Current</label>
 		<description>Input current (A)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="input-current-status" advanced="true">
@@ -105,6 +124,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Input Voltage</label>
 		<description>Input voltage (V)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="input-voltage-status" advanced="true">
@@ -117,18 +140,30 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Output Current</label>
 		<description>Output current (A)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="output-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Output Voltage</label>
 		<description>Output voltage (V)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-charge">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge</label>
 		<description>Battery charge (percent)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-runtime">

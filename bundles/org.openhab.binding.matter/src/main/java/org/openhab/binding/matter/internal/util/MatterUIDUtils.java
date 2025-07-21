@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class MatterUIDUtils {
 
     /**
-     * Node thing types will have a UUID like matter:node_1234567890
+     * Node thing types will have a UUID like matter:node-1234567890
      *
      * @param nodeId the node ID of the Node
      * @return a ThingTypeUID for a Node
@@ -39,7 +39,7 @@ public class MatterUIDUtils {
     }
 
     /**
-     * Bridge Endpoint thing types will have a UUID like matter matter:endpoint_1234567890_1
+     * Bridge Endpoint thing types will have a UUID like matter matter:endpoint-1234567890-1
      *
      * @param nodeId the node ID of the Node
      * @param endpointNumber the endpoint number of the Bridge Endpoint
@@ -57,6 +57,9 @@ public class MatterUIDUtils {
      * @return the base ThingTypeUID
      */
     public static @Nullable ThingTypeUID baseTypeForThingType(ThingTypeUID thingTypeUID) {
+        if (!MatterBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId())) {
+            return null;
+        }
         String type = thingTypeUID.getId().split("-", 2)[0];
         switch (type) {
             case "node":

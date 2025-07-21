@@ -16,7 +16,8 @@ Other tools can be used to managed Insteon devices, such as the [Insteon Termina
 
 At startup, the binding will download the modem database along with each configured device all-link database if not previously downloaded and currently awake.
 Therefore, the initialization on the first start may take some additional time to complete depending on the number of devices configured.
-The modem and device link databases are only downloaded once unless the binding receives an indication that a database was updated or marked to be refreshed via the [openHAB console](#console-commands).
+The modem and device link databases information is then cached and updated accordingly based on relevant messages the binding receives.
+To force a database redownload, use the [openHAB console](#console-commands).
 
 **Important note as of openHAB 4.3.0**
 
@@ -64,41 +65,44 @@ The default poll interval of 300 seconds has been tested and found to be a good 
 
 ### `hub1`
 
-| Parameter                   | Default | Required | Description                                                            |
-| --------------------------- | :-----: | :------: | ---------------------------------------------------------------------- |
-| hostname                    |         |   Yes    | Network address of the hub.                                            |
-| port                        |  9761   |    No    | Network port of the hub.                                               |
-| devicePollIntervalInSeconds |   300   |    No    | Device poll interval in seconds.                                       |
-| deviceDiscoveryEnabled      |  true   |    No    | Discover Insteon devices found in the hub database but not configured. |
-| sceneDiscoveryEnabled       |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.  |
-| deviceSyncEnabled           |  false  |    No    | Synchronize related devices based on their all-link database.          |
+| Parameter                      | Default | Required | Description                                                               |
+| ------------------------------ | :-----: | :------: | ------------------------------------------------------------------------- |
+| hostname                       |         |   Yes    | Network address of the hub.                                               |
+| port                           |  9761   |    No    | Network port of the hub.                                                  |
+| devicePollIntervalInSeconds    |   300   |    No    | Device poll interval in seconds.                                          |
+| deviceResponseTimeoutInMinutes |   30    |    No    | Device response timeout in minutes before a device is considered offline. |
+| deviceDiscoveryEnabled         |  true   |    No    | Discover Insteon devices found in the hub database but not configured.    |
+| sceneDiscoveryEnabled          |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.     |
+| deviceSyncEnabled              |  false  |    No    | Synchronize related devices based on their all-link database.             |
 
 >NOTE: Use this bridge to connect to a networked PLM via ser2net.
 
 ### `hub2`
 
-| Parameter                     | Default | Required | Description                                                            |
-| ----------------------------- | :-----: | :------: | ---------------------------------------------------------------------- |
-| hostname                      |         |   Yes    | Network address of the hub.                                            |
-| port                          |  25105  |    No    | Network port of the hub.                                               |
-| username                      |         |   Yes    | Username to access the hub.                                            |
-| password                      |         |   Yes    | Password to access the hub.                                            |
-| hubPollIntervalInMilliseconds |  1000   |    No    | Hub poll interval in milliseconds.                                     |
-| devicePollIntervalInSeconds   |   300   |    No    | Device poll interval in seconds.                                       |
-| deviceDiscoveryEnabled        |  true   |    No    | Discover Insteon devices found in the hub database but not configured. |
-| sceneDiscoveryEnabled         |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.  |
-| deviceSyncEnabled             |  false  |    No    | Synchronize related devices based on their all-link database.          |
+| Parameter                      | Default | Required | Description                                                               |
+| ------------------------------ | :-----: | :------: | ------------------------------------------------------------------------- |
+| hostname                       |         |   Yes    | Network address of the hub.                                               |
+| port                           |  25105  |    No    | Network port of the hub.                                                  |
+| username                       |         |   Yes    | Username to access the hub.                                               |
+| password                       |         |   Yes    | Password to access the hub.                                               |
+| hubPollIntervalInMilliseconds  |  1000   |    No    | Hub poll interval in milliseconds.                                        |
+| devicePollIntervalInSeconds    |   300   |    No    | Device poll interval in seconds.                                          |
+| deviceResponseTimeoutInMinutes |   30    |    No    | Device response timeout in minutes before a device is considered offline. |
+| deviceDiscoveryEnabled         |  true   |    No    | Discover Insteon devices found in the hub database but not configured.    |
+| sceneDiscoveryEnabled          |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.     |
+| deviceSyncEnabled              |  false  |    No    | Synchronize related devices based on their all-link database.             |
 
 ### `plm`
 
-| Parameter                   | Default | Required | Description                                                              |
-| --------------------------- | :-----: | :------: | ------------------------------------------------------------------------ |
-| serialPort                  |         |   Yes    | Serial port connected to the modem. Example: `/dev/ttyS0` or `COM1`      |
-| baudRate                    |  19200  |    No    | Serial port baud rate connected to the modem.                            |
-| devicePollIntervalInSeconds |   300   |    No    | Device poll interval in seconds.                                         |
-| deviceDiscoveryEnabled      |  true   |    No    | Discover Insteon devices found in the modem database but not configured. |
-| sceneDiscoveryEnabled       |  false  |    No    | Discover Insteon scenes found in the modem database but not configured.  |
-| deviceSyncEnabled           |  false  |    No    | Synchronize related devices based on their all-link database.            |
+| Parameter                      | Default | Required | Description                                                               |
+| ------------------------------ | :-----: | :------: | ------------------------------------------------------------------------- |
+| serialPort                     |         |   Yes    | Serial port connected to the modem. Example: `/dev/ttyS0` or `COM1`       |
+| baudRate                       |  19200  |    No    | Serial port baud rate connected to the modem.                             |
+| devicePollIntervalInSeconds    |   300   |    No    | Device poll interval in seconds.                                          |
+| deviceResponseTimeoutInMinutes |   30    |    No    | Device response timeout in minutes before a device is considered offline. |
+| deviceDiscoveryEnabled         |  true   |    No    | Discover Insteon devices found in the modem database but not configured.  |
+| sceneDiscoveryEnabled          |  false  |    No    | Discover Insteon scenes found in the modem database but not configured.   |
+| deviceSyncEnabled              |  false  |    No    | Synchronize related devices based on their all-link database.             |
 
 ### `device`
 
@@ -108,8 +112,8 @@ The default poll interval of 300 seconds has been tested and found to be a good 
 
 The device type is automatically determined by the binding using the device product data.
 For a [battery powered device](#battery-powered-devices) that was never configured previously, it may take until the next time that device sends a broadcast message to be modeled properly.
-To speed up the process for this case, it is recommended to force the device to become awake after the associated bridge is online.
-Likewise, for a device that wasn't accessible during the binding initialization phase, press on its SET button once powered on to notify the binding that it is available.
+To speed up the process for this case, it is recommended to force the device to become awake after the associated bridge is online by pressing on its SET button.
+Likewise, for a wired device that wasn't connected during the first binding initialization, press on its on/off button once powered on to notify the binding that it is available.
 
 ### `scene`
 
@@ -670,7 +674,7 @@ By default, the binding only sends direct messages to the intended device to upd
 Whenever the bridge related device synchronization parameter `deviceSyncEnabled` is set to `true`, broadcast messages for supported Insteon commands (e.g. on/off, bright/dim, manual change) are sent to all responders of a given group, updating all related devices in one request.
 If no broadcast group is determined or for Insteon commands that don't support broadcasting (e.g. percent), direct messages are sent to each related device instead, to adjust their level based on their all-link database.
 
-## Insteon Binding Process
+## Insteon Linking Process
 
 Before Insteon devices communicate with one another, they must be linked.
 During the linking process, one of the devices will be the "Controller", the other the "Responder".
@@ -1505,15 +1509,24 @@ It shouldn't be used in most cases except during initial device configuration.
 Same goes with commands, the binding will queue up commands requested on these devices and send them during the awake time window.
 Only one command per channel is queued, this mean that subsequent requests will overwrite previous ones.
 
-### Heartbeat Timeout Monitor
+### Heartbeat Timeout
 
-Sensor devices that supports heartbeat have a timeout monitor.
-If no broadcast message is received within a specific interval, the associated thing status will go offline until the binding receives a broadcast message from that device.
-The heartbeat interval on most sensor devices is hard coded as 24 hours but some have the ability to change that interval through the `heartbeat-interval` channel.
-It is enabled by default on devices that supports that feature and will be disabled on devices that have the ability to turn off their heartbeat through the `heartbeat-on-off` channel.
-It is important that the heartbeat group (typically 4) is linked properly to the modem by using the `insteon device addMissingLinks` console command.
-Otherwise, if the link is missing, the timeout monitor will be disabled.
-If necessary, the heartbeat timeout monitor can be manually reset by disabling and re-enabling the associated device thing.
+Sensor devices that support heartbeats have a timeout.
+If a broadcast message is not received within a specific interval, the associated thing's status will change to offline.
+This status persists until the binding receives a broadcast message from that device.
+While most sensor devices have a hardcoded heartbeat interval of 24 hours, some allow modification via the `heartbeat-interval` channel.
+This timeout feature is enabled by default on supporting devices and disabled on devices that can have their heartbeat turned off using the `heartbeat-on-off` channel.
+Proper linking of the heartbeat group (typically group 4) to the modem is crucial; use the `insteon device addMissingLinks` console command to ensure this.
+If the link is missing, the timeout feature will be disabled.
+The heartbeat timeout can be manually reset, if necessary, by disabling and then re-enabling the associated device thing.
+
+### Response Timeout
+
+Non-battery powered devices have a response timeout.
+If a successful response message is not received within a specific interval, the associated thing's status will change to offline.
+While the device is offline, the binding will ignore commands sent to it.
+This status persists until a valid response is received.
+The response timeout can be increased from 30 minutes (default) up to 6 hours by updating the associated bridge parameter `deviceResponseTimeoutInMinutes`.
 
 ## Related Devices
 
@@ -1608,8 +1621,15 @@ This will automatically disable the legacy network bridge with the same configur
 - For battery powered devices, press on their SET button to speed up the discovery process.
 Otherwise you may have to wait until the next time these devices send a heartbeat message which can take up to 24 hours.
 
+- For wired devices that weren't available during the first binding initialization, once connected, press on their on/off button.
+This will notify the binding to retrieve the product information from these devices.
+
 - For scenes, you can either enable scene discovery and add the discovered things, or just manually add specific scene things based on your existing environment.
 Enabling scene discovery might generate a considerable amount of things in your inbox depending on the number of scenes configured in your modem.
+
+- If some unknown devices are showing in your inbox, it could be due corrupt messages the binding received during the modem database download phase.
+Since the modem database is cached after the first download, it will need to be reloaded using the `insteon modem reloadDatabase` console command.
+Otherwise, these devices will keep appearing in your inbox.
 
 - If you have rules to send commands to synchronize the state between related devices, you can enable the device synchronization feature on the bridge instead.
 This will synchronize related devices automatically based on their all-link database.

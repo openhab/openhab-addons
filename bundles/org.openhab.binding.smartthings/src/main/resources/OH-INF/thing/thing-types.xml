@@ -1181,6 +1181,10 @@
 	<channel-type id="airConditionerMode-channel">
 		<item-type>String</item-type>
 		<label>Air Conditioner Mode</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">Auto</option>
@@ -1201,6 +1205,9 @@
 		<item-type>String</item-type>
 		<label>Alarm</label>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="both">Both</option>
@@ -1215,12 +1222,20 @@
 		<item-type>Number</item-type>
 		<label>Battery</label>
 		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="contact-channel">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<category>contact</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="button-channel">
@@ -1238,11 +1253,19 @@
 		<item-type>Number</item-type>
 		<label>Carbon Dioxide</label>
 		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="carbonMonoxide-channel">
 		<item-type>String</item-type>
 		<label>Carbon Monoxide</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="clear">Clear</option>
@@ -1256,30 +1279,50 @@
 		<item-type>Number</item-type>
 		<label>Hue</label>
 		<category>Color</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="saturation-channel">
 		<item-type>Number</item-type>
 		<label>Saturation</label>
 		<category>Color</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="color-channel">
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<category>Color</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="colorValue-channel">
 		<item-type>Color</item-type>
 		<label>Color Value</label>
 		<category>Color</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="colorTemperature-channel">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="consumable-channel">
@@ -1301,6 +1344,10 @@
 		<item-type>String</item-type>
 		<label>Door Status</label>
 		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="closed">Closed</option>
@@ -1345,12 +1392,20 @@
 		<item-type>Number</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="power-channel">
 		<item-type>Number</item-type>
 		<label>Power</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="estimatedTimeOfArrival-channel">
@@ -1366,6 +1421,10 @@
 	<channel-type id="illuminance-channel">
 		<item-type>Number</item-type>
 		<label>Illuminance</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="imageCapture-channel">
@@ -1390,6 +1449,10 @@
 		<item-type>String</item-type>
 		<label>Lock State</label>
 		<category></category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="locked">Locked</option>
@@ -1415,18 +1478,30 @@
 		<item-type>String</item-type>
 		<label>Media Activity</label>
 		<category>Player</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="currentActivity-channel">
 		<item-type>String</item-type>
 		<label>Current Media Activity</label>
 		<category>Player</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="motion-channel">
 		<item-type>String</item-type>
 		<label>Motion Sensor</label>
 		<category></category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="active">Active</option>
@@ -1439,36 +1514,60 @@
 		<item-type>String</item-type>
 		<label>Current Status</label>
 		<category>Player</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="level-channel">
 		<item-type>Dimmer</item-type>
 		<label>Light Level</label>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="volumeLevel-channel">
 		<item-type>Number</item-type>
 		<label>Volume Level</label>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="trackDescription-channel">
 		<item-type>String</item-type>
 		<label>Description of Current Track</label>
 		<category>Player</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="trackData-channel">
 		<item-type>String</item-type>
 		<label>Track Data</label>
 		<category>Player</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="mute-channel">
 		<item-type>String</item-type>
 		<label>Mute</label>
 		<category>Player</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="muted">Muted</option>
@@ -1487,6 +1586,10 @@
 		<item-type>String</item-type>
 		<label>Power Source</label>
 		<category></category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="battery">Battery power</option>
@@ -1501,6 +1604,10 @@
 		<item-type>String</item-type>
 		<label>Presence</label>
 		<category></category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="not present">Not present</option>
@@ -1513,12 +1620,20 @@
 		<item-type>Number</item-type>
 		<label>Relative Humidity</label>
 		<category></category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="shock-channel">
 		<item-type>String</item-type>
 		<label>Shock</label>
 		<category></category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Vibration</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="clear">Clear</option>
@@ -1537,6 +1652,10 @@
 		<item-type>Number</item-type>
 		<label>Received Signal Strength Indication</label>
 		<category></category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="sleeping-channel">
@@ -1554,6 +1673,10 @@
 	<channel-type id="smoke-channel">
 		<item-type>String</item-type>
 		<label>Smoke</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="clear">Clear</option>
@@ -1603,12 +1726,20 @@
 		<label>Switch</label>
 		<description>This is a switch</description>
 		<category>switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="tamper-channel">
 		<item-type>String</item-type>
 		<label>Tamper Alert Sensor</label>
 		<category></category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="clear">Clear</option>
@@ -1621,30 +1752,50 @@
 		<item-type>Number</item-type>
 		<label>Current Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="heatingSetpoint-channel">
 		<item-type>Number</item-type>
 		<label>Heating Setpoint</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="coolingSetpoint-channel">
 		<item-type>Number</item-type>
 		<label>Cooling Setpoint</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="thermostatSetpoint-channel">
 		<item-type>Number</item-type>
 		<label>Current Setpoint</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="thermostatMode-channel">
 		<item-type>String</item-type>
 		<label>Thermostat Mode</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">Auto</option>
@@ -1662,6 +1813,10 @@
 		<item-type>String</item-type>
 		<label>Fan Mode</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="auto">Auto</option>
@@ -1675,6 +1830,10 @@
 		<item-type>String</item-type>
 		<label>Operating State</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="cooling">Cooling</option>
@@ -1737,6 +1896,10 @@
 		<item-type>Number</item-type>
 		<label>Ultraviolet Index</label>
 		<category></category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="valve-channel">
@@ -1755,11 +1918,19 @@
 		<item-type>Number</item-type>
 		<label>Voltage Measurement</label>
 		<category></category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="washer-mode-channel">
 		<item-type>String</item-type>
 		<label>Washer Mode</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="regular">Regular</option>
@@ -1779,6 +1950,10 @@
 		<item-type>String</item-type>
 		<label>Water Sensor</label>
 		<category></category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="dry">Dry</option>
@@ -1791,6 +1966,10 @@
 		<item-type>String</item-type>
 		<label>Window Shade</label>
 		<category></category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="closed">Closed</option>

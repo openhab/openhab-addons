@@ -181,7 +181,7 @@ public class LegacyRequestManager {
 
         @Override
         public int compareTo(RequestQueue queue) {
-            return (int) (expirationTime - queue.expirationTime);
+            return Long.compare(expirationTime, queue.expirationTime);
         }
     }
 }

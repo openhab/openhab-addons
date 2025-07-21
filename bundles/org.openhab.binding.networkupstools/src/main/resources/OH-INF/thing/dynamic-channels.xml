@@ -8,6 +8,10 @@
 		<item-type>String</item-type>
 		<label>String</label>
 		<description>String channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config"/>
 	</channel-type>
@@ -22,6 +26,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Electric Current</label>
 		<description>Electric Current channel</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type"/>
 	</channel-type>
@@ -29,6 +37,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Electric Potential</label>
 		<description>Electric Potential channel</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type"/>
 	</channel-type>
@@ -36,6 +48,10 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Frequency</label>
 		<description>Frequency channel</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type"/>
 	</channel-type>
@@ -43,6 +59,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Power channel</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type"/>
 	</channel-type>

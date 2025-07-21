@@ -42,13 +42,16 @@ public class Msg {
 
     private final byte[] data;
     private final MsgDefinition definition;
-    private long quietTime = 0;
+    private Priority priority;
+    private long quietTime = 500L;
+    private boolean expired = false;
     private boolean replayed = false;
     private long timestamp = System.currentTimeMillis();
 
     public Msg(byte[] data, MsgDefinition definition) {
         this.data = Arrays.copyOf(data, definition.getLength());
         this.definition = definition;
+        this.priority = isOutbound() ? Priority.COMMAND : Priority.NULL;
     }
 
     public Msg(MsgDefinition definition) {
@@ -69,6 +72,10 @@ public class Msg {
 
     public Direction getDirection() {
         return definition.getDirection();
+    }
+
+    public Priority getPriority() {
+        return priority;
     }
 
     public long getQuietTime() {
@@ -107,16 +114,20 @@ public class Msg {
         }
     }
 
+    public boolean isToAddress(@Nullable InsteonAddress address) {
+        try {
+            return getInsteonAddress("toAddress").equals(address);
+        } catch (FieldException e) {
+            return false;
+        }
+    }
+
     public boolean isInbound() {
         return getDirection() == Direction.FROM_MODEM;
     }
 
     public boolean isOutbound() {
         return getDirection() == Direction.TO_MODEM;
-    }
-
-    public boolean isEcho() {
-        return isPureNack() || isReply();
     }
 
     public boolean isReply() {
@@ -139,8 +150,8 @@ public class Msg {
         }
     }
 
-    public boolean isReplyOf(Msg msg) {
-        return isReply() && Arrays.equals(msg.getData(), Arrays.copyOf(data, msg.getLength()));
+    public boolean isReplyOf(@Nullable Msg msg) {
+        return msg != null && isReply() && Arrays.equals(msg.getData(), Arrays.copyOf(data, msg.getLength()));
     }
 
     public boolean isFailureReport() {
@@ -219,16 +230,32 @@ public class Msg {
         }
     }
 
+    public boolean isExpired() {
+        return expired;
+    }
+
     public boolean isReplayed() {
         return replayed;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 
     public void setQuietTime(long quietTime) {
         this.quietTime = quietTime;
     }
 
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
     public void setIsReplayed(boolean replayed) {
         this.replayed = replayed;
+    }
+
+    public void resetTimestamp() {
+        this.timestamp = System.currentTimeMillis();
     }
 
     public boolean containsField(String key) {
@@ -568,6 +595,31 @@ public class Msg {
         }
     }
 
+    /**
+     * Checks if message has a higher priority than another one
+     *
+     * @param msg the message to compare to
+     * @return true if this message has a higher priority, otherwise false
+     */
+    public boolean hasHigherPriorityThan(@Nullable Msg msg) {
+        if (msg == null) {
+            return true;
+        }
+        return priority.compareTo(msg.priority) < 0;
+    }
+
+    /**
+     * Returns a copy of this message
+     *
+     * @return the copied message
+     */
+    public Msg copy() {
+        Msg msg = new Msg(data, definition);
+        msg.priority = priority;
+        msg.quietTime = quietTime;
+        return msg;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj == this) {
@@ -706,7 +758,6 @@ public class Msg {
         msg.setByte("messageFlags", (byte) 0xCF);
         msg.setByte("command1", cmd1);
         msg.setByte("command2", cmd2);
-        msg.setQuietTime(0L);
         return msg;
     }
 
@@ -841,7 +892,6 @@ public class Msg {
         Msg msg = makeMessage("SendX10Message");
         msg.setByte("rawX10", cmd);
         msg.setByte("X10Flag", flag);
-        msg.setQuietTime(300L);
         return msg;
     }
 

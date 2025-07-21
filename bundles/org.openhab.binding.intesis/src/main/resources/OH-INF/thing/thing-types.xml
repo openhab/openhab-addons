@@ -73,6 +73,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.intesis.ambientTemperature.label</label>
 		<description>@text/channel-type.intesis.ambientTemperature.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5" readOnly="true"></state>
 	</channel-type>
 

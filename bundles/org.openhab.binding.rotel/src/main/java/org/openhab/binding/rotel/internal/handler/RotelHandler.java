@@ -1690,7 +1690,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 case KEY_FREQ_ZONE2:
                 case KEY_FREQ_ZONE3:
                 case KEY_FREQ_ZONE4:
-                    if (MSG_VALUE_OFF.equalsIgnoreCase(value) || MSG_VALUE_NONE.equalsIgnoreCase(value)) {
+                    if (MSG_VALUE_OFF.equalsIgnoreCase(value) || MSG_VALUE_NONE.equalsIgnoreCase(value)
+                            || MSG_VALUE_OVER.equalsIgnoreCase(value)) {
                         frequencies[numZone] = 0.0;
                     } else {
                         // Suppress a potential ending "k" or "K"

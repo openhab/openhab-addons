@@ -48,7 +48,7 @@ public class ModemDBChange extends DatabaseChange<ModemDBRecord> {
      * @return the modem db change
      */
     public static ModemDBChange forModify(ModemDBRecord record, byte[] data) {
-        return new ModemDBChange(ModemDBRecord.withNewData(data, record), ChangeType.MODIFY);
+        return new ModemDBChange(record.withNewData(data), ChangeType.MODIFY);
     }
 
     /**

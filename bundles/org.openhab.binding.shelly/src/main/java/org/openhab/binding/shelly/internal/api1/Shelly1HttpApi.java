@@ -48,6 +48,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +123,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @throws ShellyApiException
      */
     @Override
-    public ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice device)
+    public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice device)
             throws ShellyApiException {
         if (device != null) {
             profile.device = device;
@@ -137,7 +138,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         }
 
         // Map settings to device profile for Light and Sense
-        profile.initialize(thingType, json, profile.device);
+        profile.initialize(thingTypeUID, json, profile.device);
 
         // 2nd level initialization
         profile.thingName = profile.device.hostname;
@@ -493,10 +494,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      *            plain or hex64 format
      *
      * @throws ShellyApiException
-     * @throws IllegalArgumentException
      */
     @Override
-    public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException {
+    public void sendIRKey(String keyCode) throws ShellyApiException {
         String type = "";
         if (profile.irCodes.containsKey(keyCode)) {
             type = SHELLY_IR_CODET_STORED;

@@ -22,15 +22,6 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
-
-	<channel-type id="timestamp" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>@text/timestampChannelLabel</label>
-		<description>@text/timestampChannelDescription</description>
-		<category>time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="hazel-level">
 		<item-type>Number</item-type>
 		<label>Hazel Level</label>

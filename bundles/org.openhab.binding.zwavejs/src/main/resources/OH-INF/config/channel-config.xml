@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="channel-type:zwavejs:base-channel">
+		<parameter name="incomingUnit" type="text">
+			<label>Incoming Unit</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandClassId" type="integer">
+			<label>Command Class Id</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandClassName" type="text">
+			<label>Command Class Name</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="endpoint" type="integer">
+			<label>Endpoint Index</label>
+			<advanced>true</advanced>
+			<default>0</default>
+		</parameter>
+		<parameter name="factor" type="decimal">
+			<label>Factor</label>
+			<advanced>true</advanced>
+			<default>1</default>
+		</parameter>
+		<parameter name="propertyKeyStr" type="text">
+			<label>Property Key Str</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="propertyKeyInt" type="integer">
+			<label>Property Key Int</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="readProperty" type="text">
+			<label>Read Property</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="writePropertyStr" type="text">
+			<label>Write Property Str</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="writePropertyInt" type="integer">
+			<label>Write Property Int</label>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:zwavejs:invertible-channel">
+		<parameter name="incomingUnit" type="text">
+			<label>Incoming Unit</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandClassId" type="integer">
+			<label>Command Class Id</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandClassName" type="text">
+			<label>Command Class Name</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="endpoint" type="integer">
+			<label>Endpoint Index</label>
+			<advanced>true</advanced>
+			<default>0</default>
+		</parameter>
+		<parameter name="factor" type="decimal">
+			<label>Factor</label>
+			<advanced>true</advanced>
+			<default>1</default>
+		</parameter>
+		<parameter name="propertyKeyStr" type="text">
+			<label>Property Key Str</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="propertyKeyInt" type="integer">
+			<label>Property Key Int</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="readProperty" type="text">
+			<label>Read Property</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="writePropertyStr" type="text">
+			<label>Write Property Str</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="writePropertyInt" type="integer">
+			<label>Write Property Int</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="inverted" type="boolean">
+			<label>Inverted</label>
+			<description>When True the value will be inverted for OpenClose, OnOff and Percentage types.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

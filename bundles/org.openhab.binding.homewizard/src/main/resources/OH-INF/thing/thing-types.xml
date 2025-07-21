@@ -144,6 +144,10 @@
 		<label>Total Imported Energy Counter 1</label>
 		<description>This channel provides the most recently reported total imported energy in kWh by counter 1, most commonly
 			used for import during the night or weekend.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_import_t2">
@@ -153,6 +157,10 @@
 			This channel provides the most recently reported total imported energy in kWh by counter 2, most commonly
 			used for import during the day.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_export_t1">
@@ -162,6 +170,10 @@
 			This channel provides the most recently reported total exported energy in kWh by counter 1, most commonly
 			used for export during the night or weekend.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_export_t2">
@@ -171,6 +183,10 @@
 			This channel provides the most recently reported total exported energy in kWh by counter 2, most commonly
 			used for export during the day.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="active_voltage">
@@ -179,6 +195,10 @@
 		<description>
 			This channel provides the current grid voltage.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="active_power">
@@ -188,6 +208,10 @@
 			This channel provides the current net total power in W. It will be below 0 if power is currently being
 			exported.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -198,6 +222,10 @@
 			This channel provides the current net phase 1 power in W. It will be below 0 if power is currently being
 			exported.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="active_power_l2">
@@ -207,6 +235,10 @@
 			This channel provides the current net phase 2 power in W. It will be below 0 if power is currently being
 			exported. It will be 0 for single phase systems.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="active_power_l3">
@@ -216,6 +248,10 @@
 			This channel provides the current net phase 3 power in W. It will be below 0 if power is currently being
 			exported. It will be 0 for single phase systems.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_gas">
@@ -226,6 +262,10 @@
 			frequently as the data in the other channels, the gas_timestamp channel provides the time stamp of the most recent
 			update.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="gas_timestamp">
@@ -242,6 +282,10 @@
 		<description>
 			This channel provides the most recently reported total imported water in m^3.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -261,6 +305,10 @@
 		<description>
 			This channel provides access to the power switch of the Energysocket
 		</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="power_lock">

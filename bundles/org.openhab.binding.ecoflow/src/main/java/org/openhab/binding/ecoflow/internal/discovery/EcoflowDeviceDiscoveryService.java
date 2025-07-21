@@ -16,6 +16,7 @@ import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING
 import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING_TYPE_DELTA2MAX;
 import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING_TYPE_POWERSTREAM;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -97,7 +98,7 @@ public class EcoflowDeviceDiscoveryService extends AbstractThingHandlerDiscovery
 
     private void scanForDevices() {
         this.api.ifPresent(api -> {
-            long timestampOfLastScan = getTimestampOfLastScan();
+            Instant timestampOfLastScan = getTimestampOfLastScan();
             try {
                 List<DeviceListResponseEntry> devices = api.getDeviceList();
                 logger.debug("Ecoflow discovery found {} devices", devices.size());

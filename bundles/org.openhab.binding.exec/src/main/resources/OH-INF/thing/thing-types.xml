@@ -69,7 +69,7 @@
 		<item-type>Switch</item-type>
 		<label>Running</label>
 		<description>Send ON to execute the command and the current state tells whether it is running or not</description>
-		<state readOnly="true"></state>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="lastexecution">
 		<item-type>DateTime</item-type>

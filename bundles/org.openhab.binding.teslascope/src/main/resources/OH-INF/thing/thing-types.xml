@@ -4,8 +4,29 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<bridge-type id="account">
+		<label>Teslascope Account</label>
+		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>apiKey</label>
+				<description>apiKey provided by Teslascope</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the account is polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<thing-type id="vehicle">
-		<label>Teslascope</label>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Vehicle</label>
 		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
 		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channels>
@@ -98,10 +119,6 @@
 		</properties>
 
 		<config-description>
-			<parameter name="apiKey" type="text" required="true">
-				<label>apiKey</label>
-				<description>apiKey provided by Teslascope</description>
-			</parameter>
 			<parameter name="publicID" type="text" required="true">
 				<label>Vehicle Public ID</label>
 				<description>Vehicle public ID listed in Teslascope</description>
@@ -325,7 +342,7 @@
 		<description>Lock or unlock the car</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="driver-rear-door" advanced="true">

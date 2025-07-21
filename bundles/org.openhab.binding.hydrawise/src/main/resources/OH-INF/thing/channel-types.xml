@@ -129,6 +129,10 @@
 		<item-type>DateTime</item-type>
 		<label>Next Run Time</label>
 		<description>The next time this zone is scheduled to run</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -136,30 +140,50 @@
 		<item-type>Switch</item-type>
 		<label>Run Zones</label>
 		<description>Run or stop zones for the default time.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="runcustom">
 		<item-type>Number:Time</item-type>
 		<label>Run Zones With Custom Duration</label>
 		<description>Run zones now for a custom duration</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="suspend">
 		<item-type>Switch</item-type>
 		<label>Suspend Zones</label>
 		<description>Suspends or resumes zones</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="suspenduntil">
 		<item-type>DateTime</item-type>
 		<label>Suspend Zones</label>
 		<description>Suspends zones until this date</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="timeleft">
 		<item-type>Number:Time</item-type>
 		<label>Time Left Seconds</label>
 		<description>Time left that zone will run for</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -227,6 +251,10 @@
 		<label>High temperature</label>
 		<description>High temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -235,6 +263,10 @@
 		<label>Low Temperature</label>
 		<description>Low Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -256,6 +288,10 @@
 		<item-type>DateTime</item-type>
 		<label>Forecast Time</label>
 		<description>Forecast date and time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -264,6 +300,10 @@
 		<label>Humidity</label>
 		<description>Humidity percentage</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
 
@@ -272,6 +312,10 @@
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -286,6 +330,10 @@
 		<item-type>Number</item-type>
 		<label>Precipitation</label>
 		<description>Precipitation amount</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
@@ -293,6 +341,10 @@
 		<item-type>Number</item-type>
 		<label>Probability Of Precipitation</label>
 		<description>Probability of precipitation percentage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
 </thing:thing-descriptions>

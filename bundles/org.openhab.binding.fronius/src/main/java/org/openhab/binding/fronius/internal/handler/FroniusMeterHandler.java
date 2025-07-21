@@ -14,6 +14,7 @@ package org.openhab.binding.fronius.internal.handler;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
@@ -28,6 +29,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link FroniusMeterHandler} is responsible for updating the data, which are
@@ -37,10 +40,13 @@ import org.openhab.core.types.State;
  * @author Thomas Kordelle - Actually constants should be all upper case.
  * @author Hannes Spenger - Added getValue for power sum
  */
+@NonNullByDefault
 public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(FroniusMeterHandler.class);
+
     private @Nullable MeterRealtimeBodyData meterRealtimeBodyData;
-    private FroniusBaseDeviceConfiguration config;
+    private @Nullable FroniusBaseDeviceConfiguration config;
 
     public FroniusMeterHandler(Thing thing) {
         super(thing);
@@ -53,6 +59,11 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
     @Override
     protected void handleRefresh(FroniusBridgeConfiguration bridgeConfiguration) throws FroniusCommunicationException {
+        FroniusBaseDeviceConfiguration config = this.config;
+        if (config == null) {
+            logger.warn("config is null in handleRefresh(), this is a bug, please report it.");
+            return;
+        }
         updateData(bridgeConfiguration, config);
         updateChannels();
         updateProperties();
@@ -71,7 +82,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      * @return the last retrieved data
      */
     @Override
-    protected State getValue(String channelId) {
+    protected @Nullable State getValue(String channelId) {
         MeterRealtimeBodyData localMeterRealtimeBodyData = meterRealtimeBodyData;
         if (localMeterRealtimeBodyData == null) {
             return null;
@@ -83,46 +94,42 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
         }
         final String fieldName = fields[0];
 
-        switch (fieldName) {
-            case FroniusBindingConstants.METER_ENABLE:
-                return new DecimalType(localMeterRealtimeBodyData.getEnable());
-            case FroniusBindingConstants.METER_LOCATION:
-                return new DecimalType(localMeterRealtimeBodyData.getMeterLocationCurrent());
-            case FroniusBindingConstants.METER_CURRENT_AC_PHASE_1:
-                return new QuantityType<>(localMeterRealtimeBodyData.getCurrentACPhase1(), Units.AMPERE);
-            case FroniusBindingConstants.METER_CURRENT_AC_PHASE_2:
-                return new QuantityType<>(localMeterRealtimeBodyData.getCurrentACPhase2(), Units.AMPERE);
-            case FroniusBindingConstants.METER_CURRENT_AC_PHASE_3:
-                return new QuantityType<>(localMeterRealtimeBodyData.getCurrentACPhase3(), Units.AMPERE);
-            case FroniusBindingConstants.METER_VOLTAGE_AC_PHASE_1:
-                return new QuantityType<>(localMeterRealtimeBodyData.getVoltageACPhase1(), Units.VOLT);
-            case FroniusBindingConstants.METER_VOLTAGE_AC_PHASE_2:
-                return new QuantityType<>(localMeterRealtimeBodyData.getVoltageACPhase2(), Units.VOLT);
-            case FroniusBindingConstants.METER_VOLTAGE_AC_PHASE_3:
-                return new QuantityType<>(localMeterRealtimeBodyData.getVoltageACPhase3(), Units.VOLT);
-            case FroniusBindingConstants.METER_POWER_PHASE_1:
-                return new QuantityType<>(localMeterRealtimeBodyData.getPowerRealPPhase1(), Units.WATT);
-            case FroniusBindingConstants.METER_POWER_PHASE_2:
-                return new QuantityType<>(localMeterRealtimeBodyData.getPowerRealPPhase2(), Units.WATT);
-            case FroniusBindingConstants.METER_POWER_PHASE_3:
-                return new QuantityType<>(localMeterRealtimeBodyData.getPowerRealPPhase3(), Units.WATT);
-            case FroniusBindingConstants.METER_POWER_SUM:
-                return new QuantityType<>(localMeterRealtimeBodyData.getPowerRealPSum(), Units.WATT);
-            case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_1:
-                return new DecimalType(localMeterRealtimeBodyData.getPowerFactorPhase1());
-            case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_2:
-                return new DecimalType(localMeterRealtimeBodyData.getPowerFactorPhase2());
-            case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_3:
-                return new DecimalType(localMeterRealtimeBodyData.getPowerFactorPhase3());
-            case FroniusBindingConstants.METER_ENERGY_REAL_SUM_CONSUMED:
-                return new QuantityType<>(localMeterRealtimeBodyData.getEnergyRealWACSumConsumed(), Units.WATT_HOUR);
-            case FroniusBindingConstants.METER_ENERGY_REAL_SUM_PRODUCED:
-                return new QuantityType<>(localMeterRealtimeBodyData.getEnergyRealWACSumProduced(), Units.WATT_HOUR);
-            default:
-                break;
-        }
-
-        return null;
+        return switch (fieldName) {
+            case FroniusBindingConstants.METER_ENABLE -> new DecimalType(localMeterRealtimeBodyData.getEnable());
+            case FroniusBindingConstants.METER_LOCATION ->
+                new DecimalType(localMeterRealtimeBodyData.getMeterLocationCurrent());
+            case FroniusBindingConstants.METER_CURRENT_AC_PHASE_1 ->
+                new QuantityType<>(localMeterRealtimeBodyData.getCurrentACPhase1(), Units.AMPERE);
+            case FroniusBindingConstants.METER_CURRENT_AC_PHASE_2 ->
+                new QuantityType<>(localMeterRealtimeBodyData.getCurrentACPhase2(), Units.AMPERE);
+            case FroniusBindingConstants.METER_CURRENT_AC_PHASE_3 ->
+                new QuantityType<>(localMeterRealtimeBodyData.getCurrentACPhase3(), Units.AMPERE);
+            case FroniusBindingConstants.METER_VOLTAGE_AC_PHASE_1 ->
+                new QuantityType<>(localMeterRealtimeBodyData.getVoltageACPhase1(), Units.VOLT);
+            case FroniusBindingConstants.METER_VOLTAGE_AC_PHASE_2 ->
+                new QuantityType<>(localMeterRealtimeBodyData.getVoltageACPhase2(), Units.VOLT);
+            case FroniusBindingConstants.METER_VOLTAGE_AC_PHASE_3 ->
+                new QuantityType<>(localMeterRealtimeBodyData.getVoltageACPhase3(), Units.VOLT);
+            case FroniusBindingConstants.METER_POWER_PHASE_1 ->
+                new QuantityType<>(localMeterRealtimeBodyData.getPowerRealPPhase1(), Units.WATT);
+            case FroniusBindingConstants.METER_POWER_PHASE_2 ->
+                new QuantityType<>(localMeterRealtimeBodyData.getPowerRealPPhase2(), Units.WATT);
+            case FroniusBindingConstants.METER_POWER_PHASE_3 ->
+                new QuantityType<>(localMeterRealtimeBodyData.getPowerRealPPhase3(), Units.WATT);
+            case FroniusBindingConstants.METER_POWER_SUM ->
+                new QuantityType<>(localMeterRealtimeBodyData.getPowerRealPSum(), Units.WATT);
+            case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_1 ->
+                new DecimalType(localMeterRealtimeBodyData.getPowerFactorPhase1());
+            case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_2 ->
+                new DecimalType(localMeterRealtimeBodyData.getPowerFactorPhase2());
+            case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_3 ->
+                new DecimalType(localMeterRealtimeBodyData.getPowerFactorPhase3());
+            case FroniusBindingConstants.METER_ENERGY_REAL_SUM_CONSUMED ->
+                new QuantityType<>(localMeterRealtimeBodyData.getEnergyRealWACSumConsumed(), Units.WATT_HOUR);
+            case FroniusBindingConstants.METER_ENERGY_REAL_SUM_PRODUCED ->
+                new QuantityType<>(localMeterRealtimeBodyData.getEnergyRealWACSumProduced(), Units.WATT_HOUR);
+            default -> null;
+        };
     }
 
     private void updateProperties() {
@@ -148,8 +155,8 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      */
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
             throws FroniusCommunicationException {
-        MeterRealtimeResponse meterRealtimeResponse = getMeterRealtimeData(bridgeConfiguration.hostname,
-                config.deviceId);
+        MeterRealtimeResponse meterRealtimeResponse = getMeterRealtimeData(bridgeConfiguration.scheme,
+                bridgeConfiguration.hostname, config.deviceId);
         MeterRealtimeBody meterRealtimeBody = meterRealtimeResponse.getBody();
         if (meterRealtimeBody == null) {
             meterRealtimeBodyData = null;
@@ -161,12 +168,14 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
     /**
      * Make the MeterRealtimeData request
      *
+     * @param scheme http or https
      * @param ip address of the device
      * @param deviceId of the device
      * @return {MeterRealtimeResponse} the object representation of the json response
      */
-    private MeterRealtimeResponse getMeterRealtimeData(String ip, int deviceId) throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.getMeterDataUrl(ip, deviceId);
+    private MeterRealtimeResponse getMeterRealtimeData(String scheme, String ip, int deviceId)
+            throws FroniusCommunicationException {
+        String location = FroniusBindingConstants.getMeterDataUrl(scheme, ip, deviceId);
         return collectDataFromUrl(MeterRealtimeResponse.class, location);
     }
 }

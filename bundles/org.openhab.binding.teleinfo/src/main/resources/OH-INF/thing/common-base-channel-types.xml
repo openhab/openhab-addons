@@ -9,6 +9,10 @@
 		<label>BASE</label>
 		<description>Total consumed energy</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 

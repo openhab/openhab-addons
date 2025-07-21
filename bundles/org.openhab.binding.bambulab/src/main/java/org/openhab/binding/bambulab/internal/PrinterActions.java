@@ -22,10 +22,13 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = PrinterActions.class)
 @ThingActionsScope(name = BINDING_ID)
 @NonNullByDefault
 public class PrinterActions implements ThingActions {
@@ -43,13 +46,8 @@ public class PrinterActions implements ThingActions {
 
     @RuleAction(label = "@text/action.sendCommand.label", description = "@text/action.sendCommand.description")
     public void sendCommand(
-            @ActionInput(name = "time", label = "@text/action.sendCommand.commandLabel", description = "@text/action.sendCommand.commandDescription") String stringCommand) {
-        var localHandler = handler;
-        if (localHandler == null) {
-            return;
-        }
-
-        localHandler.sendCommand(stringCommand);
+            @ActionInput(name = "stringCommand", label = "@text/action.sendCommand.commandLabel", description = "@text/action.sendCommand.commandDescription") String stringCommand) {
+        requireNonNull(handler).sendCommand(stringCommand);
     }
 
     public static void sendCommand(@Nullable ThingActions actions, String stringCommand) {
@@ -58,12 +56,7 @@ public class PrinterActions implements ThingActions {
 
     @RuleAction(label = "@text/action.refreshChannels.label", description = "@text/action.refreshChannels.description")
     public void refreshChannels() {
-        var localHandler = handler;
-        if (localHandler == null) {
-            return;
-        }
-
-        localHandler.refreshChannels();
+        requireNonNull(handler).refreshChannels();
     }
 
     public static void refreshChannels(@Nullable ThingActions actions) {

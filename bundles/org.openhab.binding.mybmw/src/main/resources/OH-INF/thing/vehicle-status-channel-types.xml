@@ -6,6 +6,10 @@
 	<channel-type id="doors-channel">
 		<item-type>String</item-type>
 		<label>Overall Door Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="windows-channel">
@@ -22,7 +26,7 @@
 		<label>Doors Locked</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="next-service-date-channel">

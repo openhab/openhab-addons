@@ -12,15 +12,22 @@
  */
 package org.openhab.binding.fronius.internal;
 
+import static org.openhab.binding.fronius.internal.FroniusBindingConstants.DEFAULT_REFRESH_PERIOD;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link FroniusBridgeConfiguration} is the class used to match the
  * bridge configuration.
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class FroniusBridgeConfiguration {
-    public String hostname;
-    public String username;
-    public String password;
-    public Integer refreshInterval;
+    public String hostname = ""; // FroniusBridgeHandler enforces that this not empty
+    public @Nullable String username;
+    public @Nullable String password;
+    public int refreshInterval = DEFAULT_REFRESH_PERIOD;
+    public String scheme = "http";
 }

@@ -103,6 +103,7 @@
 		<description>@text/channel-type.shelly.heartBeat.description</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true">

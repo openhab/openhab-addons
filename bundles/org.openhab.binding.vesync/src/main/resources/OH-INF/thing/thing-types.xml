@@ -299,7 +299,7 @@
 		<description>Indicator if the devices child lock is enabled (Display Lock)</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

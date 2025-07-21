@@ -77,6 +77,10 @@
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>A list of genres or tags that you can select from</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="ALL">Show All Genres</option>
@@ -126,12 +130,20 @@
 		<item-type>String</item-type>
 		<label>Stream</label>
 		<description>The stations URI that can be sent to a openHAB audio sink</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>The currently selected stations name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="icon">

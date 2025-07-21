@@ -77,7 +77,7 @@ public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoverySer
     public void deactivate() {
         logger.debug("Deactivate discovery service for zone teperature control type remove thing types {}",
                 super.getSupportedThingTypes());
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     /**

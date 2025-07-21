@@ -73,6 +73,10 @@
 		<label>Target Temperature</label>
 		<description>Target temperature currently set on device</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="30" step="0.5" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -81,6 +85,10 @@
 		<label>Fixed Temperature</label>
 		<description>Target temperature for fixed mode on device</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="30" step="0.5" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -96,6 +104,10 @@
 		<item-type>String</item-type>
 		<label>Run Mode</label>
 		<description>The heat regulation mode of the thermostat</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="not_set">Not Set</option>

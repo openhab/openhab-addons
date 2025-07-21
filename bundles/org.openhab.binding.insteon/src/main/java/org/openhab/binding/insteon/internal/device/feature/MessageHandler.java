@@ -553,7 +553,7 @@ public abstract class MessageHandler extends BaseFeatureHandler {
                 // set device insteon engine
                 getInsteonDevice().setInsteonEngine(engine);
                 // continue device polling
-                getInsteonDevice().doPoll(0L);
+                getInsteonDevice().poll(500L);
             } catch (FieldException e) {
                 logger.warn("{}: error parsing msg: {}", nm(), msg, e);
             }
@@ -584,9 +584,9 @@ public abstract class MessageHandler extends BaseFeatureHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            // reset device heartbeat monitor on all link broadcast or cleanup message not replayed
+            // reset device heartbeat timeout on all link broadcast or cleanup message not replayed
             if (msg.isAllLinkBroadcastOrCleanup() && !msg.isReplayed()) {
-                getInsteonDevice().resetHeartbeatMonitor();
+                getInsteonDevice().resetHeartbeatTimeout();
             }
         }
     }
@@ -1003,8 +1003,8 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
             super.handleMessage(cmd1, msg);
-            // reset device heartbeat monitor
-            getInsteonDevice().resetHeartbeatMonitor();
+            // reset device heartbeat timeout
+            getInsteonDevice().resetHeartbeatTimeout();
         }
     }
 
@@ -1229,8 +1229,8 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
             super.handleMessage(cmd1, msg);
-            // reset device heartbeat monitor
-            getInsteonDevice().resetHeartbeatMonitor();
+            // reset device heartbeat timeout
+            getInsteonDevice().resetHeartbeatTimeout();
         }
 
         @Override

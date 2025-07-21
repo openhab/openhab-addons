@@ -129,6 +129,10 @@
 		<item-type>Number</item-type>
 		<label>Source</label>
 		<description>The audio source that is played</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Source 1</option>

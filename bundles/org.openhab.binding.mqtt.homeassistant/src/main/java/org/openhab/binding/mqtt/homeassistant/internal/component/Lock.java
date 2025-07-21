@@ -17,17 +17,17 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.RWConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT lock, following the https://www.home-assistant.io/integrations/lock.mqtt specification.
@@ -36,7 +36,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Support OPEN, full state, and optimistic mode.
  */
 @NonNullByDefault
-public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
+public class Lock extends AbstractComponent<Lock.Configuration> {
     public static final String LOCK_CHANNEL_ID = "lock";
     public static final String STATE_CHANNEL_ID = "state";
 
@@ -57,57 +57,95 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
             STATE_LOCKED, "@text/state.lock.locked", STATE_LOCKING, "@text/state.lock.locking", STATE_UNLOCKED,
             "@text/state.lock.unlocked", STATE_UNLOCKING, "@text/state.lock.unlocking");
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Lock");
+    public static class Configuration extends EntityConfiguration implements RWConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Lock");
         }
 
-        protected boolean optimistic = false;
+        @Nullable
+        Value getCommandTemplate() {
+            return getOptionalValue("command_template");
+        }
 
-        @SerializedName("command_topic")
-        protected @Nullable String commandTopic;
-        @SerializedName("state_topic")
-        protected String stateTopic = "";
-        @SerializedName("payload_lock")
-        protected String payloadLock = PAYLOAD_LOCK;
-        @SerializedName("payload_unlock")
-        protected String payloadUnlock = PAYLOAD_UNLOCK;
-        @SerializedName("payload_open")
-        protected @Nullable String payloadOpen;
-        @SerializedName("state_jammed")
-        protected String stateJammed = STATE_JAMMED;
-        @SerializedName("state_locked")
-        protected String stateLocked = STATE_LOCKED;
-        @SerializedName("state_locking")
-        protected String stateLocking = STATE_LOCKING;
-        @SerializedName("state_unlocked")
-        protected String stateUnlocked = STATE_UNLOCKED;
-        @SerializedName("state_unlocking")
-        protected String stateUnlocking = STATE_UNLOCKING;
+        String getPayloadLock() {
+            return getString("payload_lock");
+        }
+
+        String getPayloadUnlock() {
+            return getString("payload_unlock");
+        }
+
+        @Nullable
+        String getPayloadOpen() {
+            return getOptionalString("payload_open");
+        }
+
+        String getPayloadReset() {
+            return getString("payload_reset");
+        }
+
+        String getStateJammed() {
+            return getString("state_jammed");
+        }
+
+        String getStateLocked() {
+            return getString("state_locked");
+        }
+
+        String getStateLocking() {
+            return getString("state_locking");
+        }
+
+        String getStateOpen() {
+            return getString("state_open");
+        }
+
+        String getStateOpening() {
+            return getString("state_opening");
+        }
+
+        String getStateUnlocked() {
+            return getString("state_unlocked");
+        }
+
+        String getStateUnlocking() {
+            return getString("state_unlocking");
+        }
+
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
     private boolean optimistic = false;
     private OnOffValue lockValue;
     private TextValue stateValue;
 
-    public Lock(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Lock(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        this.optimistic = channelConfiguration.optimistic || channelConfiguration.stateTopic.isBlank();
+        String stateTopic = config.getStateTopic();
+        String commandTopic = config.getCommandTopic();
+        Value commandTemplate = config.getCommandTemplate();
+        this.optimistic = config.isOptimistic() || stateTopic == null;
 
-        lockValue = new OnOffValue(new String[] { channelConfiguration.stateLocked },
-                new String[] { channelConfiguration.stateUnlocked, channelConfiguration.stateLocking,
-                        channelConfiguration.stateUnlocking, channelConfiguration.stateJammed },
-                channelConfiguration.payloadLock, channelConfiguration.payloadUnlock);
+        String payloadLock = config.getPayloadLock();
+        String payloadUnlock = config.getPayloadUnlock();
+        String payloadOpen = config.getPayloadOpen();
+        String stateLocked = config.getStateLocked();
+        String stateUnlocked = config.getStateUnlocked();
+        String stateLocking = config.getStateLocking();
+        String stateUnlocking = config.getStateUnlocking();
+        String stateJammed = config.getStateJammed();
+
+        lockValue = new OnOffValue(new String[] { config.getStateLocked() },
+                new String[] { stateLocked, stateUnlocked, stateLocking, stateUnlocking, stateJammed }, payloadLock,
+                payloadUnlock);
 
         buildChannel(LOCK_CHANNEL_ID, ComponentChannelType.SWITCH, lockValue, "Lock",
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
+                componentContext.getUpdateListener()).stateTopic(stateTopic, config.getValueTemplate())
+                .commandTopic(commandTopic, config.isRetain(), config.getQos(), commandTemplate)
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).commandFilter(command -> {
                     if (command instanceof OnOffType) {
                         autoUpdate(command.equals(OnOffType.ON));
@@ -116,32 +154,28 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
                 }).build();
 
         Map<String, String> commands = new LinkedHashMap<>();
-        commands.put(PAYLOAD_LOCK, channelConfiguration.payloadLock);
-        commands.put(PAYLOAD_UNLOCK, channelConfiguration.payloadUnlock);
-        String payloadOpen = channelConfiguration.payloadOpen;
+        commands.put(PAYLOAD_LOCK, payloadLock);
+        commands.put(PAYLOAD_UNLOCK, payloadUnlock);
         if (payloadOpen != null) {
             commands.put(PAYLOAD_OPEN, payloadOpen);
         }
         Map<String, String> states = new LinkedHashMap<>();
-        states.put(channelConfiguration.stateLocked, STATE_LOCKED);
-        states.put(channelConfiguration.stateUnlocked, STATE_UNLOCKED);
-        states.put(channelConfiguration.stateLocking, STATE_LOCKING);
-        states.put(channelConfiguration.stateUnlocking, STATE_UNLOCKING);
-        states.put(channelConfiguration.stateJammed, STATE_JAMMED);
+        states.put(stateLocked, STATE_LOCKED);
+        states.put(stateUnlocked, STATE_UNLOCKED);
+        states.put(stateLocking, STATE_LOCKING);
+        states.put(stateUnlocking, STATE_UNLOCKING);
+        states.put(stateJammed, STATE_JAMMED);
         stateValue = new TextValue(states, commands, STATE_LABELS, COMMAND_LABELS);
 
         buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, stateValue, "State",
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
-                .isAdvanced(true).withAutoUpdatePolicy(AutoUpdatePolicy.VETO).commandFilter(command -> {
+                componentContext.getUpdateListener()).stateTopic(stateTopic, config.getValueTemplate())
+                .commandTopic(commandTopic, config.isRetain(), config.getQos(), commandTemplate).isAdvanced(true)
+                .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).commandFilter(command -> {
                     if (command instanceof StringType stringCommand) {
                         if (stringCommand.toString().equals(PAYLOAD_LOCK)) {
                             autoUpdate(true);
                         } else if (stringCommand.toString().equals(PAYLOAD_UNLOCK)
-                                || (channelConfiguration.payloadOpen != null
-                                        && stringCommand.toString().equals(PAYLOAD_OPEN))) {
+                                || (payloadOpen != null && stringCommand.toString().equals(PAYLOAD_OPEN))) {
                             autoUpdate(false);
                         }
                     }
@@ -158,7 +192,7 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
 
         final ChannelUID lockChannelUID = buildChannelUID(LOCK_CHANNEL_ID);
         final ChannelUID stateChannelUID = buildChannelUID(STATE_CHANNEL_ID);
-        final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
+        final ChannelStateUpdateListener updateListener = componentContext.getUpdateListener();
 
         if (locking) {
             stateValue.update(new StringType(STATE_LOCKED));

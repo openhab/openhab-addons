@@ -30,11 +30,11 @@ import org.openhab.core.thing.type.AutoUpdatePolicy;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class ButtonTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "button/0x847127fffe11dd6a_auto_lock_zigbee2mqtt";
 
-    @SuppressWarnings("null")
     @Test
     public void testButton() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -71,7 +71,6 @@ public class ButtonTests extends AbstractComponentTests {
         assertPublished("esphome/single-car-gdo/button/restart/command", "PRESS");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testButtonWithCustomPayload() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """

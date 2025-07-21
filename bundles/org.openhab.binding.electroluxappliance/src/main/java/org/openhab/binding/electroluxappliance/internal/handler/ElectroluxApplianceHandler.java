@@ -15,12 +15,16 @@ package org.openhab.binding.electroluxappliance.internal.handler;
 import static org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceBindingConstants.CHANNEL_STATUS;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceConfiguration;
 import org.openhab.binding.electroluxappliance.internal.api.ElectroluxGroupAPI;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -29,6 +33,9 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +52,21 @@ public abstract class ElectroluxApplianceHandler extends BaseThingHandler {
 
     private ElectroluxApplianceConfiguration config = new ElectroluxApplianceConfiguration();
 
-    public ElectroluxApplianceHandler(Thing thing) {
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
+
+    public ElectroluxApplianceHandler(Thing thing, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
         super(thing);
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+    }
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
     }
 
     @Override
@@ -65,15 +85,19 @@ public abstract class ElectroluxApplianceHandler extends BaseThingHandler {
         config = getConfigAs(ElectroluxApplianceConfiguration.class);
         if (config.getSerialNumber().isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configuration of Serial Number is mandatory");
+                    getLocalizedText("error.electroluxappliance.all-devices.missing-serial-number"));
         } else {
             updateStatus(ThingStatus.UNKNOWN);
 
-            scheduler.execute(() -> {
+            // The bridge updates, then attempts to read the config, this fails, then refreshes the token and try's
+            // again
+            // while this is going on this kicks in where the DTO data is not yet read, so this allows for these initial
+            // delays.
+            scheduler.schedule(() -> {
                 update();
                 Map<String, String> properties = refreshProperties();
                 updateProperties(properties);
-            });
+            }, 5, TimeUnit.SECONDS);
         }
     }
 
@@ -82,7 +106,7 @@ public abstract class ElectroluxApplianceHandler extends BaseThingHandler {
         if (dto != null) {
             update(dto);
         } else {
-            logger.warn("AppliancedDTO is null!");
+            logger.warn("{}", getLocalizedText("warning.electroluxappliance.application-dto-null"));
         }
     }
 
@@ -105,4 +129,8 @@ public abstract class ElectroluxApplianceHandler extends BaseThingHandler {
     public abstract void update(@Nullable ApplianceDTO dto);
 
     public abstract Map<String, String> refreshProperties();
+
+    protected ElectroluxApplianceConfiguration getApplianceConfig() {
+        return config;
+    }
 }

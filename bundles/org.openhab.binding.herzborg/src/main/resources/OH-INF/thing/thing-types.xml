@@ -53,6 +53,10 @@
 		<label>Position</label>
 		<description>Curtain position control</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>

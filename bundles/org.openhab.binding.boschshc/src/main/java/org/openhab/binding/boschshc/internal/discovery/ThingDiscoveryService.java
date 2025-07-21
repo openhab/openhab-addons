@@ -128,7 +128,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
     public void dispose() {
         super.dispose();
         logger.trace("dispose");
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
         thingHandler.unregisterDiscoveryListener();
 
         super.deactivate();
