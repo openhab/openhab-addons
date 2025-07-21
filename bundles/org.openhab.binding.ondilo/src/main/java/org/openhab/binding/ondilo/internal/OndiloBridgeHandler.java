@@ -19,12 +19,14 @@ import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.dto.Pool;
+import org.openhab.binding.ondilo.internal.dto.UserInfo;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -187,6 +189,12 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
                 return Optional.of(currentPools);
             }
         }
+    }
+
+    public void updateUserInfo(UserInfo userInfo) {
+        Map<String, String> properties = editProperties();
+        properties.put(PROPERTY_BRIDGE_USER_INFO, userInfo.getUserInfo());
+        updateProperties(properties);
     }
 
     @Override

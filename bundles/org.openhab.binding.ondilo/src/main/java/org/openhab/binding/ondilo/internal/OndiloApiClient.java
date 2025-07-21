@@ -31,6 +31,8 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link OndiloApiClient} for accessing the Ondilo API using OAuth2 authentication.
  * handlers.
@@ -44,6 +46,12 @@ public class OndiloApiClient {
     private @Nullable String bearer;
     private @Nullable AccessTokenResponse accessTokenResponse;
     private static final String ONDILO_API_URL = "https://interop.ondilo.com/api/customer/v1";
+    private static final Gson GSON = new Gson();
+
+    private static long lastRequestTime = 0;
+    // Minimum interval between requests in milliseconds
+    // Enforce API rate limit: 5 requests max per 1 second
+    private static final long MIN_REQUEST_INTERVAL_MS = 200;
 
     public OndiloApiClient(OAuthClientService oAuthService, AccessTokenResponse accessTokenResponse) {
         this.oAuthService = oAuthService;
@@ -53,50 +61,36 @@ public class OndiloApiClient {
     }
 
     @Nullable
-    public synchronized String get(String endpoint) {
-        try {
-            refreshAccessTokenIfNeeded();
-            URL url = new URI(ONDILO_API_URL + endpoint).toURL();
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Authorization", "Bearer " + bearer);
-            conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("Accept-Charset", "utf-8");
-            conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
-            conn.connect();
-            int responseCode = conn.getResponseCode();
-            if (responseCode == 200) {
-                try (InputStream is = conn.getInputStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
-                    return scanner.useDelimiter("\\A").next();
-                }
-            } else {
-                logger.warn("Ondilo API request failed with code: {}", responseCode);
+    public synchronized <T> T request(String requestMethod, String endpoint, Class<T> type) {
+        // Enforce API rate limit: at least 200ms between requests
+        long now = System.currentTimeMillis();
+        long wait = lastRequestTime + MIN_REQUEST_INTERVAL_MS - now;
+        if (wait > 0) {
+            try {
+                Thread.sleep(wait);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("API request pause interrupted: {}", e.getMessage());
+                return null;
             }
-        } catch (InterruptedIOException e) {
-            logger.debug("Ondilo API request interrupted: {}", e.getMessage());
-            Thread.currentThread().interrupt();
-        } catch (IOException | URISyntaxException e) {
-            logger.warn("Ondilo API request error", e);
         }
-        return null;
-    }
-
-    @Nullable
-    public synchronized String put(String endpoint) {
         try {
             refreshAccessTokenIfNeeded();
             URL url = new URI(ONDILO_API_URL + endpoint).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("PUT");
+            conn.setRequestMethod(requestMethod);
             conn.setRequestProperty("Authorization", "Bearer " + bearer);
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Accept-Charset", "utf-8");
             conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
             conn.connect();
+            lastRequestTime = System.currentTimeMillis();
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
                 try (InputStream is = conn.getInputStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
-                    return scanner.useDelimiter("\\A").next();
+                    String response = scanner.useDelimiter("\\A").next();
+                    // Parse JSON to DTO
+                    return GSON.fromJson(response, type);
                 }
             } else {
                 logger.warn("Ondilo API request failed with code: {}", responseCode);
