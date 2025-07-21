@@ -1,0 +1,14 @@
+{
+	"code": 0,
+	"message": "SUCCESS",
+	"request_id": "8f4b525c2c5811f08f5a0242ac480009",
+	"data": {
+		"enduser_id": "test_id",
+		"token": "test_token",
+		"lan_code": "EN",
+		"notify": {
+			"sign_out": true,
+			"phone": "a@b.c"
+		}
+	}
+}
