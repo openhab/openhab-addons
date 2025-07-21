@@ -166,7 +166,6 @@ public class StateFilterProfile implements StateProfile {
                                 expression, callback.getItemChannelLink(),
                                 StateCondition.ComparisonType.namesAndSymbols());
                         return;
-
                     }
 
                     String lhs = matcher.group(1).trim();

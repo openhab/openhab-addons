@@ -1042,7 +1042,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
             if (apiClient.isPresent()) {
-
                 // set read-only state description, if device has read-only power state option
                 Optional<Channel> powerStateChannel = getThingChannel(CHANNEL_POWER_STATE);
                 if (powerStateChannel.isPresent()) {

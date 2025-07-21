@@ -31,7 +31,6 @@ public class WorkHoursDTO implements Data {
     public QuantityType<Time> workHoursCompressor;
 
     public WorkHoursDTO(byte[] bArray) {
-
         ValueBuffer wrap = ValueBuffer.wrap(bArray);
 
         workHoursFan = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.1), Units.HOUR);
