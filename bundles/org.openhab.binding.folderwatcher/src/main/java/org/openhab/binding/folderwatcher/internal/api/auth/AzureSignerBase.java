@@ -27,9 +27,9 @@ import org.openhab.binding.folderwatcher.internal.api.util.HttpUtils;
  */
 @NonNullByDefault
 public abstract class AzureSignerBase extends SignerBase {
-    protected static String PAIR_SEPARATOR = "\n";
-    protected static String VALEU_SEPARATOR = ":";
-    protected static String HEADER_FILTER = "x-ms-";
+    protected static final String PAIR_SEPARATOR = "\n";
+    protected static final String VALEU_SEPARATOR = ":";
+    protected static final String HEADER_FILTER = "x-ms-";
     protected URL endpointUrl;
     protected String httpMethod;
     protected String serviceName;

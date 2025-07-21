@@ -237,7 +237,7 @@ public class NetatmoConstants {
         SECURITY(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES, CARBON_MONOXIDE_SCOPES),
         NONE();
 
-        public static String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(fa -> fa.scopes)
+        public static final String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(fa -> fa.scopes)
                 .flatMap(Set::stream).map(s -> s.name().toLowerCase()).collect(Collectors.joining(" "));
 
         public final Set<Scope> scopes;
