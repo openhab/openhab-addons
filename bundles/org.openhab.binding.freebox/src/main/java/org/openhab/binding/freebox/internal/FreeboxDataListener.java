@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freebox.internal.api.dto.FreeboxAirMediaReceiver;
-import org.openhab.binding.freebox.internal.api.dto.FreeboxLanHost;
+import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiver;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanHost;
 import org.openhab.core.thing.ThingUID;
 
 /**
