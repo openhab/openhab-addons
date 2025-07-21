@@ -47,7 +47,7 @@ public class DemandControl {
             .map(day -> Map.entry(day, day.substring(0, 2)))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    private static Gson GSON = new Gson();
+    private static final Gson GSON = new Gson();
 
     public String ret = "";
 
