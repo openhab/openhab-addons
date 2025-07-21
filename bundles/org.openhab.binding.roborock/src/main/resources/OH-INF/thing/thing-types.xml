@@ -231,7 +231,7 @@
 	</channel-type>
 	<channel-type id="mop_mode">
 		<item-type>Number</item-type>
-		<label>Water Box Mode</label>
+		<label>Mop Mode</label>
 		<state min="300" max="303" step="1" pattern="%.0f%%" readOnly="false">
 			<options>
 				<option value="300">Standard</option>
