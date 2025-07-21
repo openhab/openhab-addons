@@ -381,6 +381,22 @@
 		</config-description>
 	</channel-type>
 
+	<channel-type id="pilotWire">
+		<item-type>Number</item-type>
+		<label>Pilot wire</label>
+		<description>Mode of a heating device</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Comfort</option>
+				<option value="2">Eco</option>
+				<option value="3">Anti-freeze</option>
+				<option value="4">Comfort-1</option>
+				<option value="5">Comfort-2</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="batteryVoltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
