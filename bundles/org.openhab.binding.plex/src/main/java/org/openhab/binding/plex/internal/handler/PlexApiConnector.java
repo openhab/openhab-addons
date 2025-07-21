@@ -13,6 +13,7 @@
 package org.openhab.binding.plex.internal.handler;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
@@ -134,7 +135,7 @@ public class PlexApiConnector {
     public @Nullable MediaContainer getSessionData() {
         try {
             String url = "https://" + host + ":" + port + "/status/sessions" + "?X-Plex-Token=" + token;
-            logger.debug("Getting session data '{}'", url);
+            logger.debug("Polling session data '{}'", url);
             return getFromXml(doHttpRequest("GET", url, getClientHeaders(), false), MediaContainer.class);
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("An exception occurred while polling the PLEX Server: '{}'", e.getMessage());
@@ -184,12 +185,16 @@ public class PlexApiConnector {
         try {
             MediaContainer api = getFromXml(doHttpRequest("GET", API_URL, getClientHeaders(), true),
                     MediaContainer.class);
-            logger.debug("MediaContainer {}", api.getSize());
+            logger.trace("MediaContainer {}", api.getSize());
             if (api.getDevice() != null) {
+                InetAddress hostAddress = InetAddress.getByName(host);
                 for (Device tmpDevice : api.getDevice()) {
+                    logger.trace("== Device {}", tmpDevice.getName());
                     if (tmpDevice.getConnection() != null) {
                         for (Connection tmpConn : tmpDevice.getConnection()) {
-                            if (host.equals(tmpConn.getAddress())) {
+                            InetAddress tmpAddress = InetAddress.getByName(tmpConn.getAddress());
+                            logger.trace("== Connection {}", tmpConn.getAddress());
+                            if (hostAddress.equals(tmpAddress)) {
                                 scheme = tmpConn.getProtocol();
                                 logger.debug(
                                         "PLEX Api fetched. Found configured PLEX server in Api request, applied. Protocol used : {}",
@@ -240,7 +245,7 @@ public class PlexApiConnector {
             final ContentResponse res = request.send();
             response = res.getContentAsString();
         }
-        logger.debug("HTTP response: {}", response);
+        logger.trace("HTTP response: {}", response);
         return response;
     }
 
@@ -324,6 +329,7 @@ public class PlexApiConnector {
             isShutDown = false;
             wsClient.start();
             wsClient.connect(plexSocket, uri, request);
+            logger.debug("Connected to webSocket URI {}", uri);
         } catch (Exception e) {
             logger.debug("Could not connect webSocket URI {} message {}", uri, e.getMessage(), e);
         }
@@ -390,6 +396,8 @@ public class PlexApiConnector {
      * @param playerID The ID of the PLEX player
      */
     public void controlPlayer(Command command, String playerID) {
+        logger.debug("Controlling player '{}' with command '{}'", playerID, command);
+
         String commandPath = null;
         if (command instanceof PlayPauseType) {
             if (command.equals(PlayPauseType.PLAY)) {
@@ -415,6 +423,7 @@ public class PlexApiConnector {
                 Properties headers = getClientHeaders();
                 headers.put("X-Plex-Target-Client-Identifier", playerID);
                 doHttpRequest("GET", url, headers, false);
+                logger.debug("Command '{}' sent to player '{}' with url {}", commandPath, playerID, url);
             } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
                 logger.debug("An exception occurred trying to send command '{}' to the player: {}", commandPath,
                         e.getMessage());
