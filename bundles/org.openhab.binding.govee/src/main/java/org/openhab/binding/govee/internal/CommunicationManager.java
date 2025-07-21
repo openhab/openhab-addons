@@ -182,7 +182,6 @@ public class CommunicationManager {
                     try (DatagramChannel channel = DatagramChannel.open()
                             .setOption(StandardSocketOptions.SO_REUSEADDR, true)
                             .bind(new InetSocketAddress(RESPONSE_PORT))) {
-
                         while (!serverStopFlag) {
                             String sourceIp = "";
                             try {

@@ -42,7 +42,6 @@ public class Tariff {
         this.values = line.replace(',', '.').split(";", -1);
         try {
             if (values.length == lenControl) {
-
                 this.dateDebut = LocalDate.parse(values[0], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC);
                 this.dateFin = !values[1].isEmpty()
                         ? LocalDate.parse(values[1], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC)

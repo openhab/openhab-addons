@@ -337,7 +337,6 @@ public class HomeConnectApiClient {
      */
     public PowerStateAccess getPowerStateAccess(String haId)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-
         String powerStateSettings = getRaw(haId, BASE_PATH + haId + "/settings/" + SETTING_POWER_STATE);
 
         /***

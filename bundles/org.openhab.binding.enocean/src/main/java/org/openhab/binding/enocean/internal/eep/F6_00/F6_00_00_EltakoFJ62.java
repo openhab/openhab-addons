@@ -57,7 +57,6 @@ public class F6_00_00_EltakoFJ62 extends _RPSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
-
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
                 switch (bytes[0]) {
