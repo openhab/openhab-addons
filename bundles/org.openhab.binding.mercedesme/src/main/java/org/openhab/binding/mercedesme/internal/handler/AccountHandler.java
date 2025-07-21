@@ -119,6 +119,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (!configValidReason.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
         } else {
+            mbWebsocket.dispose(false);
             authService = Optional.of(new AuthService(this, httpClient, config, localeProvider.getLocale(), storage,
                     config.refreshToken));
             refreshScheduler = Optional
@@ -128,7 +129,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public void refresh() {
         if (!Constants.NOT_SET.equals(authService.get().getToken())) {
-            mbWebsocket.run();
+            mbWebsocket.update();
         } else {
             // all failed - start manual authorization
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
@@ -160,8 +161,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 schedule.cancel(true);
             }
         });
-        mbWebsocket.dispose();
         eventQueue.clear();
+        mbWebsocket.dispose(true);
     }
 
     @Override
@@ -459,7 +460,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public void sendCommand(@Nullable ClientMessage cm) {
         if (cm != null) {
-            mbWebsocket.setCommand(cm);
+            mbWebsocket.addCommand(cm);
         }
         scheduler.schedule(this::refresh, 2, TimeUnit.SECONDS);
     }

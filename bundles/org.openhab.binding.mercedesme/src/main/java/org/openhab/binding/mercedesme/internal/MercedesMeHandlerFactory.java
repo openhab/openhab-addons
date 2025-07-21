@@ -23,7 +23,6 @@ import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -37,8 +36,6 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -62,7 +59,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeDiscoveryService discoveryService;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
-    private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
     public static String ohVersion = "unknown";
 
@@ -70,17 +66,17 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
             final @Reference LocaleProvider lp, final @Reference LocationProvider locationP,
             final @Reference TimeZoneProvider tzp, final @Reference MercedesMeCommandOptionProvider cop,
-            final @Reference MercedesMeStateOptionProvider sop, final @Reference UnitProvider up) {
+            final @Reference MercedesMeStateOptionProvider sop, final @Reference UnitProvider up,
+            final @Reference MercedesMeDiscoveryService discoveryService) {
         this.storageService = storageService;
         localeProvider = lp;
         locationProvider = locationP;
         mmcop = cop;
         mmsop = sop;
-
+        this.discoveryService = discoveryService;
         Utils.initialize(tzp, lp);
         Mapper.initialize(up);
         httpClientFactory = hcf;
-        discoveryService = new MercedesMeDiscoveryService();
     }
 
     @Override
@@ -99,10 +95,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            if (discoveryServiceReg == null) {
-                discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                        null);
-            }
             return new AccountHandler((Bridge) thing, discoveryService, httpClientFactory.getCommonHttpClient(),
                     localeProvider, storageService);
         } else if (THING_TYPE_BEV.equals(thingTypeUID) || THING_TYPE_COMB.equals(thingTypeUID)
@@ -110,15 +102,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             return new VehicleHandler(thing, locationProvider, mmcop, mmsop);
         }
         return null;
-    }
-
-    @Override
-    protected void deactivate(ComponentContext componentContext) {
-        super.deactivate(componentContext);
-        if (discoveryServiceReg != null) {
-            discoveryServiceReg.unregister();
-            discoveryServiceReg = null;
-        }
     }
 
     public static String getVersion() {
