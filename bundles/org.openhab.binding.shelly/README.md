@@ -485,6 +485,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | VALVE_ERROR  | Device reported a problem with the valve.                                         |
 | VIBRATION    | Device reported vibration.                                                        |
 | LOW_BATTERY  | Device reported low battery.                                                      |
+| LORA_RECEIVED| A datagram has been receive via LoRa protocol                                     |
 
 ### Sensors
 
@@ -505,6 +506,25 @@ Refer to section [Full Example](#full-example) for examples how to catch alarm t
 ## Channels
 
 Depending on the device type and firmware release channels might be not available or stay with value NaN.
+
+### LoRa Add-On - Channel Group lora
+
+The LoRa Add-On is a radio module for the LoRa WAN Network.
+This can be attacxhed to various Shelly Gen3 or Gen4 devices like Shelly Plus 1PM or Shelly Shutter.
+Gen1 or Gen2 devices do not support the LoRa Add-On even you might be able to activate it in the device's Web UI.
+Shelly Dimmer Gen 3 is an exception, it does NOT support any Add-Ons incl. the LoRa Add-On.
+
+
+| Group   | Channel      | Type    | read-only | Description                                                                       |
+| ------- | ------------ | ------- | --------- | --------------------------------------------------------------------------------- |
+| lora    | dataRx       | String  | yes       | Received LoRa Datagram, BASE64-encoded. Use the LORA_RECEIVED trigger event.      |
+|         | bytesRx      | Number  | yes       | Number of bytes received from LoRa network so far.                                |
+|         | dataTx       | String  | write     | Use this channel to send a BASE64-encoded datagram to the LoRa network.           |
+|         | bytesTx      | Number  | yes       | Number of bytes sent to the LoRa network so far                                   |
+|         | errorsTx     | Number  | yes       | Number of failed transmissions to the LoRa network                                |
+|         | snr          | Number  | yes       | SNR (signal / noise ratio) of the received packet                                 |
+|         | rssi         | Number  | yes       | LoRa signal strength (0-4, 0 being worst and 4 being best strength)               |
+|         | airtime      | Number  | yes       | Time in milliseconds of the transmission time in the last 60 minutes              |
 
 ### Shelly 1 (thing-type: shelly1)
 

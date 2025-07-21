@@ -336,6 +336,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
+        if (dc.lora100 != null && config.enableLoRa) {
+            profile.settings.loraDetected = true;
+            profile.settings.loraRxEnabled = dc.lora100.rxEnabled;
+        }
+
         if (!profile.initialized && alwaysOn) {
             getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
@@ -710,7 +715,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: Configuration update detected, re-initialize", thingName);
                     getThing().requestUpdates(1, true); // refresh config
                     break;
-
                 case SHELLY2_EVENT_OTASTART:
                     logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
                     getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
@@ -741,6 +745,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
                     getThing().postEvent(e.event, false);
                     break;
+                case SHELLY2_EVENT_LORADATA:
+                    logger.debug("{}: LoRa data received, payload = {}", thingName, e.lora);
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(e.lora));
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.rssi));
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.snr));
+                    getThing().postEvent(SHELLY2_EVENT_LORADATA.toUpperCase(), false);
+                    break;
+
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
             }
