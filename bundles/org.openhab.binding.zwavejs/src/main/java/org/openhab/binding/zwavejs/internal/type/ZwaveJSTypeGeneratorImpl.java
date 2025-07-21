@@ -357,7 +357,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             builder.withStateDescriptionFragment(details.statePattern);
         }
 
-        if (details.unitSymbol != null) {
+        if (details.unitSymbol != null && !CoreItemFactory.NUMBER.equals(details.itemType)) {
             builder.withUnitHint(details.unitSymbol);
         }
 
