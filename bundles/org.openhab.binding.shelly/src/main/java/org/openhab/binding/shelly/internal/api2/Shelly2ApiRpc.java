@@ -314,7 +314,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
         profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
         if (profile.isRGBW2) {
-            ArrayList<ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
+            ArrayList<@Nullable ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
             rgbwLights.add(new ShellySettingsRgbwLight());
             profile.settings.lights = rgbwLights;
             profile.status.lights = new ArrayList<>();
@@ -333,6 +333,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (dc.led != null) {
             profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
+        }
+
+        if (dc.lora100 != null && config.enableLoRa) {
+            profile.settings.loraDetected = true;
+            profile.settings.loraRxEnabled = dc.lora100.rxEnabled;
         }
 
         profile.initialized = true;
@@ -491,13 +496,24 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (upload) {
                 logger.debug("{}: Script will be installed...", thingName);
 
-                // Create new script, get id
-                ShellyScriptResponse rsp = apiRequest(
-                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withName(script),
-                        ShellyScriptResponse.class);
-                ourId = rsp.id;
-                logger.debug("{}: Script has been created, id={}", thingName, ourId);
-                upload = true;
+                if (ourId == -1) {
+                    // find free script id
+                    ourId = 0;
+                    while (++ourId < 10 && testScriptId(scriptList, ourId)) {
+                    }
+                }
+                if (ourId < 10) {
+                    // Create new script, get id
+                    ShellyScriptResponse rsp = apiRequest(new Shelly2RpcRequest()
+                            .withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withId(ourId).withName(script),
+                            ShellyScriptResponse.class);
+                    ourId = rsp.id;
+                    logger.debug("{}: Script has been created, id={}", thingName, ourId);
+                    upload = true;
+                } else {
+                    logger.debug("{}: Too many scripts installed on this device", thingName);
+                    upload = false;
+                }
             }
 
             if (upload) {
@@ -535,6 +551,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.debug("{}: Unable to install script {}: {}", thingName, script, res.toString());
             }
         }
+    }
+
+    private boolean testScriptId(ShellyScriptListResponse scriptList, int id) {
+        for (ShellyScriptListEntry s : scriptList.scripts) {
+            if (s.id == id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean startScript(int ourId, boolean start) {
@@ -695,7 +720,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: Configuration update detected, re-initialize", thingName);
                     getThing().requestUpdates(1, true); // refresh config
                     break;
-
                 case SHELLY2_EVENT_OTASTART:
                     logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
                     getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
@@ -726,6 +750,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
                     getThing().postEvent(e.event, false);
                     break;
+                case SHELLY2_EVENT_LORADATA:
+                    logger.debug("{}: LoRa data received, payload = {}", thingName, e.lora);
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(e.lora));
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.rssi));
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.snr));
+                    getThing().postEvent(SHELLY2_EVENT_LORADATA.toUpperCase(), false);
+                    break;
+
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
             }
