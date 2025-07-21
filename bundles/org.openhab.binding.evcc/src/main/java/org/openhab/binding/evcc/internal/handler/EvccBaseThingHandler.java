@@ -168,6 +168,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             case CoreItemFactory.NUMBER:
             case NUMBER_CURRENCY:
             case NUMBER_DIMENSIONLESS:
+            case NUMBER_ENERGY_PRICE:
             case NUMBER_ELECTRIC_CURRENT:
             case NUMBER_EMISSION_INTENSITY:
             case NUMBER_ENERGY:

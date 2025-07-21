@@ -543,14 +543,14 @@
 		</tags>
 	</channel-type>
 	<channel-type id="loadpoint-session-price">
-		<item-type>Number:EnergyPrice</item-type>
+		<item-type>Number:Currency</item-type>
 		<label>Session Price</label>
 		<description>Costs of the current charging seesion</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Info</tag>
 		</tags>
-		<state pattern="%.3f %unit%" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpoint-session-price-per-k-wh">
 		<item-type>Number:EnergyPrice</item-type>
@@ -560,7 +560,7 @@
 			<tag>Measurement</tag>
 			<tag>Info</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpoint-smart-cost-active">
 		<item-type>Switch</item-type>
