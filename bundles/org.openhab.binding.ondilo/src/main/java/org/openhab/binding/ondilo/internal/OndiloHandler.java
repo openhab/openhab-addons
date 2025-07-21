@@ -195,9 +195,9 @@ public class OndiloHandler extends BaseThingHandler {
         if (lastMeasureTime != null) {
             if (!valueTime.equals(lastMeasureTime)) {
                 double delta = value - lastMeasureState.value;
-                if (unitOrType instanceof Unit<?>) {
-                    updateState(trendChannel, new QuantityType<>(delta, (Unit<?>) unitOrType));
-                } else {
+                if (unitOrType instanceof Unit<?> unit) {
+                    updateState(trendChannel, new QuantityType<>(delta, (Unit<?>) unit));
+                } else { // DecimalType
                     updateState(trendChannel, new DecimalType(delta));
                 }
                 logger.trace(
@@ -209,9 +209,9 @@ public class OndiloHandler extends BaseThingHandler {
             updateState(trendChannel, UnDefType.UNDEF);
         }
         // Update the current value channel
-        if (unitOrType instanceof Unit<?>) {
-            updateState(channel, new QuantityType<>(value, (Unit<?>) unitOrType));
-        } else {
+        if (unitOrType instanceof Unit<?> unit) {
+            updateState(channel, new QuantityType<>(value, (Unit<?>) unit));
+        } else { // DecimalType
             updateState(channel, new DecimalType(value));
         }
 
