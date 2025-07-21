@@ -16,8 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.time.Duration;
 import java.time.Instant;
@@ -638,8 +636,6 @@ public class Utils {
      * @param url - URL to split
      * @return Map with key-value pairs from query
      * @throws UnsupportedEncodingException if decoding fails
-     * @throws URISyntaxException
-     * @throws MalformedURLException
      */
     public static Map<String, String> getQueryParams(String query) {
         Map<String, String> queryPairs = new LinkedHashMap<String, String>();
