@@ -125,6 +125,9 @@ public class ShellyApiConfiguration {
     // All access must be guarded by "this"
     private boolean enableRangeExtender;
 
+    // All access must be guarded by "this"
+    private boolean enableLoRa;
+
     /** Local ip addresses used to create callback url */
     private final String localIp;
 
@@ -194,6 +197,7 @@ public class ShellyApiConfiguration {
 
         enableBluGateway = thingConfig.getEnableBluGateway();
         enableRangeExtender = thingConfig.getEnableRangeExtender();
+        enableLoRa = thingConfig.getEnableLoRa();
 
         enableCoIOT = gen2 ? false : thingConfig.getEventsCoIoT();
         eventsButton = thingConfig.getEventsButton();
@@ -359,6 +363,10 @@ public class ShellyApiConfiguration {
 
     public synchronized boolean getEnableRangeExtender() {
         return enableRangeExtender;
+    }
+
+    public synchronized boolean getEnableLoRa() {
+        return enableLoRa;
     }
 
     public String getLocalIp() {
