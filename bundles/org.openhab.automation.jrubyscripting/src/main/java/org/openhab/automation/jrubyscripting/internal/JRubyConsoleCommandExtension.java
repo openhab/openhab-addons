@@ -173,7 +173,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
 
     private void info(Console console) {
         File gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfile();
-        final String PRINT_VERSION_NUMBERS = """
+        final String printVersionNumbers = """
                 library_version = defined?(OpenHAB::DSL::VERSION) && OpenHAB::DSL::VERSION
 
                 puts "JRuby #{JRUBY_VERSION}"
@@ -184,7 +184,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 puts "ENV['BUNDLE_GEMFILE']: #{ENV['BUNDLE_GEMFILE']}"
                     """);
 
-        executeWithFullJRuby(console, engine -> engine.eval(PRINT_VERSION_NUMBERS));
+        executeWithFullJRuby(console, engine -> engine.eval(printVersionNumbers));
         console.println("Script path: " + scriptFileWatcher.getWatchPath());
         console.println("");
         console.println("JRuby Scripting Add-on Configuration:");
@@ -270,7 +270,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                         for (Map.Entry<String, String> consoleScript : consoles.entrySet()) {
                             String name = consoleScript.getKey();
                             String description = consoleScript.getValue();
-                            if (defaultConsole.equals(DEFAULT_CONSOLE_PATH + name) || defaultConsole.equals(name)) {
+                            if ((DEFAULT_CONSOLE_PATH + name).equals(defaultConsole) || name.equals(defaultConsole)) {
                                 description = description + " (default)";
                                 defaultConsoleInRegistry = true;
                             }
@@ -312,7 +312,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         });
     }
 
-    synchronized private void bundler(Console console, String[] args) {
+    private synchronized void bundler(Console console, String[] args) {
         final File gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfile();
         boolean bundleInit = args.length >= 1 && "init".equals(args[0]);
 
@@ -331,7 +331,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             return;
         }
 
-        final String BUNDLER = """
+        final String bundler = """
                 require "jruby"
                 JRuby.runtime.instance_config.update_native_env_enabled = false
 
@@ -363,7 +363,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         try {
             Object result = executeWithPlainJRuby(console, engine -> {
                 engine.put(ScriptEngine.ARGV, args);
-                return engine.eval(BUNDLER);
+                return engine.eval(bundler);
             });
             logger.debug("Bundler result: {}", result);
             // A null result indicates a successful creation of Gemfile.
@@ -409,7 +409,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         Files.write(gemfilePath, outputGemfile);
     }
 
-    synchronized private void gem(Console console, String[] args) {
+    private synchronized void gem(Console console, String[] args) {
         final String GEM = """
                 require "rubygems/gem_runner"
                 Gem::GemRunner.new.run ARGV
