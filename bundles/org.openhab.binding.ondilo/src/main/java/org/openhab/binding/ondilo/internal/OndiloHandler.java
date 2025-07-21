@@ -70,16 +70,11 @@ public class OndiloHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
 
     // Store last value and valueTime for trend calculation
-    private double lastTemperature = Double.NaN;
-    private @Nullable Instant lastTemperatureTime = null;
-    private double lastPh = Double.NaN;
-    private @Nullable Instant lastPhTime = null;
-    private double lastOrp = Double.NaN;
-    private @Nullable Instant lastOrpTime = null;
-    private double lastSalt = Double.NaN;
-    private @Nullable Instant lastSaltTime = null;
-    private double lastTds = Double.NaN;
-    private @Nullable Instant lastTdsTime = null;
+    private OndiloMeasureState lastTemperatureState = new OndiloMeasureState(Double.NaN, null);
+    private OndiloMeasureState lastPhState = new OndiloMeasureState(Double.NaN, null);
+    private OndiloMeasureState lastOrpState = new OndiloMeasureState(Double.NaN, null);
+    private OndiloMeasureState lastSaltState = new OndiloMeasureState(Double.NaN, null);
+    private OndiloMeasureState lastTdsState = new OndiloMeasureState(Double.NaN, null);
 
     public OndiloHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
@@ -194,63 +189,67 @@ public class OndiloHandler extends BaseThingHandler {
         this.recommendationId = 0; // Reset last processed recommendation ID
     }
 
-    private void updateTrendChannel(String channel, String trendChannel, double value, @Nullable Instant lastValueTime,
-            double lastValue, Instant valueTime, Object unitOrType) {
-        if (lastValueTime != null && !lastValueTime.equals(valueTime)) {
-            double delta = value - lastValue;
-            if (unitOrType instanceof Unit<?>) {
-                updateState(trendChannel, new QuantityType<>(delta, (Unit<?>) unitOrType));
-            } else {
-                updateState(trendChannel, new DecimalType(delta));
-            }
+    private void updateTrendChannel(String channel, String trendChannel, double value, Instant valueTime,
+            OndiloMeasureState lastMeasureState, Object unitOrType) {
+        Instant lastMeasureTime = lastMeasureState.time;
+        if (lastMeasureTime != null) {
+            if (!valueTime.equals(lastMeasureTime)) {
+                double delta = value - lastMeasureState.value;
+                if (unitOrType instanceof Unit<?>) {
+                    updateState(trendChannel, new QuantityType<>(delta, (Unit<?>) unitOrType));
+                } else {
+                    updateState(trendChannel, new DecimalType(delta));
+                }
+                logger.trace(
+                        "channel: {}, trendChannel: {}, value: {}, valueTime: {}, lastValue: {}, lastValueTime: {},  unitOrType: {} ==> delta: {}",
+                        channel, trendChannel, value, valueTime.toString(), lastMeasureState.value,
+                        lastMeasureTime.toString(), unitOrType.toString(), delta);
+            } // else: keep current value
         } else {
             updateState(trendChannel, UnDefType.UNDEF);
         }
-        updateState(channel, unitOrType instanceof Unit<?> ? new QuantityType<>(value, (Unit<?>) unitOrType)
-                : new DecimalType(value));
+        // Update the current value channel
+        if (unitOrType instanceof Unit<?>) {
+            updateState(channel, new QuantityType<>(value, (Unit<?>) unitOrType));
+        } else {
+            updateState(channel, new DecimalType(value));
+        }
+
+        lastMeasureState.value = value;
+        lastMeasureState.time = valueTime;
     }
 
-    public Instant updateLastMeasuresChannels(LastMeasure lastMeasure) {
-        Instant valueTime = parseUtcTimeToInstant(lastMeasure.valueTime);
-        switch (lastMeasure.dataType) {
+    public Instant updateLastMeasuresChannels(LastMeasure measure) {
+        Instant valueTime = parseUtcTimeToInstant(measure.valueTime);
+        switch (measure.dataType) {
             case "temperature":
-                updateTrendChannel(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_TREND, lastMeasure.value,
-                        this.lastTemperatureTime, this.lastTemperature, valueTime, SIUnits.CELSIUS);
-                this.lastTemperature = lastMeasure.value;
-                this.lastTemperatureTime = valueTime;
+                updateTrendChannel(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_TREND, measure.value, valueTime,
+                        lastTemperatureState, SIUnits.CELSIUS);
                 break;
             case "ph":
-                updateTrendChannel(CHANNEL_PH, CHANNEL_PH_TREND, lastMeasure.value, this.lastPhTime, this.lastPh,
-                        valueTime, DecimalType.class);
-                this.lastPh = lastMeasure.value;
-                this.lastPhTime = valueTime;
+                updateTrendChannel(CHANNEL_PH, CHANNEL_PH_TREND, measure.value, valueTime, lastPhState,
+                        DecimalType.class);
                 break;
             case "orp":
-                updateTrendChannel(CHANNEL_ORP, CHANNEL_ORP_TREND, lastMeasure.value / 1000.0, this.lastOrpTime,
-                        this.lastOrp / 1000.0, valueTime, Units.VOLT); // Convert mV to V
-                this.lastOrp = lastMeasure.value;
-                this.lastOrpTime = valueTime;
+                updateTrendChannel(CHANNEL_ORP, CHANNEL_ORP_TREND, measure.value / 1000.0, valueTime, lastOrpState,
+                        Units.VOLT); // Convert mV to V
                 break;
             case "salt":
-                updateTrendChannel(CHANNEL_SALT, CHANNEL_SALT_TREND, lastMeasure.value * 0.001, this.lastSaltTime,
-                        this.lastSalt * 0.001, valueTime, Units.KILOGRAM_PER_CUBICMETRE); // Convert mg/l to kg/m³
-                this.lastSalt = lastMeasure.value;
-                this.lastSaltTime = valueTime;
+                updateTrendChannel(CHANNEL_SALT, CHANNEL_SALT_TREND, measure.value * 0.001, valueTime, lastSaltState,
+                        Units.KILOGRAM_PER_CUBICMETRE); // Convert mg/l to kg/m³
                 break;
             case "tds":
-                updateTrendChannel(CHANNEL_TDS, CHANNEL_TDS_TREND, lastMeasure.value, this.lastTdsTime, this.lastTds,
-                        valueTime, Units.PARTS_PER_MILLION);
-                this.lastTds = lastMeasure.value;
-                this.lastTdsTime = valueTime;
+                updateTrendChannel(CHANNEL_TDS, CHANNEL_TDS_TREND, measure.value, valueTime, lastTdsState,
+                        Units.PARTS_PER_MILLION);
                 break;
             case "battery":
-                updateState(CHANNEL_BATTERY, new QuantityType<>(lastMeasure.value, Units.PERCENT));
+                updateState(CHANNEL_BATTERY, new QuantityType<>(measure.value, Units.PERCENT));
                 break;
             case "rssi":
-                updateState(CHANNEL_RSSI, new DecimalType(lastMeasure.value));
+                updateState(CHANNEL_RSSI, new DecimalType(measure.value));
                 break;
             default:
-                logger.warn("Unknown data type: {}", lastMeasure.dataType);
+                logger.warn("Unknown data type: {}", measure.dataType);
         }
         // Update value time channel (expect that it is the same for all measures)
         updateState(CHANNEL_VALUE_TIME, new DateTimeType(valueTime));
