@@ -261,6 +261,7 @@
 /bundles/org.openhab.binding.mqtt.homeassistant/ @antroids @ccutrer
 /bundles/org.openhab.binding.mqtt.homie/ @ccutrer
 /bundles/org.openhab.binding.mqtt.ruuvigateway/ @ssalonen
+/bundles/org.openhab.binding.mspa/ @weymann
 /bundles/org.openhab.binding.mybmw/ @ntruchsess @mherwege @martingrassl
 /bundles/org.openhab.binding.mycroft/ @dalgwen
 /bundles/org.openhab.binding.mynice/ @clinique
