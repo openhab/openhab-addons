@@ -825,9 +825,9 @@ public class OnvifConnection {
             logger.error("Error parsing ONVIF xml.", e);
             return;
         }
-        NodeList NotificationMessageNodeList = xmlDocument.getElementsByTagName("wsnt:NotificationMessage");
-        for (int i = 0; i < NotificationMessageNodeList.getLength(); i++) {
-            Element notificationMessageElement = (Element) NotificationMessageNodeList.item(i);
+        NodeList notificationMessages = xmlDocument.getElementsByTagName("wsnt:NotificationMessage");
+        for (int i = 0; i < notificationMessages.getLength(); i++) {
+            Element notificationMessageElement = (Element) notificationMessages.item(i);
 
             Element topicElement = (Element) notificationMessageElement.getElementsByTagName("wsnt:Topic").item(0);
             String topic = topicElement.getFirstChild().getNodeValue().replace("tns1:", "");
