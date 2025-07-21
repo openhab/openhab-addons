@@ -87,6 +87,7 @@
     <module>org.openhab.binding.bluetooth.govee</module>
     <module>org.openhab.binding.bluetooth.grundfosalpha</module>
     <module>org.openhab.binding.bluetooth.hdpowerview</module>
+    <module>org.openhab.binding.bluetooth.listener</module>
     <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
@@ -117,6 +118,7 @@
     <module>org.openhab.binding.deutschebahn</module>
     <module>org.openhab.binding.digiplex</module>
     <module>org.openhab.binding.digitalstrom</module>
+    <module>org.openhab.binding.dirigera</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.dolbycp</module>
@@ -130,6 +132,7 @@
     <module>org.openhab.binding.easee</module>
     <module>org.openhab.binding.echonetlite</module>
     <module>org.openhab.binding.ecobee</module>
+    <module>org.openhab.binding.ecoflow</module>
     <module>org.openhab.binding.ecotouch</module>
     <module>org.openhab.binding.ecovacs</module>
     <module>org.openhab.binding.ecowatt</module>
@@ -258,6 +261,7 @@
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.mercedesme</module>
+    <module>org.openhab.binding.meross</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteofrance</module>
     <module>org.openhab.binding.meteostick</module>
@@ -316,6 +320,7 @@
     <module>org.openhab.binding.ojelectronics</module>
     <module>org.openhab.binding.omnikinverter</module>
     <module>org.openhab.binding.omnilink</module>
+    <module>org.openhab.binding.ondilo</module>
     <module>org.openhab.binding.onebusaway</module>
     <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onewire</module>
@@ -362,6 +367,7 @@
     <module>org.openhab.binding.renault</module>
     <module>org.openhab.binding.resol</module>
     <module>org.openhab.binding.rfxcom</module>
+    <module>org.openhab.binding.ring</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
     <module>org.openhab.binding.roku</module>
@@ -477,6 +483,7 @@
     <module>org.openhab.binding.yioremote</module>
     <module>org.openhab.binding.yeelight</module>
     <module>org.openhab.binding.zoneminder</module>
+    <module>org.openhab.binding.zwavejs</module>
     <module>org.openhab.binding.zway</module>
     <!-- persistence -->
     <module>org.openhab.persistence.dynamodb</module>

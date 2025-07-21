@@ -30,10 +30,15 @@ import org.openhab.binding.insteon.internal.device.ProductData;
  */
 @NonNullByDefault
 public class DatabaseCache {
+    private @Nullable Boolean complete;
     private @Nullable Integer delta;
     private @Nullable Boolean reload;
     private @Nullable List<DatabaseRecord> records;
     private @Nullable Map<String, ProductData> products;
+
+    public boolean getComplete() {
+        return Objects.requireNonNullElse(complete, false);
+    }
 
     public int getDelta() {
         return Objects.requireNonNullElse(delta, -1);
@@ -94,6 +99,12 @@ public class DatabaseCache {
         if (!records.isEmpty()) {
             modemDB.loadRecords(records);
         }
+
+        // set modem db complete if true
+        boolean complete = getComplete();
+        if (complete) {
+            modemDB.setIsComplete(complete);
+        }
     }
 
     /**
@@ -103,6 +114,11 @@ public class DatabaseCache {
         private final DatabaseCache cache = new DatabaseCache();
 
         private Builder() {
+        }
+
+        public Builder withComplete(boolean complete) {
+            cache.complete = complete;
+            return this;
         }
 
         public Builder withDatabaseDelta(int delta) {

@@ -20,8 +20,9 @@ import com.google.gson.JsonElement;
  * @author Dan Cunningham - Initial contribution
  */
 public class Response {
-    public String type;
+    public ResponseType type;
     public String id;
     public JsonElement result;
     public String error;
+    public String errorId;
 }

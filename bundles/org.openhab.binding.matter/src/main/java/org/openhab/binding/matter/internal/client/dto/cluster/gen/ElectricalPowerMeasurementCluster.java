@@ -260,8 +260,8 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
      * shall NOT delay marking this attribute as ready for report for longer than 60 seconds.
      */
     public BigInteger neutralCurrent; // 18 amperage-mA R V
-    // Structs
 
+    // Structs
     /**
      * If supported, this event shall be generated at the end of a measurement period. The start and end times for
      * measurement periods shall be determined by the server, and may represent overlapping periods.

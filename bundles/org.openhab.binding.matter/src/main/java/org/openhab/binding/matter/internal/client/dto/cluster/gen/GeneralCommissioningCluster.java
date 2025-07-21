@@ -134,8 +134,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * A null value indicates that there is no pending deadline for updated TC acceptance.
      */
     public Integer tcUpdateDeadline; // 9 uint32 R A
-    // Structs
 
+    // Structs
     /**
      * This structure provides some constant values that may be of use to all commissioners.
      */

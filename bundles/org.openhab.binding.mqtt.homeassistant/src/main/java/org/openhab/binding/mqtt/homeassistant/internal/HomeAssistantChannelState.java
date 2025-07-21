@@ -59,6 +59,7 @@ public class HomeAssistantChannelState extends ChannelState {
 
     @Override
     public CompletableFuture<Boolean> publishValue(Command command) {
+        Predicate<Command> commandFilter = this.commandFilter;
         if (commandFilter != null) {
             try {
                 if (!commandFilter.test(command)) {

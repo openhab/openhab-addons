@@ -72,8 +72,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
      * this attribute is part of a subscription.
      */
     public Integer updateStateProgress; // 3 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when a change of the UpdateState attribute occurs due to an OTA Requestor moving
      * through the states necessary to query for updates.

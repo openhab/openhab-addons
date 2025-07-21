@@ -19,8 +19,8 @@ export class WindowCoveringDeviceType extends GenericDeviceType {
                 ...clusterValues,
             },
         );
-        endpoint.events.windowCovering.operationalStatus$Changed.on(value => {
-            this.sendBridgeEvent("windowCovering", "operationalStatus", value);
+        endpoint.events.windowCovering.operationalStatus$Changed.on((value, oldValue, context) => {
+            this.attributeChanged("windowCovering", "operationalStatus", value, context);
         });
         return endpoint;
     }
@@ -53,15 +53,11 @@ export class WindowCoveringDeviceType extends GenericDeviceType {
                 targetPercent100ths?: number,
             ): Promise<void> {
                 if (targetPercent100ths != null) {
-                    await parent.sendBridgeEvent(
-                        "windowCovering",
-                        "targetPositionLiftPercent100ths",
-                        targetPercent100ths,
-                    );
+                    parent.sendBridgeEvent("windowCovering", "targetPositionLiftPercent100ths", targetPercent100ths);
                 }
             }
             override async handleStopMovement() {
-                await parent.sendBridgeEvent("windowCovering", "operationalStatus", {
+                parent.sendBridgeEvent("windowCovering", "operationalStatus", {
                     global: WindowCovering.MovementStatus.Stopped,
                     lift: WindowCovering.MovementStatus.Stopped,
                     tilt: WindowCovering.MovementStatus.Stopped,

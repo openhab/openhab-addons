@@ -34,12 +34,12 @@ import org.openhab.core.types.CommandOption;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class SceneTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC_1 = "scene/12345_14/scene_1";
     public static final String CONFIG_TOPIC_2 = "scene/12345_14/scene_2";
 
-    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC_1), """
@@ -66,7 +66,6 @@ public class SceneTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/Theater Room Lights/set", "{ \"scene_recall\": 1 }", 2);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testMerge() throws InterruptedException {
         var component1 = (Scene) discoverComponent(configTopicToMqtt(CONFIG_TOPIC_1), """
@@ -112,7 +111,6 @@ public class SceneTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/Theater Room Lights/set", "{ \"scene_recall\": 2 }");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testMultipleTopics() throws InterruptedException {
         var component1 = (Scene) discoverComponent(configTopicToMqtt(CONFIG_TOPIC_1), """

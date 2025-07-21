@@ -1,6 +1,7 @@
 import { Logger } from "@matter/general";
 import { WebSocketSession } from "../app";
 import { Controller } from "../Controller";
+import { toJSON } from "../util/Json";
 import { ControllerNode } from "./ControllerNode";
 import { Clusters } from "./namespaces/Clusters";
 import { Nodes } from "./namespaces/Nodes";
@@ -23,8 +24,8 @@ export class ClientController extends Controller {
         super(ws, params);
         const stringId = this.params.get("nodeId");
         const nodeId = stringId != null ? parseInt(stringId) : null;
-        let storagePath = this.params.get("storagePath");
-        let controllerName = this.params.get("controllerName");
+        const storagePath = this.params.get("storagePath");
+        const controllerName = this.params.get("controllerName");
 
         if (nodeId === null || storagePath === null || controllerName === null) {
             throw new Error("Missing required parameters in the request");
@@ -53,16 +54,15 @@ export class ClientController extends Controller {
     }
 
     executeCommand(namespace: string, functionName: string, args: any[]): any | Promise<any> {
-        const controllerAny: any = this;
-        let baseObject: any;
+        logger.debug(`Executing function ${namespace}.${functionName}(${toJSON(args)})`);
 
-        logger.debug(`Executing function ${namespace}.${functionName}(${Logger.toJSON(args)})`);
+        const controllerAny: any = this;
 
         if (typeof controllerAny[namespace] !== "object") {
             throw new Error(`Namespace ${namespace} not found`);
         }
 
-        baseObject = controllerAny[namespace];
+        const baseObject = controllerAny[namespace];
         if (typeof baseObject[functionName] !== "function") {
             throw new Error(`Function ${functionName} not found`);
         }

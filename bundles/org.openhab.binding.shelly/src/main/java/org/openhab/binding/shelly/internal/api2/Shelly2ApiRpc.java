@@ -93,6 +93,7 @@ import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,7 +166,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice devInfo)
+    public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
         ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
 
@@ -211,19 +212,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         List<ShellySettingsRoller> rollers = profile.settings.rollers;
         profile.numRollers = rollers != null ? rollers.size() : 0;
-
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
-        if (getString(profile.device.mode).isEmpty() && profile.hasRelays) {
-            profile.device.mode = profile.isRoller ? SHELLY_CLASS_ROLLER : SHELLY_CLASS_RELAY;
-        }
 
         ShellySettingsDevice device = profile.device;
-        if (config.serviceName.isEmpty()) {
+        if (config.serviceName.isBlank()) {
             config.serviceName = getString(profile.device.hostname);
+            logger.debug("{}: {} is used as serviceName", thingName, config.serviceName);
         }
-        profile.settings.fw = device.fw;
+        profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
-        profile.fwVersion = profile.status.update.oldVersion = ShellyDeviceProfile.extractFwVersion(device.fw);
+        profile.fwVersion = profile.status.update.oldVersion = ShellyDeviceProfile
+                .extractFwVersion(profile.settings.fw);
         profile.status.hasUpdate = profile.status.update.hasUpdate = false;
 
         if (dc.eth != null) {
@@ -269,9 +268,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         // Pro 3EM has 3 meters
         // Pro 2 has 2 relays, but no meters
         // Mini PM has 1 meter, but no relay
-        if (thingType.equals(THING_TYPE_SHELLYPRO2_RELAY_STR)) {
+        if (THING_TYPE_SHELLYPRO2.equals(thingTypeUID)) {
             profile.numMeters = 0;
-        } else if (thingType.equals(THING_TYPE_SHELLYPRO3EM_STR)) {
+        } else if (THING_TYPE_SHELLYPRO3EM.equals(thingTypeUID)) {
             profile.numMeters = 3;
         } else if (dc.pm10 != null) {
             profile.numMeters = 1;
@@ -798,7 +797,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         info.mac = getString(device.mac);
         info.auth = getBool(device.auth);
         info.gen = getInteger(device.gen);
-        info.mode = mapValue(MAP_PROFILE, device.profile);
+        info.mode = mapValue(MAP_PROFILE, getString(device.profile));
         return info;
     }
 
@@ -1245,7 +1244,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException {
+    public void sendIRKey(String keyCode) throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
 

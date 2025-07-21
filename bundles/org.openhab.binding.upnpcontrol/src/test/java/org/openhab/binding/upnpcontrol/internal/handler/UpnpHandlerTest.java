@@ -28,6 +28,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.jupnp.UpnpService;
+import org.jupnp.model.message.discovery.OutgoingSearchRequest;
+import org.jupnp.transport.Router;
+import org.jupnp.transport.RouterException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -66,6 +70,9 @@ public class UpnpHandlerTest {
 
     @Mock
     protected @Nullable UpnpIOService upnpIOService;
+
+    @Mock
+    protected @Nullable UpnpService upnpService;
 
     @Mock
     protected @Nullable UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
@@ -115,6 +122,16 @@ public class UpnpHandlerTest {
 
         // stub config for initialize
         when(config.as(UpnpControlConfiguration.class)).thenReturn(new UpnpControlConfiguration());
+
+        upnpService = mock(UpnpService.class);
+        Router router = mock(Router.class);
+        when(upnpService.getRouter()).thenReturn(router);
+        try {
+            doNothing().when(router).send(any(OutgoingSearchRequest.class));
+        } catch (RouterException e) {
+            // This will never happen in the test since doNothing doesn't trigger behavior
+            throw new RuntimeException("Unexpected exception in test setup", e);
+        }
     }
 
     protected void initHandler(UpnpHandler handler) {

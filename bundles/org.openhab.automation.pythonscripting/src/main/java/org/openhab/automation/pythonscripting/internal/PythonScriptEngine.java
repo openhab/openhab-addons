@@ -27,7 +27,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -77,10 +76,7 @@ public class PythonScriptEngine
 
     private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
 
-    private static final String PYTHON_OPTION_EXECUTABLE = "python.Executable";
-    private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
-    private static final String PYTHON_OPTION_INPUTFILEPATH = "python.InputFilePath";
     private static final String PYTHON_OPTION_EMULATEJYTHON = "python.EmulateJython";
     private static final String PYTHON_OPTION_POSIXMODULEBACKEND = "python.PosixModuleBackend";
     private static final String PYTHON_OPTION_DONTWRITEBYTECODEFLAG = "python.DontWriteBytecodeFlag";
@@ -128,13 +124,9 @@ public class PythonScriptEngine
             .targetTypeMapping(Value.class, Item.class, v -> v.hasMember("raw_item"),
                     v -> v.getMember("raw_item").as(Item.class), HostAccess.TargetMappingPrecedence.LOW)
 
-            // Translate python GraalWrapperSet to java.util.Set
-            .targetTypeMapping(Value.class, Set.class, v -> v.hasMember("isSetType"),
-                    PythonScriptEngine::transformGraalWrapperSet, HostAccess.TargetMappingPrecedence.LOW)
-
-            // Translate python list to java.util.Collection
-            .targetTypeMapping(Value.class, Collection.class, (v) -> v.hasArrayElements(),
-                    (v) -> v.as(Collection.class), HostAccess.TargetMappingPrecedence.LOW)
+            // Translate python array to java.util.Set
+            .targetTypeMapping(Value.class, Set.class, v -> v.hasArrayElements(),
+                    PythonScriptEngine::transformArrayToSet, HostAccess.TargetMappingPrecedence.LOW)
 
             .build();
 
@@ -212,23 +204,15 @@ public class PythonScriptEngine
                 .option(PYTHON_OPTION_POSIXMODULEBACKEND, "java") //
                 // Force to automatically import site.py module, to make Python packages available
                 .option(PYTHON_OPTION_FORCEIMPORTSITE, Boolean.toString(true)) //
-                // The sys.executable path, a virtual path that is used by the interpreter
-                // to discover packages
-                .option(PYTHON_OPTION_EXECUTABLE,
-                        PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.resolve("bin").resolve("python").toString())
-                // Set the python home to be read from the embedded resources
-                .option(PYTHON_OPTION_PYTHONHOME, PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString()) //
-                // Set python path to point to sources stored in
-                .option(PYTHON_OPTION_PYTHONPATH,
-                        PythonScriptEngineFactory.PYTHON_LIB_PATH.toString() + File.pathSeparator
-                                + PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString())
-                // pass the path to be executed
-                .option(PYTHON_OPTION_INPUTFILEPATH, PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString()) //
                 // make sure the TopLevelExceptionHandler calls the excepthook to print Python exceptions
                 .option(PYTHON_OPTION_ALWAYSRUNEXCEPTHOOK, Boolean.toString(true)) //
                 // emulate jython behavior (will slowdown the engine)
                 .option(PYTHON_OPTION_EMULATEJYTHON,
-                        String.valueOf(pythonScriptEngineConfiguration.isJythonEmulation()));
+                        String.valueOf(pythonScriptEngineConfiguration.isJythonEmulation()))
+
+                // Set python path to point to sources stored in
+                .option(PYTHON_OPTION_PYTHONPATH, PythonScriptEngineFactory.PYTHON_LIB_PATH.toString()
+                        + File.pathSeparator + PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString());
 
         if (pythonScriptEngineConfiguration.isCachingEnabled()) {
             contextConfig.option(PYTHON_OPTION_DONTWRITEBYTECODEFLAG, Boolean.toString(false)) //
@@ -483,7 +467,7 @@ public class PythonScriptEngine
         return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
     }
 
-    private static Set<String> transformGraalWrapperSet(Value value) {
+    private static Set<String> transformArrayToSet(Value value) {
         Set<String> set = new HashSet<>();
         for (int i = 0; i < value.getArraySize(); ++i) {
             Value element = value.getArrayElement(i);

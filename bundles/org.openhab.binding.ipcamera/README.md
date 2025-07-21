@@ -13,7 +13,6 @@ To see what features each brand has implemented from their APIs, please see this
 - Check this readme for any setup steps for your brand.
 - Check if the camera is offline, if so there will be a reason listed.
 - Always look at the log files with TRACE enabled, as any FFmpeg and camera errors may not reach the INFO logs.
-To enable TRACE logging, enter this in the openHAB console `log:set TRACE org.openhab.binding.ipcamera`.
 - Search the forum using any log messages to find how others have already solved it.
 - Only after doing the above ask for help in the forum and create a new thread.
 
@@ -139,7 +138,7 @@ The discovery feature of openHAB can be used to find and setup ONVIF cameras.
 This method should be preferred as it will discover the cameras IP, ports and URLs for you, making the setup much easier.
 The binding needs to use UDP port 3702 to discover the cameras with, so this port needs to be unblocked by your firewall or add the camera manually if the camera is not auto found.
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
-The binding will only search using openHAB's currently selected primary network address, see <https://www.openhab.org/docs/settings/>.
+The binding will only search using openHAB's currently selected primary network address.
 If your camera is not found after a few searches, it may not be ONVIF and in this case you will need to manually add the camera via the UI.
 Cameras that are not ONVIF should be added as a `generic` thing type and you will need to provide the URLs manually.
 
@@ -231,6 +230,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `autoWhiteLED`              | Switch | RW         | When ON this sets a cameras visible white LED to automatically turn on or off.                                                                                                                                                                                                                                                     |
 | `carAlarm`                  | Switch | RW         | When a car is detected the switch will turn ON.                                                                                                                                                                                                                                                                                    |
 | `cellMotionAlarm`           | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
+| `createSnapshots` | Switch | RW | This control can be used to manually start and stop using your openHAB CPU to create snapshots from a RTSP source with FFmpeg. |
 | `doorBell`                  | Switch | R          | Doorbird only, will reflect the status of the doorbell button.                                                                                                                                                                                                                                                                     |
 | `enableAudioAlarm`          | Switch | RW         | Allows the audio alarm to be turned ON or OFF.                                                                                                                                                                                                                                                                                     |
 | `enableEmail`               | Switch | RW         | Allows the email features to be turned ON or OFF.                                                                                                                                                                                                                                                                                  |
@@ -284,7 +284,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `tooBlurryAlarm`            | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
 | `tooBrightAlarm`            | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
 | `tooDarkAlarm`              | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
-| `pollImage`                 | Switch | RW         | This control can be used to manually start and stop using your CPU to create snapshots from a RTSP source. If you have a snapshot URL setup in the binding, only then can this control can be used to update the Image channel.                                                                                                    |
+| `pollImage`                 | Switch | RW         | This control can be used to start and stop updating the Image channel.                                                                                                    |
 | `whiteLED`                  | Dimmer | RW         | Turn the visible white LED ON or OFF and if supported dim from 0-100%.                                                                                                                                                                                                                                                             |
 | `zoom`                      | Dimmer | RW         | Works with ONVIF cameras that can be moved.                                                                                                                                                                                                                                                                                        |
 | `acceptedCardNumber`        | String | R          | This channel shows the last accepted access card number that opened the door. The channel doesn't show rejected/unauthorized cards.                                                                                                                                                                                                |
@@ -704,6 +704,7 @@ end
 ```
 
 ## How To Reboot Camera
+
 ```
 rule "Reboot Camera At 12:00 AM"
 when

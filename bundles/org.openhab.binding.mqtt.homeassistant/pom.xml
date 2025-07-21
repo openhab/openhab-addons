@@ -15,13 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: MQTT HomeAssistant Convention</name>
 
   <properties>
-    <bnd.importpackage>!sun.misc.*,
-      !sun.reflect.*,
-      !com.sun.management.*,
-      !jdk.internal.reflect.*,
-      !jdk.vm.ci.services</bnd.importpackage>
-
-    <graalpy.version>24.2.0</graalpy.version>
+    <graalpy.version>24.2.1</graalpy.version>
     <!-- define a property to overwrite it on Windows, as venv has a different structure -->
     <graalpy.executable>bin/python3</graalpy.executable>
   </properties>
@@ -42,27 +36,36 @@
 
     <!-- Graal Polyglot Framework -->
     <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>polyglot</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.polyglot.polyglot</artifactId>
       <version>${graalpy.version}</version>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
     </dependency>
-    <!-- Graal TRegex engine (internally used by Graal Python engine) -->
-    <dependency>
-      <groupId>org.graalvm.regex</groupId>
-      <artifactId>regex</artifactId>
-      <version>${graalpy.version}</version>
-    </dependency>
-    <!-- Graal Python engine (depends on Graal TRegex engine, must be added after it) -->
+    <!-- Graal Python engine.
+     Note this is _not_ the OSGiified bundle - this exact one needs to be available
+     for graalpy-maven-plugin below.
+     -->
     <dependency>
       <groupId>org.graalvm.polyglot</groupId>
       <artifactId>python-community</artifactId>
       <version>${graalpy.version}</version>
       <type>pom</type>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.graalvm.python</groupId>
-      <artifactId>python-embedding</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.python.python-embedding</artifactId>
       <version>${graalpy.version}</version>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>1.78.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -73,10 +76,23 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>embed-dependencies</id>
+            <id>unpack-bouncycastle</id>
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <includeArtifactIds>bcprov-jdk18on</includeArtifactIds>
+              <!--
+               For unexplained reasons, when running tests bcprov loads in such a way that signatures can't be verified,
+               and Java raises a security exception when Python tries to load it. This is not a problem when loading
+               as an OSGi bundle inside openHAB. So unpack it locally, remove the signatures, and in the surefire configuration
+               below override the classpath to use the unpacked version.
+               -->
+              <excludes>META-INF/*.SF,META-INF/*.RSA,META-INF/*.DSA</excludes>
+              <outputDirectory>${project.build.directory}/unsigned</outputDirectory>
+              <type>jar</type>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -85,6 +101,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.5.2</version>
         <configuration>
+          <additionalClasspathElements>
+            <additionalClasspathElement>${project.build.directory}/unsigned</additionalClasspathElement>
+          </additionalClasspathElements>
           <argLine>-noverify</argLine>
         </configuration>
       </plugin>
@@ -99,7 +118,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <outputDirectory>${project.build.directory}/classes/GRAALPY-VFS/${project.groupId}/${project.artifactId}/src</outputDirectory>
+              <outputDirectory>${project.build.directory}/classes/org.graalvm.python.vfs/src</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/main/python</directory>
@@ -121,11 +140,11 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <resourceDirectory>GRAALPY-VFS/${project.groupId}/${project.artifactId}</resourceDirectory>
               <packages>
                 <package>awesomeversion==24.6.0</package>
                 <package>Jinja2==3.1.6</package>
                 <package>python-slugify==8.0.4</package>
+                <package>voluptuous==0.15.2</package>
               </packages>
             </configuration>
           </execution>
@@ -137,11 +156,11 @@
             </goals>
             <phase>process-resources</phase>
             <configuration>
-              <resourceDirectory>GRAALPY-VFS/${project.groupId}/${project.artifactId}</resourceDirectory>
               <packages>
                 <package>awesomeversion==24.6.0</package>
                 <package>Jinja2==3.1.6</package>
                 <package>python-slugify==8.0.4</package>
+                <package>voluptuous==0.15.2</package>
               </packages>
             </configuration>
           </execution>
@@ -159,46 +178,12 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <executable>${project.build.directory}/classes/GRAALPY-VFS/${project.groupId}/${project.artifactId}/venv/${graalpy.executable}</executable>
+              <executable>${project.build.directory}/classes/org.graalvm.python.vfs/venv/${graalpy.executable}</executable>
               <arguments>
                 <argument>-m</argument>
                 <argument>compileall</argument>
-                <argument>${project.build.directory}/classes/GRAALPY-VFS/${project.groupId}/${project.artifactId}/src</argument>
+                <argument>${project.build.directory}/classes/org.graalvm.python.vfs/src</argument>
               </arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.6.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <artifactSet>
-                <includes>
-                  <include>org.graalvm.llvm:llvm-api</include>
-                  <include>org.graalvm.polyglot:polyglot</include>
-                  <include>org.graalvm.python:python-language</include>
-                  <include>org.graalvm.python:python-resources</include>
-                  <include>org.graalvm.regex:regex</include>
-                  <include>org.graalvm.tools:profiler-tool</include>
-                  <include>org.graalvm.truffle:truffle-api</include>
-                  <include>org.graalvm.truffle:truffle-nfi</include>
-                  <include>org.graalvm.truffle:truffle-nfi-libffi</include>
-                </includes>
-              </artifactSet>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <transformers>
-                <!-- Transformer to merge module-info.class
-                  files, if needed -->
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-              </transformers>
             </configuration>
           </execution>
         </executions>
