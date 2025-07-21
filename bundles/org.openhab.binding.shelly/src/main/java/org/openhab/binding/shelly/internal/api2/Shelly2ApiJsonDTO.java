@@ -147,6 +147,15 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
     public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
 
+    // BLU events
+    public static final String SHELLY2_BLU_GWSCRIPT = "oh-blu-scanner.js";
+    public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
+    public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
+    public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
+
+    // LoRa
+    public static final String SHELLY2_EVENT_LORADATA = "lora_received";
+
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
     public static final String SHELLY2_ERROR_OVERTEMP = "overtemp";
@@ -449,6 +458,18 @@ public class Shelly2ApiJsonDTO {
             public String powerLed;
         }
 
+        public class Shelly2DeviceConfigLora {
+            public Integer id;
+            public Long freq;
+            public Integer bw;
+            public Integer dr;
+            public Integer cr;
+            public Integer plen;
+            public Integer txp;
+            @SerializedName("rx_enable")
+            public Boolean rxEnabled;
+        }
+
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -526,6 +547,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
+
+            @SerializedName("lora:100")
+            public Shelly2DeviceConfigLora lora100;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -606,6 +630,19 @@ public class Shelly2ApiJsonDTO {
             public Double timerStartedAt;
             @SerializedName("timer_duration")
             public Double timerDuration;
+        }
+
+        public static class Shelly2DeviceStatusb {
+            public Integer id;
+            @SerializedName("bytes_recd")
+            public Long rxBytes;
+            @SerializedName("bytes_sent")
+            public Long txBytes;
+            @SerializedName("send_fails")
+            public Long txErrors;
+            @SerializedName("air_time_hr_ms")
+            public Long airtime;
+            public String fw;
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -859,6 +896,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+
+            @SerializedName("lora:100")
+            public Shelly2DeviceStatusLora lora100;
         }
 
         public class Shelly2DeviceStatusSys {
@@ -1143,6 +1183,19 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
+    public static class Shelly2DeviceStatusLora {
+        public Integer id;
+        @SerializedName("bytes_recd")
+        public Long rxBytes;
+        @SerializedName("bytes_sent")
+        public Long txBytes;
+        @SerializedName("send_fails")
+        public Long txErrors;
+        @SerializedName("air_time_hr_ms")
+        public Long airtime;
+        public String fw;
+    }
+
     public static class Shelly2RpcNotifyStatus {
         public static class Shelly2NotifyStatus extends Shelly2DeviceStatusResult {
             public Double ts;
@@ -1189,13 +1242,22 @@ public class Shelly2ApiJsonDTO {
         public Integer id;
         public Double ts;
         public String component;
+        public String name;
         public String event;
-        @SerializedName("data")
-        public Shelly2NotifyBluEventData blu;
+        public Object data;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")
         public Integer cfgRev;
+
+        // BLU
+        public Shelly2NotifyBluEventData blu;
+
+        // LoRa
+        String lora;
+        Integer rssi;
+        Integer snr;
+        Long tsu;
     }
 
     public class Shelly2NotifyEventData {

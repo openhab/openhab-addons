@@ -26,6 +26,7 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -620,5 +621,80 @@
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
+
+	<channel-group-type id="loraAddon">
+		<label>@text/channel-group-type.shelly.loraAddon.label</label>
+		<description>@text/channel-group-type.shelly.loraAddon.description</description>
+	</channel-group-type>
+
+	<channel-type id="loraRxData">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.loraRxData.label</label>
+		<description>@text/channel-type.shelly.loraRxData.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraTxData">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.loraTxData.label</label>
+		<description>@text/channel-type.shelly.loraTxData.description</description>
+	</channel-type>
+
+	<channel-type id="loraRxBytes">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.loraRxBytes.label</label>
+		<description>@text/channel-type.shelly.loraRxBytes.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraTxBytes">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.loraTxBytes.label</label>
+		<description>@text/channel-type.shelly.loraTxBytes.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraTxErrors">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.loraTxErrors.label</label>
+		<description>@text/channel-type.shelly.loraTxErrors.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraAirtime" advanced="true">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.loraAirtime.label</label>
+		<description>@text/channel-type.shelly.loraAirtime.description</description>
+		<category>Time</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraSignal">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.loraSignal.label</label>
+		<description>@text/channel-type.shelly.loraSignal.description</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraSNR" advanced="true">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.loraSNR.label</label>
+		<description>@text/channel-type.shelly.loraSNR.description</description>
+		<category>Flow</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
 
 </thing:thing-descriptions>

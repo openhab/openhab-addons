@@ -728,6 +728,9 @@ public class Shelly1ApiJsonDTO {
         // Gen2
         public Boolean ethernet;
         public Boolean bluetooth;
+
+        public Boolean loraDetected = false;
+        public Boolean loraRxEnabled = false;
     }
 
     public static class ShellySettingsAttributes {

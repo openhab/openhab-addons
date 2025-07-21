@@ -31,6 +31,11 @@
 			<description>@text/thing-type.config.shelly.enableRangeExtender.description</description>
 			<default>false</default>
 		</parameter>
+		<parameter name="enableLoRa" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableLoRa.label</label>
+			<description>@text/thing-type.config.shelly.enableLoRa.description</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:shelly:roller-gen2">
@@ -64,6 +69,11 @@
 		<parameter name="enableBluGateway" type="boolean" required="false">
 			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
 			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="enableLoRa" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableLora.label</label>
+			<description>@text/thing-type.config.shelly.enableLora.description</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
@@ -149,6 +159,11 @@
 		<parameter name="enableBluGateway" type="boolean" required="false">
 			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
 			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="enableLoRa" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableLora.label</label>
+			<description>@text/thing-type.config.shelly.enableLora.description</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
