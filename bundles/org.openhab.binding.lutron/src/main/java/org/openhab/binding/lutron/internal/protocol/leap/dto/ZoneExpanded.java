@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * ZoneExpanded object
  *
- * @author Peter J Wojciechowski - initial
+ * @author Peter J Wojciechowski - Initial contribution
  */
 public class ZoneExpanded extends AbstractMessageBody {
     @SerializedName("href")

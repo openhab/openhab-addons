@@ -54,7 +54,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
         property = Constants.SERVICE_PID + "=org.openhab.automation.jrubyscripting")
 @ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = JRubyScriptEngineFactory.CONFIG_DESCRIPTION_URI)
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
-    public final static String CONFIG_DESCRIPTION_URI = "automation:jrubyscripting";
+    public static final String CONFIG_DESCRIPTION_URI = "automation:jrubyscripting";
 
     private final JRubyScriptEngineConfiguration configuration = new JRubyScriptEngineConfiguration();
 
