@@ -15,11 +15,11 @@ package org.openhab.binding.evcc.internal;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link EvccBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link EvccBindingConstants} class contains fields mapping thing configuration parameters.
  *
  * @author Florian Hotze - Initial contribution
  * @author Luca Arnecke - Update to evcc version 0.123.1
@@ -37,9 +37,10 @@ public class EvccBindingConstants {
     public static final ThingTypeUID THING_TYPE_PV = new ThingTypeUID(BINDING_ID, "pv");
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
     public static final ThingTypeUID THING_TYPE_HEATING = new ThingTypeUID(BINDING_ID, "heating");
+    public static final ThingTypeUID THING_TYPE_STATISTICS = new ThingTypeUID(BINDING_ID, "statistics");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SITE, THING_TYPE_VEHICLE,
-            THING_TYPE_LOADPOINT, THING_TYPE_BATTERY, THING_TYPE_PV, THING_TYPE_HEATING);
+            THING_TYPE_LOADPOINT, THING_TYPE_BATTERY, THING_TYPE_PV, THING_TYPE_HEATING, THING_TYPE_STATISTICS);
 
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_INDEX = "index";
@@ -55,10 +56,21 @@ public class EvccBindingConstants {
     public static final String PROPERTY_TYPE_LOADPOINT = "loadpoint";
     public static final String PROPERTY_TYPE_PV = "pv";
     public static final String PROPERTY_TYPE_SITE = "site";
+    public static final String PROPERTY_TYPE_STATISTICS = "statistics";
     public static final String PROPERTY_TYPE_VEHICLE = "vehicle";
 
     public static final String JSON_MEMBER_BATTERY = "battery";
     public static final String JSON_MEMBER_LOADPOINTS = "loadpoints";
     public static final String JSON_MEMBER_PV = "pv";
+    public static final String JSON_MEMBER_STATISTICS = "statistics";
     public static final String JSON_MEMBER_VEHICLES = "vehicles";
+
+    public static final String NUMBER_CURRENCY = CoreItemFactory.NUMBER + ":Currency";
+    public static final String NUMBER_DIMENSIONLESS = CoreItemFactory.NUMBER + ":Dimensionless";
+    public static final String NUMBER_ELECTRIC_CURRENT = CoreItemFactory.NUMBER + ":ElectricCurrent";
+    public static final String NUMBER_EMISSION_INTENSITY = CoreItemFactory.NUMBER + ":EmissionIntensity";
+    public static final String NUMBER_ENERGY = CoreItemFactory.NUMBER + ":Energy";
+    public static final String NUMBER_POWER = CoreItemFactory.NUMBER + ":Power";
+    public static final String NUMBER_TIME = CoreItemFactory.NUMBER + ":Time";
+    public static final String NUMBER_LENGTH = CoreItemFactory.NUMBER + ":Length";
 }

@@ -20,7 +20,7 @@
 	</channel-type>
 	<channel-type id="battery-controllable">
 		<item-type>Switch</item-type>
-		<label>Battery controllable</label>
+		<label>Battery Controllable</label>
 		<description>Indicates whether this battery is controllable or not</description>
 		<category>Switch</category>
 		<tags>

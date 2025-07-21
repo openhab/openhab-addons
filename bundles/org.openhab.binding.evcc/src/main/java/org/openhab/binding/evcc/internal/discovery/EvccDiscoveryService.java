@@ -27,6 +27,7 @@ import org.openhab.binding.evcc.internal.discovery.mapper.EvccDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.LoadpointDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.PvDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.SiteDiscoveryMapper;
+import org.openhab.binding.evcc.internal.discovery.mapper.StatisticsDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.VehicleDiscoveryMapper;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
@@ -55,7 +56,7 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
 
     private final List<EvccDiscoveryMapper> mappers = List.of(new LoadpointDiscoveryMapper(),
             new VehicleDiscoveryMapper(), new BatteryDiscoveryMapper(), new SiteDiscoveryMapper(),
-            new PvDiscoveryMapper());
+            new PvDiscoveryMapper(), new StatisticsDiscoveryMapper());
 
     private @Nullable ScheduledFuture<?> evccDiscoveryJob;
 

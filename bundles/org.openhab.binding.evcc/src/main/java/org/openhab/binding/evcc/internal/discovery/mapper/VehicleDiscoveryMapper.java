@@ -36,7 +36,6 @@ import com.google.gson.JsonObject;
 /**
  * The {@link VehicleDiscoveryMapper} is responsible for mapping the discovered vehicles to discovery results
  *
- *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault

@@ -133,7 +133,7 @@
 	</channel-type>
 	<channel-type id="loadpoint-charger-phases1p3p">
 		<item-type>Switch</item-type>
-		<label>Charger Feature: Phase Switching</label>
+		<label>Phase Switching</label>
 		<description>Indicates that the loadpoint can switch between 1 and 3 phases</description>
 		<category>Switch</category>
 		<tags>
@@ -149,7 +149,7 @@
 	</channel-type>
 	<channel-type id="loadpoint-charger-single-phase">
 		<item-type>Switch</item-type>
-		<label>Charger Feature: 1 Phase Charging</label>
+		<label>1 Phase Charging</label>
 		<description>Indicates that the charger can only charge with 1 phase</description>
 		<category>Switch</category>
 		<tags>

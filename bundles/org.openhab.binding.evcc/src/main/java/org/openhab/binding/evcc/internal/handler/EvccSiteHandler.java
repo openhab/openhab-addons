@@ -43,7 +43,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
-            String datapoint = getKeyFromChannelUID(channelUID).toLowerCase();
+            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
             String value = "";
             if (command instanceof OnOffType) {
                 value = command == OnOffType.ON ? "true" : "false";

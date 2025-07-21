@@ -53,7 +53,7 @@
 	</channel-type>
 	<channel-type id="site-battery-grid-charge-active">
 		<item-type>Switch</item-type>
-		<label>Battery Grid Charging Active</label>
+		<label>Grid Charging Active</label>
 		<description>Indicates whether the battery gets charged from the grid or not</description>
 		<category>Switch</category>
 		<tags>
@@ -308,7 +308,7 @@
 	</channel-type>
 	<channel-type id="site-startup">
 		<item-type>Switch</item-type>
-		<label>Start up</label>
+		<label>Start Up</label>
 		<description>Indicates wether restart is needed or not</description>
 		<tags>
 			<tag>Status</tag>

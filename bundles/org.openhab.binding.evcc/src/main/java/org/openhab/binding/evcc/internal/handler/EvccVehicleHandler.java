@@ -51,7 +51,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
-            String datapoint = getKeyFromChannelUID(channelUID).toLowerCase();
+            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
             String value = command.toString();
             if (value.contains(" ")) {
                 value = value.substring(0, command.toString().indexOf(" "));

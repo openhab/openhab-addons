@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class EvccConfiguration {
     public String host = "";
-    public int refreshInterval = 30;
+    public int pollInterval = 30;
     public int port = 7070;
-    public String schema = "http";
+    public String scheme = "http";
 }

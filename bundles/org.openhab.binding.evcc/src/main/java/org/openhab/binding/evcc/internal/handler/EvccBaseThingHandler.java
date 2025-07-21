@@ -21,9 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,6 +29,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -55,7 +54,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -68,7 +66,6 @@ import com.google.gson.JsonObject;
 public abstract class EvccBaseThingHandler extends BaseThingHandler implements EvccJsonAwareHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccBaseThingHandler.class);
-    private final Gson gson = new Gson();
     private final ChannelTypeRegistry channelTypeRegistry;
     protected @Nullable EvccBridgeHandler bridgeHandler;
     protected boolean isInitialized = false;
@@ -122,15 +119,10 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            return;
-        }
-        bridgeHandler = bridge.getHandler() instanceof EvccBridgeHandler ? (EvccBridgeHandler) bridge.getHandler()
-                : null;
-        if (bridgeHandler == null) {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof EvccBridgeHandler handler) {
+            bridgeHandler = handler;
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            return;
         }
     }
 
@@ -145,7 +137,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            String key = getKeyFromChannelUID(channelUID);
+            String key = Utils.getKeyFromChannelUID(channelUID);
             if (bridgeHandler != null) {
                 JsonObject state = getStatefromCachedState(bridgeHandler.getCachedEvccState());
                 if (!state.isEmpty()) {
@@ -157,25 +149,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
-    protected String getKeyFromChannelUID(ChannelUID channelUID) {
-        String[] splittedId = channelUID.getIdWithoutGroup().split("-");
-        String[] parts = IntStream.range(1, splittedId.length).mapToObj(i -> splittedId[i]).toArray(String[]::new);
-
-        StringBuilder camelCase = new StringBuilder();
-        for (int i = 0; i < parts.length; i++) {
-            String part = parts[i];
-            if (i == 0) {
-                camelCase.append(part.toLowerCase());
-            } else {
-                camelCase.append(part.substring(0, 1).toUpperCase());
-                camelCase.append(part.substring(1).toLowerCase());
-            }
-        }
-
-        return camelCase.toString();
-    }
-
-    private String getItemType(ChannelTypeUID channelTypeUID) {
+    protected String getItemType(ChannelTypeUID channelTypeUID) {
         ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeUID);
         if (null != channelType) {
             String itemType = channelType.getItemType();
@@ -191,23 +165,23 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             return;
         }
         switch (itemType) {
-            case "Number":
-            case "Number:Currency":
-            case "Number:Dimensionless":
-            case "Number:ElectricCurrent":
-            case "Number:EmissionIntensity":
-            case "Number:Energy":
-            case "Number:Power":
-            case "Number:Time":
+            case CoreItemFactory.NUMBER:
+            case NUMBER_CURRENCY:
+            case NUMBER_DIMENSIONLESS:
+            case NUMBER_ELECTRIC_CURRENT:
+            case NUMBER_EMISSION_INTENSITY:
+            case NUMBER_ENERGY:
+            case NUMBER_POWER:
+            case NUMBER_TIME:
                 updateState(channelUID, new DecimalType(value.getAsDouble()));
                 break;
-            case "Number:Length":
+            case NUMBER_LENGTH:
                 updateState(channelUID, new QuantityType<>(value.getAsDouble(), MetricPrefix.KILO(SIUnits.METRE)));
                 break;
-            case "String":
+            case CoreItemFactory.STRING:
                 updateState(channelUID, new StringType(value.getAsString()));
                 break;
-            case "Switch":
+            case CoreItemFactory.SWITCH:
                 updateState(channelUID, value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
                 break;
             default:
@@ -215,27 +189,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
-    public static String capitalizeWords(String input) {
-        String[] allParts = input.split("-");
-        String[] parts = IntStream.range(1, allParts.length).mapToObj(i -> allParts[i]).toArray(String[]::new);
-        StringJoiner joiner = new StringJoiner(" ");
-
-        for (String part : parts) {
-            if (!part.isEmpty()) {
-                joiner.add(Character.toUpperCase(part.charAt(0)) + part.substring(1));
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static String sanatizeChannels(String input) {
-        return input.replaceAll("(?<!^)(?=[A-Z])", "-");
-    }
-
-    private String getThingKey(String key) {
+    protected String getThingKey(String key) {
         Map<String, String> props = getThing().getProperties();
-        return (props.get("type") + "-" + sanatizeChannels(key)).toLowerCase();
+        return (props.get("type") + "-" + Utils.sanatizeChannelID(key));
     }
 
     @Override
@@ -275,20 +231,12 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
                         .method(HttpMethod.POST).header(HttpHeader.ACCEPT, "application/json").send();
 
-                if (response.getStatus() == 200) {
-                    @Nullable
-                    JsonObject returnValue = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                    if (returnValue != null) {
-                        // Here we can check for correct response, in my Opinion it is not necessary
-                        ;
-                    }
-                } else {
+                if (response.getStatus() != 200) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     logger.warn("evcc API error: HTTP {}", response.getStatus());
                 }
-
             } catch (Exception e) {
-                logger.error("evcc bridge couldn't call the API", e);
+                logger.warn("evcc bridge couldn't call the API", e);
             }
         }
     }
@@ -302,11 +250,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         switch (statusInfo.getStatus()) {
             case OFFLINE:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                dispose();
                 break;
             case UNINITIALIZED:
                 updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-                dispose();
                 break;
             case ONLINE:
                 if (!isInitialized) {
@@ -326,13 +272,13 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
-    private void logUnknownChannelXml(String key, String itemType) {
+    protected void logUnknownChannelXml(String key, String itemType) {
         String xmlSnippet = String.format(
                 "<channel-type id=\"%s\">\n" + "    <item-type>%s</item-type>\n" + "    <label>%s</label>\n"
                         + "    <description>Autogenerated placeholder</description>\n" + "</channel-type>\n",
-                key, itemType, capitalizeWords(key));
+                key, itemType, Utils.capitalizeWords(key));
         logger.trace("Unbekannter Channel erkannt eventuell fehlt die Definition im {}.xml:\n{}",
-                thing.getProperties().get("type"), xmlSnippet);
+                getThing().getProperties().get("type"), xmlSnippet);
 
         Path filePath = Paths.get(System.getProperty("user.dir"), "evcc", "unknown-channels.xml");
 

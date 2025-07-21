@@ -53,8 +53,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EvccBridgeHandler.class);
     private final Gson gson = new Gson();
 
-    private final HttpClientFactory httpClientFactory;
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     private final CopyOnWriteArrayList<EvccJsonAwareHandler> listeners = new CopyOnWriteArrayList<>();
     private @Nullable ScheduledFuture<?> pollJob;
     private volatile JsonObject lastState = new JsonObject();
@@ -62,7 +61,6 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
-        this.httpClientFactory = httpClientFactory;
         httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -74,10 +72,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         EvccConfiguration config = getConfigAs(EvccConfiguration.class);
-        endpoint = config.schema + "://" + config.host + ":" + config.port + "/api/state";
-        httpClient = httpClientFactory.getCommonHttpClient();
+        endpoint = config.scheme + "://" + config.host + ":" + config.port + "/api/state";
 
-        startPolling(config.refreshInterval);
+        startPolling(config.pollInterval);
 
         fetchEvccState().ifPresent(state -> {
             this.lastState = state;
@@ -130,12 +127,10 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                logger.warn("evcc request error: HTTP {}", response.getStatus());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        Integer.toString(response.getStatus()));
             }
-
         } catch (Exception e) {
-            logger.error("Bridge couldn't fetch state from evcc instance");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
 
@@ -149,6 +144,8 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
             } catch (Exception e) {
                 if (listener instanceof BaseThingHandler handler) {
                     logger.warn("Listener {} couldn't parse evcc state", handler.getThing().getUID(), e);
+                } else {
+                    logger.debug("Listener {} is not instance of BaseThingHandlder", listener, e);
                 }
             }
         }

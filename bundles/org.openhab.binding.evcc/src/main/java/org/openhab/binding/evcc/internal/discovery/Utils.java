@@ -21,10 +21,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Utils {
+
     /**
      * This method will check if the string for regex:[a-zA-Z0-9_-]+ and will replace those with - as well as german
      * "umlaut"s
-     * It returns the original string if the regex doesn't match, otherwise the revised string
+     * 
+     * @param name that will be sanatized
+     * @return a sanatized name that has replaced german "umlauts" and any other unallowed char
      */
     public static String sanatizeName(String name) {
         if (!name.matches("[a-zA-Z0-9_-]+")) {

@@ -8,8 +8,8 @@
 		<description>Connection to evcc instance</description>
 		<config-description>
 			<parameter name="schema" type="text">
-				<label>Protocol Schema</label>
-				<description>The protocol schema that should be used to connect to your instance</description>
+				<label>Protocol Scheme</label>
+				<description>The protocol scheme that should be used to connect to your instance</description>
 				<default>http</default>
 				<options>
 					<option value="http">HTTP</option>
@@ -28,7 +28,7 @@
 			</parameter>
 			<parameter name="pollInterval" type="integer" required="false">
 				<advanced>true</advanced>
-				<label>Polling interval</label>
+				<label>Polling Interval</label>
 				<default>30</default>
 				<description>How often should the state be polled? (in seconds, default is 30s)</description>
 			</parameter>

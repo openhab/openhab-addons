@@ -55,7 +55,7 @@ These channels are dynamically added to the Thing during their initialization; t
 ### `demo.things` Example
 
 ```java
-Bridge evcc:server:demo-server "Demo" [schema="https", url="demo.evcc.io", port=80, refreshInterval=30] {
+Bridge evcc:server:demo-server "Demo" [scheme="https", url="demo.evcc.io", port=80, refreshInterval=30] {
     // This thing will only exist once per evcc instance
     Thing site demo-site "Site - evcc Demo"
     // You can define as many Battery things as you have batteries configured in your evcc instance

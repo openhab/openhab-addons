@@ -22,6 +22,7 @@ import org.openhab.binding.evcc.internal.handler.EvccHeatingHandler;
 import org.openhab.binding.evcc.internal.handler.EvccLoadpointHandler;
 import org.openhab.binding.evcc.internal.handler.EvccPvHandler;
 import org.openhab.binding.evcc.internal.handler.EvccSiteHandler;
+import org.openhab.binding.evcc.internal.handler.EvccStatisticsHandler;
 import org.openhab.binding.evcc.internal.handler.EvccVehicleHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -92,6 +93,10 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_PV.equals(type)) {
             return new EvccPvHandler(thing, channelTypeRegistry);
+        }
+
+        if (THING_TYPE_STATISTICS.equals(type)) {
+            return new EvccStatisticsHandler(thing, channelTypeRegistry);
         }
         return null;
     }

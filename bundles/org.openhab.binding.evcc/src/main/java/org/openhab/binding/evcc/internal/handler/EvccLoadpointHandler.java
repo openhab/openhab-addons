@@ -80,7 +80,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
-            String datapoint = getKeyFromChannelUID(channelUID).toLowerCase();
+            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
             // Special Handling for enbale and disable endpoints
             if (datapoint.contains("enable")) {
                 datapoint += "/enable/" + datapoint.replace("enable", "");
