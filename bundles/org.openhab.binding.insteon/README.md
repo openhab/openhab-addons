@@ -990,7 +990,7 @@ then
 end
 ```
 
-#### Motion Sensors
+### Motion Sensors
 
 Link such that the modem is a responder to the motion sensor.
 
@@ -1068,12 +1068,12 @@ The battery and light level are only updated when either there is motion, light 
 
 </details>
 
-#### Hidden Door Sensors
+### Hidden Door Sensors
 
 Similar in operation to the motion sensor above.
 Link such that the modem is a responder to the motion sensor.
 
-##### Hidden Door Sensors Items
+#### Hidden Door Sensors Items
 
 ```java
 Contact              doorSensor             "door sensor [MAP(contact.map):%s]" { channel="insteon:device:home:aabbcc:contact" }
@@ -1127,7 +1127,7 @@ OFF=unlocked
 -=unknown
 ```
 
-#### I/O Linc (garage door openers)
+### I/O Linc (garage door openers)
 
 The I/O Linc devices are really two devices in one: an output relay and an input contact sensor.
 To control the relay, link the modem as a controller using the set buttons as described in the instructions.
@@ -1137,7 +1137,7 @@ To invert the state, either relink the modem as a responder with the sensor stat
 By default, the device is inverted where an on command is sent when the sensor is closed, and off when open.
 For a garage door opener, ensure the input sensor is closed (status LED off) during the linking process.
 
-##### I/O Linc Items
+#### I/O Linc Items
 
 ```java
 Switch  garageDoorOpener                 "door opener"                        { channel="insteon:device:home:aabbcc:switch" }
@@ -1247,13 +1247,13 @@ Setpoint item=sirenAlertDuration minValue=0 maxValue=127 step=1
 Switch   item=sirenAlertType mappings=[ CHIME="CHIME", LOUD_SIREN="LOUD SIREN" ]
 ```
 
-#### Smoke Detectors
+### Smoke Detectors
 
 The smoke bridge monitors First Alert ONELINK smoke and carbon monoxide detectors.
 
 Here is an example configuration for a smoke bridge:
 
-##### Smoke Detectors Items
+#### Smoke Detectors Items
 
 ```java
 Switch smokeAlarm          "smoke alarm"           { channel="insteon:device:home:aabbcc:smoke-alarm" }
@@ -1406,7 +1406,7 @@ Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
 }
 ```
 
-### Scene Items
+#### Scene Items
 
 ```java
 Switch scene                    "scene"         { channel="insteon:scene:home:scene42:scene" }
@@ -1414,7 +1414,7 @@ Switch sceneFastOnOff           "fast on/off"   { channel="insteon:scene:home:sc
 Rollershutter sceneManualChange "manual change" { channel="insteon:scene:home:scene42:manual-change" }
 ```
 
-### Scene Sitemap
+#### Scene Sitemap
 
 ```perl
 Switch item=scene
