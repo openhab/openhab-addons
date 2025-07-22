@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # pinning to SHA to mitigate possible supply chain attacks
+      # pinning to SHA to mitigate possible supply chain attack
       - name: Run markdownlint-cli
         uses: nosborn/github-action-markdown-cli@508d6cefd8f0cc99eab5d2d4685b1d5f470042c1 # v3.5.0
         with:
