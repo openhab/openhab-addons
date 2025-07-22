@@ -10,7 +10,7 @@
 
 1. Step 3
 
-   ![connectlinky-enedis-step2b](connectlinky-enedis-step2b.png)<br/>
+   ![connectlinky-enedis-step2b](connectlinky-enedis-step2b.png)
 
 1. Step 4
 
