@@ -1,6 +1,6 @@
 # AVM FRITZ! Binding
 
-The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ([AVM Home Automation](https://avm.de/ratgeber/filter/smart-home/)) features.
+The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ([AVM Home Automation](https://fritz.com/produkte/smart-home/)) features.
 
 ![FRITZ!DECT 200 301 500](doc/AVM_FRITZDECT_200_301_500_freigestellt.png)
 
@@ -35,7 +35,7 @@ For AHA functionality, the router has to run at least on firmware FRITZ!OS 6.00 
 
 ### FRITZ!DECT 200 / FRITZ!DECT 210
 
-This switchable outlets [FRITZ!DECT 210](https://avm.de/produkte/fritzdect/fritzdect-210/) and [FRITZ!DECT 200](https://avm.de/produkte/fritzdect/fritzdect-200/) have to be connected to a FRITZ!Box by DECT protocol.
+This switchable outlets [FRITZ!DECT 210](https://fritz.com/produkte/smart-home/fritzsmart-energy-210/) and [FRITZ!DECT 200](https://fritz.com/produkte/smart-home/fritzsmart-energy-200/) have to be connected to a FRITZ!Box by DECT protocol.
 They support switching the outlet and reading the current power, current voltage, accumulated energy consumption and temperature.
 **NOTE:** The `voltage` channel will be added to the thing during runtime - if the interface supports it (FRITZ!OS 7 or higher).
 
@@ -46,19 +46,19 @@ It supports reading the current power, current voltage, accumulated energy consu
 
 ### FRITZ!DECT Repeater 100
 
-This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) has to be connected to a FRITZ!Box by DECT protocol.
+This [DECT repeater](https://fritz.com/produkte/smart-home/fritzdect-repeater-100/) has to be connected to a FRITZ!Box by DECT protocol.
 It only supports temperature readings.
 
 ### FRITZ!Powerline 546E
 
-This [powerline adapter](https://avm.de/produkte/fritzpowerline/) can be used via the bridge or in stand-alone mode.
+This [powerline adapter](https://fritz.com/produkte/wlan-mesh/) can be used via the bridge or in stand-alone mode.
 It supports switching the outlet and reading the current power, current voltage and accumulated energy consumption.
 This device does not contain a temperature sensor.
 **NOTE:** The `voltage` channel will be added to the thing during runtime - if the interface supports it (FRITZ!OS 7 or higher).
 
 ### FRITZ!DECT 302 / FRITZ!DECT 301 / FRITZ!DECT 300 / Comet DECT
 
-These devices [FRITZ!DECT 302](https://avm.de/produkte/fritzdect/fritzdect-302/), [FRITZ!DECT 301](https://avm.de/produkte/fritzdect/fritzdect-301/), FRITZ!DECT 300 and [Comet DECT](https://eurotronic.org/produkte/dect-ule-heizkoerperthermostat/comet-dect/) ([EUROtronic Technology GmbH](https://eurotronic.org/)) are used to regulate radiators via DECT-ULE protocol.
+These devices [FRITZ!DECT 302](https://fritz.com/produkte/smart-home/fritzsmart-thermo-302/), [FRITZ!DECT 301](https://fritz.com/produkte/smart-home/fritzdect-301/), FRITZ!DECT 300 and [Comet DECT](https://eurotronic.org/produkte/dect-ule-heizkoerperthermostat/comet-dect/) ([EUROtronic Technology GmbH](https://eurotronic.org/)) are used to regulate radiators via DECT-ULE protocol.
 The FRITZ!Box can handle up to twelve heating thermostats.
 The binding provides channels for reading and setting the temperature.
 Additionally you can check the eco temperature, the comfort temperature and the battery level of the device.
@@ -67,14 +67,14 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 6.35.
 
 ### FRITZ!DECT 400 / FRITZ!DECT 440
 
-The [FRITZ!DECT 400](https://avm.de/produkte/fritzdect/fritzdect-400/) and [FRITZ!DECT 440](https://avm.de/produkte/fritzdect/fritzdect-440/) are buttons for convenient operation of FRITZ! Smart Home devices (FRITZ!OS 7.08  or higher for FRITZ!DECT 400, 7.20  or higher for FRITZ!DECT 440).
+The [FRITZ!DECT 440](https://fritz.com/produkte/smart-home/fritzsmart-control-440/) and FRITZ!DECT 400 are buttons for convenient operation of FRITZ! Smart Home devices (FRITZ!OS 7.08  or higher for FRITZ!DECT 400, 7.20  or higher for FRITZ!DECT 440).
 The FRITZ!DECT 400 supports a configurable button to trigger short or long press events.
 Beside four customizable buttons the FRITZ!DECT 440 supports temperature readings.
 **NOTE:** FRITZ!DECT 440 now uses Channel Groups to group its Channels like `device#battery_level`, `device#battery_low` for device information, `sensors#temperature` for sensor data and `top-left`, `bottom-left`, `top-right` and `bottom-right` combined with `press` and `last_change` (see [Full Example](#full-example))
 
 ### FRITZ!DECT 500
 
-The [FRITZ!DECT 500](https://avm.de/produkte/fritzdect/fritzdect-500/) is a dimmable colorized light bulb.
+The FRITZ!DECT 500 is a dimmable colorized light bulb.
 
 #### Supported Channel Groups
 
@@ -221,7 +221,7 @@ The trigger channel `press` for a FRITZ!DECT 400 device is of type `system.butto
 
 ### FRITZ! Smart Home Templates
 
-With the new [templates feature](https://en.avm.de/guide/smart-home/meet-the-smart-home-templates-from-fritz/) in FRITZ!OS 7, you can now save the settings of your Smart Home devices and groups as a template for certain occasions e.g. holidays or vacation.
+With the new [templates feature](https://fritz.com/ratgeber/drei-smart-home-vorlagen-die-den-alltag-erleichtern/) in FRITZ!OS 7, you can now save the settings of your Smart Home devices and groups as a template for certain occasions e.g. holidays or vacation.
 Unfortunately it is not that simple to find out the unique identifier (AIN) for a template needed for sending it as command to the `apply_template` channel.
 Here is a work-around:
 To retrieve the list of AINs assigned by FRITZ! for your templates, go to the FRITZ!Box' Support page at [http://fritz.box/html/support.html](http://fritz.box/html/support.html) within your local network and login.
@@ -270,7 +270,7 @@ Bridge avmfritz:fritzbox:1 "FRITZ!Box" [ ipAddress="192.168.x.x", password="xxx"
     Thing FRITZ_Powerline_546E yy_yy_yy_yy_yy_yy "FRITZ!Powerline 546E #2" [ ain="yy:yy:yy:yy:yy:yy" ]
     Thing Comet_DECT aaaaaabbbbbb "Comet DECT #3" [ ain="aaaaaabbbbbb" ]
     Thing HAN_FUN_CONTACT zzzzzzzzzzzz_1 "HAN-FUN Contact #4" [ ain="zzzzzzzzzzzz-1" ]
-    Thing HAN_FUN_SWITCH zzzzzzzzzzzz_2 "HAN-FUN Switch #5" [ ain=zzzzzzzzzzzz-2" ]
+    Thing HAN_FUN_SWITCH zzzzzzzzzzzz_2 "HAN-FUN Switch #5" [ ain="zzzzzzzzzzzz-2" ]
     Thing FRITZ_DECT_Repeater_100 rrrrrrrrrrrr "DECT Repeater 100 #6" [ ain="rrrrrrrrrrrr" ]
     Thing FRITZ_GROUP_HEATING AA_AA_AA_900 "Heating group" [ ain="AA:AA:AA-900" ]
     Thing FRITZ_GROUP_SWITCH BB_BB_BB_900 "Switch group" [ ain="BB:BB:BB-900" ]
