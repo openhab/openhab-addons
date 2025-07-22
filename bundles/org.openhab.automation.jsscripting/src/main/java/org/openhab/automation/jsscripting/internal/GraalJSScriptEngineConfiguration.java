@@ -34,7 +34,7 @@ public class GraalJSScriptEngineConfiguration {
     private static final String CFG_DEPENDENCY_TRACKING_ENABLED = "dependencyTrackingEnabled";
 
     public static final int INJECTION_DISABLED = 0;
-    public static final int INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS = 2;
+    public static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY = 2;
     public static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 1;
 
     private int injectionEnabled = 2;
@@ -54,7 +54,7 @@ public class GraalJSScriptEngineConfiguration {
         boolean oldWrapperEnabled = wrapperEnabled;
 
         this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Integer.class,
-                INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS);
+                INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY);
         this.injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED),
                 Boolean.class, true);
         this.wrapperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_WRAPPER_ENABLED), Boolean.class, true);

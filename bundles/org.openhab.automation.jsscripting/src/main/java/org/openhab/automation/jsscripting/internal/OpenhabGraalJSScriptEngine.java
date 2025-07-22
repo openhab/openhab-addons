@@ -305,8 +305,8 @@ public class OpenhabGraalJSScriptEngine
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
 
             if (configuration.isInjection(GraalJSScriptEngineConfiguration.INJECTION_ENABLED_FOR_ALL_SCRIPTS)
-                    || (isNonFileBasedScript() && configuration.isInjection(
-                            GraalJSScriptEngineConfiguration.INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS))) {
+                    || (isUiBasedScript() && configuration.isInjection(
+                            GraalJSScriptEngineConfiguration.INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY))) {
                 if (configuration.isInjectionCachingEnabled()) {
                     logger.debug("Evaluating cached openhab-js injection for engine '{}' ...", engineIdentifier);
                     delegate.getPolyglotContext().eval(OPENHAB_JS_SOURCE);
@@ -324,8 +324,7 @@ public class OpenhabGraalJSScriptEngine
 
     @Override
     protected String onScript(String script) {
-        boolean isTransformationScript = engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
-        if (configuration.isWrapperEnabled() && isNonFileBasedScript() && !isTransformationScript) {
+        if (isUiBasedScript() && configuration.isWrapperEnabled()) {
             logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
             return "(function() {" + script + "})()";
         }
@@ -351,17 +350,18 @@ public class OpenhabGraalJSScriptEngine
     }
 
     /**
-     * Tests if the current script is a non-file-based script, i.e. it is not loaded from a file.
+     * Tests if the current script is a UI-based script, i.e. it is neither loaded from a file nor a transformation.
      * 
-     * @return true if the script is non-file-based, false otherwise
+     * @return true if the script is UI-based, false otherwise
      */
-    private boolean isNonFileBasedScript() {
+    private boolean isUiBasedScript() {
         ScriptContext ctx = delegate.getContext();
         if (ctx == null) {
             logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
             return false;
         }
-        return ctx.getAttribute("javax.script.filename") == null;
+        return ctx.getAttribute("javax.script.filename") == null
+                && !engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
     }
 
     /**

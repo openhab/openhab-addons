@@ -22,7 +22,7 @@
 			If disabled, the openHAB JavaScript library can be imported manually using"<code>require('openhab')</code>.
 			]]></description>
 			<options>
-				<option value="2">Auto injection enabled only for UI-based and Transformation scripts (recommended)</option>
+				<option value="2">Auto injection enabled only for UI-based scripts (recommended)</option>
 				<option value="1">Auto injection enabled for all scripts, i.e. including file-based scripts</option>
 				<option value="0">Disable auto-injection and import manually instead</option>
 			</options>
@@ -31,7 +31,7 @@
 		<parameter name="wrapperEnabled" type="boolean" required="true" groupName="environment">
 			<label>Wrap UI-based scripts in Self-Executing Function</label>
 			<description><![CDATA[
-			Wrapping UI-based rules in a self-executing function allows the use of the <code>let</code> and <code>const</code> variable declarations,
+			Wrapping UI-based scripts in a self-executing function allows the use of the <code>let</code> and <code>const</code> variable declarations,
 			as well as the use of <code>function</code> and <code>class</code> declarations.<br>
 			With this option enabled, you can also use <code>return</code> statements in your scripts to abort execution at any point.
 			]]></description>
