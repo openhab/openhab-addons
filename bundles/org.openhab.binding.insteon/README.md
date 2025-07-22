@@ -1398,7 +1398,7 @@ Similar to [dimmers](#dimmers), the binding uses the device on level and ramp ra
 
 The binding can trigger scenes by commanding the modem to send broadcasts to a given Insteon group.
 
-#### Scene Things
+#### Things
 
 ```java
 Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
@@ -1406,7 +1406,7 @@ Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
 }
 ```
 
-#### Scene Items
+#### Items
 
 ```java
 Switch scene                    "scene"         { channel="insteon:scene:home:scene42:scene" }
@@ -1414,7 +1414,7 @@ Switch sceneFastOnOff           "fast on/off"   { channel="insteon:scene:home:sc
 Rollershutter sceneManualChange "manual change" { channel="insteon:scene:home:scene42:manual-change" }
 ```
 
-#### Scene Sitemap
+#### Sitemap
 
 ```perl
 Switch item=scene
@@ -1433,7 +1433,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   Since it is a broadcast message, the corresponding item does _not_ take the address of any device, but of the modem itself.
   The format is `broadcastOnOff#X` where X is the group that you want to be able to broadcast messages to:
 
-#### Legacy Scene Things
+#### Legacy Things
 
   ```java
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
@@ -1452,7 +1452,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   }
   ```
 
-#### Legacy Scene Items
+#### Legacy Items
 
   ```java
   Switch  broadcastOnOff "group on/off"  { channel="insteon:device:home:AABBCC:broadcastOnOff#2" }
