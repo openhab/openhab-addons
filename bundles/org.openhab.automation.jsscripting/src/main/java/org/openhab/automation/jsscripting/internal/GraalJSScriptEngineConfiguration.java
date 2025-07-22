@@ -51,6 +51,7 @@ public class GraalJSScriptEngineConfiguration {
         logger.trace("JavaScript Script Engine Configuration: {}", config);
 
         boolean oldDependencyTrackingEnabled = dependencyTrackingEnabled;
+        boolean oldWrapperEnabled = wrapperEnabled;
 
         this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Integer.class,
                 INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS);
@@ -64,6 +65,11 @@ public class GraalJSScriptEngineConfiguration {
             logger.info(
                     "{} dependency tracking for JavaScript Scripting. Please resave your scripts to apply this change.",
                     dependencyTrackingEnabled ? "Enabled" : "Disabled");
+        }
+        if (oldWrapperEnabled != wrapperEnabled) {
+            logger.info(
+                    "{} wrapper for JavaScript Scripting. Please resave your UI-based scripts to apply this change.",
+                    wrapperEnabled ? "Enabled" : "Disabled");
         }
     }
 

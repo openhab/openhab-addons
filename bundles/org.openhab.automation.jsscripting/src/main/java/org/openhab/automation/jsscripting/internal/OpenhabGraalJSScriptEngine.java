@@ -13,6 +13,7 @@
 package org.openhab.automation.jsscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
+import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -303,9 +304,8 @@ public class OpenhabGraalJSScriptEngine
             logger.debug("Evaluating cached global script for engine '{}' ...", engineIdentifier);
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
 
-            boolean nonFileBasedScript = ctx.getAttribute("javax.script.filename") == null;
             if (configuration.isInjection(GraalJSScriptEngineConfiguration.INJECTION_ENABLED_FOR_ALL_SCRIPTS)
-                    || (nonFileBasedScript && configuration.isInjection(
+                    || (isNonFileBasedScript() && configuration.isInjection(
                             GraalJSScriptEngineConfiguration.INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS))) {
                 if (configuration.isInjectionCachingEnabled()) {
                     logger.debug("Evaluating cached openhab-js injection for engine '{}' ...", engineIdentifier);
@@ -320,6 +320,16 @@ public class OpenhabGraalJSScriptEngine
         } catch (ScriptException e) {
             logger.error("Could not inject global script", e);
         }
+    }
+
+    @Override
+    protected String onScript(String script) {
+        boolean isTransformationScript = engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
+        if (configuration.isWrapperEnabled() && isNonFileBasedScript() && !isTransformationScript) {
+            logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
+            return "(function() {" + script + "})()";
+        }
+        return super.onScript(script);
     }
 
     @Override
@@ -338,6 +348,20 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public void close() {
         jsRuntimeFeatures.close();
+    }
+
+    /**
+     * Tests if the current script is a non-file-based script, i.e. it is not loaded from a file.
+     * 
+     * @return true if the script is non-file-based, false otherwise
+     */
+    private boolean isNonFileBasedScript() {
+        ScriptContext ctx = delegate.getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return false;
+        }
+        return ctx.getAttribute("javax.script.filename") == null;
     }
 
     /**

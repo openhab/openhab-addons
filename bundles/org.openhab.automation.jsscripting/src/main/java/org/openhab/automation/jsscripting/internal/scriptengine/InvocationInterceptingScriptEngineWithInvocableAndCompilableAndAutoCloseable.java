@@ -43,6 +43,22 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     protected void beforeInvocation() {
     }
 
+    /**
+     * Hook method to be called when a string script is about to be evaluated.
+     * 
+     * @param script the script to be evaluated
+     * @return the modified script to be evaluated instead, or the original script
+     */
+    protected String onScript(String script) {
+        return script;
+    }
+
+    /**
+     * Hook method to be called after the invocation of any method on the script engine.
+     * 
+     * @param obj the result of the invocation
+     * @return the result to be returned instead, or the original result
+     */
     protected Object afterInvocation(Object obj) {
         return obj;
     }
@@ -58,10 +74,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public Object eval(String s, ScriptContext scriptContext) throws ScriptException {
+    public Object eval(String script, ScriptContext scriptContext) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(s, scriptContext));
+            return afterInvocation(super.eval(onScript(script), scriptContext));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -82,10 +98,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public Object eval(String s) throws ScriptException {
+    public Object eval(String script) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(s));
+            return afterInvocation(super.eval(onScript(script)));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -106,10 +122,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public Object eval(String s, Bindings bindings) throws ScriptException {
+    public Object eval(String script, Bindings bindings) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(s, bindings));
+            return afterInvocation(super.eval(onScript(script), bindings));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -168,10 +184,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public CompiledScript compile(String s) throws ScriptException {
+    public CompiledScript compile(String script) throws ScriptException {
         try {
             beforeInvocation();
-            return (CompiledScript) afterInvocation(super.compile(s));
+            return (CompiledScript) afterInvocation(super.compile(onScript(script)));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
