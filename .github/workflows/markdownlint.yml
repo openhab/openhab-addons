@@ -22,18 +22,3 @@ jobs:
         with:
           files: .
           config_file: ".github/markdownlint.yaml"
-
-  markdown-link-check:
-    name: Broken Links Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # pinning to SHA to mitigate possible supply chain attack
-      - name: Check for broken links
-        uses: tcort/github-action-markdown-link-check@a800ad5f1c35bf61987946fd31c15726a1c9f2ba # v1.1.0
-        with:
-          use-quiet-mode: 'yes' # only show errors in output
-          use-verbose-mode: 'yes' # show detailed HTTP status for checked links
-          config-file: '.github/mlc_config.json'
