@@ -354,8 +354,9 @@ class ForecastSolarTest {
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
 
         TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Average);
-        Instant now = Utils.now();
-        assertEquals(24, powerSeries.size());
+        Instant now = Utils.now().minus(1, ChronoUnit.HOURS);
+        // 24 hours of data plus current hour = 25
+        assertEquals(25, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
             State s = entry.state();
@@ -364,7 +365,7 @@ class ForecastSolarTest {
         });
 
         TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.Average);
-        assertEquals(24, energySeries.size());
+        assertEquals(25, energySeries.size());
         energySeries.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
             State s = entry.state();

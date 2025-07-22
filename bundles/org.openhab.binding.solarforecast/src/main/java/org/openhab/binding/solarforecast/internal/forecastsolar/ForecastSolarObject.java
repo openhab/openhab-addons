@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -52,18 +53,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ForecastSolarObject implements SolarForecast {
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarObject.class);
+    private final TreeMap<String, Double> wattHourDayMap = new TreeMap<>();
     private final TreeMap<ZonedDateTime, Double> wattHourMap = new TreeMap<>();
     private final TreeMap<ZonedDateTime, Double> wattMap = new TreeMap<>();
-    private final DateTimeFormatter dateInputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter dateTimeInputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter dateInputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private DateTimeFormatter dateOutputFormatter = DateTimeFormatter
             .ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT).withZone(ZoneId.systemDefault());
     private ZoneId zone = ZoneId.systemDefault();
-    private Optional<String> rawData = Optional.empty();
     private Instant expirationDateTime;
     private Instant creationDateTime;
     private String identifier;
-    private double correctionFactor = 1;
 
     public ForecastSolarObject(String id) {
         expirationDateTime = Utils.now().minusSeconds(1);
@@ -76,10 +77,17 @@ public class ForecastSolarObject implements SolarForecast {
         creationDateTime = Utils.now();
         identifier = id;
         if (!content.isEmpty()) {
-            rawData = Optional.of(content);
             try {
                 JSONObject contentJson = new JSONObject(content);
                 JSONObject resultJson = contentJson.getJSONObject("result");
+
+                // first get daily production values
+                JSONObject wattsDay = resultJson.getJSONObject("watt_hours_day");
+                wattsDay.keys().forEachRemaining(date -> {
+                    wattHourDayMap.put(date, wattsDay.getDouble(date) / 1000.0);
+                });
+
+                // fill map with hourly production and power values
                 JSONObject wattHourJson = resultJson.getJSONObject("watt_hours");
                 JSONObject wattJson = resultJson.getJSONObject("watts");
                 String zoneStr = contentJson.getJSONObject("message").getJSONObject("info").getString("timezone");
@@ -92,7 +100,7 @@ public class ForecastSolarObject implements SolarForecast {
                     String dateStr = iter.next();
                     // convert date time into machine readable format
                     try {
-                        ZonedDateTime zdt = LocalDateTime.parse(dateStr, dateInputFormatter).atZone(zone);
+                        ZonedDateTime zdt = LocalDateTime.parse(dateStr, dateTimeInputFormatter).atZone(zone);
                         wattHourMap.put(zdt, wattHourJson.getDouble(dateStr));
                         wattMap.put(zdt, wattJson.getDouble(dateStr));
                     } catch (DateTimeParseException dtpe) {
@@ -168,7 +176,7 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public TimeSeries getEnergyTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
-        Instant now = Utils.now();
+        Instant now = Utils.now().minus(1, ChronoUnit.HOURS); // changing current hour is accepted
         wattHourMap.forEach((timestamp, energy) -> {
             Instant entryTimestamp = timestamp.toInstant();
             if (Utils.isAfterOrEqual(entryTimestamp, now)) {
@@ -232,7 +240,7 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public TimeSeries getPowerTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
-        Instant now = Utils.now();
+        Instant now = Utils.now().minus(1, ChronoUnit.HOURS); // changing current hour is accepted
         wattMap.forEach((timestamp, power) -> {
             Instant entryTimestamp = timestamp.toInstant();
             if (Utils.isAfterOrEqual(entryTimestamp, now)) {
@@ -243,19 +251,11 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public double getDayTotal(LocalDate queryDate) {
-        if (rawData.isEmpty()) {
+        if (wattHourDayMap.isEmpty()) {
             throw new SolarForecastException(this, "No forecast data available");
         }
-        JSONObject contentJson = new JSONObject(rawData.get());
-        JSONObject resultJson = contentJson.getJSONObject("result");
-        JSONObject wattsDay = resultJson.getJSONObject("watt_hours_day");
-
-        if (wattsDay.has(queryDate.toString())) {
-            // correction factor applies only for today, not for other forecasts
-            double forecastValue = wattsDay.getDouble(queryDate.toString()) / 1000.0;
-            if (LocalDate.now(Utils.getClock()).equals(queryDate)) {
-                forecastValue *= correctionFactor;
-            }
+        Double forecastValue = wattHourDayMap.get(queryDate.format(dateInputFormatter));
+        if (forecastValue != null) {
             return forecastValue;
         } else {
             throw new SolarForecastException(this,
@@ -267,13 +267,6 @@ public class ForecastSolarObject implements SolarForecast {
         double daily = getDayTotal(queryDateTime.toLocalDate());
         double actual = getActualEnergyValue(queryDateTime);
         return daily - actual;
-    }
-
-    public String getRaw() {
-        if (rawData.isPresent()) {
-            return rawData.get();
-        }
-        return "{}";
     }
 
     public ZoneId getZone() {
@@ -394,10 +387,14 @@ public class ForecastSolarObject implements SolarForecast {
      * @param factor The correction factor to apply.
      */
     public void setCorrectionFactor(double factor) {
-        correctionFactor = factor;
-        // ZonedDateTime startCorrection = ZonedDateTime.now(Utils.getClock());
         ZonedDateTime startCorrection = ZonedDateTime.now(Utils.getClock()).toLocalDate().atStartOfDay(zone);
         ZonedDateTime endCorrection = startCorrection.toLocalDate().plusDays(1).atStartOfDay(zone);
+
+        String dayKey = startCorrection.toLocalDate().format(dateInputFormatter);
+        Double dayProduction = wattHourDayMap.get(dayKey);
+        if (dayProduction != null) {
+            wattHourDayMap.put(dayKey, dayProduction * factor);
+        }
 
         wattHourMap.forEach((timestamp, value) -> {
             if (timestamp.isAfter(startCorrection) && timestamp.isBefore(endCorrection)) {

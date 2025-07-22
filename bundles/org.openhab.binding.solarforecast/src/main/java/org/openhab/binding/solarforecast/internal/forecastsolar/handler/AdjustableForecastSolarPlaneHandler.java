@@ -119,7 +119,7 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
                     .isAfter(firstMeasure.get().plus(configuration.holdingTime, ChronoUnit.MINUTES));
         }
         if (!forecast.isEmpty()) {
-            logger.warn("No adjustment possible: Unable to find first measure in forecast {}", forecast.getRaw());
+            logger.warn("No adjustment possible: Unable to find first measure in forecast");
         } else {
             logger.debug("Forecast is empty, no first measure available");
         }
