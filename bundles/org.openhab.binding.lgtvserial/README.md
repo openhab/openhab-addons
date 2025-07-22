@@ -14,8 +14,8 @@ This binding supports the following thing types:
 | Thing ID          | Description                                                                                           |
 |-------------------|-------------------------------------------------------------------------------------------------------|
 | lgtv              | Generic LG TV thing. This thing should be used when there is no proper thing defined for your device. |
-| lgtv-LV-series    | This thing supports the LED LCD TV models LV and LW except *LV255C, *LV355B, *LV355C                  |
-| lgtv-LVx55-series | This thing supports the *LV255C, *LV355B, *LV355C models                                              |
+| lgtv-LV-series    | This thing supports the LED LCD TV models LV and LW except \*LV255C, \*LV355B, \*LV355C                  |
+| lgtv-LVx55-series | This thing supports the \*LV255C, \*LV355B, \*LV355C models                                              |
 | lgtv-LK-series    | This thing supports the LCD TV models LK                                                              |
 | lgtv-PW-series    | This thing supports the PLASMA TV models PW                                                           |
 | lgtv-M6503C       | This thing supports the M6503C monitor                                                                |
@@ -136,7 +136,7 @@ Here is the list of all the LG TV commands added to the binding, in channel type
 
 The following commands/channels are not currently implemented in the binding but the commands could be [sent via the raw channel](#using-raw-channel-via-rules-example).
 
-| Channel ID         | Command | Description
+| Channel ID         | Command | Description                                                                                                |
 |--------------------|---------|------------------------------------------------------------------------------------------------------------|
 | abnormal-state     | k z     | To read the power off status when in Stand-by mode                                                         |
 | auto-configuration | j u     | To adjust picture position and minimize image shaking automatically. Works only in RGB(PC) mode.           |
@@ -174,14 +174,14 @@ end
 
 ## LG protocol references
 
-[1] Manual for M6503C monitor <https://gscs-b2c.lge.com/downloadFile?fileId=KROWM000237239.pdf><a name="ref1"/>
+[1] Manual for M6503C monitor <https://gscs-b2c.lge.com/downloadFile?fileId=KROWM000237239.pdf>
 
 [2] <https://sites.google.com/site/brendanrobert/projects/bits-and-pieces/lg-tv-hacks>
 
 [3] <https://code.google.com/archive/p/lg-tv-command/source/default/source>
 
-[4] <https://github.com/suan/libLGTV_serial><a name="ref4"/>
+[4] <https://github.com/suan/libLGTV_serial>
 
-[5] Manual for LV series, LK series, PW series and PZ series <https://gscs-b2c.lge.com/downloadFile?fileId=ujpO8yH69djwNZzwuavqpQ><a name="ref5"/>
+[5] Manual for LV series, LK series, PW series and PZ series <https://gscs-b2c.lge.com/downloadFile?fileId=ujpO8yH69djwNZzwuavqpQ>
 
 [6] Manual for LD series, LE series, LX series and PK series <https://gscs-b2c.lge.com/downloadFile?fileId=76If0tKDLOUizuoXikllgQ>
