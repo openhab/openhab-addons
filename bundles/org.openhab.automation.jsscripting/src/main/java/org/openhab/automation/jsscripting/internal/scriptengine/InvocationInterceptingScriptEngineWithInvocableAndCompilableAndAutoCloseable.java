@@ -33,10 +33,13 @@ import javax.script.ScriptException;
 public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T extends ScriptEngine & Invocable & Compilable & AutoCloseable>
         extends DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable<T> {
 
-    public InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable(T delegate) {
+    protected InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable(T delegate) {
         super(delegate);
     }
 
+    /**
+     * Hook method to be called before the invocation of any method on the script engine.
+     */
     protected void beforeInvocation() {
     }
 
@@ -44,6 +47,12 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
         return obj;
     }
 
+    /**
+     * Hook method to be called after a {@link ScriptException} or other exception is thrown during invocation.
+     * 
+     * @param e the exception that was thrown
+     * @return the exception to be thrown instead, or the original exception
+     */
     protected Exception afterThrowsInvocation(Exception e) {
         return e;
     }
@@ -121,11 +130,11 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public Object invokeMethod(Object o, String s, Object... objects)
+    public Object invokeMethod(Object thiz, String name, Object... args)
             throws ScriptException, NoSuchMethodException, NullPointerException, IllegalArgumentException {
         try {
             beforeInvocation();
-            return afterInvocation(super.invokeMethod(o, s, objects));
+            return afterInvocation(super.invokeMethod(thiz, name, args));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeMethod to avoid
@@ -141,11 +150,11 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public Object invokeFunction(String s, Object... objects)
+    public Object invokeFunction(String name, Object... args)
             throws ScriptException, NoSuchMethodException, NullPointerException {
         try {
             beforeInvocation();
-            return afterInvocation(super.invokeFunction(s, objects));
+            return afterInvocation(super.invokeFunction(name, args));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeFunction to avoid
