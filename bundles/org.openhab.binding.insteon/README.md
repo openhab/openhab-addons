@@ -1668,7 +1668,7 @@ openhab> insteon debug sendBroadcastMessage 42 13 00
 ### Device Permissions / Linux Device Locks
 
 When openHAB is running as a non-root user (Linux/OSX) it is important to ensure it has write access not just to the PLM device, but to the os lock directory.
-Under openSUSE this is `/run/lock` and is manage by the **lock** group.
+Under openSUSE this is `/run/lock` and is managed by the **lock** group.
 
 Example commands to grant openHAB access, depending on Linux distribution:
 
