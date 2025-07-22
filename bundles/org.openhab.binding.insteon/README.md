@@ -1104,7 +1104,7 @@ Note that battery level is only updated when the sensor is triggered or through 
 
 It is important to sync with the lock controller within 5 feet to avoid poor connection and link twice for both ON and OFF functionality.
 
-#### Locks Items
+#### Items
 
 ```java
 Switch doorLock "Front Door [MAP(lock.map):%s]"  { channel="insteon:device:home:aabbcc:lock" }
@@ -1469,7 +1469,7 @@ This allows openHAB not only control X10 devices without the need for other hard
 
 Note that X10 switches/dimmers send no status updates when toggled manually.
 
-#### X10 Things
+#### Things
 
 ```java
 Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
@@ -1492,7 +1492,7 @@ Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
 
 </details>
 
-#### X10 Items
+#### Items
 
 ```java
 Switch  x10Switch "X10 switch" { channel="insteon:x10:home:a2:switch" }
