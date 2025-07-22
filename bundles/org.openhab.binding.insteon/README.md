@@ -790,7 +790,7 @@ Additionally, for button toggle mode set to always on or off, only `ON` or `OFF`
 
 #### Keypad Switches
 
-##### Keypad Switch Items
+##### Items
 
 The following items will expose a keypad switch and its associated buttons:
 
@@ -815,7 +815,7 @@ Switch keypadSwitchD            "button D"           { channel="insteon:device:h
 
 </details>
 
-##### Keypad Switch Sitemap
+##### Sitemap
 
 The following sitemap will bring the items to life in the GUI:
 
@@ -829,7 +829,7 @@ Frame label="Keypad" {
 }
 ```
 
-##### Keypad Switch Rules
+##### Rules
 
 The following rules will monitor regular on/off, fast on/off and manual change button events:
 
@@ -867,7 +867,7 @@ end
 <details>
   <summary>Legacy</summary>
 
-##### Legacy Keypad Switch Items
+##### Legacy Items
 
   Here is a simple example, just using the load (main) switch:
 
@@ -881,7 +881,7 @@ end
   Switch keypadSwitchD            "keypad button D"    { channel="insteon:device:home:AABBCC:keypadButtonD"}
   ```
 
-##### Legacy Keypad Switch Things
+##### Legacy Things
 
   The value after group must either be a number or string.
   The hexadecimal value 0xf3 can either converted to a numeric value 243 or the string value "0xf3".
@@ -898,7 +898,7 @@ end
   }
   ```
 
-##### Legacy Keypad Switch Sitemap
+##### Legacy Sitemap
 
   The following sitemap will bring the items to life in the GUI:
 
@@ -920,7 +920,7 @@ end
 
 The keypad dimmers are like keypad switches, except that the main load is dimmable.
 
-##### Keypad Dimmers Items
+##### Items
 
 ```java
 Dimmer keypadDimmer           "main dimmer" { channel="insteon:device:home:aabbcc:dimmer" }
@@ -937,7 +937,7 @@ Switch keypadDimmerButtonA    "button A"    { channel="insteon:device:home:aabbc
 
 </details>
 
-##### Keypad Dimmers Sitemap
+##### Sitemap
 
 ```perl
 Slider item=keypadDimmer label="main" switchSupport
@@ -979,7 +979,7 @@ The modem's link database (see [Insteon Terminal](https://github.com/pfrommerd/i
 
 The mini remote buttons cannot be modeled as items since they don't have a state or can receive commands. However, button triggered events can be monitored through rules that can set off subsequent actions:
 
-#### Mini Remotes Rules
+#### Rules
 
 ```java
 rule "Mini Remote Button A Pressed On"
@@ -994,7 +994,7 @@ end
 
 Link such that the modem is a responder to the motion sensor.
 
-#### Motion Sensors Items
+#### Items
 
 ```java
 Switch               motionSensor             "motion sensor [MAP(motion.map):%s]" { channel="insteon:device:home:aabbcc:motion"}
@@ -1051,7 +1051,7 @@ The battery and light level are only updated when either there is motion, light 
   This can be configured with the device configuration parameter of the device.
   The key in the JSON object is `heartbeatOnly` and the value is a boolean:
 
-#### Motion Sensors Things
+#### Things
 
   ```java
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
@@ -1073,7 +1073,7 @@ The battery and light level are only updated when either there is motion, light 
 Similar in operation to the motion sensor above.
 Link such that the modem is a responder to the motion sensor.
 
-#### Hidden Door Sensors Items
+#### Items
 
 ```java
 Contact              doorSensor             "door sensor [MAP(contact.map):%s]" { channel="insteon:device:home:aabbcc:contact" }
@@ -1137,7 +1137,7 @@ To invert the state, either relink the modem as a responder with the sensor stat
 By default, the device is inverted where an on command is sent when the sensor is closed, and off when open.
 For a garage door opener, ensure the input sensor is closed (status LED off) during the linking process.
 
-#### I/O Linc Items
+#### Items
 
 ```java
 Switch  garageDoorOpener                 "door opener"                        { channel="insteon:device:home:aabbcc:switch" }
@@ -1168,7 +1168,7 @@ CLOSED=closed
 
 Here is an example configuration for a FanLinc module, which has a dimmable light and a variable speed fan:
 
-#### Fan Items
+#### Items
 
 ```java
 Dimmer fanLincDimmer "dimmer [%d %%]" { channel="insteon:device:home:aabbcc:dimmer" }
@@ -1185,7 +1185,7 @@ String fanLincFan    "fan speed"      { channel="insteon:device:home:aabbcc:fan-
 
 </details>
 
-#### Fan Sitemap
+#### Sitemap
 
 ```perl
 Slider item=fanLincDimmer switchSupport
@@ -1200,7 +1200,7 @@ Additionally, the device can be reset.
 
 See the example below:
 
-#### Power Meters Items
+#### Items
 
 ```java
 Number:Power  iMeterPower   "power [%d W]"       { channel="insteon:device:home:aabbcc:power-usage" }
@@ -1227,7 +1227,7 @@ The channels to change the alert delay and duration are only used for the siren 
 
 Here is an example configuration for a siren module:
 
-#### Sirens Items
+#### Items
 
 ```java
 Switch siren                   "siren"                 { channel="insteon:device:home:aabbcc:siren" }
@@ -1237,7 +1237,7 @@ Number:Time sirenAlertDuration "alert duration [%d s]" { channel="insteon:device
 String sirenAlertType          "alert type [%s]"       { channel="insteon:device:home:aabbcc:alert-type" }
 ```
 
-##### Sirens Sitemap
+##### Sitemap
 
 ```perl
 Switch   item=siren
@@ -1253,7 +1253,7 @@ The smoke bridge monitors First Alert ONELINK smoke and carbon monoxide detector
 
 Here is an example configuration for a smoke bridge:
 
-#### Smoke Detectors Items
+#### Items
 
 ```java
 Switch smokeAlarm          "smoke alarm"           { channel="insteon:device:home:aabbcc:smoke-alarm" }
@@ -1270,7 +1270,7 @@ When pump control is enabled, the 8th valve will remain on and cannot be control
 Each sprinkler program can be turned on/off by using `PLAY` and `PAUSE` commands.
 To skip forward or back to the next or previous valve in the program, use `NEXT` and `PREVIOUS` commands.
 
-#### Sprinklers Items
+#### Items
 
 ```java
 Switch valve1   "valve 1"   { channel="insteon:device:home:aabbcc:valve1" }
@@ -1293,7 +1293,7 @@ Player program4 "program 4" { channel="insteon:device:home:aabbcc:program4" }
 The thermostat (2441TH) is one of the most complex Insteon devices available.
 To ensure all links are configured between the modem and device, and the status reporting is enabled, use the `insteon device addMissingLinks` console command.
 
-#### Thermostats Items
+#### Items
 
 ```java
 Number:Temperature   thermostatCoolSetpoint "cool setpoint [%.1f °F]" { channel="insteon:device:home:aabbcc:cool-setpoint" }
@@ -1343,7 +1343,7 @@ String               thermostatTimeFormat         "time format [%s]"            
 
 </details>
 
-#### Thermostats Sitemap
+#### Sitemap
 
 For the thermostat to display in the GUI, add this to the sitemap file:
 
