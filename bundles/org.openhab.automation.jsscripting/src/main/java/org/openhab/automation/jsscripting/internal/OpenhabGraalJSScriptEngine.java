@@ -161,9 +161,12 @@ public class OpenhabGraalJSScriptEngine
                             @Override
                             public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options,
                                     FileAttribute<?>... attrs) throws IOException {
-                                Consumer<String> localScriptDependencyListener = scriptDependencyListener;
-                                if (localScriptDependencyListener != null) {
-                                    localScriptDependencyListener.accept(path.toString());
+                                if (configuration.isDependencyTrackingEnabled()
+                                        && path.startsWith(GraalJSScriptEngineFactory.JS_LIB_PATH)) {
+                                    Consumer<String> localScriptDependencyListener = scriptDependencyListener;
+                                    if (localScriptDependencyListener != null) {
+                                        localScriptDependencyListener.accept(path.toString());
+                                    }
                                 }
 
                                 if (path.toString().endsWith(".js")) {
