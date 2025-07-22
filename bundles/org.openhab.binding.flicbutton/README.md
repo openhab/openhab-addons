@@ -69,7 +69,7 @@ You're free to choose any label you like for your button.
 | ------------------------- | ------------------------ | --------------------------| ------------------------------ |
 | rawbutton                | [System Trigger Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-trigger-channel-types) `system.rawbutton`  | Depends on the  [Trigger Profile](https://www.openhab.org/docs/configuration/items.html#profiles) used | Raw Button channel that triggers `PRESSED` and `RELEASED` events, allows to use openHAB profiles or own implementations via rules to detect e.g. double clicks, long presses etc.  |
 | button                   | [System Trigger Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-trigger-channel-types) `system.button`    | Depends on the [Trigger Profile](https://www.openhab.org/docs/configuration/items.html#profiles) used | Button channel that is using Flic's implementation for detecting long, short or double clicks. Triggers `SHORT_PRESSED`,`DOUBLE_PRESSED` and `LONG_PRESSED` events.   |
-| battery-level            | [System State Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-state-channel-types) `system.battery-level`     | Number | Represents the battery level as a percentage (0-100%).
+| battery-level            | [System State Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-state-channel-types) `system.battery-level`     | Number | Represents the battery level as a percentage (0-100%). |
 
 ## Example
 
