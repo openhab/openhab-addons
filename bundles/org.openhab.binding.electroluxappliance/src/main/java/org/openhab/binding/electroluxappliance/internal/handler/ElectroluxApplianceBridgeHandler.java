@@ -34,6 +34,7 @@ import org.openhab.binding.electroluxappliance.internal.listener.TokenUpdateList
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -73,24 +74,40 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
+    private final Storage<String> storage;
 
     private @Nullable ElectroluxGroupAPI api;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> instantUpdate;
 
     public ElectroluxApplianceBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson,
-            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider,
+            @Reference Storage<String> storage) {
         super(bridge);
         this.httpClient = httpClient;
         this.gson = gson;
         this.localeProvider = localeProvider;
         this.translationProvider = translationProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
+        this.storage = storage;
     }
 
     @Override
     public void initialize() {
         ElectroluxApplianceBridgeConfiguration config = getConfigAs(ElectroluxApplianceBridgeConfiguration.class);
+
+        // If the saved token was saved with the match config.refreshToken from the config restore it for use
+        @Nullable
+        String storedRefreshToken = storage.get("currentConfigToken");
+        if (storedRefreshToken != null && config.refreshToken.equals(storedRefreshToken)) {
+            final @Nullable String savedToken = storage.get("refreshToken");
+            if (savedToken != null) {
+                onTokenUpdated(savedToken);
+            }
+        } else {
+            storage.put("currentConfigToken", config.refreshToken);
+            storage.put("refreshToken", config.refreshToken);
+        }
 
         refreshTimeInSeconds = config.refresh;
 
@@ -125,6 +142,7 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
         configuration.put("refreshToken", newRefreshToken);
         // Update the configuration
         updateConfiguration(configuration);
+        storage.put("refreshToken", newRefreshToken);
     }
 
     public Map<String, ApplianceDTO> getElectroluxApplianceThings() {

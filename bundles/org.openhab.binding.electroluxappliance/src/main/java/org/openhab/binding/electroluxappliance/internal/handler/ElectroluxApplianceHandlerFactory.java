@@ -78,17 +78,18 @@ public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
+        final Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
+                String.class.getClassLoader());
+
         if (THING_TYPE_ELECTROLUX_AIR_PURIFIER.equals(thingTypeUID)) {
             return new ElectroluxAirPurifierHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_ELECTROLUX_WASHING_MACHINE.equals(thingTypeUID)) {
             return new ElectroluxWashingMachineHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER.equals(thingTypeUID)) {
-            final Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
-                    String.class.getClassLoader());
             return new ElectroluxPortableAirConditionerHandler(thing, translationProvider, localeProvider, storage);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new ElectroluxApplianceBridgeHandler((Bridge) thing, httpClient, gson, translationProvider,
-                    localeProvider);
+                    localeProvider, storage);
         }
         return null;
     }
