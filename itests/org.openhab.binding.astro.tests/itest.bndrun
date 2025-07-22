@@ -50,6 +50,7 @@ Fragment-Host: org.openhab.binding.astro
 	org.openhab.core.config.core;version='[5.1.0,5.1.1)',\
 	org.openhab.core.config.discovery;version='[5.1.0,5.1.1)',\
 	org.openhab.core.io.console;version='[5.1.0,5.1.1)',\
+	org.openhab.core.semantics;version='[5.1.0,5.1.1)',\
 	org.openhab.core.thing;version='[5.1.0,5.1.1)',\
 	org.openhab.core.transform;version='[5.1.0,5.1.1)',\
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
@@ -72,5 +73,5 @@ Fragment-Host: org.openhab.binding.astro
 	org.objectweb.asm.util;version='[9.6.0,9.6.1)',\
 	org.openhab.core.test;version='[5.1.0,5.1.1)',\
 	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
-	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
-	org.openhab.core.semantics;version='[5.0.0,5.0.1)'
+	jakarta.annotation-api;version='[2.1.1,2.1.2)'
+
