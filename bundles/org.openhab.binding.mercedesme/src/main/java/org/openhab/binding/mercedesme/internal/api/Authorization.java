@@ -94,11 +94,14 @@ public class Authorization {
         // restore token from persistence if available
         String storedToken = storage.get(identifier);
         if (storedToken != null) {
-            // returns INVALID_TOKEN in case of an error
-            TokenResponse tokenResponseJson = Utils.GSON.fromJson(storedToken, TokenResponse.class);
-            token = decodeToken(tokenResponseJson);
+            token = Utils.INVALID_TOKEN;
+            try {
+                TokenResponse tokenResponseJson = Utils.GSON.fromJson(storedToken, TokenResponse.class);
+                token = decodeToken(tokenResponseJson);
+            } catch (JsonSyntaxException e) {
+                logger.warn("Stored token {} for {} not parsable: {}", storedToken, config.email, e.getMessage());
+            }
             if (!authTokenIsValid()) {
-                token = Utils.INVALID_TOKEN;
                 storage.remove(identifier);
                 logger.trace("Invalid token for {}", config.email);
             } else {
