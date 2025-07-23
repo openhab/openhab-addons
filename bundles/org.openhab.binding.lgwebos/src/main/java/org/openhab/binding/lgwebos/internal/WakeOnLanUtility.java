@@ -140,6 +140,30 @@ public class WakeOnLanUtility {
     }
 
     /**
+     * Send single WOL (Wake On Lan) package on specific interface
+     *
+     * @param macAddress MAC address to send WOL package to
+     * @param broadcastAddress Broadcast address to send WOL package to
+     */
+    public static void sendWOLPacket(String macAddress, String broadcastAddress) {
+        byte[] bytes = getWOLPackage(macAddress);
+
+        try {
+            InetAddress broadcast = InetAddress.getByName(broadcastAddress);
+
+            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, broadcast, 9);
+            try (DatagramSocket socket = new DatagramSocket()) {
+                socket.send(packet);
+                LOGGER.trace("Sent WOL packet to {} {}", broadcast, macAddress);
+            } catch (IOException e) {
+                LOGGER.warn("Problem sending WOL packet to {} {}", broadcast, macAddress);
+            }
+        } catch (IOException e) {
+            LOGGER.warn("Problem with interface while sending WOL packet to {} / {}", macAddress, broadcastAddress);
+        }
+    }
+
+    /**
      * Create WOL UDP package: 6 bytes 0xff and then 16 times the 6 byte mac address repeated
      *
      * @param macStr String representation of the MAC address (either with : or -)
