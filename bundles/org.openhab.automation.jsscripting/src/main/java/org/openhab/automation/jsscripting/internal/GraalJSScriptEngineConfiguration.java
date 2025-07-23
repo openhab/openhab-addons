@@ -43,23 +43,24 @@ public class GraalJSScriptEngineConfiguration {
     private boolean dependencyTrackingEnabled = true;
 
     /**
-     * Update configuration
+     * Create a new configuration instance from the given parameters.
+     * 
+     * @param config configuration parameters to apply to JavaScript
+     */
+    public GraalJSScriptEngineConfiguration(Map<String, ?> config) {
+        update(config);
+    }
+
+    /**
+     * To be called when the configuration is modified.
      *
      * @param config configuration parameters to apply to JavaScript
      */
-    void update(Map<String, ?> config) {
-        logger.trace("JavaScript Script Engine Configuration: {}", config);
-
+    void modified(Map<String, ?> config) {
         boolean oldDependencyTrackingEnabled = dependencyTrackingEnabled;
         boolean oldWrapperEnabled = wrapperEnabled;
 
-        this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Integer.class,
-                INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY);
-        this.injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED),
-                Boolean.class, true);
-        this.wrapperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_WRAPPER_ENABLED), Boolean.class, true);
-        this.dependencyTrackingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEPENDENCY_TRACKING_ENABLED),
-                Boolean.class, true);
+        this.update(config);
 
         if (oldDependencyTrackingEnabled != dependencyTrackingEnabled) {
             logger.info(
@@ -71,6 +72,23 @@ public class GraalJSScriptEngineConfiguration {
                     "{} wrapper for JavaScript Scripting. Please resave your UI-based scripts to apply this change.",
                     wrapperEnabled ? "Enabled" : "Disabled");
         }
+    }
+
+    /**
+     * Update configuration
+     *
+     * @param config configuration parameters to apply to JavaScript
+     */
+    private void update(Map<String, ?> config) {
+        logger.trace("JavaScript Script Engine Configuration: {}", config);
+
+        injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Integer.class,
+                INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY);
+        injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED), Boolean.class,
+                true);
+        wrapperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_WRAPPER_ENABLED), Boolean.class, true);
+        dependencyTrackingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEPENDENCY_TRACKING_ENABLED),
+                Boolean.class, true);
     }
 
     public boolean isInjection(int type) {

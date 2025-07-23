@@ -65,7 +65,7 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     }
 
     private final Logger logger = LoggerFactory.getLogger(GraalJSScriptEngineFactory.class);
-    private final GraalJSScriptEngineConfiguration configuration = new GraalJSScriptEngineConfiguration();
+    private final GraalJSScriptEngineConfiguration configuration;
 
     private final JSScriptServiceUtil jsScriptServiceUtil;
     private final JSDependencyTracker jsDependencyTracker;
@@ -77,13 +77,12 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
         this.jsDependencyTracker = jsDependencyTracker;
         this.jsScriptServiceUtil = jsScriptServiceUtil;
-
-        modified(config);
+        this.configuration = new GraalJSScriptEngineConfiguration(config);
     }
 
     @Modified
     protected void modified(Map<String, ?> config) {
-        configuration.update(config);
+        configuration.modified(config);
     }
 
     @Override
