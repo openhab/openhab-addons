@@ -1,6 +1,7 @@
 # WlanThermo Binding
 
 This binding add support for the WlanThermo BBQ Thermometer.
+
 | Nano                                 | Mini                                |
 |--------------------------------------|-------------------------------------|
 | ![WlanThermo Nano V1+](doc/nano.jpg) | ![WlanThermo Mini V2](doc/mini.jpg) |
