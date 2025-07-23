@@ -33,26 +33,51 @@ import javax.script.ScriptException;
 public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T extends ScriptEngine & Invocable & Compilable & AutoCloseable>
         extends DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable<T> {
 
-    public InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable(T delegate) {
+    protected InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable(T delegate) {
         super(delegate);
     }
 
+    /**
+     * Hook method to be called before the invocation of any method on the script engine.
+     */
     protected void beforeInvocation() {
     }
 
+    /**
+     * Hook method to be called when a string script is about to be evaluated.
+     * 
+     * @param script the script to be evaluated
+     * @return the modified script to be evaluated instead, or the original script
+     */
+    protected String onScript(String script) {
+        return script;
+    }
+
+    /**
+     * Hook method to be called after the invocation of any method on the script engine.
+     * 
+     * @param obj the result of the invocation
+     * @return the result to be returned instead, or the original result
+     */
     protected Object afterInvocation(Object obj) {
         return obj;
     }
 
+    /**
+     * Hook method to be called after a {@link ScriptException} or other exception is thrown during invocation.
+     * 
+     * @param e the exception that was thrown
+     * @return the exception to be thrown instead, or the original exception
+     */
     protected Exception afterThrowsInvocation(Exception e) {
         return e;
     }
 
     @Override
-    public Object eval(String s, ScriptContext scriptContext) throws ScriptException {
+    public Object eval(String script, ScriptContext scriptContext) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(s, scriptContext));
+            return afterInvocation(super.eval(onScript(script), scriptContext));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -73,10 +98,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public Object eval(String s) throws ScriptException {
+    public Object eval(String script) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(s));
+            return afterInvocation(super.eval(onScript(script)));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -97,10 +122,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public Object eval(String s, Bindings bindings) throws ScriptException {
+    public Object eval(String script, Bindings bindings) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(s, bindings));
+            return afterInvocation(super.eval(onScript(script), bindings));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -121,11 +146,11 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public Object invokeMethod(Object o, String s, Object... objects)
+    public Object invokeMethod(Object thiz, String name, Object... args)
             throws ScriptException, NoSuchMethodException, NullPointerException, IllegalArgumentException {
         try {
             beforeInvocation();
-            return afterInvocation(super.invokeMethod(o, s, objects));
+            return afterInvocation(super.invokeMethod(thiz, name, args));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeMethod to avoid
@@ -141,11 +166,11 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public Object invokeFunction(String s, Object... objects)
+    public Object invokeFunction(String name, Object... args)
             throws ScriptException, NoSuchMethodException, NullPointerException {
         try {
             beforeInvocation();
-            return afterInvocation(super.invokeFunction(s, objects));
+            return afterInvocation(super.invokeFunction(name, args));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeFunction to avoid
@@ -159,10 +184,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     }
 
     @Override
-    public CompiledScript compile(String s) throws ScriptException {
+    public CompiledScript compile(String script) throws ScriptException {
         try {
             beforeInvocation();
-            return (CompiledScript) afterInvocation(super.compile(s));
+            return (CompiledScript) afterInvocation(super.compile(onScript(script)));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
