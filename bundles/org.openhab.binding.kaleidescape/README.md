@@ -116,7 +116,7 @@ The following channels are available:
 | music#track_handle         | String      | The handle of the currently playing track                                                                                       |
 | music#album_handle         | String      | The handle of the currently playing album                                                                                       |
 | music#nowplay_handle       | String      | The handle of the current now playing list                                                                                      |
-| -- music channels (not available on Alto and Strato) --                                                                                                                    |||
+| -- metadata display channels (music related channels not available on Alto and Strato) --                                                                                  |||
 | detail#type                | String      | Indicates if the currently selected item is a Movie or Album                                                                    |
 | detail#title               | String      | The title of the selected movie                                                                                                 |
 | detail#album_title         | String      | The title of the selected album                                                                                                 |
