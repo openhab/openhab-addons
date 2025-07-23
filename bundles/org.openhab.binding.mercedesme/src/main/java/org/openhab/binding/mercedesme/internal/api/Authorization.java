@@ -99,6 +99,7 @@ public class Authorization {
                 TokenResponse tokenResponseJson = Utils.GSON.fromJson(storedToken, TokenResponse.class);
                 token = decodeToken(tokenResponseJson);
             } catch (JsonSyntaxException e) {
+                storage.remove(identifier);
                 logger.warn("Stored token {} for {} not parsable: {}", storedToken, config.email, e.getMessage());
             }
             if (!authTokenIsValid()) {
