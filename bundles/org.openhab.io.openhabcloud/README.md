@@ -16,7 +16,7 @@ The openHAB Cloud service (and thus the connector to it) is useful for different
 - Open the openHAB web UI and login as an administrator.
 - Click on Add-on Store, followed by System Integrations.
 - Use the Install button to install the openHAB Cloud Connector.
-- Register your session (https://myopenhab.org/) using UUID and Secret.
+- Register your session (<https://myopenhab.org/>) using UUID and Secret.
 
 ## UUID and Secret
 

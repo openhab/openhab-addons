@@ -45,12 +45,12 @@ New table schema is the default for fresh openHAB installations and for users th
 For users with old table schema, one can use pre-existing policy `AmazonDynamoDBFullAccess` (although it gives wider-than-necessary permissions).
 
   1. Open Services menu, and search for _IAM_.
-  2. From top right, press the small arrow on top right corner close to your name. Copy the _Account ID_ to clipboard by pressing the small "copy" icon
+  1. From top right, press the small arrow on top right corner close to your name. Copy the _Account ID_ to clipboard by pressing the small "copy" icon
   ![AWS Account ID](doc/aws_account_id.png)
-  3. In IAM dialog, select _Policies_ from the menu on the left
-  4. Click _Create policy_
-  5. Open _JSON_ tab and input the below policy code.
-  6. Make the below the changes to the policy JSON `Resource` section
+  1. In IAM dialog, select _Policies_ from the menu on the left
+  1. Click _Create policy_
+  1. Open _JSON_ tab and input the below policy code.
+  1. Make the below the changes to the policy JSON `Resource` section
 
 - Modify the AWS account id from `055251986555` to to the one you have on clipboard (see step 2 above)
 - If you are on some other region than `eu-west-1`, change the entry accordingly
@@ -111,11 +111,11 @@ Here we create AWS user with programmatic access to the DynamoDB.
 We associate the user with the policy created above.
 
   1. Open _Services_ -> _IAM_ -> _Users_ -> _Add users_. Enter `openhab` as _User name_, and tick _Programmatic access_
-  2. Click _Next: Permissions_
-  3. Select _Attach existing policies directly_, and search policies with `openhab-dynamodb-policy`. Tick the `openhab-dynamodb-policy` and proceed with _Next: Tags_
-  4. Click _Next: review_
-  5. Click _Create user_
-  6. Record the _Access key ID_ and _Secret access key_
+  1. Click _Next: Permissions_
+  1. Select _Attach existing policies directly_, and search policies with `openhab-dynamodb-policy`. Tick the `openhab-dynamodb-policy` and proceed with _Next: Tags_
+  1. Click _Next: review_
+  1. Click _Create user_
+  1. Record the _Access key ID_ and _Secret access key_
 
 ## Configuration
 
@@ -235,9 +235,9 @@ Similar caveat applies for DynamoDB Time to Live (TTL) setting `expireDays`.
 ### Updating Amazon SDK
 
 1. Update SDK version and `netty-nio-client` version in `scripts/fetch_sdk_pom.xml`. You can use the [maven online repository browser](https://mvnrepository.com/artifact/software.amazon.awssdk/dynamodb-enhanced) to find the latest version available online.
-2. `scripts/fetch_sdk.sh`
-3. Copy printed dependencies to `pom.xml`. If necessary, adjust feature.xml, bnd.importpackage and dep.noembedding as well (probably rarely needed but [it happens](https://aws.amazon.com/blogs/developer/the-aws-sdk-for-java-2-17-removes-its-external-dependency-on-jackson/)).
-4. Check & update `NOTICE` file with all the updated, new and removed dependencies.
+1. `scripts/fetch_sdk.sh`
+1. Copy printed dependencies to `pom.xml`. If necessary, adjust feature.xml, bnd.importpackage and dep.noembedding as well (probably rarely needed but [it happens](https://aws.amazon.com/blogs/developer/the-aws-sdk-for-java-2-17-removes-its-external-dependency-on-jackson/)).
+1. Check & update `NOTICE` file with all the updated, new and removed dependencies.
 
 After these changes, it's good practice to run integration tests (against live AWS DynamoDB) in `org.openhab.persistence.dynamodb.test` bundle.
 See README.md in the test bundle for more information how to execute the tests.
@@ -250,8 +250,8 @@ One can configure AWS credentials to run the test against real AWS DynamoDB for 
 Eclipse instructions
 
 1. Run all tests (in package org.openhab.persistence.dynamodb.internal) as JUnit Tests
-2. Configure the run configuration, and open Arguments sheet
-3. In VM arguments, provide the credentials for AWS
+1. Configure the run configuration, and open Arguments sheet
+1. In VM arguments, provide the credentials for AWS
 
 ```bash
 -DDYNAMODBTEST_REGION=REGION-ID

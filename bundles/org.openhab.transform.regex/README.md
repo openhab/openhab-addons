@@ -29,7 +29,7 @@ The special characters `\.[]{}()*+-?^$|` have to be escaped when they should be 
 
 ### Example In Setup
 
-**Input String**
+#### Input String
 
 ```shell
 temp=44.0'C
@@ -37,7 +37,7 @@ temp=44.0'C
 
 the regex transformation can be used to extract the value to display it on the label.
 
-**.items**
+#### `example.items`
 
 ```java
 String  Temperature_str "Temperature [REGEX(.*=(\\d*\\.\\d*).*):%s °C]" {...}
@@ -60,7 +60,7 @@ The result will be `44.0` and displayed on the label as `Temperature 44.0 °C`.
 A better solution would be to use the regex on the result from the binding either in a rule or when the binding allows it on the output channel.
 Thus the value `44.0` would be saved as a number.
 
-**.rules**
+#### .rules
 
 ```java
 rule "Convert String to Item Number"
