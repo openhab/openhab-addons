@@ -100,9 +100,7 @@ The following channels are available:
 | ui#user_input              | String      | Indicates if the user is being prompted for input, what type of input, and any currently entered characters                     |
 | ui#user_input_prompt       | String      | Indicates user input prompt info and properties currently shown on screen                                                       |
 | ui#sendcmd                 | String      | Sends a raw command to the Kaleidescape player (WriteOnly)                                                                      |
-
-**Note:** Music channels (not available on Alto and Strato)
-
+| -- music channels (not available on Alto and Strato) --                                                                                                                    |||
 | music#control              | Player      | Control Music Playback e.g. play/pause/next/previous/ffward/rewind                                                              |
 | music#repeat               | Switch      | Controls repeat playback for music                                                                                              |
 | music#random               | Switch      | Controls random playback for music                                                                                              |
