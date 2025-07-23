@@ -277,7 +277,7 @@ public class OpenhabGraalJSScriptEngine
                 .getAttribute(CONTEXT_KEY_DEPENDENCY_LISTENER);
         if (localScriptDependencyListener == null) {
             logger.warn(
-                    "Failed to retrieve script script dependency listener from engine bindings. Script dependency tracking will be disabled for engine '{}'.",
+                    "Failed to retrieve script dependency listener from engine bindings. Script dependency tracking will be disabled for engine '{}'.",
                     engineIdentifier);
         }
         scriptDependencyListener = localScriptDependencyListener;
