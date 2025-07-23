@@ -33,7 +33,7 @@ public abstract class DelegatingScriptEngineWithInvocableAndCompilableAndAutoclo
         implements ScriptEngine, Invocable, Compilable, AutoCloseable {
     protected T delegate;
 
-    public DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable(T delegate) {
+    protected DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable(T delegate) {
         this.delegate = delegate;
     }
 
