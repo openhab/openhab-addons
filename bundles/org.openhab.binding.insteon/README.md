@@ -1394,11 +1394,11 @@ Rollershutter windowShade "window shade" { channel="insteon:device:home:aabbcc:r
 
 Similar to [dimmers](#dimmers), the binding uses the device on level and ramp rate local settings to set the rollershutter level, the same way it would be set when physically interacting with the controller, and can be overridden using the `onLevel` and `rampRate`channel parameters.
 
-### Insteon Scenes
+## Insteon Scenes
 
 The binding can trigger scenes by commanding the modem to send broadcasts to a given Insteon group.
 
-#### Things
+### Things
 
 ```java
 Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
@@ -1406,7 +1406,7 @@ Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
 }
 ```
 
-#### Items
+### Items
 
 ```java
 Switch scene                    "scene"         { channel="insteon:scene:home:scene42:scene" }
@@ -1414,7 +1414,7 @@ Switch sceneFastOnOff           "fast on/off"   { channel="insteon:scene:home:sc
 Rollershutter sceneManualChange "manual change" { channel="insteon:scene:home:scene42:manual-change" }
 ```
 
-#### Sitemap
+### Sitemap
 
 ```perl
 Switch item=scene
@@ -1433,7 +1433,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   Since it is a broadcast message, the corresponding item does _not_ take the address of any device, but of the modem itself.
   The format is `broadcastOnOff#X` where X is the group that you want to be able to broadcast messages to:
 
-#### Legacy Things
+### Legacy Things
 
   ```java
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
@@ -1452,7 +1452,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   }
   ```
 
-#### Legacy Items
+### Legacy Items
 
   ```java
   Switch  broadcastOnOff "group on/off"  { channel="insteon:device:home:AABBCC:broadcastOnOff#2" }
@@ -1462,14 +1462,14 @@ An `ON` state indicates that all the device states associated to a scene are mat
 
 </details>
 
-### X10 Devices
+## X10 Devices
 
 It is worth noting that both the Insteon PLM and the 2014 Hub can both command X10 devices over the powerline, and also set switch stats based on X10 signals received over the powerline.
 This allows openHAB not only control X10 devices without the need for other hardware, but it can also have rules that react to incoming X10 powerline commands.
 
 Note that X10 switches/dimmers send no status updates when toggled manually.
 
-#### Things
+### Things
 
 ```java
 Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
@@ -1492,7 +1492,7 @@ Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
 
 </details>
 
-#### Items
+### Items
 
 ```java
 Switch  x10Switch "X10 switch" { channel="insteon:x10:home:a2:switch" }
