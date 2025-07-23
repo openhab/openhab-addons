@@ -1,0 +1,23 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+
+version: 2
+
+# this would enable querying all packages from our repo first,
+# disabled for now as we do not want to use it. Kept for reference.
+#registries:
+#  openhab-jfrog:
+#    type: "maven-repository"
+#    url: "https://openhab.jfrog.io/artifactory/libs-all/"
+
+updates:
+  - package-ecosystem: "github-actions" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+
