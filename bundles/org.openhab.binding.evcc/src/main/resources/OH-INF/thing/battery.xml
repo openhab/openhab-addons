@@ -12,7 +12,7 @@
 		<description>A battery configured in your evcc instance</description>
 	</thing-type>
 	<channel-type id="battery-capacity">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Battery Capacity</label>
 		<description>Capacity of this battery</description>
 		<category>Energy</category>
@@ -35,7 +35,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="battery-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Battery Power</label>
 		<description>Current power from this battery</description>
 		<category>Energy</category>

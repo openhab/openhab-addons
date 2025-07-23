@@ -13,7 +13,7 @@
 	</thing-type>
 	<!-- Already declared in site.xml maybe evcc is going to change it in the future -->
 	<channel-type id="pv-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>PV Power</label>
 		<description>Current power of this photovoltaic system in Watt</description>
 		<category>Power</category>

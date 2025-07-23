@@ -7,7 +7,7 @@
 		<label>Server</label>
 		<description>Connection to evcc instance</description>
 		<config-description>
-			<parameter name="schema" type="text">
+			<parameter name="scheme" type="text">
 				<label>Protocol Scheme</label>
 				<description>The protocol scheme that should be used to connect to your instance</description>
 				<default>http</default>

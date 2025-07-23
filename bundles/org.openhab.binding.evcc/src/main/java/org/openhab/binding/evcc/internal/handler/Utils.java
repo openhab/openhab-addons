@@ -12,19 +12,59 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_DIMENSIONLESS;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_ELECTRIC_CURRENT;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_EMISSION_INTENSITY;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_ENERGY;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_LENGTH;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_POWER;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.IntStream;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 
 /**
- * The {@link Utils} provides utility methods for string manipulation
+ * The {@link Utils} provides utility methods
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public class Utils {
+
+    private static Map<String, @Nullable Unit<?>> unitMap = new HashMap<>();
+
+    static {
+        unitMap.put(NUMBER_LENGTH, SIUnits.METRE);
+        unitMap.put(NUMBER_POWER, Units.WATT);
+        unitMap.put(NUMBER_ENERGY, Units.WATT_HOUR);
+        unitMap.put(NUMBER_TIME, Units.SECOND);
+        unitMap.put(NUMBER_ELECTRIC_CURRENT, Units.AMPERE);
+        unitMap.put(NUMBER_DIMENSIONLESS, Units.ONE);
+        unitMap.put(NUMBER_EMISSION_INTENSITY, SIUnits.GRAM.divide(Units.KILOWATT_HOUR));
+    }
+
+    public static Unit<?> getUnitfromChannelType(String itemType) {
+        Unit<?> unit = unitMap.get(itemType);
+        if (null != unit) {
+            return unit;
+        } else {
+            return Units.ONE;
+        }
+    }
+
+    public static void addUnitToUnitMap(String key, Unit<?> unit) {
+        unitMap.put(key, unit);
+    }
 
     /**
      * This method will capatalize the words of a given string

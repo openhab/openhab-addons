@@ -13,6 +13,7 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -36,8 +37,8 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccSiteHandler.class);
 
-    public EvccSiteHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
-        super(thing, channelTypeRegistry);
+    public EvccSiteHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry, LocaleProvider locale) {
+        super(thing, channelTypeRegistry, locale);
     }
 
     @Override
@@ -80,6 +81,11 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
         if (state.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
+        }
+
+        // Set the smart cost type
+        if (state.has("smartCostType")) {
+            smartCostType = state.get("smartCostType").getAsString();
         }
 
         if (state.has("gridConfigured")) {

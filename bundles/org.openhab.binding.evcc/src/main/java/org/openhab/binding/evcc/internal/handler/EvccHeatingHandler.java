@@ -13,6 +13,7 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
@@ -26,8 +27,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccHeatingHandler extends EvccLoadpointHandler {
 
-    public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
-        super(thing, channelTypeRegistry);
+    public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry, LocaleProvider locale) {
+        super(thing, channelTypeRegistry, locale);
     }
 
     @Override

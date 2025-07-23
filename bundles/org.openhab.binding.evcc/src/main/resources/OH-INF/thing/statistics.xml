@@ -41,7 +41,7 @@
 	</channel-group-type>
 
 	<channel-type id="avg-co2-type">
-		<item-type>Number:EmissionIntensity</item-type>
+		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
 		<label>Average C02</label>
 		<tags>
 			<tag>Calculation</tag>
@@ -58,19 +58,19 @@
 		<state pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="charged-energy-type">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Charged Energy</label>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Info</tag>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="solar-percentage-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Solar Percentage</label>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Info</tag>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.2f %unit%"></state>
 	</channel-type>

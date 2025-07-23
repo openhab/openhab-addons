@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -40,8 +41,8 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccStatisticsHandler.class);
 
-    public EvccStatisticsHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
-        super(thing, channelTypeRegistry);
+    public EvccStatisticsHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry, LocaleProvider locale) {
+        super(thing, channelTypeRegistry, locale);
     }
 
     @Override

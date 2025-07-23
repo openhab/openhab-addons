@@ -17,6 +17,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -41,8 +42,8 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EvccLoadpointHandler.class);
     protected final int index;
 
-    public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
-        super(thing, channelTypeRegistry);
+    public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry, LocaleProvider locale) {
+        super(thing, channelTypeRegistry, locale);
         Map<String, String> props = thing.getProperties();
         String indexString = props.getOrDefault(PROPERTY_INDEX, "0");
         index = Integer.parseInt(indexString);

@@ -12,7 +12,7 @@
 		<representation-property>id</representation-property>
 	</thing-type>
 	<channel-type id="vehicle-capacity">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Vehicle Capacity</label>
 		<description>Capacity of vehicle battery</description>
 		<category>Energy</category>
@@ -53,7 +53,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="vehicle-max-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Vehicle Max Current</label>
 		<description>Maximum allowed current that can be provided to charge the vehicle</description>
 		<category>Energy</category>
@@ -64,7 +64,7 @@
 		<state min="6" step="1" max="32" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicle-min-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Vehicle Min Current</label>
 		<description>Minimum current thats need to provided to charge the vehicle</description>
 		<category>Energy</category>
@@ -82,7 +82,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vehicle-plan-soc">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Planned SoC</label>
 		<description>Planned state of charge to which the vehicle will be charged (can be greater than the Vehicle Limit SoC)</description>
 		<tags>

@@ -16,6 +16,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -43,8 +44,8 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     private String endpoint = "";
 
-    public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
-        super(thing, channelTypeRegistry);
+    public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry, LocaleProvider locale) {
+        super(thing, channelTypeRegistry, locale);
         vehicleId = thing.getProperties().get(PROPERTY_ID);
     }
 

@@ -18,7 +18,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-battery-capacity">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Site Battery Capacity</label>
 		<description>Accumulated battery capacity for this site</description>
 		<category>Energy</category>
@@ -41,7 +41,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="site-battery-energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="Wh">Number:Energy</item-type>
 		<label>Battery Energy</label>
 		<description>Energy provided from the battery(ies)</description>
 		<category>Energy</category>
@@ -67,14 +67,23 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="site-battery-grid-charge-limit">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="site-battery-grid-charge-limit-co2">
+		<item-type>Number:EmissionIntensity</item-type>
 		<label>Grid Charging Limit</label>
 		<description>Below this smart cost limit the charging from grid will start (currency or co2)</description>
 		<tags>
 			<tag>Control</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="site-battery-grid-charge-limit-price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Grid Charging Limit</label>
+		<description>Below this smart cost limit the charging from grid will start (currency or co2)</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state pattern="%.3f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-battery-mode">
 		<item-type>String</item-type>
@@ -105,7 +114,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="site-battery-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Battery Power</label>
 		<description>Accumulated power distributed by the battery(ies)</description>
 		<category>Energy</category>
@@ -187,7 +196,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-grid-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Grid Power</label>
 		<description>Current power from grid (negative means feed-in)</description>
 		<category>Energy</category>
@@ -198,7 +207,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-home-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Home Power</label>
 		<description>Current power consumption by home</description>
 		<category>Energy</category>
@@ -228,21 +237,21 @@
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="site-interval">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Interval</label>
 		<description>Refresh interval configured for evcc</description>
 		<category>Settings</category>
-		<state pattern="%.0f" readOnly="true"></state>
+		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="site-pv-energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="Wh">Number:Energy</item-type>
 		<label>PV Energy</label>
 		<description>Accumulated energy provided through photovoltaic systems</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-pv-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>PV Power</label>
 		<description>Accumulated current power from photovoltaic systems</description>
 		<category>Energy</category>
@@ -253,7 +262,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-residual-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Grid Residual Power</label>
 		<description>Target operating point of the surplus regulation at the grid connection (grid meter)
 		</description>
@@ -322,7 +331,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="site-tariff-co2">
-		<item-type>Number:EmissionIntensity</item-type>
+		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
 		<label>CO2 Concentration</label>
 		<description>Indicates the current carbon dioxide concentration per kWh</description>
 		<category>co2</category>
@@ -333,7 +342,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="site-tariff-co2-home">
-		<item-type>Number:EmissionIntensity</item-type>
+		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
 		<label>CO2 Concentration Home</label>
 		<description>Indicates the current carbon dioxide concentration per kWh for your home</description>
 		<category>co2</category>
@@ -344,7 +353,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="site-tariff-co2-loadpoints">
-		<item-type>Number:EmissionIntensity</item-type>
+		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
 		<label>CO2 Concentration Loadpoints</label>
 		<description>Indicates the current carbon dioxide concentration per kWh for your loadpoints</description>
 		<category>co2</category>
@@ -355,31 +364,31 @@
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="site-tariff-feed-in">
-		<item-type>Number:Currency</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Feed in price per kWh</label>
 		<description>Indicates the current price per kWh for feed-in to the grid</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-tariff-grid">
-		<item-type>Number:Currency</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Grid Price</label>
 		<description>Indicates the current price per kWh for consuming from the grid</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-tariff-price-home">
-		<item-type>Number:Currency</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Home Price</label>
 		<description>Indicates the current price per kWh for your home</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-tariff-price-loadpoints">
-		<item-type>Number:Currency</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Loadpoint price per kWh</label>
 		<description>Indicates the current price per kWh for loadpoints</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-tariff-solar">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Solar Tariff</label>
 		<description>Current solar power forecast</description>
 		<category>Energy</category>
