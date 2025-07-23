@@ -100,7 +100,7 @@ The following channels are available:
 | ui#user_input              | String      | Indicates if the user is being prompted for input, what type of input, and any currently entered characters                     |
 | ui#user_input_prompt       | String      | Indicates user input prompt info and properties currently shown on screen                                                       |
 | ui#sendcmd                 | String      | Sends a raw command to the Kaleidescape player (WriteOnly)                                                                      |
-| -- music channels (not available on Alto and Strato) --                                                                                                                    |
+| -- music channels (not available on Alto and Strato) --                                                                                                                    |||
 | music#control              | Player      | Control Music Playback e.g. play/pause/next/previous/ffward/rewind                                                              |
 | music#repeat               | Switch      | Controls repeat playback for music                                                                                              |
 | music#random               | Switch      | Controls random playback for music                                                                                              |
@@ -116,7 +116,7 @@ The following channels are available:
 | music#track_handle         | String      | The handle of the currently playing track                                                                                       |
 | music#album_handle         | String      | The handle of the currently playing album                                                                                       |
 | music#nowplay_handle       | String      | The handle of the current now playing list                                                                                      |
-| -- metadata display channels (music related channels not available on Alto and Strato) --                                                                                  |
+| -- music channels (not available on Alto and Strato) --                                                                                                                    |||
 | detail#type                | String      | Indicates if the currently selected item is a Movie or Album                                                                    |
 | detail#title               | String      | The title of the selected movie                                                                                                 |
 | detail#album_title         | String      | The title of the selected album                                                                                                 |
