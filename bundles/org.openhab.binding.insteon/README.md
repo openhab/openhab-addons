@@ -1237,7 +1237,7 @@ Number:Time sirenAlertDuration "alert duration [%d s]" { channel="insteon:device
 String sirenAlertType          "alert type [%s]"       { channel="insteon:device:home:aabbcc:alert-type" }
 ```
 
-##### Sitemap
+#### Sitemap
 
 ```perl
 Switch   item=siren
