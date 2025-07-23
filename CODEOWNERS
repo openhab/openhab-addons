@@ -170,7 +170,7 @@
 /bundles/org.openhab.binding.homewizard/ @Daniel-42
 /bundles/org.openhab.binding.hpprinter/ @cossey
 /bundles/org.openhab.binding.http/ @J-N-K
-/bundles/org.openhab.binding.hue/ @cweitkamp @andrewfg
+/bundles/org.openhab.binding.hue/ @andrewfg
 /bundles/org.openhab.binding.huesync/ @pgfeller
 /bundles/org.openhab.binding.hydrawise/ @digitaldan
 /bundles/org.openhab.binding.hyperion/ @tavalin
@@ -498,7 +498,7 @@
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.feed.tests/ @openhab/add-ons-maintainers
-/itests/org.openhab.binding.hue.tests/ @cweitkamp
+/itests/org.openhab.binding.hue.tests/ @openhab/add-ons-maintainers
 /itests/org.openhab.binding.max.tests/ @marcelrv
 /itests/org.openhab.binding.mielecloud.tests/ @BjoernLange
 /itests/org.openhab.binding.modbus.tests/ @ssalonen
