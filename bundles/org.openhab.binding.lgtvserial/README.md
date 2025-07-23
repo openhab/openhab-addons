@@ -174,14 +174,14 @@ end
 
 ## LG protocol references
 
-[1] Manual for M6503C monitor <https://gscs-b2c.lge.com/downloadFile?fileId=KROWM000237239.pdf>
+[1] Manual for M6503C monitor <https://gscs-b2c.lge.com/downloadFile?fileId=KROWM000237239.pdf><a name="ref1"/>
 
 [2] <https://sites.google.com/site/brendanrobert/projects/bits-and-pieces/lg-tv-hacks>
 
 [3] <https://code.google.com/archive/p/lg-tv-command/source/default/source>
 
-[4] <https://github.com/suan/libLGTV_serial>
+[4] <https://github.com/suan/libLGTV_serial><a name="ref4"/>
 
-[5] Manual for LV series, LK series, PW series and PZ series <https://gscs-b2c.lge.com/downloadFile?fileId=ujpO8yH69djwNZzwuavqpQ>
+[5] Manual for LV series, LK series, PW series and PZ series <https://gscs-b2c.lge.com/downloadFile?fileId=ujpO8yH69djwNZzwuavqpQ><a name="ref5"/>
 
 [6] Manual for LD series, LE series, LX series and PK series <https://gscs-b2c.lge.com/downloadFile?fileId=76If0tKDLOUizuoXikllgQ>
