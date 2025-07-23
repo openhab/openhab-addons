@@ -1500,7 +1500,7 @@ Dimmer  x10Dimmer "X10 dimmer" { channel="insteon:x10:home:b4:dimmer" }
 Contact x10Contact "X10 contact" { channel="insteon:x10:home:c6:contact" }
 ```
 
-### Battery Powered Devices
+## Battery Powered Devices
 
 Battery powered devices (mostly sensors) work differently than standard wired one.
 To conserve battery, these devices are only pollable when there are awake.
@@ -1530,7 +1530,7 @@ While the device is offline, the binding will ignore commands sent to it.
 This status persists until a valid response is received.
 The response timeout can be increased from 30 minutes (default) up to 6 hours by updating the associated bridge parameter `deviceResponseTimeoutInMinutes`.
 
-### Related Devices
+## Related Devices
 
 When an Insteon device changes its state because it is directly operated (for example by flipping a switch manually), it sends out a broadcast message to announce the state change, and the binding (if the PLM modem is properly linked as a responder) should update the corresponding openHAB items.
 Other linked devices however may also change their state in response, but those devices will _not_ send out a broadcast message, and so openHAB will not learn about their state change until the next poll.
