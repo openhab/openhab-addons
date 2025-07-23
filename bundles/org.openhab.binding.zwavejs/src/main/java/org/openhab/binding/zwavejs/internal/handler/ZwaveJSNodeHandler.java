@@ -394,16 +394,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     @Override
-    public void onNodeRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
-    }
-
-    @Override
-    public void onNodeAdded(Node node) {
-        // not supported, as this is a handler for an existing node
-    }
-
-    @Override
     public boolean onNodeStateChanged(Event event) {
         logger.trace("Node {}. State changed event", config.id);
 
@@ -556,6 +546,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     public void onNodeDead(Event event) {
         logger.trace("Node {}. Dead", config.id);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.dead-node");
+    }
+
+    @Override
+    public void onNodeRemoved(Event event) {
+        logger.trace("Node {}. Removed", config.id);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.conf-error.node-removed");
     }
 
     @Override
