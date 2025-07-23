@@ -25,7 +25,7 @@ The following Tapo-Devices are supported. For precise channel-description look a
 | Smart Temperature Sensor (RF)      | T310        | Temperature and Humidity Sensor              |
 |                                    | T315        | Temperature and Humidity Sensor with Display |
 | Smart Switch (RF)                  | S210        | Wall switch with 1 contact                    |
-| Smart Switch (RF)                  | S220        | Wall switch with 2 contacts                  | 
+| Smart Switch (RF)                  | S220        | Wall switch with 2 contacts                   |
 
 ## Prerequisites
 

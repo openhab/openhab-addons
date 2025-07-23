@@ -141,7 +141,7 @@ The call-types are the same as provided by the FritzBox, i.e. `1` (inbound), `2`
 | `macSignalStrength2` | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 5Ghz   |
 | `macSpeed2`          | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 5Ghz             |
 
-***Note:*** The `wifi24GHzEnable`, `wifi5GHzEnable` and `wifiGuestEnable`channels have been deprecated and will be removed in future versions.
+_Note:_ The `wifi24GHzEnable`, `wifi5GHzEnable` and `wifiGuestEnable`channels have been deprecated and will be removed in future versions.
 They are replaced by `wifiXEnable` (with `X` being a number between `1` and `4`).
 
 - FritzBoxes which do not support 5 GHz use `wifi1Enable` for the standard WiFi and `wifi2Enable`for the guest WiFi.

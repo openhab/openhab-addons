@@ -1,6 +1,10 @@
 # Teslascope Binding
 
-This binding integrates [Tesla Electrical Vehicles](https://www.tesla.com).
+This binding integ| auto-conditioning   | Switch               | Auto Conditioning   | Turns on auto-conditioning (a/c or heating)                                                |
+| battery-level       | Number:Dimensionless | Battery Level       | State of the battery in %                                                                   |
+| charging-state      | String               | Charging State      | "Starting", "Complete", "Charging", "Disconnected", "Stopped", "NoPower"                   |
+| charge-port         | Switch               | Charge Port         | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)|
+| climate             | Switch               | Climate             | Climate status indicator                                                                    | [Tesla Electrical Vehicles](https://www.tesla.com).
 The integration happens through the [Teslascope](https://www.teslascope.com) API.
 
 ## Supported Things
@@ -14,11 +18,12 @@ After (manually) adding a Teslascope Account bridge, registered vehicles will be
 
 ## `account` Bridge Configuration
 
-Account configuration is necessary. 
-The easiest way to do this is from the UI. 
+Account configuration is necessary.
+The easiest way to do this is from the UI.
 Just add a new thing, select the Teslascope binding, then Teslascope Account Binding Thing, and enter the apiKey from the Teslascope website.
 
 As a minimum, the apiKey is needed:
+
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | apiKey          | N/A           | Yes      | No       | apiKey provided by Teslascope                                                        |
@@ -27,6 +32,7 @@ As a minimum, the apiKey is needed:
 ## `vehicle` Thing Configuration
 
 As a minimum, the publicID is needed:
+
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | publicID        | N/A           | Yes      | No       | Vehicle Public ID listed in Teslascope                                               |
@@ -41,7 +47,7 @@ All vehicles support a huge number of channels - the following list shows the st
 | auto-conditioning   | Switch               | Auto Conditioning   | Turns on auto-conditioning (a/c or heating)                                                 |
 | battery-level       | Number:Dimensionless | Battery Level       | State of the battery in %                                                                   |
 | charging-state      | String               | Charging State      | “Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”                    |
-| charge-port         | Switch               | Charge Port         | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed) | 
+| charge-port         | Switch               | Charge Port         | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed) |
 | climate             | Switch               | Climate             | Climate status indicator                                                                    |
 | door-lock           | Switch               | Door Lock           | Lock or unlock the car                                                                      |
 | inside-temp         | Number:Temperature   | Inside Temperature  | Indicates the inside temperature of the vehicle                                             |
