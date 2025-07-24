@@ -34,6 +34,7 @@ import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeApiException;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeAuthException;
+import org.openhab.binding.mercedesme.internal.exception.MercedesMeBindingException;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.i18n.LocaleProvider;
@@ -162,6 +163,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             handleAuthError(e);
         } catch (MercedesMeApiException e) {
             handleApiError(e);
+        } catch (MercedesMeBindingException e) {
+            handleBindingError(e);
         }
     }
 
@@ -381,7 +384,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (cm != null) {
             api.websocketAddCommand(cm);
         }
-        scheduleRefresh(2);
     }
 
     public void keepAlive(String vin, boolean b) {
@@ -420,6 +422,11 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private void handleApiError(MercedesMeApiException e) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 STATUS_API_FAILURE + " [\"" + e.getMessage() + "\"]");
+    }
+
+    private void handleBindingError(MercedesMeBindingException e) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                STATUS_BIDNING_ERROR + " [\"" + e.getMessage() + "\"]");
     }
 
     public void handleConnected() {

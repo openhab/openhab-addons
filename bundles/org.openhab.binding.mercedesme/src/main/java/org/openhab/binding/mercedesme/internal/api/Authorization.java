@@ -47,6 +47,7 @@ import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.dto.TokenResponse;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeApiException;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeAuthException;
+import org.openhab.binding.mercedesme.internal.exception.MercedesMeBindingException;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -94,16 +95,15 @@ public class Authorization {
         // restore token from persistence if available
         String storedToken = storage.get(identifier);
         if (storedToken != null) {
-            token = Utils.INVALID_TOKEN;
             try {
                 TokenResponse tokenResponseJson = Utils.GSON.fromJson(storedToken, TokenResponse.class);
                 token = decodeToken(tokenResponseJson);
             } catch (JsonSyntaxException e) {
-                storage.remove(identifier);
+                handleInvalidToken();
                 logger.warn("Stored token {} for {} not parsable: {}", storedToken, config.email, e.getMessage());
             }
             if (!authTokenIsValid()) {
-                storage.remove(identifier);
+                handleInvalidToken();
                 logger.trace("Invalid token for {}", config.email);
             } else {
                 atrl.onAccessTokenResponse(token);
@@ -143,12 +143,7 @@ public class Authorization {
             if (tokenResponseStatus == 200) {
                 storeToken(tokenResponse);
             } else {
-                token = Utils.INVALID_TOKEN;
-                /**
-                 * 1) remove token from storage
-                 * 2) listener will be informed about INVALID_TOKEN and bridge will go OFFLINE
-                 */
-                storage.remove(identifier);
+                handleInvalidToken();
                 logger.warn("Failed to refresh token {} {}", tokenResponseStatus, tokenResponse);
             }
             listener.onAccessTokenResponse(token);
@@ -159,12 +154,11 @@ public class Authorization {
     }
 
     private void storeToken(String tokenResponse) {
-        TokenResponse tokenResponseJson = Utils.GSON.fromJson(tokenResponse, TokenResponse.class);
-        if (tokenResponseJson != null) {
+        try {
+            TokenResponse tokenResponseJson = Utils.GSON.fromJson(tokenResponse, TokenResponse.class);
             // response doesn't contain creation date time so set it manually
             tokenResponseJson.createdOn = Instant.now().toString();
-            // a new refresh token is delivered optional
-            // if not set in response take old one
+            // A refresh token is delivered optional. If not set in response take old one
             if (Constants.NOT_SET.equals(tokenResponseJson.refreshToken)) {
                 tokenResponseJson.refreshToken = token.getRefreshToken();
             }
@@ -174,13 +168,13 @@ public class Authorization {
                 logger.debug("Token result {}", token.toString());
                 storage.put(identifier, tokenStore);
             } else {
-                token = Utils.INVALID_TOKEN;
-                storage.remove(identifier);
+                handleInvalidToken();
                 logger.warn("Refresh token delivered invalid result {}", tokenResponse);
             }
-        } else {
-            logger.debug("Token refersh delivered not parsable result {}", tokenResponse);
-            token = Utils.INVALID_TOKEN;
+        } catch (JsonSyntaxException e) {
+            logger.warn("Token response {} not parsable: {}", tokenResponse, e.getMessage());
+            handleInvalidToken();
+            return;
         }
     }
 
@@ -220,7 +214,7 @@ public class Authorization {
      * @throws MercedesMeAuthException if response status isn't correct or needed parameters not delivered
      * @throws MercedesMeApiException if an error occurs during API calls
      */
-    public void login() throws MercedesMeAuthException, MercedesMeApiException {
+    public void login() throws MercedesMeAuthException, MercedesMeApiException, MercedesMeBindingException {
         logger.info("Start login");
         if (isJunit()) {
             // avoid real API calls in JUnit environment
@@ -249,7 +243,7 @@ public class Authorization {
             loginHttpClient.start();
             loginHttpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
             String codeVerifier = generateCodeVerifier(32);
-            String codeChallenge = generateCodeChallengeSafely(codeVerifier);
+            String codeChallenge = generateCodeChallenge(codeVerifier);
             String resumeUrl = getResumeUrl(loginHttpClient, codeChallenge);
             sendUserAgent(loginHttpClient);
             sendUsername(loginHttpClient);
@@ -258,6 +252,9 @@ public class Authorization {
             requestAccessToken(loginHttpClient, authCode, codeVerifier);
         } catch (MercedesMeAuthException | MercedesMeApiException e) {
             throw e;
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            String message = e.getMessage();
+            throw new MercedesMeBindingException(message == null ? "unknown" : message);
         } catch (Exception e) {
             String message = e.getMessage();
             throw new MercedesMeApiException(message == null ? "unknown" : message);
@@ -277,7 +274,7 @@ public class Authorization {
      * @throws MercedesMeApiException if an error occurs during API call
      */
     private String getResumeUrl(HttpClient loginHttpClient, String codeChallenge)
-            throws MercedesMeAuthException, MercedesMeApiException {
+            throws MercedesMeAuthException, MercedesMeApiException, UnsupportedEncodingException {
         Fields resumeContent = new Fields();
         resumeContent.put("client_id", Constants.AUTH_CLIENT_ID);
         resumeContent.put("code_challenge_method", "S256");
@@ -409,7 +406,7 @@ public class Authorization {
      * @throws MercedesMeApiException if an error occurs during API call
      */
     private String resumeAuthentication(HttpClient loginHttpClient, String resumeUrl, String preLoginToken)
-            throws MercedesMeAuthException, MercedesMeApiException {
+            throws MercedesMeAuthException, MercedesMeApiException, UnsupportedEncodingException {
         String code = null;
         MultiMap<@Nullable String> authParams = new MultiMap<>();
         authParams.add("token", preLoginToken);
@@ -465,23 +462,14 @@ public class Authorization {
             storeToken(tokenResponseString);
             logger.info("Successfully resumed login");
         } else {
-            token = Utils.INVALID_TOKEN;
-            /**
-             * 1) remove token from storage
-             * 2) listener will be informed about INVALID_TOKEN and bridge will go OFFLINE
-             * 3) user needs to check response manually
-             */
-            storage.remove(identifier);
+            handleInvalidToken();
             logger.info("Failed resume login {} {}", status, tokenResponse.getContentAsString());
         }
     }
 
-    private String generateCodeChallengeSafely(String codeVerifier) throws MercedesMeAuthException {
-        try {
-            return generateCodeChallenge(codeVerifier);
-        } catch (NoSuchAlgorithmException e) {
-            throw new MercedesMeAuthException("Failed to generate code challenge: " + e.getMessage());
-        }
+    private void handleInvalidToken() {
+        token = Utils.INVALID_TOKEN;
+        storage.remove(identifier);
     }
 
     private String generateCodeChallenge(String codeVerifier) throws NoSuchAlgorithmException {

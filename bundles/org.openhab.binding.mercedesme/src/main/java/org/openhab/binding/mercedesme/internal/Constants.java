@@ -278,6 +278,7 @@ public class Constants {
     public static final String STATUS_CONFIG_REFRESH_LOW = "@text/mercedesme.account.status.config.refresh-invalid";
     public static final String STATUS_AUTH_FAILURE = "@text/mercedesme.account.status.auth-failure";
     public static final String STATUS_API_FAILURE = "@text/mercedesme.account.status.api-failure";
+    public static final String STATUS_BIDNING_ERROR = "@text/mercedesme.account.status.binding-error";
     public static final String STATUS_WEBSOCKET_FAILURE = "@text/mercedesme.account.status.websocket-failure";
     public static final String STATUS_BRIDGE_MISSING = "@text/mercedesme.vehicle.status.bridge-missing";
 
