@@ -87,7 +87,7 @@ Bridge tellstick:telldus-core:1 "Tellstick Duo" [resendInterval=200,libraryPath=
 
 Optional:
 
-- **libraryPath:** The path to tellduscore.dll/so semicolon seperated list of folders.
+- **libraryPath:** The path to tellduscore.dll/so semicolon separated list of folders.
 - **resendInterval:** The interval between each transmission of command in ms, default 100ms.
 
 #### Telldus Live Bridge

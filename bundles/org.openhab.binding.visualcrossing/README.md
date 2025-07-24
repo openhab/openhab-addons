@@ -179,7 +179,7 @@ Number:Temperature Total_Weather_Data_Basic_Feels_Like "Feels Like" (Total_Weath
 Number:Dimensionless Total_Weather_Data_Basic_Humidity "Humidity" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#humidity"}
 Number:Temperature Total_Weather_Data_Basic_Dew "Dew" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#dew"}
 Number:Length Total_Weather_Data_Basic_Precip "Precip" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip", unit="mm"}
-Number:Dimensionless Total_Weather_Data_Basic_Precip_Probality "Precip Probality" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip-prob"}
+Number:Dimensionless Total_Weather_Data_Basic_Precip_Probability "Precip Probability" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip-prob"}
 String Total_Weather_Data_Basic_Precip_Type "Precip Type" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip-type"}
 Number:Length Total_Weather_Data_Basic_Snow "Snow" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#snow"}
 Number:Length Total_Weather_Data_Basic_Snow_Depth "Snow Depth" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#snow-depth"}
