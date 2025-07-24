@@ -120,6 +120,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable ScheduledFuture<?> loginFuture;
 
+    /**
+     * Future for token refresh
+     */
+    private @Nullable ScheduledFuture<?> tokenRefreshFuture;
+
     // List of futures used for command retries
     private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<>();
 
@@ -145,9 +150,6 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     // Last login timestamp
     private Instant lastLoginTimestamp = Instant.MIN;
-
-    // Token expiration time
-    private Instant tokenExpirationTime = Instant.MAX;
 
     /**
      * Our configuration
@@ -253,6 +255,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 return;
             }
         }
+
+        cancelTokenRefresh();
 
         if (tooManyRequests || Instant.now().minusSeconds(LOGIN_LIMIT_TIME).isBefore(lastLoginTimestamp)) {
             logger.debug("Postponing login to avoid throttling");
@@ -498,6 +502,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             loginFuture = null;
         }
 
+        cancelTokenRefresh();
+
         HttpClient localHttpClient = httpClient;
         if (localHttpClient != null) {
             try {
@@ -594,11 +600,6 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (tokenNeedsRefresh()) {
-            logger.debug("The access token expires soon, refreshing the cloud access token");
-            reLogin();
-        }
-
         List<SomfyTahomaEvent> events = getEvents();
         logger.trace("Got total of {} events", events.size());
         for (SomfyTahomaEvent event : events) {
@@ -606,10 +607,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private boolean tokenNeedsRefresh() {
-        return !thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)
-                && Instant.now().plusSeconds(thingConfig.getRefresh()).isAfter(tokenExpirationTime)
-                && !isDevModeReady();
+    private void refreshToken() {
+        logger.debug("The access token expires soon, refreshing the cloud access token");
+        reLogin();
     }
 
     private void processEvent(SomfyTahomaEvent event) {
@@ -972,10 +972,26 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         SomfyTahomaOauth2Reponse oauth2response = gson.fromJson(response.getContentAsString(),
                 SomfyTahomaOauth2Reponse.class);
 
-        tokenExpirationTime = Instant.now().plusSeconds(oauth2response.getExpiresIn());
+        Instant tokenExpirationTime = Instant.now().plusSeconds(oauth2response.getExpiresIn());
         logger.debug("OAuth2 Access Token: {}, expires: {}", oauth2response.getAccessToken(), tokenExpirationTime);
 
+        planTokenRefresh(oauth2response.getExpiresIn());
+
         accessToken = oauth2response.getAccessToken();
+    }
+
+    private void planTokenRefresh(int expiresIn) {
+        int refreshIn = expiresIn - SECONDS_BEFORE_EXPIRATION;
+        logger.debug("Scheduling token refresh at: {}", Instant.now().plusSeconds(refreshIn));
+        tokenRefreshFuture = scheduler.schedule(this::refreshToken, refreshIn, TimeUnit.SECONDS);
+    }
+
+    private void cancelTokenRefresh() {
+        ScheduledFuture<?> localTokenRefreshFuture = tokenRefreshFuture;
+        if (localTokenRefreshFuture != null) {
+            localTokenRefreshFuture.cancel(true);
+            tokenRefreshFuture = null;
+        }
     }
 
     private String getApiFullUrl(String subUrl) {
