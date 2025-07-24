@@ -46,7 +46,7 @@ The thing **aha Waste Collection Schedule** provides four channels for the upcom
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | generalWaste  | DateTime | Next collection day for general waste  |
-| lightweightPackaging  | DateTime | Next collection day for lightweight packaging  |
+| leightweightPackaging  | DateTime | Next collection day for lightweight packaging  |
 | bioWaste  | DateTime | Next collection day for bio waste  |
 | paper  | DateTime | Next collection day for paper  |
 
