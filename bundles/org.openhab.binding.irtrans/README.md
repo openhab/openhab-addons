@@ -34,7 +34,7 @@ There is no specific binding configuration required.
 
 ### `blaster` Thing Configuration
 
-The `blaster` Thing reuires an `ethernet` (Bridge) before it can be used.
+The `blaster` Thing requires an `ethernet` (Bridge) before it can be used.
 
 | Parameter | Description                                                                                                                                                                      | Config   | Default |
 |-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
