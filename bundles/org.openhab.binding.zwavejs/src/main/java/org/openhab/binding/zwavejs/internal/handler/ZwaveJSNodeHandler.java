@@ -638,7 +638,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
         }
 
-        SemanticTag equipmentTag = getEquipmentTag(builder.build().getChannels());
+        SemanticTag equipmentTag = getEquipmentTag(result.channels.values());
         if (equipmentTag != null) {
             logger.debug("Node {}. Setting semantic equipment tag {}", this.config.id, equipmentTag);
             builder.withSemanticEquipmentTag(equipmentTag);
