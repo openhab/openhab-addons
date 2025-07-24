@@ -1,10 +1,6 @@
 # Teslascope Binding
 
-This binding integ| auto-conditioning   | Switch               | Auto Conditioning   | Turns on auto-conditioning (a/c or heating)                                                |
-| battery-level       | Number:Dimensionless | Battery Level       | State of the battery in %                                                                   |
-| charging-state      | String               | Charging State      | "Starting", "Complete", "Charging", "Disconnected", "Stopped", "NoPower"                   |
-| charge-port         | Switch               | Charge Port         | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)|
-| climate             | Switch               | Climate             | Climate status indicator                                                                    | [Tesla Electrical Vehicles](https://www.tesla.com).
+This binding integrates [Tesla Electric Vehicles](https://www.tesla.com).
 The integration happens through the [Teslascope](https://www.teslascope.com) API.
 
 ## Supported Things
@@ -71,7 +67,7 @@ Additionally, these advanced channels are available (not all are available on al
 | charge                      | Switch                   | Charge                        | Start (ON) or stop (OFF) charging                                                                        |
 | charge-amps                 | Number:ElectricCurrent   | Charger Current               | Current actually delivered by the charger                                                                |
 | charge-current-request      | Number:ElectricCurrent   | Charger Current Requested     | Current requested from the charger                                                                       |
-| charge-current-request-max  | Number:ElectricCurrent   | Max Charger Current Supported | Maximuum current supported by the charger                                                                |
+| charge-current-request-max  | Number:ElectricCurrent   | Max Charger Current Supported | Maximum current supported by the charger                                                                |
 | charge-energy-added         | Number:Energy            | Charge Energy Added           | Energy added, in kWh, during the last charging session                                                   |
 | charge-limit-soc            | Number:Dimensionless     | Charge Limit SOC              | Current charging limit of the vehicle, in %                                                              |
 | charge-limit-soc-min        | Number:Dimensionless     | Charge Limit SOC Min          | Minimum charging limit of the vehicle, in %                                                              |
@@ -134,7 +130,7 @@ Additionally, these advanced channels are available (not all are available on al
 | tpms-soft-warning-rr        | Switch                   | Tyre Pressure Soft Warning RR | Tyre Pressure Soft Warning Rear Right                                                                    |
 | usable-battery-level        | Number                   | Usable Battery Level          | Indicates the % of battery that can be used for vehicle functions like driving                           |
 | valet-mode                  | Switch                   | Valet Mode                    | Enable or disable Valet Mode                                                                             |
-| wiper-blade-heater          | Switch                   | Wiperblade Heater             | Indicates if the wiperblade heater is switched on                                                        |
+| wiper-blade-heater          | Switch                   | Wiper Blade Heater            | Indicates if the wiper blade heater is switched on                                                        |
 
 ## Full Example
 
