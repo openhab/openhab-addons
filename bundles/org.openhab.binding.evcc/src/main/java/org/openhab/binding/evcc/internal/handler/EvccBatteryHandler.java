@@ -15,9 +15,9 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -35,8 +35,8 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
 
     private final int index;
 
-    public EvccBatteryHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry, LocaleProvider locale) {
-        super(thing, channelTypeRegistry, locale);
+    public EvccBatteryHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
+        super(thing, channelTypeRegistry);
         Map<String, String> props = thing.getProperties();
         String indexString = props.getOrDefault(PROPERTY_INDEX, "0");
         index = Integer.parseInt(indexString);
@@ -45,17 +45,16 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        if (null == bridgeHandler) {
-            return;
-        }
-        JsonObject stateOpt = bridgeHandler.getCachedEvccState();
-        if (stateOpt.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            return;
-        }
+        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            JsonObject stateOpt = handler.getCachedEvccState();
+            if (stateOpt.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
 
-        JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject();
-        commonInitialize(state);
+            JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject();
+            commonInitialize(state);
+        });
     }
 
     @Override
@@ -65,7 +64,7 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public JsonObject getStatefromCachedState(JsonObject state) {
+    public JsonObject getStateFromCachedState(JsonObject state) {
         return state.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject();
     }
 }

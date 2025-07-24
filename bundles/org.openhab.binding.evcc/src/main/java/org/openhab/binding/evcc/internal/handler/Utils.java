@@ -20,10 +20,11 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_LENG
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_POWER;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.stream.IntStream;
 
 import javax.measure.Unit;
 
@@ -41,40 +42,38 @@ import org.openhab.core.thing.ChannelUID;
 @NonNullByDefault
 public class Utils {
 
-    private static Map<String, @Nullable Unit<?>> unitMap = new HashMap<>();
+    private static final Map<String, @Nullable Unit<?>> UNIT_MAP = new HashMap<>();
 
     static {
-        unitMap.put(NUMBER_LENGTH, SIUnits.METRE);
-        unitMap.put(NUMBER_POWER, Units.WATT);
-        unitMap.put(NUMBER_ENERGY, Units.WATT_HOUR);
-        unitMap.put(NUMBER_TIME, Units.SECOND);
-        unitMap.put(NUMBER_ELECTRIC_CURRENT, Units.AMPERE);
-        unitMap.put(NUMBER_DIMENSIONLESS, Units.ONE);
-        unitMap.put(NUMBER_EMISSION_INTENSITY, SIUnits.GRAM.divide(Units.KILOWATT_HOUR));
-    }
-
-    public static Unit<?> getUnitfromChannelType(String itemType) {
-        Unit<?> unit = unitMap.get(itemType);
-        if (null != unit) {
-            return unit;
-        } else {
-            return Units.ONE;
-        }
-    }
-
-    public static void addUnitToUnitMap(String key, Unit<?> unit) {
-        unitMap.put(key, unit);
+        UNIT_MAP.put(NUMBER_LENGTH, SIUnits.METRE);
+        UNIT_MAP.put(NUMBER_POWER, Units.WATT);
+        UNIT_MAP.put(NUMBER_ENERGY, Units.WATT_HOUR);
+        UNIT_MAP.put(NUMBER_TIME, Units.SECOND);
+        UNIT_MAP.put(NUMBER_ELECTRIC_CURRENT, Units.AMPERE);
+        UNIT_MAP.put(NUMBER_DIMENSIONLESS, Units.ONE);
+        UNIT_MAP.put(NUMBER_EMISSION_INTENSITY, SIUnits.GRAM.divide(Units.KILOWATT_HOUR));
     }
 
     /**
-     * This method will capatalize the words of a given string
+     * This method retrieves the unit for the corresponding item type
+     * 
+     * @param itemType the unit will be received for
+     * @return Unit<?> that is mapped to the item type
+     */
+    public static Unit<?> getUnitFromChannelType(String itemType) {
+        Unit<?> unit = UNIT_MAP.get(itemType);
+        return Objects.requireNonNullElse(unit, Units.ONE);
+    }
+
+    /**
+     * This method will capitalize the words of a given string
      * 
      * @param input string containing hyphenized words
      * @return A string with spaces instead of hyphens and the first letter of each word is capitalized
      */
     public static String capitalizeWords(String input) {
         String[] allParts = input.split("-");
-        String[] parts = IntStream.range(1, allParts.length).mapToObj(i -> allParts[i]).toArray(String[]::new);
+        String[] parts = Arrays.stream(allParts, 1, allParts.length).toArray(String[]::new);
         StringJoiner joiner = new StringJoiner(" ");
 
         for (String part : parts) {
@@ -87,24 +86,24 @@ public class Utils {
     }
 
     /**
-     * This method will sanatize a given string for a channel ID
+     * This method will sanitize a given string for a channel ID
      * 
      * @param input camel case string
      * @return A string that contains hyphens
      */
-    public static String sanatizeChannelID(String input) {
+    public static String sanitizeChannelID(String input) {
         return input.replaceAll("(?<!^)(?=[A-Z])", "-").toLowerCase();
     }
 
     /**
      * This method will get the key from a ChannelUID
      * 
-     * @param channelUID
+     * @param channelUID which the key shall be retrieved from
      * @return the key in camel case
      */
     public static String getKeyFromChannelUID(ChannelUID channelUID) {
-        String[] splittedId = channelUID.getIdWithoutGroup().split("-");
-        String[] parts = IntStream.range(1, splittedId.length).mapToObj(i -> splittedId[i]).toArray(String[]::new);
+        String[] split = channelUID.getIdWithoutGroup().split("-");
+        String[] parts = Arrays.stream(split, 1, split.length).toArray(String[]::new);
 
         StringBuilder camelCase = new StringBuilder();
         for (int i = 0; i < parts.length; i++) {

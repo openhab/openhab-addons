@@ -15,9 +15,9 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -42,8 +42,8 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EvccLoadpointHandler.class);
     protected final int index;
 
-    public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry, LocaleProvider locale) {
-        super(thing, channelTypeRegistry, locale);
+    public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
+        super(thing, channelTypeRegistry);
         Map<String, String> props = thing.getProperties();
         String indexString = props.getOrDefault(PROPERTY_INDEX, "0");
         index = Integer.parseInt(indexString);
@@ -52,9 +52,9 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        if (bridgeHandler != null) {
-            endpoint = bridgeHandler.getBaseURL() + API_PATH_LOADPOINTS + "/" + (index + 1);
-            JsonObject stateOpt = bridgeHandler.getCachedEvccState();
+        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            endpoint = handler.getBaseURL() + API_PATH_LOADPOINTS + "/" + (index + 1);
+            JsonObject stateOpt = handler.getCachedEvccState();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
@@ -73,16 +73,14 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
                 state.add("phasesConfigured", state.get("phases"));
             }
             commonInitialize(state);
-        } else {
-            return;
-        }
+        });
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
             String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
-            // Special Handling for enbale and disable endpoints
+            // Special Handling for enable and disable endpoints
             if (datapoint.contains("enable")) {
                 datapoint += "/enable/" + datapoint.replace("enable", "");
             } else if (datapoint.contains("disable")) {
@@ -98,7 +96,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
                 }
             }
             String url = endpoint + "/" + datapoint + "/" + value;
-            logger.debug("Sendig command to this url: {}", url);
+            logger.debug("Sending command to this url: {}", url);
             sendCommand(url);
         } else {
             super.handleCommand(channelUID, command);
@@ -120,7 +118,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public JsonObject getStatefromCachedState(JsonObject state) {
+    public JsonObject getStateFromCachedState(JsonObject state) {
         return state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
     }
 }

@@ -84,9 +84,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (null != pollJob && !pollJob.isCancelled()) {
-            pollJob.cancel(true);
-        }
+        Optional.ofNullable(pollJob).ifPresent(job -> {
+            job.cancel(true);
+        });
         listeners.clear();
     }
 
@@ -118,7 +118,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
             if (response.getStatus() == 200) {
                 @Nullable
                 JsonObject returnValue = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                if (returnValue != null) {
+                if (null != returnValue) {
                     updateStatus(ThingStatus.ONLINE);
                     if (returnValue.has("result")) {
                         return Optional.of(returnValue.getAsJsonObject("result"));
@@ -157,7 +157,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     public void register(EvccJsonAwareHandler handler) {
         listeners.addIfAbsent(handler);
-        Optional.ofNullable(lastState).ifPresent(state -> handler.updateFromEvccState(state));
+        Optional.of(lastState).ifPresent(handler::updateFromEvccState);
     }
 
     public void unregister(EvccJsonAwareHandler handler) {

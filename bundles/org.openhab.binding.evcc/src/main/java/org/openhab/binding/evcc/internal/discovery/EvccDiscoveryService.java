@@ -86,10 +86,16 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start evcc background discovery");
-        if (evccDiscoveryJob == null || evccDiscoveryJob.isCancelled()) {
-            evccDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> startScan(), 0, SCAN_INTERVAL_IN_SECONDS,
-                    TimeUnit.SECONDS);
-        }
+        Optional.ofNullable(evccDiscoveryJob).ifPresentOrElse(job -> {
+            if (job.isCancelled()) {
+                startNewJob();
+            }
+        }, this::startNewJob);
+    }
+
+    private void startNewJob() {
+        evccDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, SCAN_INTERVAL_IN_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     @Override

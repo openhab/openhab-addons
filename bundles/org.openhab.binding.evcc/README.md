@@ -5,7 +5,7 @@ The binding is compatible to evcc [version 0.123.1](https://github.com/evcc-io/e
 
 You can easily install and upgrade evcc on openHABian using `sudo openhabian-config`.
 
-evcc controls your wallbox(es) with multiple charging modes and allows you to charge your ev with your photovoltaik's excess current.
+evcc controls your wallbox(es) with multiple charging modes and allows you to charge your ev with your photovoltaic's excess current.
 To provide an intelligent charging control, evcc supports over 30 wallboxes and over 20 energy meters/home energy management systems from many manufacturers as well as electric vehicles from over 20 car manufacturers.
 Furthermore, evcc calculates your money savings.
 
@@ -13,7 +13,7 @@ This binding enables openHAB to retrieve status data from your evcc instance and
 For more advanced features like calculated savings, you have to visit the web UI of evcc.
 
 This binding will create a file in your userdata folder, when it detects new datapoints in the response from evcc.
-This will help to add them to the binding make them available with the next version of the binding.
+This will help to add them to the binding and make them available with the next version of the binding.
 
 ## Supported Things
 
@@ -34,7 +34,7 @@ The bridge will discover the things automatically in the background.
 | Parameter       | Type    | Description                                              | Advanced | Required |
 |-----------------|---------|----------------------------------------------------------|----------|----------|
 | schema          | String  | Schema to connect to your instance (http or https)       | No       | Yes      |
-| host            | String  | IP or hostname running your  evcc instance               | No       | Yes      |
+| host            | String  | IP or hostname running your evcc instance                | No       | Yes      |
 | port            | Integer | Port of your evcc instance                               | Yes      | Yes      |
 | refreshInterval | Number  | Interval the status is polled in seconds (minimum is 15) | Yes      | Yes      |
 
@@ -47,7 +47,7 @@ You can add them via file configuration or in the openHAB UI.
 
 ## Channels
 
-evcc Things can have several channels based correspondig on their capabilities.
+evcc Things can have several channels based corresponding on their capabilities.
 These channels are dynamically added to the Thing during their initialization; therefore, there is no list of possible channels in this documentation.
 
 ## Full Example
@@ -62,7 +62,7 @@ Bridge evcc:server:demo-server "Demo" [scheme="https", url="demo.evcc.io", port=
     Thing battery demo-battery1 "Battery - evcc Demo Battery 1"
     ..
     // You can define as many PV things as you have photovoltaics configured in your evcc instance
-    Thing pv demo-pv1 "PV - evcc Demo Photovoltaik 1"
+    Thing pv demo-pv1 "PV - evcc Demo Photovoltaic 1"
     ..
     // You can define as many Loadpoint things as you have loadpoints configured in your evcc instance
     Thing loadpoint demo-loadpoint-carport "Loadpoint - evcc Demo Loadpoint 1"

@@ -24,7 +24,6 @@ import org.openhab.binding.evcc.internal.handler.EvccPvHandler;
 import org.openhab.binding.evcc.internal.handler.EvccSiteHandler;
 import org.openhab.binding.evcc.internal.handler.EvccStatisticsHandler;
 import org.openhab.binding.evcc.internal.handler.EvccVehicleHandler;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -49,15 +48,13 @@ import org.osgi.service.component.annotations.Reference;
 public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
-    private final LocaleProvider locale;
     private final ChannelTypeRegistry channelTypeRegistry;
 
     @Activate
     public EvccHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference ChannelTypeRegistry channelTypeRegistry, @Reference LocaleProvider locale) {
+            @Reference ChannelTypeRegistry channelTypeRegistry) {
         this.httpClientFactory = httpClientFactory;
         this.channelTypeRegistry = channelTypeRegistry;
-        this.locale = locale;
     }
 
     @Override
@@ -74,31 +71,31 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_SITE.equals(type)) {
-            return new EvccSiteHandler(thing, channelTypeRegistry, locale);
+            return new EvccSiteHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_VEHICLE.equals(type)) {
-            return new EvccVehicleHandler(thing, channelTypeRegistry, locale);
+            return new EvccVehicleHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_LOADPOINT.equals(type)) {
-            return new EvccLoadpointHandler(thing, channelTypeRegistry, locale);
+            return new EvccLoadpointHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_HEATING.equals(type)) {
-            return new EvccHeatingHandler(thing, channelTypeRegistry, locale);
+            return new EvccHeatingHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_BATTERY.equals(type)) {
-            return new EvccBatteryHandler(thing, channelTypeRegistry, locale);
+            return new EvccBatteryHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_PV.equals(type)) {
-            return new EvccPvHandler(thing, channelTypeRegistry, locale);
+            return new EvccPvHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_STATISTICS.equals(type)) {
-            return new EvccStatisticsHandler(thing, channelTypeRegistry, locale);
+            return new EvccStatisticsHandler(thing, channelTypeRegistry);
         }
         return null;
     }

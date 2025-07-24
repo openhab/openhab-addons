@@ -38,8 +38,8 @@ public class StatisticsDiscoveryMapper implements EvccDiscoveryMapper {
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonObject statiscs = state.getAsJsonObject(JSON_MEMBER_STATISTICS);
-        if (statiscs == null) {
+        JsonObject statistics = state.getAsJsonObject(JSON_MEMBER_STATISTICS);
+        if (statistics == null) {
             return results;
         }
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_STATISTICS, bridgeHandler.getThing().getUID(),

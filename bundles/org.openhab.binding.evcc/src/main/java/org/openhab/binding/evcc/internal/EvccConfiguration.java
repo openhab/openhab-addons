@@ -15,11 +15,9 @@ package org.openhab.binding.evcc.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EvccBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link EvccConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Florian Hotze - Initial contribution
- * @author Luca Arnecke - Update to evcc version 0.123.1
  * @author Marcel Goerentz - Rework the binding
  */
 @NonNullByDefault

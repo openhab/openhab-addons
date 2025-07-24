@@ -28,6 +28,6 @@
 		<label>Title</label>
 		<description>Name of the photovoltaic system as displayed in the UI</description>
 		<category>Text</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

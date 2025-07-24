@@ -208,7 +208,7 @@
 	<channel-type id="loadpoint-connected">
 		<item-type>Switch</item-type>
 		<label>Vehicle Connected</label>
-		<description>Indicates wheter a vehicle is connected or not</description>
+		<description>Indicates whether a vehicle is connected or not</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Status</tag>
@@ -549,7 +549,7 @@
 	<channel-type id="loadpoint-pv-action">
 		<item-type>String</item-type>
 		<label>PV Action</label>
-		<description>Indicates whether pv charging gets enbaled or disabled</description>
+		<description>Indicates whether pv charging gets enabled or disabled</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -687,8 +687,8 @@
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-climater-active">
 		<item-type>Switch</item-type>
-		<label>Vehicle Climater Active</label>
-		<description>Indicates whether the climater is active or not for the connected vehicle</description>
+		<label>Vehicle Climate Active</label>
+		<description>Indicates whether the climate control is active or not for the connected vehicle</description>
 		<tags>
 			<tag>Airconditioning</tag>
 			<tag>Status</tag>

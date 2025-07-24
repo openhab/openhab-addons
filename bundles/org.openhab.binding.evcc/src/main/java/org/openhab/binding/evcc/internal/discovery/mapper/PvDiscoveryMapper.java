@@ -50,7 +50,7 @@ public class PvDiscoveryMapper implements EvccDiscoveryMapper {
             String title = pv.has("title") ? pv.get("title").getAsString().toLowerCase(Locale.ROOT) : "pv" + i;
 
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_PV, bridgeHandler.getThing().getUID(),
-                    Utils.sanatizeName(title));
+                    Utils.sanitizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_INDEX, i)
                     .withProperty(PROPERTY_TYPE, PROPERTY_TYPE_PV).withProperty(PROPERTY_TITLE, title)

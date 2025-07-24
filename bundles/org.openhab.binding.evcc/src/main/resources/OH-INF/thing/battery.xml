@@ -65,6 +65,6 @@
 			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -26,6 +26,11 @@
 		<item-type>String</item-type>
 		<label>Vehicle Icon</label>
 		<description>Used icon for this vehicle in the UI</description>
+		<category>Text</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicle-limit-soc">
@@ -66,7 +71,7 @@
 	<channel-type id="vehicle-min-current">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Vehicle Min Current</label>
-		<description>Minimum current thats need to provided to charge the vehicle</description>
+		<description>Minimum current that needs to provided to charge the vehicle</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Control</tag>
@@ -78,8 +83,12 @@
 	<channel-type id="vehicle-plan-precondition">
 		<item-type>Number:Time</item-type>
 		<label>Plan Precondition Duration</label>
-		<description>Plan Precondition Duration</description>
-		<state readOnly="true"></state>
+		<description>Configured duration for charging the vehicle before departure (preconditioning the battery)</description>
+		<category>Time</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="vehicle-plan-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -94,13 +103,13 @@
 	<channel-type id="vehicle-plan-time">
 		<item-type>DateTime</item-type>
 		<label>Plan Datetime</label>
-		<description>Planned date and time when the chaging should be started</description>
+		<description>Planned date and time when the charging should be started</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vehicle-title">
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
-		<description>Name of the vehicle as diplayed in the UI</description>
+		<description>Name of the vehicle as displayed in the UI</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>

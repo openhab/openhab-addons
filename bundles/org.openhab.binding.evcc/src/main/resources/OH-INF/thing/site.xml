@@ -57,8 +57,8 @@
 		<description>Indicates whether the battery gets charged from the grid or not</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
 			<tag>Status</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state pattern="%.0f" readOnly="true">
 			<options>

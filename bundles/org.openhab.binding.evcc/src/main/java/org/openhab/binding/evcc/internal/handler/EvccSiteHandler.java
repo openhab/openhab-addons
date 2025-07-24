@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -37,8 +38,8 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccSiteHandler.class);
 
-    public EvccSiteHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry, LocaleProvider locale) {
-        super(thing, channelTypeRegistry, locale);
+    public EvccSiteHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
+        super(thing, channelTypeRegistry);
     }
 
     @Override
@@ -73,25 +74,24 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        if (bridgeHandler == null) {
-            return;
-        }
-        endpoint = bridgeHandler.getBaseURL();
-        JsonObject state = bridgeHandler.getCachedEvccState();
-        if (state.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            return;
-        }
+        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            endpoint = handler.getBaseURL();
+            JsonObject state = handler.getCachedEvccState();
+            if (state.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
 
-        // Set the smart cost type
-        if (state.has("smartCostType")) {
-            smartCostType = state.get("smartCostType").getAsString();
-        }
+            // Set the smart cost type
+            if (state.has("smartCostType")) {
+                smartCostType = state.get("smartCostType").getAsString();
+            }
 
-        if (state.has("gridConfigured")) {
-            modifyJSON(state);
-        }
-        commonInitialize(state);
+            if (state.has("gridConfigured")) {
+                modifyJSON(state);
+            }
+            commonInitialize(state);
+        });
     }
 
     private void modifyJSON(JsonObject state) {
@@ -100,7 +100,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public JsonObject getStatefromCachedState(JsonObject state) {
+    public JsonObject getStateFromCachedState(JsonObject state) {
         if (state.has("gridConfigured")) {
             modifyJSON(state);
         }

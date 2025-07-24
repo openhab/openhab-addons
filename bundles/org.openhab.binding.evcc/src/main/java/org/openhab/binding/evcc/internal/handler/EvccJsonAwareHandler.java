@@ -31,10 +31,10 @@ public interface EvccJsonAwareHandler {
     void updateFromEvccState(JsonObject state);
 
     /**
-     * This method shall return the to the thing correspondig JSON object
+     * This method shall return the to the thing corresponding JSON object
      * 
      * @param state the cached API JSON response
      * @return to the thing corresponding JSON object
      */
-    JsonObject getStatefromCachedState(JsonObject state);
+    JsonObject getStateFromCachedState(JsonObject state);
 }
