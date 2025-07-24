@@ -95,7 +95,7 @@ actions:
 
         // Get next collection dates from items
         var biomuellDate = items['collectionDay_bioWaste'].getZonedDateTime();
-        var leichtverpackungDate = items['collectionDay_lightweightPackaging'].getZonedDateTime();
+        var leichtverpackungDate = items['collectionDay_leightweightPackaging'].getZonedDateTime();
         var papierDate = items['collectionDay_paper'].getZonedDateTime();
         var restmuellDate = items['collectionDay_generalWaste'].getZonedDateTime();
 
