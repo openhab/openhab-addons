@@ -27,7 +27,7 @@ Things must be created manually.
 
 WlanThermo things require you to specify the IP-address of your WlanThermo device (the one you enter into your browser to access the WebUI)
 The configuration of username/password is optional.
-If ommitted, the binding data will be read-only for all channels.
+If omitted, the binding data will be read-only for all channels.
 WlanThermo Mini things do not require a username/password and will always be read-only!
 
 ## Channels
