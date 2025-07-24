@@ -6,7 +6,7 @@ You'll receive your API Key by mail.
 
 ## Supported Things
 
-- `api`: bridge used to connect to the AirParif service. Provides some general informations for the whole area.
+- `api`: bridge used to connect to the AirParif service. Provides some general information for the whole area.
 - `location`: Presents the pollen and air quality information for a given location.
 
 Of course, you can add multiple `location`s, e.g. for gathering pollen or air quality data for different locations.
