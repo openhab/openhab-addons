@@ -151,7 +151,7 @@ public class ShellyDeviceProfileTest {
 
     private static Stream<Arguments> provideTestCasesForBuildBluServiceName() {
         return Stream.of( //
-                Arguments.of("SBBT", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
+                Arguments.of("SBBT-002C", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
                 Arguments.of("SBBT-02C", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
                 Arguments.of("SBBT-02C-03D", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
                 Arguments.of("SBDW", "001A2B3C4D5E", "shellybludw-001a2b3c4d5e"), //

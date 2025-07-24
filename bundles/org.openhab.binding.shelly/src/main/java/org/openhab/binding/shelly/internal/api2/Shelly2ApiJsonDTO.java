@@ -1213,8 +1213,10 @@ public class Shelly2ApiJsonDTO {
         public Integer pid;
         @SerializedName("Battery")
         public Integer battery;
-        @SerializedName("Button")
-        public Integer buttonEvent;
+        @SerializedName("Buttons")
+        public Integer[] buttonEvents;
+        @SerializedName("Dimmer")
+        public Double dimmer;
         @SerializedName("Illuminance")
         public Integer illuminance;
         @SerializedName("Window")
