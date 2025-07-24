@@ -150,8 +150,6 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYPRO_PREFIX = "shellypro";
 
     // Service name prefixes
-    public static final String SERVICE_NAME_SHELLYPLUS_PREFIX = "shellyplus";
-    public static final String SERVICE_NAME_SHELLYPRO_PREFIX = "shellypro";
     public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
     public static final String SERVICE_NAME_SHELLYPLUSRANGE_PREFIX = "shellyplusrange";
 
