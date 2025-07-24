@@ -130,7 +130,7 @@ The following channels are available:
 | detail#artist              | String      | The artist of the selected album                                                                                                |
 | detail#directors           | String      | A list of directors of the selected movie                                                                                       |
 | detail#genres              | String      | A list of genres of the selected item                                                                                           |
-| detail#rating_reason       | String      | An explaination of why the selected movie received its rating                                                                   |
+| detail#rating_reason       | String      | An explanation of why the selected movie received its rating                                                                    |
 | detail#synopsis            | String      | A synopsis of the selected movie                                                                                                |
 | detail#review              | String      | A review of the selected album                                                                                                  |
 | detail#color_description   | String      | Indicates if the selected movie is in Color, Black and White, etc.                                                              |
