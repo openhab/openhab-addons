@@ -5,7 +5,7 @@ with a [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci) b
 
 Currently, although Flic Buttons are BLE devices, this binding only supports fliclib-linux-hci (flicd) as a bridge.
 The openHAB Bluetooth Bindings are not supported.
-Flicd requires a seperate Bluetooth adapter to work, so if you use this binding together with e.g. the
+Flicd requires a separate Bluetooth adapter to work, so if you use this binding together with e.g. the
 [Bluez Binding](https://www.openhab.org/addons/bindings/bluetooth.bluez/),
 two physical Bluetooth adapters are required (one for Bluez and one for flicd).
 Be aware that flicd requires an initial internet connection for the verification of the buttons.
