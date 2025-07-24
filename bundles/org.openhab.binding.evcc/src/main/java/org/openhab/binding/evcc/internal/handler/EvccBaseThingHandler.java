@@ -23,6 +23,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
@@ -154,7 +155,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             }
         } else {
             String valString = Objects.requireNonNullElse(value.toString(), "Null");
-            logUnknownChannelXml(thingKey, "Hint for type: " + valString);
+            logUnknownChannelXmlAsync(thingKey, "Hint for type: " + valString);
         }
     }
 
@@ -208,7 +209,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 updateState(channelUID, value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
                 break;
             default:
-                logUnknownChannelXml(channelUID.getId(), "Hint for type: " + value.toString());
+                logUnknownChannelXmlAsync(channelUID.getId(), "Hint for type: " + value.toString());
         }
     }
 
@@ -296,6 +297,10 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             default:
                 break;
         }
+    }
+
+    public void logUnknownChannelXmlAsync(String key, String itemType) {
+        CompletableFuture.runAsync(() -> logUnknownChannelXml(key, itemType));
     }
 
     protected void logUnknownChannelXml(String key, String itemType) {
