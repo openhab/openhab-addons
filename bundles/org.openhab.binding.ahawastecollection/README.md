@@ -62,7 +62,7 @@ wasteCollection.items
 
 ```java
 DateTime collectionDay_generalWaste "Next general waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:generalWaste"}
-DateTime collectionDay_lightweightPackaging "Next lightweight packaging collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:lightweightPackaging"}
+DateTime collectionDay_lightweightPackaging "Next lightweight packaging collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:leightweightPackaging"}
 DateTime collectionDay_bioWaste "Next bio waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:bioWaste"}
 DateTime collectionDay_paper "Next paper collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:paper"}
 ```
