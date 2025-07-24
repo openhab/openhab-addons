@@ -263,6 +263,21 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testGenCTNode74HumidityInvalidUnit() throws IOException {
+        Channel channel = getChannel("store_4.json", 74, "multilevel-sensor-humidity");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:multilevel-sensor-humidity", channel.getUID().getAsString());
+        assertEquals("Number:Dimensionless", Objects.requireNonNull(type).getItemType());
+        assertEquals("Humidity", channel.getLabel());
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+        assertNotNull(type);
+    }
+
+    @Test
     public void testGenCTNode186WeirdType() throws IOException {
         Channel channel = getChannel("store_4.json", 186, "door-lock-inside-handles-can-open-door");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
