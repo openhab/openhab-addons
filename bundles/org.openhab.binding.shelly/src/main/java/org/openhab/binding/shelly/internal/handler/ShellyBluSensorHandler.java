@@ -55,13 +55,32 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
     }
 
     public static void addBluThing(String gateway, Shelly2NotifyEvent e, @Nullable ShellyThingTable thingTable) {
-        String model = substringBefore(getString(e.data.name), "-").toUpperCase();
+        String model = getString(e.data.name);
+        String bluClass = substringBefore(model, "-").toUpperCase();
         String mac = e.data.addr.replaceAll(":", "");
         LOGGER.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
+
         ThingTypeUID thingTypeUID;
-        switch (model) {
-            case SHELLYDT_BLUBUTTON:
-                thingTypeUID = THING_TYPE_SHELLYBLUBUTTON;
+        switch (bluClass) {
+            case SHELLYDT_BLUBUTTONCLASS:
+                switch (model) {
+                    case SHELLYDT_BLUBUTTON1:
+                        thingTypeUID = THING_TYPE_SHELLYBLUBUTTON;
+                        break;
+                    case SHELLYDT_BLUWALLSWITCH4:
+                    case SHELLYDT_BLUWALLSWITCH4_2:
+                        thingTypeUID = THING_TYPE_SHELLYBLUWALLSWITCH4;
+                        break;
+                    case SHELLYDT_BLURCBUTTON4:
+                        thingTypeUID = THING_TYPE_SHELLYBLURCBUTTON4;
+                        break;
+                    default:
+                        LOGGER.debug("{}: Unsupported BLUBUTTON device model {}, MAC={}", gateway, model, mac);
+                        return;
+                }
+                break;
+            case SHELLYDT_BLUREMOTE:
+                thingTypeUID = THING_TYPE_SHELLYBLUREMOTE;
                 break;
             case SHELLYDT_BLUDW:
                 thingTypeUID = THING_TYPE_SHELLYBLUDW;
