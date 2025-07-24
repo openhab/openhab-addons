@@ -6,7 +6,7 @@ To use this binding, you first need to [register and get your API token](https:/
 
 ## Discovery
 
-Once a bridge with the api Key has been created, Local UV Index informations can be auto discovered based on system location.
+Once a bridge with the api Key has been created, Local UV Index information can be auto discovered based on system location.
 
 ## Binding Configuration
 
