@@ -45,8 +45,10 @@ public class ShellyBluEventDataDTO {
         public Integer pid;
         @SerializedName("Battery")
         public Integer battery;
-        @SerializedName("Button")
-        public Integer[] buttons;
+        @SerializedName("Buttons")
+        public Integer[] buttonEvents;
+        @SerializedName("Dimmer")
+        public Double dimmer;
         @SerializedName("Illuminance")
         public Integer illuminance;
         @SerializedName("Window")
@@ -56,11 +58,9 @@ public class ShellyBluEventDataDTO {
         @SerializedName("Motion")
         public Integer motionState;
         @SerializedName("Temperature")
-        public Double[] temperatures;
+        public Double temperature;
         @SerializedName("Humidity")
         public Double humidity;
-        @SerializedName("Firmware32") // BLU Remote
-        public Long firmware;
 
         public Integer rssi;
         public Integer tx_power;

@@ -15,7 +15,11 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+<<<<<<< HEAD
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.getBluServiceName;
+=======
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
+>>>>>>> 04fa572b5e (wip)
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,7 +59,30 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private boolean connected = false; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
+<<<<<<< HEAD
     private static final int PID_CYCLE_TRESHHOLD = 50;
+=======
+    private final int pidCycleThreshold = 50;
+
+    private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.ofEntries( //
+            Map.entry(SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH), //
+            Map.entry(SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH), //
+            Map.entry(SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH), //
+            Map.entry(SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH), //
+            Map.entry(SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH), //
+            Map.entry(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH), //
+            Map.entry("1", SHELLY_BTNEVENT_1SHORTPUSH), //
+            Map.entry("2", SHELLY_BTNEVENT_2SHORTPUSH), //
+            Map.entry("3", SHELLY_BTNEVENT_3SHORTPUSH), //
+            Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), //
+            Map.entry("80", SHELLY_BTNEVENT_HOLDING), //
+            Map.entry("254", SHELLY_BTNEVENT_HOLDING)); // for firmware prior to 1.0.20
+
+    private static final Map<ThingTypeUID, Integer> BLU_NUM_INPUTS = Map.ofEntries( //
+            Map.entry(THING_TYPE_SHELLYBLUBUTTON, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
+            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4));
+>>>>>>> 04fa572b5e (wip)
 
     /**
      * Regular constructor - called by Thing handler
@@ -66,11 +93,14 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      */
     public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
         super(thingName, thingTable, thing);
+<<<<<<< HEAD
 
         ShellyDeviceProfile profile = thing.getProfile();
         ThingTypeUID uid = thing.getThing().getThingTypeUID();
         profile.initializeInputs(uid, SHELLY_BTNT_MOMENTARY);
         deviceStatus = profile.status;
+=======
+>>>>>>> 04fa572b5e (wip)
     }
 
     @Override
@@ -136,6 +166,37 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.settings.sleepMode.period = 720;
         }
 
+<<<<<<< HEAD
+=======
+        if (profile.isButton) {
+            profile.settings.inputs = new ArrayList<>();
+            List<ShellySettingsInput> inputs = profile.settings.inputs;
+
+            // Initialize the tables
+            ShellySettingsInput settings = new ShellySettingsInput();
+            settings.btnType = SHELLY_BTNT_MOMENTARY;
+
+            ShellyInputState input = new ShellyInputState();
+            input.input = 0;
+            input.event = "";
+            input.eventCount = 0;
+
+            if (BLU_NUM_INPUTS.containsKey(thingTypeUID)) {
+                int numInputs = BLU_NUM_INPUTS.get(thingTypeUID);
+                logger.trace("{} ShellyBluApi constructor, number of inputs: {}", thingName, numInputs);
+                deviceStatus.inputs = new ArrayList<>();
+
+                for (int i = 0; i < numInputs; i++) {
+                    inputs.set(i, settings);
+                    inputs.add(settings);
+                    deviceStatus.inputs.add(input);
+                }
+            }
+
+            profile.status = deviceStatus;
+        }
+
+>>>>>>> 04fa572b5e (wip)
         profile.initialized = true;
         return profile;
     }
@@ -307,8 +368,35 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             }
                         }
 
+<<<<<<< HEAD
                         ShellyComponents.updateDeviceStatus(t, deviceStatus);
                         ShellyComponents.updateSensors(getThing(), deviceStatus);
+=======
+                        if (e.data.buttonEvents != null) {
+                            logger.trace("{}: Shelly BLU button events received: {}", thingName,
+                                    gson.toJson(e.data.buttonEvents));
+                            for (int bttnIdx = 0; bttnIdx < e.data.buttonEvents.length; bttnIdx++) {
+                                if (e.data.buttonEvents[bttnIdx] != 0) {
+                                    ShellyInputState input = deviceStatus.inputs != null
+                                            ? deviceStatus.inputs.get(bttnIdx)
+                                            : new ShellyInputState();
+                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE, e.data.buttonEvents[bttnIdx] + "");
+                                    input.eventCount++;
+                                    deviceStatus.inputs.set(bttnIdx, input);
+
+                                    String group = getProfile().getInputGroup(bttnIdx);
+                                    String suffix = profile.getInputSuffix(bttnIdx);
+                                    t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
+                                            getStringType(input.event));
+                                    t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
+                                            getDecimal(input.eventCount));
+                                    t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
+                                }
+                            }
+                        }
+                        updated |= ShellyComponents.updateDeviceStatus(t, deviceStatus);
+                        updated |= ShellyComponents.updateSensors(getThing(), deviceStatus);
+>>>>>>> 04fa572b5e (wip)
                         break;
                     default:
                         super.onNotifyEvent(message);
