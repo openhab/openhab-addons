@@ -15,7 +15,6 @@ package org.openhab.binding.zwavejs.internal.handler;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 import static org.openhab.binding.zwavejs.internal.CommandClassConstants.EQUIPMENT_MAP;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -603,32 +602,50 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         return true;
     }
 
+    /**
+     * Updates the channels of a ThingBuilder based on the provided ZwaveJSTypeGeneratorResult.
+     * Does not touch existing Thing channels and their configuration.
+     * 
+     * <p>
+     * This method performs the following actions:
+     * <ul>
+     * <li>Removes channels from the ThingBuilder that are no longer part of the result.</li>
+     * <li>Adds new channels from the result that are not already present in the ThingBuilder.</li>
+     * <li>Sets a semantic equipment tag for the ThingBuilder if applicable.</li>
+     * </ul>
+     * 
+     * @param builder The {@link ThingBuilder} to update.
+     * @param result The {@link ZwaveJSTypeGeneratorResult} containing the updated channel information.
+     * @return The updated {@link ThingBuilder}.
+     */
     private ThingBuilder updateChannels(ThingBuilder builder, ZwaveJSTypeGeneratorResult result) {
-        List<Channel> channelsToRemove = new ArrayList<>();
-        for (Channel channel : thing.getChannels()) {
-            if (!result.channels.containsKey(channel.getUID().getId())) {
-                channelsToRemove.add(channel);
+        Map<String, Channel> existingChannelEntries = thing.getChannels().stream()
+                .collect(Collectors.toMap(channel -> channel.getUID().getId(), channel -> channel));
+
+        // remove channels that are no longer part of the thing
+        for (Map.Entry<String, Channel> existingEntry : existingChannelEntries.entrySet()) {
+            if (!result.channels.containsKey(existingEntry.getKey())) {
+                logger.trace("Node {}. Removing {} channel", this.config.id, existingEntry.getKey());
+                builder.withoutChannel(existingEntry.getValue().getUID());
             }
         }
-        if (!channelsToRemove.isEmpty()) {
-            logger.trace("Node {}. Removing {} channels", this.config.id, channelsToRemove.size());
-            builder.withoutChannels(channelsToRemove);
-        }
-        if (!result.channels.isEmpty()) {
-            List<Channel> channels = result.channels.entrySet().stream().sorted(Map.Entry.comparingByKey())
-                    .map(Map.Entry::getValue).toList();
-            logger.trace("Node {}. Adding {} channels", this.config.id, channels.size());
-            builder.withChannels(channels);
-        }
-        if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
-            SemanticTag equipmentTag = getEquipmentTag(builder.build().getChannels());
-            if (equipmentTag != null) {
-                logger.debug("Node {}. Setting semantic equipment tag {}", this.config.id, equipmentTag);
-                builder.withSemanticEquipmentTag(equipmentTag);
-            } else {
-                logger.debug("Node {}. No semantic equipment tag set", this.config.id);
+
+        // Add new channels that are not already present
+        for (Map.Entry<String, Channel> newEntry : result.channels.entrySet()) {
+            if (!existingChannelEntries.containsKey(newEntry.getKey())) {
+                logger.trace("Node {}. Adding {} channel", this.config.id, newEntry.getKey());
+                builder.withChannel(newEntry.getValue());
             }
         }
+
+        SemanticTag equipmentTag = getEquipmentTag(result.channels.values());
+        if (equipmentTag != null) {
+            logger.debug("Node {}. Setting semantic equipment tag {}", this.config.id, equipmentTag);
+            builder.withSemanticEquipmentTag(equipmentTag);
+        } else {
+            logger.debug("Node {}. No semantic equipment tag set", this.config.id);
+        }
+
         return builder;
     }
 
