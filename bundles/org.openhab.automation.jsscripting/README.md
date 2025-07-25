@@ -74,11 +74,11 @@ See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of fu
 ### UI Event Object
 
 **NOTE**: Note that `event` object is different in UI based rules and file based rules! This section is only valid for UI based rules. If you use file based rules, refer to [file based rules event object documentation](#event-object).
-Note that `event` object is only available when:
-  1. the UI based rule was triggered by an event and is not manually run! Trying to access `event` on a manual run does not work (and will lead to an error), use `this.event` instead (will be `undefined` in case of manual run).
-  2. the rule is inline script or called by an inline script which passes it the `event object`. "Item Actions", "Scene, Rules, & Scripts", and "Audio and Voice" actions are not passed the `event` object.
+Note that `event` object is only available when the UI based rule was triggered by an event and is not called from another rule!
+Trying to access `event` in this case does not work and will lead to an error. Use `this.event` instead (will be `undefined` when it does not exist).
 
 When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
+When a rule is triggered, there is additional context available for the action in a variable called `event`.
 
 This table gives an overview over the `event` object for most common trigger types:
 
@@ -89,8 +89,10 @@ This table gives an overview over the `event` object for most common trigger typ
 | `itemCommand`  | sub-class of [org.openhab.core.types.Command](https://www.openhab.org/javadoc/latest/org/openhab/core/types/command) | `[item] received a command`            | Command that triggered event                                                                                  | `receivedCommand`      |
 | `itemName`     | string                                                                                                               | all                                    | Name of Item that triggered event                                                                             | `triggeringItem.name`  |
 | `type`         | string                                                                                                               | all                                    | Type of event that triggered event (`"ItemStateEvent"`, `"ItemStateChangedEvent"`, `"ItemCommandEvent"`, ...) | N/A                    |
+| `event`        | string                                                                                                               | channel based triggeres                | Event data published by the triggering channel.                                                               | `receivedEvent`        |
+| `payload`      | JSON formatted string                                                                                                | all                                    | Any additional information provided by the trigger not already exposed. "{}" there is none.             | N/A                    |
 
-Note that in UI based rules `event.itemState`, `event.oldItemState`, and `event.itemCommand` are Java types (not JavaScript), and care must be taken when comparing these with JavaScript types:
+Note that in UI based rules `event`, and therefore everything carried by `event` are Java types (not JavaScript). Care must be taken when comparing these with JavaScript types:
 
 ```javascript
 var { ON } = require("@runtime")
@@ -111,26 +113,6 @@ console.log(event.itemState.toString() == "test") // OK
 ## Scripting Basics
 
 The openHAB JavaScript Scripting runtime attempts to provide a familiar environment to JavaScript developers.
-
-### `let` and `const`
-
-Due to the way how openHAB runs UI based scripts, `let`, `const` and `class` are not supported at top-level.
-Use `var` instead or wrap your script inside a self-invoking function:
-
-```javascript
-// Wrap script inside a self-invoking function:
-(function (data) {
-  const C = 'Hello world';
-  console.log(C);
-})(this.event);
-
-// Defining a class using var:
-var Tree = class {
-  constructor (height) {
-    this.height = height;
-  }
-}
-```
 
 ### `require`
 
@@ -231,7 +213,6 @@ myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello mutation!"
 
 If you need to pass some variables to the timer but avoid that they can get mutated, pass those variables as parameters to `setTimeout`/`setInterval` or `createTimer`:
 
-
 ```javascript
 var myVar = 'Hello world!';
 
@@ -282,8 +263,8 @@ Use JavaScript Scripting as script transformation by:
    })(input);
    ```
 
-2. Using `JS(<scriptname>.js):%s` as Item state transformation.
-3. Passing parameters is also possible by using a URL like syntax: `JS(<scriptname>.js?arg=value)`.
+1. Using `JS(<scriptname>.js):%s` as Item state transformation.
+1. Passing parameters is also possible by using a URL like syntax: `JS(<scriptname>.js?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
 
 Simple transformations can aso be given as an inline script: `JS(|...)`, e.g. `JS(|"String has " + input.length + "characters")`.
@@ -310,9 +291,9 @@ See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for fu
   - .getItem(name, nullIfMissing) ⇒ `Item`
   - .getItems() ⇒ `Array[Item]`
   - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
-  - .addItem([itemConfig](#itemconfig))
-  - .removeItem(itemOrItemName) ⇒ `boolean`
-  - .replaceItem([itemConfig](#itemconfig))
+  - .addItem([itemConfig](#itemconfig), persist) ⇒ `Item`
+  - .removeItem(itemOrItemName) ⇒ `Item|null`
+  - .replaceItem([itemConfig](#itemconfig)) ⇒ `Item|null`
   - .safeItemName(s) ⇒ `string`
 
 ```javascript
@@ -438,6 +419,20 @@ items.replaceItem({
 ```
 
 See [openhab-js : ItemConfig](https://openhab.github.io/openhab-js/global.html#ItemConfig) for full API documentation.
+
+#### Providing Items (& metadata & channel links) from Scripts
+
+The `addItem` method can be used to provide Items from scripts in a configuration-as-code manner.
+It also allows providing metadata and channel configurations for the Item, basically creating the Item as if it was defined in a `.items` file.
+The benefit of using `addItem` is that you can use loops, conditions or generator functions to create lots of Items without the need to write them all out in a file or manually in the UI.
+
+When called from file-based scripts, the created Item will share the lifecycle with the script, meaning it will be removed when the script is unloaded.
+You can use the `persist` parameter to optionally persist the Item from file-based scripts.
+
+When called from UI-based scripts, the Item will be stored permanently and will not be removed when the script is unloaded.
+Keep in mind that attempting to add an Item with the same name as an existing Item will result in an error.
+
+See [openhab-js : Item](https://openhab.github.io/openhab-js/items.html#.addItem) for full API documentation.
 
 #### `ItemPersistence`
 
@@ -721,7 +716,6 @@ actions.ScriptExecution.createTimer(string identifier, time.ZonedDateTime zdt, f
 - `hasTerminated()`: Whether the scheduled execution has already terminated. ⇒ `boolean`
 - `reschedule(time.ZonedDateTime)`: Reschedules a timer to a new starting time. This can also be called after a timer has terminated, which will result in another execution of the same code. ⇒ `boolean`: true, if rescheduling was successful
 
-
 ```javascript
 var now = time.ZonedDateTime.now();
 
@@ -867,14 +861,14 @@ See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for fu
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
 
-**Example** *(Get a previously set value with a default value (times = 0))*
+**Example** _(Get a previously set value with a default value (times = 0))_
 
 ```js
 var counter = cache.shared.get('counter', () => 0);
 console.log('Counter: ' + counter);
 ```
 
-**Example** *(Get a previously set value, modify and store it)*
+**Example** _(Get a previously set value, modify and store it)_
 
 ```js
 var counter = cache.private.get('counter');
@@ -915,7 +909,7 @@ Therefore, if you attempt to use the `DateTimeFormatter` and receive an error sa
 
 [JS-Joda Locales](https://github.com/js-joda/js-joda/tree/master/packages/locale#use-prebuilt-locale-packages) includes a list of all the supported locales.
 Each locale consists of a two letter language indicator followed by a "-" and a two letter dialect indicator: e.g. "EN-US".
-Installing a locale can be done through the command `npm install @js-joda/locale_de-de` from the *$OPENHAB_CONF/automation/js* folder.
+Installing a locale can be done through the command `npm install @js-joda/locale_de-de` from the _$OPENHAB_CONF/automation/js_ folder.
 
 To import and use a local into your rule you need to require it and create a `DateTimeFormatter` that uses it:
 
@@ -1297,7 +1291,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-  console.log(event);
+    console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
@@ -1491,8 +1485,8 @@ When it is run, `npm` will remove everything from `node_modules` that has not be
 Follow these steps to create your own library (it's called a CommonJS module):
 
 1. Create a separate folder for your library outside of `automation/js`, you may also initialize a Git repository.
-2. Run `npm init` from your newly created folder; at least provide responses for the `name`, `version` and `main` (e.g. `index.js`) fields.
-3. Create the main file of your library (`index.js`) and add some exports:
+1. Run `npm init` from your newly created folder; at least provide responses for the `name`, `version` and `main` (e.g. `index.js`) fields.
+1. Create the main file of your library (`index.js`) and add some exports:
 
    ```javascript
    var someProperty = 'Hello world!';
@@ -1506,9 +1500,12 @@ Follow these steps to create your own library (it's called a CommonJS module):
    };
    ```
 
-4. Tar it up by running `npm pack` from your library's folder.
-5. Install it by running `npm install <path-to-library-folder>/<name>-<version>.tgz` from the `automation/js` folder.
-6. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
+1. Tar it up by running `npm pack` from your library's folder.
+1. Install it by running `npm install <path-to-library-folder>/<name>-<version>.tgz` from the `automation/js` folder.
+1. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
+1. As you might have already noticed, the JavaScript Scripting add-on is reloading a script as soon as one of its dependencies changes.
+   When developing a library inside `node_modules`, this can cause regular reloads.
+   To avoid this situation, you can disable dependency tracking in the JavaScript Scripting add-on settings (you need to tick "show advanced" for the setting to come up).
 
 It is also possible to upload your library to [npm](https://npmjs.com) to share it with other users.
 
