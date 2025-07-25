@@ -43,7 +43,6 @@ public class PowerDTO implements Data {
     public QuantityType<Power> electricPowerCooling;
 
     public PowerDTO(byte[] bArray) {
-
         ValueBuffer wrap = ValueBuffer.wrap(bArray);
 
         cop = new DecimalType(DataConverter.getUDoubleValue(wrap, 0.1));

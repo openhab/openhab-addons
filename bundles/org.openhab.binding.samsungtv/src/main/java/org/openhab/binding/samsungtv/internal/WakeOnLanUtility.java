@@ -43,28 +43,29 @@ public class WakeOnLanUtility {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WakeOnLanUtility.class);
     private static final int CMD_TIMEOUT_MS = 1000;
+    private static final Pattern MAC_REGEX = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
     private static String host = "";
 
     /**
      * Get os command to find MAC address
      *
-     * @return os COMMAND
+     * @return os command
      */
     public static String getCommand() {
         String os = System.getProperty("os.name");
-        String COMMAND = "";
+        String command = "";
         if (os != null) {
             os = os.toLowerCase();
             LOGGER.debug("{}: os: {}", host, os);
             if ((os.contains("win"))) {
-                COMMAND = "arp -a %s";
+                command = "arp -a %s";
             } else if ((os.contains("mac"))) {
-                COMMAND = "arp %s";
+                command = "arp %s";
             } else { // linux
                 if (checkIfLinuxCommandExists("arp")) {
-                    COMMAND = "arp %s";
+                    command = "arp %s";
                 } else if (checkIfLinuxCommandExists("arping")) { // typically OH provided docker image
-                    COMMAND = "arping -r -c 1 -C 1 %s";
+                    command = "arping -r -c 1 -C 1 %s";
                 } else {
                     LOGGER.warn("{}: arping not installed", host);
                 }
@@ -72,7 +73,7 @@ public class WakeOnLanUtility {
         } else {
             LOGGER.warn("{}: Unable to determine os", host);
         }
-        return COMMAND;
+        return command;
     }
 
     /**
@@ -83,14 +84,13 @@ public class WakeOnLanUtility {
      */
     public static @Nullable String getMACAddress(String hostName) {
         host = hostName;
-        String COMMAND = getCommand();
-        if (COMMAND.isEmpty()) {
+        String command = getCommand();
+        if (command.isEmpty()) {
             LOGGER.debug("{}: MAC address detection not possible. No command to identify MAC found.", hostName);
             return null;
         }
 
-        Pattern MAC_REGEX = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
-        String[] cmds = Stream.of(COMMAND.split(" ")).map(arg -> String.format(arg, hostName)).toArray(String[]::new);
+        String[] cmds = Stream.of(command.split(" ")).map(arg -> String.format(arg, hostName)).toArray(String[]::new);
         String response = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(CMD_TIMEOUT_MS), cmds);
         String macAddress = null;
 
@@ -109,7 +109,7 @@ public class WakeOnLanUtility {
             LOGGER.debug("{}: MAC address of host {} is {}", hostName, hostName, macAddress);
         } else {
             LOGGER.debug("{}: Problem executing command {} to retrieve MAC address for {}: {}", hostName,
-                    String.format(COMMAND, hostName), hostName, response);
+                    String.format(command, hostName), hostName, response);
         }
         return macAddress;
     }

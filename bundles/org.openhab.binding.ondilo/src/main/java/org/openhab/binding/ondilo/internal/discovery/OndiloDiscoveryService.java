@@ -96,16 +96,16 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
             ThingUID poolThingUid = new ThingUID(THING_TYPE_ONDILO, bridgeUID, String.valueOf(pool.id));
 
             Map<String, Object> properties = new HashMap<>();
-            properties.put(ONDILO_ID, pool.id);
-            properties.put(ONDILO_NAME, pool.name);
-            properties.put(ONDILO_TYPE, pool.type);
-            properties.put(ONDILO_VOLUME, pool.getVolume());
-            properties.put(ONDILO_DISINFECTION, pool.getDisinfection());
-            properties.put(ONDILO_ADDRESS, pool.getAddress());
-            properties.put(ONDILO_LOCATION, pool.getLocation());
+            properties.put(PROPERTY_ONDILO_ID, pool.id);
+            properties.put(PROPERTY_ONDILO_NAME, pool.name);
+            properties.put(PROPERTY_ONDILO_TYPE, pool.type);
+            properties.put(PROPERTY_ONDILO_VOLUME, pool.getVolume());
+            properties.put(PROPERTY_ONDILO_DISINFECTION, pool.getDisinfection());
+            properties.put(PROPERTY_ONDILO_ADDRESS, pool.getAddress());
+            properties.put(PROPERTY_ONDILO_LOCATION, pool.getLocation());
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(poolThingUid).withThingType(thingTypeUID)
-                    .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(ONDILO_ID)
+                    .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(PROPERTY_ONDILO_ID)
                     .withLabel("Ondilo ICO: " + pool.name).build();
             thingDiscovered(discoveryResult);
         }

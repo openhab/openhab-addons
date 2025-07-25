@@ -20836,7 +20836,7 @@
                                     "sensorType": 5,
                                     "scale": 0
                                 },
-                                "unit": "%",
+                                "unit": "%rH",
                                 "stateful": true,
                                 "secret": false
                             },

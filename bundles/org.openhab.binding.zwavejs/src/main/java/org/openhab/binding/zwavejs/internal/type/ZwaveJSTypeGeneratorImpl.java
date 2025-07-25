@@ -357,7 +357,8 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             builder.withStateDescriptionFragment(details.statePattern);
         }
 
-        if (details.unitSymbol != null) {
+        // Length check makes sure that it is a quantity type, e.g. `Number:xyz`
+        if (details.unitSymbol != null && details.itemType.length() > CoreItemFactory.NUMBER.length() + 1) {
             builder.withUnitHint(details.unitSymbol);
         }
 

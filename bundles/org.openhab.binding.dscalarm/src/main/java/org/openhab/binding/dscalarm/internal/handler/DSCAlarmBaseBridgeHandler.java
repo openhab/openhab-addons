@@ -547,7 +547,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     private void handleIncomingMessage(DSCAlarmEvent event, Thing thing, DSCAlarmThingType dscAlarmThingType) {
-
         logger.debug("handleIncomingMessage(): Thing Search - '{}'", thing);
 
         if (thing != null) {

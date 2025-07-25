@@ -36,7 +36,6 @@ public class PvDTO implements Data {
     public QuantityType<Temperature> pvTargetTemperatureDrinkingwater;
 
     public PvDTO(byte[] bArray) {
-
         int modActive = ModbusBitUtilities.extractBit(bArray, 0);
         pvModulationActive = modActive == 0 ? OnOffType.OFF : OnOffType.ON;
 
