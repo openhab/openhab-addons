@@ -21,6 +21,7 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="vehicle-icon">
 		<item-type>String</item-type>
@@ -32,6 +33,7 @@
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="vehicle-limit-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -67,6 +69,7 @@
 			<tag>Current</tag>
 		</tags>
 		<state min="6" step="1" max="32" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="vehicle-min-current">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
@@ -89,6 +92,7 @@
 			<tag>Setpoint</tag>
 			<tag>Duration</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="vehicle-plan-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -99,12 +103,14 @@
 			<tag>Energy</tag>
 		</tags>
 		<state readOnly="true"></state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="vehicle-plan-time">
 		<item-type>DateTime</item-type>
 		<label>Plan Datetime</label>
 		<description>Planned date and time when the charging should be started</description>
 		<state readOnly="true"></state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="vehicle-title">
 		<item-type>String</item-type>
@@ -112,5 +118,6 @@
 		<description>Name of the vehicle as displayed in the UI</description>
 		<category>Text</category>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

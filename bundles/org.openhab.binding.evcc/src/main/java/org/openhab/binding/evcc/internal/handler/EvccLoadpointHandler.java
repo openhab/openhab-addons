@@ -41,6 +41,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccLoadpointHandler.class);
     protected final int index;
+    private int[] version = {};
 
     public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
@@ -80,6 +81,10 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
             String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
+            // Backwardscompatibility for phasesConfigured
+            if ("configuredPhases".equals(datapoint) && version[0] == 0 && version[1] < 200) {
+                datapoint = "phases";
+            }
             // Special Handling for enable and disable endpoints
             if (datapoint.contains("enable")) {
                 datapoint += "/enable/" + datapoint.replace("enable", "");
@@ -105,6 +110,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public void updateFromEvccState(JsonObject state) {
+        version = Utils.convertVersionStringToIntArray(state.get("version").getAsString().split(" ")[0]);
         state = state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
         super.updateFromEvccState(state);
     }

@@ -108,4 +108,18 @@ public class Utils {
 
         return camelCase.toString();
     }
+
+    /**
+     * This method will convert the version string into an int array
+     * If the input is blank, the method will return 0, 0, 0
+     * 
+     * @param input version string
+     * @return int array of size 3
+     */
+    public static int[] convertVersionStringToIntArray(String input) {
+        if (input.isEmpty()) {
+            return new int[] { 0, 0, 0 };
+        }
+        return Arrays.stream(input.split("\\.")).mapToInt(Integer::parseInt).toArray();
+    }
 }

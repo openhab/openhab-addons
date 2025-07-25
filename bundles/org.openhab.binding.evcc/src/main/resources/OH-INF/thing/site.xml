@@ -16,6 +16,7 @@
 		<description>Available evcc update version</description>
 		<category>Text</category>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-capacity">
 		<item-type unitHint="kWh">Number:Energy</item-type>
@@ -23,6 +24,7 @@
 		<description>Accumulated battery capacity for this site</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-discharge-control">
 		<item-type>Switch</item-type>
@@ -39,6 +41,7 @@
 				<option value="OFF">Disabled</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-energy">
 		<item-type unitHint="Wh">Number:Energy</item-type>
@@ -50,6 +53,7 @@
 			<tag>Measurement</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-grid-charge-active">
 		<item-type>Switch</item-type>
@@ -66,6 +70,7 @@
 				<option value="OFF">Inactive</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-grid-charge-limit-co2">
 		<item-type>Number:EmissionIntensity</item-type>
@@ -75,6 +80,7 @@
 			<tag>Control</tag>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-grid-charge-limit-price">
 		<item-type>Number:EnergyPrice</item-type>
@@ -84,6 +90,7 @@
 			<tag>Control</tag>
 		</tags>
 		<state pattern="%.3f" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-mode">
 		<item-type>String</item-type>
@@ -98,6 +105,7 @@
 				<option value="charge">Charging</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-mode-external">
 		<item-type>String</item-type>
@@ -112,6 +120,7 @@
 				<option value="charge">Charging</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-power">
 		<item-type unitHint="W">Number:Power</item-type>
@@ -123,6 +132,7 @@
 			<tag>Measurement</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-battery-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -134,6 +144,7 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-buffer-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -143,6 +154,7 @@
 		</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-buffer-start-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -152,6 +164,7 @@
 		</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-currency">
 		<item-type>String</item-type>
@@ -159,6 +172,7 @@
 		<description>Current configured currency</description>
 		<category>Text</category>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-demo-mode">
 		<item-type>Switch</item-type>
@@ -171,6 +185,7 @@
 				<option value="OFF">Inactive</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-eebus">
 		<item-type>Switch</item-type>
@@ -182,18 +197,21 @@
 				<option value="OFF">Not configured</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-green-share-home">
 		<item-type>Number</item-type>
 		<label>Green Share Home</label>
 		<description>Indicates whether green power is available for home</description>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-green-share-loadpoints">
 		<item-type>Number</item-type>
 		<label>Green Share Loadpoints</label>
 		<description>Indicates whether green power is available for loadpoints</description>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-grid-power">
 		<item-type unitHint="W">Number:Power</item-type>
@@ -205,6 +223,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-home-power">
 		<item-type unitHint="W">Number:Power</item-type>
@@ -216,6 +235,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-messaging">
 		<item-type>Switch</item-type>
@@ -227,6 +247,7 @@
 				<option value="OFF">Not configured</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-priority-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -235,6 +256,7 @@
 		</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-interval">
 		<item-type>Number</item-type>
@@ -242,6 +264,7 @@
 		<description>Refresh interval configured for evcc</description>
 		<category>Settings</category>
 		<state pattern="%d" readOnly="true"></state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-pv-energy">
 		<item-type unitHint="Wh">Number:Energy</item-type>
@@ -249,6 +272,7 @@
 		<description>Accumulated energy provided through photovoltaic systems</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-pv-power">
 		<item-type unitHint="W">Number:Power</item-type>
@@ -260,6 +284,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-residual-power">
 		<item-type unitHint="W">Number:Power</item-type>
@@ -272,6 +297,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-smart-cost-available">
 		<item-type>Switch</item-type>
@@ -287,6 +313,7 @@
 				<option value="OFF">Not Available</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-smart-cost-type">
 		<item-type>String</item-type>
@@ -299,6 +326,7 @@
 				<option value="co2">CO2</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-smart-feed-in-priority-available">
 		<item-type>Switch</item-type>
@@ -314,6 +342,7 @@
 				<option value="OFF">Not Available</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-startup">
 		<item-type>Switch</item-type>
@@ -329,6 +358,7 @@
 				<option value="OFF">False</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-tariff-co2">
 		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
@@ -340,6 +370,7 @@
 			<tag>CO2</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-tariff-co2-home">
 		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
@@ -351,6 +382,7 @@
 			<tag>CO2</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-tariff-co2-loadpoints">
 		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
@@ -362,30 +394,35 @@
 			<tag>CO2</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-tariff-feed-in">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Feed in price per kWh</label>
 		<description>Indicates the current price per kWh for feed-in to the grid</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-tariff-grid">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Grid Price</label>
 		<description>Indicates the current price per kWh for consuming from the grid</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-tariff-price-home">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Home Price</label>
 		<description>Indicates the current price per kWh for your home</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-tariff-price-loadpoints">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Loadpoint price per kWh</label>
 		<description>Indicates the current price per kWh for loadpoints</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-tariff-solar">
 		<item-type unitHint="W">Number:Power</item-type>
@@ -397,12 +434,14 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-site-title">
 		<item-type>String</item-type>
 		<label>Site Title</label>
 		<description>Name of the site as displayed in the UI</description>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="site-version">
 		<item-type>String</item-type>
@@ -410,5 +449,6 @@
 		<description>Current evcc version</description>
 		<category>Text</category>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

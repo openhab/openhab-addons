@@ -47,6 +47,7 @@
 			<tag>Calculation</tag>
 			<tag>Info</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="avg-price-type">
 		<item-type>Number:EnergyPrice</item-type>
@@ -56,6 +57,7 @@
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%.2f %unit%"></state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="charged-energy-type">
 		<item-type unitHint="kWh">Number:Energy</item-type>
@@ -64,6 +66,7 @@
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="solar-percentage-type">
 		<item-type>Number:Dimensionless</item-type>
@@ -73,5 +76,6 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.2f %unit%"></state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

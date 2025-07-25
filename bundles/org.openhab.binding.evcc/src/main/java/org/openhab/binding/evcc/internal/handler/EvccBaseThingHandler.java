@@ -59,6 +59,7 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -72,6 +73,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
     private final Logger logger = LoggerFactory.getLogger(EvccBaseThingHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
+    private final Gson gson = new Gson();
     protected @Nullable EvccBridgeHandler bridgeHandler;
     protected boolean isInitialized = false;
     protected String endpoint = "";
@@ -258,9 +260,22 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
                         .method(HttpMethod.POST).header(HttpHeader.ACCEPT, "application/json").send();
 
-                if (response.getStatus() != 200) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    logger.warn("evcc API error: HTTP {}", response.getStatus());
+                if (response.getStatus() == 200) {
+                    logger.debug("Sending command was successful");
+                } else {
+                    @Nullable
+                    JsonObject responseJson = gson.fromJson(response.getContentAsString(), JsonObject.class);
+                    Optional.ofNullable(responseJson).ifPresent(json -> {
+                        if (json.has("error")) {
+                            logger.debug("Sending command was unsuccessful, got this error:\n {}",
+                                    responseJson.get("error").getAsString());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    responseJson.get("error").getAsString());
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            logger.warn("evcc API error: HTTP {}", response.getStatus());
+                        }
+                    });
                 }
             } catch (Exception e) {
                 logger.warn("evcc bridge couldn't call the API", e);

@@ -22,6 +22,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="pv-title">
 		<item-type>String</item-type>
@@ -29,5 +30,6 @@
 		<description>Name of the photovoltaic system as displayed in the UI</description>
 		<category>Text</category>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
