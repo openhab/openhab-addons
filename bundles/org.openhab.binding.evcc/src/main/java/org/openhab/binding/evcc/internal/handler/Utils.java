@@ -21,7 +21,6 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_POWE
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -29,7 +28,6 @@ import java.util.StringJoiner;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -42,17 +40,9 @@ import org.openhab.core.thing.ChannelUID;
 @NonNullByDefault
 public class Utils {
 
-    private static final Map<String, @Nullable Unit<?>> UNIT_MAP = new HashMap<>();
-
-    static {
-        UNIT_MAP.put(NUMBER_LENGTH, SIUnits.METRE);
-        UNIT_MAP.put(NUMBER_POWER, Units.WATT);
-        UNIT_MAP.put(NUMBER_ENERGY, Units.WATT_HOUR);
-        UNIT_MAP.put(NUMBER_TIME, Units.SECOND);
-        UNIT_MAP.put(NUMBER_ELECTRIC_CURRENT, Units.AMPERE);
-        UNIT_MAP.put(NUMBER_DIMENSIONLESS, Units.ONE);
-        UNIT_MAP.put(NUMBER_EMISSION_INTENSITY, SIUnits.GRAM.divide(Units.KILOWATT_HOUR));
-    }
+    private static final Map<String, Unit<?>> UNIT_MAP = Map.of(NUMBER_LENGTH, SIUnits.METRE, NUMBER_POWER, Units.WATT,
+            NUMBER_ENERGY, Units.WATT_HOUR, NUMBER_TIME, Units.SECOND, NUMBER_ELECTRIC_CURRENT, Units.AMPERE,
+            NUMBER_DIMENSIONLESS, Units.ONE, NUMBER_EMISSION_INTENSITY, SIUnits.GRAM.divide(Units.KILOWATT_HOUR));
 
     /**
      * This method retrieves the unit for the corresponding item type
