@@ -37,5 +37,5 @@ updates:
       - dependency-name: "com.github.jaxb-xew-plugin:jaxb-xew-plugin" # updated with core
       - dependency-name: "com.diffplug.spotless:spotless-maven-plugin" # updated together with SAT
       - dependency-name: "*graalvm*" # do not touch graalvm related stuff
-      - dependency-name: "org.openapitools:openapi*" # updated togeter with openapi genrator
+      - dependency-name: "org.openapitools:openapi*" # updated togeter with openapi generator
       - dependency-name: "org.apache.openjpa:openjpa*" # should be done with openjpa upgrades"
