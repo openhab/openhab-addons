@@ -60,8 +60,8 @@ Switch Irrigation4 "Zone 4" <water> (Out_Irrigation) { channel="orbitbhyve:sprin
 Switch IrrigationP1 "Run program A" <program> (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:program_a" }
 Switch IrrigationP1Enable "Schedule program A" <program>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:enable_program_a" }
 String IrrigationMode "Irrigation mode [%s]" <water>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:mode" }
-Number IrrigationTime "Irrigation time [%d min]" <clock>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:watering_time" }
-Number IrrigationRainDelay "Rain delay [%d h]" <hourglass>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:rain_delay" }
+Number:Time IrrigationTime "Irrigation time [%d min]" <clock>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:watering_time" }
+Number:Time IrrigationRainDelay "Rain delay [%d h]" <hourglass>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:rain_delay" }
 DateTime IrrigationNextStart "Next start A [%1$td.%1$tm.%1$tY %1$tR]" <clock>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:next_start" }
 ```
 
@@ -79,6 +79,6 @@ Switch item=IrrigationP1
 Switch item=IrrigationP1Enable
 Text item=IrrigationMode
 Text item=IrrigationRainDelay
-Switch item=IrrigationRainDelay mappings=[0="OFF", 24="24", 48="48", 72="72"]
+Switch item=IrrigationRainDelay mappings=["0 h"="OFF", "24 h"="24h", "48 h"="48h", "72 h"="72h"]
 Text item=IrrigationNextStart visibility=[IrrigationP1Enable==ON]
 ```
