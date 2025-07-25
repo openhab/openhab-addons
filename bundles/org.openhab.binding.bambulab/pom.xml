@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.bambulab</artifactId>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>pl.grzeslowski</groupId>
       <artifactId>JBambuAPI</artifactId>
-      <version>1.3.0</version>
+      <version>1.6.0</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.paho</groupId>

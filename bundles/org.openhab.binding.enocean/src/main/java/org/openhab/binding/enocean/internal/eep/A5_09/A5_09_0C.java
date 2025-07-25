@@ -36,16 +36,16 @@ public class A5_09_0C extends A5_09_05 {
 
     @Override
     protected String[] getVOCIdentifications() {
-        String[] VOCIdsSuper = super.getVOCIdentifications();
-        int elFromSuper = VOCIdsSuper.length - 2;
-        String[] VOCIdsExtension = new String[] { "Naphthalene", "4-Phenylcyclohexene", "Limonene", "Trichloroethylene",
-                "Isovaleric acid", "Indole", "Cadaverine", "Putrescine", "Caproic acid", "Ozone" };
-        String[] VOCIdsExtended = new String[elFromSuper + VOCIdsExtension.length];
+        String[] parentVOCIds = super.getVOCIdentifications();
+        int parentVOCIdsLength = parentVOCIds.length - 2;
+        String[] additionalVOCIds = new String[] { "Naphthalene", "4-Phenylcyclohexene", "Limonene",
+                "Trichloroethylene", "Isovaleric acid", "Indole", "Cadaverine", "Putrescine", "Caproic acid", "Ozone" };
+        String[] combinedVOCIds = new String[parentVOCIdsLength + additionalVOCIds.length];
 
-        System.arraycopy(VOCIdsSuper, 0, VOCIdsExtended, 0, elFromSuper);
-        System.arraycopy(VOCIdsExtension, 0, VOCIdsExtended, elFromSuper, VOCIdsExtension.length);
+        System.arraycopy(parentVOCIds, 0, combinedVOCIds, 0, parentVOCIdsLength);
+        System.arraycopy(additionalVOCIds, 0, combinedVOCIds, parentVOCIdsLength, additionalVOCIds.length);
 
-        return VOCIdsExtended;
+        return combinedVOCIds;
     }
 
     @Override

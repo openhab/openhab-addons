@@ -26,6 +26,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
@@ -284,6 +285,8 @@ public class ShellyComponents {
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, Units.VOLT));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
                                     toQuantityType(getDouble(emeter.current), DIGITS_AMPERE, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_FREQUENCY,
+                                    toQuantityType(getDouble(emeter.frequency), DIGITS_FREQUENCY, Units.HERTZ));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
                                     toQuantityType(computePF(emeter), Units.PERCENT));
 

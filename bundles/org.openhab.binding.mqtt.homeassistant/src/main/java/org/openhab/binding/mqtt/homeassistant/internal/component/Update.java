@@ -13,16 +13,19 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.ROConfiguration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -33,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT Update component, following the https://www.home-assistant.io/integrations/update.mqtt/ specification.
@@ -41,35 +43,53 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class Update extends AbstractComponent<Update.ChannelConfiguration> implements ChannelStateUpdateListener {
+public class Update extends AbstractComponent<Update.Configuration> implements ChannelStateUpdateListener {
     public static final String UPDATE_CHANNEL_ID = "update";
     public static final String LATEST_VERSION_CHANNEL_ID = "latest-version";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Update");
+    public static class Configuration extends EntityConfiguration implements ROConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Update");
         }
 
-        @SerializedName("latest_version_template")
-        protected @Nullable String latestVersionTemplate;
-        @SerializedName("latest_version_topic")
-        protected @Nullable String latestVersionTopic;
-        @SerializedName("command_topic")
-        protected @Nullable String commandTopic;
-        @SerializedName("state_topic")
-        protected @Nullable String stateTopic;
+        @Nullable
+        String getCommandTopic() {
+            return getOptionalString("command_topic");
+        }
 
-        protected @Nullable String title;
-        @SerializedName("release_summary")
-        protected @Nullable String releaseSummary;
-        @SerializedName("release_url")
-        protected @Nullable String releaseUrl;
+        @Nullable
+        Value getLatestVersionTemplate() {
+            return getOptionalValue("latest_version_template");
+        }
 
-        @SerializedName("payload_install")
-        protected @Nullable String payloadInstall;
+        @Nullable
+        String getLatestVersionTopic() {
+            return getOptionalString("latest_version_topic");
+        }
+
+        @Nullable
+        String getPayloadInstall() {
+            return getOptionalString("payload_install");
+        }
+
+        @Nullable
+        String getReleaseSummary() {
+            return getOptionalString("release_summary");
+        }
+
+        @Nullable
+        String getReleaseUrl() {
+            return getOptionalString("release_url");
+        }
+
+        boolean isRetain() {
+            return getBoolean("retain");
+        }
+
+        @Nullable
+        String getTitle() {
+            return getOptionalString("title");
+        }
     }
 
     /**
@@ -143,35 +163,32 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
     private ReleaseState state = new ReleaseState();
     private @Nullable ReleaseStateListener listener = null;
 
-    public Update(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Update(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
         TextValue value = new TextValue();
-        String commandTopic = channelConfiguration.commandTopic;
-        String payloadInstall = channelConfiguration.payloadInstall;
+        String commandTopic = config.getCommandTopic();
+        String payloadInstall = config.getPayloadInstall();
 
-        var builder = buildChannel(UPDATE_CHANNEL_ID, ComponentChannelType.STRING, value, getName(), this);
-        if (channelConfiguration.stateTopic != null) {
-            builder.stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate());
-        }
+        var builder = buildChannel(UPDATE_CHANNEL_ID, ComponentChannelType.STRING, value, "Update", this);
+        builder.stateTopic(config.getStateTopic(), config.getValueTemplate());
         if (commandTopic != null && payloadInstall != null) {
             updatable = true;
-            builder.commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                    channelConfiguration.getQos());
+            builder.commandTopic(commandTopic, config.isRetain(), config.getQos());
         }
         updateChannel = builder.build(false);
 
-        if (channelConfiguration.latestVersionTopic != null) {
+        String latestVersionTopic = config.getLatestVersionTopic();
+        if (latestVersionTopic != null) {
             value = new TextValue();
             latestVersionChannel = buildChannel(LATEST_VERSION_CHANNEL_ID, ComponentChannelType.STRING, value,
-                    getName(), this)
-                    .stateTopic(channelConfiguration.latestVersionTopic, channelConfiguration.latestVersionTemplate)
+                    "Latest Version", this).stateTopic(latestVersionTopic, config.getLatestVersionTemplate())
                     .build(false);
         }
 
-        state.title = channelConfiguration.title;
-        state.releaseSummary = channelConfiguration.releaseSummary;
-        state.releaseUrl = channelConfiguration.releaseUrl;
+        state.title = config.getTitle();
+        state.releaseSummary = config.getReleaseSummary();
+        state.releaseUrl = config.getReleaseUrl();
 
         addJsonAttributesChannel();
     }
@@ -190,8 +207,8 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
         if (!updatable) {
             return;
         }
-        String commandTopic = channelConfiguration.commandTopic;
-        String payloadInstall = channelConfiguration.payloadInstall;
+        String commandTopic = Objects.requireNonNull(config.getCommandTopic());
+        String payloadInstall = Objects.requireNonNull(config.getPayloadInstall());
 
         updateChannel.getState().publishValue(new StringType(payloadInstall)).handle((v, ex) -> {
             if (ex != null) {
@@ -237,7 +254,7 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
                 try {
                     // check if it's JSON first
                     @Nullable
-                    final ReleaseState releaseState = getGson().fromJson(strValue, ReleaseState.class);
+                    final ReleaseState releaseState = componentContext.getGson().fromJson(strValue, ReleaseState.class);
                     if (releaseState != null) {
                         state = releaseState;
                         notifyReleaseStateUpdated();

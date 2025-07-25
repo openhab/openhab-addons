@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tuya.internal.local.handlers;
 
+import static org.openhab.binding.tuya.internal.local.TuyaDevice.PROTOCOL_ATTR;
 import static org.openhab.binding.tuya.internal.local.TuyaDevice.SESSION_KEY_ATTR;
 
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tuya.internal.local.CommandType;
 import org.openhab.binding.tuya.internal.local.DeviceStatusListener;
 import org.openhab.binding.tuya.internal.local.MessageWrapper;
+import org.openhab.binding.tuya.internal.local.ProtocolVersion;
 import org.openhab.binding.tuya.internal.local.TuyaDevice;
 import org.openhab.binding.tuya.internal.local.dto.TcpStatusPayload;
 import org.openhab.binding.tuya.internal.util.CryptoUtil;
@@ -79,12 +81,15 @@ public class TuyaMessageHandler extends ChannelDuplexHandler {
     @SuppressWarnings("unchecked")
     public void channelRead(@NonNullByDefault({}) ChannelHandlerContext ctx, @NonNullByDefault({}) Object msg)
             throws Exception {
-        if (!ctx.channel().hasAttr(TuyaDevice.DEVICE_ID_ATTR) || !ctx.channel().hasAttr(SESSION_KEY_ATTR)) {
-            logger.warn("{}: Failed to retrieve deviceId or sessionKey from ChannelHandlerContext. This is a bug.",
+        if (!ctx.channel().hasAttr(TuyaDevice.DEVICE_ID_ATTR) || !ctx.channel().hasAttr(SESSION_KEY_ATTR)
+                || !ctx.channel().hasAttr(PROTOCOL_ATTR)) {
+            logger.warn(
+                    "{}: Failed to retrieve deviceId, sessionKey or protocol from ChannelHandlerContext. This is a bug.",
                     Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""));
             return;
         }
         String deviceId = ctx.channel().attr(TuyaDevice.DEVICE_ID_ATTR).get();
+        ProtocolVersion protocol = ctx.channel().attr(TuyaDevice.PROTOCOL_ATTR).get();
 
         if (msg instanceof MessageWrapper<?> m) {
             if (m.commandType == CommandType.DP_QUERY || m.commandType == CommandType.STATUS) {
@@ -125,7 +130,7 @@ public class TuyaMessageHandler extends ChannelDuplexHandler {
 
                 ctx.channel().writeAndFlush(response);
 
-                byte[] newSessionKey = CryptoUtil.generateSessionKey(sessionRandom, remoteKey, sessionKey);
+                byte[] newSessionKey = CryptoUtil.generateSessionKey(sessionRandom, remoteKey, sessionKey, protocol);
                 if (newSessionKey == null) {
                     logger.warn("{}{}: Session key negotiation failed because session key is null.", deviceId,
                             Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""));

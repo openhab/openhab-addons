@@ -10,6 +10,7 @@
 		<description>
 			Panasonic UHD Blu-ray model DP-UB420/424, DP-UB820/824 or DP-UB9000/9004
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power">
@@ -21,6 +22,10 @@
 			<channel id="player-status" typeId="player-status"/>
 			<channel id="time-elapsed" typeId="time-elapsed"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>uuid</representation-property>
 
@@ -47,6 +52,10 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A remote button press to send to the player</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="POWERON">Power On</option>
@@ -115,12 +124,20 @@
 		<label>Control</label>
 		<description>Transport Controls e.g. Play/Pause/Next/Previous/FForward/Rewind</description>
 		<category>Player</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="player-status">
 		<item-type>String</item-type>
 		<label>Player Status</label>
 		<description>The current player status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -129,7 +146,11 @@
 		<label>Playback Time</label>
 		<description>The current playback time elapsed</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 </thing:thing-descriptions>

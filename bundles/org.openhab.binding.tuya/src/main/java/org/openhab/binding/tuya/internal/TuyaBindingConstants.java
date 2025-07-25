@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -53,6 +54,7 @@ public class TuyaBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_UID_COLOR = new ChannelTypeUID(BINDING_ID, "color");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_DIMMER = new ChannelTypeUID(BINDING_ID, "dimmer");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_QUANTITY = new ChannelTypeUID(BINDING_ID, "quantity");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_STRING = new ChannelTypeUID(BINDING_ID, "string");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_SWITCH = new ChannelTypeUID(BINDING_ID, "switch");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_IR_CODE = new ChannelTypeUID(BINDING_ID, "ir-code");
@@ -72,7 +74,8 @@ public class TuyaBindingConstants {
 
         try (InputStreamReader reader = new InputStreamReader(resource)) {
             Gson gson = new Gson();
-            Type schemaListType = TypeToken.getParameterized(Map.class, String.class, SchemaDp.class).getType();
+            Type schemaListType = TypeToken.getParameterized(LinkedHashMap.class, String.class, SchemaDp.class)
+                    .getType();
             Type schemaType = TypeToken.getParameterized(Map.class, String.class, schemaListType).getType();
             return Objects.requireNonNull(gson.fromJson(reader, schemaType));
         } catch (IOException e) {

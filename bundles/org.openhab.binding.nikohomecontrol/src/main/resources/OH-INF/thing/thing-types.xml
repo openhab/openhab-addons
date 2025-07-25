@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>@text/bridgeLabel</label>
 		<description>@text/bridgeDescription</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="alarm" typeId="alarm"/>
 			<channel id="notice" typeId="notice"/>
@@ -34,6 +35,7 @@
 	<bridge-type id="bridge2">
 		<label>@text/bridge2Label</label>
 		<description>@text/bridge2Description</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="alarm" typeId="alarm"/>
 			<channel id="notice" typeId="notice"/>
@@ -77,6 +79,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/pushButtonLabel</label>
 		<description>@text/pushButtonDescription</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channels>
 			<channel id="button" typeId="button"/>
 		</channels>
@@ -94,6 +97,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/onOffLabel</label>
 		<description>@text/onOffDescription</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 		</channels>
@@ -111,6 +115,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/dimmerLabel</label>
 		<description>@text/dimmerDescription</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
@@ -134,6 +139,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/blindLabel</label>
 		<description>@text/blindDescription</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
 		</channels>
@@ -157,6 +163,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/thermostatLabel</label>
 		<description>@text/thermostatDescription</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="measured" typeId="measured"/>
 			<channel id="heatingmode" typeId="heatingmode"/>
@@ -186,6 +193,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/energyMeterLiveLabel</label>
 		<description>@text/energyMeterLiveDescription</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="energy" typeId="energy"/>
@@ -217,6 +225,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/energyMeterLabel</label>
 		<description>@text/energyMeterDescription</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="energy" typeId="energy"/>
 			<channel id="energyday" typeId="energyday"/>
@@ -247,6 +256,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/gasMeterLabel</label>
 		<description>@text/gasMeterDescription</description>
+		<semantic-equipment-tag>GasMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="gas" typeId="gas"/>
 			<channel id="gasday" typeId="gasday"/>
@@ -277,6 +287,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/waterMeterLabel</label>
 		<description>@text/waterMeterDescription</description>
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="water" typeId="water"/>
 			<channel id="waterday" typeId="waterday"/>
@@ -307,6 +318,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/accessLabel</label>
 		<description>@text/accessDescription</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
 		<channels>
 			<channel id="bellbutton" typeId="bellbutton"/>
 			<channel id="lock" typeId="lock"/>
@@ -324,6 +336,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/accessRingAndComeInLabel</label>
 		<description>@text/accessRingAndComeInDescription</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
 		<channels>
 			<channel id="bellbutton" typeId="bellbutton"/>
 			<channel id="ringandcomein" typeId="ringandcomein"/>
@@ -342,6 +355,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/alarmLabel</label>
 		<description>@text/alarmDescription</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<channels>
 			<channel id="arm" typeId="system.power"/>
 			<channel id="armed" typeId="armed"/>
@@ -368,6 +382,10 @@
 		<label>@text/channelRollershutterLabel</label>
 		<description>@text/channelRollershutterDescription</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="measured">
@@ -402,6 +420,10 @@
 		<item-type>String</item-type>
 		<label>@text/channelModeLabel</label>
 		<description>@text/channelModeDescription</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="Day">@text/channelModeOption0</option>
@@ -461,48 +483,80 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channelPowerLabel</label>
 		<description>@text/channelPowerDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="energy">
 		<item-type>Number:Energy</item-type>
 		<label>@text/channelEnergyLabel</label>
 		<description>@text/channelEnergyDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="energyday">
 		<item-type>Number:Energy</item-type>
 		<label>@text/channelEnergyDayLabel</label>
 		<description>@text/channelEnergyDayDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="gas">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelGasLabel</label>
 		<description>@text/channelGasDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="gasday">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelGasDayLabel</label>
 		<description>@text/channelGasDayDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="water">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelWaterLabel</label>
 		<description>@text/channelWaterDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="waterday">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelWaterDayLabel</label>
 		<description>@text/channelWaterDayDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="measurementtime">
 		<item-type>DateTime</item-type>
 		<label>@text/channelMeasurementTimeLabel</label>
 		<description>@text/channelMeasurementTimeDescription</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -511,6 +565,10 @@
 		<label>@text/channelBellButtonLabel</label>
 		<description>@text/channelBellButtonDescription</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="ringandcomein">
@@ -518,12 +576,20 @@
 		<label>@text/channelRingAndComeInLabel</label>
 		<description>@text/channelRingAndComeInDescription</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>@text/channelLockLabel</label>
 		<description>@text/channelLockDescription</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -532,6 +598,10 @@
 		<label>@text/channelAlarmArmedLabel</label>
 		<description>@text/channelAlarmArmedDescription</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="alarmstate">
@@ -539,6 +609,9 @@
 		<label>@text/channelAlarmStateLabel</label>
 		<description>@text/channelAlarmStateDescription</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="DISARMED">@text/channelOptionAlarmStateDisarmed</option>

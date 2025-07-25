@@ -7,6 +7,7 @@
 	<bridge-type id="http">
 		<label>OpenSprinkler HTTP Bridge</label>
 		<description>A connection to a stand alone OpenSprinkler device which communicates over HTTP.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -63,6 +64,7 @@
 		</supported-bridge-type-refs>
 		<label>OpenSprinkler Station</label>
 		<description>Controls a station connected to the OpenSprinkler device.</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="stationState" typeId="stationState"></channel>
@@ -87,6 +89,7 @@
 		</supported-bridge-type-refs>
 		<label>OpenSprinkler Device</label>
 		<description>A thing that receives data from the OpenSprinkler device directly.</description>
+		<semantic-equipment-tag>Horticulture</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rainsensor" typeId="rainsensor"></channel>
@@ -117,6 +120,10 @@
 		<label>Rain Sensor</label>
 		<description>Provides feedback on whether the OpenSprinkler device has detected rain or not.</description>
 		<category>Sensor</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -125,6 +132,9 @@
 		<label>Sensor 2</label>
 		<description>Sensor 2 can be setup as a rain, flow or soil moisture sensor.</description>
 		<category>Sensor</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -140,6 +150,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Water Level</label>
 		<description>The current watering level in percent</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -171,6 +185,10 @@
 		<label>Station State</label>
 		<description>Controls a station on the OpenSprinkler device.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 

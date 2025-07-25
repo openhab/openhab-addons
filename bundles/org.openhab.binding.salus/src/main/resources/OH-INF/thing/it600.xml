@@ -17,6 +17,7 @@
 			setting the desired temperature, and defining the operation type. The operation of this device depends on a unique
 			Data Source Name (DSN) which serves as an identifier in the Salus cloud system.
 		</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="it600-temp-channel"/>
 			<channel id="expected-temperature" typeId="it600-expected-temp-channel"/>
@@ -45,6 +46,10 @@
 		<label>Temperature</label>
 		<description>Current temperature in room</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="35" step="0.5" readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="it600-expected-temp-channel">
@@ -52,6 +57,10 @@
 		<label>Expected Temperature</label>
 		<description>Sets the desired temperature in room</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="35" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="it600-work-type-channel">
@@ -65,6 +74,10 @@
 			TEMPORARY_MANUAL — schedules are
 			turned on, following manual temperature until next schedule.
 		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">OFF</option>
@@ -78,5 +91,9 @@
 		<item-type>Switch</item-type>
 		<label>Running State</label>
 		<description>Is the device running</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

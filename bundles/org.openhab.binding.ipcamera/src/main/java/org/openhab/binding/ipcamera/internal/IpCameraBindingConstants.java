@@ -84,6 +84,7 @@ public class IpCameraBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_POLL_IMAGE = "pollImage";
+    public static final String CHANNEL_CREATE_SNAPSHOTS = "createSnapshots";
     public static final String CHANNEL_RECORDING_GIF = "recordingGif";
     public static final String CHANNEL_GIF_HISTORY = "gifHistory";
     public static final String CHANNEL_GIF_HISTORY_LENGTH = "gifHistoryLength";

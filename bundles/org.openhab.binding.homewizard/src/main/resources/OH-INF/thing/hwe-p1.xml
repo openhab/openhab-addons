@@ -8,7 +8,7 @@
 		<label>HomeWizard P1 Meter</label>
 		<description>This thing provides the measurement data that is available through the API of a HomeWizard
 			P1 Meter.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="energy" typeId="p1-energy-group"/>
 		</channel-groups>
@@ -136,6 +136,10 @@
 			frequently as the data in the other channels, the gas_timestamp channel provides the time stamp of the most recent
 			update.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="p1-gas-timestamp">

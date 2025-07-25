@@ -40,6 +40,7 @@
 		</supported-bridge-type-refs>
 		<label>Switch</label>
 		<description>Bistabiel-Mono-Timer-Interval Output</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 		</channels>
@@ -74,6 +75,7 @@
 		</supported-bridge-type-refs>
 		<label>CO2</label>
 		<description>Qbus CO2</description>
+		<semantic-equipment-tag>CO2Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="co2" typeId="co2"/>
 		</channels>
@@ -91,6 +93,7 @@
 		</supported-bridge-type-refs>
 		<label>Dimmer</label>
 		<description>Qbus Dimmer Output</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
@@ -114,6 +117,7 @@
 		</supported-bridge-type-refs>
 		<label>RollerShutter</label>
 		<description>Qbus shutter (ROL02P) control</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
 		</channels>
@@ -131,6 +135,7 @@
 		</supported-bridge-type-refs>
 		<label>RollerShutter (With Slats)</label>
 		<description>Qbus shutter with slats control</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
 			<channel id="slats" typeId="slats"/>
@@ -149,6 +154,7 @@
 		</supported-bridge-type-refs>
 		<label>Thermostat</label>
 		<description>Qbus Thermostat</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="measured" typeId="measured"/>
 			<channel id="mode" typeId="mode"/>
@@ -198,6 +204,10 @@
 		<label>Mode</label>
 		<description>Thermostat Mode</description>
 		<category>Number</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Manual</option>
@@ -214,6 +224,10 @@
 		<label>CO2</label>
 		<description>CO2 value for Qbus</description>
 		<category>CO2</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollershutter">
@@ -221,6 +235,10 @@
 		<label>Rollershutter</label>
 		<description>Rollershutter Control for Qbus</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="slats">
@@ -228,6 +246,10 @@
 		<label>Slatcontrol</label>
 		<description>Slatcontrol for Qbus</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

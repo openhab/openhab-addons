@@ -279,7 +279,7 @@ public class DenonMarantzState {
         StringType newVal = StringType.valueOf(zone3Input);
         if (!newVal.equals(this.zone3Input)) {
             this.zone3Input = newVal;
-            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_INPUT, newVal);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_INPUT, newVal);
         }
     }
 

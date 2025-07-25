@@ -11,7 +11,7 @@
 
 		<label>ForecastSolar PV Plane</label>
 		<description>One PV Plane of Multi Plane Bridge</description>
-
+		<semantic-equipment-tag>SolarPanel</semantic-equipment-tag>
 		<channels>
 			<channel id="power-estimate" typeId="power-estimate"/>
 			<channel id="energy-estimate" typeId="energy-estimate"/>

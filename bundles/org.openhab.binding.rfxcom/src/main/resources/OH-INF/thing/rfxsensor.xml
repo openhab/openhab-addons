@@ -14,6 +14,7 @@
 
 		<label>RFXCOM RFXSensor</label>
 		<description>A RFXSensor device.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>

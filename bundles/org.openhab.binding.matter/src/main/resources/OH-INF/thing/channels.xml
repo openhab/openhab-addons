@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="matter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="battery-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>The current battery voltage</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-alarm">
+		<item-type>String</item-type>
+		<label>Battery Alarm</label>
+		<description>The battery alarm state</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="minThreshold">Below min threshold</option>
+				<option value="threshold1">Below threshold 1</option>
+				<option value="threshold2">Below threshold 2</option>
+				<option value="threshold3">Below threshold 3</option>
+				<option value="noThreshold">No battery alarm</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="powersource-batpercentremaining">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Percent Remaining</label>
+		<description>Indicates the estimated percentage of battery charge remaining until the battery will no longer be able
+			to provide power to the Node</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="powersource-batchargelevel">
+		<item-type>Number</item-type>
+		<label>Battery Charge Level</label>
+		<description>Indicates a coarse ranking of the charge level of the battery, used to indicate when intervention is
+			required</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>LowBattery</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Ok</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="colorcontrol-color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>The color channel allows to control the color of a light.
+			It is also possible to dim values and switch the
+			light on and off.
+		</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="colorcontrol-temperature">
+		<item-type>Dimmer</item-type>
+		<label>Color Temperature</label>
+		<description>Sets the color temperature of the light</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
+		<state pattern="%.0f %%" min="0" max="100"/>
+	</channel-type>
+
+	<channel-type id="colorcontrol-temperature-abs" advanced="true">
+		<item-type unitHint="mirek">Number:Temperature</item-type>
+		<label>Color Temperature</label>
+		<description>Sets the color temperature of the light in mirek</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="onoffcontrol-onoff">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switches the power on and off</description>
+		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="levelcontrol-level">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Sets the level of the light</description>
+		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<state min="0" max="100" pattern="%d %%"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="modeselect-mode">
+		<item-type>Number</item-type>
+		<label>Mode Select</label>
+		<description>Selection of 1 or more states</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%d" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="switch-switch">
+		<item-type>Number</item-type>
+		<label>Switch</label>
+		<description>Indication of a switch or remote being activated</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="switch-switchlatched">
+		<kind>trigger</kind>
+		<label>Switched Latched Trigger</label>
+		<description>This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. after
+			the move.</description>
+	</channel-type>
+
+	<channel-type id="switch-initialpress">
+		<kind>trigger</kind>
+		<label>Initial Press Trigger</label>
+		<description>This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. while
+			pressed.</description>
+	</channel-type>
+
+	<channel-type id="switch-longpress">
+		<kind>trigger</kind>
+		<label>Long Press Trigger</label>
+		<description>This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. while
+			long pressed.</description>
+	</channel-type>
+
+	<channel-type id="switch-shortrelease">
+		<kind>trigger</kind>
+		<label>Short Release Trigger</label>
+		<description>This trigger shall indicate the previous value of the CurrentPosition attribute as a JSON object, i.e.
+			just prior to a short release.</description>
+	</channel-type>
+
+	<channel-type id="switch-longrelease">
+		<kind>trigger</kind>
+		<label>Long Release Trigger</label>
+		<description>This trigger shall indicate the previous value of the CurrentPosition attribute as a JSON object, i.e.
+			just prior to a long release.</description>
+	</channel-type>
+
+	<channel-type id="switch-multipressongoing">
+		<kind>trigger</kind>
+		<label>Multi-Press Ongoing Trigger</label>
+		<description>This trigger shall indicate 2 numeric fields as a JSON object. The first is the new value of the
+			CurrentPosition attribute, i.e. while pressed. The second is the multi press code with a value of N when the Nth
+			press of a multi-press sequence has been detected.
+		</description>
+	</channel-type>
+
+	<channel-type id="switch-multipresscomplete">
+		<kind>trigger</kind>
+		<label>Multi-Press Complete Trigger</label>
+		<description>This trigger shall indicate 2 numeric fields as a JSON object. The first is the new value of the
+			CurrentPosition attribute, i.e. while pressed. The second is how many times the momentary switch has been pressed in
+			a multi-press sequence.
+		</description>
+	</channel-type>
+
+	<channel-type id="thermostat-localtemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Local Temperature</label>
+		<description>Indicates the local temperature provided by the thermostat</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="thermostat-outdoortemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature</label>
+		<description>Indicates the outdoor temperature provided by the thermostat</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="thermostat-occupiedheating">
+		<item-type>Number:Temperature</item-type>
+		<label>Occupied Heating Setpoint</label>
+		<description>Sets the heating temperature when the room is occupied</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="thermostat-occupiedcooling">
+		<item-type>Number:Temperature</item-type>
+		<label>Occupied Cooling Setpoint</label>
+		<description>Sets the cooling temperature when the room is occupied</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="thermostat-unoccupiedheating">
+		<item-type>Number:Temperature</item-type>
+		<label>Unoccupied Heating Setpoint</label>
+		<description>Sets the heating temperature when the room is unoccupied</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="thermostat-unoccupiedcooling">
+		<item-type>Number:Temperature</item-type>
+		<label>Unoccupied Cooling Setpoint</label>
+		<description>Sets the cooling temperature when the room is unoccupied</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="thermostat-systemmode">
+		<item-type>Number</item-type>
+		<label>System Mode</label>
+		<description>Sets the system mode of the thermostat</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Auto</option>
+				<option value="3">Cool</option>
+				<option value="4">Heat</option>
+				<option value="5">Emergency Heating</option>
+				<option value="6">Precooling</option>
+				<option value="7">Fan Only</option>
+				<option value="8">Dry</option>
+				<option value="9">Sleep</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="thermostat-runningmode">
+		<item-type>Number</item-type>
+		<label>Running Mode</label>
+		<description>The running mode of the thermostat</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="3">Cool</option>
+				<option value="4">Heat</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="windowcovering-lift">
+		<item-type>Rollershutter</item-type>
+		<label>Window Covering Lift</label>
+		<description>Sets the window covering level - supporting open/close and up/down type commands
+		</description>
+		<category>Blinds</category>
+	</channel-type>
+
+	<channel-type id="fancontrol-fanmode">
+		<item-type>Number</item-type>
+		<label>Fan Mode</label>
+		<description>Sets the fan mode</description>
+		<category>Fan</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+				<option value="4">On</option>
+				<option value="5">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fancontrol-percent">
+		<item-type>Dimmer</item-type>
+		<label>Fan Speed</label>
+		<description>The current fan speed percentage </description>
+		<category>Fan</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="temperaturemeasurement-measuredvalue">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Indicates the temperature reading</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="relativehumiditymeasurement-measuredvalue">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Indicates the current relative humidity</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="occupancysensing-occupied">
+		<item-type>Switch</item-type>
+		<label>Occupancy</label>
+		<description>Indicates if an occupancy sensor is triggered</description>
+		<category>Presence</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="illuminancemeasurement-measuredvalue">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illumination</label>
+		<description>Indicates the brightness in Lux.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="booleanstate-statevalue">
+		<item-type>Switch</item-type>
+		<label>Boolean State</label>
+		<description>Indicates a boolean, true or false, value</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wifinetworkdiagnostics-rssi">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Signal</label>
+		<description>Wi-Fi signal strength indicator.</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="doorlock-lockstate">
+		<item-type>Switch</item-type>
+		<label>Door Lock State</label>
+		<description>Locks and unlocks the door and maintains the lock state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+
+	<channel-type id="electricalenergymeasurement-energymeasurmement-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="electricalpowermeasurement-activepower">
+		<item-type>Number:Power</item-type>
+		<label>Active Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="electricalpowermeasurement-activecurrent">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Active Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="electricalpowermeasurement-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<!-- Robotic Vacuum Cleaner Channels -->
+	<channel-type id="rvcrunmode-mode">
+		<item-type>Number</item-type>
+		<label>Run Mode</label>
+		<description>Selects the run mode (idle, cleaning, mapping) of the robotic vacuum cleaner</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="rvccleanmode-mode">
+		<item-type>Number</item-type>
+		<label>Clean Mode</label>
+		<description>Selects the cleaning mode (vacuum, mop etc.) of the robotic vacuum cleaner</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="rvcoperationalstate-state">
+		<item-type>Number</item-type>
+		<label>Operational State</label>
+		<description>Reports the operational state of the robotic vacuum cleaner</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rvcoperationalstate-gohome">
+		<item-type>Switch</item-type>
+		<label>Go Home</label>
+		<description>Sends the robotic vacuum cleaner back to the dock</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="servicearea-selectedarea">
+		<item-type>Switch</item-type>
+		<label>Area Selection</label>
+		<description>Toggle to enable a mapped area for cleaning</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="airquality-airquality">
+		<item-type>Number</item-type>
+		<label>Air Quality</label>
+		<description>Indicates the currently measured air quality.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Unknown</option>
+				<option value="1">Good</option>
+				<option value="2">Fair</option>
+				<option value="3">Moderate</option>
+				<option value="4">Poor</option>
+				<option value="5">Very Poor</option>
+				<option value="6">Extremely Poor</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

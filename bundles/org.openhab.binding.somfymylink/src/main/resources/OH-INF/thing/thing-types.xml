@@ -8,6 +8,7 @@
 	<bridge-type id="mylink">
 		<label>Somfy MyLink</label>
 		<description>Somfy MyLink bridge enabling communication with Somfy devices</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="sceneid" typeId="scenelist"/>
 		</channels>
@@ -50,6 +51,7 @@
 		</supported-bridge-type-refs>
 		<label>Somfy Shade</label>
 		<description>Controls shades</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="shadelevel" typeId="shadeControl"/>
 		</channels>
@@ -73,6 +75,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="button">

@@ -9,7 +9,7 @@
 		<description>The SEMS Portal is where the data about powerstations is collected online.
 			Configuration will only work if
 			you have used this account at least once in the portal itsself.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">GoodWe</property>
 		</properties>
@@ -40,7 +40,7 @@
 
 		<label>Power Station</label>
 		<description>A Power Station is the GoodWe converter that is connected through the internet with the SEMSPortal.</description>
-
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel id="lastUpdate" typeId="lastUpdate"/>
 			<channel id="currentOutput" typeId="currentOutput"/>
@@ -64,21 +64,37 @@
 		<item-type>Number:Power</item-type>
 		<label>Current Output</label>
 		<description>Current output in Watts</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="todayTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Todays Total Output</label>
 		<description>Todays total output in kWh</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="monthTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Current Month Total Output</label>
 		<description>The total output of this month in kWh</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="overallTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Overall Total Output</label>
 		<description>The total output from the start of the installation in kWh</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="todayIncome">
 		<item-type>Number</item-type>

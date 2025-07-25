@@ -42,6 +42,9 @@
 		<label>Beep Console</label>
 		<description>Send a beep command to this/all console(s).</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Off</option>

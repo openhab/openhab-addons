@@ -35,6 +35,7 @@ import org.openhab.automation.jrubyscripting.internal.watch.JRubyScriptFileWatch
 import org.openhab.core.automation.module.script.ScriptEngineContainer;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.config.core.ConfigDescription;
+import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionRegistry;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
@@ -58,15 +59,15 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     private final Logger logger = LoggerFactory.getLogger(JRubyConsoleCommandExtension.class);
 
     private final String DEFAULT_CONSOLE_PATH = "openhab/console/";
+    private final String OPENHAB_SCRIPTING_GEM = "gem \"openhab-scripting\", \"~> 5.0\"";
 
     private static final String INFO = "info";
     private static final String CONSOLE = "console";
     private static final String BUNDLE = "bundle";
     private static final String GEM = "gem";
-    private static final String UPDATE = "update";
     private static final String PRUNE = "prune";
 
-    private static final List<String> SUB_COMMANDS = List.of(INFO, CONSOLE, BUNDLE, GEM, UPDATE, PRUNE);
+    private static final List<String> SUB_COMMANDS = List.of(INFO, CONSOLE, BUNDLE, GEM, PRUNE);
 
     private final ScriptEngineManager scriptEngineManager;
     private final JRubyScriptEngineFactory jRubyScriptEngineFactory;
@@ -100,9 +101,8 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
                 buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
                         "starts an interactive JRuby console"), //
-                buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler in the main Script path"), //
+                buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler against your Gemfile"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
-                buildCommandUsage(UPDATE, "updates the configured gems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
         );
     }
@@ -146,9 +146,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 case GEM:
                     gem(console, Arrays.copyOfRange(args, 1, args.length));
                     break;
-                case UPDATE:
-                    updateGems(console);
-                    break;
                 case PRUNE:
                     if (args.length > 1) {
                         if ("-f".equals(args[1]) || "--force".equals(args[1])) {
@@ -175,16 +172,19 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     private void info(Console console) {
-        final String PRINT_VERSION_NUMBERS = """
+        File gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfile();
+        final String printVersionNumbers = """
                 library_version = defined?(OpenHAB::DSL::VERSION) && OpenHAB::DSL::VERSION
 
                 puts "JRuby #{JRUBY_VERSION}"
                 puts "JRuby Scripting Library #{library_version || 'is not installed'}"
-                puts "GEM_HOME: #{ENV['GEM_HOME']}"
-                puts "RUBYLIB: #{ENV['RUBYLIB']}"
-                    """;
+                puts "ENV['GEM_HOME']: #{ENV['GEM_HOME']}"
+                puts "ENV['RUBYLIB']: #{ENV['RUBYLIB']}"
+                    """ + (!gemfile.exists() ? "" : """
+                puts "ENV['BUNDLE_GEMFILE']: #{ENV['BUNDLE_GEMFILE']}"
+                    """);
 
-        executeWithFullJRuby(console, engine -> engine.eval(PRINT_VERSION_NUMBERS));
+        executeWithFullJRuby(console, engine -> engine.eval(printVersionNumbers));
         console.println("Script path: " + scriptFileWatcher.getWatchPath());
         console.println("");
         console.println("JRuby Scripting Add-on Configuration:");
@@ -198,6 +198,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             return;
         }
 
+        List<ConfigDescriptionParameter> parameters = configDescription.getParameters();
         Map<String, String> config = jRubyScriptEngineFactory.getConfiguration().getConfigurations();
         // The JRubyScripting Add-on configuration doesn't have group-less parameters,
         // but in case they exist in the future, print them out
@@ -212,9 +213,19 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 groupLabel = group.getName();
             }
             console.println(groupLabel);
-            configDescription.getParameters().forEach(parameter -> {
-                if (group.getName().equals(parameter.getGroupName())) {
-                    console.println("  " + parameter.getName() + ": " + config.get(parameter.getName()));
+            parameters.forEach(parameter -> {
+                if (!group.getName().equals(parameter.getGroupName())) {
+                    return;
+                }
+                console.print("  " + parameter.getName() + ": ");
+                String value = config.get(parameter.getName());
+                if (value == null) {
+                    console.println("not set");
+                } else if (value.contains("\n")) {
+                    console.println("  (multiline)");
+                    console.println("    " + value.replace("\n", "\n    "));
+                } else {
+                    console.println(value);
                 }
             });
             console.println("");
@@ -251,7 +262,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 case "-l":
                     boolean defaultConsoleInRegistry = false;
                     Map<String, String> consoles = (Map<String, String>) getConsoles();
-                    if (consoles == null) {
+                    if (consoles.isEmpty()) {
                         console.println(
                                 "The list of console scripts is not available. Please install/update the JRuby helper library gem.");
                     } else {
@@ -259,7 +270,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                         for (Map.Entry<String, String> consoleScript : consoles.entrySet()) {
                             String name = consoleScript.getKey();
                             String description = consoleScript.getValue();
-                            if (defaultConsole.equals(DEFAULT_CONSOLE_PATH + name) || defaultConsole.equals(name)) {
+                            if ((DEFAULT_CONSOLE_PATH + name).equals(defaultConsole) || name.equals(defaultConsole)) {
                                 description = description + " (default)";
                                 defaultConsoleInRegistry = true;
                             }
@@ -288,25 +299,42 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         final String consoleScript = script.contains("/") ? script : DEFAULT_CONSOLE_PATH + script;
         final String[] argv = args;
 
-        // Use full class name here to avoid ambiguity against other OSGiConsole implementations
-        if (console instanceof org.openhab.core.io.console.karaf.OSGiConsole) {
-            logger.debug("Starting JRuby console with script: {}", consoleScript);
+        logger.debug("Starting JRuby console with script: {}", consoleScript);
 
-            executeWithFullJRuby(console, engine -> {
-                // Resolve console.getSession().getTerminal() in Ruby to avoid having to add
-                // org.apache.karaf.shell.core as a dependency in pom.xml
-                engine.put("$console", console);
-                engine.put(ScriptEngine.ARGV, argv);
-                engine.eval(String.format("$terminal = $console.session.terminal; require '%s'", consoleScript));
-                return null;
-            });
-        } else {
-            console.println("JRuby Console is not supported in this environment.");
-        }
+        executeWithFullJRuby(console, engine -> {
+            // Resolve console.getSession().getTerminal() in Ruby to avoid having to add
+            // org.apache.karaf.shell.core as a dependency in pom.xml
+            engine.put("$console", console);
+            engine.put(ScriptEngine.ARGV, argv);
+            engine.eval(String.format("require '%s'", consoleScript));
+
+            return null;
+        });
     }
 
-    synchronized private void bundler(Console console, String[] args) {
-        final String BUNDLER = """
+    private synchronized void bundler(Console console, String[] args) {
+        final File gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfile();
+        boolean bundleInit = args.length >= 1 && "init".equals(args[0]);
+
+        if (bundleInit && gemfile.exists()) {
+            console.printf("Gemfile '%s' already exists.\n", gemfile.toString());
+            return;
+        } else if (!bundleInit && !gemfile.exists()) {
+            console.printf("""
+                    No Gemfile found. Please ensure the 'bundle_gemfile' setting is correct and the Gemfile exists.
+
+                    To create a new Gemfile '%s', run the command:
+                      jrubyscripting bundle init
+
+                    This will create a Gemfile that includes the openhab helper library in the current directory.
+                    """, gemfile.toString());
+            return;
+        }
+
+        final String bundler = """
+                require "jruby"
+                JRuby.runtime.instance_config.update_native_env_enabled = false
+
                 require "bundler"
                 require "bundler/friendly_errors"
 
@@ -322,13 +350,45 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 end
                 """;
 
-        String originalDir = System.setProperty("user.dir", scriptFileWatcher.getWatchPath().toString());
+        // We need to set user.dir because bundle init creates the Gemfile there
+        // and ignores BUNDLE_GEMFILE environment variable
+        String gemfileDir = gemfile.getParent();
+        if (gemfileDir == null) {
+            console.println("Error: Unable to determine Gemfile directory.");
+            console.println("Please check the 'bundle_gemfile' setting in the add-on configuration.");
+            console.println("Current setting: " + gemfile.toString());
+            return;
+        }
+        String originalDir = System.setProperty("user.dir", gemfileDir);
         try {
-            executeWithPlainJRuby(console, engine -> {
+            Object result = executeWithPlainJRuby(console, engine -> {
                 engine.put(ScriptEngine.ARGV, args);
-                engine.eval(BUNDLER);
-                return null;
+                return engine.eval(bundler);
             });
+            logger.debug("Bundler result: {}", result);
+            // A null result indicates a successful creation of Gemfile.
+            // Otherwise, if a Gemfile already exists, it will return `1`
+            if (bundleInit && result == null) {
+                try {
+                    // bundler init always creates a file called "Gemfile".
+                    // if our setting points to any file other than "Gemfile",
+                    // we need to rename the new Gemfile to it
+                    Path newGemfile = Path.of(gemfileDir, "Gemfile");
+                    Path gemfilePath = gemfile.toPath();
+                    if (!newGemfile.equals(gemfilePath)) {
+                        Files.move(newGemfile, gemfilePath);
+                        console.printf("Renamed %s to %s\n", newGemfile.toString(), gemfilePath.toString());
+                    }
+                    if (gemfile.exists()) {
+                        insertHelperLibraryGem(console, gemfile.toPath());
+                    } else {
+                        console.println("Gemfile creation failed.");
+                    }
+                } catch (IOException e) {
+                    console.println("Error: " + e.getMessage());
+                    return;
+                }
+            }
         } finally {
             if (originalDir == null) {
                 System.clearProperty("user.dir");
@@ -338,7 +398,18 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         }
     }
 
-    synchronized private void gem(Console console, String[] args) {
+    private void insertHelperLibraryGem(Console console, Path gemfilePath) throws IOException {
+        List<String> originalGemfile = Files.readAllLines(gemfilePath);
+        // The Gemfile generated by bundler init contains `# gem "rails"` -> remove it
+        // and add the openHAB scripting gem
+        List<String> outputGemfile = Stream.concat( //
+                originalGemfile.stream().filter(line -> !line.trim().startsWith("# gem ")), //
+                Stream.of(OPENHAB_SCRIPTING_GEM) //
+        ).toList();
+        Files.write(gemfilePath, outputGemfile);
+    }
+
+    private synchronized void gem(Console console, String[] args) {
         final String GEM = """
                 require "rubygems/gem_runner"
                 Gem::GemRunner.new.run ARGV
@@ -347,14 +418,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         executeWithPlainJRuby(console, engine -> {
             engine.put(ScriptEngine.ARGV, args);
             engine.eval(GEM);
-            return null;
-        });
-    }
-
-    private void updateGems(Console console) {
-        console.println("Updating configured gems: " + jRubyScriptEngineFactory.getConfiguration().getGems());
-        executeWithPlainJRuby(console, engine -> {
-            jRubyScriptEngineFactory.updateGems(engine);
             return null;
         });
     }
@@ -446,13 +509,12 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         final String scriptIdentifier = "jruby-console-" + UUID.randomUUID().toString();
 
         printLoadingMessage(console, true);
-        ScriptEngineContainer scriptEngineContainer = scriptEngineManager.createScriptEngine(scriptType,
-                scriptIdentifier);
-        if (scriptEngineContainer == null) {
+        ScriptEngineContainer container = scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier);
+        if (container == null) {
             console.println("Error: Unable to create JRuby script engine.");
             return null;
         }
-        ScriptEngine engine = scriptEngineContainer.getScriptEngine();
+        ScriptEngine engine = container.getScriptEngine();
         try {
             printLoadingMessage(console, false);
             return process.apply(engine);

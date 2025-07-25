@@ -7,6 +7,7 @@
 	<bridge-type id="rio">
 		<label>Russound RIO Device</label>
 		<description>Ethernet access point to Russound RIO control system (usually the main controller)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lang" typeId="sysLang"/>
@@ -50,6 +51,7 @@
 
 		<label>Russound Controller</label>
 		<description>Controller of Zones, Sources, etc</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="zones" typeId="ctlZones"/>
@@ -70,6 +72,7 @@
 
 		<label>Russound Zone</label>
 		<description>Zone within a Controller</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="name" typeId="zoneName"/>
@@ -122,6 +125,7 @@
 
 		<label>Russound Source</label>
 		<description>Source (tuner, streamer, etc) within the Russound System</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="name" typeId="srcName"/>
@@ -186,6 +190,10 @@
 		<item-type>Switch</item-type>
 		<label>All Zones</label>
 		<description>Toggles All Zones</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="sysControllers" advanced="true">
 		<item-type>String</item-type>
@@ -260,16 +268,28 @@
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>Whether the zone is ON or OFF</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="zoneVolume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume level of zone</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="zoneMute">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Whether the zone is muted</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="zonePage" advanced="true">
 		<item-type>Switch</item-type>
@@ -391,36 +411,60 @@
 		<item-type>String</item-type>
 		<label>ChannelName</label>
 		<description>Source's Channel Name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcComposerName" advanced="true">
 		<item-type>String</item-type>
 		<label>Composer Name</label>
 		<description>Current song's composer name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcGenre" advanced="true">
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>Current song's genre</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcArtistName">
 		<item-type>String</item-type>
 		<label>Artist Name</label>
 		<description>Current song's artist name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcAlbumName">
 		<item-type>String</item-type>
 		<label>Album Name</label>
 		<description>Current song's album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcCoverArtUrl" advanced="true">
 		<item-type>String</item-type>
 		<label>Cover Art URL</label>
 		<description>Current song's covert art url</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcPlayListName" advanced="true">
@@ -433,6 +477,10 @@
 		<item-type>String</item-type>
 		<label>Song Name</label>
 		<description>Name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcRating" advanced="true">
@@ -445,6 +493,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Provider Mode or Streaming Service</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcShuffleMode" advanced="true">

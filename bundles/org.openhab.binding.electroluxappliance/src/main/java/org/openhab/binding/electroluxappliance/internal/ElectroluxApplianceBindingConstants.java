@@ -32,6 +32,8 @@ public class ElectroluxApplianceBindingConstants {
     public static final ThingTypeUID THING_TYPE_ELECTROLUX_AIR_PURIFIER = new ThingTypeUID(BINDING_ID, "air-purifier");
     public static final ThingTypeUID THING_TYPE_ELECTROLUX_WASHING_MACHINE = new ThingTypeUID(BINDING_ID,
             "washing-machine");
+    public static final ThingTypeUID THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER = new ThingTypeUID(BINDING_ID,
+            "portable-air-conditioner");
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "api");
 
     // List of all common Channel ids
@@ -72,6 +74,28 @@ public class ElectroluxApplianceBindingConstants {
     public static final String CHANNEL_STEAM_VALUE = "steam-value";
     public static final String CHANNEL_PROGRAMS_ORDER = "programs-order";
 
+    // List of all Channel Ids for Portable Air Conditioner
+    public static final String CHANNEL_DEVICE_RUNNING = "appliance-running";
+    public static final String CHANNEL_AMBIENT_TEMPERATURE = "ambient-temperature";
+    public static final String CHANNEL_TARGET_TEMPERATURE = "target-temperature";
+    public static final String CHANNEL_SLEEP_MODE = "sleep-mode";
+    public static final String CHANNEL_FAN_SWING = "fan-swing";
+    public static final String CHANNEL_CHILD_LOCK = "child-ui-lock";
+    public static final String CHANNEL_FAN_MODE = "fan-mode";
+    public static final String CHANNEL_MODE = "mode";
+    public static final String CHANNEL_NETWORK_QUALITY_INDICATOR = "network-quality-indicator";
+    public static final String CHANNEL_NETWORK_RSSI = "network-rssi";
+    public static final String CHANNEL_COMPRESSOR_STATE = "compressor-state";
+    public static final String CHANNEL_FOURWAY_VALVE_STATE = "fourway-valve-state";
+    public static final String CHANNEL_EVAP_DEFROST_STATE = "evap-defrost-state";
+    public static final String CHANNEL_OFF_TIMER_ACTIVE = "off-timer-active";
+    public static final String CHANNEL_OFF_TIMER_DURATION = "off-timer-duration";
+    public static final String CHANNEL_OFF_TIMER_TIME = "off-timer-time";
+    public static final String CHANNEL_ON_TIMER_ACTIVE = "on-timer-active";
+    public static final String CHANNEL_ON_TIMER_DURATION = "on-timer-duration";
+    public static final String CHANNEL_ON_TIMER_TIME = "on-timer-time";
+    public static final String CHANNEL_FILTER_STATE = "filter-state";
+
     // List of all Properties ids
     public static final String PROPERTY_BRAND = "brand";
     public static final String PROPERTY_COLOUR = "colour";
@@ -80,6 +104,8 @@ public class ElectroluxApplianceBindingConstants {
     public static final String PROPERTY_FW_VERSION = "fwVersion";
     public static final String PROPERTY_SERIAL_NUMBER = "serialNumber";
     public static final String PROPERTY_WORKMODE = "workmode";
+    public static final String PROPERTY_NIU_FW_VERSION = "nioFwVersion";
+    public static final String PROPERTY_MCU_FW_VERSION = "mcuFwVersion";
 
     // List of all Commands for Air Purifiers
     public static final String COMMAND_WORKMODE_POWEROFF = "PowerOff";

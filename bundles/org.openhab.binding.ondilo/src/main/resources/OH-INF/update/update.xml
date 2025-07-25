@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="ondilo:ondilo">
+		<instruction-set targetVersion="1">
+			<add-channel id="temperature-trend" groupIds="measure">
+				<type>ondilo:temperature-trend</type>
+			</add-channel>
+			<add-channel id="ph-trend" groupIds="measure">
+				<type>ondilo:ph-trend</type>
+			</add-channel>
+			<add-channel id="orp-trend" groupIds="measure">
+				<type>ondilo:orp-trend</type>
+			</add-channel>
+			<add-channel id="salt-trend" groupIds="measure">
+				<type>ondilo:salt-trend</type>
+			</add-channel>
+			<add-channel id="tds-trend" groupIds="measure">
+				<type>ondilo:tds-trend</type>
+			</add-channel>
+
+			<add-channel id="temperature-low" groupIds="configuration">
+				<type>ondilo:temperature-low-high</type>
+			</add-channel>
+			<add-channel id="temperature-high" groupIds="configuration">
+				<type>ondilo:temperature-low-high</type>
+				<label>Maximum Water Temperature</label>
+				<description>Maximum water temperature</description>
+			</add-channel>
+			<add-channel id="ph-low" groupIds="configuration">
+				<type>ondilo:ph-low-high</type>
+			</add-channel>
+			<add-channel id="ph-high" groupIds="configuration">
+				<type>ondilo:ph-low-high</type>
+				<label>Maximum PH Level</label>
+				<description>Maximum PH level</description>
+			</add-channel>
+			<add-channel id="orp-low" groupIds="configuration">
+				<type>ondilo:orp-low-high</type>
+			</add-channel>
+			<add-channel id="orp-high" groupIds="configuration">
+				<type>ondilo:orp-low-high</type>
+				<label>Maximum ORP</label>
+				<description>Maximum Oxidation-Reduction Potential (ORP)</description>
+			</add-channel>
+			<add-channel id="salt-low" groupIds="configuration">
+				<type>ondilo:salt-low-high</type>
+			</add-channel>
+			<add-channel id="salt-high" groupIds="configuration">
+				<type>ondilo:salt-low-high</type>
+				<label>Maximum Salt Level</label>
+				<description>Maximum salt level</description>
+			</add-channel>
+			<add-channel id="tds-low" groupIds="configuration">
+				<type>ondilo:tds-low-high</type>
+			</add-channel>
+			<add-channel id="tds-high" groupIds="configuration">
+				<type>ondilo:tds-low-high</type>
+				<label>Maximum TDS</label>
+				<description>Maximum Total Dissolved Solids (TDS)</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

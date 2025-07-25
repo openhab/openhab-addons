@@ -12,6 +12,8 @@
  */
 package org.openhab.automation.jsscripting.internal;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -21,15 +23,17 @@ import javax.script.ScriptEngine;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
-import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.ConfigurableService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
 
@@ -43,23 +47,25 @@ import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
         + "=org.openhab.jsscripting")
 @ConfigurableService(category = "automation", label = "JS Scripting", description_uri = "automation:jsscripting")
 @NonNullByDefault
-public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
-    private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
-    private static final String CFG_INJECTION_CACHING_ENABLED = "injectionCachingEnabled";
+public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
+    public static final Path JS_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "js");
+    public static final String NODE_DIR = "node_modules";
+    public static final Path JS_LIB_PATH = JS_DEFAULT_PATH.resolve(NODE_DIR);
+
+    public static final String SCRIPT_TYPE = "application/javascript";
 
     private static final GraalJSEngineFactory factory = new GraalJSEngineFactory();
-
     private static final List<String> scriptTypes = createScriptTypes();
 
     private static List<String> createScriptTypes() {
         // Add those for backward compatibility (existing scripts may rely on those MIME types)
         List<String> backwardCompat = List.of("application/javascript;version=ECMAScript-2021", "graaljs");
-        return Stream.of(factory.getMimeTypes(), factory.getExtensions(), backwardCompat).flatMap(List::stream)
-                .toList();
+        return Stream.of(List.of(SCRIPT_TYPE), factory.getMimeTypes(), factory.getExtensions(), backwardCompat)
+                .flatMap(List::stream).distinct().toList();
     }
 
-    private boolean injectionEnabled = true;
-    private boolean injectionCachingEnabled = true;
+    private final Logger logger = LoggerFactory.getLogger(GraalJSScriptEngineFactory.class);
+    private final GraalJSScriptEngineConfiguration configuration;
 
     private final JSScriptServiceUtil jsScriptServiceUtil;
     private final JSDependencyTracker jsDependencyTracker;
@@ -67,9 +73,16 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     @Activate
     public GraalJSScriptEngineFactory(final @Reference JSScriptServiceUtil jsScriptServiceUtil,
             final @Reference JSDependencyTracker jsDependencyTracker, Map<String, Object> config) {
+        logger.debug("Loading GraalJSScriptEngineFactory");
+
         this.jsDependencyTracker = jsDependencyTracker;
         this.jsScriptServiceUtil = jsScriptServiceUtil;
-        modified(config);
+        this.configuration = new GraalJSScriptEngineConfiguration(config);
+    }
+
+    @Modified
+    protected void modified(Map<String, ?> config) {
+        configuration.modified(config);
     }
 
     @Override
@@ -87,19 +100,12 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         if (!scriptTypes.contains(scriptType)) {
             return null;
         }
-        return new DebuggingGraalScriptEngine<>(new OpenhabGraalJSScriptEngine(injectionEnabled,
-                injectionCachingEnabled, jsScriptServiceUtil, jsDependencyTracker));
+        return new DebuggingGraalScriptEngine<>(
+                new OpenhabGraalJSScriptEngine(configuration, jsScriptServiceUtil, jsDependencyTracker));
     }
 
     @Override
     public @Nullable ScriptDependencyTracker getDependencyTracker() {
         return jsDependencyTracker;
-    }
-
-    @Modified
-    protected void modified(Map<String, ?> config) {
-        this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Boolean.class, true);
-        this.injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED),
-                Boolean.class, true);
     }
 }

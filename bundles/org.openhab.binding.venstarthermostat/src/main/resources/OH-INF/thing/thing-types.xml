@@ -4,11 +4,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
+	<!-- Venstar Thermostat Thing -->
 	<thing-type id="colorTouchThermostat">
 		<label>ColorTouch Thermostat</label>
 		<description>Venstar ColorTouch Thermostat</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
@@ -88,6 +88,7 @@
 
 		<properties>
 			<property name="uuid"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -114,6 +115,10 @@
 		<item-type>String</item-type>
 		<label>System Mode</label>
 		<description>Current System Operating Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="off">Off</option>
@@ -135,6 +140,10 @@
 		<item-type>String</item-type>
 		<label>Away Mode</label>
 		<description>Current Away Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="home">Home</option>
@@ -154,6 +163,10 @@
 		<item-type>String</item-type>
 		<label>Fan Mode</label>
 		<description>Current Fan Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="auto">Auto</option>
@@ -173,6 +186,10 @@
 		<item-type>Switch</item-type>
 		<label>Fan State</label>
 		<description>Current Fan State</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -187,6 +204,10 @@
 		<item-type>String</item-type>
 		<label>Schedule Mode</label>
 		<description>Current Schedule Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="disabled">Disabled</option>
@@ -284,6 +305,10 @@
 		<item-type>String</item-type>
 		<label>System State</label>
 		<description>Current System Operating State</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="idle">Idle</option>
@@ -307,6 +332,10 @@
 		<label>Heating Setpoint</label>
 		<description>Heating Setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" min="40" max="80" step="1.0"/>
 	</channel-type>
 
@@ -315,6 +344,10 @@
 		<label>Cooling Setpoint</label>
 		<description>Cooling Setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" min="60" max="95" step="1.0"/>
 	</channel-type>
 
@@ -323,8 +356,11 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="outdoorTemperature">
@@ -332,8 +368,11 @@
 		<label>Outdoor Temperature</label>
 		<description>Outdoor Temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="humidity">
@@ -341,6 +380,10 @@
 		<label>Humidity</label>
 		<description>Indoor Humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 

@@ -12,7 +12,7 @@
 
 		<label>FRITZ!DECT 500</label>
 		<description>FRITZ!DECT500 color light.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
@@ -36,7 +36,7 @@
 
 		<label>FRITZ!DECT 400</label>
 		<description>FRITZ!DECT400 switch.</description>
-
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channels>
 			<channel id="press" typeId="system.button">
 				<label>Button Press</label>
@@ -60,7 +60,7 @@
 
 		<label>FRITZ!DECT 440</label>
 		<description>FRITZ!DECT440 switch.</description>
-
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="top-left" typeId="button">
 				<label>Top Left Button</label>
@@ -91,7 +91,7 @@
 
 		<label>Comet DECT</label>
 		<description>Comet DECT heating thermostat.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
@@ -127,7 +127,7 @@
 
 		<label>FRITZ!DECT 302</label>
 		<description>FRITZ!DECT 302 heating thermostat.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
@@ -163,7 +163,7 @@
 
 		<label>FRITZ!DECT 301</label>
 		<description>FRITZ!DECT 301 heating thermostat.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
@@ -199,7 +199,7 @@
 
 		<label>FRITZ!DECT 300</label>
 		<description>FRITZ!DECT 300 heating thermostat.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
@@ -235,7 +235,7 @@
 
 		<label>FRITZ!DECT 210</label>
 		<description>FRITZ!DECT210 switchable outlet.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
@@ -269,7 +269,7 @@
 
 		<label>FRITZ!DECT 200</label>
 		<description>FRITZ!DECT200 switchable outlet.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
@@ -304,7 +304,7 @@
 		<label>FRITZ!Powerline 546E</label>
 		<description>FRITZ!Powerline 546E with switchable outlet.
 		</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
@@ -355,7 +355,7 @@
 
 		<label>HAN-FUN Contact</label>
 		<description>HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder).</description>
-
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="contact_state" id="contact_state"/>
 		</channels>
@@ -373,7 +373,7 @@
 
 		<label>HAN-FUN Switch</label>
 		<description>HAN-FUN switch (e.g. SmartHome Wandtaster).</description>
-
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="press" typeId="system.rawbutton">
 				<label>Button Press</label>
@@ -395,7 +395,7 @@
 
 		<label>HAN-FUN Blinds</label>
 		<description>HAN-FUN blinds (e.g. RolloTron DECT 1213)</description>
-
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
 			<channel id="obstruction_alarm" typeId="obstruction_alarm"/>
@@ -414,7 +414,7 @@
 
 		<label>HAN-FUN Color Light</label>
 		<description>HAN-FUN color light (e.g SmartHome LED-Lampe E27 (farbig)).</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
@@ -438,6 +438,7 @@
 
 		<label>HAN-FUN Dimmable Light</label>
 		<description>HAN-FUN dimmable light (e.g. SmartHome LED-Lampe E27 (warmweiß)).</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
@@ -456,9 +457,30 @@
 
 		<label>HAN-FUN On / Off Device</label>
 		<description>HAN-FUN switchable device (e.g. SmartHome Zwischenstecker innen / SmartHome Zwischenstecker außen)</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="on_off" typeId="system.power"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+	<thing-type id="FRITZ_Smart_Energy_250">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+
+		<label>FRITZ Smart Energy 250</label>
+		<description>FRITZ!Smart Energy 250 smart meter read head.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channels>
+			<channel id="energy" typeId="system.electric-energy"/>
+			<channel id="power" typeId="system.electric-power"/>
+			<channel id="voltage" typeId="system.electric-voltage"/>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>ain</representation-property>
@@ -475,7 +497,7 @@
 
 		<label>Heating Group</label>
 		<description>Group for heating thermostats.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
@@ -510,7 +532,7 @@
 
 		<label>Switch Group</label>
 		<description>Group for switchable outlets and power meters.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
@@ -534,4 +556,43 @@
 
 		<config-description-ref uri="thing-type:avmfritz:fritzgroup"/>
 	</thing-type>
+
+	<thing-type id="HAN_FUN_SENSOR">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN Sensor</label>
+		<description>HAN-FUN Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channels>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+	<thing-type id="HAN_FUN_HOST">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN Host</label>
+		<description>HAN-FUN device (Gerät) hosting one or more HAN-FUN units</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
+		<channels>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
 </thing:thing-descriptions>

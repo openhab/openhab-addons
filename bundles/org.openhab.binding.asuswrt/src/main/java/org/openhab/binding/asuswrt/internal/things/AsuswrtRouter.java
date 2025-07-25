@@ -75,6 +75,8 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final String uid;
 
+    private int backoffDuration = RECONNECT_BACKOFF_START_S;
+
     public AsuswrtErrorHandler errorHandler;
 
     public AsuswrtRouter(Bridge bridge, HttpClient httpClient) {
@@ -128,15 +130,13 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     }
 
     public void startPollingJob() {
-        int pollingInterval = AsuswrtUtils.getValueOrDefault(config.pollingInterval, POLLING_INTERVAL_S_DEFAULT);
-        TimeUnit timeUnit = TimeUnit.SECONDS;
+        int pollingInterval = AsuswrtUtils.getValueOrDefault(config.pollingInterval, POLLING_INTERVAL_DEFAULT_S);
         if (pollingInterval > 0) {
-            if (pollingInterval < POLLING_INTERVAL_S_MIN) {
-                pollingInterval = POLLING_INTERVAL_S_MIN;
-            }
-            logger.trace("({}) start polling scheduler with interval {} {}", getUID(), pollingInterval, timeUnit);
+            pollingInterval = Math.max(pollingInterval, POLLING_INTERVAL_MIN_S);
+            logger.trace("({}) start polling scheduler with interval {} {}", getUID(), pollingInterval,
+                    TimeUnit.SECONDS);
             pollingJob = scheduler.scheduleWithFixedDelay(this::pollingJobAction, pollingInterval, pollingInterval,
-                    timeUnit);
+                    TimeUnit.SECONDS);
         } else {
             stopScheduler(pollingJob);
         }
@@ -149,26 +149,26 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     }
 
     protected void startReconnectScheduler() {
-        int pollingInterval = config.reconnectInterval;
-        TimeUnit timeUnit = TimeUnit.SECONDS;
-        if (pollingInterval < RECONNECT_INTERVAL_S) {
-            pollingInterval = RECONNECT_INTERVAL_S;
-        }
-        logger.trace("({}) start reconnect scheduler in {} {}", getUID(), pollingInterval, timeUnit);
-        reconnectJob = scheduler.schedule(this::reconnectJobAction, pollingInterval, timeUnit);
+        backoffDuration = RECONNECT_BACKOFF_START_S;
+        logger.debug("({}) will attempt reconnect in {} {}", getUID(), backoffDuration, TimeUnit.SECONDS);
+        reconnectJob = scheduler.schedule(this::reconnectJobAction, backoffDuration, TimeUnit.SECONDS);
     }
 
     protected void reconnectJobAction() {
-        connect();
+        if (!connect()) {
+            backoffDuration = Math.min(backoffDuration * 2, RECONNECT_BACKOFF_MAX_S);
+            logger.debug("({}) will attempt reconnect in {} {}", getUID(), backoffDuration, TimeUnit.SECONDS);
+            reconnectJob = scheduler.schedule(this::reconnectJobAction, backoffDuration, TimeUnit.SECONDS);
+        }
     }
 
     protected void startDiscoveryScheduler() {
         int pollingInterval = config.discoveryInterval;
-        TimeUnit timeUnit = TimeUnit.SECONDS;
         if (config.autoDiscoveryEnabled && pollingInterval > 0) {
             logger.trace("{} starting bridge discovery sheduler with interval {} {}", getUID(), pollingInterval,
-                    timeUnit);
-            discoveryJob = scheduler.scheduleWithFixedDelay(discoveryService::startScan, 0, pollingInterval, timeUnit);
+                    TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(discoveryService::startScan, 0, pollingInterval,
+                    TimeUnit.SECONDS);
         } else {
             stopScheduler(discoveryJob);
         }
@@ -194,7 +194,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      * Connects to the router and sets the states.
      */
     @SuppressWarnings("null")
-    protected void connect() {
+    protected boolean connect() {
         connector.login();
         if (connector.cookieStore.cookieIsSet()) {
             stopScheduler(reconnectJob);
@@ -202,8 +202,10 @@ public class AsuswrtRouter extends BaseBridgeHandler {
             devicePropertiesChanged(deviceInfo);
             setState(ThingStatus.ONLINE);
             startPollingJob();
+            return true;
         } else {
             setState(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorHandler.getErrorMessage());
+            return false;
         }
     }
 

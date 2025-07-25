@@ -15,6 +15,7 @@ package org.openhab.binding.bambulab.internal;
 import static org.assertj.core.api.Assertions.*;
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedMode.*;
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -101,8 +102,8 @@ class CommandParserTest {
                 new PrinterClient.Channel.AmsFilamentSettingCommand(11, 22, "s3", "s4", 55, 66, "s7")));
         var amsControlCommandStream = Arrays.stream(PrinterClient.Channel.AmsControlCommand.values())//
                 .map(value -> Arguments.of("AmsControl:" + value.name(), value));
-        var printSpeedCommandStream = Arrays.stream(PrinterClient.Channel.PrintSpeedCommand.values())//
-                .map(value -> Arguments.of("PrintSpeed:" + value.name(), value));
+        var printSpeedCommandStream = Stream.of(SILENT, STANDARD, SPORT, LUDICROUS)//
+                .map(value -> Arguments.of("PrintSpeed:" + value.getName(), value));
         var gCodeFileCommandStream = stream(
                 Arguments.of("GCodeFile:s1", new PrinterClient.Channel.GCodeFileCommand("s1")));
         var gCodeLineCommandStream = stream(Arguments.of("""
@@ -155,8 +156,8 @@ class CommandParserTest {
         ThrowableAssert.ThrowingCallable when = () -> CommandParser.parseCommand(command);
 
         // then
-        assertThatThrownBy(when)//
-                .message()//
+        assertThatCode(when)//
+                .as("Command should be supported! But it was not! Command: %s", command)
                 // if an error message starts with "Unknown..." it means that the giant if statement did not cover
                 // command.
                 //
@@ -165,7 +166,7 @@ class CommandParserTest {
                 //
                 // it might happen that there will be some other IllegalArgumentException (like not enough params) would
                 // be thrown, but none of them starts with "Unknown...".
-                .doesNotStartWith("Unknown command name: " + command);
+                .hasMessageNotContaining("Unknown command");
     }
 
     static Stream<Arguments> shouldSupportCommand() {
@@ -173,6 +174,9 @@ class CommandParserTest {
                 .getSubTypesOf(PrinterClient.Channel.Command.class)//
                 .stream()//
                 .map(Class::getSimpleName)//
-                .map(command -> command.replace("Command", "")).map(Arguments::of);
+                .sorted()//
+                .map(command -> command.replace("Command", ""))//
+                .map(command -> command + ":x:y:z:w")//
+                .map(Arguments::of);
     }
 }

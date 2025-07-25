@@ -8,6 +8,7 @@
 	<bridge-type id="controller">
 		<label>OmniLink Controller</label>
 		<description>An OmniLink controller.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="system_date" typeId="system_date"/>
 			<channel id="enable_disable_beeper" typeId="console_enable_disable_beeper">
@@ -60,6 +61,10 @@
 		<label>Date/Time</label>
 		<description>Controller date/time.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 

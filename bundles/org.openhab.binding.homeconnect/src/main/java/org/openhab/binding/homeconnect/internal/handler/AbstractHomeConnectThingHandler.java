@@ -52,6 +52,7 @@ import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.client.model.Event;
 import org.openhab.binding.homeconnect.internal.client.model.HomeAppliance;
 import org.openhab.binding.homeconnect.internal.client.model.Option;
+import org.openhab.binding.homeconnect.internal.client.model.PowerStateAccess;
 import org.openhab.binding.homeconnect.internal.client.model.Program;
 import org.openhab.binding.homeconnect.internal.handler.cache.ExpiringStateMap;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
@@ -1025,6 +1026,13 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
             if (apiClient.isPresent()) {
+                // set read-only state description, if device has read-only power state option
+                Optional<Channel> powerStateChannel = getThingChannel(CHANNEL_POWER_STATE);
+                if (powerStateChannel.isPresent()) {
+                    dynamicStateDescriptionProvider.withReadOnly(powerStateChannel.get().getUID(),
+                            apiClient.get().getPowerStateAccess(getThingHaId()) == PowerStateAccess.READ_ONLY);
+                }
+
                 Data data = apiClient.get().getPowerState(getThingHaId());
                 if (data.getValue() != null) {
                     return OnOffType.from(STATE_POWER_ON.equals(data.getValue()));
@@ -1320,7 +1328,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected void handlePowerCommand(final ChannelUID channelUID, final Command command,
             final HomeConnectApiClient apiClient, String stateNotOn)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        if (command instanceof OnOffType && CHANNEL_POWER_STATE.equals(channelUID.getId())) {
+        if (command instanceof OnOffType && CHANNEL_POWER_STATE.equals(channelUID.getId())
+                && apiClient.getPowerStateAccess(getThingHaId()) == PowerStateAccess.READ_WRITE) {
             apiClient.setPowerState(getThingHaId(), OnOffType.ON.equals(command) ? STATE_POWER_ON : stateNotOn);
         }
     }

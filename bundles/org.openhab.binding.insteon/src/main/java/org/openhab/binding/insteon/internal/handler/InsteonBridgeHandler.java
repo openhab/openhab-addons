@@ -120,6 +120,10 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
         return getBridgeConfig().getDevicePollInterval();
     }
 
+    public int getDeviceResponseTimeout() {
+        return getBridgeConfig().getDeviceResponseTimeout();
+    }
+
     public boolean isDeviceDiscoveryEnabled() {
         return getBridgeConfig().isDeviceDiscoveryEnabled();
     }
@@ -343,8 +347,6 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
      * @param modem the discovered modem
      */
     public void modemDiscovered(InsteonModem modem) {
-        modem.setPollInterval(getDevicePollInterval());
-
         initializeChannels(modem);
         updateProperties(modem);
         loadDeviceCache(modem);

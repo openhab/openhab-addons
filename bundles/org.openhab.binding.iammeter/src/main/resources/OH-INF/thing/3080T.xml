@@ -7,6 +7,7 @@
 	<thing-type id="powermeter3080T">
 		<label>Iammeter Power Meter 3080T</label>
 		<description>3 phases PowerMeter for Iammeter 3080T Binding</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="powerPhaseA" typeId="powerPhaseGroup">
 				<label>Power Phase A</label>
@@ -39,30 +40,50 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>voltage for phase A</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>current for phase A</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>power for phase A</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="importenergy">
 		<item-type>Number:Energy</item-type>
 		<label>ImportEnergy</label>
 		<description>importenergy for phase A</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="exportgrid">
 		<item-type>Number:Energy</item-type>
 		<label>Exportgrid</label>
 		<description>exportgrid for phase A</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="frequency" advanced="true">

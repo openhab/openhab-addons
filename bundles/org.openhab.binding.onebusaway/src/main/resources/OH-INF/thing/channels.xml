@@ -8,6 +8,10 @@
 		<item-type>DateTime</item-type>
 		<label>Arrival Time</label>
 		<description>The arrival time</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 		<config-description-ref uri="channel-type:onebusaway:config"/>
 	</channel-type>
@@ -16,6 +20,10 @@
 		<item-type>DateTime</item-type>
 		<label>Departure Time</label>
 		<description>The departure time</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 		<config-description-ref uri="channel-type:onebusaway:config"/>
 	</channel-type>

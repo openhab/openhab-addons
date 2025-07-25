@@ -46,6 +46,7 @@ import org.openhab.binding.homeconnect.internal.client.model.HomeAppliance;
 import org.openhab.binding.homeconnect.internal.client.model.HomeConnectRequest;
 import org.openhab.binding.homeconnect.internal.client.model.HomeConnectResponse;
 import org.openhab.binding.homeconnect.internal.client.model.Option;
+import org.openhab.binding.homeconnect.internal.client.model.PowerStateAccess;
 import org.openhab.binding.homeconnect.internal.client.model.Program;
 import org.openhab.binding.homeconnect.internal.configuration.ApiBridgeConfiguration;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -53,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -322,6 +324,53 @@ public class HomeConnectApiClient {
     public Data getPowerState(String haId)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         return getSetting(haId, SETTING_POWER_STATE);
+    }
+
+    /**
+     * Provides information on whether the power state of device can be set or only read.
+     *
+     * @param haId home appliance id
+     * @return {@link PowerStateAccess}
+     * @throws CommunicationException API communication exception
+     * @throws AuthorizationException oAuth authorization exception
+     * @throws ApplianceOfflineException appliance is not connected to the cloud
+     */
+    public PowerStateAccess getPowerStateAccess(String haId)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        String powerStateSettings = getRaw(haId, BASE_PATH + haId + "/settings/" + SETTING_POWER_STATE);
+
+        /***
+         * Example response:
+         * {
+         * "data": {
+         * "key": "BSH.Common.Setting.PowerState",
+         * "value": "BSH.Common.EnumType.PowerState.Off",
+         * "type": "BSH.Common.EnumType.PowerState",
+         * "constraints": {
+         * "allowedvalues": [
+         * "BSH.Common.EnumType.PowerState.Off",
+         * "BSH.Common.EnumType.PowerState.On"
+         * ],
+         * "default": "BSH.Common.EnumType.PowerState.On",
+         * "access": "readWrite"
+         * }
+         * }
+         * }
+         */
+
+        if (powerStateSettings != null) {
+            JsonObject responseObject = parseString(powerStateSettings).getAsJsonObject();
+            JsonObject data = responseObject.getAsJsonObject("data");
+            JsonElement jsonConstraints = data.get("constraints");
+            if (jsonConstraints.isJsonObject()) {
+                JsonElement jsonAccess = jsonConstraints.getAsJsonObject().get("access");
+                if (jsonAccess.isJsonPrimitive()) {
+                    return PowerStateAccess.fromString(jsonAccess.getAsString());
+                }
+            }
+        }
+
+        return PowerStateAccess.READ_ONLY;
     }
 
     /**
