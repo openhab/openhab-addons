@@ -361,6 +361,6 @@ Items {
 
 Having these values in the timeline you're able to cross check how the forecast influences the Photovoltaic Production.
 
-<img align="right" src="./doc/GrafanaCloudiness.png" alt="Grafana cloudiness forecast dashboard"/>
+<img align="right" src="doc/GrafanaCloudiness.png" alt="Grafana cloudiness forecast dashboard"/>
 
 I personally would like to have more steering control of the E3DC to react on such forecast e.g. "stop charging the car if it gets too cloudy"
