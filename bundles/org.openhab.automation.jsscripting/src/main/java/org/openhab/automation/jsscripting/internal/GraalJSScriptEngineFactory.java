@@ -54,8 +54,6 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     public static final String SCRIPT_TYPE = "application/javascript";
 
-    private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
-    private static final String CFG_INJECTION_CACHING_ENABLED = "injectionCachingEnabled";
 
     private static final GraalJSEngineFactory FACTORY = new GraalJSEngineFactory();
 
