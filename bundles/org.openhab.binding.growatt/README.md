@@ -192,7 +192,7 @@ The meaning of the method parameters is as follows:
 
 Notes:
 
--<sup>1)</sup> _**WARNING**_ inverters have different program `time segment`'s for each `programMode`.
+-<sup>1)</sup> **WARNING** inverters have different program `time segment`'s for each `programMode`.
 To prevent unexpected results do not overlap the `time segment`'s.
 
 -<sup>2)</sup> Depending on inverter type and `programMode` certain parameters may accept 'null' values.
