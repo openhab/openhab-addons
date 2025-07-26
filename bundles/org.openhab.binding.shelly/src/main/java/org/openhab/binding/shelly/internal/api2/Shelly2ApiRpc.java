@@ -161,6 +161,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (getProfile().isBlu) {
                 installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
             }
+
+            if (config.enableLoRa) {
+                installScript(SHELLY2_LORA_GWSCRIPT, true);
+            }
         } catch (ShellyApiException e) {
         }
     }
@@ -332,6 +336,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
+        if (dc.lora100 != null && config.enableLoRa) {
+            profile.settings.loraDetected = true;
+            profile.settings.loraRxEnabled = dc.lora100.rxEnabled;
+        }
+
         profile.initialized = true;
         if (!discovery) {
             getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
@@ -364,6 +373,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             deviceReboot();
                             getThing().reinitializeThing();
                         }
+                    }
+
+                    if (config.enableLoRa) {
+                        installScript(SHELLY2_LORA_GWSCRIPT, true);
                     }
                 }
             } catch (ShellyApiException e) {
@@ -488,13 +501,24 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (upload) {
                 logger.debug("{}: Script will be installed...", thingName);
 
-                // Create new script, get id
-                ShellyScriptResponse rsp = apiRequest(
-                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withName(script),
-                        ShellyScriptResponse.class);
-                ourId = rsp.id;
-                logger.debug("{}: Script has been created, id={}", thingName, ourId);
-                upload = true;
+                if (ourId == -1) {
+                    // find free script id
+                    ourId = 0;
+                    while (++ourId < 10 && testScriptId(scriptList, ourId)) {
+                    }
+                }
+                if (ourId < 10) {
+                    // Create new script, get id
+                    ShellyScriptResponse rsp = apiRequest(new Shelly2RpcRequest()
+                            .withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withId(ourId).withName(script),
+                            ShellyScriptResponse.class);
+                    ourId = rsp.id;
+                    logger.debug("{}: Script has been created, id={}", thingName, ourId);
+                    upload = true;
+                } else {
+                    logger.debug("{}: Too many scripts installed on this device", thingName);
+                    upload = false;
+                }
             }
 
             if (upload) {
@@ -532,6 +556,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.debug("{}: Unable to install script {}: {}", thingName, script, res.toString());
             }
         }
+    }
+
+    private boolean testScriptId(ShellyScriptListResponse scriptList, int id) {
+        for (ShellyScriptListEntry s : scriptList.scripts) {
+            if (s.id == id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean startScript(int ourId, boolean start) {
@@ -734,6 +767,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
                         getThing().postEvent(e.event, false);
                         break;
+
+                    case SHELLY2_EVENT_LORADATA:
+                        logger.debug("{}: LoRa data received, payload = {}", thingName, e.data.info);
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(e.data.info.data));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.data.info.rssi));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.data.info.snr));
+
+                        getThing().postEvent(e.data.info.event, false);
+                        break;
+
                     default:
                         logger.debug("{}: Event {} was not handled", thingName, e.event);
                 }
