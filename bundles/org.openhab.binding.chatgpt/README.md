@@ -60,7 +60,7 @@ Each channel of type `chat` takes the following configuration parameters:
 
 Items to be used by the HLI service must be tagged with the [ "ChatGPT" ] tag.
 If no semantic model is set up, you can set the parameter `useSemanticModel` to false.
-In this case, the item names must follow the naming convention '{Location}_***', for example "Kitchen_Light". The label of the items are expected to briefly describe the item in more detail.
+In this case, the item names must follow the naming convention '\<Location>_***', for example "Kitchen_Light". The label of the items are expected to briefly describe the item in more detail.
 
 ## Full Example
 
