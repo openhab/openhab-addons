@@ -613,7 +613,7 @@ Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
 There are two ways to cast a camera.
 
 1. openHAB Cloud Connector and using metadata/tags.
-2. Chromecast Bindings `playuri` channel.
+1. Chromecast Bindings `playuri` channel.
 
 The first method once setup allows you to ask "OK Google show X camera", or "OK Google show X camera on Y display".
 By optionally naming the display that you wish to use, it can be cast directly to your Chromecast (connected to your TV) by speaking to a Google Nest Mini.
@@ -705,7 +705,7 @@ end
 
 ## How To Reboot Camera
 
-```
+```java
 rule "Reboot Camera At 12:00 AM"
 when
     Time cron "0 0 0 ? *"
