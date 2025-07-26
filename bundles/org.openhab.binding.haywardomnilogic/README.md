@@ -89,16 +89,16 @@ Hayward OmniLogic Connection Parameters:
 
 ### Chlorinator Alert Bit Array
 
-| Bits  | Value                                       | Description           |
-|-------|---------------------------------------------|-----------------------|
-| 1:0   | 00 = OK, 01 = Salt Low, 10 = Salt too Low   | Low salt              |
-| 2     | 0 = OK,  1 = High                           | High Current          |
-| 3     | 0 = OK,  1 = Low                            | Low Voltage           |
-| 5:4   | 00 = OK, 01 = Low, 10 = Scaleback,11 = High | Cell Water Temp       |
-| 7:6   | 00 = OK, 01 = High, 10 = Clearing           | Board Temp            |
-| 8     | 0                                           | Not Used              |
-| 10:9  | 0                                           | Not Used              |
-| 12:11 | 00 = OK, 01 = Clean                         | Cell Cleaning/Runtime |
+| Bits  | Value                                        | Description           |
+|-------|----------------------------------------------|-----------------------|
+| 1:0   | 00 = OK, 01 = Salt Low, 10 = Salt too Low    | Low salt              |
+| 2     | 0 = OK, 1 = High                             | High Current          |
+| 3     | 0 = OK, 1 = Low                              | Low Voltage           |
+| 5:4   | 00 = OK, 01 = Low, 10 = Scaleback, 11 = High | Cell Water Temp       |
+| 7:6   | 00 = OK, 01 = High, 10 = Clearing            | Board Temp            |
+| 8     | 0                                            | Not Used              |
+| 10:9  | 0                                            | Not Used              |
+| 12:11 | 00 = OK, 01 = Clean                          | Cell Cleaning/Runtime |
 
 ### Chlorinator Status Bit Array
 
