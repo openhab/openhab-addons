@@ -40,7 +40,7 @@ You can use :
 
 - The enedis bridge: Uses the old Enedis API, based on the Enedis website, to gather data.
 - The myelectricaldata bridge: Uses the new REST Enedis API via the MyElectricalData proxy site to access the data.
-- TThe enedis-api bridge: Also uses the new REST Enedis API, but gathers data directly from the Enedis site.
+- The enedis-api bridge: Also uses the new REST Enedis API, but gathers data directly from the Enedis site.
 
 You first need to create an account at [the Enedis website](https://mon-compte-client.enedis.fr/) if you don't already have one.
 Ensure that you have accepted their conditions and check that you can see graphs on the website, especially the hourly view.
