@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.jrubyscripting.internal.JRubyScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
+import org.openhab.core.common.BidiSetBag;
 import org.openhab.core.service.WatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
