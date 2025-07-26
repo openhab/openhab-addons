@@ -575,7 +575,7 @@ The folder "conf/automation/python/" must be writeable by openHAB.
 
 #### Failed to inject import wrapper
 
-The reading the Python source file "conf/automation/python/lib/openhab/\<wrapper>.py" failed.
+The reading the Python source file "conf/automation/python/lib/openhab/\_\_wrapper\_\_py" failed.
 
 This could either a permission/owner problem or a problem during deployment of the helper libs.
 You should check that this file exists and it is readable by openHAB.
