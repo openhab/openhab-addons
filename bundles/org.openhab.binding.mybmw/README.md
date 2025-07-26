@@ -244,7 +244,7 @@ As the replies are formatted as JSON use the [JsonPath Transformation Service](h
 |---------------------|---------------|------------------------------------------------|
 | raw                 | String        | Unfiltered JSON String of vehicle data         |
 
-<img align="right" src="./doc/RawData.png" alt="Raw data example" width="400" height="125"/>
+<img align="right" src="doc/RawData.png" alt="Raw data example" width="400" height="125"/>
 
 Examples:
 
