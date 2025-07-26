@@ -19,7 +19,6 @@ The binding does not support auto discovery.
 | password        | N/A           | Yes      | No       | the password of the local account on the Powerwall that the installer provided       |
 | refresh         | 10            | No       | Yes      | The frequency with which to refresh information from the Powerwall (in seconds)      |
 
-
 ## Channels
 
 | channel id                | type                 | description                                                  |
