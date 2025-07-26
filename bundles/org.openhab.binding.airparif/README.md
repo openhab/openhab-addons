@@ -151,7 +151,7 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:airparif:willow     |   Yes   | ![Willow](doc/images/willow.svg) |
 | oh:airparif:wormwood   |   Yes   | ![Wormwood](doc/images/wormwood.svg) |
 
-## Full Examplee
+## Full Example
 
 ### Thing Configurationn
 
