@@ -10,7 +10,7 @@ sudo apt-get install libttspico-utils
 ```
 
 In Arch Linux the pico2wave binaries are available in an Arch User repository (AUR) under
-https://aur.archlinux.org/packages/svox-pico-bin/
+<https://aur.archlinux.org/packages/svox-pico-bin/>
 
 ## Configuration
 
@@ -21,7 +21,7 @@ There is no need to configure anything for this service.
 The following list are the only supported languages (as these are the languages supported by
 pico2wave, see also [the documentation of the Debian package](https://packages.debian.org/de/wheezy/libttspico-utils)):
 
-```
+```text
 German (de-DE)
 English, US (en-US)
 English, GB (en-GB)

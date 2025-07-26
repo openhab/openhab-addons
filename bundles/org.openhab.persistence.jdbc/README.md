@@ -26,15 +26,15 @@ The following databases are currently supported and tested:
 <!-- MarkdownTOC -->
 
 - [Configuration](#configuration)
-	- [Minimal Configuration](#minimal-configuration)
-	- [Migration from MySQL to JDBC Persistence Services](#migration-from-mysql-to-jdbc-persistence-services)
+  - [Minimal Configuration](#minimal-configuration)
+  - [Migration from MySQL to JDBC Persistence Services](#migration-from-mysql-to-jdbc-persistence-services)
 - [Technical Notes](#technical-notes)
-	- [Database Table Schema](#database-table-schema)
-	- [Number Precision](#number-precision)
-	- [Rounding results](#rounding-results)
-	- [Maintenance](#maintenance)
-	- [For Developers](#for-developers)
-	- [Performance Tests](#performance-tests)
+  - [Database Table Schema](#database-table-schema)
+  - [Number Precision](#number-precision)
+  - [Rounding results](#rounding-results)
+  - [Maintenance](#maintenance)
+  - [For Developers](#for-developers)
+  - [Performance Tests](#performance-tests)
 
 <!-- /MarkdownTOC -->
 
@@ -98,7 +98,7 @@ url=jdbc:postgresql://192.168.0.1:5432/testPostgresql
 Oracle connectivity has been tested on an Oracle Always Free Tier Autonomous DB 19c.
 
 You need to configure your database connection to not use an Oracle Wallet, but use the Java Key Store (JKS).
-To connect to an Oracle Autonomous Database, use the instructions at https://www.oracle.com/database/technologies/java-connectivity-to-atp.html#pre-requisites-tab, under Java Key Stores (JKS).
+To connect to an Oracle Autonomous Database, use the instructions at <https://www.oracle.com/database/technologies/java-connectivity-to-atp.html#pre-requisites-tab>, under Java Key Stores (JKS).
 
 Your services/jdbc.cfg should contain the following minimal configuration for connecting to an Oracle Autonomous Database:
 
@@ -171,7 +171,7 @@ The service will create a mapping table to link each item to a table, and a sepa
 The item data tables include time and data values.
 The SQL data type used depends on the openHAB item type, and allows the item state to be recovered back into openHAB in the same way it was stored.
 
-With this *per-item* layout, the scalability and easy maintenance of the database is ensured, even if large amounts of data must be managed.
+With this _per-item_ layout, the scalability and easy maintenance of the database is ensured, even if large amounts of data must be managed.
 To rename existing tables, use the parameters `tableNamePrefix`, `tableUseRealItemNames`, `tableIdDigitCount` and `tableCaseSensitiveItemNames` in the configuration.
 
 Please be aware that changing the name of `itemsManageTable` is not supported by the migration.

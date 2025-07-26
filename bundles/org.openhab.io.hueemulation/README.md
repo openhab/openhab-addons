@@ -30,8 +30,8 @@ By default the pairing mode disables itself after 1 minute (can be configured).
 
 ## Exposed lights
 
-It is important to note that you are exposing *Items* not *Things* or *Channels*.
-Only Color, Dimmer, Rollershutter, Switch and Group type *Items* are supported.
+It is important to note that you are exposing _Items_ not _Things_ or _Channels_.
+Only Color, Dimmer, Rollershutter, Switch and Group type _Items_ are supported.
 Group type items require the "Huelight" tag to be exposed as devices instead of Groups.
 
 This service can emulate 3 different devices:
@@ -53,14 +53,14 @@ The following default tags are setup:
 - "Lighting": Item will be exposed as a dimmable white bulb
 - "ColorLighting": Item will be exposed as a color bulb
 
-It is the responsibility of binding developers to categories and default tag their available *Channels*, so that linked Items are automatically exposed with this service.
+It is the responsibility of binding developers to categories and default tag their available _Channels_, so that linked Items are automatically exposed with this service.
 
 You can tag items manually though as well.
 
 ## Exposed names
 
 Your items labels are used for exposing!
-The default naming schema for automatically linked items unfortunately names *Items* like their Channel names,
+The default naming schema for automatically linked items unfortunately names _Items_ like their Channel names,
 so usually "Brightness" or "Color". You want to rename those.
 
 ## Configuration
@@ -156,7 +156,7 @@ You must either
   (`iptables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8080`)
 - install a reverse proxy on port 80, for example nginx with the following configuration:
 
-  ```
+  ```text
   server {
     listen 80;
     location / {
@@ -173,7 +173,7 @@ You must either
 
 - For Amazon Echo the pairing process may fail due to a 302 response from openHAB, this can be resolved by using a reverse proxy to change the request url from `/api` to `/api/`, for example nginx with the following configuration:
 
-  ```
+  ```text
   server {
     listen 80;
     location /api {
@@ -186,9 +186,9 @@ Please open port 80 tcp and port 1900 udp in your firewall installation.
 
 You can test if the hue emulation does its job by enabling pairing mode including the option "Amazon Echo device discovery fix".
 
-1. Navigate with your browser to "http://your-openhab-ip/description.xml" to check the discovery response.
+1. Navigate with your browser to `http://your-openhab-ip/description.xml` to check the discovery response.
    Check the IP address in there.
-2. Navigate with your browser to "http://your-openhab-ip/api/status" to check the self test report.
+1. Navigate with your browser to `http://your-openhab-ip/api/status` to check the self test report.
 
 If you use the port forwarding way, the self-test page will not be able to correctly determine if your installation works on port 80.
 A reverse proxy is recommended.
