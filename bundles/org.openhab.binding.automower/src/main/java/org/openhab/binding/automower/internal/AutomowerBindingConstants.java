@@ -272,7 +272,7 @@ public class AutomowerBindingConstants {
             put(76, "Connection NOT changed");
             put(77, "Com board not available");
             put(78, "Slipped - Mower has Slipped. Situation not solved with moving pattern");
-            put(79, "Invalid battery combination - Invalid combination of different battery types.");
+            put(79, "Invalid battery combination - Invalid combination of different battery types");
             put(80, "Cutting system imbalance Warning");
             put(81, "Safety function faulty");
             put(82, "Wheel motor blocked, rear right");

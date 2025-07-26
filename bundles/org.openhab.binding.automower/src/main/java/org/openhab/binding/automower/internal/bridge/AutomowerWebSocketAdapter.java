@@ -163,7 +163,6 @@ public class AutomowerWebSocketAdapter {
         try {
             WebSocketSession webSocketSession = handler.getWebSocketSession();
             if (webSocketSession != null) {
-
                 String accessToken = bridge.authenticate().getAccessToken();
                 if (unansweredPings > MAX_UNANSWERED_PINGS || accessToken == null) {
                     webSocketSession.close(1000, "Timeout: manually closing dead connection");

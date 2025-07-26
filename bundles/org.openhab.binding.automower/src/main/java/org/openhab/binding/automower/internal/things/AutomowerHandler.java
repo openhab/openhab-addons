@@ -590,7 +590,7 @@ public class AutomowerHandler extends BaseThingHandler {
             attributes.setEnable(enable);
             mower.getAttributes().getStayOutZones().getZones().stream().filter(zone -> zone.getId().equals(zoneId))
                     .findFirst().ifPresent(zone -> {
-                        zone.setEnabed(enable);
+                        zone.setEnabled(enable);
                     });
 
             String id = automowerId.get();

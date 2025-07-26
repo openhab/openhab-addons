@@ -70,7 +70,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final WebSocketClient webSocketClient;
     private boolean closing;
-    private Map<String, AutomowerHandler> automowerHandlers = new HashMap<>();;
+    private Map<String, AutomowerHandler> automowerHandlers = new HashMap<>();
 
     public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
             WebSocketClient webSocketClient) {

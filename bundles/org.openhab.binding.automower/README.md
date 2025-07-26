@@ -44,26 +44,26 @@ These channels represent the Automower® status.
 
 | channel                               | type         | access mode | description                                                                                                 | advanced |
 |---------------------------------------|----------------------|-----|----------------------------------------------------------------------------------------------------------------|-------|
-| status#name                           | String               | R   | The name of the mower                                                                                     | false |
+| status#name                           | String               | R   | The name of the mower                                                                                          | false |
 | status#mode                           | String               | R   | The current mode (MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN)                                              | false |
 | status#activity                       | String               | R   | The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN)                                                                                                                                                                    | false |
 | status#inactive-reason                | String               | R   | The current reason for being inactive (NONE, PLANNING, SEARCHING_FOR_SATELLITES)                               | false |
 | status#state                          | String               | R   | The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED_NONE, RESTRICTED_WEEK_SCHEDULE, RESTRICTED_PARK_OVERRIDE, RESTRICTED_SENSOR, RESTRICTED_DAILY_LIMIT, RESTRICTED_FOTA, RESTRICTED_FROST, RESTRICTED_ALL_WORK_AREAS_COMPLETED, RESTRICTED_EXTERNAL, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP)                                                                                                                                       | false |
 | status#work-area-id<sup id="a1">[1](#f1)</sup> | Number      | R   | Id of the active Work Area                                                                                     | true  |
 | status#work-area<sup id="a1">[1](#f1)</sup>    | String      | R   | Name of the active Work Area                                                                                   | false |
-| status#last-update                    | DateTime             | R   | The time when the mower sent the last update                                                              | false |
+| status#last-update                    | DateTime             | R   | The time when the mower sent the last update                                                                   | false |
 | status#last-poll-update               | DateTime             | R   | The time when the binding polled the last update from the cloud                                                | true  |
-| status#poll-update                    | Switch               | R/W | Poll mower status update from the cloud (`sendCommand(ON)`)                                               | true  |
+| status#poll-update                    | Switch               | R/W | Poll mower status update from the cloud (`sendCommand(ON)`)                                                    | true  |
 | status#battery                        | Number:Dimensionless | R   | The battery state of charge in percent                                                                         | false |
 | status#error-code                     | Number               | R/W | The current error code. `sendCommand(0)` to confirm current non fatal error                                    | true  |
 | status#error-message                  | String               | R   | The current error message                                                                                      | false |
 | status#error-timestamp                | DateTime             | R   | The timestamp when the current error occurred                                                                  | false |
-| status#error-confirmable<sup id="a1">[1](#f1)</sup> | Switch | R   | If the mower has an error, this attribute states if the error is confirmable                              | true  |
-| status#next-start                     | DateTime             | R   | The time for the next scheduled start. If the mower is charging then the value is the estimated time when it will leave the charging station. If the mower is about to start now, the value is NULL                                                                                                                                   | false |
+| status#error-confirmable<sup id="a1">[1](#f1)</sup> | Switch | R   | If the mower has an error, this attribute states if the error is confirmable                                   | true  |
+| status#next-start                     | DateTime             | R   | The time for the next scheduled start. If the mower is charging then the value is the estimated time when it will leave the charging station. If the mower is about to start now, the value is NULL                                                                                                                                                                                  | false |
 | status#override-action                | String               | R   | The action that overrides the current planner operation                                                        | true  |
 | status#restricted-reason              | String               | R   | The reason that restrics the current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL)                                                                                                                                                   | false |
 | status#external-reason                | String               | R   | An external reason set by i.e. Google Assistant or Amazon Alexa that restrics the current planner operation    | true  |
-| status#position                       | Location             | R   | Last GPS Position of the mower                                                                            | false |
+| status#position                       | Location             | R   | Last GPS Position of the mower                                                                                 | false |
 
 ### Settings Channels
 
@@ -85,7 +85,7 @@ These channels hold different Automower® statistics.
 | channel                             | type                 | access mode | description                                                                                 | advanced |
 |-------------------------------------|----------------------|-------------|---------------------------------------------------------------------------------------------|----------|
 | statistic#cutting-blade-usage-time  | Number:Time          | R/W         | The time since the last reset of the cutting blade usage counter. `sendCommand(0)` to reset | false    |
-| statistic#down-time                 | Number:Time          | R           | The time the mower has been disconnected from the cloud                                | true     |
+| statistic#down-time                 | Number:Time          | R           | The time the mower has been disconnected from the cloud                                     | true     |
 | statistic#number-of-charging-cycles | Number               | R           | Number of charging cycles                                                                   | false    |
 | statistic#number-of-collisions      | Number               | R           | Total number of collisions                                                                  | false    |
 | statistic#total-charging-time       | Number:Time          | R           | Total charging time                                                                         | false    |
@@ -95,7 +95,7 @@ These channels hold different Automower® statistics.
 | statistic#total-running-time        | Number:Time          | R           | The total running time (the wheel motors have been running)                                 | false    |
 | statistic#total-searching-time      | Number:Length        | R           | The total searching time                                                                    | false    |
 | statistic#total-searching-percent   | Number:Dimensionless | R           | The total searching time in percent                                                         | false    |
-| statistic#up-time                   | Number:Time          | R           | The time the mower has been connected to the cloud                                     | true     |
+| statistic#up-time                   | Number:Time          | R           | The time the mower has been connected to the cloud                                          | true     |
 
 ### Calendar Tasks Channels
 
@@ -126,7 +126,7 @@ These channels hold the different Stayout Zone configurations.
 | stayoutzone#dirty<sup id="a1">[1](#f1)</sup>              | Switch | R           | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true     |
 | stayoutzone#\<x\>-zone-id<sup id="a1">[1](#f1)</sup>      | String | R           | Id of the stay-out zone                                                                                                            | true     |
 | stayoutzone#\<x\>-zone-name<sup id="a1">[1](#f1)</sup>    | String | R           | The name of the stay-out zone                                                                                                      | true     |
-| stayoutzone#\<x\>-zone-enabled<sup id="a1">[1](#f1)</sup> | Switch | R/W         | If the stay-out zone is enabled, the mower will not access the zone                                                           | true     |
+| stayoutzone#\<x\>-zone-enabled<sup id="a1">[1](#f1)</sup> | Switch | R/W         | If the stay-out zone is enabled, the mower will not access the zone                                                                | true     |
 
 \<x\> ... 01-#stayoutzones
 
@@ -163,13 +163,13 @@ Command channels that trigger actions.
 
 | channel                           | type     | access mode | description                                                                                            | advanced |
 |-----------------------------------|----------|-------------|--------------------------------------------------------------------------------------------------------|----------|
-| command#start                     | Number   | W           | Start the mower for the given duration, overriding the schedule                                   | false    |
-| command#start_in_workarea         | Number   | W           | Start the mower in the given Work Area, overriding the schedule. The mower will continue forever          | false    |
-| command#resume_schedule           | Switch   | W           | Resume the schedule of the mower                                                                  | false    |
-| command#pause                     | Switch   | W           | Pause the mower at the current location until manual resume                                       | false    |
-| command#park                      | Number   | W           | Park the mower for the given duration, overriding the schedule                                    | false    |
-| command#park_until_next_schedule  | Switch   | W           | Park the mower, fully charge it and start afterwards according to the schedule                    | false    |
-| command#park_until_further_notice | Switch   | W           | Park the mower until it is started again by the start action/command or the schedule gets resumed | false    |
+| command#start                     | Number   | W           | Start the mower for the given duration, overriding the schedule                                        | false    |
+| command#start_in_workarea         | Number   | W           | Start the mower in the given Work Area, overriding the schedule. The mower will continue forever       | false    |
+| command#resume_schedule           | Switch   | W           | Resume the schedule of the mower                                                                       | false    |
+| command#pause                     | Switch   | W           | Pause the mower at the current location until manual resume                                            | false    |
+| command#park                      | Number   | W           | Park the mower for the given duration, overriding the schedule                                         | false    |
+| command#park_until_next_schedule  | Switch   | W           | Park the mower, fully charge it and start afterwards according to the schedule                         | false    |
+| command#park_until_further_notice | Switch   | W           | Park the mower until it is started again by the start action/command or the schedule gets resumed      | false    |
 
 ## Actions
 
@@ -177,20 +177,20 @@ The following actions are available for `automower` things:
 
 | action name                | arguments         | description                                                                                            |
 |----------------------------|-------------------|--------------------------------------------------------------------------------------------------------|
-| start                      | `duration (long)` | Start the mower for the given duration (minutes), overriding the schedule                         |
-| startInWorkArea            | `workAreaId (long)`<br/>`duration (long)` | Start the mower in the given Work Area for the given duration (minutes), overriding the schedule. If duration is skipped the mower will continue forever   |
-| pause                      | -                 | Pause the mower at the current location until manual resume                                       |
-| park                       | `duration (long)` | Park the mower for the given duration (minutes), overriding the schedule                          |
-| parkUntilNextSchedule      | -                 | Park the mower, fully charge it and start afterwards according to the schedule                    |
-| parkUntilFurtherNotice     | -                 | Park the mower until it is started again by the start action/command or the schedule gets resumed |
-| resumeSchedule             | -                 | Resume the schedule of the mower                                                                  |
+| start                      | `duration (long)` | Start the mower for the given duration (minutes), overriding the schedule                              |
+| startInWorkArea            | `workAreaId (long)`<br/>`duration (long)` | Start the mower in the given Work Area for the given duration (minutes), overriding the schedule. If duration is skipped the mower will continue forever |
+| pause                      | -                 | Pause the mower at the current location until manual resume                                            |
+| park                       | `duration (long)` | Park the mower for the given duration (minutes), overriding the schedule                               |
+| parkUntilNextSchedule      | -                 | Park the mower, fully charge it and start afterwards according to the schedule                         |
+| parkUntilFurtherNotice     | -                 | Park the mower until it is started again by the start action/command or the schedule gets resumed      |
+| resumeSchedule             | -                 | Resume the schedule of the mower                                                                       |
 | confirmError               | -                 | Confirm current non fatal error                                                                        |
 | resetCuttingBladeUsageTime | -                 | Reset the cutting blade usage time                                                                     |
-| setSettings                | `byte cuttingHeight`<br/>`String headlightMode`                       | Update mower settings                         |
+| setSettings                | `byte cuttingHeight`<br/>`String headlightMode`                       | Update mower settings                              |
 | setWorkArea                | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`       | Update Work Area settings                          |
 | setStayOutZone             | `String zoneId`<br/>`boolean enable`                                  | Enable or disable stay-out zone                    |
 | setCalendarTask            | `Long workAreaId` (optional, set to `null` if the mower doesn't support Work Areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings. Parameter are an array for all calendar tasks (per Work Area) |
-| poll                       | -                 | Poll mower status update from the cloud                                                           |
+| poll                       | -                 | Poll mower status update from the cloud                                                                |
 
 ## Full Example
 

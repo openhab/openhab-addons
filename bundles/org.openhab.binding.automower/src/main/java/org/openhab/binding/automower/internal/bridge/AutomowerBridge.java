@@ -120,7 +120,6 @@ public class AutomowerBridge {
      */
     public void sendAutomowerCommand(String id, AutomowerCommand command, @Nullable Long commandWorkAreaId,
             @Nullable Long commandDuration) throws AutomowerCommunicationException {
-
         MowerCommand mowerCommand = new MowerCommand();
         mowerCommand.setType(command.getCommand());
 
