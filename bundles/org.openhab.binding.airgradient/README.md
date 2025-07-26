@@ -2,7 +2,7 @@
 
 AirGradient provides open source and open hardware air quality monitors.
 
-This binding reads air quality data from the AirGradient [API](https://www.airgradient.com/).
+This binding reads air quality data from the [AirGradient](https://www.airgradient.com/) API.
 
 This API is documented at the [AirGradient API documentation](https://api.airgradient.com/public/docs/api/v1/).
 
