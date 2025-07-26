@@ -644,7 +644,7 @@ Answer is `Done` if command is successfully executed.
 If you operate with the device you can see requests and responses in openHAB Log Viewer.
 If device cannot be found answer is `Device Id xyz not found`.
 
-```text
+```shell
 console> openhab:dirigera debug all true
 Done
 ```
