@@ -525,7 +525,7 @@ See [Matter Bridge](#matter-bridge) for information on running a Bridge server.
 
 **Example:**
 
-- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem. The Ikea Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
+- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem. The IKEA Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
 
 ### Thread Border Routers
 
