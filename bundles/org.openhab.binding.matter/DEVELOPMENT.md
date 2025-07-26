@@ -22,7 +22,7 @@ mvn clean install
 
 ### Maven Build Process
 
-The `mvn clean install` command executes several steps to build the websocket server and package everything together.
+The `mvn clean install` command executes several steps to build the WebSocket server and package everything together.
 By default, this will not regenerate the matter cluster classes. To regenerate the cluster classes, use the `code-gen` profile:
 
 ```bash
