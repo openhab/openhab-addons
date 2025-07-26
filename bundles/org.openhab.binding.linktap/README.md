@@ -7,7 +7,7 @@ E.g. behind a router**
 
 The method of interaction this binding supports is:
 
-**Program and execution of the watering plan within the application**
+## Program and execution of the watering plan within the application
 
 The currently supported capabilities include where supported by the gateway / device:
 
@@ -165,8 +165,8 @@ Bridge linktap:gateway:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=tru
 ### Item Configuration
 
 ```java
-Number:Dimensionless   	   Tap1BatteryLevel       "Tap 1 - Battery Level"                 <batterylevel>     ["Point"] { channel="linktap:device:home:tapValve1:battery",unit="%%" }
-Number:Dimensionless   	   Tap1SignalLevel        "Tap 1 - Signal Level"                  <qualityofservice> ["Point"] { channel="linktap:device:home:tapValve1:signal",unit="%%" }
+Number:Dimensionless       Tap1BatteryLevel       "Tap 1 - Battery Level"                 <batterylevel>     ["Point"] { channel="linktap:device:home:tapValve1:battery",unit="%%" }
+Number:Dimensionless       Tap1SignalLevel        "Tap 1 - Signal Level"                  <qualityofservice> ["Point"] { channel="linktap:device:home:tapValve1:signal",unit="%%" }
 Switch                     Tap1RfLinked           "Tap 1 - RF Linked"                     <switch>           ["Point"] { channel="linktap:device:home:tapValve1:rf-linked"}
 Switch                     Tap1FlmLinked          "Tap 1 - FLM Linked"                    <switch>           ["Point"] { channel="linktap:device:home:tapValve1:flm-linked"}
 Switch                     Tap1WaterCutAlert      "Tap 1 - Water Cut Alert"               <alarm>            ["Point"] { channel="linktap:device:home:tapValve1:water-cut" }
@@ -232,4 +232,3 @@ Flow data would as expected not be updated.
 ## Thanks To
 
 A note goes out to Bill at Link-Tap who has been extremely responsive in providing specifications, and quick fixes for a single issue noticed, as well as answering many questions about the behaviours of untested devices.
-
