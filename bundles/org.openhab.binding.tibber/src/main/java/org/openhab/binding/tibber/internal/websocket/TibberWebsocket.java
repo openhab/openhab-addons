@@ -21,7 +21,6 @@ import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -67,9 +66,9 @@ public class TibberWebsocket {
     private final TibberConfiguration config;
     private final HttpClient httpClient;
     private final TibberHandler handler;
-    private Optional<WebSocketClient> wsClient = Optional.empty();
-    private Optional<Session> session = Optional.empty();
-    private Optional<URI> wsUrl = Optional.empty();
+    private @Nullable WebSocketClient wsClient;
+    private @Nullable Session session;
+    private @Nullable URI wsUrl;
 
     public TibberWebsocket(TibberHandler handler, TibberConfiguration config, HttpClient httpClient) {
         this.handler = handler;
@@ -95,15 +94,15 @@ public class TibberWebsocket {
         try {
             client.start();
             client.connect(this, getSubscriptionUrl(), newRequest);
-            wsClient = Optional.of(client);
+            wsClient = client;
         } catch (Exception e) {
             logger.warn("Exception ws connection {}", e.getMessage());
         }
     }
 
     private @Nullable URI getSubscriptionUrl() throws IOException {
-        if (wsUrl.isPresent()) {
-            return wsUrl.get();
+        if (wsUrl != null) {
+            return wsUrl;
         } else {
             Request websocketUrlRequest = handler.getRequest();
             websocketUrlRequest.content(new StringContentProvider(WEBSOCKET_URL_QUERY, "utf-8"));
@@ -121,7 +120,7 @@ public class TibberWebsocket {
                             JsonElement subscriptionElement = viewerObject.get("websocketSubscriptionUrl");
                             if (subscriptionElement != null) {
                                 URI wsURI = new URI(subscriptionElement.toString().replaceAll("^\"|\"$", ""));
-                                wsUrl = Optional.of(wsURI);
+                                wsUrl = wsURI;
                                 return wsURI;
                             }
                         }
@@ -135,42 +134,41 @@ public class TibberWebsocket {
     }
 
     public void stop() {
-        wsClient.ifPresentOrElse(client -> {
+        WebSocketClient wsClient = this.wsClient;
+        if (wsClient != null) {
             try {
-                session.ifPresent(session -> {
+                Session session = this.session;
+                if (session != null) {
                     sendMessage(DISCONNECT_MESSAGE);
                     session.close();
-                });
-                client.stop();
-                client.destroy();
+                }
+                wsClient.stop();
+                wsClient.destroy();
             } catch (Exception e) {
                 logger.warn("Exception stopping ws url {}", e.getMessage());
             } finally {
-                wsClient = Optional.empty();
-                session = Optional.empty();
+                this.wsClient = null;
             }
-        }, () -> {
-            wsClient = Optional.empty();
-            session = Optional.empty();
-        });
+        }
+        this.session = null;
     }
 
     @OnWebSocketConnect
     public void onConnect(Session wssession) {
-        session = Optional.of(wssession);
+        session = wssession;
         String connection = String.format(CONNECT_MESSAGE, config.token);
         sendMessage(connection);
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        session = Optional.empty();
+        session = null;
         logger.debug("WebSocket closed - Status {} Reason {}", statusCode, reason);
     }
 
     @OnWebSocketError
     public void onWebSocketError(Throwable e) {
-        session = Optional.empty();
+        session = null;
         logger.warn("Websocket error {}", e.getMessage());
     }
 
@@ -199,25 +197,28 @@ public class TibberWebsocket {
                 logger.debug("Websocket receiced pong without ping {}", payloadString);
             }
         } else if (Frame.Type.PING.equals(frame.getType())) {
-            session.ifPresentOrElse((session) -> {
+            Session session = this.session;
+            if (session != null) {
                 ByteBuffer buffer = frame.getPayload();
                 try {
                     session.getRemote().sendPong(buffer);
                 } catch (IOException e) {
                     logger.debug("Websocket onPing answer exception {}", e.getMessage());
                 }
-            }, () -> {
+            } else {
                 logger.debug("Websocket onPing answer cannot be initiated");
-            });
+            }
         }
     }
 
     public boolean isConnected() {
-        return session.isPresent() && session.get().isOpen();
+        Session session = this.session;
+        return session != null && session.isOpen();
     }
 
     public void ping() {
-        session.ifPresent(session -> {
+        Session session = this.session;
+        if (session != null) {
             try {
                 String pingId = UUID.randomUUID().toString();
                 pingPongMap.put(pingId, Instant.now());
@@ -225,19 +226,20 @@ public class TibberWebsocket {
             } catch (IOException e) {
                 logger.debug("Websocket ping failed {}", e.getMessage());
             }
-        });
+        }
     }
 
     private void sendMessage(String message) {
-        session.ifPresentOrElse(session -> {
+        Session session = this.session;
+        if (session != null) {
             logger.trace("Websocket send message {}", message);
             try {
                 session.getRemote().sendString(message);
             } catch (IOException e) {
                 logger.warn("Websocket send message {} failed - reason {}", message, e.getMessage());
             }
-        }, () -> {
+        } else {
             logger.debug("Websocket send message {} rejected - websocket offline", message);
-        });
+        }
     }
 }
