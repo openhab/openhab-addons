@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -43,9 +44,13 @@ public class TelegramHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
 
+    private final StorageService storageService;
+
     @Activate
-    public TelegramHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+    public TelegramHandlerFactory(@Reference final HttpClientFactory httpClientFactory,
+            @Reference StorageService storageService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.storageService = storageService;
     }
 
     @Override
@@ -58,7 +63,7 @@ public class TelegramHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (TELEGRAM_THING.equals(thingTypeUID)) {
-            return new TelegramHandler(thing, httpClient);
+            return new TelegramHandler(thing, httpClient, storageService);
         }
         return null;
     }
