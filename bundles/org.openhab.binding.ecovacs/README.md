@@ -177,7 +177,7 @@ Bridge ecovacs:ecovacsapi:ecovacsapi [ email="your.email@provider.com", password
 
 When encountering an unsupported model during discovery, the binding creates a log message like this one:
 
-```
+```text
 2023-04-21 12:02:39.607 [INFO ] [acs.internal.api.impl.EcovacsApiImpl] - Found unsupported device DEEBOT N8 PRO CARE (class s1f8g7, company eco-ng), ignoring.
 ```
 
@@ -189,4 +189,3 @@ For doing so, you can follow the following steps:
 - create a file named `custom_device_descs.json`, whose format of that file is the same as [the built-in device list](https://raw.githubusercontent.com/openhab/openhab-addons/main/bundles/org.openhab.binding.ecovacs/src/main/resources/devices/supported_device_list.json)
 - for a model that is very similar to an existing one, create an entry with `modelName`, `deviceClass` (from the log line) and `deviceClassLink` (`deviceClass` of the similar model)
 - for other models, you can also try experimenting with creating a full entry, but it's likely that the binding code will need to be updated in that case
-

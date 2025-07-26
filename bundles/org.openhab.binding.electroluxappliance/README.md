@@ -17,14 +17,14 @@ After the configuration of the `api` bridge, your Electrolux appliances will be 
 
 ### Configuration Options
 
-Only the bridge requires manual configuration. 
+Only the bridge requires manual configuration.
 The Electrolux appliance things can be added by hand, or you can let the discovery mechanism automatically find them.
 
 #### `api` Bridge
 
 | Parameter    | Description                                            | Type   | Default  | Required |
 |--------------|--------------------------------------------------------|--------|----------|----------|
-| apiKey       | Your created API key on developer.electrolux.one       | String | NA       | yes      |        
+| apiKey       | Your created API key on developer.electrolux.one       | String | NA       | yes      |
 | refreshToken | Your created refresh token on developer.electrolux.one | String | NA       | yes      |
 | refresh      | Specifies the refresh interval in second               | Number | 600      | yes      |
 
@@ -135,7 +135,7 @@ Bridge electroluxappliance:api:myAPI "Electrolux Group API" [apiKey="12345678", 
 }
 ```
 
-##  `demo.items` Example - Air Purifier
+## `demo.items` Example - Air Purifier
 
 ```java
 // CO2
@@ -156,7 +156,7 @@ Switch electroluxapplianceIonizer "Electrolux Air Ionizer Setting" {channel="ele
 Switch electroluxapplianceSafetyLock "Electrolux Air Safety Lock Setting" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:safetyLock"}
 ```
 
-##  `demo.items` Example - Portable Air Conditioner
+## `demo.items` Example - Portable Air Conditioner
 
 ```java
 Group Electrolux_Air_Conditioner "Electrolux Air Conditioner" [AirConditioner]
