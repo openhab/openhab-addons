@@ -3,7 +3,7 @@
 Unlike LIP, which was designed to use a simple serial or telnet connection and authenticates using a username/password, LEAP uses a SSL connection and authenticates using certificates.
 This necessarily makes configuration more complicated.
 There are several open source utilities available for generating the certificate files necessary to access your Caseta or RA2 Select hub.
-One good choice is included with the popular pylutron library which is available on Github at [pylutron-caseta](https://github.com/gurumitts/pylutron-caseta).
+One good choice is included with the popular pylutron library which is available on GitHub at [pylutron-caseta](https://github.com/gurumitts/pylutron-caseta).
 On a Unix-like system, you can easily install it via `pip`:
 
 ```bash
