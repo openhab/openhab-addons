@@ -23,7 +23,6 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -56,6 +55,7 @@ public class ShellyBluHandler extends ShellyBaseHandler {
 
     public static void addBluThing(String gateway, Shelly2NotifyEvent e, @Nullable ShellyThingTable thingTable) {
         String model = getString(e.data.name);
+
         String bluClass = substringBefore(model, "-").toUpperCase();
         String mac = e.data.addr.replaceAll(":", "");
         LOGGER.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
@@ -65,7 +65,7 @@ public class ShellyBluHandler extends ShellyBaseHandler {
             case SHELLYDT_BLUBUTTONCLASS:
                 switch (model) {
                     case SHELLYDT_BLUBUTTON1:
-                        thingTypeUID = THING_TYPE_SHELLYBLUBUTTON;
+                        thingTypeUID = THING_TYPE_SHELLYBLUBUTTON1;
                         break;
                     case SHELLYDT_BLUWALLSWITCH4:
                     case SHELLYDT_BLUWALLSWITCH4_2:
@@ -95,7 +95,7 @@ public class ShellyBluHandler extends ShellyBaseHandler {
                 LOGGER.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
                 return;
         }
-        String serviceName = ShellyDeviceProfile.buildBluServiceName(getString(e.data.name), mac);
+        String serviceName = buildBluServiceName(getString(e.data.name), mac);
 
         Map<String, Object> properties = new TreeMap<>();
         addProperty(properties, PROPERTY_MODEL_ID, model);
