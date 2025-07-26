@@ -325,7 +325,7 @@ I like the Grafana approach and I used the [InfluxDB & Grafana Tutorial](https:/
 from the Community to set this up.
 I prepared my machine and I'm quite pleased with the results.
 
-<img align="right" src="./doc/GrafanaPV.png" alt="Grafana PV monitoring dashboard"/>
+<img align="right" src="doc/GrafanaPV.png" alt="Grafana PV monitoring dashboard"/>
 
 In the above picture there are two graphs
 
