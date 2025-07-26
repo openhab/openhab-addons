@@ -2,7 +2,7 @@
 
 The `zwavejs` binding integrates Z-Wave JS with openHAB, allowing you to control and monitor Z-Wave devices using the Z-Wave JS Webservice (part of Z-Wave JS UI).
 This binding supports a wide range of Z-Wave devices, including sensors, switches, dimmers, and more.
-For documentation about Z-Wave JS UI, please visit <https://zwave-js.github.io/zwave-js-ui/>.
+For documentation about Z-Wave JS UI, please visit the [Z-Wave JS UI documentation](https://zwave-js.github.io/zwave-js-ui/).
 
 ## Prerequisites
 

@@ -1,7 +1,7 @@
 # Wolf Smartset Binding
 
-This binding communicates with the www.wolf-smartset.de API and provides values readonly.
-Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link Pro) <https://www.wolf.eu/produkte/smarthome/>
+This binding communicates with the <www.wolf-smartset.de> API and provides values readonly.
+Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link Pro) [Wolf SmartHome products](https://www.wolf.eu/produkte/smarthome/)
 
 ## Supported Things
 
@@ -25,8 +25,8 @@ The account thing holds the credentials to connect to the wolf-smartset online p
 
 | Parameter       | Type    | Defaut | Description                                                         |
 |-----------------|---------|----------|---------------------------------------------------------------------|
-| username | text | | username to authenticate to www.wolf-smartset.de |
-| password | text  | | password to authenticate to www.wolf-smartset.de |
+| username | text | | username to authenticate to <www.wolf-smartset.de> |
+| password | text  | | password to authenticate to <www.wolf-smartset.de> |
 | refreshIntervalStructure | integer | 10 | Specifies the refresh interval to refresh the Structure in minutes |
 | refreshIntervalValues | integer | 15 | Specifies time in seconds to refresh values |
 | discoveryEnabled | boolean | true | disable the Thing discovery |
@@ -113,11 +113,11 @@ Number CSZHeizgerat_EingangE1 "Eingang E1" { channel="wolfsmartset:unit:account:
 
 ## Supported Heating-Devices
 
-All devices able to be connected to www.wolf-smartset.de
+All devices able to be connected to <www.wolf-smartset.de>
 
 ### Related Documentation from WOLF
 
-<https://oxomi.com/service/json/catalog/pdf?portal=2024876&catalog=10406695>
+[Wolf Product Documentation](https://oxomi.com/service/json/catalog/pdf?portal=2024876&catalog=10406695)
 
 | Heating system                            | WOLF Link home        | WOLF Link pro      |
 |-------------------------------------------|-----------------------|--------------------|
