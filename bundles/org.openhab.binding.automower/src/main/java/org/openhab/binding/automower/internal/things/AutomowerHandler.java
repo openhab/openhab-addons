@@ -857,78 +857,78 @@ public class AutomowerHandler extends BaseThingHandler {
         }
     }
 
-    private synchronized void addRemoveDynamicChannels(Mower mower, Capabilities capabilities,
-            List<CalendarTask> calendarTasks) {
+    private void addRemoveDynamicChannels(Mower mower, Capabilities capabilities, List<CalendarTask> calendarTasks) {
         // create a copy of the present channels
-        channelAdd.clear();
+        List<Channel> channelAdd = new ArrayList<>();
         for (Channel channel : thing.getChannels()) {
             channelAdd.add(channel);
         }
-        channelRemove.clear();
+        List<Channel> channelRemove = new ArrayList<>();
 
         if (capabilities.hasWorkAreas()) {
-            createChannel(CHANNEL_STATUS_WORK_AREA_ID, CHANNEL_TYPE_STATUS_WORK_AREA_ID, "Number");
-            createChannel(CHANNEL_STATUS_WORK_AREA, CHANNEL_TYPE_STATUS_WORK_AREA, "String");
+            createChannel(CHANNEL_STATUS_WORK_AREA_ID, CHANNEL_TYPE_STATUS_WORK_AREA_ID, "Number", channelAdd);
+            createChannel(CHANNEL_STATUS_WORK_AREA, CHANNEL_TYPE_STATUS_WORK_AREA, "String", channelAdd);
         } else {
-            removeChannel(CHANNEL_STATUS_WORK_AREA_ID);
-            removeChannel(CHANNEL_STATUS_WORK_AREA);
+            removeChannel(CHANNEL_STATUS_WORK_AREA_ID, channelRemove);
+            removeChannel(CHANNEL_STATUS_WORK_AREA, channelRemove);
         }
         if (capabilities.canConfirmError()) {
-            createChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE, CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE, "Switch");
+            createChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE, CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE, "Switch",
+                    channelAdd);
         } else {
-            removeChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE);
+            removeChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE, channelRemove);
         }
         if (capabilities.hasPosition()) {
-            createChannel(CHANNEL_STATUS_POSITION, CHANNEL_TYPE_STATUS_POSITION, "Location");
+            createChannel(CHANNEL_STATUS_POSITION, CHANNEL_TYPE_STATUS_POSITION, "Location", channelAdd);
         } else {
-            removeChannel(CHANNEL_STATUS_POSITION);
+            removeChannel(CHANNEL_STATUS_POSITION, channelRemove);
         }
 
         if (capabilities.hasHeadlights()) {
-            createChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE, "String");
+            createChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE, "String", channelAdd);
         } else {
-            removeChannel(CHANNEL_SETTING_HEADLIGHT_MODE);
+            removeChannel(CHANNEL_SETTING_HEADLIGHT_MODE, channelRemove);
         }
 
         int i;
         for (i = 0; i < calendarTasks.size(); i++) {
             int j = 0;
             createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time");
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time", channelAdd);
             createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time");
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time", channelAdd);
             createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch");
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd);
             createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch");
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd);
             createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch");
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd);
             createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch");
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd);
             createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch");
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd);
             createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch");
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd);
             createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch");
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd);
             if (capabilities.hasWorkAreas()) {
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Number");
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Number", channelAdd);
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                        CHANNEL_TYPE_CALENDARTASK.get(j++), "String");
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "String", channelAdd);
             } else {
-                removeIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++));
-                removeIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++));
+                removeIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++), channelRemove);
+                removeIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++), channelRemove);
             }
         }
         // remove all consecutive channels that are no longer required
         for (int j = 0; j < CHANNEL_CALENDARTASK.size(); j++) {
-            removeConsecutiveIndexedChannels(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j));
+            removeConsecutiveIndexedChannels(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j), channelRemove);
         }
 
         i = 0;
         if (capabilities.hasStayOutZones()) {
-            createChannel(CHANNEL_STAYOUTZONE_DIRTY, CHANNEL_TYPE_STAYOUTZONES_DIRTY, "Switch");
+            createChannel(CHANNEL_STAYOUTZONE_DIRTY, CHANNEL_TYPE_STAYOUTZONES_DIRTY, "Switch", channelAdd);
 
             if (mower.getAttributes().getStayOutZones() != null) {
                 List<StayOutZone> stayOutZones = mower.getAttributes().getStayOutZones().getZones();
@@ -936,20 +936,20 @@ public class AutomowerHandler extends BaseThingHandler {
                     for (; i < stayOutZones.size(); i++) {
                         int j = 0;
                         createIndexedChannel(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j),
-                                CHANNEL_TYPE_STAYOUTZONE.get(j++), "String");
+                                CHANNEL_TYPE_STAYOUTZONE.get(j++), "String", channelAdd);
                         createIndexedChannel(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j),
-                                CHANNEL_TYPE_STAYOUTZONE.get(j++), "String");
+                                CHANNEL_TYPE_STAYOUTZONE.get(j++), "String", channelAdd);
                         createIndexedChannel(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j),
-                                CHANNEL_TYPE_STAYOUTZONE.get(j++), "Switch");
+                                CHANNEL_TYPE_STAYOUTZONE.get(j++), "Switch", channelAdd);
                     }
                 }
             }
         } else {
-            removeChannel(CHANNEL_STAYOUTZONE_DIRTY);
+            removeChannel(CHANNEL_STAYOUTZONE_DIRTY, channelRemove);
         }
         // remove all consecutive channels that are no longer required
         for (int j = 0; j < CHANNEL_STAYOUTZONE.size(); j++) {
-            removeConsecutiveIndexedChannels(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j));
+            removeConsecutiveIndexedChannels(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j), channelRemove);
         }
 
         i = 0;
@@ -959,23 +959,23 @@ public class AutomowerHandler extends BaseThingHandler {
                 for (; i < workAreas.size(); i++) {
                     int j = 0;
                     createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "Number");
+                            "Number", channelAdd);
                     createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "String");
+                            "String", channelAdd);
                     createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "Number:Dimensionless");
+                            "Number:Dimensionless", channelAdd);
                     createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "Switch");
+                            "Switch", channelAdd);
                     createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "Number:Dimensionless");
+                            "Number:Dimensionless", channelAdd);
                     createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "DateTime");
+                            "DateTime", channelAdd);
                 }
             }
         }
         // remove all consecutive channels that are no longer required
         for (int j = 0; j < CHANNEL_WORKAREA.size(); j++) {
-            removeConsecutiveIndexedChannels(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j));
+            removeConsecutiveIndexedChannels(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), channelRemove);
         }
 
         // remove channels that are now longer required and add new once
@@ -1344,20 +1344,19 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private void createIndexedChannel(String ChannelGroup, int id, String channel, ChannelTypeUID channelTypeUID,
-            String itemType) {
+            String itemType, List<Channel> channelAdd) {
         String indexedChannel = getIndexedChannel(ChannelGroup, id, channel);
         String indexedLabel = getIndexedLabel(id, channel);
-        createChannel(indexedLabel, indexedChannel, channelTypeUID, itemType);
+        createChannel(indexedLabel, indexedChannel, channelTypeUID, itemType, channelAdd);
     }
 
-    private void createChannel(String channel, ChannelTypeUID channelTypeUID, String itemType) {
-        createChannel(null, channel, channelTypeUID, itemType);
+    private void createChannel(String channel, ChannelTypeUID channelTypeUID, String itemType,
+            List<Channel> channelAdd) {
+        createChannel(null, channel, channelTypeUID, itemType, channelAdd);
     }
 
-    private List<Channel> channelAdd = new ArrayList<>();
-    private List<Channel> channelRemove = new ArrayList<>();
-
-    private void createChannel(@Nullable String label, String channel, ChannelTypeUID channelTypeUID, String itemType) {
+    private void createChannel(@Nullable String label, String channel, ChannelTypeUID channelTypeUID, String itemType,
+            List<Channel> channelAdd) {
         ChannelUID channelUid = new ChannelUID(thing.getUID(), channel);
         if (thing.getChannel(channelUid) == null) {
             Channel newChannel;
@@ -1371,20 +1370,21 @@ public class AutomowerHandler extends BaseThingHandler {
         }
     }
 
-    private void removeIndexedChannel(String ChannelGroup, int id, String channel) {
+    private void removeIndexedChannel(String ChannelGroup, int id, String channel, List<Channel> channelRemove) {
         String indexedChannel = getIndexedChannel(ChannelGroup, id, channel);
-        removeChannel(indexedChannel);
+        removeChannel(indexedChannel, channelRemove);
     }
 
-    private void removeConsecutiveIndexedChannels(String ChannelGroup, int id, String channel) {
+    private void removeConsecutiveIndexedChannels(String ChannelGroup, int id, String channel,
+            List<Channel> channelRemove) {
         String indexedChannel = getIndexedChannel(ChannelGroup, id, channel);
-        if (removeChannel(indexedChannel)) {
+        if (removeChannel(indexedChannel, channelRemove)) {
             // remove next channel recursively
-            removeConsecutiveIndexedChannels(ChannelGroup, id + 1, channel);
+            removeConsecutiveIndexedChannels(ChannelGroup, id + 1, channel, channelRemove);
         }
     }
 
-    private boolean removeChannel(String channel) {
+    private boolean removeChannel(String channel, List<Channel> channelRemove) {
         ChannelUID channelUid = new ChannelUID(thing.getUID(), channel);
         Channel chn = thing.getChannel(channelUid);
         if (chn != null) {
