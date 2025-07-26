@@ -82,7 +82,7 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
     public static final ThingUID HA_UID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, HA_ID);
     public static final ThingType HA_THING_TYPE = ThingTypeBuilder
             .instance(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, HA_TYPE_LABEL).build();
-    protected static final HomeAssistantPythonBridge python = new HomeAssistantPythonBridge();
+    protected static final HomeAssistantPythonBridge PYTHON = new HomeAssistantPythonBridge();
 
     protected @Mock @NonNullByDefault({}) MqttBrokerConnection bridgeConnection;
     protected @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistry;

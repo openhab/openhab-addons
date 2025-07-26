@@ -58,8 +58,8 @@ import org.slf4j.LoggerFactory;
 public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
     private final Logger logger = LoggerFactory.getLogger(JRubyConsoleCommandExtension.class);
 
-    private final String DEFAULT_CONSOLE_PATH = "openhab/console/";
-    private final String OPENHAB_SCRIPTING_GEM = "gem \"openhab-scripting\", \"~> 5.0\"";
+    private static final String DEFAULT_CONSOLE_PATH = "openhab/console/";
+    private static final String OPENHAB_SCRIPTING_GEM = "gem \"openhab-scripting\", \"~> 5.0\"";
 
     private static final String INFO = "info";
     private static final String CONSOLE = "console";
