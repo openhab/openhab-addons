@@ -617,7 +617,7 @@ DIRIGERA Hub token: abcdef12345.......
 
 With token available you can test your devices e.g. via curl commands.
 
-```text
+```shell
 curl -X PATCH https://$YOUR_IP:8443/v1/devices/$DEVICE -H 'Authorization: Bearer $TOKEN' -H 'Content-Type: application/json' -d '[{"attributes":{"colorHue":280,"colorSaturation":1}}]' --insecure
 ```
 
