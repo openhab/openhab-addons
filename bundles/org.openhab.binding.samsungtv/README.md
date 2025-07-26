@@ -191,7 +191,7 @@ This input allows you to set the internal art mode state from an external source
 
 ### artLabel
 
-`artlabel` is a String channel that receives the _intenal_ lable of the artwork displayed. This will be something like `MY_0010` or `SAM-0123`. `MY` means it's art you uploaded, `SAM` means its from the Samsung art gallery.
+`artlabel` is a String channel that receives the _internal_ label of the artwork displayed. This will be something like `MY_0010` or `SAM-0123`. `MY` means it's art you uploaded, `SAM` means its from the Samsung art gallery.
 You have to figure out what the label actually represents.
 
 You can send commands to the channel. It accepts, Strings, string representations of a `Rawtype` image and `RawType` Images. If you send a String, such as `MY-0013`, it will display that art on the TV. If the TV is ON, playing live TV, then the Tv will switch to artMode.
