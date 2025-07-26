@@ -228,7 +228,7 @@ Be welcome to contribute your ideas to the community, this is what creates the d
 
 ### Resources
 
-There is a bunch of ressources you could browse around openHAB, Shelly or the binding
+There is a bunch of resources you could browse around openHAB, Shelly or the binding
 
 - [Binding README](../README.md)
 - [Bugs/Features](https://github.com/openhab/openhab-addons/issues?q=is%3Aissue+is%3Aopen+%5Bshelly%5D)
