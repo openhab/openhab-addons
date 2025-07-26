@@ -3,10 +3,9 @@
 The Tibber Binding retrieves `prices` from  [Tibber API](https://developer.tibber.com).
 Users equipped with Tibber Pulse hardware can connect in addition to [live group](#live-group) and [statistics group](#statistics-group).
 
-
 ## Supported Things
 
-| Type      | ID        | Description               | 
+| Type      | ID        | Description               |
 |-----------|-----------|---------------------------|
 | Thing     | tibberapi | Connection to Tibber API  |
 
@@ -96,7 +95,7 @@ All values read-only.
 
 ### `statistics` group
 
-Statistic information about total, daily and last hour energy consumption and production. 
+Statistic information about total, daily and last hour energy consumption and production.
 All values read-only.
 
 | Channel ID            | Type                      | Description                                                   |
@@ -111,27 +110,27 @@ All values read-only.
 
 ## Thing Actions
 
-Thing actions can be used to perform calculations on the current available price information cached by the binding. 
+Thing actions can be used to perform calculations on the current available price information cached by the binding.
 Cache contains energy prices from today and after reaching the `updateHour` also for tomorrow.
-This is for planning when and for what cost a specific electric consumer can be started.  
+This is for planning when and for what cost a specific electric consumer can be started.
 
 Performing a calcuation a `parameters` object is needed containing e.g. your boundaries for the calculation.
 Parameter object allow 2 types: Java `Map` or JSON `String`.
 The result is returned as JSON encoded `String`.
 Refer below sections how the result looks like.
 If the action cannot be performed, a warning will be logged and an empty `String` will be returned.
-Some real life scenarios are schown in [Action Examples](#action-examples) section.
+Some real life scenarios are schown in [Thing Actions](#thing-actions) section.
 
 ### `priceInfoStart`
 
-Returns starting point as `Instant` of first available energy price. 
+Returns starting point as `Instant` of first available energy price.
 It's not allowed to start calculations before this timestamp.
 
 In case of error `Instant.MAX` is returned.
 
 ### `priceInfoEnd`
 
-Returns end point as `Instant` of the last available energy price. 
+Returns end point as `Instant` of the last available energy price.
 It's not allowed to exceed calculations after this timestamp.
 
 In case of error `Instant.MIN` is returned.
@@ -173,9 +172,9 @@ then
 end
 ```
 
-**Console output**
+## Console output
 
-```
+```text
 2025-05-29 15:52:31.345 [INFO ] [ab.core.model.script.TibberPriceList] - PriceInfo 0 : 0.1829 Starts at : 2025-05-30T13:00+02:00[Europe/Berlin]
 2025-05-29 15:52:31.349 [INFO ] [ab.core.model.script.TibberPriceList] - PriceInfo 1 : 0.183 Starts at : 2025-05-30T14:00+02:00[Europe/Berlin]
 2025-05-29 15:52:31.352 [INFO ] [ab.core.model.script.TibberPriceList] - PriceInfo 2 : 0.1842 Starts at : 2025-05-29T15:52:31.341193101+02:00[Europe/Berlin]
@@ -185,15 +184,15 @@ end
 ### Result
 
 JSON encoded `String` result with keys
- 
-| Key           | Type      | Description                           | 
+
+| Key           | Type      | Description                           |
 |---------------|-----------|---------------------------------------|
 | size          | int       | Size of price list                    |
 | priceList     | JsonArray | Array of `priceInfo` entries          |
 
 JSON Object `priceInfo`
 
-| Key           | Type      | Description                           | 
+| Key           | Type      | Description                           |
 |---------------|-----------|---------------------------------------|
 | startsAt      | String    | String encoded Instant                |
 | duration      | int       | Price duration in seconds             |
@@ -248,14 +247,14 @@ For use cases like dishwasher or laundry.
 | duration      | String    | Duration as String with units `h`,`m` or `s`  | N/A               | true      |
 | curve         | JsonArray | Array with `curveEntry` elements              | N/A               | no        |
 
-Provide either 
+Provide either
 
 - `power` and `duration` for constant consumption _or_
 - `curve` for sophisticated use cases like a recorded laundry power timeseries
 
 JSON Object `curveEntry`
 
-| Key           | Type      | Description                           | 
+| Key           | Type      | Description                           |
 |---------------|-----------|---------------------------------------|
 | timestamp     | String    | String encoded Instant                |
 | power         | int       | Power in watts                        |
@@ -298,7 +297,7 @@ end
 
 Console output:
 
-```
+```text
 2025-05-29 16:07:40.858 [TRACE] [.internal.calculator.PriceCalculator] - Calculation time 2 ms for 1819 iterations
 2025-05-29 16:07:40.860 [INFO ] [ab.core.model.script.TibberBestPrice] - {"cheapestStart":"2025-05-30T11:00:40.856950656Z","mostExpensiveStart":"2025-05-30T18:25:40.856950656Z"}
 2025-05-29 16:07:40.861 [TRACE] [.internal.calculator.PriceCalculator] - Calculation time 0 ms for 26 iterations
@@ -309,8 +308,8 @@ Console output:
 #### Result
 
 JSON encoded `String` result with keys
- 
-| Key                   | Type      | Description                           | 
+
+| Key                   | Type      | Description                           |
 |-----------------------|-----------|---------------------------------------|
 | cheapestStart         | String    | Timestamp of cheapest start           |
 | lowestPrice           | double    | Price of the cheapest period          |
@@ -318,7 +317,7 @@ JSON encoded `String` result with keys
 | highestPrice          | double    | Price of the most expensive period    |
 | averagePrice          | double    | Average price within the period       |
 
-#### Example
+#### Result Example
 
 ```json
 {
@@ -374,7 +373,7 @@ end
 
 Console output
 
-```
+```text
 2025-05-29 19:42:38.223 [INFO ] [hab.core.model.script.TibberSchedule] - {"cost":17.004625,"size":2,"schedule":[{"start":"2025-05-30T08:00:00Z","stop":"2025-05-30T16:00:00Z","duration":28800,"cost":16.407600000000002},{"start":"2025-05-29T23:00:00Z","stop":"2025-05-29T23:15:00Z","duration":900,"cost":0.5970249999999999}]}
 2025-05-29 19:42:38.225 [INFO ] [hab.core.model.script.TibberSchedule] - Cost : 17.004625 Number of schedules : 2
 2025-05-29 19:42:38.227 [INFO ] [hab.core.model.script.TibberSchedule] - Schedule 0: {start=2025-05-30T08:00:00Z, stop=2025-05-30T16:00:00Z, duration=28800, cost=16.407600000000002}
@@ -386,26 +385,26 @@ Console output
 #### Result
 
 JSON encoded `String` result with keys
- 
-| Key           | Type      | Description                           | 
+
+| Key           | Type      | Description                           |
 |---------------|-----------|---------------------------------------|
 | size          | int       | Number of schedules                   |
 | schedule      | JsonArray | Array of `scheduleEntry` elements     |
 
 JSON Object `scheduleEntry`
 
-| Key           | Type      | Description                           | 
+| Key           | Type      | Description                           |
 |---------------|-----------|---------------------------------------|
 | timestamp     | String    | String encoded Instant                |
 | duration      | int       | Price duration in seconds             |
 | price         | double    | Price in your currency                |
 
-Provide either 
+Provide either
 
 - `timestamp` - duration will be calculated automatically _or_
 - `duration` if you already know it
 
-#### Example
+#### Result Example
 
 ```json
 {
