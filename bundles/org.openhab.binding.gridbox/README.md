@@ -4,7 +4,7 @@ The [Viessmann GridBox](https://www.viessmann.de/de/produkte/energiemanagement/g
 
 The Viessmann GridBox is a variety of the [gridX Gateway](https://de.gridx.ai/edge-services) and uses the gridX Xenon cloud service to upload the fetched data and deliver the data to the GridBox app and web service.
 The measured data (energy production, consumptions, etc.) cannot be accessed locally. However, thanks to the pioneer work in the [unl0ck/viessmann-gridbox-connector](https://github.com/unl0ck/viessmann-gridbox-connector) repository, we can retrieve the data from the gridX cloud service using Rest-API calls.
-The API is documented [here](https://developer.gridx.ai/reference/).
+The API is documented [at gridx.ai](https://developer.gridx.ai/reference/).
 
 This binding polls the "live data" API endpoint to gather the available data from the GridBox.
 It creates a GridBox thing with the channels representing the data points of the live data API call.
@@ -14,7 +14,7 @@ Authentication is handled by a OAuth call generating a ID Token which is require
 
 At the moment, only one API-"system" per account is supported by this binding.
 A "system" is the representation of a GridBox together with its connected appliances (PV inverter, heat pump etc.).
-The binding will use the first system ID retrieved by a call to the https://api.gridx.de/systems API.
+The binding will use the first system ID retrieved by a call to the <https://api.gridx.de/systems> API.
 
 Also, only the live data API endpoint is supported by the binding as it is the most interesting for openHAB use cases.
 There is another API endpoint for fetching aggregated measurement data which could be added in the future.
@@ -76,7 +76,7 @@ The following channels are supplied by the GridBox thing (descriptions taken fro
 
 ## Full Example
 
-### Thing Configuration
+### Thing Configuration Example
 
 ```java
 Thing gridbox:gridbox:901b4766e2 "GridBox" [email="abc@example.com",password="mypassword",refreshInterval=120]
