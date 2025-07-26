@@ -54,7 +54,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
 
     @BeforeEach
     public void beforeEach() {
-        discovery = new TestHomeAssistantDiscovery(channelTypeProvider, python);
+        discovery = new TestHomeAssistantDiscovery(channelTypeProvider, PYTHON);
     }
 
     @Test
