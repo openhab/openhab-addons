@@ -49,7 +49,7 @@ For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
 
 #### Properties
 
-<img align="right" src="./doc/vehicle-properties.png" width="500" height="350"/>
+<img align="right" src="doc/vehicle-properties.png" alt="Vehicle properties overview" width="500" height="350"/>
 
 For each vehicle properties are available.
 Basic information is given regarding
@@ -98,7 +98,7 @@ At first initialization, follow the online instructions for login into the BMW A
 | Parameter       | Type    | Description                                                                                            |
 |-----------------|---------|--------------------------------------------------------------------------------------------------------|
 | language        | text    | Channel data can be returned in the desired language                                                   |
-| hcaptchatoken   | text    | HCaptcha-Token for initial login (see https://bimmer-connected.readthedocs.io/en/stable/captcha.html)  |
+| hcaptchatoken   | text    | HCaptcha-Token for initial login (see <https://bimmer-connected.readthedocs.io/en/stable/captcha.html>)  |
 | callbackIP      | text    | IP address for openHAB callback URL, defaults to IP of openHAB host                                    |
 | callbackPort    | integer | Port Number for openHAB callback URL, default 8090                                                     |
 
@@ -244,7 +244,7 @@ As the replies are formatted as JSON use the [JsonPath Transformation Service](h
 |---------------------|---------------|------------------------------------------------|
 | raw                 | String        | Unfiltered JSON String of vehicle data         |
 
-<img align="right" src="./doc/RawData.png" width="400" height="125"/>
+<img align="right" src="doc/RawData.png" alt="Raw data example" width="400" height="125"/>
 
 Examples:
 
@@ -517,7 +517,7 @@ Possible view ports:
 
 ### Dynamic Data
 
-<img align="right" src="./doc/SessionOptions.png" width="400" height="250"/>
+<img align="right" src="doc/SessionOptions.png" alt="Session options example" width="400" height="250"/>
 
 There are 3 occurrences of dynamic data delivered
 
@@ -575,7 +575,7 @@ As with fingerprint data, personal data is eliminated from logs.
 
 ### Range vs Range Radius
 
-<img align="right" src="./doc/range-radius.png" width="400" height="350"/>
+<img align="right" src="doc/range-radius.png" alt="Range radius example" width="400" height="350"/>
 
 You will observe differences in the vehicle range and range radius values.
 While range is indicating the possible distance to be driven on roads the range radius indicates the reachable range on the map.

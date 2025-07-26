@@ -1,6 +1,6 @@
 # Matter Code Generator
 
-This system generates Java classes for Matter clusters, device types, and related functionality. It uses Handlebars templates to transform Matter.js protocol definitions into Java code suitable for serialization. 
+This system generates Java classes for Matter clusters, device types, and related functionality. It uses Handlebars templates to transform Matter.js protocol definitions into Java code suitable for serialization.
 
 ## Overview
 
@@ -20,16 +20,17 @@ The code generator consists of:
 The generator script:
 
 1. Imports Matter.js protocol definitions
-2. Maps Matter.js data types to Java types
-3. Processes cluster inheritance and references between clusters
-4. Compiles Handlebars templates
-5. Generates Java code files in the `out/` directory
-
+1. Maps Matter.js data types to Java types
+1. Processes cluster inheritance and references between clusters
+1. Compiles Handlebars templates
+1. Generates Java code files in the `out/` directory
 
 ## Templates
 
 ### cluster-class.hbs
+
 Generates individual cluster classes with:
+
 - Cluster attributes
 - Struct definitions  
 - Enum definitions
@@ -37,12 +38,16 @@ Generates individual cluster classes with:
 - toString() implementation
 
 ### base-cluster.hbs
+
 Generates the base cluster class with:
+
 - Common fields and methods
 - Global struct/enum definitions
 
 ### cluster-constants.hbs
+
 Generates constants for:
+
 - Channel names
 - Channel labels
 - Channel IDs
@@ -51,16 +56,18 @@ Generates constants for:
 note this is not currently used yet in the binding
 
 ### cluster-registry.hbs
+
 Generates a registry mapping cluster IDs to cluster classes
 
 ### device-types-class.hbs
+
 Generates device type definitions and mappings
 
 ## Usage
 
 1. Install dependencies:
-2. Run the generator:
-3. Generated Java files will be in the `out/` directory
+1. Run the generator:
+1. Generated Java files will be in the `out/` directory
 
 ```bash
 npm install && npm run start
@@ -79,4 +86,4 @@ The generator includes several Handlebars helpers for string manipulation to ass
 - `asTitleCase`: Convert to Title Case
 - `asEnumField`: Convert to ENUM_FIELD format
 - `asHex`: Convert number to hex string
--  and many others
+- and many others
