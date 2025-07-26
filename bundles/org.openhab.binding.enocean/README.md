@@ -223,7 +223,7 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | | |
 | environmentalSensor             | receivingEEPId    |                             | A5_13_01 |
 |                                 | enoceanId         | | |
-| centralCommand                  | senderIdOffset    | SenderId used for sending msg.If omitted, nextSenderId of bridge is used | 1-127 |
+| centralCommand                  | senderIdOffset    | SenderId used for sending msg. If omitted, nextSenderId of bridge is used | 1-127 |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      | EEP used for sending msg    | A5_38_08_01, A5_38_08_02 |
 |                                 | broadcastMessages | Send broadcast or addressed msg | true, false |
