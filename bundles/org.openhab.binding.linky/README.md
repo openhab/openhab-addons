@@ -131,7 +131,7 @@ If you select enedis bridge, you will need:
 - Follow these steps to initialize the token.
   You can access the procedure from the connectlinky page available from your openHAB: <https://home.myopenhab.org/connectlinky/index>.
 
-    You will find screenshot of the procedure in the following directory
+    You will find a screenshot of the procedure in the following directory
     [doc/enedis/](doc/enedis/index.md)
 
     1. Go to the connectlinky page on OpenHAB.
