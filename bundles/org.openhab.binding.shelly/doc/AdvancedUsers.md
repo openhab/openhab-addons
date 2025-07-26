@@ -2,25 +2,7 @@
 
 This section provides information for advanced use cases.
 
-## Additional Resour`Please note:` Once events are filtered they are not show anymore in the logfile, you can't find them later.
-
-- openHAB 2.5.x
-
-A configuration is added as a new section to `openhab2-userdata/etc/org.ops4j.pax.logging.cfg`
-
-```ini
-# custom filtering rules
-log4j2.appender.event.filter.uselessevents.type = RegexFilter
-log4j2.appender.event.filter.uselessevents.regex = .*(heartBeat|LastUpdate|lastUpdate|LetzteAktualisierung|Uptime|Laufzeit|ZuletztGesehen).*
-log4j2.appender.event.filter.uselessevents.onMatch = DENY
-log4j2.appender.event.filter.uselessevents.onMisMatch = NEUTRAL
-```
-
-- openHAB 3.0
-
-The configuration format of openHAB 3.0 is in xml format.
-
-- Open the file `userdata/etc/log4j2.xml`dditional resources available providing more information on Shelly devices and how to integrate those into openHAB:
+## Additional Resources
 
 - [Shelly Homepage](https://shelly.cloud)
 - [Shelly Support Group (English)](https://www.facebook.com/groups/ShellyIoTCommunitySupport)
