@@ -73,7 +73,7 @@ public enum VacuumErrorType {
     ERROR52(52, "Clean carousel exception"),
     ERROR53(53, "Clean carousel water full"),
     ERROR54(54, "Water carriage drop"),
-    ERROR55(55, "Check clean carouse"),
+    ERROR55(55, "Check clean carousel"),
     ERROR56(56, "Audio error"),
     ERROR254(254, "Bin full"),
     ERROR255(255, "Internal error"),

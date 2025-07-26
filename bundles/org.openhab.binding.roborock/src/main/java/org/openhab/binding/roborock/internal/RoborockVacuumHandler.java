@@ -97,28 +97,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private @NonNullByDefault({}) Rooms[] homeRooms; // fixme should not be using nonnullbydefault
     private String rrHomeId = "";
     private String localKey = "";
-    private byte[] nonce = new byte[16];
+    private final byte[] nonce = new byte[16];
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
     private long lastSuccessfulPollTimestamp;
     private final Gson gson = new Gson();
     private String lastHistoryID = "";
-    private int getStatusID = -1;
-    private int getConsumableID = -1;
-    private int getRoomMappingID = -1;
-    private int getNetworkInfoID = -1;
-    private int getCleanRecordID = -1;
-    private int getCleanSummaryID = -1;
-    private int getDndTimerID = -1;
-    private int getSegmentStatusID = -1;
-    private int getMapStatusID = -1;
-    private int getLedStatusID = -1;
-    private int getCarpetModeID = -1;
-    private int getFwFeaturesID = -1;
-    private int getMultiMapsListID = -1;
-    private int getCustomizeCleanModeID = -1;
-    private int getMapID = -1;
+
+    // Using a map to store request IDs for better management
+    private final Map<String, Integer> outstandingRequests = new ConcurrentHashMap<>();
 
     private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
             RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
@@ -132,6 +120,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         this.channelTypeRegistry = channelTypeRegistry;
         initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
         pollTask = new SchedulerTask(scheduler, logger, "Poll", this::pollData);
+        new java.security.SecureRandom().nextBytes(nonce);
     }
 
     protected String getToken() {
@@ -304,16 +293,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
         }
 
-        boolean empty_byte_array = true;
-        for (byte b : nonce) {
-            if (b != 0) {
-                empty_byte_array = false;
-                break;
-            }
-        }
-        if (empty_byte_array) {
-            new java.security.SecureRandom().nextBytes(nonce);
-        }
         scheduleNextPoll(-1);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -374,25 +353,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         // also look at array size of homeData.result.rooms[i] and populate rooms list....
                         homeRooms = homeData.result.rooms;
                         if (homeData.result.devices[i].online == true) {
-                            try {
-                                logger.debug("Running pollData - sending MQTT commands");
-                                getStatusID = sendCommand(COMMAND_GET_STATUS);
-                                getConsumableID = sendCommand(COMMAND_GET_CONSUMABLE);
-                                getNetworkInfoID = sendCommand(COMMAND_GET_NETWORK_INFO);
-                                getCleanSummaryID = sendCommand(COMMAND_GET_CLEAN_SUMMARY);
-                                getDndTimerID = sendCommand(COMMAND_GET_DND_TIMER);
-                                getRoomMappingID = sendCommand(COMMAND_GET_ROOM_MAPPING);
-                                getSegmentStatusID = sendCommand(COMMAND_GET_SEGMENT_STATUS);
-                                getMapStatusID = sendCommand(COMMAND_GET_MAP_STATUS);
-                                getLedStatusID = sendCommand(COMMAND_GET_LED_STATUS);
-                                getCarpetModeID = sendCommand(COMMAND_GET_CARPET_MODE);
-                                getFwFeaturesID = sendCommand(COMMAND_GET_FW_FEATURES);
-                                getMultiMapsListID = sendCommand(COMMAND_GET_MULTI_MAP_LIST);
-                                getCustomizeCleanModeID = sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE);
-                                // getMapID = sendCommand(COMMAND_GET_MAP);
-                            } catch (UnsupportedEncodingException e) {
-                                logger.debug("UnsupportedEncodingException");
-                            }
+                            sendAllMqttCommands();
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "Communication error, Roborock API reports vacuum offline.");
@@ -424,6 +385,27 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    private void sendAllMqttCommands() {
+        try {
+            outstandingRequests.put("getStatus", sendCommand(COMMAND_GET_STATUS));
+            outstandingRequests.put("getConsumable", sendCommand(COMMAND_GET_CONSUMABLE));
+            outstandingRequests.put("getNetworkInfo", sendCommand(COMMAND_GET_NETWORK_INFO));
+            outstandingRequests.put("getCleanSummary", sendCommand(COMMAND_GET_CLEAN_SUMMARY));
+            outstandingRequests.put("getDndTimer", sendCommand(COMMAND_GET_DND_TIMER));
+            outstandingRequests.put("getRoomMapping", sendCommand(COMMAND_GET_ROOM_MAPPING));
+            outstandingRequests.put("getSegmentStatus", sendCommand(COMMAND_GET_SEGMENT_STATUS));
+            outstandingRequests.put("getMapStatus", sendCommand(COMMAND_GET_MAP_STATUS));
+            outstandingRequests.put("getLedStatus", sendCommand(COMMAND_GET_LED_STATUS));
+            outstandingRequests.put("getCarpetMode", sendCommand(COMMAND_GET_CARPET_MODE));
+            outstandingRequests.put("getFwFeatures", sendCommand(COMMAND_GET_FW_FEATURES));
+            outstandingRequests.put("getMultiMapsList", sendCommand(COMMAND_GET_MULTI_MAP_LIST));
+            outstandingRequests.put("getCustomizeCleanMode", sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
+            // outstandingRequests.put("getMap", sendCommand(COMMAND_GET_MAP)); // Uncomment if map command is needed
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Failed to send MQTT commands due to unsupported encoding: {}", e.getMessage());
+        }
+    }
+
     public void handleMessage(byte[] payload) {
         logger.trace("Received MQTT message for: {}", getThing().getUID().getId());
         String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
@@ -444,68 +426,67 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
                     int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
-                    logger.trace("MQTT message processing, id={}", messageId);
-                    if (messageId == getStatusID) {
-                        logger.debug("Received getStatus response, parse it");
-                        handleGetStatus(jsonString);
-                        getStatusID = -1;
-                    } else if (messageId == getConsumableID) {
-                        logger.debug("Received getConsumable response, parse it");
-                        handleGetConsumables(jsonString);
-                        getConsumableID = -1;
-                    } else if (messageId == getRoomMappingID) {
-                        logger.debug("Received getRoomMapping response, parse it");
-                        handleGetRoomMapping(jsonString);
-                        getRoomMappingID = -1;
-                    } else if (messageId == getNetworkInfoID) {
-                        logger.debug("Received getNetworkInfo response, parse it");
-                        handleGetNetworkInfo(jsonString);
-                        getNetworkInfoID = -1;
-                    } else if (messageId == getCleanRecordID) {
-                        logger.debug("Received getCleanRecord response, parse it");
-                        handleGetCleanRecord(jsonString);
-                        getCleanRecordID = -1;
-                    } else if (messageId == getCleanSummaryID) {
-                        logger.debug("Received getCleanSummary response, parse it");
-                        handleGetCleanSummary(jsonString);
-                        getCleanSummaryID = -1;
-                    } else if (messageId == getDndTimerID) {
-                        logger.debug("Received getDndTimer response, parse it");
-                        handleGetDndTimer(jsonString);
-                        getDndTimerID = -1;
-                    } else if (messageId == getSegmentStatusID) {
-                        logger.debug("Received getSegmentStatus response, parse it");
-                        handleGetSegmentStatus(jsonString);
-                        getSegmentStatusID = -1;
-                    } else if (messageId == getMapStatusID) {
-                        logger.debug("Received getMapStatus response, parse it");
-                        handleGetMapStatus(jsonString);
-                        getMapStatusID = -1;
-                    } else if (messageId == getLedStatusID) {
-                        logger.debug("Received getLedStatus response, parse it");
-                        handleGetLedStatus(jsonString);
-                        getLedStatusID = -1;
-                    } else if (messageId == getCarpetModeID) {
-                        logger.debug("Received getCarpetMode response, parse it");
-                        handleGetCarpetMode(jsonString);
-                        getCarpetModeID = -1;
-                    } else if (messageId == getFwFeaturesID) {
-                        logger.debug("Received getFwFeatures response, parse it");
-                        handleGetFwFeatures(jsonString);
-                        getFwFeaturesID = -1;
-                    } else if (messageId == getMultiMapsListID) {
-                        logger.debug("Received getMultiMapsList response, parse it");
-                        handleGetMultiMapsList(jsonString);
-                        getMultiMapsListID = -1;
-                    } else if (messageId == getCustomizeCleanModeID) {
-                        logger.debug("Received getCustomizeCleanMode response, parse it");
-                        handleGetCustomizeCleanMode(jsonString);
-                        getCustomizeCleanModeID = -1;
-                    } else if (messageId == getMapID) {
-                        logger.debug("Received getMap response, parse it");
-                        handleGetMap(jsonString);
-                        getMapID = -1;
+                    String methodName = outstandingRequests.entrySet().stream()
+                            .filter(entry -> entry.getValue() == messageId).map(Map.Entry::getKey).findFirst()
+                            .orElse(null);
+
+                    if (methodName == null) {
+                        logger.debug("Received response for unknown or already handled message ID: {}", messageId);
+                        return;
                     }
+
+                    logger.debug("Received {} response for ID {}, parsing it.", methodName, messageId);
+                    switch (methodName) {
+                        case "getStatus":
+                            handleGetStatus(jsonString);
+                            break;
+                        case "getConsumable":
+                            handleGetConsumables(jsonString);
+                            break;
+                        case "getRoomMapping":
+                            handleGetRoomMapping(jsonString);
+                            break;
+                        case "getNetworkInfo":
+                            handleGetNetworkInfo(jsonString);
+                            break;
+                        case "getCleanRecord":
+                            handleGetCleanRecord(jsonString);
+                            break;
+                        case "getCleanSummary":
+                            handleGetCleanSummary(jsonString);
+                            break;
+                        case "getDndTimer":
+                            handleGetDndTimer(jsonString);
+                            break;
+                        case "getSegmentStatus":
+                            handleGetSegmentStatus(jsonString);
+                            break;
+                        case "getMapStatus":
+                            handleGetMapStatus(jsonString);
+                            break;
+                        case "getLedStatus":
+                            handleGetLedStatus(jsonString);
+                            break;
+                        case "getCarpetMode":
+                            handleGetCarpetMode(jsonString);
+                            break;
+                        case "getFwFeatures":
+                            handleGetFwFeatures(jsonString);
+                            break;
+                        case "getMultiMapsList":
+                            handleGetMultiMapsList(jsonString);
+                            break;
+                        case "getCustomizeCleanMode":
+                            handleGetCustomizeCleanMode(jsonString);
+                            break;
+                        case "getMap":
+                            handleGetMap(jsonString);
+                            break;
+                        default:
+                            logger.debug("No handler for method: {}", methodName);
+                            break;
+                    }
+                    outstandingRequests.remove(methodName); // Remove once handled
                 }
             } else {
                 // handle live updates ie any one (or more of values of dps)
@@ -815,7 +796,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 if (!lastClean.equals(lastHistoryID)) {
                     lastHistoryID = lastClean;
                     try {
-                        getCleanRecordID = sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]");
+                        outstandingRequests.put("getCleanRecord",
+                                sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
                     } catch (UnsupportedEncodingException e) {
                         // Shouldn't occur
                     }
@@ -836,7 +818,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     if (!lastClean.equals(lastHistoryID)) {
                         lastHistoryID = lastClean;
                         try {
-                            getCleanRecordID = sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]");
+                            outstandingRequests.put("getCleanRecord",
+                                    sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
                         } catch (UnsupportedEncodingException e) {
                             // Shouldn't occur
                         }

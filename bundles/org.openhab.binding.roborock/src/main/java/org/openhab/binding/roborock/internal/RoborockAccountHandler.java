@@ -17,6 +17,7 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,7 +32,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.CRC32;
@@ -92,7 +92,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private String token = "";
     private String baseUri = "";
     private Rriot rriot = new Login().new Rriot();
-    private SecureRandom secureRandom = new SecureRandom();
+    private final SecureRandom secureRandom = new SecureRandom();
 
     /** The file we store definitions in */
     protected final Map<Thing, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
@@ -208,7 +208,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         config = getConfigAs(RoborockAccountConfiguration.class);
-        if (config.email.isBlank()) {
+        if (config == null || config.email == null || config.email.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Missing email address configuration");
             return;
@@ -225,7 +225,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     private void stopPoll() {
-        final Future<?> future = pollFuture;
+        final ScheduledFuture<?> future = pollFuture;
         if (future != null) {
             future.cancel(true);
             pollFuture = null;
@@ -240,7 +240,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             logger.debug("MQTT message - more than 5 minutes since Publish and no response");
             // teardownAndScheduleReconnection();
             // lastMQTTMessageTimestamp = System.currentTimeMillis();
-        } else if (this.mqttClient == null) {
+        } else if (this.mqttClient == null || !this.mqttClient.getState().isConnected()) {
             // teardownAndScheduleReconnection();
             mqttConnectTask.schedule(280);
         }
@@ -256,7 +256,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         logger.debug("Child registered with gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
                 getThing().getUID(), getThing().getLabel());
-        childDevices.put(childThing, (RoborockVacuumHandler) childHandler);
+        if (childHandler instanceof RoborockVacuumHandler) {
+            childDevices.put(childThing, (RoborockVacuumHandler) childHandler);
+        } else {
+            logger.warn("Initialized child handler is not a RoborockVacuumHandler: {}",
+                    childHandler.getClass().getName());
+        }
     }
 
     @Override
@@ -283,6 +288,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
         String sessionStoreToken = sessionStorage.get("token");
         String sessionStoreRriot = sessionStorage.get("rriot");
+
         if (!(sessionStoreToken == null) && !(sessionStoreRriot == null)) {
             logger.trace("Retrieved token and rriot values from sessionStorage");
             token = sessionStoreToken;
@@ -314,7 +320,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     private synchronized void teardown(boolean scheduleReconnection) {
-        disconnect();
+        disconnectMqttClient();
 
         mqttConnectTask.cancel();
         initTask.cancel();
@@ -325,13 +331,14 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     private void establishMQTTConnection() {
-        if (token.isEmpty() || rriot.r.m.isEmpty() || rriot.k.isEmpty() || rriot.s.isEmpty() || rriot.u.isEmpty()) {
+        if (token.isEmpty() || rriot.r == null || rriot.r.m.isEmpty() || rriot.k.isEmpty() || rriot.s.isEmpty()
+                || rriot.u.isEmpty()) {
             logger.trace("token and/or rriot are empty, delay connection to MQTT server");
             return;
         }
 
         try {
-            connect();
+            connectMqttClient();
             logger.debug("Bridge connected to MQTT");
             updateStatus(ThingStatus.ONLINE);
         } catch (InterruptedException | RoborockCommunicationException e) {
@@ -347,7 +354,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         stopPoll();
     }
 
-    public void connect() throws RoborockCommunicationException, InterruptedException {
+    public void connectMqttClient() throws RoborockCommunicationException, InterruptedException {
         String mqttHost = "";
         int mqttPort = 1883;
         String mqttUser = "";
@@ -403,13 +410,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             client.connect().get();
             logger.debug("Established MQTT connection.");
 
-            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/";
-
-            for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
-                logger.info("Subscribing to MQTT topic for deviceID = {}", entry.getKey().getUID().getId());
-                client.subscribeWith().topicFilter(topic + entry.getKey().getUID().getId())
-                        .callback(this::handleMessage).send().get();
-            }
+            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
+            client.subscribeWith().topicFilter(topic).callback(this::handleMessage).send().get();
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             boolean isAuthFailure = cause instanceof Mqtt5ConnAckException connAckException
@@ -425,28 +427,34 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     public void handleMessage(@Nullable Mqtt5Publish publish) {
-        if (publish == null) {
+        if (publish == null || publish.getPayload().isEmpty()) { // Check payload presence
             logger.debug("handleMessage - null publish received");
             return;
         }
-        String receivedTopic = publish.getTopic().toString();
 
+        String receivedTopic = publish.getTopic().toString();
         String destination = receivedTopic.substring(receivedTopic.lastIndexOf('/') + 1);
         logger.debug("Received MQTT message for device {}", destination);
         lastMQTTMessageTimestamp = System.currentTimeMillis();
+
         // check list of child handlers and send message to the right one
         for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
             if (entry.getKey().getUID().getAsString().contains(destination)) {
-                logger.trace("Submit response to child {} -> {}", destination, entry.getKey().getUID());
-                byte[] payload = publish.getPayloadAsBytes();
-
-                entry.getValue().handleMessage(payload);
+                try {
+                    logger.trace("Submit response to child {} -> {}", destination, entry.getKey().getUID());
+                    entry.getValue().handleMessage(publish.getPayloadAsBytes());
+                } catch (Exception e) {
+                    logger.error(
+                            "Unhandled exception processing MQTT message for device {}. Message will be discarded.",
+                            destination, e);
+                }
                 return;
             }
         }
+        logger.warn("Received MQTT message for unknown device destination: {}", destination);
     }
 
-    public void disconnect() {
+    public void disconnectMqttClient() {
         Mqtt5AsyncClient client = this.mqttClient;
         if (client != null) {
             client.disconnect();
@@ -457,8 +465,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private String getEndpoint() {
         try {
             byte[] md5Bytes = MessageDigest.getInstance("MD5").digest(rriot.k.getBytes());
-            byte[] subArray = new byte[6];
-            System.arraycopy(md5Bytes, 8, subArray, 0, 6);
+            byte[] subArray = Arrays.copyOfRange(md5Bytes, 8, 14);
             return Base64.getEncoder().encodeToString(subArray);
         } catch (NoSuchAlgorithmException e) {
             return "";
@@ -478,11 +485,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         int protocol = 101;
         int id = secureRandom.nextInt(22767 + 1) + 10000;
 
-        StringBuffer hexStringBuffer = new StringBuffer();
-        for (int i = 0; i < nonce.length; i++) {
-            hexStringBuffer.append(byteToHex(nonce[i]));
-        }
-        String nonceHex = hexStringBuffer.toString();
+        String nonceHex = bytesToHex(nonce);
 
         Map<String, Object> security = new HashMap<>();
         security.put("endpoint", getEndpoint());
@@ -505,12 +508,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String modPayload = payload.replace(":\\\"[", ":[").replace("]\\\"}", "]}");
         logger.trace("Modified payload = {}", modPayload);
 
-        byte[] message = build(thingID, localKey, protocol, timestamp, modPayload.getBytes("UTF-8"));
+        byte[] message = build(thingID, localKey, protocol, timestamp, modPayload.getBytes(StandardCharsets.UTF_8));
         // now send message via mqtt
         String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
 
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
-        if (this.mqttClient != null) {
+        if (this.mqttClient != null && this.mqttClient.getState().isConnected()) {
             logger.debug("Publishing {} message to {}", method, topic);
             mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
                     .whenComplete((mqtt5Publish, throwable) -> {
@@ -526,34 +529,57 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Converts a byte array to its hexadecimal string representation.
+     *
+     * @param bytes The byte array to convert.
+     * @return The hexadecimal string.
+     */
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
     byte[] build(String thingID, String localKey, int protocol, int timestamp, byte[] payload) {
         try {
             String key = ProtocolUtils.encodeTimestamp(timestamp) + localKey + SALT;
-            byte[] encrypted = ProtocolUtils.encrypt(payload, key);
+            byte[] encryptedPayload = ProtocolUtils.encrypt(payload, key);
 
             int randomInt = secureRandom.nextInt(90000) + 10000;
             int seq = secureRandom.nextInt(900000) + 100000;
 
-            int totalLength = 23 + encrypted.length;
-            byte[] msg = new byte[totalLength];
-            // Writing fixed string '1.0'
-            msg[0] = 49; // ASCII for '1'
-            msg[1] = 46; // ASCII for '.'
-            msg[2] = 48; // ASCII for '0'
-            ProtocolUtils.writeInt32BE(msg, (int) (seq & 0xFFFFFFFF), 3);
-            ProtocolUtils.writeInt32BE(msg, (int) (randomInt & 0xFFFFFFFF), 7);
-            ProtocolUtils.writeInt32BE(msg, timestamp, 11);
-            ProtocolUtils.writeInt16BE(msg, protocol, 15);
-            ProtocolUtils.writeInt16BE(msg, encrypted.length, 17);
-            // Manually copying encrypted data into msg
-            for (int i = 0; i < encrypted.length; i++) {
-                msg[19 + i] = encrypted[i];
-            }
-            byte[] buf = Arrays.copyOfRange(msg, 0, msg.length - 4);
+            // Header: "1.0" (3 bytes), Sequence (4 bytes), Random (4 bytes), Timestamp (4 bytes), Protocol (2 bytes),
+            // Payload Length (2 bytes)
+            // Total header size = 3 + 4 + 4 + 4 + 2 + 2 = 19 bytes
+            // Plus encrypted payload length
+            // Plus CRC32 (4 bytes) at the end
+            int totalLength = 19 + encryptedPayload.length + 4;
+            byte[] message = new byte[totalLength];
+
+            // Write fixed string '1.0'
+            message[0] = '1';
+            message[1] = '.';
+            message[2] = '0';
+
+            // Write integer fields
+            ProtocolUtils.writeInt32BE(message, seq, 3);
+            ProtocolUtils.writeInt32BE(message, randomInt, 7);
+            ProtocolUtils.writeInt32BE(message, timestamp, 11);
+            ProtocolUtils.writeInt16BE(message, protocol, 15);
+            ProtocolUtils.writeInt16BE(message, encryptedPayload.length, 17);
+
+            // Copy encrypted payload
+            System.arraycopy(encryptedPayload, 0, message, 19, encryptedPayload.length);
+
+            // Calculate CRC32 and write to the end
             CRC32 crc32 = new CRC32();
-            crc32.update(buf);
-            ProtocolUtils.writeInt32BE(msg, (int) crc32.getValue(), msg.length - 4);
-            return msg;
+            crc32.update(message, 0, message.length - 4); // Calculate CRC for all bytes except the last 4 (CRC field
+                                                          // itself)
+            ProtocolUtils.writeInt32BE(message, (int) crc32.getValue(), message.length - 4);
+            return message;
         } catch (Exception e) {
             logger.debug("Exception encrypting payload, {}", e.getMessage());
             return new byte[0];
