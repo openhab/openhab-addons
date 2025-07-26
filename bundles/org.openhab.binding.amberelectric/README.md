@@ -13,6 +13,7 @@ The binding does not support auto discovery.
 ## Thing Configuration
 
 As a minimum, the apiKey is needed:
+
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                                           |
 |-----------------|---------------|----------|----------|-------------------------------------------------------------------------------------------------------|
 | apiKey          | N/A           | Yes      | No       | The API key from the 'Developer' section of <https://apps.amber.com.au>                               |

@@ -21,7 +21,7 @@ Auto-discovery is not supported at this moment.
 
 The binding itself does not require any special configuration.
 
-*note*  If openHAB is deployed in a Docker container, you must set the `network_mode` to host. Without this setting, messages on the host network will not reach the Docker container's internal networks.
+_note_ If openHAB is deployed in a Docker container, you must set the `network_mode` to host. Without this setting, messages on the host network will not reach the Docker container's internal networks.
 
 ## Thing Configuration
 

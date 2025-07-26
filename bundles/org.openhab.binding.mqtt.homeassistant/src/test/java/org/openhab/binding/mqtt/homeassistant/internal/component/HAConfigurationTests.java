@@ -57,7 +57,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     public void testAbbreviations() {
         String json = readTestJson("configA.json");
 
-        Switch.Configuration config = AbstractComponentConfiguration.create(python, "switch", json,
+        Switch.Configuration config = AbstractComponentConfiguration.create(PYTHON, "switch", json,
                 Switch.Configuration.class);
 
         assertThat(config.getName(), is("A"));
@@ -85,7 +85,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     public void testTildeSubstritution() {
         String json = readTestJson("configB.json");
 
-        Switch.Configuration config = AbstractComponentConfiguration.create(python, "switch", json,
+        Switch.Configuration config = AbstractComponentConfiguration.create(PYTHON, "switch", json,
                 Switch.Configuration.class);
 
         assertThat(config.getAvailabilityTopic(), is("D/E"));
@@ -103,7 +103,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     public void testSampleFanConfig() {
         String json = readTestJson("configFan.json");
 
-        Fan.Configuration config = AbstractComponentConfiguration.create(python, "fan", json, Fan.Configuration.class);
+        Fan.Configuration config = AbstractComponentConfiguration.create(PYTHON, "fan", json, Fan.Configuration.class);
         assertThat(config.getName(), is("Bedroom Fan"));
     }
 
@@ -111,7 +111,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     public void testDeviceListConfig() {
         String json = readTestJson("configDeviceList.json");
 
-        Fan.Configuration config = AbstractComponentConfiguration.create(python, "fan", json, Fan.Configuration.class);
+        Fan.Configuration config = AbstractComponentConfiguration.create(PYTHON, "fan", json, Fan.Configuration.class);
         assertThat(config.getDevice(), is(notNullValue()));
 
         Device device = config.getDevice();
@@ -124,7 +124,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     public void testDeviceSingleStringConfig() {
         String json = readTestJson("configDeviceSingleString.json");
 
-        Fan.Configuration config = AbstractComponentConfiguration.create(python, "fan", json, Fan.Configuration.class);
+        Fan.Configuration config = AbstractComponentConfiguration.create(PYTHON, "fan", json, Fan.Configuration.class);
         assertThat(config.getDevice(), is(notNullValue()));
 
         Device device = config.getDevice();
@@ -136,7 +136,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     @Test
     public void testTS0601ClimateConfig() {
         String json = readTestJson("configTS0601ClimateThermostat.json");
-        Climate.Configuration config = AbstractComponentConfiguration.create(python, "climate", json,
+        Climate.Configuration config = AbstractComponentConfiguration.create(PYTHON, "climate", json,
                 Climate.Configuration.class);
         assertThat(config.getDevice(), is(notNullValue()));
         assertThat(config.getDevice().getIdentifiers(), is(notNullValue()));
@@ -174,7 +174,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     @Test
     public void testClimateConfig() {
         String json = readTestJson("configClimate.json");
-        Climate.Configuration config = AbstractComponentConfiguration.create(python, "climate", json,
+        Climate.Configuration config = AbstractComponentConfiguration.create(PYTHON, "climate", json,
                 Climate.Configuration.class);
         assertThat(config.getActionTemplate().toString(), is("Template<template=(a) renders=0>"));
         assertThat(config.getActionTopic(), is("b"));

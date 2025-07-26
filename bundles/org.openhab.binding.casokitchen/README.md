@@ -1,7 +1,7 @@
 # CasoKitchen Binding
 
 Provides access towards CASO Smart Kitchen devices which are connected within the [CASO Control App](https://www.casocontrol.de/).
- 
+
 ## Supported Things
 
 - `winecooler-2z`: Wine cooler with two zones
@@ -16,13 +16,13 @@ You need a [CASO Account](https://www.casoapp.com/Account/Create) to get configu
 After register you'll get the
 
 - API key
-- Device ID 
+- Device ID
 
-## Wine Cooler with 2 Zones 
+## Wine Cooler with 2 Zones
 
 ### Configuration winecooler-2z
 
-| Name            | Type    | Description                                          | Default | 
+| Name            | Type    | Description                                          | Default |
 |-----------------|---------|------------------------------------------------------|---------|
 | apiKey          | text    | API obtained from thing configuration                | N/A     |
 | deviceId        | text    | Device Id obtained from thing configuration          | N/A     |
@@ -35,7 +35,7 @@ Channels are separated in 3 groups
 - `generic` group covering states for the whole device
 - `top` and `bottom` group covering states related to top or bottom zone
 
-#### Generic Group 
+#### Generic Group
 
 Group name `generic`.
 
@@ -61,7 +61,7 @@ Currently it cannot be changed using the API.
 
 ## Full Example
 
-### Thing Configuration
+### Example Thing Configuration
 
 ```java
 Thing       casokitchen:winecooler-2z:whiny           "Whiny Wine Cooler"        [ apiKey="ABC", deviceId="XYZ" ]

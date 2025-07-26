@@ -104,7 +104,7 @@ With the possibility to control your lights you could do:
 You must define an `account` (Bridge) before defining any other Thing can be used.
 
 1. Create an Amazon `account` thing
-1. Open the url `YOUR_OPENHAB/amazonechocontrol` in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and login.
+1. Open the URL `YOUR_OPENHAB/amazonechocontrol` in your browser (e.g. `http://openhab:8080/amazonechocontrol/`), click the link for your account thing and login.
 1. You should see now a message that the login was successful
 1. If you encounter redirect/page refresh issues, enable two-factor authentication (2FA) on your Amazon account.
 
@@ -119,7 +119,7 @@ You will find the required serial number in settings of the device in the Alexa 
 
 If you want to discover your smart home devices you need to activate it in the 'Amazon Account' thing.
 Devices from other skills can be discovered too.
-See section *Smart Home Devices* below for more information.
+See section _Smart Home Devices_ below for more information.
 
 ## Configuration
 
@@ -138,7 +138,6 @@ See section *Smart Home Devices* below for more information.
 |-----------------|-----------|-------------|------------|--------------------------------------------------|
 | `sendMessage`   | String    | W           | account    | Write Only! Sends a message to the Echo devices. |
 
-
 ### Thing Configuration
 
 The `echo`, `echospot`, `echoshow` and `wha` have the same configuration:
@@ -147,9 +146,9 @@ The `echo`, `echospot`, `echoshow` and `wha` have the same configuration:
 |--------------------------|----------------------------------------------------|
 | `serialNumber`           | Serial number of the Amazon Echo in the Alexa app  |
 
-You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/amazonechocontrol/YOUR_ACCOUNT (e.g. http://openhab:8080/amazonechocontrol/account1).
+You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/amazonechocontrol/YOUR_ACCOUNT (e.g. `http://openhab:8080/amazonechocontrol/account1`).
 
-### Channels
+### Echo Device Channels
 
 | Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description                                                                                                                                                                                                                             |
 |-----------------------|-------------|-------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -177,13 +176,13 @@ You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/
 | startRoutine          | String      | W           | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa,"                                                                                                                                                       |
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider                                                                                                                                                                                                                  |
 | playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles'                                                                                                                                                                    |
-| startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)                             |
+| startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.{FlashbriefingDeviceID} (Note: The options are case sensitive)                             |
 | announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.                                                                            |
 | textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>` |
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used                                                                                                                                                                |
 | textCommand           | String      | W           | echo, echoshow, echospot      | Write Only! Execute a text command (like a spoken text)                                                                                                                                                                                 |
 | lastVoiceCommand      | String      | R           | echo, echoshow, echospot      | Last voice command spoken to the device.                                                                                                                                                                                                |
-| lastSpokenText      	| String      | R           | echo, echoshow, echospot      | Last spoken text from the device. (for example statements, answers and text to speeches)                                                                                                                                               |
+| lastSpokenText        | String      | R           | echo, echoshow, echospot      | Last spoken text from the device. (for example statements, answers and text to speeches)                                                                                                                                               |
 | mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent                                                                                                                                                                                                               |
 | mediaProgressTime     | Number:Time | R/W         | echo, echoshow, echospot      | Media play time                                                                                                                                                                                                                         |
 | mediaLength           | Number:Time | R           | echo, echoshow, echospot      | Media length                                                                                                                                                                                                                            |
@@ -198,7 +197,7 @@ This can be used to call Alexa API from rules.
 
 E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
-http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
+`http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1`
 
 ### Example
 
@@ -338,18 +337,18 @@ The `flashbriefingprofile` thing helps you to overcome this limitation.
 To set it up using managed (UI) configuration:
 
 1. Use the app to create the flash-briefing configuration you want.
-2. Start the discovery, you should see a new "flashbriefingprofile" thing. If this is not the case, a thing with the current configuration already exists.
-3. Add that thing (you can use a custom name if you want).
-4. Repeat steps 1-3 for other configurations (you can add as many as you want, make sure they are different).
+1. Start the discovery, you should see a new "flashbriefingprofile" thing. If this is not the case, a thing with the current configuration already exists.
+1. Add that thing (you can use a custom name if you want).
+1. Repeat steps 1-3 for other configurations (you can add as many as you want, make sure they are different).
 
 Textual configuration (untested, not recommended):
 
 1. Add a new `flashbriefiungprofilething` to your `.things` file.
-2. Use the app to create the flash-briefing configuration you want.
-3. Send `ON` to the `save` channel of the thing you created in step 1.
-4. Repeat steps 1-3 for other configurations (you can add as many as you want, make sure they are different).
+1. Use the app to create the flash-briefing configuration you want.
+1. Send `ON` to the `save` channel of the thing you created in step 1.
+1. Repeat steps 1-3 for other configurations (you can add as many as you want, make sure they are different).
 
-#### Channels
+### Flash Briefing Profile Channels
 
 | Channel Type ID | Item Type | Access Mode | Description                                                                                                                                   |
 |-----------------|-----------|:-----------:|-----------------------------------------------------------------------------------------------------------------------------------------------|
@@ -360,7 +359,7 @@ Textual configuration (untested, not recommended):
 **Attention:** Be careful when using the `save` channel.
 Storing the same configuration to several things may result in unpredictable behavior.
 
-### Example
+### Flash Briefing Example
 
 #### flashbriefings.things
 
@@ -421,7 +420,7 @@ You can use that id if you want to define the thing in a file.
 Discovered smart home devices show a `deviceIdentifierList` in their thing properties, containing one or more serial numbers.
 You can check if any of these serial numbers is associated with another device and use this to identify devices with similar/same names.
 
-### Channels
+### Smart Home Device Channels
 
 The channels of the smarthome devices will be generated at runtime.
 Check in the UI thing configurations, which channels are created.
@@ -451,13 +450,13 @@ Check in the UI thing configurations, which channels are created.
 | contact                  | Contact              | R           | smartHomeDevice                       | A contact sensor OPEN if detected, CLOSED if NOT_DETECTED                                                                   |
 | geoLocation              | Location             | R           | smartHomeDevice                       | The location (e.g. of a Tile)                                                                                               |
 
-*Note* the channels of `smartHomeDevices` and `smartHomeDeviceGroup` will be created dynamically based on the capabilities reported by the Amazon server. This can take a little bit of time.
+**Note:** the channels of `smartHomeDevices` and `smartHomeDeviceGroup` will be created dynamically based on the capabilities reported by the Amazon server. This can take a little bit of time.
 The polling interval configured in the Account Thing to get the state is specified in minutes and has a minimum of 10. This means it takes up to 10 minutes to see the state of a channel. The reason for this low interval is, that the polling causes a big server load for the Smart Home Skills.
 
-*Note*: The `color` channel is read-only by default because Alexa does only support setting colors by their name.
+**Note:** The `color` channel is read-only by default because Alexa does only support setting colors by their name.
 It has a configuration parameter `matchColors` which enables writing to that channel and tries to find the closes available color when sending a command to Alexa.
 
-### Example
+### Smart Home Example
 
 #### smarthome.things
 
@@ -520,19 +519,19 @@ Link the `geoLocation` channel of the Tile thing to a `Location` item named `Car
 Add a second item of type `Number:Length` with the name `CarDistance` (adjust state description to your needs, e.g. miles or km as unit).
 Create a rule that triggers on change of that item with the DSL script as action:
 
-```
+```javascript
 var homeLocation = new PointType("50.273448, 8.409950")
 CarDistance.postUpdate(homeLocation.distanceFrom(CarLocation.state as PointType).toString + " m")
 ```
 
-## Advanced Feature Technically Experienced Users
+## Advanced Features for Technically Experienced Users
 
 The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the Amazon Alexa server.
 This can be used to call Alexa API from rules.
 
 E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
-http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
+`http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1`
 
 To resolve login problems the connection settings of an `account` thing can be reset via the karaf console.
 The command `amazonechocontrol listAccounts` shows a list of all available `account` things.
@@ -596,7 +595,6 @@ No specification uses the volume from the `textToSpeechVolume` channel.
 
 Note: If you turn off the sound and Alexa is playing music, it will anyway turn down the volume for a moment. This behavior can not be changed.
 
-
 ```java
 rule "Say welcome if the door opens"
 when
@@ -608,9 +606,9 @@ end
 
 ## Playing an alarm sound for 15 seconds with an openHAB rule if a door contact was opened
 
-1) Do get the ID of your sound, follow the steps in "How To Get IDs"
-2) Write down the text in the square brackets. e.g. ECHO:system_alerts_repetitive01 for the nightstand sound
-3) Create a rule for start playing the sound:
+1. Do get the ID of your sound, follow the steps in "How To Get IDs"
+1. Write down the text in the square brackets. e.g. ECHO:system_alerts_repetitive01 for the nightstand sound
+1. Create a rule for start playing the sound:
 
 ```java
 var Timer stopAlarmTimer = null
@@ -638,9 +636,9 @@ Note 2: The rule have no effect for your default alarm sound used in the Alexa a
 
 ### Play a spotify playlist if a switch was changed to on
 
-1) Do get the ID of your sound, follow the steps in "How To Get IDs"
-2) Write down the text in the square brackets. e.g. SPOTIFY for the spotify music provider
-3) Create a rule for start playing a song or playlist:
+1. Do get the ID of your sound, follow the steps in "How To Get IDs"
+1. Write down the text in the square brackets. e.g. SPOTIFY for the spotify music provider
+1. Create a rule for start playing a song or playlist:
 
 ```java
 rule "Play a playlist on spotify if a switch was changed"
@@ -656,8 +654,8 @@ Note: It is recommended to test the command send to play music command first wit
 
 ### Start playing weather/traffic/etc
 
-1) Pick up one of the available commands: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing
-2) Create a rule for start playing the information where you provide the command as string:
+1. Pick up one of the available commands: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing
+1. Create a rule for start playing the information where you provide the command as string:
 
 ```java
 rule "Start wheater info"
@@ -670,9 +668,9 @@ end
 
 ### Start playing a custom flashbriefing on a device
 
-1) Do get the ID of your sound, follow the steps in "How To Get IDs"
-2) Write down the text in the square brackets. e.g. flashbriefing.flashbriefing1
-2) Create a rule for start playing the information where you provide the command as string:
+1. Do get the ID of your sound, follow the steps in "How To Get IDs"
+1. Write down the text in the square brackets. e.g. flashbriefing.flashbriefing1
+1. Create a rule for start playing the information where you provide the command as string:
 
 ```java
 rule "Start wheater info"
@@ -696,7 +694,7 @@ The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazo
 The idea for writing this binding came from this blog: [https://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html](https://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html) (German).
 Thank you Alex!
 The technical information for the web socket connection to get live Alexa state updates cames from Ingo.
-He has done the Alexa ioBroker implementation https://github.com/Apollon77
+He has done the [Alexa ioBroker implementation](https://github.com/Apollon77)
 Thank you Ingo!
 
 ## Trademark Disclaimer

@@ -19,7 +19,7 @@ The `owserver` is the bridge that connects to an existing OWFS installation.
 
 ### Things
 
-There are different types of things: the simple one (`basic`), multisensors built around the DS1923/DS2438 chip (`ms-tx`) and more advanced sensors from Elaborated Networks (www.wiregate.de) (`ams`, `bms`), Embedded Data System (www.embeddeddatasystems.com)(`edsenv`) and Brain4Home (`bae091x`).
+There are different types of things: the simple one (`basic`), multisensors built around the DS1923/DS2438 chip (`ms-tx`) and more advanced sensors from Elaborated Networks (<www.wiregate.de>) (`ams`, `bms`), Embedded Data System (<www.embeddeddatasystems.com>)(`edsenv`) and Brain4Home (`bae091x`).
 
 ## Discovery
 

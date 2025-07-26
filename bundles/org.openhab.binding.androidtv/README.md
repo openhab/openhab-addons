@@ -163,7 +163,7 @@ KEYPRESS will accept the following commands as strings (case sensitive):
 - KEY_SUBMIT
 
 The list above causes an instantanious "press and release" of each button.
-If you would like to manually control the press and release of each you may append _PRESS and _RELEASE to the end of each.
+If you would like to manually control the press and release of each you may append `_PRESS` and `_RELEASE` to the end of each.
 (e.g. KEY_FORWARD_PRESS or KEY_FORWARD_RELEASE)
 
 You may also send an ASCII character as a single letter to simulate a key entry (e.g KEY_A, KEY_1, KEY_z).
@@ -225,6 +225,7 @@ This completes the PIN process.
 Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
 
 ## Troubleshooting
+
 Some devices come with an outdated version of the "Android TV Remote Service". So in case the PIN Process does not result in a PIN
 shown on the screen, and the openHAB log shows an entry
 ```GoogleTV version on device needs to be updated```
@@ -598,4 +599,3 @@ Switch GoogleTV_MUTE "MUTE [%s]" { channel = "androidtv:googletv:theater:mute" }
 | 302 | KEYCODE_DEMO_APP_2 |
 | 303 | KEYCODE_DEMO_APP_3 |
 | 304 | KEYCODE_DEMO_APP_4 |
-

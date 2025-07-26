@@ -46,7 +46,7 @@ import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
 @NonNullByDefault
 public class StateParserHelper {
     private static final Pattern DBM_PATTERN = Pattern.compile("^(-?\\d+)dBm$");
-    private static final Logger logger = LoggerFactory.getLogger(StateParserHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StateParserHelper.class);
 
     public static Optional<State> parseTimeMinutes(@Nullable Integer integer) {
         return Optional.ofNullable(integer)//
@@ -63,7 +63,7 @@ public class StateParserHelper {
                     .map(Double::parseDouble)//
                     .flatMap(StateParserHelper::parseTemperatureType);
         } catch (NumberFormatException ex) {
-            logger.debug("Cannot parse: {}", value, ex);
+            LOGGER.debug("Cannot parse: {}", value, ex);
             return Optional.of(UNDEF);
         }
     }
@@ -76,7 +76,7 @@ public class StateParserHelper {
         try {
             return Optional.ofNullable(value).map(DecimalType::new);
         } catch (NumberFormatException ex) {
-            logger.debug("Cannot parse {}", value, ex);
+            LOGGER.debug("Cannot parse {}", value, ex);
             return Optional.of(UNDEF);
         }
     }
@@ -91,7 +91,7 @@ public class StateParserHelper {
                     .map(Double::parseDouble)//
                     .map(d -> new QuantityType<>(d, PERCENT));
         } catch (NumberFormatException ex) {
-            logger.debug("Cannot parse {}", percent, ex);
+            LOGGER.debug("Cannot parse {}", percent, ex);
             return Optional.of(UNDEF);
         }
     }
@@ -106,7 +106,7 @@ public class StateParserHelper {
         }
         var matcher = DBM_PATTERN.matcher(wifi);
         if (!matcher.matches()) {
-            logger.debug("Cannot match {} to {}", wifi, DBM_PATTERN);
+            LOGGER.debug("Cannot match {} to {}", wifi, DBM_PATTERN);
             return Optional.of(UNDEF);
         }
 
@@ -115,7 +115,7 @@ public class StateParserHelper {
             var value = parseInt(integer);
             return Optional.of(new QuantityType<>(value, DECIBEL_MILLIWATTS));
         } catch (NumberFormatException e) {
-            logger.debug("Cannot parse integer {} from wifi {}", integer, wifi, e);
+            LOGGER.debug("Cannot parse integer {} from wifi {}", integer, wifi, e);
             return Optional.of(UNDEF);
         }
     }

@@ -43,7 +43,7 @@ To obtain the Global Location Number of your grid company:
 - Open the file and look for the rows having **Price_type** = "Subscription".
 - In the columns **Name** and/or **Description** you should see the name of your grid company.
 - In column **Owner** you can find the GLN ("Global Location Number").
-- Most rows will have this **Owner**. If in doubt, try to look for rows __not__ having 5790000432752 as owner.
+- Most rows will have this **Owner**. If in doubt, try to look for rows _not_ having 5790000432752 as owner.
 
 #### Reduced electricity tax applies
 
@@ -216,12 +216,14 @@ See also [Datahub Price List](https://www.energidataservice.dk/tso-electricity/D
 ##### Filter Examples
 
 _N1:_
+
 | Parameter       | Value   |
 | --------------- | ------- |
 | chargeTypeCodes | CD,CD R |
 | notes           |         |
 
 _Nord Energi Net:_
+
 | Parameter       | Value      |
 | --------------- | ---------- |
 | chargeTypeCodes | TAC        |

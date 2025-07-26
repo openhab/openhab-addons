@@ -19,8 +19,6 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BambuLabBindingConstants} class defines common constants, which are
@@ -34,7 +32,7 @@ public class BambuLabBindingConstants {
     public static final String BINDING_ID = "bambulab";
 
     // misc consts
-    public static String NO_CAMERA_CERT = "none";
+    public static final String NO_CAMERA_CERT = "none";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID PRINTER_THING_TYPE = new ThingTypeUID(BINDING_ID, "printer");
@@ -220,8 +218,6 @@ public class BambuLabBindingConstants {
             PC,
             PVA,
             HIPS;
-
-            private static final Logger log = LoggerFactory.getLogger(TrayType.class);
 
             public static Optional<TrayType> findTrayType(String name) {
                 return stream(values())//

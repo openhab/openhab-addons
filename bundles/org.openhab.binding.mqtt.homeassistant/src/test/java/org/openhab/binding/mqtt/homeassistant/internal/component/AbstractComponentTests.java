@@ -90,7 +90,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
         thingHandler = new LatchThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry, gson, python, unitProvider, SUBSCRIBE_TIMEOUT,
+                stateDescriptionProvider, channelTypeRegistry, gson, PYTHON, unitProvider, SUBSCRIBE_TIMEOUT,
                 ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);

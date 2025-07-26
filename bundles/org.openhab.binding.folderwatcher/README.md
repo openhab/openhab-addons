@@ -56,7 +56,6 @@ The `azureblob` thing has the following configuration options:
 | azureAnonymous     | Anonymous Connection      | Connect anonymously (works for public containers)       | no       | false         |
 | azureAccessKey     | Azure Access              | Access Key for Azure storage account                    | no       | ""            |
 
-
 ## Events
 
 This binding supports the following event:

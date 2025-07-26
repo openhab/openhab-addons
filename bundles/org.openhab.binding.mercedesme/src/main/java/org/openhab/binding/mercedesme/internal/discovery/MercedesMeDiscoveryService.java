@@ -32,7 +32,8 @@ import org.osgi.service.component.annotations.Component;
  * @author Bernd Weymann - Add vin as representation property
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, configurationPid = "discovery.mercedesme")
+@Component(service = { DiscoveryService.class,
+        MercedesMeDiscoveryService.class }, configurationPid = "discovery.mercedesme")
 public class MercedesMeDiscoveryService extends AbstractDiscoveryService {
 
     public MercedesMeDiscoveryService() {

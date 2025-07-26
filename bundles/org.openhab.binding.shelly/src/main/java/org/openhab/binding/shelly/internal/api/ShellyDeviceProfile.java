@@ -217,7 +217,7 @@ public class ShellyDeviceProfile {
         boolean isGas = THING_TYPE_SHELLYGAS.equals(thingTypeUID);
         boolean isUNI = THING_TYPE_SHELLYUNI.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSUNI.equals(thingTypeUID);
         isHT = THING_TYPE_SHELLYHT.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSHT.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSHTG3.equals(thingTypeUID) || THING_TYPE_SHELLYBLUHT.equals(thingTypeUID);
+                || THING_TYPE_SHELLYBLUHT.equals(thingTypeUID);
         isDW = THING_TYPE_SHELLYDOORWIN.equals(thingTypeUID) || THING_TYPE_SHELLYDOORWIN2.equals(thingTypeUID)
                 || THING_TYPE_SHELLYBLUDW.equals(thingTypeUID);
         isMotion = THING_TYPE_SHELLYMOTION.equals(thingTypeUID) || THING_TYPE_SHELLYBLUMOTION.equals(thingTypeUID);
@@ -261,8 +261,6 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_DIMMER_CONTROL;
         } else if (isRoller) {
             return numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
-        } else if (isDimmer) {
-            return CHANNEL_GROUP_RELAY_CONTROL;
         } else if (hasRelays) {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isRGBW2) {
@@ -415,8 +413,7 @@ public class ShellyDeviceProfile {
         return thingTypeID.startsWith(THING_TYPE_SHELLYPLUS_PREFIX)
                 || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX) || thingTypeID.contains("mini")
                 || THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSHTG3.equals(thingTypeUID) || isBluSeries(thingTypeUID)
-                || THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
+                || isBluSeries(thingTypeUID) | isBluSeries(thingTypeUID) || THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {

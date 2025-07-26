@@ -25,7 +25,7 @@ Once that registration is approved, you can create access credentials under the 
 | accessKey | The access key obtained as described above |
 | secretKey | The secret key obtained as described above |
 
-Please note that the developer account can *not* be used multiple times in parallel, as doing so will disturb event updates.
+Please note that the developer account can _not_ be used multiple times in parallel, as doing so will disturb event updates.
 
 For the device things, there is no required configuration (when using discovery). The following parameters exist:
 
@@ -138,7 +138,7 @@ Remarks:
 - [2] The range of valid values is 0..600/800 W. The upper limit depends on inverter type.
 - [3] Possible states: 'prioIsSupply' (prefer AC output over battery storage), 'prioIsStorage' (prefer battery storage over AC output)
 
-## Thing Configuration
+## Configuration in .things Files
 
 If you want to create the API bridge in a .things file, the entry has to look as follows:
 

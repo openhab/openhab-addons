@@ -29,4 +29,5 @@ public class FroniusBridgeConfiguration {
     public @Nullable String username;
     public @Nullable String password;
     public int refreshInterval = DEFAULT_REFRESH_PERIOD;
+    public String scheme = "http";
 }

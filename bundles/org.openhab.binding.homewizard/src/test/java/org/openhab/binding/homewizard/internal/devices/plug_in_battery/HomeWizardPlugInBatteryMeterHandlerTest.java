@@ -70,7 +70,6 @@ public class HomeWizardPlugInBatteryMeterHandlerTest extends HomeWizardHandlerTe
 
     private static HomeWizardPlugInBatteryHandlerMock createAndInitHandler(final ThingHandlerCallback callback,
             final Thing thing) {
-
         final HomeWizardPlugInBatteryHandlerMock handler = spy(new HomeWizardPlugInBatteryHandlerMock(thing));
 
         try {

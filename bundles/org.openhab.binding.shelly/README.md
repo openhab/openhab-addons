@@ -355,7 +355,7 @@ You could also create a rule to catch those status changes or device alarms (see
 | eventsRoller       | true: register event "trigger" when the roller updates status | no        | true for roller devices                            |
 | favoriteUP         | 0-4: Favorite id for UP (see Roller Favorites)                | no        | 0 = no favorite id                                 |
 | favoriteDOWN       | 0-4: Favorite id for DOWN (see Roller Favorites)              | no        | 0 = no favorite id                                 |
-| enableBluGateway   | true: Active BLU gateway support (install script)             | no        | false                                              ]
+| enableBluGateway   | true: Activate BLU gateway support (install script)           | no        | false                                              |
 
 ### General Notes
 
@@ -415,7 +415,7 @@ Depending on the firmware release the Shelly devices supports 2 different mechan
     Version 1.8 introduces CoIoT version 2, which fixes various issues with version 1 and provides almost all relevant status updates.
 
     If there is no specific reason you should enable CoIoT.
-    Check section Network Settings [here](doc/AdvancedUsers.md) for more information.
+    Check section [Network Settings](doc/AdvancedUsers.md) for more information.
 
     Enable the autoCoIoT option in the binding configuration or eventsCoIoT in the Thing configuration to activate CoIoT.
 
@@ -1329,7 +1329,6 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 
 ### Shelly Plus 3EM-63 (thing-type: shellyplus3em63)
 
-
 | Group  | Channel       | Type     | read-only | Description                                                                       |
 | ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
 | relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
@@ -1415,7 +1414,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 Channels lastEvent and eventCount are only available if input type is set to momentary button
 
-### Shelly Plus HT (thing-type: shellyplusht), Plus HT Gen 3 (thing-type: shellyhtg3)
+### Shelly Plus HT (thing-type: shellyplusht)
 
 | Group   | Channel      | Type     | read-only | Description                                             |
 | ------- | ------------ | -------- | --------- | ------------------------------------------------------- |
