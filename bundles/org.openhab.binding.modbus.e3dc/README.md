@@ -25,7 +25,7 @@ Modbus registers are available for all devices.
 
 The needed Things can be found in the **Modbus Binding** and have to be added manually without Discovery
 
-<img align="right" src="./doc/E3DC_Modbus_Settings.png" alt="E3DC Modbus Settings"/>
+<img align="right" src="doc/E3DC_Modbus_Settings.png" alt="E3DC Modbus Settings"/>
 
 1. Create _Modbus TCP Bridge_ with matching Settings of your E3DC Device
 
