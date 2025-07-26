@@ -62,7 +62,6 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 | status#restricted-reason              | String               | R   | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL)                                                                                                                                                   | false |
 | status#external-reason                | String               | R   | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation | true  |
 
-
 ### Settings Channels
 
 | channel                                           | type   | access mode | description                                                             | advanced |

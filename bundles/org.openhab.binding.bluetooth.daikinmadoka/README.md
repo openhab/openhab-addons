@@ -35,24 +35,24 @@ _Here you should provide information about available channel types, what their m
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| Channel Type ID  | Item Type   | Access Mode   |  Description                  |
-|----------|--------|-----------|-------------------|
-| onOffStatus  | Switch | R/W |Switches On or Off the unit  |
-| indoorTemperature  | Number:Temperature |  R | Indoor temperature from the Thermostat
-| outdoorTemperature  | Number:Temperature | R | Outdoor temperature from the external unit. Not always supported/reported.
-| commCtrlVersion  | String | R | Communication Controller Firmware Version
-| remoteCtrlVersion  | String | R | Remote Controller Firmware Version
-| operationMode  | String | R/W | The operation mode of the AC unit. Currently supported values: HEAT, COOL.
-| fanSpeed  | Number | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the fan speed, whatever the current mode is. Fan speed are from 1 to 5. On BRC1H, the device supports 3 speeds: LOW (1), MEDIUM (2-4), MAX (5). Some BRC1H also support an AUTO (0) mode - but not all of them support it (depending on internal unit).
-| setpoint  | Number:Temperature | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the setpoint, whatever the current mode is.
-| homekitCurrentHeatingCoolingMode  | String | R | This channel is a "virtual channel" to be used with the HomeKit add-on to implement Thermostat thing. Values supported are the HomeKit addon ones: Off, CoolOn, HeatOn, Auto.
-| homekitTargetHeatingCoolingMode  | String | R/W | This channel is a "virtual channel" to be used with the HomeKit add-on to implement Thermostat thing. Values supported are the HomeKit addon ones: Off, CoolOn, HeatOn, Auto.
-| homebridgeMode | String | R/W | This channel is a "virtual channel" to be used with external HomeBridge. Values are: Off, Heating, Cooling, Auto.
-| eyeBrightness | Dimmer | R/W | This channel allows to manipulate the Blue "Eye" indicator Brightness. Values are between 0 and 100.
-| indoorPowerHours | Number:Time | R | This channel indicates the number of hours the indoor unit has been powered (operating or not).
-| indoorOperationHours | Number:Time | R | This channel indicates the number of hours the indoor unit has been operating.
-| indoorFanHours | Number:Time | R | This channel indicates the number of hours the fan has been blowing.
-| cleanFilterIndicator | Switch | R/W | This channel indicates if the filter needs cleaning. The indicator can be reset by writing "OFF" to the channel.
+| Channel Type ID                  | Item Type           | Access | Description                                                                                                                                                               |
+| -------------------------------- | ------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| onOffStatus                      | Switch              | R/W    | Turns the unit on or off.                                                                                                                                                 |
+| indoorTemperature                | Number\:Temperature | R      | Current indoor temperature reported by the thermostat.                                                                                                                    |
+| outdoorTemperature               | Number\:Temperature | R      | Outdoor temperature from the external unit (may not always be supported).                                                                                                 |
+| commCtrlVersion                  | String              | R      | Firmware version of the communication controller.                                                                                                                         |
+| remoteCtrlVersion                | String              | R      | Firmware version of the remote controller.                                                                                                                                |
+| operationMode                    | String              | R/W    | Current operating mode of the AC unit. Supported values: `HEAT`, `COOL`.                                                                                                  |
+| fanSpeed                         | Number              | R/W    | Virtual channel for adjusting fan speed (independent of mode). Values: `1–5`.<br> BRC1H units: `LOW (1)`, `MEDIUM (2–4)`, `MAX (5)`. Some models also support `AUTO (0)`. |
+| setpoint                         | Number\:Temperature | R/W    | Virtual channel for adjusting the temperature setpoint (independent of mode).                                                                                             |
+| homekitCurrentHeatingCoolingMode | String              | R      | Virtual channel for HomeKit integration (Thermostat thing). Supported values: `Off`, `CoolOn`, `HeatOn`, `Auto`.                                                          |
+| homekitTargetHeatingCoolingMode  | String              | R/W    | Virtual channel for HomeKit integration (Thermostat thing). Supported values: `Off`, `CoolOn`, `HeatOn`, `Auto`.                                                          |
+| homebridgeMode                   | String              | R/W    | Virtual channel for HomeBridge integration. Supported values: `Off`, `Heating`, `Cooling`, `Auto`.                                                                        |
+| eyeBrightness                    | Dimmer              | R/W    | Adjusts the brightness of the blue “eye” indicator (`0–100%`).                                                                                                            |
+| indoorPowerHours                 | Number\:Time        | R      | Total hours the indoor unit has been powered (operating or idle).                                                                                                         |
+| indoorOperationHours             | Number\:Time        | R      | Total hours the indoor unit has been actively operating.                                                                                                                  |
+| indoorFanHours                   | Number\:Time        | R      | Total hours the fan has been running.                                                                                                                                     |
+| cleanFilterIndicator             | Switch              | R/W    | Indicates if the filter needs cleaning. Reset by writing `OFF` to this channel.                                                                                           |
 
 ## Full Example
 
