@@ -75,9 +75,9 @@ Alarm Sensor thing represents a generic sensor, relevant sensor channels will be
 
 | Channel Type ID   | Item Type          | Description                                                           |
 |-------------------|--------------------|-----------------------------------------------------------------------|
-| State             | Switch             | Set and read the device state ON or OFF.                             |
-| targetTemperature | Number:Temperature | Shows the current set point of the thrermostat.                      |
-| roomTemperature   | Number:Temperature | Shows the current termprature measured by the thermostat.            |
+| State             | Switch             | Set and read the device state ON or OFF.                              |
+| targetTemperature | Number:Temperature | Shows the current set point of the thrermostat.                       |
+| roomTemperature   | Number:Temperature | Shows the current termprature measured by the thermostat.             |
 | mode              | String             | Set/Read Thermostat mode - Cool, Heat, Fan, Dry, Auto                 |
 | fanLevel          | String             | Set/Read fan leval - Low, Medium, High, Auto                          |
 
