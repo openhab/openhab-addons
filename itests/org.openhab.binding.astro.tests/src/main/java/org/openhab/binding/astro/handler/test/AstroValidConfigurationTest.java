@@ -44,7 +44,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 public class AstroValidConfigurationTest {
 
     private static final String NULL_LONGITUDE = "51.2,null";
-    private final static String NULL_LATITUDE = "null,25.4";
+    private static final String NULL_LATITUDE = "null,25.4";
 
     @Test
     public void testIfGeolocationIsProvidedForASunThing_theThingStatusBecomesONLINE() {
