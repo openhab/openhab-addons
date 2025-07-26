@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.handler.utils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -90,7 +91,7 @@ public class ThingConfiguration {
      *         itself
      *         is {@code null}.
      */
-    public static Object getValue(BaseBridgeHandler bridge, ChannelUID channelUID, String configName) {
+    public static @Nullable Object getValue(BaseBridgeHandler bridge, ChannelUID channelUID, String configName) {
         ThingUID channelTUID = channelUID.getThingUID();
         Thing thingOfChannel = bridge.getThing().getThing(channelTUID);
         if (thingOfChannel == null) {

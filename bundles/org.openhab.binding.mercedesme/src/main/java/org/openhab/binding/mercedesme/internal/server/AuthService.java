@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -104,7 +105,12 @@ public class AuthService {
                 refreshToken();
             }
         }
-        return token.getAccessToken();
+        String accessToken = token.getAccessToken();
+        if (accessToken == null) {
+            logger.warn("Unable to authenticate, no access token available");
+            return "";
+        }
+        return accessToken;
     }
 
     private void refreshToken() {
@@ -133,7 +139,7 @@ public class AuthService {
                     // a new refresh token is delivered optional
                     // if not set in response take old one
                     if (Constants.NOT_SET.equals(tokenResponseJson.refreshToken)) {
-                        tokenResponseJson.refreshToken = token.getRefreshToken();
+                        tokenResponseJson.refreshToken = Objects.requireNonNullElse(token.getRefreshToken(), "");
                     }
                     token = decodeToken(tokenResponseJson);
                     if (tokenIsValid()) {
