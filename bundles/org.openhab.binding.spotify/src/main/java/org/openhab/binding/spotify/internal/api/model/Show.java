@@ -15,29 +15,16 @@ package org.openhab.binding.spotify.internal.api.model;
 import java.util.List;
 
 /**
- * Spotify Api Album data class.
+ * Spotify Api Show data class : a Podcast entry.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Moved to it's own class
+ * @author Laurent Arnal - Initial contribution
  */
-public class Album extends BaseEntry {
+public class Show extends BaseEntry {
 
-    private String albumType;
-    private List<Artist> artists;
     private List<String> availableMarkets;
     private ExternalUrl externalUrls;
     private String href;
     private String type;
-
-    private Tracks tracks;
-
-    public String getAlbumType() {
-        return albumType;
-    }
-
-    public List<Artist> getArtists() {
-        return artists;
-    }
 
     public List<String> getAvailableMarkets() {
         return availableMarkets;
@@ -55,7 +42,4 @@ public class Album extends BaseEntry {
         return type;
     }
 
-    public Tracks getTracks() {
-        return tracks;
-    }
 }
