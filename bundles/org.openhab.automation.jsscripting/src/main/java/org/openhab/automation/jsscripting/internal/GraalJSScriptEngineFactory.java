@@ -54,7 +54,6 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     public static final String SCRIPT_TYPE = "application/javascript";
 
-
     private static final GraalJSEngineFactory FACTORY = new GraalJSEngineFactory();
 
     private static final List<String> SCRIPT_TYPES = createScriptTypes();
