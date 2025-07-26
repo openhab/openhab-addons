@@ -1,95 +1,126 @@
-# roborock Binding
+# Roborock Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+This binding is used to control Roborock robot vacuum cleaner products implementing the Roborock protocol.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The following things types are available:
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+| ThingType        | Description                                                                                                              |
+|------------------|--------------------------------------------------------------------------------------------------------------------------|
+| roborock:vacuum  | For RoboRock Robot Vacuum products                                                                                       |
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+After (manually) adding a Roborock Account bridge, registered vehicles will be auto discovered.
 
-## Binding Configuration
+## `account` Bridge Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+Account configuration is necessary. 
+The easiest way to do this is from the UI. 
+Just add a new thing, select the Roborock binding, then Roborock Account Binding Thing, and enter the email and password for your Roborock account.
 
-```
-# Configuration for the roborock Binding
-#
-# Default secret key for the pairing of the roborock Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+| Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
+|-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
+| email           | N/A           | Yes      | No       | Email address for your Roborock account                                              |
+| password        | N/A           | Yes      | No       | Password for your Roborock account                                                   |
+| refresh         | 5             | No       | Yes      | The frequency with which to refresh information from Roborock specified in minutes   |
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
+## `vacuum` Thing Configuration
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
-
-## Thing Configuration
-
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-### `sample` Thing Configuration
-
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+These should be created via discovery as the thingID is set to the ID discovered by the API.
+| Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
+|-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
+| refresh         | 5             | No       | Yes      | The frequency with which to refresh information from Roborock specified in minutes   |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| String  | network#ssid                      | Network SSID               |
+| String  | network#bssid                     | Network BSSID              |
+| Number  | network#rssi                      | Network RSSI               |
+| String  | actions#rpc                       | send commands via cloud.   |
+| Number  | status#segment_status             | Segment Status             |
+| Number  | status#map_status                 | Map Box Status             |
+| Number  | status#led_status                 | Led Box Status             |
+| String  | info#carpet_mode                  | Carpet Mode details        |
+| String  | info#fw_features                  | Firmware Features          |
+| String  | info#room_mapping                 | Room Mapping details       |
+| String  | info#multi_maps_list              | Maps Listing details       |
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Switch  | status#water_box_status           | Water Box Status           |
+| Switch  | status#lock_status                | Lock Status                |
+| Number  | status#water_box_mode             | Water Box Mode             |
+| Number  | status#mop_mode                   | Mop Mode                   |
+| Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
+| Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
+| Switch  | status#is_locating                | Robot is locating          |
+| Number  | actions#segment                   | Room Clean  (enter room #) |
+| Switch  | actions#collect_dust              | Start collecting dust      |
+| Switch  | actions#clean_mop_start           | Start mop wash             |
+| Switch  | actions#clean_mop_stop            | Stop mop wash              |
+| Number  | status#mop_drying_time            | Mop drying Time            |
+| Switch  | status#is_mop_drying              | Mop cleaning active        |
+| Number  | status#dock_state_id              | Dock status id             |
+| String  | status#dock_state                 | Dock status message        |
+
+There are several advanced channels, which may be useful in rules (e.g. for individual room cleaning etc)
+In case your vacuum does not support one of these commands, it will show "unsupported_method" for string channels or no value for numeric channels.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
-
-### Thing Configuration
+### `demo.things` Example
 
 ```java
-Example thing configuration goes here.
+Bridge roborock:account:account [ email="xxxx", password="xxxx" ] {
+    roborock:vacuum:QrevoS [ refresh=5 ]
+}
 ```
 
-### Item Configuration
-
+### `example.items` Example
 ```java
-Example item configuration goes here.
+Group  gVac     "Roborock Robot Vacuum"      <fan>
+Group  gVacStat "Status Details"           <status> (gVac)
+Group  gVacCons "Consumables Usage"        <line-increase> (gVac)
+Group  gVacDND  "Do Not Disturb Settings"  <moon> (gVac)
+Group  gVacHist "Cleaning History"         <calendar> (gVac)
+Group  gVacLast "Last Cleaning Details"       <calendar> (gVac)
+
+String actionControl  "Vacuum Control"          {channel="roborock:vacuum:034F0E45:actions#control" }
+String actionCommand  "Vacuum Command"          {channel="roborock:vacuum:034F0E45:actions#commands" }
+
+Number statusBat    "Battery Level [%1.0f%%]" <battery>   (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#battery" }
+Number statusArea    "Cleaned Area [%1.0fm²]" <zoom>   (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean_area" }
+Number statusTime    "Cleaning Time [%1.0f']" <clock>   (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean_time" }
+String  statusError    "Error [%s]"  <error>  (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#error_code" }
+Number statusFanPow    "Fan Power [%1.0f%%]"  <signal>   (gVacStat) {channel="roborock:vacuum:034F0E45:status#fan_power" }
+Number statusClean    "In Cleaning Status [%1.0f]"   <switch>  (gVacStat) {channel="roborock:vacuum:034F0E45:status#in_cleaning" }
+Switch statusDND    "DND Activated"    (gVacStat) {channel="roborock:vacuum:034F0E45:status#dnd_enabled" }
+Number statusStatus    "Status [%1.0f]"  <status>  (gVacStat) {channel="roborock:vacuum:034F0E45:status#state"}
+Switch isLocating    "Locating"    (gVacStat) {channel="roborock:vacuum:034F0E45:status#is_locating" }
+
+Number consumableMain    "Main Brush [%1.0f]"    (gVacCons) {channel="roborock:vacuum:034F0E45:consumables#main_brush_time"}
+Number consumableSide    "Side Brush [%1.0f]"    (gVacCons) {channel="roborock:vacuum:034F0E45:consumables#side_brush_time"}
+Number consumableFilter    "Filter Time[%1.0f]"    (gVacCons) {channel="roborock:vacuum:034F0E45:consumables#filter_time" }
+Number consumableSensor    "Sensor [%1.0f]"    (gVacCons) {channel="roborock:vacuum:034F0E45:consumables#sensor_dirt_time"}
+
+Switch dndFunction   "DND Function" <moon>   (gVacDND) {channel="roborock:vacuum:034F0E45:dnd#dnd_function"}
+String dndStart   "DND Start Time [%s]" <clock>   (gVacDND) {channel="roborock:vacuum:034F0E45:dnd#dnd_start"}
+String dndEnd   "DND End Time [%s]"   <clock-on>  (gVacDND) {channel="roborock:vacuum:034F0E45:dnd#dnd_end"}
+
+Number historyArea    "Total Cleaned Area [%1.0fm²]" <zoom>    (gVacHist) {channel="roborock:vacuum:034F0E45:history#total_clean_area"}
+String historyTime    "Total Clean Time [%s]"   <clock>     (gVacHist) {channel="roborock:vacuum:034F0E45:history#total_clean_time"}
+Number historyCount    "Total # Cleanings [%1.0f]"  <office>  (gVacHist) {channel="roborock:vacuum:034F0E45:history#total_clean_count"}
+
+String lastStart   "Last Cleaning Start time [%s]" <clock> (gVacLast) {channel="roborock:vacuum:034F0E45:cleaning#last_clean_start_time"}
+String lastEnd     "Last Cleaning End time [%s]" <clock> (gVacLast) {channel="roborock:vacuum:034F0E45:cleaning#last_clean_end_time"}
+Number lastArea    "Last Cleaned Area [%1.0fm²]" <zoom>    (gVacLast) {channel="roborock:vacuum:034F0E45:cleaning#last_clean_area"}
+Number lastTime    "Last Clean Time [%1.0f']"   <clock>     (gVacLast) {channel="roborock:vacuum:034F0E45:cleaning#last_clean_duration"}
+Number lastError    "Error [%s]"  <error>  (gVacLast) {channel="roborock:vacuum:034F0E45:cleaning#last_clean_error" }
+Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="roborock:vacuum:034F0E45:cleaning#last_clean_finish" }
 ```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
