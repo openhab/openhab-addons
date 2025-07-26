@@ -16,4 +16,3 @@ This is useful when latencies in the system limit prevent very small movements a
 ```java
 Rollershutter <itemName> { channel="<channelUID>"[profile="transform:ROLLERSHUTTERPOSITION", uptime=<uptime>, downtime=<downtime>, precision=<minimun percent movement>]}
 ```
-

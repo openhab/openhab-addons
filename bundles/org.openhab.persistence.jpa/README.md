@@ -33,7 +33,7 @@ Other database drivers can be added by expanding the openHAB classpath.
 
 Use the following classpath setup in start.sh / start_debug.sh of openHAB:
 
-```
+```bash
 cp=$(echo lib/*.jar | tr ' ' ':'):$(find $eclipsehome -name "org.eclipse.equinox.launcher_*.jar" | sort | tail -1);
 ```
 
@@ -42,4 +42,3 @@ This will add all .jar files in a folder "lib" in the root of openhab.
 All databases that are supported by JPA can be added.
 
 Define `driver` and `url` according to the database definitions.
-

@@ -8,8 +8,6 @@ Transforms an [XML](https://www.w3.org/XML/) input using an [XPath](https://www.
 
 Given a retrieved XML
 
-**Input XML**
-
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <PTZStatus version="2.0" >
@@ -23,15 +21,13 @@ Given a retrieved XML
 
 The XPath `/PTZStatus/AbsoluteHigh/azimuth/text()` returns the document
 
-```
+```text
 450
 ```
 
 ## Advanced Example
 
 Given a retrieved XML (e.g. from an HIK Vision device with the namespace `xmlns="http://www.hikvision.com/ver20/XMLSchema"`):
-
-**Input XML**
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -58,7 +54,7 @@ The XPath
 
 returns
 
-```
+```xml
 <azimuth>450</azimuth>
 ```
 

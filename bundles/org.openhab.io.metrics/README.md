@@ -31,7 +31,7 @@ The following configuration parameters can be set:
 
 | Config param         | Description                                                                                               | Default value |
 |----------------------|-----------------------------------------------------------------------------------------------------------|---------------|
-| influxMetricsEnabled | Enable the Influx (www.influxdata.com) metrics. Further configuration of the InfluxDB instance necessary. | false         |
+| influxMetricsEnabled | Enable the Influx (<www.influxdata.com>) metrics. Further configuration of the InfluxDB instance necessary. | false         |
 | jmxMetricsEnabled    | Enable the Java Management Extensions (JMX) metrics.                                                      | false         |
 
 Refer to the corresponding monitoring system sections for monitoring system specific configuration parameters.
@@ -72,7 +72,7 @@ The InfluxDB exporter service will start as soon as the _influxMetricsEnabled_ c
 
 | Config param                  | Description                                                                       | Default value         |
 |-------------------------------|-----------------------------------------------------------------------------------|-----------------------|
-| influxURL                     | The URL of the InfluxDB instance. Defaults to http://localhost:8086               | http://localhost:8086 |
+| influxURL                     | The URL of the InfluxDB instance. Defaults to <http://localhost:8086>               | `http://localhost:8086` |
 | influxDB                      | The name of the database to use. Defaults to "openhab".                           | openHAB               |
 | influxUsername                | InfluxDB user name                                                                | n/a                   |
 | influxPassword                | The InfluxDB password (no default).                                               | n/a                   |
