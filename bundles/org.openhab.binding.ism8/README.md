@@ -291,4 +291,4 @@ NULL=Undefiniert
 ```
 
 _Result_
-![Sitemap Example](./doc/Sitemap-Example.png)
+![Sitemap Example](doc/Sitemap-Example.png)
