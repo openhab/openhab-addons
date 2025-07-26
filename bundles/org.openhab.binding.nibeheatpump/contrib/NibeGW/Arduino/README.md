@@ -126,7 +126,7 @@ You can connect to NibeGW with any telnet client.
 You can also set some options via telnet.
 With 'h' you get a menu with all available options:
 
-```c
+```shell
 Arduino NibeGW
 Commands:
  E -> exit
