@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.discovery.AutomowerDiscoveryService;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
@@ -59,7 +58,7 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     protected final @NonNullByDefault({}) HttpClient httpClient;
     private @Nullable ServiceRegistration<?> automowerDiscoveryServiceRegistration;
     private final TimeZoneProvider timeZoneProvider;
-    private final WebSocketClient webSocketClient;
+    private final WebSocketFactory webSocketFactory;
 
     @Activate
     public AutomowerHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory,
@@ -67,7 +66,7 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
-        this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
+        this.webSocketFactory = webSocketFactory;
     }
 
     @Override
@@ -79,7 +78,7 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (AutomowerBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             AutomowerBridgeHandler handler = new AutomowerBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
-                    webSocketClient);
+                    webSocketFactory.getCommonWebSocketClient());
             registerAutomowerDiscoveryService(handler);
             return handler;
         }

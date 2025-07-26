@@ -117,9 +117,9 @@ public class AutomowerHandler extends BaseThingHandler {
 
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH == command) {
-            // not implemented as it would causes >100 channel updates in a row during setup (performance)
-        } else {
+        // REFRESH is not implemented as it would causes >100 channel updates in a row during setup (performance, API
+        // rate limit)
+        if (RefreshType.REFRESH != command) {
             String groupId = channelUID.getGroupId();
             String channelId = channelUID.getIdWithoutGroup();
             if (groupId != null) {
@@ -963,248 +963,266 @@ public class AutomowerHandler extends BaseThingHandler {
              */
 
             /* Update Status channels */
-            updateState(CHANNEL_STATUS_NAME, new StringType(mower.getAttributes().getSystem().getName()));
-            updateState(CHANNEL_STATUS_MODE, new StringType(mower.getAttributes().getMower().getMode().name()));
-            updateState(CHANNEL_STATUS_ACTIVITY, new StringType(mower.getAttributes().getMower().getActivity().name()));
-            updateState(CHANNEL_STATUS_INACTIVE_REASON,
-                    new StringType(mower.getAttributes().getMower().getInactiveReason().name()));
-
-            if (mower.getAttributes().getMower().getState() != State.RESTRICTED) {
-                updateState(CHANNEL_STATUS_STATE, new StringType(mower.getAttributes().getMower().getState().name()));
-            } else {
-                updateState(CHANNEL_STATUS_STATE,
-                        new StringType(restrictedState(mower.getAttributes().getPlanner().getRestrictedReason())));
-            }
-
-            if (capabilities.hasWorkAreas()) {
-                Long workAreaId = mower.getAttributes().getMower().getWorkAreaId();
-                if (workAreaId != null) {
-                    updateState(CHANNEL_STATUS_WORK_AREA_ID, new DecimalType(workAreaId));
-                    WorkArea workArea = getWorkAreaById(mower, workAreaId);
-                    if (workArea != null && workArea.getName() != null) {
-                        if (workAreaId.equals(0L) && workArea.getName().isBlank()) {
-                            updateState(CHANNEL_STATUS_WORK_AREA, new StringType("main area"));
-                        } else {
-                            updateState(CHANNEL_STATUS_WORK_AREA, new StringType(workArea.getName()));
-                        }
-                    } else {
-                        updateState(CHANNEL_STATUS_WORK_AREA, UnDefType.NULL);
-                    }
-                } else {
-                    updateState(CHANNEL_STATUS_WORK_AREA_ID, UnDefType.NULL);
-                }
-            }
-
-            updateState(CHANNEL_STATUS_LAST_UPDATE, new DateTimeType(
-                    toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp(), ZoneId.of("UTC"))));
-            ZonedDateTime lastQuery = this.lastQueryTime;
-            if (lastQuery != null) {
-                updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, new DateTimeType(lastQuery));
-            } else {
-                updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, UnDefType.NULL);
-            }
-            updateState(CHANNEL_STATUS_BATTERY,
-                    new QuantityType<>(mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
-
-            int errorCode = mower.getAttributes().getMower().getErrorCode();
-            updateState(CHANNEL_STATUS_ERROR_CODE, new DecimalType(errorCode));
-            String errorMessage = getErrorMessage(errorCode);
-            if (errorMessage != null) {
-                updateState(CHANNEL_STATUS_ERROR_MESSAGE, new StringType(errorMessage));
-            } else {
-                updateState(CHANNEL_STATUS_ERROR_MESSAGE, UnDefType.NULL);
-            }
-
-            long errorCodeTimestamp = mower.getAttributes().getMower().getErrorCodeTimestamp();
-            if (errorCodeTimestamp == 0L) {
-                updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, UnDefType.NULL);
-            } else {
-                updateState(CHANNEL_STATUS_ERROR_TIMESTAMP,
-                        new DateTimeType(toZonedDateTime(errorCodeTimestamp, mowerZoneId)));
-            }
-
-            if (capabilities.canConfirmError()) {
-                updateState(CHANNEL_STATUS_ERROR_CONFIRMABLE,
-                        OnOffType.from(mower.getAttributes().getMower().getIsErrorConfirmable()));
-            }
-
-            long nextStartTimestamp = mower.getAttributes().getPlanner().getNextStartTimestamp();
-            // If next start timestamp is 0 it means the mower should start now
-            if (nextStartTimestamp == 0L) {
-                updateState(CHANNEL_STATUS_NEXT_START, UnDefType.NULL);
-            } else {
-                updateState(CHANNEL_STATUS_NEXT_START,
-                        new DateTimeType(toZonedDateTime(nextStartTimestamp, mowerZoneId)));
-            }
-            updateState(CHANNEL_STATUS_OVERRIDE_ACTION,
-                    new StringType(mower.getAttributes().getPlanner().getOverride().getAction().name()));
-            RestrictedReason restrictedReason = mower.getAttributes().getPlanner().getRestrictedReason();
-            if (restrictedReason != null) {
-                updateState(CHANNEL_STATUS_RESTRICTED_REASON, new StringType(restrictedReason.name()));
-            } else {
-                updateState(CHANNEL_STATUS_RESTRICTED_REASON, UnDefType.NULL);
-            }
-
-            updateState(CHANNEL_STATUS_EXTERNAL_REASON,
-                    new DecimalType(mower.getAttributes().getPlanner().getExternalReason()));
-
-            updateState(CHANNEL_SETTING_CUTTING_HEIGHT,
-                    new DecimalType(mower.getAttributes().getSettings().getCuttingHeight()));
-
-            if (capabilities.hasPosition()) {
-                updateState(CHANNEL_STATUS_POSITION,
-                        new PointType(new DecimalType(mower.getAttributes().getLastPosition().getLatitude()),
-                                new DecimalType(mower.getAttributes().getLastPosition().getLongitude())));
-            }
-
+            updateStatusChannels(mower, capabilities);
             /* Update Settings channels */
-            if (capabilities.hasHeadlights()) {
-                Headlight headlight = mower.getAttributes().getSettings().getHeadlight();
-                if (headlight != null) {
-                    updateState(CHANNEL_SETTING_HEADLIGHT_MODE, new StringType(headlight.getHeadlightMode().name()));
-                } else {
-                    updateState(CHANNEL_SETTING_HEADLIGHT_MODE, UnDefType.NULL);
-                }
-            }
-
+            updateSettingChannels(mower, capabilities);
             /* Update Statistics channels */
-            updateState(CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME,
-                    new QuantityType<>(mower.getAttributes().getStatistics().getCuttingBladeUsageTime(), Units.SECOND));
-            updateState(CHANNEL_STATISTIC_DOWN_TIME,
-                    new QuantityType<>(mower.getAttributes().getStatistics().getDownTime(), Units.SECOND));
-            updateState(CHANNEL_STATISTIC_NUMBER_OF_CHARGING_CYCLES,
-                    new DecimalType(mower.getAttributes().getStatistics().getNumberOfChargingCycles()));
-            updateState(CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS,
-                    new DecimalType(mower.getAttributes().getStatistics().getNumberOfCollisions()));
-            updateState(CHANNEL_STATISTIC_TOTAL_CHARGING_TIME,
-                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalChargingTime(), Units.SECOND));
-            updateState(CHANNEL_STATISTIC_TOTAL_CUTTING_TIME,
-                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalCuttingTime(), Units.SECOND));
-            updateState(CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE,
-                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalDriveDistance(), SIUnits.METRE));
-            updateState(CHANNEL_STATISTIC_TOTAL_RUNNING_TIME,
-                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalRunningTime(), Units.SECOND));
-            updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME,
-                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalSearchingTime(), Units.SECOND));
-
-            if (mower.getAttributes().getStatistics().getTotalRunningTime() != 0) {
-                updateState(CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT,
-                        new QuantityType<>(
-                                (float) mower.getAttributes().getStatistics().getTotalCuttingTime()
-                                        / (float) mower.getAttributes().getStatistics().getTotalRunningTime() * 100.0,
-                                Units.PERCENT));
-                updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT,
-                        new QuantityType<>(
-                                (float) mower.getAttributes().getStatistics().getTotalSearchingTime()
-                                        / (float) mower.getAttributes().getStatistics().getTotalRunningTime() * 100.0,
-                                Units.PERCENT));
-            } else {
-                updateState(CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT, new QuantityType<>(0, Units.PERCENT));
-                updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT, new QuantityType<>(0, Units.PERCENT));
-            }
-            updateState(CHANNEL_STATISTIC_UP_TIME,
-                    new QuantityType<>(mower.getAttributes().getStatistics().getUpTime(), Units.SECOND));
-
+            updateStatisticChannels(mower);
             /* Update CalendarTasks channels */
-            i = 0;
-            for (; i < calendarTasks.size(); i++) {
-                int j = 0;
-                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                        new QuantityType<>(calendarTasks.get(i).getStart(), Units.MINUTE));
-                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                        new QuantityType<>(calendarTasks.get(i).getDuration(), Units.MINUTE));
-                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                        OnOffType.from(calendarTasks.get(i).getMonday()));
-                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                        OnOffType.from(calendarTasks.get(i).getTuesday()));
-                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                        OnOffType.from(calendarTasks.get(i).getWednesday()));
-                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                        OnOffType.from(calendarTasks.get(i).getThursday()));
-                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                        OnOffType.from(calendarTasks.get(i).getFriday()));
-                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                        OnOffType.from(calendarTasks.get(i).getSaturday()));
-                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                        OnOffType.from(calendarTasks.get(i).getSunday()));
-                if (capabilities.hasWorkAreas()) {
-                    updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                            new DecimalType(calendarTasks.get(i).getWorkAreaId()));
-                    WorkArea workArea = getWorkAreaById(mower, calendarTasks.get(i).getWorkAreaId());
-                    if (workArea != null) {
-                        if (calendarTasks.get(i).getWorkAreaId().equals(0L) && workArea.getName().isBlank()) {
-                            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                                    new StringType("main area"));
-                        } else {
-                            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
-                                    new StringType(workArea.getName()));
-                        }
-                    } else {
-                        updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++), UnDefType.NULL);
-                    }
-                }
-            }
-
+            updateCalendarTaskChannels(mower, capabilities, calendarTasks);
             /* Update StayOutZones channels */
-            i = 0;
-            if (capabilities.hasStayOutZones()) {
-                StayOutZones stayOutZones = mower.getAttributes().getStayOutZones();
-                if (stayOutZones != null) {
-                    updateState(CHANNEL_STAYOUTZONE_DIRTY, OnOffType.from(stayOutZones.isDirty()));
+            updateStayOutZonesChannels(mower, capabilities);
+            /* Update WorkAreas channels */
+            updateWorkAreasChannels(mower, capabilities);
+        }
+    }
 
-                    List<StayOutZone> stayOutZoneList = mower.getAttributes().getStayOutZones().getZones();
-                    if (stayOutZoneList != null) {
-                        for (; i < stayOutZoneList.size(); i++) {
-                            int j = 0;
-                            updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
-                                    new StringType(stayOutZoneList.get(i).getId()));
-                            updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
-                                    new StringType(stayOutZoneList.get(i).getName()));
-                            updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
-                                    OnOffType.from(stayOutZoneList.get(i).isEnabled()));
-                        }
+    private void updateStatusChannels(Mower mower, Capabilities capabilities) {
+        updateState(CHANNEL_STATUS_NAME, new StringType(mower.getAttributes().getSystem().getName()));
+        updateState(CHANNEL_STATUS_MODE, new StringType(mower.getAttributes().getMower().getMode().name()));
+        updateState(CHANNEL_STATUS_ACTIVITY, new StringType(mower.getAttributes().getMower().getActivity().name()));
+        updateState(CHANNEL_STATUS_INACTIVE_REASON,
+                new StringType(mower.getAttributes().getMower().getInactiveReason().name()));
+
+        if (mower.getAttributes().getMower().getState() != State.RESTRICTED) {
+            updateState(CHANNEL_STATUS_STATE, new StringType(mower.getAttributes().getMower().getState().name()));
+        } else {
+            updateState(CHANNEL_STATUS_STATE,
+                    new StringType(restrictedState(mower.getAttributes().getPlanner().getRestrictedReason())));
+        }
+
+        if (capabilities.hasWorkAreas()) {
+            Long workAreaId = mower.getAttributes().getMower().getWorkAreaId();
+            if (workAreaId != null) {
+                updateState(CHANNEL_STATUS_WORK_AREA_ID, new DecimalType(workAreaId));
+                WorkArea workArea = getWorkAreaById(mower, workAreaId);
+                if (workArea != null && workArea.getName() != null) {
+                    if (workAreaId.equals(0L) && workArea.getName().isBlank()) {
+                        updateState(CHANNEL_STATUS_WORK_AREA, new StringType("main area"));
+                    } else {
+                        updateState(CHANNEL_STATUS_WORK_AREA, new StringType(workArea.getName()));
+                    }
+                } else {
+                    updateState(CHANNEL_STATUS_WORK_AREA, UnDefType.NULL);
+                }
+            } else {
+                updateState(CHANNEL_STATUS_WORK_AREA_ID, UnDefType.NULL);
+            }
+        }
+
+        updateState(CHANNEL_STATUS_LAST_UPDATE, new DateTimeType(
+                toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp(), ZoneId.of("UTC"))));
+        ZonedDateTime lastQuery = this.lastQueryTime;
+        if (lastQuery != null) {
+            updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, new DateTimeType(lastQuery));
+        } else {
+            updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, UnDefType.NULL);
+        }
+        updateState(CHANNEL_STATUS_BATTERY,
+                new QuantityType<>(mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
+
+        int errorCode = mower.getAttributes().getMower().getErrorCode();
+        updateState(CHANNEL_STATUS_ERROR_CODE, new DecimalType(errorCode));
+        String errorMessage = getErrorMessage(errorCode);
+        if (errorMessage != null) {
+            updateState(CHANNEL_STATUS_ERROR_MESSAGE, new StringType(errorMessage));
+        } else {
+            updateState(CHANNEL_STATUS_ERROR_MESSAGE, UnDefType.NULL);
+        }
+
+        long errorCodeTimestamp = mower.getAttributes().getMower().getErrorCodeTimestamp();
+        if (errorCodeTimestamp == 0L) {
+            updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, UnDefType.NULL);
+        } else {
+            updateState(CHANNEL_STATUS_ERROR_TIMESTAMP,
+                    new DateTimeType(toZonedDateTime(errorCodeTimestamp, mowerZoneId)));
+        }
+
+        if (capabilities.canConfirmError()) {
+            updateState(CHANNEL_STATUS_ERROR_CONFIRMABLE,
+                    OnOffType.from(mower.getAttributes().getMower().getIsErrorConfirmable()));
+        }
+
+        long nextStartTimestamp = mower.getAttributes().getPlanner().getNextStartTimestamp();
+        // If next start timestamp is 0 it means the mower should start now
+        if (nextStartTimestamp == 0L) {
+            updateState(CHANNEL_STATUS_NEXT_START, UnDefType.NULL);
+        } else {
+            updateState(CHANNEL_STATUS_NEXT_START, new DateTimeType(toZonedDateTime(nextStartTimestamp, mowerZoneId)));
+        }
+        updateState(CHANNEL_STATUS_OVERRIDE_ACTION,
+                new StringType(mower.getAttributes().getPlanner().getOverride().getAction().name()));
+        RestrictedReason restrictedReason = mower.getAttributes().getPlanner().getRestrictedReason();
+        if (restrictedReason != null) {
+            updateState(CHANNEL_STATUS_RESTRICTED_REASON, new StringType(restrictedReason.name()));
+        } else {
+            updateState(CHANNEL_STATUS_RESTRICTED_REASON, UnDefType.NULL);
+        }
+
+        updateState(CHANNEL_STATUS_EXTERNAL_REASON,
+                new DecimalType(mower.getAttributes().getPlanner().getExternalReason()));
+
+        updateState(CHANNEL_SETTING_CUTTING_HEIGHT,
+                new DecimalType(mower.getAttributes().getSettings().getCuttingHeight()));
+
+        if (capabilities.hasPosition()) {
+            updateState(CHANNEL_STATUS_POSITION,
+                    new PointType(new DecimalType(mower.getAttributes().getLastPosition().getLatitude()),
+                            new DecimalType(mower.getAttributes().getLastPosition().getLongitude())));
+        }
+    }
+
+    private void updateSettingChannels(Mower mower, Capabilities capabilities) {
+        if (capabilities.hasHeadlights()) {
+            Headlight headlight = mower.getAttributes().getSettings().getHeadlight();
+            if (headlight != null) {
+                updateState(CHANNEL_SETTING_HEADLIGHT_MODE, new StringType(headlight.getHeadlightMode().name()));
+            } else {
+                updateState(CHANNEL_SETTING_HEADLIGHT_MODE, UnDefType.NULL);
+            }
+        }
+    }
+
+    private void updateStatisticChannels(Mower mower) {
+        updateState(CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME,
+                new QuantityType<>(mower.getAttributes().getStatistics().getCuttingBladeUsageTime(), Units.SECOND));
+        updateState(CHANNEL_STATISTIC_DOWN_TIME,
+                new QuantityType<>(mower.getAttributes().getStatistics().getDownTime(), Units.SECOND));
+        updateState(CHANNEL_STATISTIC_NUMBER_OF_CHARGING_CYCLES,
+                new DecimalType(mower.getAttributes().getStatistics().getNumberOfChargingCycles()));
+        updateState(CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS,
+                new DecimalType(mower.getAttributes().getStatistics().getNumberOfCollisions()));
+        updateState(CHANNEL_STATISTIC_TOTAL_CHARGING_TIME,
+                new QuantityType<>(mower.getAttributes().getStatistics().getTotalChargingTime(), Units.SECOND));
+        updateState(CHANNEL_STATISTIC_TOTAL_CUTTING_TIME,
+                new QuantityType<>(mower.getAttributes().getStatistics().getTotalCuttingTime(), Units.SECOND));
+        updateState(CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE,
+                new QuantityType<>(mower.getAttributes().getStatistics().getTotalDriveDistance(), SIUnits.METRE));
+        updateState(CHANNEL_STATISTIC_TOTAL_RUNNING_TIME,
+                new QuantityType<>(mower.getAttributes().getStatistics().getTotalRunningTime(), Units.SECOND));
+        updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME,
+                new QuantityType<>(mower.getAttributes().getStatistics().getTotalSearchingTime(), Units.SECOND));
+
+        if (mower.getAttributes().getStatistics().getTotalRunningTime() != 0) {
+            updateState(CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT,
+                    new QuantityType<>(
+                            (float) mower.getAttributes().getStatistics().getTotalCuttingTime()
+                                    / (float) mower.getAttributes().getStatistics().getTotalRunningTime() * 100.0,
+                            Units.PERCENT));
+            updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT,
+                    new QuantityType<>(
+                            (float) mower.getAttributes().getStatistics().getTotalSearchingTime()
+                                    / (float) mower.getAttributes().getStatistics().getTotalRunningTime() * 100.0,
+                            Units.PERCENT));
+        } else {
+            updateState(CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT, new QuantityType<>(0, Units.PERCENT));
+            updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT, new QuantityType<>(0, Units.PERCENT));
+        }
+        updateState(CHANNEL_STATISTIC_UP_TIME,
+                new QuantityType<>(mower.getAttributes().getStatistics().getUpTime(), Units.SECOND));
+    }
+
+    private void updateCalendarTaskChannels(Mower mower, Capabilities capabilities, List<CalendarTask> calendarTasks) {
+        int i = 0;
+        for (; i < calendarTasks.size(); i++) {
+            int j = 0;
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    new QuantityType<>(calendarTasks.get(i).getStart(), Units.MINUTE));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    new QuantityType<>(calendarTasks.get(i).getDuration(), Units.MINUTE));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getMonday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getTuesday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getWednesday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getThursday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getFriday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getSaturday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getSunday()));
+            if (capabilities.hasWorkAreas()) {
+                updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                        new DecimalType(calendarTasks.get(i).getWorkAreaId()));
+                WorkArea workArea = getWorkAreaById(mower, calendarTasks.get(i).getWorkAreaId());
+                if (workArea != null) {
+                    if (calendarTasks.get(i).getWorkAreaId().equals(0L) && workArea.getName().isBlank()) {
+                        updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                                new StringType("main area"));
+                    } else {
+                        updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                                new StringType(workArea.getName()));
+                    }
+                } else {
+                    updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++), UnDefType.NULL);
+                }
+            }
+        }
+    }
+
+    private void updateStayOutZonesChannels(Mower mower, Capabilities capabilities) {
+        int i = 0;
+        if (capabilities.hasStayOutZones()) {
+            StayOutZones stayOutZones = mower.getAttributes().getStayOutZones();
+            if (stayOutZones != null) {
+                updateState(CHANNEL_STAYOUTZONE_DIRTY, OnOffType.from(stayOutZones.isDirty()));
+
+                List<StayOutZone> stayOutZoneList = mower.getAttributes().getStayOutZones().getZones();
+                if (stayOutZoneList != null) {
+                    for (; i < stayOutZoneList.size(); i++) {
+                        int j = 0;
+                        updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
+                                new StringType(stayOutZoneList.get(i).getId()));
+                        updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
+                                new StringType(stayOutZoneList.get(i).getName()));
+                        updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
+                                OnOffType.from(stayOutZoneList.get(i).isEnabled()));
                     }
                 }
             }
+        }
+    }
 
-            /* Update WorkAreas channels */
-            i = 0;
-            if (capabilities.hasWorkAreas()) {
-                List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
-                if (workAreas != null) {
-                    for (; i < workAreas.size(); i++) {
-                        int j = 0;
-                        WorkArea workArea = workAreas.get(i);
-                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                new DecimalType(workArea.getWorkAreaId()));
+    private void updateWorkAreasChannels(Mower mower, Capabilities capabilities) {
+        int i = 0;
+        if (capabilities.hasWorkAreas()) {
+            List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
+            if (workAreas != null) {
+                for (; i < workAreas.size(); i++) {
+                    int j = 0;
+                    WorkArea workArea = workAreas.get(i);
+                    updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
+                            new DecimalType(workArea.getWorkAreaId()));
 
-                        if (workArea.getWorkAreaId() == 0L && workArea.getName().isBlank()) {
-                            updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                    new StringType("main area"));
-                        } else {
-                            updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                    new StringType(workArea.getName()));
-                        }
+                    if (workArea.getWorkAreaId() == 0L && workArea.getName().isBlank()) {
                         updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                new QuantityType<>(workArea.getCuttingHeight(), Units.PERCENT));
+                                new StringType("main area"));
+                    } else {
                         updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                OnOffType.from(workArea.isEnabled()));
-                        if (workArea.getProgress() != null) {
-                            updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                    new QuantityType<>(workArea.getProgress(), Units.PERCENT));
-                        } else {
-                            updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), UnDefType.NULL);
-                        }
+                                new StringType(workArea.getName()));
+                    }
+                    updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
+                            new QuantityType<>(workArea.getCuttingHeight(), Units.PERCENT));
+                    updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
+                            OnOffType.from(workArea.isEnabled()));
+                    if (workArea.getProgress() != null) {
+                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
+                                new QuantityType<>(workArea.getProgress(), Units.PERCENT));
+                    } else {
+                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), UnDefType.NULL);
+                    }
 
-                        // lastTimeCompleted is in seconds, convert it to milliseconds
-                        Long lastTimeCompleted = workArea.getLastTimeCompleted();
-                        // If lastTimeCompleted is 0 it means the work area has never been completed
-                        if (lastTimeCompleted != null && lastTimeCompleted != 0L) {
-                            updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), new DateTimeType(
-                                    toZonedDateTime(TimeUnit.SECONDS.toMillis(lastTimeCompleted), mowerZoneId)));
-                        } else {
-                            updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), UnDefType.NULL);
-                        }
+                    // lastTimeCompleted is in seconds, convert it to milliseconds
+                    Long lastTimeCompleted = workArea.getLastTimeCompleted();
+                    // If lastTimeCompleted is 0 it means the work area has never been completed
+                    if (lastTimeCompleted != null && lastTimeCompleted != 0L) {
+                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), new DateTimeType(
+                                toZonedDateTime(TimeUnit.SECONDS.toMillis(lastTimeCompleted), mowerZoneId)));
+                    } else {
+                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), UnDefType.NULL);
                     }
                 }
             }
