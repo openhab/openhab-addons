@@ -73,9 +73,10 @@ See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of fu
 
 ### UI Event Object
 
+**NOTE**: Note that `event` object is different in UI based rules and file based rules! This section is only valid for UI based rules. If you use file based rules, refer to [file based rules event object documentation](#event-object).
+
 Note that `event` object is only available when the UI based rule was triggered by an event and is not called from another rule!
 Trying to access `event` in this case does not work and will lead to an error. Use `this.event` instead (will be `undefined` when it does not exist).
-
 
 When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
 When a rule is triggered, there is additional context available for the action in a variable called `event`.
