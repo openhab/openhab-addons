@@ -356,7 +356,7 @@ slots:
 
 ## Getting Tempo Calendar Information
 
-### Temp Thing Channels
+### Tempo Thing Channels
 
 - The tempo group will give information about the tempo day color link to a tempo contract
 
