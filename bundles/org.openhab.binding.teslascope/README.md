@@ -67,7 +67,7 @@ Additionally, these advanced channels are available (not all are available on al
 | charge                      | Switch                   | Charge                        | Start (ON) or stop (OFF) charging                                                                        |
 | charge-amps                 | Number:ElectricCurrent   | Charger Current               | Current actually delivered by the charger                                                                |
 | charge-current-request      | Number:ElectricCurrent   | Charger Current Requested     | Current requested from the charger                                                                       |
-| charge-current-request-max  | Number:ElectricCurrent   | Max Charger Current Supported | Maximum current supported by the charger                                                                |
+| charge-current-request-max  | Number:ElectricCurrent   | Max Charger Current Supported | Maximum current supported by the charger                                                                 |
 | charge-energy-added         | Number:Energy            | Charge Energy Added           | Energy added, in kWh, during the last charging session                                                   |
 | charge-limit-soc            | Number:Dimensionless     | Charge Limit SOC              | Current charging limit of the vehicle, in %                                                              |
 | charge-limit-soc-min        | Number:Dimensionless     | Charge Limit SOC Min          | Minimum charging limit of the vehicle, in %                                                              |
