@@ -3,7 +3,7 @@
 Unlike LIP, which was designed to use a simple serial or telnet connection and authenticates using a username/password, LEAP uses a SSL connection and authenticates using certificates.
 This necessarily makes configuration more complicated.
 There are several open source utilities available for generating the certificate files necessary to access your Caseta or RA2 Select hub.
-One good choice is included with the popular pylutron library which is available on Github at https://github.com/gurumitts/pylutron-caseta.
+One good choice is included with the popular pylutron library which is available on GitHub at [pylutron-caseta](https://github.com/gurumitts/pylutron-caseta).
 On a Unix-like system, you can easily install it via `pip`:
 
 ```bash
@@ -16,6 +16,7 @@ Successfully installed pylutron_caseta-0.20.0
 ```
 
 First, you need to locate your bridge using `leap-scan`:
+
 ```bash
 $ leap-scan
 Lutron-05701a1c.local. 192.168.1.10 fe80::5a2b:aee:ed11:c6d5
@@ -54,8 +55,8 @@ Issuer: CN=SmartBridge572B0A11C6D5, O="Lutron Electronics Co., Inc.", L=Coopersb
 Serial number: 1
 Valid from: Fri Oct 30 18:00:00 MDT 2015 until: Thu Oct 25 18:00:00 MDT 2035
 Certificate fingerprints:
-	 SHA1: 20:BE:07:23:0D:61:E7:EE:C4:17:C5:A2:6D:AB:85:0D:64:CF:2A:51
-	 SHA256: C3:51:D0:C0:8C:15:7D:21:34:6F:B6:91:5E:0F:03:85:AB:06:DB:74:63:2D:7B:22:F2:1C:CB:12:7E:3C:29:E2
+    SHA1: 20:BE:07:23:0D:61:E7:EE:C4:17:C5:A2:6D:AB:85:0D:64:CF:2A:51
+    SHA256: C3:51:D0:C0:8C:15:7D:21:34:6F:B6:91:5E:0F:03:85:AB:06:DB:74:63:2D:7B:22:F2:1C:CB:12:7E:3C:29:E2
 Signature algorithm name: SHA256withECDSA
 Subject Public Key Algorithm: 256-bit EC (secp256r1) key
 Version: 3
