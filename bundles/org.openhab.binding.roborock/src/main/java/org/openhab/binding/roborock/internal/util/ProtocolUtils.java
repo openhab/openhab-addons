@@ -18,7 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -162,9 +161,7 @@ public final class ProtocolUtils {
      */
     public static String encodeTimestamp(int timestamp) {
         // Convert the timestamp to a hexadecimal string and pad it to ensure it's at least 8 characters
-        String hex = new BigInteger(Long.toString(timestamp)).toString(16);
-        // Pad with leading zeros to ensure it's 8 characters long
-        hex = String.format("%08x", timestamp);
+        String hex = String.format("%08x", timestamp);
 
         // Define the order in which to rearrange the hexadecimal characters
         int[] order = { 5, 6, 3, 7, 1, 2, 0, 4 };
@@ -316,10 +313,6 @@ public final class ProtocolUtils {
     private static String handleImageProtocol(byte[] message, MessageHeader header, byte[] nonce) {
         logger.debug("Protocol 301 (image) received, not fully handled yet. Message length: {}", message.length);
 
-        // The image handling logic seems incomplete and commented out in the original.
-        // It's left here as a placeholder for future implementation.
-        // The original code had an 'if (images == 1)' block that was never true, so it's removed.
-        // If image processing is needed, this section requires significant review and implementation.
         int images = 0;
         if (images == 1) {
             byte[] payload = Arrays.copyOfRange(message, 0, 24);
@@ -328,7 +321,7 @@ public final class ProtocolUtils {
             int requestId = ByteBuffer.wrap(Arrays.copyOfRange(payload, 16, 22)).getShort();
             String anotherUnusedString = new String(Arrays.copyOfRange(payload, 22, 24)).trim();
             byte[] decrypted;
-            decrypted = decryptCbc(Arrays.copyOfRange(message, 23, message.length), nonce);
+            decrypted = decryptCbc(Arrays.copyOfRange(message, 24, message.length), nonce);
             logger.debug("decrypted.length = {}, message.length = {}", decrypted.length, message.length);
             byte[] decompressed;
             try {

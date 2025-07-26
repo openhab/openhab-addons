@@ -123,7 +123,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         new java.security.SecureRandom().nextBytes(nonce);
     }
 
-    protected String getToken() {
+    protected String getTokenFromBridge() {
         RoborockAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
             return "";
@@ -137,7 +137,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     @Nullable
-    protected String setRoutine(String routine) {
+    protected String setRoutineViaBridge(String routine) {
         RoborockAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
             return "";
@@ -179,7 +179,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
 
             if (channelUID.getId().equals(CHANNEL_ROUTINE)) {
-                setRoutine(command.toString());
+                setRoutineViaBridge(command.toString());
                 return;
             }
 
@@ -243,7 +243,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         bridgeHandler = accountHandler;
         hasChannelStructure = false;
-        token = getToken();
+        token = getTokenFromBridge();
+
         if (!token.isEmpty()) {
             if (rrHomeId.isEmpty()) {
                 Home home = bridgeHandler.getHomeDetail();
@@ -279,7 +280,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void initDevice() {
         if (token.isEmpty()) {
-            token = getToken();
+            token = getTokenFromBridge();
             if (!token.isEmpty()) {
                 if (rrHomeId.isEmpty()) {
                     Home home = bridgeHandler.getHomeDetail();
@@ -302,8 +303,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         initTask.cancel();
 
         if (scheduleReconnection) {
-            SchedulerTask connectTask = initTask;
-            connectTask.schedule(30);
+            initTask.schedule(30);
         }
     }
 
@@ -689,7 +689,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private void handleGetNetworkInfo(String response) {
         logger.trace("handleGetNetworkInfo - response {}", response);
         GetNetworkInfo getNetworkInfo = gson.fromJson(response, GetNetworkInfo.class);
-        if (getNetworkInfo != null) {
+        if (getNetworkInfo != null && getNetworkInfo.result != null) {
             updateState(CHANNEL_SSID, new StringType(getNetworkInfo.result.ssid));
             updateState(CHANNEL_BSSID, new StringType(getNetworkInfo.result.bssid));
             updateState(CHANNEL_RSSI, new DecimalType(getNetworkInfo.result.rssi));

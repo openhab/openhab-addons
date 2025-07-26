@@ -61,6 +61,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
@@ -139,7 +141,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     @Nullable
     public Home getHomeDetail() {
         try {
-            return webTargets.getHomeDetail(baseUri, token, rriot);
+            return webTargets.getHomeDetail(baseUri, token);
         } catch (RoborockAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
@@ -174,14 +176,14 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication error " + e.getMessage());
-                return new String();
+                return "";
             } catch (RoborockCommunicationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Communication error " + e.getMessage());
-                return new String();
+                return "";
             }
         } else {
-            return new String();
+            return "";
         }
     }
 
@@ -472,13 +474,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private String byteToHex(byte num) {
-        char[] hexDigits = new char[2];
-        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
-        hexDigits[1] = Character.forDigit((num & 0xF), 16);
-        return new String(hexDigits);
-    }
-
     public int sendCommand(String method, String params, String thingID, String localKey, byte[] nonce)
             throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
@@ -491,10 +486,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         security.put("endpoint", getEndpoint());
         security.put("nonce", nonceHex.toLowerCase());
 
+        JsonElement paramsElement = JsonParser.parseString(params);
         Map<String, Object> inner = new HashMap<>();
         inner.put("id", id);
         inner.put("method", method);
-        inner.put("params", params);
+        inner.put("params", paramsElement);
         inner.put("security", security);
 
         Map<String, Object> dps = new HashMap<>();
@@ -505,10 +501,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         payloadMap.put("dps", dps);
 
         String payload = gson.toJson(payloadMap);
-        String modPayload = payload.replace(":\\\"[", ":[").replace("]\\\"}", "]}");
-        logger.trace("Modified payload = {}", modPayload);
+        logger.trace("MQTT payload = {}", payload);
 
-        byte[] message = build(thingID, localKey, protocol, timestamp, modPayload.getBytes(StandardCharsets.UTF_8));
+        byte[] message = build(thingID, localKey, protocol, timestamp, payload.getBytes(StandardCharsets.UTF_8));
         // now send message via mqtt
         String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
 
