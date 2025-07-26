@@ -29,7 +29,7 @@ public enum DockStatusType {
     MAINTENANCE_BRUSH_JAMMED(42, "Maintenance brush jammed"),
     DIRTY_TANK_LATCH_OPEN(44, "Dirty tank latch open"),
     ERROR_DUST_CONTAINER(46, "Missing dust container/dust bag"),
-    CLEANING_TANK_FULL_OR_BLOCKED(53, "Cleaning tank full or blocled");
+    CLEANING_TANK_FULL_OR_BLOCKED(53, "Cleaning tank full or blocked");
 
     private final int id;
     private final String description;
