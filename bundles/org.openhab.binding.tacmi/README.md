@@ -223,7 +223,7 @@ The known measure types are:
 | 14     | el. Current   | mA      |                                              |
 | 15     | Time          | hours   |                                              |
 | 16     | dimensionless | [none]  | use for multiplexers, etc                    |
-| 17..   | repeating     | again   | from 1, e.g 17==1, 18==2, ...               |
+| 17..   | repeating     | again   | from 1, e.g 17==1, 18==2, ...                |
 
 ## Full Example (CoE/Schema API)
 
