@@ -55,6 +55,10 @@ public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
     private static final Pattern GEN1_VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
     private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]*)?");
+    private static final Map<ThingTypeUID, Integer> BLU_NUM_INPUTS = Map.ofEntries( //
+            Map.entry(THING_TYPE_SHELLYBLUBUTTON1, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
+            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4));
 
     public String thingName = "";
     public boolean initialized = false; // true when initialized
@@ -169,6 +173,26 @@ public class ShellyDeviceProfile {
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(device.numRollers);
         List<ShellySettingsInput> inputs = settings.inputs;
+        if (isButton) {
+            // Initialize the tables
+            settings.inputs = new ArrayList<>();
+            ShellySettingsInput settings = new ShellySettingsInput();
+            settings.btnType = SHELLY_BTNT_MOMENTARY;
+            if (isBlu && BLU_NUM_INPUTS.containsKey(thingTypeUID)) {
+                ShellyInputState input = new ShellyInputState();
+                input.input = 0;
+                input.event = "";
+                input.eventCount = 0;
+
+                int numInputs = BLU_NUM_INPUTS.get(thingTypeUID);
+                logger.trace("{} ShellyBluApi constructor, number of inputs: {}", thingName, numInputs);
+
+                for (int i = 0; i < numInputs; i++) {
+                    inputs.set(i, settings);
+                    inputs.add(settings);
+                }
+            }
+        }
         numInputs = inputs != null ? inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;

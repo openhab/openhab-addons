@@ -111,7 +111,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellypro3em400-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM400), //
 
                 // Shelly BLU
-                Arguments.of("shellyblubutton-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUBUTTON), //
+                Arguments.of("shellyblubutton-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUBUTTON1), //
                 Arguments.of("shellybluht-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUHT), //
                 Arguments.of("shellybludw-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of("shellyblumotion-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUMOTION) //
@@ -249,7 +249,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO3EM400, "", THING_TYPE_SHELLYPRO3EM400), //
 
                 // BLU Series
-                Arguments.of(SHELLYDT_BLUBUTTON1, "", THING_TYPE_SHELLYBLUBUTTON), //
+                Arguments.of(SHELLYDT_BLUBUTTON1, "", THING_TYPE_SHELLYBLUBUTTON1), //
                 Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
                 Arguments.of(SHELLYDT_BLUWALLSWITCH4, "", THING_TYPE_SHELLYBLUWALLSWITCH4), //
                 Arguments.of(SHELLYDT_BLURCBUTTON4, "", THING_TYPE_SHELLYBLURCBUTTON4), //
@@ -257,7 +257,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_BLUDW, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of(SHELLYDT_BLUMOTION, "", THING_TYPE_SHELLYBLUMOTION), //
 
-                Arguments.of(SHELLYDT_BLUCLASS_BUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
+                Arguments.of(SHELLYDT_BLUCLASS_BUTTON, "", THING_TYPE_SHELLYBLUBUTTON1), //
                 Arguments.of(SHELLYDT_BLUCLASS_HT, "", THING_TYPE_SHELLYBLUHT), //
                 Arguments.of(SHELLYDT_BLUCLASS_DW, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of(SHELLYDT_BLUCLASS_MOTION, "", THING_TYPE_SHELLYBLUMOTION), //
