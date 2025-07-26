@@ -130,8 +130,8 @@ The following channels are supported:
 ```java
 // Bridge configuration
 Bridge electroluxappliance:api:myAPI "Electrolux Group API" [apiKey="12345678", refreshToken="12345678", refresh="300"] {
-     Thing air-purifier             myair-purifier                "Electrolux Pure A9"    [ serialNummber="123456789" ]
-     Thing portable-air-conditioner myportable-air-con            "AEG Comfort 6000"      [ serialNummber="234567891" ]   
+     Thing air-purifier             myair-purifier                "Electrolux Pure A9"    [ serialNumber="123456789" ]
+     Thing portable-air-conditioner myportable-air-con            "AEG Comfort 6000"      [ serialNumber="234567891" ]   
 }
 ```
 
@@ -160,24 +160,24 @@ Switch electroluxapplianceSafetyLock "Electrolux Air Safety Lock Setting" {chann
 
 ```java
 Group Electrolux_Air_Conditioner "Electrolux Air Conditioner" [AirConditioner]
-Number:Temperature Electrolux_Air_Conditioner_Ambient_Temperature "Ambient Temperature [%.1f %unit%]" <Temperature> (Electrolux_Air_Conditioner) [Measurement, Temperature] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:ambient-temperature", unit="°C" }
-Switch Electrolux_Air_Conditioner_Child_Lock "Child Lock" <Lock> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:child-ui-lock" }
-Switch Electrolux_Air_Conditioner_Compressor_Running "Compressor Running" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:compressor-state" }
-Switch Electrolux_Air_Conditioner_Evap_Defrost_State "Evap Defrost State" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:evap-defrost-state" }
-String Electrolux_Air_Conditioner_Fan_Speed "Fan Speed" <Flow> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:fan-mode" }
-Switch Electrolux_Air_Conditioner_Fan_Swing "Fan Swing" <Flow> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:fan-swing" }
-Switch Electrolux_Air_Conditioner_Four_Way_Valve_State "Four Way Valve State" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:fourway-valve-state" }
-String Electrolux_Air_Conditioner_Mode "Mode" <Settings> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:mode" }
-String Electrolux_Air_Conditioner_Network_Quality "Network Quality" <Network> (Electrolux_Air_Conditioner) [SignalStrength, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:network-quality-indicator" }
-Switch Electrolux_Air_Conditioner_Powered_On "Powered On" <Temperature> (Electrolux_Air_Conditioner) [Mode, Switch] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:appliance-running" }
-Number:Power Electrolux_Air_Conditioner_RSSI "RSSI" <QualityOfService> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:network-rssi", unit="dBm" }
-Switch Electrolux_Air_Conditioner_Sleep_Mode "Sleep Mode" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:sleep-mode" }
-Number:Temperature Electrolux_Air_Conditioner_Target_Temperature "Target Temperature [%.1f %unit%]" <Temperature> (Electrolux_Air_Conditioner) [Status, Temperature] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:target-temperature", unit="°C" }
-Switch Electrolux_Air_Conditioner_Timer_Off_Activate "Timer Off Activate" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-active" }
-Number:Time Electrolux_Air_Conditioner_Timer_Off_Duration "Timer Off Duration [%.1f %unit%]" <Settings> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-duration", unit="s" }
-DateTime Electrolux_Air_Conditioner_Offtimertime "Auto Off Expiry [%1$tF %1$tR]" <Time> (Electrolux_Air_Conditioner) [Status, Timestamp] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-time" }
-Switch Electrolux_Air_Conditioner_Timer_On_Activate "Timer On Activate" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-active" }
-Number:Time Electrolux_Air_Conditioner_Timer_On_Duration "Timer On Duration [%.1f %unit%]" <Settings> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-duration", unit="s" }
-DateTime Electrolux_Air_Conditioner_Ontimertime "Auto On Expiry [%1$tF %1$tR]" <Time> (Electrolux_Air_Conditioner) [Status, Timestamp] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-time" }
-String Electrolux_Air_Conditioner_Filter_State "Filter State" <text> (Electrolux_Air_Conditioner) [Info, Status] { channel="electroluxappliance:portable-air-conditioner:a4f9fc0801:40308110:filter-state" }
+Number:Temperature Electrolux_Air_Conditioner_Ambient_Temperature "Ambient Temperature [%.1f %unit%]" <temperature> (Electrolux_Air_Conditioner) [Measurement, Temperature] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:ambient-temperature", unit="°C" }
+Switch Electrolux_Air_Conditioner_Child_Lock "Child Lock" <lock> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:child-ui-lock" }
+Switch Electrolux_Air_Conditioner_Compressor_Running "Compressor Running" <switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:compressor-state" }
+Switch Electrolux_Air_Conditioner_Evap_Defrost_State "Evap Defrost State" <switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:evap-defrost-state" }
+String Electrolux_Air_Conditioner_Fan_Speed "Fan Speed" <flow> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:fan-mode" }
+Switch Electrolux_Air_Conditioner_Fan_Swing "Fan Swing" <flow> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:fan-swing" }
+Switch Electrolux_Air_Conditioner_Four_Way_Valve_State "Four Way Valve State" <switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:fourway-valve-state" }
+String Electrolux_Air_Conditioner_Mode "Mode" <settings> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:mode" }
+String Electrolux_Air_Conditioner_Network_Quality "Network Quality" <network> (Electrolux_Air_Conditioner) [SignalStrength, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:network-quality-indicator" }
+Switch Electrolux_Air_Conditioner_Powered_On "Powered On" <switch> (Electrolux_Air_Conditioner) [Mode, Switch] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:appliance-running" }
+Number:Power Electrolux_Air_Conditioner_RSSI "RSSI" <qualityOfService> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:network-rssi", unit="dBm" }
+Switch Electrolux_Air_Conditioner_Sleep_Mode "Sleep Mode" <switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:sleep-mode" }
+Number:Temperature Electrolux_Air_Conditioner_Target_Temperature "Target Temperature [%.1f %unit%]" <temperature> (Electrolux_Air_Conditioner) [Status, Temperature] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:target-temperature", unit="°C" }
+Switch Electrolux_Air_Conditioner_Timer_Off_Activate "Timer Off Activate" <switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-active" }
+Number:Time Electrolux_Air_Conditioner_Timer_Off_Duration "Timer Off Duration [%.1f %unit%]" <settings> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-duration", unit="s" }
+DateTime Electrolux_Air_Conditioner_Offtimertime "Auto Off Expiry [%1$tF %1$tR]" <time> (Electrolux_Air_Conditioner) [Status, Timestamp] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-time" }
+Switch Electrolux_Air_Conditioner_Timer_On_Activate "Timer On Activate" <switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-active" }
+Number:Time Electrolux_Air_Conditioner_Timer_On_Duration "Timer On Duration [%.1f %unit%]" <settings> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-duration", unit="s" }
+DateTime Electrolux_Air_Conditioner_Ontimertime "Auto On Expiry [%1$tF %1$tR]" <time> (Electrolux_Air_Conditioner) [Status, Timestamp] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-time" }
+String Electrolux_Air_Conditioner_Filter_State "Filter State" <text> (Electrolux_Air_Conditioner) [Info, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:filter-state" }
 ```
