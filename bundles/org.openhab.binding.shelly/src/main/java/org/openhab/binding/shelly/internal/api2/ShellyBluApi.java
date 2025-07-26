@@ -13,13 +13,11 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.buildBluServiceName;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,7 +28,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorTmp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorAccel;
@@ -75,11 +72,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), //
             Map.entry("80", SHELLY_BTNEVENT_HOLDING), //
             Map.entry("254", SHELLY_BTNEVENT_HOLDING)); // for firmware prior to 1.0.20
-
-    private static final Map<ThingTypeUID, Integer> BLU_NUM_INPUTS = Map.ofEntries( //
-            Map.entry(THING_TYPE_SHELLYBLUBUTTON, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
-            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4));
 
     /**
      * Regular constructor - called by Thing handler
@@ -152,34 +144,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.settings.sleepMode = new ShellySensorSleepMode();
             profile.settings.sleepMode.unit = "m";
             profile.settings.sleepMode.period = 720;
-        }
-
-        if (profile.isButton) {
-            profile.settings.inputs = new ArrayList<>();
-            List<ShellySettingsInput> inputs = profile.settings.inputs;
-
-            // Initialize the tables
-            ShellySettingsInput settings = new ShellySettingsInput();
-            settings.btnType = SHELLY_BTNT_MOMENTARY;
-
-            ShellyInputState input = new ShellyInputState();
-            input.input = 0;
-            input.event = "";
-            input.eventCount = 0;
-
-            if (BLU_NUM_INPUTS.containsKey(thingTypeUID)) {
-                int numInputs = BLU_NUM_INPUTS.get(thingTypeUID);
-                logger.trace("{} ShellyBluApi constructor, number of inputs: {}", thingName, numInputs);
-                deviceStatus.inputs = new ArrayList<>();
-
-                for (int i = 0; i < numInputs; i++) {
-                    inputs.set(i, settings);
-                    inputs.add(settings);
-                    deviceStatus.inputs.add(input);
-                }
-            }
-
-            profile.status = deviceStatus;
         }
 
         profile.initialized = true;
@@ -256,7 +220,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         }
                         logger.debug("{}: BLU Device discovered", thingName);
                         if (e.data.name != null) {
-                            profile.settings.name = ShellyDeviceProfile.buildBluServiceName(e.data.name, e.data.addr);
+                            profile.settings.name = buildBluServiceName(e.data.name, e.data.addr);
                         }
                         break;
                     case SHELLY2_EVENT_BLUDATA:

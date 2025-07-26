@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.shelly.internal.ShellyDevices;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
@@ -118,7 +119,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYMINI_EM, true, false), //
 
                 // Shelly BLU
-                Arguments.of(THING_TYPE_SHELLYBLUBUTTON, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
@@ -145,7 +146,7 @@ public class ShellyDeviceProfileTest {
     @ParameterizedTest
     @MethodSource("provideTestCasesForBuildBluServiceName")
     void buildBluServiceName(String name, String mac, String expectedServiceName) {
-        String actualServiceName = ShellyDeviceProfile.buildBluServiceName(name, mac);
+        String actualServiceName = ShellyDevices.buildBluServiceName(name, mac);
         assertThat(actualServiceName, is(equalTo(expectedServiceName)));
     }
 
@@ -163,7 +164,7 @@ public class ShellyDeviceProfileTest {
     @Test
     void buildBluServiceNameWhenNameUnknownThrowIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            ShellyDeviceProfile.buildBluServiceName("sbbt", "001A2B3C4D5E");
+            ShellyDevices.buildBluServiceName("sbbt", "001A2B3C4D5E");
         });
     }
 
@@ -207,7 +208,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBULB, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
-                Arguments.of(THING_TYPE_SHELLYBLUBUTTON, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYHT, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
