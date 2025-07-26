@@ -600,7 +600,7 @@ Debugging is essential for such a binding which supports many available products
 General debug messages will overflow traces and it's hard to find relevant information.
 To deal with these challenges commands for [openHAB console](https://www.openhab.org/docs/administration/console.html) are provided.
 
-```text
+```shell
 Usage: openhab:dirigera token - Get token from DIRIGERA hub
 Usage: openhab:dirigera json [<deviceId> | all] - Print JSON data
 Usage: openhab:dirigera debug [<deviceId> | all] [true | false]  - Enable / disable detailed debugging for specific / all devices
