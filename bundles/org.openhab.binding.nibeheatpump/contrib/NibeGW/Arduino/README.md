@@ -140,7 +140,7 @@ Commands:
 
 On the target IP you can see the receiving udp messages with netcat (if you changed the default target port 9999, you also have to adjust it here):
 
-```c
+```shell
 nc -lu 9999 | hexdump -C
 ```
 
