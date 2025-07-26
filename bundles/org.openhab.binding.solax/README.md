@@ -160,7 +160,7 @@ If you're missing a channel this means that it's not supported for your inverter
 | password          | The registration number, shown in the Solax Cloud web portal. Mandatory parameter.                                                                 |
 | token             | Token for accessing the Solax Cloud API. Can be obtained via Service -> API on the Solax cloud web portal. Mandatory parameter.                    |
 
-### Channels
+### Cloud Connect Channels
 
 | Channel                         | Type                       | Description                                                                                                                                 |
 |---------------------------------|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|

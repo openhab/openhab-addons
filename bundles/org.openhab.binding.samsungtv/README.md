@@ -45,9 +45,9 @@ Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, macAddress=
 
 Different ports are used on different models. It may be 55000, 8001 or 8002.
 
-If you have a <2016 TV, the interface will be *Legacy*, and the port is likely 55000.<br>
-If you have a >2016 TV, the interface will be either *websocket* on port 8001, or *websocketsecure* on port 8002.<br>
-If your TV supports *websocketsecure*, you **MUST** use it, otherwise the `keyCode` and all dependent channels will not work.
+If you have a <2016 TV, the interface will be _Legacy_, and the port is likely 55000.<br>
+If you have a >2016 TV, the interface will be either _websocket_ on port 8001, or _websocketsecure_ on port 8002.<br>
+If your TV supports _websocketsecure_, you **MUST** use it, otherwise the `keyCode` and all dependent channels will not work.
 
 In order for the binding to control your TV, you will be asked to accept the remote connection (from openHAB) on your TV. You have 30 seconds to accept the connection. If you fail to accept it, then most channels will not work.
 Once you have accepted the connection, the returned token is stored in the binding, so you don't have to repeat this every time openHAB is restarted.
@@ -59,7 +59,7 @@ The binding will try to automatically discover the correct protocol for your TV,
 
 Under `advanced`, you can enter a Smartthings PAT, and Device Id. This enables more channels via the Smartthings cloud. This is only for TV's that support Smartthings. No hub is required. The binding will attempt to discover the device ID for your TV automatically, you can enter it manually if automatic detection fails.
 
-Also under `advanced`, you have the ability to turn on *"Subscribe to UPnP events"*. This is off by default. This option reduces (but does not eliminate) the polling of UPnP services. You can enable it if you want to test it out. If you disable this setting (after testing), you should power cycle your TV to remove the old subscriptions.
+Also under `advanced`, you have the ability to turn on _"Subscribe to UPnP events"_. This is off by default. This option reduces (but does not eliminate) the polling of UPnP services. You can enable it if you want to test it out. If you disable this setting (after testing), you should power cycle your TV to remove the old subscriptions.
 
 For >2019 TV's, there is an app workaround, see [App Discovery](#app-discovery) for details.
 
@@ -191,7 +191,7 @@ This input allows you to set the internal art mode state from an external source
 
 ### artLabel
 
-`artlabel` is a String channel that receives the *intenal* lable of the artwork displayed. This will be something like `MY_0010` or `SAM-0123`. `MY` means it's art you uploaded, `SAM` means its from the Samsung art gallery.
+`artlabel` is a String channel that receives the _internal_ label of the artwork displayed. This will be something like `MY_0010` or `SAM-0123`. `MY` means it's art you uploaded, `SAM` means its from the Samsung art gallery.
 You have to figure out what the label actually represents.
 
 You can send commands to the channel. It accepts, Strings, string representations of a `Rawtype` image and `RawType` Images. If you send a String, such as `MY-0013`, it will display that art on the TV. If the TV is ON, playing live TV, then the Tv will switch to artMode.
@@ -218,7 +218,7 @@ If you wrap the command with `{` `}`, then the whole string is treated as a json
 
 Currently known working commands for 2021 and earlier TV's are:
 
-```
+```text
     get_api_version
     get_artmode_status
     set_artmode_status "value" on or off
@@ -245,7 +245,7 @@ Currently known working commands for 2021 and earlier TV's are:
 
 Currently known working commands for 2022 and later TV's are:
 
-```
+```text
     api_version
     get_artmode_status
     set_artmode_status "value" on or off
@@ -536,11 +536,11 @@ There are several steps required to enable this feature, and no hub is needed.
 In order to connect to the Smartthings cloud, there are a few steps to take.
 
 1. Set the samsungtv logs to at least DEBUG
-2. Create a Samsung account (probably already have one when you set up your TV)
-3. Add Your TV to the Smartthings App
-4. Go to https://account.smartthings.com/tokens and create a Personal Access Token (PAT). check off all the features you want (I would add them all).
-5. Go to the openHAB Samsung TV Thing, and update the configuration with your PAT (click on advanced). You will fill in Device ID later if necessary.
-6. Save the Thing, and watch the logs.
+1. Create a Samsung account (probably already have one when you set up your TV)
+1. Add Your TV to the Smartthings App
+1. Go to <https://account.smartthings.com/tokens> and create a Personal Access Token (PAT). check off all the features you want (I would add them all).
+1. Go to the openHAB Samsung TV Thing, and update the configuration with your PAT (click on advanced). You will fill in Device ID later if necessary.
+1. Save the Thing, and watch the logs.
 
 The binding will attempt to find the Device ID for your TV. If you have several TV’s of the same type, you will have to manually identify the Device ID for the current Thing from the logs. The device ID should look something like 996ff19f-d12b-4c5d-1989-6768a7ad6271. If you have only one TV of each type, Device ID should get filled in for you.
 You can now link the `sourceName`, `sourceId`, `channel` and `channelName` channels, and should see the values updating. You can change the TV input source by sending `"HDMI1"`, or `"HDMI2"` to the `sourceName` channel, the exact string will depend on your TV, and how many inputs you have. You can also send a number to the `sourceId` channel.
@@ -603,13 +603,13 @@ Samsung re-introduced the art API in firmware 1622 for >2021 Frame TV's. if you 
 
 On legacy TV's, you may see an error like this:
 
-```
+```text
 2021-12-08 12:19:50.262 [DEBUG] [port.upnp.internal.UpnpIOServiceImpl] - Error reading SOAP response message. Can't transform message payload: org.jupnp.model.action.ActionException: The argument value is invalid. Invalid number of input or output arguments in XML message, expected 2 but found 1.
 ```
 
 This is not an actual error, but is what is returned when a value is polled that does not yet exist, such as the URL for the TV browser, when the browser isn’t running. These messages are not new, and can be ignored. Enabling `subscription` will eliminate them.
 
-The `getSupportedChannelNames` messages are not UPnP services, they are not actually services that are supported *by your TV* at all. They are the internal capabilities of whatever method is being used for communication (which could be direct port connection, UPnP or websocket).
+The `getSupportedChannelNames` messages are not UPnP services, they are not actually services that are supported _by your TV_ at all. They are the internal capabilities of whatever method is being used for communication (which could be direct port connection, UPnP or websocket).
 They also do not reflect the actual capabilities of your TV, just what that method supports, on your TV, they may do nothing.
 
 You should get `volume` and `mute` channels working at the minnimum. Other channels may or may not work, depending on your TV and the binding configuration.
@@ -622,15 +622,15 @@ If you want to check the communication between the machine and the TV is working
 
 ### Check if your Linux machine receives multicast traffic
 
-**With your TV OFF (ie totally off)**
+With your **TV OFF** (ie totally off)
 
 - Login to the Linux console of your openHAB machine.
-- make sure you have __netcat__ installed
+- make sure you have _netcat_ installed
 - Enter `netcat -ukl 1900` or `netcat -ukl -p 1900` depending on your version of Linux
 
 ### Check if your Windows/Mac machine receives multicast traffic
 
-**With your TV OFF (ie totally off)**
+With your **TV OFF** (ie totally off)
 
 - Download Wireshark on your openHAB machine
 - Start and select the network interface which is connected to the same network as the TV
@@ -644,7 +644,7 @@ Now turn your TV ON (with the remote control).
 
 You should see several messages like the following:
 
-```
+```text
 NOTIFY * HTTP/1.1
 HOST: 239.255.255.250:1900
 CACHE-CONTROL: max-age=1800
@@ -671,13 +671,13 @@ If you have more than one network interface on your openHAB machine, you may hav
 
 - Most likely your machine is not receiving multicast messages
 - Check your network config:
-    - Routers often block multicast - enable it.
-    - Make sure the openHAB machine and the TV are in the same subnet/VLAN.
-    - disable `IGMP Snooping` if it is enabled on your switches.
-    - enable/disable `Enable multicast enhancement (IGMPv3)` if you have it (sometimes this helps).
-    - Try to connect your openHAB machine or TV via Ethernet instead of WiFi (AP's can filter Multicasts).
-    - Make sure you don't have any firewall rules blocking multicast.
-    - if you are using a Docker container, ensure you use the `--net=host` setting, as Docker filters multicast broadcasts by default.
+  - Routers often block multicast - enable it.
+  - Make sure the openHAB machine and the TV are in the same subnet/VLAN.
+  - disable `IGMP Snooping` if it is enabled on your switches.
+  - enable/disable `Enable multicast enhancement (IGMPv3)` if you have it (sometimes this helps).
+  - Try to connect your openHAB machine or TV via Ethernet instead of WiFi (AP's can filter Multicasts).
+  - Make sure you don't have any firewall rules blocking multicast.
+  - if you are using a Docker container, ensure you use the `--net=host` setting, as Docker filters multicast broadcasts by default.
 
 ### I see the messages, but something else is not working properly
 
@@ -688,22 +688,21 @@ There are several other common issues that you can check for:
 - Remote control is not enabled on your TV. You have to specifically enable IP control and WOL on the TV.
 - You have not accepted the request to allow remote control on your TV, or, you denied the request previously.
 - You have selected an invalid combination of protocol and port in the binding.
-    - The binding will attempt to auto configure the correct protocol and port on discovery, but you can change this later to an invalid configuration, eg:
-    - Protocol None is not valid
-    - Protocol Legacy will not work on >2016 TV's
-    - Protocol websocket only works with port 8001
-    - Protocol websocketsecure only works with port 8002. If your TV supports websocketsecure on port 8002, you *must* use it, or many things will not work.
+  - The binding will attempt to auto configure the correct protocol and port on discovery, but you can change this later to an invalid configuration, eg:
+  - Protocol None is not valid
+  - Protocol Legacy will not work on >2016 TV's
+  - Protocol websocket only works with port 8001
+  - Protocol websocketsecure only works with port 8002. If your TV supports websocketsecure on port 8002, you _must_ use it, or many things will not work.
 - The channel you are trying to use is not supported on your TV.
-    - Only some channels are supported on different TV's
-    - Some channels require additional configuration on >2016 TV's. eg `SmartThings` configuration, or Apps confguration.
-    - Some channels are read only on certain TV's
+  - Only some channels are supported on different TV's
+  - Some channels require additional configuration on >2016 TV's. eg `SmartThings` configuration, or Apps confguration.
+  - Some channels are read only on certain TV's
 - I can't turn my TV ON.
-    - Older TV's (<2016) do not support tuning ON
-    - WOL is not enabled on your TV (you have to specifically enable it)
-    - You have a soundbar connected to your TV and are connected using wired Ethernet.
-    - The MAC address in the binding configuratiion is blank/wrong.
-    - You have to wait up to 60 seconds after turning OFF, before you can turn back ON (This is a Samsung feature called "instant on")
+  - Older TV's (<2016) do not support tuning ON
+  - WOL is not enabled on your TV (you have to specifically enable it)
+  - You have a soundbar connected to your TV and are connected using wired Ethernet.
+  - The MAC address in the binding configuratiion is blank/wrong.
+  - You have to wait up to 60 seconds after turning OFF, before you can turn back ON (This is a Samsung feature called "instant on")
 - My TV asks me to accept the connection every time I turn the TV on
-    - You have the TV set to "Always Ask" for external connections. You need to set it to "Only ask the First Time". To get to the Device Manager, press the home button on your TV remote and navigate to Settings → General → External Device Manager → Device Connect Manager and change the setting.
-    - You are using a text `.things` file entry for the TV `thing`, and you haven't entered the `webSocketToken` in the text file definition. The token is shown on the binding config page. See [Binding Configuration](#binding-configuration).
-
+  - You have the TV set to "Always Ask" for external connections. You need to set it to "Only ask the First Time". To get to the Device Manager, press the home button on your TV remote and navigate to Settings → General → External Device Manager → Device Connect Manager and change the setting.
+  - You are using a text `.things` file entry for the TV `thing`, and you haven't entered the `webSocketToken` in the text file definition. The token is shown on the binding config page. See [Binding Configuration](#binding-configuration).

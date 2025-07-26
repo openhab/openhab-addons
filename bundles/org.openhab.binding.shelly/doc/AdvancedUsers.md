@@ -4,8 +4,6 @@ This section provides information for advanced use cases.
 
 ## Additional Resources
 
-There are additional resources available providing more information on Shelly devices and how to integrate those into openHAB:
-
 - [Shelly Homepage](https://shelly.cloud)
 - [Shelly Support Group (English)](https://www.facebook.com/groups/ShellyIoTCommunitySupport)
 - [Firmware Archive](http://archive.shelly-faq.de)
@@ -17,7 +15,7 @@ You could also [report a bug or request a feature](https://github.com/openhab/op
 ## Firmware Upgrade
 
 The Shelly App usually displays the installed firmware and also provide the function to upgrade the device with new firmware.
-However, if this doesn't work (sometimes there are issues) you could use the [Shelly Firmware Archi Link Generator](http://archive.shelly-faq.de), which provides download links to current, but also archived firmware files for all devices. 
+However, if this doesn't work (sometimes there are issues) you could use the [Shelly Firmware Archi Link Generator](http://archive.shelly-faq.de), which provides download links to current, but also archived firmware files for all devices.
 
 |Version|Notes                                                                                             |
 |-------|--------------------------------------------------------------------------------------------------|
@@ -27,7 +25,6 @@ However, if this doesn't work (sometimes there are issues) you could use the [Sh
 |1.8.0  |Brings CoIoT version 2, which fixes a lot issues and gaps of version 1.                           |
 |1.9.2  |Various improvements, roller favorites, CoAP fixes                                                |
 
-
 There are 3 options available to perform the upgrade
 
 ### Using Shelly Web UI or Smartphone App
@@ -35,16 +32,18 @@ There are 3 options available to perform the upgrade
 The Apps usually detect when a new version becomes available and offers to do the upgrade to the latest release or beta version.
 
 ### Trigger device update
- 
+
 The [Shelly Firmware Archive Link Generator](http://archive.shelly-faq.de) is provided by the community (not official, but works like charm).
 This can be used to generate the update link, which could be easily used to perform the upgrade on the cli-level having an Internet connection on that terminal (Shelly device doesn't require an Internet access).
 
 You specify the device's IP and device model SHSW-25 and the page will generate you the link for the firmware download using the OTA of the device.
 
-Then you run 
-```
+Then you run
+
+```bash
 curl -s [-u user:password] <generated link>
 ```
+
 from the command line.
 
 This should show a JSON result, make sure that it shows "status:updating".
@@ -53,7 +52,7 @@ Wait 15sec and access the device's Web UI, go to Settings:Firmware Upgrade and m
 ### Manual download and installation of the firmware
 
 - Manually pick the download link from the [Shelly Firmware Repository](https://api.shelly.cloud/files/firmware) and get the release or beta link.
-- Once you downloaded the file you need to copy it to an http server. 
+- Once you downloaded the file you need to copy it to an http server.
 - Open the following url http://&lt;shelly ip&gt;/ota?url=http://&lt;web server&gt;/&lt;path&gt;/&lt;zip-file&gt;
 - Again, make sure that the file is downloaded and installed properly.
 
@@ -61,9 +60,9 @@ Wait 15sec and access the device's Web UI, go to Settings:Firmware Upgrade and m
 
 ### Network Settings
 
-Shelly devices do only support IPv4. 
+Shelly devices do only support IPv4.
 This implies that the openHAB host system has IPv4 bound to the network interface.
-The binding is only able to discover devices on the local subnet. 
+The binding is only able to discover devices on the local subnet.
 Add things manually with the given IP if you have a routed network in between or using a VPN connection.
 
 The binding enables CoIoT protocol by default if the device is running firmware 1.6 or newer.
@@ -75,7 +74,7 @@ Nevertheless in this setup the binding can communicate the device, but you are l
 Refer to openHAB's general documentation when running openHAB in a docker container. Enabling mDNS discovery has additional setup requirements.  
 
 ### Re-discover when IP address has changed
- 
+
 Important: The IP address should not be changed after the device is added to openHAB.
 
 This can be achieved by
@@ -100,11 +99,10 @@ Use a list of items to reduce logging.
 
 `Please note:` Once events are filtered they are not show anymore in the logfile, you can’t find them later.
 
-
 - openHAB 2.5.x
 A configuration is added as a new section to `openhab2-userdata/etc/org.ops4j.pax.logging.cfg`
 
-```
+```ini
 # custom filtering rules
 log4j2.appender.event.filter.uselessevents.type = RegexFilter
 log4j2.appender.event.filter.uselessevents.regex = .*(heartBeat|LastUpdate|lastUpdate|LetzteAktualisierung|Uptime|Laufzeit|ZuletztGesehen).*
@@ -115,6 +113,7 @@ log4j2.appender.event.filter.uselessevents.onMisMatch = NEUTRAL
 - openHAB 3.0
 
 The configuration format of openHAB 3.0 is in xml format.
+
 - Open the file `userdata/etc/log4j2.xml`
 - Search for tag RollingFile
 - and add a tag `<RegexF,ilter>...</RegExFilter>`
@@ -123,7 +122,7 @@ The attribute `regex` of this tag defines the regular expression, `onMatch="DENY
 
 Example:
 
-```
+```xml
 ...
         <!-- Rolling file appender -->
         <RollingFile fileName="${sys:openhab.logdir}/openhab.log" filePattern="${sys:openhab.logdir}/openhab.log.%i" name="LOGFILE">
@@ -135,4 +134,3 @@ Example:
         </RollingFile>
 ...
 ```
-
