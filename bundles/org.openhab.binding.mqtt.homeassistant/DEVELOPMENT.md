@@ -1,7 +1,10 @@
+# MQTT Home Assistant Binding Development
+
 src/main/python is forked from [Home Assistant core](https://github.com/home-assistant/core), in order to have near-perfect compatibility with for the Jinja templates.
 It was forked from the dev branch as of 2025-04-23, corresponding to the 2025.4.3 release of Home Assistant.
 
 The following alterations have been made:
+
 - Code not specifically used by this binding has been stripped out.
 - Generics and some type checks have been removed, being incompatible with GraalPy 24.2, which roughly corresponds with Python 3.11.
 - The standard json library is used, instead of orjson, since orjson requires a Rust compiler and would pre-compile native extensions for the architecture of the build environment, and embed them in the JAR, thus making it incompatible with other runtime architectures.

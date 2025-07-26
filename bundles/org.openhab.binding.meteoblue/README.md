@@ -23,7 +23,7 @@ its child things.
 
 | Property      | Default Value | Required? | Description          |
 | ------------- |:-------------:| :-------: | -------------------- |
-| location      |               | Yes       | The latitude, longitude, and optionally altitude of the location, separated by commas (e.g. 45.6,45.7,45.8). Altitude, if given, should be in meters.
+| location      |               | Yes       | The latitude, longitude, and optionally altitude of the location, separated by commas (e.g. 45.6,45.7,45.8). Altitude, if given, should be in meters. |
 | refresh       | 240           | No        | The time between calls to refresh the weather data, in minutes |
 | serviceType   | NonCommercial | No        | The service type to be used.  Either 'Commercial' or 'NonCommercial' |
 | timeZone      |               | No        | The time zone to use for the location. Optional, but the service recommends it be specified. The service gets the time zone from a database if not specified. |
@@ -77,7 +77,7 @@ Each of the following channels is supported in all of the channel groups.
 | condition                | String             | A brief description of the forecast weather condition (e.g. 'Overcast') |
 |                          |                    | Valid values range from 1 - 17 (see the [meteoblue docs](https://content.meteoblue.com/nl/service-specifications/standards/symbols-and-pictograms#eztoc14635_1_6)) |
 | icon                     | Image              | Image used to represent the forecast (calculated) |
-|                          |                    | see [Image icons](#image-icons) below
+|                          |                    | see [Image icons](#image-icons) below |
 | predictability           | Number             | Estimated certainty of the forecast (percentage) |
 | predictabilityClass      | Number             | Range 0-5 (0=very low, 5=very high) |
 | precipitationHours       | Number             | Total hours of the day with precipitation |

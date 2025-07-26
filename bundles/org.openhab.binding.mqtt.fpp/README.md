@@ -9,6 +9,7 @@ Autodiscovering is not supported. We have to define the things manually.
 ## Supported Things
 
 The binding supports one Thing `player` that represents the Falcon Player.
+
 ## Thing Configuration
 
 | Parameter    | Description                             | Required | Default |
