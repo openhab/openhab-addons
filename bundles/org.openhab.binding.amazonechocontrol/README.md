@@ -104,7 +104,7 @@ With the possibility to control your lights you could do:
 You must define an `account` (Bridge) before defining any other Thing can be used.
 
 1. Create an Amazon `account` thing
-1. Open the url `YOUR_OPENHAB/amazonechocontrol` in your browser (e.g. `http://openhab:8080/amazonechocontrol/`), click the link for your account thing and login.
+1. Open the URL `YOUR_OPENHAB/amazonechocontrol` in your browser (e.g. `http://openhab:8080/amazonechocontrol/`), click the link for your account thing and login.
 1. You should see now a message that the login was successful
 1. If you encounter redirect/page refresh issues, enable two-factor authentication (2FA) on your Amazon account.
 
