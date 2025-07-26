@@ -57,7 +57,7 @@ The VigiCrues information that retrieved are made available with these channels:
 | alert (*)        | Number                    | Flooding alert level of the portion related to the station |
 | alert-icon       | Image                     | Pictogram associated to the alert level                    |
 | short-comment    | String                    | Description of the alert level                             |
-| comment          | String                    | Detailed informations regarding the ongoing event          |
+| comment          | String                    | Detailed information regarding the ongoing event           |
 
 (*) Each alert level is described by a color:
 

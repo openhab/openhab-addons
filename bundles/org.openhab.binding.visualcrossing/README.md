@@ -27,7 +27,7 @@ from [VisualCrossing site](https://www.visualcrossing.com/)
 | password        | text    | API Key to connect to the cloud                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | N/A                                | yes      | no       |
 | location        | text    | Is the address, partial address or latitude,longitude location for which to retrieve weather data. You can also use US ZIP Codes.                                                                                                                                                                                                                                                                                                                                                                                         | OH location                        | no       | no       |
 | lang            | text    | Sets the language of the translatable parts of the output such as the conditions field. Available languages include: ar (Arabic), bg (Bulgiarian), cs (Czech), da (Danish), de (German), el (Greek Modern), en (English), es (Spanish) ), fa (Farsi), fi (Finnish), fr (French), he Hebrew), hu, (Hungarian), it (Italian), ja (Japanese), ko (Korean), nl (Dutch), pl (Polish), pt (Portuguese), ru (Russian), sk (Slovakian), sr (Serbian), sv (Swedish), tr (Turkish), uk (Ukranian), vi (Vietnamese) and zh (Chinese) | OH language                        | no       | no       |
-| hostname        | text    | Hostname or IP address of the server                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | https://weather.visualcrossing.com | yes      | yes      |
+| hostname        | text    | Hostname or IP address of the server                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | <https://weather.visualcrossing.com> | yes      | yes      |
 | refreshInterval | integer | Interval the device is polled in sec.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | 3600                               | no       | yes      |
 | httpRetries     | integer | Interval the device is polled in sec.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | 3                                  | no       | yes      |
 
@@ -179,7 +179,7 @@ Number:Temperature Total_Weather_Data_Basic_Feels_Like "Feels Like" (Total_Weath
 Number:Dimensionless Total_Weather_Data_Basic_Humidity "Humidity" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#humidity"}
 Number:Temperature Total_Weather_Data_Basic_Dew "Dew" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#dew"}
 Number:Length Total_Weather_Data_Basic_Precip "Precip" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip", unit="mm"}
-Number:Dimensionless Total_Weather_Data_Basic_Precip_Probality "Precip Probality" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip-prob"}
+Number:Dimensionless Total_Weather_Data_Basic_Precip_Probability "Precip Probability" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip-prob"}
 String Total_Weather_Data_Basic_Precip_Type "Precip Type" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip-type"}
 Number:Length Total_Weather_Data_Basic_Snow "Snow" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#snow"}
 Number:Length Total_Weather_Data_Basic_Snow_Depth "Snow Depth" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#snow-depth"}
@@ -214,12 +214,12 @@ rule "test"
 when
     /* when */
 then
-	val actions = getActions("visualcrossing", "visualcrossing:weather:as8af03m38")
-	if (actions !== null) {
-            val weatherResponse1 = actions.timeline()
-            // lang - https://www.visualcrossing.com/resources/documentation/weather-api/how-to-create-or-modify-language-files/
-            // dateFrom, dateTo - https://www.visualcrossing.com/resources/documentation/weather-api/using-the-time-period-parameter-to-specify-dynamic-dates-for-weather-api-requests/
-            val weatherResponse2 = actions.timeline("wrocław,poland", METRIC, "pl", "last7days", "next5days")
-	}
+    val actions = getActions("visualcrossing", "visualcrossing:weather:as8af03m38")
+    if (actions !== null) {
+        val weatherResponse1 = actions.timeline()
+        // lang - https://www.visualcrossing.com/resources/documentation/weather-api/how-to-create-or-modify-language-files/
+        // dateFrom, dateTo - https://www.visualcrossing.com/resources/documentation/weather-api/using-the-time-period-parameter-to-specify-dynamic-dates-for-weather-api-requests/
+        val weatherResponse2 = actions.timeline("wrocław,poland", METRIC, "pl", "last7days", "next5days")
+    }
 end
 ```
