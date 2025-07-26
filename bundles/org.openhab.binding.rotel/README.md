@@ -138,6 +138,7 @@ Some have additional parameters listed in the next table:
 | rsx1560    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelMulti |
 | rsx1562    | inputLabelCd, inputLabelTuner, inputLabelUsb, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelVideo6, inputLabelMulti |
 | rx1052     | baudRate, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4 |
+
 Some notes:
 
 - On Linux, you may get an error stating the serial port cannot be opened when the Rotel binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
