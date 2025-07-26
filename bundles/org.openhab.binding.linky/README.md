@@ -23,7 +23,7 @@ Step are:
        }
     ```
 
-1. Move username, password & internalAuthId configuration parameter from the old linky thing to the bridge thing.
+1. Move username, password and internalAuthId configuration parameters from the old linky thing to the bridge thing.
 1. Link your old thing to the new created bridge thing:
 
      ```java
