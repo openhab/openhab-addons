@@ -107,7 +107,7 @@ If you select MyElectricalData bridge, you will need :
   
   You can access the procedure from the connectlinky page available from your openHAB: <https://home.myopenhab.org/connectlinky/index>.
 
-  You will find screenshoot of the procedure in the following directory
+  You will find screenshot of the procedure in the following directory
   [doc/myelectricaldata/](doc/myelectricaldata/index.md)
 
   1. Go to the connectlinky page on OpenHAB.
