@@ -355,7 +355,7 @@ You could also create a rule to catch those status changes or device alarms (see
 | eventsRoller       | true: register event "trigger" when the roller updates status | no        | true for roller devices                            |
 | favoriteUP         | 0-4: Favorite id for UP (see Roller Favorites)                | no        | 0 = no favorite id                                 |
 | favoriteDOWN       | 0-4: Favorite id for DOWN (see Roller Favorites)              | no        | 0 = no favorite id                                 |
-| enableBluGateway   | true: Active BLU gateway support (install script)             | no        | false                                              |
+| enableBluGateway   | true: Activate BLU gateway support (install script)           | no        | false                                              |
 
 ### General Notes
 
