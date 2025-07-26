@@ -100,13 +100,13 @@ All values read-only.
 
 | Channel ID            | Type                      | Description                                                   |
 |-----------------------|---------------------------|---------------------------------------------------------------|
-| total-consumption     | Number:Energy             | Total energy consumption measured by Tibber Pulse meter      |
-| daily-consumption     | Number:Energy             | Energy consumed since midnight in kilowatt-hours             |
-| daily-cost            | Number:Currency           | Accumulated cost since midnight                              |
-| last-hour-consumption | Number:Energy             | Energy consumed since last hour shift in kilowatt-hours      |
-| total-production      | Number:Energy             | Total energy production measured by Tibber Pulse meter       |
-| daily-production      | Number:Energy             | Net energy produced since midnight in kilowatt-hours         |
-| last-hour-production  | Number:Energy             | Net energy produced since last hour shift in kilowatt-hours  |
+| total-consumption     | Number:Energy             | Total energy consumption measured by Tibber Pulse meter       |
+| daily-consumption     | Number:Energy             | Energy consumed since midnight in kilowatt-hours              |
+| daily-cost            | Number:Currency           | Accumulated cost since midnight                               |
+| last-hour-consumption | Number:Energy             | Energy consumed since last hour shift in kilowatt-hours       |
+| total-production      | Number:Energy             | Total energy production measured by Tibber Pulse meter        |
+| daily-production      | Number:Energy             | Net energy produced since midnight in kilowatt-hours          |
+| last-hour-production  | Number:Energy             | Net energy produced since last hour shift in kilowatt-hours   |
 
 ## Thing Actions
 
