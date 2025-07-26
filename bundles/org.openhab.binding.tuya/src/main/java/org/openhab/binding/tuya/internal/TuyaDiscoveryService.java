@@ -39,7 +39,6 @@ import org.openhab.binding.tuya.internal.util.SchemaDp;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -63,7 +62,6 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
 
     private final Logger logger = LoggerFactory.getLogger(TuyaDiscoveryService.class);
     private final Gson gson = new Gson();
-    private @NonNullByDefault({}) Storage<String> storage;
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable ScheduledFuture<?> broadcastJob;
 
@@ -112,17 +110,19 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
                     .withRepresentationProperty(CONFIG_DEVICE_ID).withProperties(properties).build();
 
             api.getDeviceSchema(device.id).thenAccept(schema -> {
-                List<SchemaDp> schemaDps = new ArrayList<>();
-                schema.functions.forEach(description -> addUniqueSchemaDp(description, schemaDps));
-                schema.status.forEach(description -> addUniqueSchemaDp(description, schemaDps));
-                storage.put(device.id, gson.toJson(schemaDps));
+                if (!TuyaSchemaDB.contains(device.productId)) {
+                    List<SchemaDp> schemaDps = new ArrayList<>();
+                    schema.functions.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.FALSE));
+                    schema.status.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.TRUE));
+                    TuyaSchemaDB.put(device.productId, schemaDps);
+                }
             });
 
             thingDiscovered(discoveryResult);
         });
     }
 
-    private void addUniqueSchemaDp(DeviceSchema.Description description, List<SchemaDp> schemaDps) {
+    private void addUniqueSchemaDp(DeviceSchema.Description description, List<SchemaDp> schemaDps, Boolean readOnly) {
         if (description.dp_id == 0 || schemaDps.stream().anyMatch(schemaDp -> schemaDp.id == description.dp_id)) {
             // dp is missing or already present, skip it
             return;
@@ -135,7 +135,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
             description.code = originalCode + "_" + index;
         }
 
-        schemaDps.add(SchemaDp.fromRemoteSchema(gson, description));
+        schemaDps.add(SchemaDp.fromRemoteSchema(gson, description, readOnly));
     }
 
     @Override
@@ -147,12 +147,6 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
         }
         removeOlderResults(getTimestampOfLastScan());
         super.stopScan();
-    }
-
-    @Override
-    public void initialize() {
-        this.storage = thingHandler.getStorage();
-        super.initialize();
     }
 
     @Override

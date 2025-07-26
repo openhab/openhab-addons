@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tuya.internal.util;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,18 +44,21 @@ public class SchemaDp {
     public String code = "";
     public String type = "";
     public String label = "";
+    public Boolean readOnly = Boolean.FALSE;
     public String unit = "";
     public @Nullable Double min;
     public @Nullable Double max;
+    public BigDecimal step = BigDecimal.ONE;
     public Integer scale = 0;
     public @Nullable List<String> range;
     public @Nullable Unit<?> parsedUnit;
 
-    public static SchemaDp fromRemoteSchema(Gson gson, DeviceSchema.Description function) {
+    public static SchemaDp fromRemoteSchema(Gson gson, DeviceSchema.Description function, Boolean readOnly) {
         SchemaDp schemaDp = new SchemaDp();
         schemaDp.code = function.code.replace("_v2", "");
         schemaDp.id = function.dp_id;
         schemaDp.type = REMOTE_LOCAL_TYPE_MAP.getOrDefault(function.type, "raw"); // fallback to raw
+        schemaDp.readOnly = readOnly;
 
         if ("enum".equalsIgnoreCase(schemaDp.type) && function.values.contains("range")) {
             schemaDp.range = Objects.requireNonNull(
@@ -65,8 +69,10 @@ public class SchemaDp {
                     gson.fromJson(function.values.replaceAll("\\\\", ""), DeviceSchema.NumericRange.class));
             schemaDp.min = numericRange.min;
             schemaDp.max = numericRange.max;
+            schemaDp.step = numericRange.step;
 
-            if (numericRange.scale == 1 && numericRange.min == 0 && numericRange.max == 1 && numericRange.step == 1) {
+            if (numericRange.scale == 1 && numericRange.min == 0 && numericRange.max == 1
+                    && numericRange.step.equals(BigDecimal.ONE)) {
                 LoggerFactory.getLogger(SchemaDp.class).warn("Ignoring scale=1 when min=0, max=1, step=1 for {}",
                         schemaDp.code);
             } else {
