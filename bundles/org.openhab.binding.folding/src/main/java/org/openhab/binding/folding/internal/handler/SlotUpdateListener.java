@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.folding.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.folding.internal.dto.SlotInfo;
+
 /**
  * Interface for callback from Client handler to Slot handler.
  *
@@ -20,6 +23,12 @@ package org.openhab.binding.folding.internal.handler;
  *
  * @author Marius Bjørnstad - Initial contribution
  */
+@NonNullByDefault
 public interface SlotUpdateListener {
+    /**
+     * Called when the slot information has been refreshed.
+     *
+     * @param si the updated {@link SlotInfo} instance containing the refreshed data
+     */
     void refreshed(SlotInfo si);
 }
