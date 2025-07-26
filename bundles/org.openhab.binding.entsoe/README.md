@@ -1,6 +1,6 @@
 # ENTSO-E Binding
 
-This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity. 
+This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity.
 
 Users can select a specific area to retrieve the relevant energy prices.
 This binding helps users monitor and manage their energy consumption based on real-time pricing data.
@@ -8,9 +8,9 @@ It is recommended to use this binding together with a currency provider (e.g. [F
 
 ## Supported Things
 
-- `day-ahead`: This is the main and single Thing of the binding. 
+- `day-ahead`: This is the main and single Thing of the binding.
 
-## Thing Configuration
+## `day-ahead` Thing Configuration
 
 To access the ENTSO-E Transparency Platform API, users need a **security token** for authentication and authorization.
 This token ensures secure access to the platform's data and services.
@@ -18,8 +18,6 @@ For detailed instructions on obtaining this token, you can refer to the [ENTSO-E
 
 Mandatory parameters of the Thing are security token and area.
 Optional parameters are historic days, resolution, availability hour for day ahead spot prices and request timeout.
-
-### `entsoe` Thing Configuration
 
 | Name                          | Type              | Description                                                               | Default   | Required | Advanced |
 |-------------------------------|-------------------|---------------------------------------------------------------------------|-----------|----------|----------|
