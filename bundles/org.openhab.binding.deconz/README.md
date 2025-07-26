@@ -156,7 +156,7 @@ The sensor devices support some of the following channels:
 | power                 | Number:Power             | R           | Power usage in Watts                                                                      | powersensor, sometimes for consumptionsensor      |
 | presence              | Switch                   | R           | Status of presence: `ON` = presence; `OFF` = no-presence                                  | presencesensor                                    |
 | pressure              | Number:Pressure          | R           | Pressure in hPa                                                                           | pressuresensor                                    |
-| tampered              | Switch                   | R           | Status of a zone: `ON` = zone is being tampered; `OFF` = zone is not tampered            | any IAS sensor                                    |
+| tampered              | Switch                   | R           | Status of a zone: `ON` = zone is being tampered; `OFF` = zone is not tampered             | any IAS sensor                                    |
 | temperature           | Number:Temperature       | R           | Temperature in ˚C                                                                         | temperaturesensor, some Xiaomi sensors,thermostat |
 | tiltangle             | Number:Angle             | R           | Tilt angle of vibration sensor                                                            | vibrationsensor                                   |
 | value                 | Number                   | R           | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                                    |
