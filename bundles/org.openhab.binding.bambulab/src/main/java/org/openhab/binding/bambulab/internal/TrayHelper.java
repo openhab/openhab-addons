@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class TrayHelper {
     static final int MAX_TRAY_VALUE = MAX_AMS * MAX_AMS_TRAYS - 1;
-    private static final Logger logger = LoggerFactory.getLogger(TrayHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrayHelper.class);
 
     static Optional<State> findStateForTrayLoaded(@Nullable String tray) {
         if (tray == null) {
@@ -42,7 +42,7 @@ class TrayHelper {
             var integer = parseInt(tray);
             return Optional.of(parseTrayLoaded(integer));
         } catch (NumberFormatException e) {
-            logger.debug("Cannot parse: {}", tray, e);
+            LOGGER.debug("Cannot parse: {}", tray, e);
             return Optional.of(UNDEF);
         }
     }
@@ -58,7 +58,7 @@ class TrayHelper {
             return StringType.valueOf("VTRAY");
         }
         if (tray > MAX_TRAY_VALUE) {
-            logger.warn("There should never be tray with value {}", tray);
+            LOGGER.warn("There should never be tray with value {}", tray);
             return UNDEF;
         }
         var amsNr = (tray / MAX_AMS) + 1;
