@@ -44,7 +44,7 @@ public class RoborockHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final StorageService storageService;
-    private ChannelTypeRegistry channelTypeRegistry;
+    private final ChannelTypeRegistry channelTypeRegistry;
 
     @Activate
     public RoborockHandlerFactory(@Reference StorageService storageService,

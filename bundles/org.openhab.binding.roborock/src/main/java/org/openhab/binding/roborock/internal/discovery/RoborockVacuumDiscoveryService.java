@@ -14,7 +14,7 @@ package org.openhab.binding.roborock.internal.discovery;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -69,10 +69,9 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
             HomeData homeData;
             homeData = getHomeData(Integer.toString(home.data.rrHomeId));
 
-            HashMap<String, Object> properties = new HashMap<>();
             if (homeData != null) {
                 for (int i = 0; i < homeData.result.devices.length; i++) {
-                    properties.put("sn", homeData.result.devices[i].sn);
+                    Map<String, Object> properties = Map.of("sn", homeData.result.devices[i].sn);
                     ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, homeData.result.devices[i].duid);
                     thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
                             .withLabel(homeData.result.devices[i].name).build());
