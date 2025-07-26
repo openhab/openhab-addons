@@ -49,7 +49,7 @@ For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
 
 #### Properties
 
-<img align="right" src="./doc/vehicle-properties.png" alt="Vehicle properties overview" width="500" height="350"/>
+<img align="right" src="doc/vehicle-properties.png" alt="Vehicle properties overview" width="500" height="350"/>
 
 For each vehicle properties are available.
 Basic information is given regarding
