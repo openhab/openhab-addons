@@ -13,7 +13,7 @@ Supported Services
 
 Display Power values of Forecast and PV Inverter items
 
-![Solar Forecast Power Chart](./doc/SolcastPower.png)
+![Solar Forecast Power Chart](doc/SolcastPower.png)
 
 Display Energy values of Forecast and PV inverter items
 Yellow line shows _Daily Total Forecast_.
