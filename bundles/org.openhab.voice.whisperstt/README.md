@@ -210,7 +210,7 @@ timer ::= [0-9]+
 - **Record Sample Format** - Change the record sample format. (allows i16 or f32)
 - **Enable Whisper Log** - Emit whisper.cpp library logs as add-on debug logs.
 
-You can find information on how to fine-tune a model using the generated records at [givimad’s github repository](https://github.com/givimad/whisper-finetune-oh).
+You can find information on how to fine-tune a model using the generated records at [givimad’s GitHub repository](https://github.com/givimad/whisper-finetune-oh).
 
 ### Configuration via a text file
 
