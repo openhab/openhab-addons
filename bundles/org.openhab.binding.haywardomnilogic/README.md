@@ -63,55 +63,55 @@ Hayward OmniLogic Connection Parameters:
 
 | Channel Type ID       | Item Type            | Description                                              | Read Write |
 |-----------------------|----------------------|----------------------------------------------------------|:----------:|
-| chlorEnable           | Switch               | Chlorinator enable                                       |     R/W    |
-| chlorOperatingMode    | String               | Chlorinator operating mode                               |      R     |
-| chlorTimedPercent     | Number:Dimensionless | Chlorinator salt output (%)                              |     R/W    |
-| chlorOperatingState   | Number               | Chlorinator operating state                              |      R     |
-| chlorScMode           | String               | Chlorinator super chlorinate mode                        |      R     |
-| chlorError            | String               | Chlorinator error bit array                              |      R     |
-| chlorAlert            | String               | Chlorinator alert bit array                              |      R     |
-| chlorAvgSaltLevel     | Number:Dimensionless | Chlorinator average salt level in Part per Million (ppm) |      R     |
-| chlorInstantSaltLevel | Number:Dimensionless | Chlorinator instant salt level in Part per Million (ppm) |      R     |
-| chlorStatus           | String               | Chlorinator status bit array                             |      R     |
+| chlorEnable           | Switch               | Chlorinator enable                                       |    R/W     |
+| chlorOperatingMode    | String               | Chlorinator operating mode                               |     R      |
+| chlorTimedPercent     | Number:Dimensionless | Chlorinator salt output (%)                              |    R/W     |
+| chlorOperatingState   | Number               | Chlorinator operating state                              |     R      |
+| chlorScMode           | String               | Chlorinator super chlorinate mode                        |     R      |
+| chlorError            | String               | Chlorinator error bit array                              |     R      |
+| chlorAlert            | String               | Chlorinator alert bit array                              |     R      |
+| chlorAvgSaltLevel     | Number:Dimensionless | Chlorinator average salt level in Part per Million (ppm) |     R      |
+| chlorInstantSaltLevel | Number:Dimensionless | Chlorinator instant salt level in Part per Million (ppm) |     R      |
+| chlorStatus           | String               | Chlorinator status bit array                             |     R      |
 
 ### Chlorinator Error Bit Array
 
-|Bits  |Value                                                               |Description                    |
-|------|--------------------------------------------------------------------|-------------------------------|
-|1:0   |00 = OK<br>  01 = Short<br> 10 = Open                               |Current Sensor                 |
-|3:2   |00 = OK<br>  01 = Short<br> 10 = Open                               |Voltage Sensor                 |
-|5:4   |00 = OK<br>  01 = Short<br> 10 = Open                               |Cell Temp Sensor               |
-|7:6   |00 = OK<br>  01 = Short<br> 10 = Open                               |Board Temp Sensor              |
-|9:8   |00 = OK<br>  01 = Short<br> 10 = Open                               |K1 Relay                       |
-|11:10 |00 = OK<br>  01 = Short<br> 10 = Open                               |K2 Relay                       |
-|13:12 |00 = OK<br>  01 = Type<br> 10 = Authentication <br> 11 = Comm Loss  |Cell Errors                    |
-|14    |0                                                                   |Aquarite PCB Error             |
+| Bits  | Value                                                   | Description        |
+|-------|---------------------------------------------------------|--------------------|
+| 1:0   | 00 = OK, 01 = Short, 10 = Open                          | Current Sensor     |
+| 3:2   | 00 = OK, 01 = Short, 10 = Open                          | Voltage Sensor     |
+| 5:4   | 00 = OK, 01 = Short, 10 = Open                          | Cell Temp Sensor   |
+| 7:6   | 00 = OK, 01 = Short, 10 = Open                          | Board Temp Sensor  |
+| 9:8   | 00 = OK, 01 = Short, 10 = Open                          | K1 Relay           |
+| 11:10 | 00 = OK, 01 = Short, 10 = Open                          | K2 Relay           |
+| 13:12 | 00 = OK, 01 = Type, 10 = Authentication, 11 = Comm Loss | Cell Errors        |
+| 14    | 0                                                       | Aquarite PCB Error |
 
 ### Chlorinator Alert Bit Array
 
-|Bits  |Value                                                               |Description                    |
-|------|--------------------------------------------------------------------|-------------------------------|
-|1:0   |00 = OK<br>  01 = Salt Low<br> 10 = Salt too Low                    |Low salt                       |
-|2     |0 = OK<br>  1 = High                                                |High Current                   |
-|3     |0 = OK<br>  1 = Low                                                 |Low Voltage                    |
-|5:4   |00 = OK<br>  01 = Low<br> 10 = Scaleback<br> 11 = High              |Cell Water Temp                |
-|7:6   |00 = OK<br>  01 = High<br> 10 = Clearing                            |Board Temp                     |
-|8     |0                                                                   |Not Used                       |
-|10:9  |0                                                                   |Not Used                       |
-|12:11 |00 = OK<br>  01 = Clean                                             |Cell Cleaning/Runtime          |
+| Bits  | Value                                        | Description           |
+|-------|----------------------------------------------|-----------------------|
+| 1:0   | 00 = OK, 01 = Salt Low, 10 = Salt too Low    | Low salt              |
+| 2     | 0 = OK, 1 = High                             | High Current          |
+| 3     | 0 = OK, 1 = Low                              | Low Voltage           |
+| 5:4   | 00 = OK, 01 = Low, 10 = Scaleback, 11 = High | Cell Water Temp       |
+| 7:6   | 00 = OK, 01 = High, 10 = Clearing            | Board Temp            |
+| 8     | 0                                            | Not Used              |
+| 10:9  | 0                                            | Not Used              |
+| 12:11 | 00 = OK, 01 = Clean                          | Cell Cleaning/Runtime |
 
 ### Chlorinator Status Bit Array
 
-|Bits  |Value                                                           |Description                    |
-|------|----------------------------------------------------------------|-------------------------------|
-|0     |0 = OK<br>1 = Error Present                                     |Error Present                  |
-|1     |0 = OK<br>1 = Alert Present                                     |Alert Present                  |
-|2     |0 = Standy<br>1 = Generating                                    |Generating                     |
-|3     |0 = Not Paused<br>1 = Paused<br>                                |Paused                         |
-|4     |0 = Local Not Paused<br>1 = Local Paused<br>                    |Local Pause                    |
-|5     |0 = Not Authenticated<><BR>1 = Authenticated                    |T-Cell Authenticated           |
-|6     |0 = K1 Relay Off<br> 1 = K1 Relay On                            |K1 Relay Active                |
-|7     |0 = K2 Relay Off<br> 1 = K2 Relay On                            |K2 Relay Active                |
+|Bits  |Value                                                         |Description                    |
+|------|--------------------------------------------------------------|-------------------------------|
+|0     |0 = OK, 1 = Error Present                                     |Error Present                  |
+|1     |0 = OK, 1 = Alert Present                                     |Alert Present                  |
+|2     |0 = Standy, 1 = Generating                                    |Generating                     |
+|3     |0 = Not Paused, 1 = Paused                                    |Paused                         |
+|4     |0 = Local Not Paused, 1 = Local Paused                        |Local Pause                    |
+|5     |0 = Not Authenticated, 1 = Authenticated                      |T-Cell Authenticated           |
+|6     |0 = K1 Relay Off, 1 = K1 Relay On                             |K1 Relay Active                |
+|7     |0 = K2 Relay Off, 1 = K2 Relay On                             |K2 Relay Active                |
 
 ### Colorlogic Light Channels
 
@@ -122,7 +122,8 @@ Hayward OmniLogic Connection Parameters:
 | colorLogicLightCurrentShow | String    | Colorlogic Light current show |     R/W    |
 | colorLogicLightBrightness  | String    | Colorlogic Light brightness   |     R/W    |
 | colorLogicLightSpeed       | String    | Colorlogic Light speed        |     R/W    |
-**Brightness and speed channels only available on Hayward V2 lights
+
+**Note:** Brightness and speed channels only available on Hayward V2 lights
 
 ### Filter Channels
 

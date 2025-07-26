@@ -36,8 +36,8 @@ The IPX800v3 (ID : 'ipx800v3') accepts the following configuration parameters :
 | portNumber          | 9870    | No       | TCP client connection port. |
 | pullInterval*       | 5000    | No       | Refresh interval (in ms)    |
 
-The binding will query periodically the 'globalstatus.xml' page of the IPX to get fresh informations.
-This is especially usefull for Analog inputs and Counter as modification of these values on PLC side does not trigger any M2M message.
+The binding will query periodically the 'globalstatus.xml' page of the IPX to get fresh information.
+This is especially useful for Analog inputs and Counter as modification of these values on PLC side does not trigger any M2M message.
 
 The thing provides four groups of channels.
 
