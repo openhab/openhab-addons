@@ -6,14 +6,14 @@ You'll receive your API Key by mail.
 
 ## Supported Things
 
-- `api`: bridge used to connect to the AirParif service. Provides some general informations for the whole area.
+- `api`: bridge used to connect to the AirParif service. Provides some general information for the whole area.
 - `location`: Presents the pollen and air quality information for a given location.
 
 Of course, you can add multiple `location`s, e.g. for gathering pollen or air quality data for different locations.
 
 ## Discovery
 
-Once your `api` bridge is created and configured with the API Key, a default `location` can be auto-discovered based on system location. 
+Once your `api` bridge is created and configured with the API Key, a default `location` can be auto-discovered based on system location.
 It will be configured with the system location and detected department.
 
 ## Thing Configuration
@@ -28,7 +28,7 @@ It will be configured with the system location and detected department.
 
 | Name            | Type    | Description                                                                    | Default | Required | Advanced |
 |-----------------|---------|--------------------------------------------------------------------------------|---------|----------|----------|
-| location        | text    | Geo coordinates to be considered (as <latitude>,<longitude>[,<altitude in m>]) | N/A     | yes      | no       |
+| location        | text    | Geo coordinates to be considered (as `{latitude},{longitude}[,{altitude in m}]`) | N/A     | yes      | no       |
 | department      | text    | Code of the department (two digits) (*)                                        | N/A     | yes      | no       |
 
 (*) When auto-discovered, the department will be pre-filled based on the location and bounding limits defined in the internal department database.
@@ -129,29 +129,29 @@ This binding has its own IconProvider and makes available the following list of 
 
 | Icon Name              | Dynamic | Illustration |
 |------------------------|---------|--------------|
-| oh:airparif:aq         |   Yes   | ![](doc/images/aq.svg) |
-| oh:airparif:alder      |   Yes   | ![](doc/images/alder.svg) |
-| oh:airparif:ash        |   Yes   | ![](doc/images/ash.svg) |
-| oh:airparif:birch      |   Yes   | ![](doc/images/birch.svg) |
-| oh:airparif:chestnut   |   Yes   | ![](doc/images/chestnut.svg) |
-| oh:airparif:cypress    |   Yes   | ![](doc/images/cypress.svg) |
-| oh:airparif:grasses    |   Yes   | ![](doc/images/grasses.svg) |
-| oh:airparif:hazel      |   Yes   | ![](doc/images/hazel.svg) |
-| oh:airparif:hornbeam   |   Yes   | ![](doc/images/hornbeam.svg) |
-| oh:airparif:linden     |   Yes   | ![](doc/images/linden.svg) |
-| oh:airparif:oak        |   Yes   | ![](doc/images/oak.svg) |
-| oh:airparif:olive      |   Yes   | ![](doc/images/olive.svg) |
-| oh:airparif:plane      |   Yes   | ![](doc/images/plane.svg) |
-| oh:airparif:plantain   |   Yes   | ![](doc/images/plantain.svg) |
+| oh:airparif:aq         |   Yes   | ![Air Quality](doc/images/aq.svg) |
+| oh:airparif:alder      |   Yes   | ![Alder](doc/images/alder.svg) |
+| oh:airparif:ash        |   Yes   | ![Ash](doc/images/ash.svg) |
+| oh:airparif:birch      |   Yes   | ![Birch](doc/images/birch.svg) |
+| oh:airparif:chestnut   |   Yes   | ![Chestnut](doc/images/chestnut.svg) |
+| oh:airparif:cypress    |   Yes   | ![Cypress](doc/images/cypress.svg) |
+| oh:airparif:grasses    |   Yes   | ![Grasses](doc/images/grasses.svg) |
+| oh:airparif:hazel      |   Yes   | ![Hazel](doc/images/hazel.svg) |
+| oh:airparif:hornbeam   |   Yes   | ![Hornbeam](doc/images/hornbeam.svg) |
+| oh:airparif:linden     |   Yes   | ![Linden](doc/images/linden.svg) |
+| oh:airparif:oak        |   Yes   | ![Oak](doc/images/oak.svg) |
+| oh:airparif:olive      |   Yes   | ![Olive](doc/images/olive.svg) |
+| oh:airparif:plane      |   Yes   | ![Plane](doc/images/plane.svg) |
+| oh:airparif:plantain   |   Yes   | ![Plantain](doc/images/plantain.svg) |
 | oh:airparif:pollen     |   Yes   | x |
-| oh:airparif:poplar     |   Yes   | ![](doc/images/poplar.svg) |
-| oh:airparif:ragweed    |   Yes   | ![](doc/images/ragweed.svg) |
-| oh:airparif:rumex      |   Yes   | ![](doc/images/rumex.svg) |
-| oh:airparif:urticaceae |   Yes   | ![](doc/images/urticaceae.svg) |
-| oh:airparif:willow     |   Yes   | ![](doc/images/willow.svg) |
-| oh:airparif:wormwood   |   Yes   | ![](doc/images/wormwood.svg) |
+| oh:airparif:poplar     |   Yes   | ![Poplar](doc/images/poplar.svg) |
+| oh:airparif:ragweed    |   Yes   | ![Ragweed](doc/images/ragweed.svg) |
+| oh:airparif:rumex      |   Yes   | ![Rumex](doc/images/rumex.svg) |
+| oh:airparif:urticaceae |   Yes   | ![Urticaceae](doc/images/urticaceae.svg) |
+| oh:airparif:willow     |   Yes   | ![Willow](doc/images/willow.svg) |
+| oh:airparif:wormwood   |   Yes   | ![Wormwood](doc/images/wormwood.svg) |
 
-## Full Examplee
+## Full Example
 
 ### Thing Configurationn
 
