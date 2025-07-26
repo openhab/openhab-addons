@@ -64,6 +64,8 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
     private final Logger logger = LoggerFactory.getLogger(ElectroluxApplianceBridgeHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
+    public static final String CURRENT_AUTH_TOKEN_STORAGE_KEY = "currentConfigToken";
+    public static final String REFRESH_AUTH_TOKEN_STORAGE_KEY = "refreshToken";
 
     private int refreshTimeInSeconds = 300;
     private boolean isCommunicationError = false;
@@ -98,15 +100,15 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
 
         // If the saved token was saved with the match config.refreshToken from the config restore it for use
         @Nullable
-        String storedRefreshToken = storage.get("currentConfigToken");
+        String storedRefreshToken = storage.get(CURRENT_AUTH_TOKEN_STORAGE_KEY);
         if (storedRefreshToken != null && config.refreshToken.equals(storedRefreshToken)) {
-            final @Nullable String savedToken = storage.get("refreshToken");
+            final @Nullable String savedToken = storage.get(REFRESH_AUTH_TOKEN_STORAGE_KEY);
             if (savedToken != null) {
                 onTokenUpdated(savedToken);
             }
         } else {
-            storage.put("currentConfigToken", config.refreshToken);
-            storage.put("refreshToken", config.refreshToken);
+            storage.put(CURRENT_AUTH_TOKEN_STORAGE_KEY, config.refreshToken);
+            storage.put(REFRESH_AUTH_TOKEN_STORAGE_KEY, config.refreshToken);
         }
 
         refreshTimeInSeconds = config.refresh;
