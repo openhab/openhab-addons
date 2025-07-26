@@ -517,7 +517,7 @@ Possible view ports:
 
 ### Dynamic Data
 
-<img align="right" src="./doc/SessionOptions.png" alt="Session options example" width="400" height="250"/>
+<img align="right" src="doc/SessionOptions.png" alt="Session options example" width="400" height="250"/>
 
 There are 3 occurrences of dynamic data delivered
 
