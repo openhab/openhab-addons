@@ -29,7 +29,7 @@ The different meter types are pretty similar in basic, but are implemented in pa
 
 | Parameter  | Description                                                                                                                                                                                         | Required |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| resourceId | The ID which represents the current meter. You can find it in the pixometer browser app while editing a specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit" | Yes      |
+| resourceId | The ID which represents the current meter. You can find it in the pixometer browser app while editing a specific meter. It should look like this: `https://pixometer.io/portal/#/meters/XXXXX/edit` | Yes      |
 
 ## Channels
 

@@ -6,7 +6,7 @@ Pi-hole is a powerful network-level advertisement and internet tracker blocking 
 By intercepting DNS requests, it can prevent unwanted content from being displayed on devices connected to your network.
 The Pi-hole Binding allows you to monitor Pi-hole statistics and control its functionality directly from your openHAB setup.
 
-### Features
+## Features
 
 - Real-time Statistics: Monitor key metrics such as the number of domains being blocked, DNS queries made today, ads blocked today, and more.
 - Control: Enable or disable Pi-hole's blocking functionality, configure blocking options, and adjust privacy settings directly from openHAB.
@@ -148,8 +148,8 @@ rule "test"
 when
     /* when */
 then
-	val actions = getActions("pihole", "pihole:server:as8af03m38")
-	if (actions !== null) {
+    val actions = getActions("pihole", "pihole:server:as8af03m38")
+    if (actions !== null) {
             // disable blocking for 5 * 60 seconds (5 minutes)
             actions.disableBlocking(5 * 60)
 
@@ -162,6 +162,6 @@ then
 
             // enable blocking
             actions.enableBlocking()
-	}
+    }
 end
 ```

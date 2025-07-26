@@ -6,7 +6,7 @@ To use this binding, you first need to [register and get your API token](https:/
 
 ## Discovery
 
-Once a bridge with the api Key has been created, Local UV Index informations can be auto discovered based on system location.
+Once a bridge with the api Key has been created, Local UV Index information can be auto discovered based on system location.
 
 ## Binding Configuration
 
@@ -68,9 +68,9 @@ This binding has its own IconProvider and makes available the following list of 
 
 | Icon Name          | Dynamic | Illustration               |
 |--------------------|---------|----------------------------|
-| oh:openuv:ozone    | No      | ![](doc/icon/ozone.svg)    |
-| oh:openuv:uv-alarm | Yes     | ![](doc/icon/uv-alarm.svg) |
-| oh:openuv:uv-index | Yes     | ![](doc/icon/uv-index.svg) |
+| oh:openuv:ozone    | No      | ![Ozone icon](doc/icon/ozone.svg)    |
+| oh:openuv:uv-alarm | Yes     | ![UV alarm icon](doc/icon/uv-alarm.svg) |
+| oh:openuv:uv-index | Yes     | ![UV index icon](doc/icon/uv-index.svg) |
 
 ## Examples
 

@@ -32,11 +32,11 @@ Configure a station manually using [list of all available stations](https://pege
 
 ### Warning Levels
 
-<img align="right" src="./doc/Marburg.png" width="450" height="500"/>
+<img align="right" src="doc/Marburg.png" alt="Marburg water level measurement station" width="450" height="500"/>
 
 Each station has specific warning levels
 
-- Warning Levels 1 (*lowest*) to 3 (*highest*)
+- Warning Levels 1 (_lowest_) to 3 (_highest_)
 - Flooding Levels
 
 Unfortunately these levels cannot be queried automatically.
