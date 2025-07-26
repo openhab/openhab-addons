@@ -58,7 +58,7 @@ Advantage and Disadvantage of Each Method.
   
 Be warned that MyElectricalData bridge collect data using MyElectricalData service.
 This service will store your enedis information for caching purpose.
-This cache is crypted, so it may be a very big concerns, but of course, we don`t know the details about this crypting, and if it can be reverse to access your data.
+This cache is crypted, so it may be a very big concerns, but of course, we don't know the details about this crypting, and if it can be reverse to access your data.
 
 ### Bridge Configuration
 
