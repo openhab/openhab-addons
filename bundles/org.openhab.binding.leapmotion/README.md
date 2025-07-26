@@ -33,11 +33,11 @@ It generates the following events with a frequency of at most 200ms:
 
 This binding specifies 3 profiles for the `gesture` channel to make it easy to link to existing items:
 
-| Profile           | Description                                                                                                                                                                                                                                                                                           |
-|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| leapmotion:switch | Simulates a toggle switch using the "tap" gesture                                                                                                                                                                                                                                                     |
-| leapmotion:dimmer | Sends percentage values and supports two modes (configuration parameter `mode=fingers|height`): - fingers: 20% for every shown finger, i.e. 0=0%, 1=20%, 2=40%, 3=60%, 4=80%, 5=100% - height: If hand shows all 5 fingers, its height above the controller determines the value. Higher is brighter. |
-| leapmotion:color  | Controls a color item by - using taps for switching on and off - height of hand (with 5 fingers shown) to dim - rotating a finger to loop through the colors                                                                                                                                          |
+| Profile           | Description                                                                                                                   |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| leapmotion:switch | Simulates a toggle switch using the "tap" gesture                                                                             |
+| leapmotion:dimmer | Sends percentage values and supports two modes (configuration parameter `mode=fingers\|height`): fingers: 20% for every shown finger, i.e. 0=0%, 1=20%, 2=40%, 3=60%, 4=80%, 5=100%; height: If hand shows all 5 fingers, its height above the controller determines the value. Higher is brighter. |
+| leapmotion:color  | Controls a color item by using taps for switching on and off, height of hand (with 5 fingers shown) to dim, rotating a finger to loop through the colors |
 
 ## Full Example
 
