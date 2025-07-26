@@ -610,7 +610,7 @@ Usage: openhab:dirigera debug [<deviceId> | all] [true | false]  - Enable / disa
 
 Prints the access token to communicate with DIRIGERA gateway as console output.
 
-```text
+```shell
 console> openhab:dirigera token
 DIRIGERA Hub token: abcdef12345.......
 ```
