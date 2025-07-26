@@ -184,7 +184,7 @@ Once initialized, the thing will generate all available channels.
 
 The following channels are supported:
 
-| Thing Type            | Channel Grpup ID  | Channel ID           | Item Type               | Access Mode | Description                                                                    |
+| Thing Type            | Channel Group ID  | Channel ID           | Item Type               | Access Mode | Description                                                                    |
 |-----------------------|-------------------|----------------------|-------------------------|-------------|--------------------------------------------------------------------------------|
 | revolution            | display           | lcd-brightness       | Number:Dimensionless    | RW          | Brightness level of the screen in percent                                      |
 | revolution            | display           | lcd-orientation      | Number                  | RW          | Screen Orientation in degrees (0 or 90 or 180 or 270)                          |
@@ -243,7 +243,7 @@ The following channels are supported:
 | call                  | outgoing          | duration             | Number:Time             | R           | Last outgoing call duration in seconds                                         |
 | call                  | outgoing          | timestamp            | DateTime                | R           | Last outgoing call creation timestamp                                          |
 | call                  | outgoing          | name                 | String                  | R           | Last outgoing called name                                                      |
-| basic-shutter         |                   | basic-shutter        | RollerShutter           | W           | Up, stop and down commands for a RTS shutter                                   |
+| basic-shutter         |                   | basic-shutter        | Rollershutter           | W           | Up, stop and down commands for a RTS shutter                                   |
 
 (*): any thing type amongst _active-player_, _player_, _host_, _wifihost_, _repeater_ and _vm_.
 
