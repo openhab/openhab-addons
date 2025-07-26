@@ -306,7 +306,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | instantpower                      | Number:Power              | Instant power consumption in Watts |
 | totalusage                        | Number:Energy             | Used energy in Kilowatt hours |
 | teachInCMD                        | Switch                    | Sends a teach-in msg, content can configured with parameter teachInMSG |
-| virtualSwitchA                    | Switch                    | Used to convert switch item commands into rocker switch messages (channel A used)Time in ms between sending a pressed and release message can be defined with channel parameter duration.The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2) |
+| virtualSwitchA                    | Switch                    | Used to convert switch item commands into rocker switch messages (channel A used). Time in ms between sending a pressed and release message can be defined with channel parameter duration. The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2) |
 | virtualRollershutterA             | Rollershutter             | Used to convert rollershutter item commands into rocker switch messages (channel A used) |
 | rockerswitchListenerSwitch        | Switch                    | Used to convert rocker switch messages into switch item state updates |
 | rockerswitchListenerRollershutter | Rollershutter             | Used to convert rocker switch messages into rollershutter item state updates |
