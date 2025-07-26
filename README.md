@@ -1,6 +1,6 @@
 # openHAB Add-ons
 
-<img align="right" width="220" src="./logo.png" alt="openHAB logo" />
+<img align="right" width="220" src="logo.png" alt="openHAB logo" />
 
 [![GitHub Actions Build Status](https://github.com/openhab/openhab-addons/actions/workflows/ci-build.yml/badge.svg?branch=main)](https://github.com/openhab/openhab-addons/actions/workflows/ci-build.yml)
 [![Jenkins Build Status](https://ci.openhab.org/job/openHAB-Addons/badge/icon)](https://ci.openhab.org/job/openHAB-Addons/)
