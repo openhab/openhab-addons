@@ -120,7 +120,7 @@ The `api-count` channel delivers a JSON object with 3 different counters:
 {"200":2,"other":0,"429":0} 
 ```
 
-<img src="./doc/APICountTransformation.png" alt="API Count Transformation Example" width="320" height="300"/>
+<img src="doc/APICountTransformation.png" alt="API Count Transformation Example" width="320" height="300"/>
 
 You can connect a Number item to this channel using a [JSONPATH transformation](https://www.openhab.org/addons/transformations/jsonpath/) referring the wanted JSON key e.g. `$.200`.
 
