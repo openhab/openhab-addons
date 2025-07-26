@@ -29,6 +29,8 @@ public class LGWebOSConfiguration {
     String key; // name has to match LGWebOSBindingConstants.CONFIG_KEY
     @Nullable
     String macAddress; // name has to match LGWebOSBindingConstants.CONFIG_MAC_ADDRESS
+    @Nullable
+    String broadcastAddress; // name has to match LGWebOSBindingConstants.CONFIG_BROADCAST_ADDRESS
     boolean useTLS = true;
 
     public String getHost() {
@@ -48,6 +50,11 @@ public class LGWebOSConfiguration {
     public String getMacAddress() {
         String m = macAddress;
         return m == null ? "" : m;
+    }
+
+    public String getBroadcastAddress() {
+        String b = broadcastAddress;
+        return b == null ? "" : b;
     }
 
     @Override
