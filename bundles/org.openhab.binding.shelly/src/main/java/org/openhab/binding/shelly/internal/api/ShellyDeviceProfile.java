@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
@@ -54,7 +56,7 @@ public class ShellyDeviceProfile {
     private static final Pattern GEN1_VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
     private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]*)?");
     private static final Map<ThingTypeUID, Integer> BLU_NUM_INPUTS = Map.ofEntries( //
-            Map.entry(THING_TYPE_SHELLYBLUBUTTON, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUBUTTON1, 1), //
             Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
             Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4));
 
@@ -172,6 +174,26 @@ public class ShellyDeviceProfile {
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(device.numRollers);
         List<ShellySettingsInput> inputs = settings.inputs;
+        if (isButton) {
+            // Initialize the tables
+            settings.inputs = new ArrayList<>();
+            ShellySettingsInput settings = new ShellySettingsInput();
+            settings.btnType = SHELLY_BTNT_MOMENTARY;
+            if (isBlu && BLU_NUM_INPUTS.containsKey(thingTypeUID)) {
+                ShellyInputState input = new ShellyInputState();
+                input.input = 0;
+                input.event = "";
+                input.eventCount = 0;
+
+                int numInputs = BLU_NUM_INPUTS.get(thingTypeUID);
+                logger.trace("{} ShellyBluApi constructor, number of inputs: {}", thingName, numInputs);
+
+                for (int i = 0; i < numInputs; i++) {
+                    inputs.set(i, settings);
+                    inputs.add(settings);
+                }
+            }
+        }
         numInputs = inputs != null ? inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
@@ -231,7 +253,9 @@ public class ShellyDeviceProfile {
         isIX = THING_TYPE_SHELLYIX3.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSI4.equals(thingTypeUID)
                 || THING_TYPE_SHELLYPLUSI4DC.equals(thingTypeUID);
         isButton = THING_TYPE_SHELLYBUTTON1.equals(thingTypeUID) || THING_TYPE_SHELLYBUTTON2.equals(thingTypeUID)
-                || THING_TYPE_SHELLYBLUBUTTON.equals(thingTypeUID);
+                || THING_TYPE_SHELLYBLUBUTTON1.equals(thingTypeUID)
+                || THING_TYPE_SHELLYBLUWALLSWITCH4.equals(thingTypeUID)
+                || THING_TYPE_SHELLYBLURCBUTTON4.equals(thingTypeUID);
         isMultiButton = THING_TYPE_SHELLYBLUWALLSWITCH4.equals(thingTypeUID)
                 || THING_TYPE_SHELLYBLURCBUTTON4.equals(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
@@ -438,29 +462,5 @@ public class ShellyDeviceProfile {
 
         // If device is not yet intialized or the enabled property is missing we assume that CoIoT is enabled
         return true;
-    }
-
-    /**
-     * Generates a service name based on the provided model name and MAC address.
-     * Delimiters will be stripped from the returned MAC address.
-     *
-     * @param name Model name such as SBBT-02C or just SBDW
-     * @param mac MAC address with or without colon delimiters
-     * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
-     */
-    public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
-        String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
-        return SERVICE_NAME_SHELLYBLU_PREFIX + switch (model) {
-            case SHELLYDT_BLUBUTTONCLASS -> "button";
-            case SHELLYDT_BLUBUTTON1 -> "button";
-            case SHELLYDT_BLUWALLSWITCH4 -> "wallswitch4";
-            case SHELLYDT_BLUWALLSWITCH4_2 -> "wallswitch4";
-            case SHELLYDT_BLURCBUTTON4 -> "rcbutton4";
-            case SHELLYDT_BLUREMOTE -> "remote";
-            case SHELLYDT_BLUDW -> "dw";
-            case SHELLYDT_BLUMOTION -> "motion";
-            case SHELLYDT_BLUHT -> "ht";
-            default -> throw new IllegalArgumentException("Unsupported BLU device model " + model);
-        } + "-" + mac.replaceAll(":", "").toLowerCase();
     }
 }

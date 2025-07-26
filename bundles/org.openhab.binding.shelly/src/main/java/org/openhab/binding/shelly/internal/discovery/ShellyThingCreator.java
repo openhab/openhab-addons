@@ -261,7 +261,7 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO4PM = new ThingTypeUID(BINDING_ID, "shellypro4pm");
 
     // Shelly Blu series
-    public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON = new ThingTypeUID(BINDING_ID, "shellyblubutton");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON1 = new ThingTypeUID(BINDING_ID, "shellyblubutton");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUWALLSWITCH4 = new ThingTypeUID(BINDING_ID,
             "shellybluwallswitch4");
     public static final ThingTypeUID THING_TYPE_SHELLYBLURCBUTTON4 = new ThingTypeUID(BINDING_ID, "shellyblurcbutton4");
@@ -362,8 +362,9 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_4PRO, THING_TYPE_SHELLYPRO4PM), //
 
             // BLU Series
-            Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON),
+            Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON1),
             Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4),
+            Map.entry(SHELLYDT_BLUWALLSWITCH4_2, THING_TYPE_SHELLYBLUWALLSWITCH4),
             Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4),
             Map.entry(SHELLYDT_BLUREMOTE, THING_TYPE_SHELLYBLUREMOTE),
 
@@ -485,7 +486,7 @@ public class ShellyThingCreator {
             Map.entry("shellypro4pm", THING_TYPE_SHELLYPRO4PM),
 
             // Shelly BLU Series
-            Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON), //
+            Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON1), //
             Map.entry("shellybluwallswitch4", THING_TYPE_SHELLYBLUWALLSWITCH4), //
             Map.entry("shellyblurcbutton4", THING_TYPE_SHELLYBLURCBUTTON4), //
             Map.entry("shellybluremote", THING_TYPE_SHELLYBLUREMOTE), //
@@ -497,6 +498,20 @@ public class ShellyThingCreator {
 
             // Password protected device
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED));
+
+    private static final Map<String, String> BLU_SERVICE_NAMES_BY_MODEL = Map.ofEntries( //
+            // with specific model id
+            Map.entry(SHELLYDT_BLUBUTTON1, "shellyplusbutton"), //
+            Map.entry(SHELLYDT_BLUWALLSWITCH4, "shellypluswallswitch4"), //
+            Map.entry(SHELLYDT_BLUWALLSWITCH4_2, "shellypluswallswitch4"), //
+            Map.entry(SHELLYDT_BLURCBUTTON4, "shellyplusrcbutton4"), //
+            Map.entry(SHELLYDT_BLUREMOTE, "shellyplusremote"), //
+
+            // with unspecific model (string everything behind -
+            Map.entry(SHELLYDT_BLUBUTTONCLASS, "shellyplusbutton"), //
+            Map.entry(SHELLYDT_BLUDW, "shellyplusdw"), //
+            Map.entry(SHELLYDT_BLUMOTION, "shellyplusmotion"), //
+            Map.entry(SHELLYDT_BLUHT, "shellyplusht"));
 
     public static ThingUID getThingUID(String serviceName) {
         return getThingUID(serviceName, "", "");
@@ -577,6 +592,27 @@ public class ShellyThingCreator {
         }
 
         return THING_TYPE_BY_SERVICE_NAME.getOrDefault(type, THING_TYPE_SHELLYUNKNOWN);
+    }
+
+    /**
+     * Generates a service name based on the provided model name and MAC address.
+     * Delimiters will be stripped from the returned MAC address.
+     *
+     * @param name Model name such as SBBT-02C or just SBDW
+     * @param mac MAC address with or without colon delimiters
+     * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
+     */
+    public static String buildBluServiceName(String model, String mac) throws IllegalArgumentException {
+        String serviceName = getString(BLU_SERVICE_NAMES_BY_MODEL.get(model));
+        String bluClass = model.contains("-") ? substringBefore(model, "-") : model; // e.g. SBBT-02C or just SBDW
+        if (serviceName.isEmpty()) {
+            serviceName = getString(BLU_SERVICE_NAMES_BY_MODEL.get(bluClass));
+        }
+        if (!serviceName.isEmpty()) {
+            return serviceName + "-" + mac.replaceAll(":", "").toLowerCase();
+        }
+
+        throw new IllegalArgumentException("Unsupported BLU device model " + model);
     }
 
     private static ThingTypeUID getRelayOrRollerType(ThingTypeUID relayType, ThingTypeUID rollerType, String mode) {
