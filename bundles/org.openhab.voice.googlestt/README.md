@@ -12,7 +12,7 @@ Before you can integrate this service with your Google Cloud Speech-to-Text, you
 - Make sure that billing is enabled for your project. [see billing documentation](https://cloud.google.com/billing/docs/how-to/modify-project)
 - Enable the Cloud Speech-to-Text API. [see dashboard](https://console.cloud.google.com/apis/dashboard)
 - Set up authentication:
-  - Go to the "APIs & Services" -> "Credentials" page in the GCP Console and your project. [see credential page](https://console.cloud.google.com/apis/credentials)
+  - Go to the "APIs & Services" -> "Credentials" page in the GCP Console and your project. [see credentials page](https://console.cloud.google.com/apis/credentials)
   - From the "Create credentials" drop-down list, select "OAuth client ID".
   - Select application type "Web application" and enter a name into the "Name" field.
   - Add "<https://www.google.com>" to the "Authorized redirect URIs".
