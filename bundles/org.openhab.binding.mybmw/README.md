@@ -575,7 +575,7 @@ As with fingerprint data, personal data is eliminated from logs.
 
 ### Range vs Range Radius
 
-<img align="right" src="./doc/range-radius.png" alt="Range radius example" width="400" height="350"/>
+<img align="right" src="doc/range-radius.png" alt="Range radius example" width="400" height="350"/>
 
 You will observe differences in the vehicle range and range radius values.
 While range is indicating the possible distance to be driven on roads the range radius indicates the reachable range on the map.
