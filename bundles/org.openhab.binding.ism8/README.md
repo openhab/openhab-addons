@@ -27,7 +27,6 @@ The intention was to have a generic ISM8 binding in order to offer full flexibil
 For this reason, you need to create a Thing configuration, where basically only the port is required next to the channel configuration.
 (`Thing ism8:device:heater "Wolf Heizung" [portNumber=12004]`)
 
-
 ## Channels
 
 You can use any channel supported by the ISM8 as a data point. Please take a look at the official manual from Wolf.
@@ -56,6 +55,7 @@ Configuration:
 A list of the available IDs is available within the Wolf manual.
 
 Depending on the firmware version of the ISM8 and the connected systems, the supported IDs differ.
+
 - type="1.001"    - Please enter here the KNX type of the data point.
 You can find the data type in the Wolf ISM8 document as well.
 - write=true      - This parameter defines if the channel is bidirectional, but the parameter is optional and by default false.
@@ -81,7 +81,7 @@ For the moment, the following data types are implemented:
 
 Date and Time types used by for CWL Excellent and CWL2 are currently not supported by the ISM8 add-on.
 
-*Attention:* Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e., `1` is mapped to `OPEN` instead of `CLOSE`).
+**Attention:** Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e., `1` is mapped to `OPEN` instead of `CLOSE`).
 A change would break all existing installations and is therefore not implemented.
 
 ## Full Example
@@ -291,4 +291,4 @@ NULL=Undefiniert
 ```
 
 _Result_
-<img src="./doc/Sitemap-Example.png" width="800" height="600">
+![Sitemap Example](doc/Sitemap-Example.png)
