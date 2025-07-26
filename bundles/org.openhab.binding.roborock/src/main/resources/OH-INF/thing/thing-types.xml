@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="roborock"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Roborock Account Handler</label>
+		<description>Control Roborock devices</description>
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<label>Email Address</label>
+				<description>email address for Roborock account</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Password for Roborock account</description>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="min" min="1">
+				<label>Refresh Interval</label>
+				<advanced>true</advanced>
+				<description>Specifies the refresh interval in minutes.</description>
+				<unitLabel>Minutes</unitLabel>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<thing-type id="vacuum">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Robot Vacuum</label>
+		<description>Roborock Robot Vacuum Cleaner</description>
+
+		<channel-groups>
+			<channel-group id="actions" typeId="actions"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="consumables" typeId="consumables"/>
+			<channel-group id="dnd" typeId="dnd"/>
+			<channel-group id="history" typeId="history"/>
+			<channel-group id="cleaning" typeId="cleaning"/>
+			<channel-group id="network" typeId="network"/>
+			<channel-group id="info" typeId="info"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="refresh" type="integer" unit="min" min="1" required="false">
+				<label>Refresh Interval</label>
+				<advanced>true</advanced>
+				<description>Specifies the refresh interval in minutes.</description>
+				<unitLabel>Minutes</unitLabel>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="actions">
+		<label>Action</label>
+		<channels>
+			<channel id="control" typeId="control"/>
+			<channel id="commands" typeId="commands"/>
+			<channel id="rpc" typeId="rpc"/>
+			<channel id="fan" typeId="fan"/>
+			<channel id="vacuum" typeId="vacuum"/>
+			<channel id="segment" typeId="segment"/>
+			<channel id="routine" typeId="routine"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status">
+		<label>Status</label>
+		<channels>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="clean_area" typeId="clean_area"/>
+			<channel id="clean_time" typeId="clean_time"/>
+			<channel id="error_code" typeId="error_code"/>
+			<channel id="error_id" typeId="error_id"/>
+			<channel id="fan_power" typeId="fan_power"/>
+			<channel id="in_cleaning" typeId="in_cleaning"/>
+			<channel id="dnd_enabled" typeId="dnd_enabled"/>
+			<channel id="map_present" typeId="map_present"/>
+			<channel id="state" typeId="state"/>
+			<channel id="state_id" typeId="state_id"/>
+			<channel id="segment_status" typeId="segment_status"/>
+			<channel id="map_status" typeId="map_status"/>
+			<channel id="led_status" typeId="led_status"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="consumables">
+		<label>Consumables</label>
+		<channels>
+			<channel id="main_brush_percent" typeId="main_brush_percent"/>
+			<channel id="side_brush_percent" typeId="side_brush_percent"/>
+			<channel id="filter_percent" typeId="filter_percent"/>
+			<channel id="sensor_dirt_percent" typeId="sensor_dirt_percent"/>
+			<channel id="main_brush_time" typeId="main_brush_time"/>
+			<channel id="side_brush_time" typeId="side_brush_time"/>
+			<channel id="filter_time" typeId="filter_time"/>
+			<channel id="sensor_dirt_time" typeId="sensor_dirt_time"/>
+			<channel id="consumable_reset" typeId="consumable_reset"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="dnd">
+		<label>Do Not Disturb</label>
+		<channels>
+			<channel id="dnd_function" typeId="dnd_function"/>
+			<channel id="dnd_start" typeId="dnd_start"/>
+			<channel id="dnd_end" typeId="dnd_end"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="cleaning">
+		<label>Last Cleaning Details</label>
+		<channels>
+			<channel id="last_clean_start_time" typeId="last_clean_start_time"/>
+			<channel id="last_clean_end_time" typeId="last_clean_end_time"/>
+			<channel id="last_clean_area" typeId="last_clean_area"/>
+			<channel id="last_clean_duration" typeId="last_clean_duration"/>
+			<channel id="last_clean_error" typeId="last_clean_error"/>
+			<channel id="last_clean_finish" typeId="last_clean_finish"/>
+			<channel id="last_clean_finish_reason" typeId="last_clean_finish_reason"/>
+			<channel id="last_clean_dustcollection_status" typeId="last_clean_dustcollection_status"/>
+			<channel id="last_clean_record" typeId="last_clean_record"/>
+			<channel id="map" typeId="map"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="history">
+		<label>History</label>
+		<channels>
+			<channel id="total_clean_area" typeId="total_clean_area"/>
+			<channel id="total_clean_time" typeId="total_clean_time"/>
+			<channel id="total_clean_count" typeId="total_clean_count"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="info">
+		<label>Info</label>
+		<channels>
+			<channel id="multi_maps_list" typeId="multi_maps_list"/>
+			<channel id="room_mapping" typeId="room_mapping"/>
+			<channel id="routine_mapping" typeId="routine_mapping"/>
+			<channel id="fw_features" typeId="fw_features"/>
+			<channel id="customize_clean_mode" typeId="customize_clean_mode"/>
+			<channel id="carpet_mode" typeId="carpet_mode"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="network">
+		<label>Network</label>
+		<channels>
+			<channel id="ssid" typeId="ssid"/>
+			<channel id="bssid" typeId="bssid"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Status channels -->
+	<channel-type id="clean_area">
+		<item-type>Number</item-type>
+		<label>Cleaning Area</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="clean_time">
+		<item-type>Number</item-type>
+		<label>Cleaning Time</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="dnd_enabled">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb</label>
+	</channel-type>
+	<channel-type id="error_code">
+		<item-type>String</item-type>
+		<label>Error Code</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="error_id">
+		<item-type>Number</item-type>
+		<label>Error ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fan_power">
+		<item-type>Number</item-type>
+		<label>Fan Power</label>
+		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="in_cleaning" advanced="true">
+		<item-type>Number</item-type>
+		<label>In Cleaning</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="map_present" advanced="true">
+		<item-type>Number</item-type>
+		<label>Map Present</label>
+		<category>Energy</category>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="msg_seq" advanced="true">
+		<item-type>Number</item-type>
+		<label>Msg Seq</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_id">
+		<item-type>Number</item-type>
+		<label>State ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="segment_status" advanced="true">
+		<item-type>Number</item-type>
+		<label>Segment Status</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="map_status" advanced="true">
+		<item-type>Number</item-type>
+		<label>Map Status</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="led_status" advanced="true">
+		<item-type>Number</item-type>
+		<label>Led Status</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<!-- Dynamic Status Channels -->
+	<channel-type id="water_box_mode">
+		<item-type>Number</item-type>
+		<label>Water Box Mode</label>
+		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="mop_mode">
+		<item-type>Number</item-type>
+		<label>Mop Mode</label>
+		<state min="300" max="303" step="1" pattern="%.0f%%" readOnly="false">
+			<options>
+				<option value="300">Standard</option>
+				<option value="301">Deep</option>
+				<option value="303">Deep+</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="water_box_status">
+		<item-type>Switch</item-type>
+		<label>Water Box State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="water_box_carriage_status">
+		<item-type>Switch</item-type>
+		<label>Water Box Carriage State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="lock_status">
+		<item-type>Switch</item-type>
+		<label>Lock Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="mop_forbidden_enable">
+		<item-type>Switch</item-type>
+		<label>Mop Forbidden</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="is_locating">
+		<item-type>Switch</item-type>
+		<label>Robot Locating</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="dock_state">
+		<item-type>String</item-type>
+		<label>Dock State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="dock_state_id">
+		<item-type>Number</item-type>
+		<label>Dock State ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="mop_drying_time">
+		<item-type>Number:Time</item-type>
+		<label>Mop Drying Time</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="is_mop_drying">
+		<item-type>Switch</item-type>
+		<label>Mop Cleaning Active</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="collect_dust">
+		<item-type>Switch</item-type>
+		<label>Start Collecting Dust</label>
+		<description>Once the vacuum cleaner is back in place, you can start collecting the dust</description>
+	</channel-type>
+	<channel-type id="clean_mop_start">
+		<item-type>Switch</item-type>
+		<label>Start Mop Wash</label>
+		<description>Once the vacuum cleaner is back in place, you can start cleaning the mop</description>
+	</channel-type>
+	<channel-type id="clean_mop_stop">
+		<item-type>Switch</item-type>
+		<label>Stop Mop Wash</label>
+	</channel-type>
+
+	<!-- Consumables channels -->
+	<channel-type id="main_brush_percent">
+		<item-type>Number</item-type>
+		<label>Main Brush Remaining</label>
+		<state pattern="%.0f%%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="side_brush_percent">
+		<item-type>Number</item-type>
+		<label>Side Brush Remaining</label>
+		<state pattern="%.0f%%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="filter_percent">
+		<item-type>Number</item-type>
+		<label>Filter Usage Remaining</label>
+		<state pattern="%.0f%%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sensor_dirt_percent">
+		<item-type>Number</item-type>
+		<label>Sensor Dirt Remaining</label>
+		<state pattern="%.0f%%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="main_brush_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Main Brush Time till Replacement</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="side_brush_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Side Brush Time till Replacement</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="filter_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Filter Time till Replacement</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sensor_dirt_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Sensor Dirt Time till Cleaning</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<!-- actions -->
+	<channel-type id="control">
+		<item-type>String</item-type>
+		<label>Control Vacuum</label>
+		<state>
+			<options>
+				<option value="vacuum">Vacuum</option>
+				<option value="spot">Spot Clean</option>
+				<option value="pause">Pause</option>
+				<option value="dock">Dock</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="fan">
+		<item-type>Number</item-type>
+		<label>Control Fan Level</label>
+		<state min="-1" max="105" step="1" readOnly="false">
+			<options>
+				<option value="38">Silent</option>
+				<option value="60">Standard</option>
+				<option value="75">Turbo</option>
+				<option value="77">Power</option>
+				<option value="90">Full</option>
+				<option value="100">Max</option>
+				<option value="101">Quiet</option>
+				<option value="102">Balanced</option>
+				<option value="103">Turbov2</option>
+				<option value="104">Maxv2</option>
+				<option value="105">Mob</option>
+				<option value="-1">Custom</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vacuum" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Vacuum On/Off</label>
+	</channel-type>
+	<channel-type id="segment" advanced="true">
+		<item-type>String</item-type>
+		<label>Vacuum Room [room#]</label>
+	</channel-type>
+	<channel-type id="routine" advanced="true">
+		<item-type>String</item-type>
+		<label>Vacuum Routine [routine#]</label>
+	</channel-type>
+
+	<channel-type id="consumable_reset">
+		<item-type>String</item-type>
+		<label>Reset Consumable</label>
+		<state>
+			<options>
+				<option value="none">Select Consumable</option>
+				<option value="main_brush_work_time">Reset Mainbrush</option>
+				<option value="side_brush_work_time">Reset Sidebrush</option>
+				<option value="filter_work_time">Reset Filter</option>
+				<option value="sensor_dirty_time">Reset Sensors</option>
+			</options>
+		</state>
+	</channel-type>
+	<!-- DND Setting -->
+	<channel-type id="dnd_function">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb Functionality</label>
+	</channel-type>
+	<channel-type id="dnd_start">
+		<item-type>String</item-type>
+		<label>Start Time DND</label>
+	</channel-type>
+	<channel-type id="dnd_end">
+		<item-type>String</item-type>
+		<label>End Time DND</label>
+	</channel-type>
+
+	<!-- Clean History -->
+	<channel-type id="total_clean_time">
+		<item-type>Number:Time</item-type>
+		<label>Total Cleaning Time</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_clean_area">
+		<item-type>Number:Area</item-type>
+		<label>Total Cleaning Area</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_clean_count">
+		<item-type>Number</item-type>
+		<label>Total Cleanings</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<!-- Clean Record -->
+	<channel-type id="last_clean_start_time">
+		<item-type>DateTime</item-type>
+		<label>Cleaning Start</label>
+		<description>Last Cleaning Start Time</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_end_time">
+		<item-type>DateTime</item-type>
+		<label>Cleaning End</label>
+		<description>Last Cleaning End Time</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_duration">
+		<item-type>Number:Time</item-type>
+		<label>Cleaning Duration</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_area">
+		<item-type>Number:Area</item-type>
+		<label>Cleaning Area</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_error">
+		<item-type>Number</item-type>
+		<label>Error</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_finish">
+		<item-type>Number</item-type>
+		<label>Cleaning Finished</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_finish_reason">
+		<item-type>Number</item-type>
+		<label>Cleaning Finished Reason</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_dustcollection_status">
+		<item-type>Number</item-type>
+		<label>Dust Collection Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_record" advanced="true">
+		<item-type>String</item-type>
+		<label>Cleaning Record</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="map" advanced="false">
+		<item-type>Image</item-type>
+		<label>Cleaning Map</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Info channels -->
+	<channel-type id="fw_features" advanced="true">
+		<item-type>String</item-type>
+		<label>Firmware Features</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="room_mapping" advanced="true">
+		<item-type>String</item-type>
+		<label>Room Mapping</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="routine_mapping" advanced="true">
+		<item-type>String</item-type>
+		<label>Routine Mapping</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="multi_maps_list" advanced="true">
+		<item-type>String</item-type>
+		<label>Multi Map List</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="carpet_mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Carpet Mode</label>
+	</channel-type>
+	<channel-type id="customize_clean_mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Customized Clean Mode</label>
+	</channel-type>
+
+	<!-- Network channels -->
+	<channel-type id="ssid" advanced="true">
+		<item-type>String</item-type>
+		<label>SSID</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="bssid" advanced="true">
+		<item-type>String</item-type>
+		<label>BSSID</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Common Actions channels -->
+	<channel-type id="commands" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute Command</label>
+	</channel-type>
+	<channel-type id="rpc" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute RPC (cloud) Command</label>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power On/Off</label>
+	</channel-type>
+</thing:thing-descriptions>
