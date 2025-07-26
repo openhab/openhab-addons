@@ -8,8 +8,8 @@ Currently, protocol version 1 and 2c are supported.
 
 There are two supported things:
 
- - `target` for SNMP v1/v2c agents
- - `target3` for SNMP v3 agents
+- `target` for SNMP v1/v2c agents
+- `target3` for SNMP v3 agents
 
 Both represent a single network device.
 Things can be extended with `number`, `string` and `switch` channels.
