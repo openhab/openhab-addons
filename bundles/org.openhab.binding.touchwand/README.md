@@ -53,10 +53,10 @@ Alarm Sensor thing represents a generic sensor, relevant sensor channels will be
 
 | Channel Type ID   | Item Type          | Description                                                           |
 |-------------------|--------------------|-----------------------------------------------------------------------|
-| switch            | Switch             | This channel supports switching the device on and off.               |
-| shutter           | Rollershutter      | This channel controls the shutter position                           |
-| brightness        | Dimmer             | This channel supports adjusting the brightness value.                |
-| wallaction        | String             | This channel indicate SHORT or LONG wallcontroller button pressed    |
+| switch            | Switch             | This channel supports switching the device on and off.                |
+| shutter           | Rollershutter      | This channel controls the shutter position                            |
+| brightness        | Dimmer             | This channel supports adjusting the brightness value.                 |
+| wallaction        | String             | This channel indicate SHORT or LONG wallcontroller button pressed     |
 
 ## Alarm Sensors Channels
 
