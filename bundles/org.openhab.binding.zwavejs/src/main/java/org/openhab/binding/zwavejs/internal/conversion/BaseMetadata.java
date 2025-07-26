@@ -69,7 +69,9 @@ public abstract class BaseMetadata {
             "seconds", "s", //
             "Seconds", "s", //
             "°(C/F)", "", // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
-            "°F/C", ""); // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
+            "°F/C", "", // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
+            "%rH", "%"); // Z-Wave JS uses %rH to represent relative humidity, but openHAB expects the standard % unit.
+
     private static final Map<String, String> CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS = Map.of("currentValue", "value", //
             "targetValue", "value", "currentColor", "color", "targetColor", "color", //
             "targetMode", "mode", "currentMode", "mode"); //

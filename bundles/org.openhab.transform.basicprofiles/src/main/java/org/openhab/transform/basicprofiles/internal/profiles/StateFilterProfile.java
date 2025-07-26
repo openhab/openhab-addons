@@ -88,9 +88,9 @@ public class StateFilterProfile implements StateProfile {
 
     // Function pattern to match `$NAME` or `$NAME(5)`.
     // The number represents an optional window size that applies to the function.
-    private final static Pattern FUNCTION_PATTERN = Pattern.compile("\\$(\\w+)(?:\\s*\\(\\s*(\\d+)\\s*\\))?\\s*");
+    private static final Pattern FUNCTION_PATTERN = Pattern.compile("\\$(\\w+)(?:\\s*\\(\\s*(\\d+)\\s*\\))?\\s*");
 
-    private final static int DEFAULT_WINDOW_SIZE = 5;
+    private static final int DEFAULT_WINDOW_SIZE = 5;
 
     private final Logger logger = LoggerFactory.getLogger(StateFilterProfile.class);
 
@@ -166,7 +166,6 @@ public class StateFilterProfile implements StateProfile {
                                 expression, callback.getItemChannelLink(),
                                 StateCondition.ComparisonType.namesAndSymbols());
                         return;
-
                     }
 
                     String lhs = matcher.group(1).trim();

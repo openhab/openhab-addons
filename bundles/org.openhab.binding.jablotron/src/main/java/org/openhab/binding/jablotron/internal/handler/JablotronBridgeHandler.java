@@ -263,19 +263,19 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
         url = JABLOTRON_API_URL + "accessTokenGet.json";
         urlParameters = "{ \"force-renew\": true }";
-        JablotronAccessTokenResponse token_response = sendJsonMessage(url, urlParameters,
+        JablotronAccessTokenResponse tokenResponse = sendJsonMessage(url, urlParameters,
                 JablotronAccessTokenResponse.class, false);
 
-        if (token_response == null) {
+        if (tokenResponse == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Null get access token response");
             return;
         }
 
-        if (token_response.getHttpCode() != 200) {
+        if (tokenResponse.getHttpCode() != 200) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Get access token http error: " + response.getHttpCode());
         } else {
-            accessToken = token_response.getData().getAccessToken();
+            accessToken = tokenResponse.getData().getAccessToken();
             updateStatus(ThingStatus.ONLINE);
         }
     }

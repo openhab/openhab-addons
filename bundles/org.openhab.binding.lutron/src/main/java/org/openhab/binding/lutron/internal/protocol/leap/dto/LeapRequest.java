@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * LeapRequest object
  *
- * @author Peter J Wojciechowski - initial
+ * @author Peter J Wojciechowski - Initial contribution
  */
 public class LeapRequest {
     @SerializedName("CommuniqueType")

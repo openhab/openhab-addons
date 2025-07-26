@@ -249,7 +249,6 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         String response = null;
         try {
             response = HttpUtil.executeUrl("GET", "http://" + config.playerAddress + url, 5000);
-
         } catch (IOException e) {
             logger.warn("Failed HTTP Post", e);
         }
