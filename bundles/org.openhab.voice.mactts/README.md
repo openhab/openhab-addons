@@ -12,7 +12,7 @@ There is no need to configure anything for this service.
 
 It automatically scans all available voices and registers them, see e.g.
 
-```
+```shell
 > voice voices
 mactts:Alex Alex (en_US)
 mactts:Ioana Ioana (ro_RO)

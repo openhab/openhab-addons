@@ -109,7 +109,7 @@ You can also use this add-on with a remote API that is compatible with the 'tran
 
 You can host you own compatible service elsewhere on your network, with third-party software such as faster-whisper-server.
 
-Please note that API mode also uses libvfad for voice activity detection, and that grammar parameters are not available.   
+Please note that API mode also uses libvfad for voice activity detection, and that grammar parameters are not available.
 
 ## Configuration
 
@@ -210,7 +210,7 @@ timer ::= [0-9]+
 - **Record Sample Format** - Change the record sample format. (allows i16 or f32)
 - **Enable Whisper Log** - Emit whisper.cpp library logs as add-on debug logs.
 
-You can find [here](https://github.com/givimad/whisper-finetune-oh) information on how to fine-tune a model using the generated records.
+You can find information on how to fine-tune a model using the generated records at [givimad’s GitHub repository](https://github.com/givimad/whisper-finetune-oh).
 
 ### Configuration via a text file
 
