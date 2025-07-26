@@ -632,7 +632,7 @@ Replace content in curl command with following variables:
 Get capabilities and current status for one `deviceId` or all devices.
 Output is shown on console as JSON String.
 
-```text
+```shell
 console> openhab:dirigera json 3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1
 {"deviceType":"light","isReachable":true,"capabilities":{"canReceive":["customName","isOn","lightLevel","colorTemperature", ...}
 ```
