@@ -4,10 +4,31 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="vehicle">
-		<label>Teslascope</label>
+	<bridge-type id="account">
+		<label>Teslascope Account</label>
 		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>apiKey</label>
+				<description>apiKey provided by Teslascope</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the account is polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Vehicle</label>
+		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channels>
 			<channel id="vin" typeId="vin"/>
 			<channel id="vehicle-name" typeId="vehicle-name"/>
@@ -19,9 +40,16 @@
 			<channel id="battery-range" typeId="battery-range"/>
 			<channel id="center-rear-seat-heater" typeId="center-rear-seat-heater"/>
 			<channel id="charge" typeId="charge"/>
+			<channel id="charge-amps" typeId="charge-amps"/>
+			<channel id="charge-current-request" typeId="charge-current-request"/>
+			<channel id="charge-current-request-max" typeId="charge-current-request-max"/>
 			<channel id="charge-energy-added" typeId="charge-energy-added"/>
+			<channel id="charge-limit-soc" typeId="charge-limit-soc"/>
+			<channel id="charge-limit-soc-min" typeId="charge-limit-soc-min"/>
+			<channel id="charge-limit-soc-max" typeId="charge-limit-soc-max"/>
 			<channel id="charge-limit-soc-standard" typeId="charge-limit-soc-standard"/>
 			<channel id="charge-port" typeId="charge-port"/>
+			<channel id="charge-port-latch" typeId="charge-port-latch"/>
 			<channel id="charge-rate" typeId="charge-rate"/>
 			<channel id="charger-power" typeId="charger-power"/>
 			<channel id="charger-voltage" typeId="charger-voltage"/>
@@ -42,6 +70,9 @@
 			<channel id="left-rear-seat-heater" typeId="left-rear-seat-heater"/>
 			<channel id="left-seat-heater" typeId="left-seat-heater"/>
 			<channel id="left-temp-direction" typeId="left-temp-direction"/>
+			<channel id="located-at-home" typeId="located-at-home"/>
+			<channel id="located-at-work" typeId="located-at-work"/>
+			<channel id="located-at-favorite" typeId="located-at-favorite"/>
 			<channel id="location" typeId="location"/>
 			<channel id="min-available-temp" typeId="min-available-temp"/>
 			<channel id="max-available-temp" typeId="max-available-temp"/>
@@ -83,16 +114,16 @@
 			<channel id="wiper-blade-heater" typeId="wiper-blade-heater"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<config-description>
-			<parameter name="apiKey" type="text" required="true">
-				<label>apiKey</label>
-				<description>apiKey provided by Teslascope</description>
-			</parameter>
 			<parameter name="publicID" type="text" required="true">
 				<label>Vehicle Public ID</label>
 				<description>Vehicle public ID listed in Teslascope</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+			<parameter name="refreshInterval" type="integer" unit="s" min="10">
 				<label>Refresh Interval</label>
 				<description>Interval the API is polled in sec.</description>
 				<default>60</default>
@@ -129,6 +160,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<description>Vehicle Battery Level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charging-state">
@@ -159,6 +194,10 @@
 		<item-type>Switch</item-type>
 		<label>Auto Conditioning</label>
 		<description>Turns on auto-conditioning (a/c or heating)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="battery-range" advanced="true">
 		<item-type>Number:Length</item-type>
@@ -183,22 +222,95 @@
 		<description>Energy added, in kWh, during the last charging session</description>
 		<state pattern="%d kWh" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="charge-limit-soc" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit SOC</label>
+		<description>Current charging limit of the vehicle, in %</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Level</tag>
+		</tags>
+		<state pattern="%.0f %%"></state>
+	</channel-type>
+	<channel-type id="charge-limit-soc-min" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit SOC Min</label>
+		<description>Minimum charging limit of the vehicle, in %</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="charge-limit-soc-max" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit SOC Max</label>
+		<description>Maximum charging limit of the vehicle, in %</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="charge-limit-soc-standard" advanced="true">
-		<item-type>Dimmer</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit SOC Standard</label>
 		<description>Standard charging limit of the vehicle, in %</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
+		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charge-port">
 		<item-type>Switch</item-type>
 		<label>Charge Port</label>
 		<description>Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="charge-port-latch">
+		<item-type>Switch</item-type>
+		<label>Charge Port Latch</label>
+		<description>Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="charge-rate" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Charge Rate</label>
 		<description>Distance per hour charging rate</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="charge-amps" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charger Current</label>
+		<description>Current actually delivered by the charger</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="charge-current-request" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charger Current Requested</label>
+		<description>Current requested from the charger</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="charge-current-request-max" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charger Current Max</label>
+		<description>Maximum current supported by the charger</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charger-power" advanced="true">
 		<item-type>Number:Power</item-type>
@@ -228,6 +340,10 @@
 		<item-type>Switch</item-type>
 		<label>Door Lock</label>
 		<description>Lock or unlock the car</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="driver-rear-door" advanced="true">
 		<item-type>Contact</item-type>
@@ -289,12 +405,46 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Inside Temperature</label>
 		<description>Indicates the inside temperature of the vehicle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="left-temp-direction" advanced="true">
 		<item-type>Number</item-type>
 		<label>Left Temperature Direction</label>
 		<description>Not documented / To be defined</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="located-at-home">
+		<item-type>Switch</item-type>
+		<label>At Home?</label>
+		<description>Car located at Home Address</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="located-at-work">
+		<item-type>Switch</item-type>
+		<label>At Work?</label>
+		<description>Car located at Work Address</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="located-at-favorite">
+		<item-type>Switch</item-type>
+		<label>At Favorite?</label>
+		<description>Car located at Address listed in favorites</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="location" advanced="false">
@@ -431,6 +581,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Speed</label>
 		<description>Vehicle speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="steering-wheel-heater" advanced="true">

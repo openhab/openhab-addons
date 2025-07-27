@@ -59,23 +59,23 @@ Now an OAuth 2.0 client is created and configured for using the SDM API by the b
     1. Choose "OAuth client ID"
     1. As "Application type" choose "Web application"
     1. Give it a name so you can remember what it is used for (e.g. `Nest Binding SDM`)
-    1. Add "https://www.google.com" to the "Authorized redirect URIs"
+    1. Add "<https://www.google.com>" to the "Authorized redirect URIs"
     1. Click "Create" to create the client
-    1. Copy and save the generated **Client ID** (e.g. `1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com`) and **Client Secret** (e.g. `726kcU-d1W4RXxEJA79oZ0oG`) somewhere
+    1. Copy and save the generated **Client ID** (e.g. `12345-abcde.apps.googleusercontent.com`) and **Client Secret** (e.g. `xyz-987`) somewhere
 1. Configure the SDM project to use the created client:
     1. Go the the SDM [Projects](https://console.nest.google.com/device-access/project-list) page
     1. Click on your SDM Project to show its details
     1. Scroll to "Project Info > OAuth client ID" and open the options menu (3 stacked dots) at the end of the line
     1. Select the "Edit" option
-    1. Copy/paste the saved OAuth 2.0 Client ID here (e.g. `1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com`)
+    1. Copy/paste the saved OAuth 2.0 Client ID here (e.g. `12345-abcde.apps.googleusercontent.com`)
     1. Click the "Save" button at the end of the line to update the project
 
 Finally, an SDM Account Thing can be created to access the SDM project using the SDM API with the created client:
 
 1. Create a new "Nest SDM Account" Thing in openHAB
 1. Copy/paste the saved SDM **Project ID** to SDM group parameter in the SDM Account Thing configuration parameters (e.g. `585de72e-968c-435c-b16a-31d1d3f76833`)
-1. Copy/paste the saved OAuth 2.0 **Client ID** to SDM group parameter (e.g. `1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com`)
-1. Copy/paste the saved OAuth 2.0 **Client Secret** to SDM group parameter (e.g. `726kcU-d1W4RXxEJA79oZ0oG`)
+1. Copy/paste the saved OAuth 2.0 **Client ID** to SDM group parameter (e.g. `12345-abcde.apps.googleusercontent.com`)
+1. Copy/paste the saved OAuth 2.0 **Client Secret** to SDM group parameter (e.g. `xyz-987`)
 1. Create an authorization code for the binding:
     1. Replace the **Project ID** and **Client ID** in the URL below with your SDM Project ID and SDM OAuth 2.0 Client ID and open the URL in a new browser tab:
 
@@ -83,7 +83,7 @@ Finally, an SDM Account Thing can be created to access the SDM project using the
 
        For the example values used so far this is:
 
-       `https://nestservices.google.com/partnerconnections/585de72e-968c-435c-b16a-31d1d3f76833/auth?scope=https://www.googleapis.com/auth/sdm.service&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com`
+       `https://nestservices.google.com/partnerconnections/585de72e-968c-435c-b16a-31d1d3f76833/auth?scope=https://www.googleapis.com/auth/sdm.service&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=12345-abcde.apps.googleusercontent.com`
     1. Enable all the permissions you want to use with the binding and click "Next" to continue
     1. Login using your Google account when prompted
     1. On the "Google hasn't verified this app" page, click on "Advanced"
@@ -139,9 +139,9 @@ Next an OAuth 2.0 client is created which is used to create a Pub/Sub subscripti
 1. Choose "OAuth client ID"
 1. As "Application type" choose "Web application"
 1. Give it a name so you can remember what it is used for (e.g. `Nest Binding Pub/Sub`)
-1. Add "https://www.google.com" to the "Authorized redirect URIs"
+1. Add "<https://www.google.com>" to the "Authorized redirect URIs"
 1. Click "Create" to create the client
-1. Copy and save the generated **Client ID** (e.g. `1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com`) and **Client Secret** (e.g. `1-k78-XcHhp_gdZF-I6JaIHp`) somewhere
+1. Copy and save the generated **Client ID** (e.g. `67890-fghij.apps.googleusercontent.com`) and **Client Secret** (e.g. `uvw-654`) somewhere
 
 Finally, the existing SDM Account Thing can be updated so it can subscribe to SDM events:
 
@@ -150,8 +150,8 @@ Finally, the existing SDM Account Thing can be updated so it can subscribe to SD
 1. Enter the name of the previously chosen **Subscription ID** that uniquely identifies the Pub/Sub subscription used by the binding
 
    > Must be 3-255 characters, start with a letter, and contain only the following characters: letters, numbers, dashes (-), periods (.), underscores (_), tildes (~), percents (%) or plus signs (+). Cannot start with  goog.
-1. Copy/paste the saved OAuth 2.0 **Client ID** to Pub/Sub group parameter (e.g. `1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com`)
-1. Copy/paste the saved OAuth 2.0 **Client Secret** to Pub/Sub group parameter (e.g. `1-k78-XcHhp_gdZF-I6JaIHp`)
+1. Copy/paste the saved OAuth 2.0 **Client ID** to Pub/Sub group parameter (e.g. `67890-fghij.apps.googleusercontent.com`)
+1. Copy/paste the saved OAuth 2.0 **Client Secret** to Pub/Sub group parameter (e.g. `uvw-654`)
 1. Create an authorization code for the binding:
     1. Replace the **Client ID** in the URL below with your Pub/Sub OAuth 2.0 Client ID and open the URL in a new browser tab:
 
@@ -159,7 +159,7 @@ Finally, the existing SDM Account Thing can be updated so it can subscribe to SD
 
        For the example client this is:
 
-       `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/pubsub&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com`
+       `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/pubsub&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=67890-fghij.apps.googleusercontent.com`
     1. Login using your Google account when prompted
     1. On the "Google hasn't verified this app" page, click on "Advanced"
     1. Then click on "Go to ... (advanced)"
@@ -243,7 +243,7 @@ You can use the discovery functionality of the binding to obtain the deviceId an
 ### sdm-demo.things
 
 ```java
-Bridge nest:sdm_account:demo_sdm_account [ sdmProjectId="585de72e-968c-435c-b16a-31d1d3f76833", sdmClientId="1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com", sdmClientSecret="726kcU-d1W4RXxEJA79oZ0oG", sdmAuthorizationCode="xkkY3qYtfZCzaXCcPxpOELUW8EhgiSMD3n9jmzJ3m0yerkQpVRdj5vqWRjMSIG", pubsubProjectId="openhab-12345", pubsubSubscriptionId="nest-sdm-events", pubsubClientId="1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com", pubsubClientSecret="1-k78-XcHhp_gdZF-I6JaIHp", pubsubAuthorizationCode="tASfQq7gn6sfbUSbwRufbMI0BYDzh1d7MBG2G7vdZpbhjmZfwDp5MkeaX0iMxn" ] {
+Bridge nest:sdm_account:demo_sdm_account [ sdmProjectId="585de72e-968c-435c-b16a-31d1d3f76833", sdmClientId="12345-abcde.apps.googleusercontent.com", sdmClientSecret="xyz-987", sdmAuthorizationCode="xkkY3qYtfZCzaXCcPxpOELUW8EhgiSMD3n9jmzJ3m0yerkQpVRdj5vqWRjMSIG", pubsubProjectId="openhab-12345", pubsubSubscriptionId="nest-sdm-events", pubsubClientId="67890-fghij.apps.googleusercontent.com", pubsubClientSecret="uvw-654", pubsubAuthorizationCode="tASfQq7gn6sfbUSbwRufbMI0BYDzh1d7MBG2G7vdZpbhjmZfwDp5MkeaX0iMxn" ] {
     Thing sdm_camera       fish_cam          [ deviceId="AVPHwTQCAhersqmQ3IXwyqSX-XyuVZXoiNSNPeHdIMKgYpYZolNP4S9LS5QDF2LeuM3BQcpBh_fOEZYxkeH6eoQdWEELqi" ] {
         Channels:
             Image : motion_event#image [ imageHeight=1080 ]

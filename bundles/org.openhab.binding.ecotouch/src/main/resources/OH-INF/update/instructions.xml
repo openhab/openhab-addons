@@ -9,16 +9,16 @@
 		</properties>
 		<instruction-set targetVersion="1">
 			<add-channel id="percent_water_limit_min">
-				<type>Number:Dimensionless</type>
+				<type>ecotouch:percent_water_limit_min</type>
 			</add-channel>
 			<add-channel id="percent_water_limit_max">
-				<type>Number:Dimensionless</type>
+				<type>ecotouch:percent_water_limit_max</type>
 			</add-channel>
 			<add-channel id="percent_heating_limit_min">
-				<type>Number:Dimensionless</type>
+				<type>ecotouch:percent_heating_limit_min</type>
 			</add-channel>
 			<add-channel id="percent_heating_limit_max">
-				<type>Number:Dimensionless</type>
+				<type>ecotouch:percent_heating_limit_max</type>
 			</add-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">
@@ -34,16 +34,16 @@
 		</properties>
 		<instruction-set targetVersion="1">
 			<add-channel id="percent_water_limit_min">
-				<type>Number:Dimensionless</type>
+				<type>ecotouch:percent_water_limit_min</type>
 			</add-channel>
 			<add-channel id="percent_water_limit_max">
-				<type>Number:Dimensionless</type>
+				<type>ecotouch:percent_water_limit_max</type>
 			</add-channel>
 			<add-channel id="percent_heating_limit_min">
-				<type>Number:Dimensionless</type>
+				<type>ecotouch:percent_heating_limit_min</type>
 			</add-channel>
 			<add-channel id="percent_heating_limit_max">
-				<type>Number:Dimensionless</type>
+				<type>ecotouch:percent_heating_limit_max</type>
 			</add-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">

@@ -13,29 +13,23 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.function.Predicate;
-
-import javax.measure.quantity.Temperature;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
-import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT climate component, following the https://www.home-assistant.io/components/climate.mqtt/ specification.
@@ -45,14 +39,11 @@ import com.google.gson.annotations.SerializedName;
  * @author Vaclav Cejka - added support for humidity and preset_modes
  */
 @NonNullByDefault
-public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
+public class Climate extends AbstractComponent<Climate.Configuration> {
     public static final String ACTION_CH_ID = "action";
-    public static final String AUX_CH_ID = "aux";
-    public static final String AWAY_MODE_CH_ID = "away-mode";
     public static final String CURRENT_HUMIDITY_CH_ID = "current-humidity";
     public static final String CURRENT_TEMPERATURE_CH_ID = "current-temperature";
     public static final String FAN_MODE_CH_ID = "fan-mode";
-    public static final String HOLD_CH_ID = "hold";
     public static final String MODE_CH_ID = "mode";
     public static final String PRESET_MODE_CH_ID = "preset-mode";
     public static final String SWING_CH_ID = "swing";
@@ -63,283 +54,447 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String POWER_CH_ID = "power";
 
     private static final String ACTION_OFF = "off";
-    private static final State ACTION_OFF_STATE = new StringType(ACTION_OFF);
     private static final List<String> ACTION_MODES = List.of(ACTION_OFF, "heating", "cooling", "drying", "idle", "fan");
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT HVAC");
+    private static final String FAN_MODE_AUTO = "auto";
+    private static final String FAN_MODE_LOW = "low";
+    private static final String FAN_MODE_MEDIUM = "medium";
+    private static final String FAN_MODE_HIGH = "high";
+
+    private static final Map<String, String> FAN_MODE_LABELS = Map.of(FAN_MODE_AUTO,
+            "@text/state.climate.fan-mode.auto", FAN_MODE_LOW, "@text/state.climate.fan-mode.low", FAN_MODE_MEDIUM,
+            "@text/state.climate.fan-mode.medium", FAN_MODE_HIGH, "@text/state.climate.fan-mode.high");
+
+    private static final String MODE_AUTO = "auto";
+    private static final String MODE_OFF = "off";
+    private static final String MODE_COOL = "cool";
+    private static final String MODE_HEAT = "heat";
+    private static final String MODE_DRY = "dry";
+    private static final String MODE_FAN_ONLY = "fan_only";
+
+    private static final Map<String, String> MODE_LABELS = Map.of(MODE_AUTO, "@text/state.climate.mode.auto", MODE_OFF,
+            "@text/state.climate.mode.off", MODE_COOL, "@text/state.climate.mode.cool", MODE_HEAT,
+            "@text/state.climate.mode.heat", MODE_DRY, "@text/state.climate.mode.dry", MODE_FAN_ONLY,
+            "@text/state.climate.mode.fan-only");
+
+    private static final String SWING_MODE_ON = "on";
+    private static final String SWING_MODE_OFF = "off";
+
+    private static final Map<String, String> SWING_MODE_LABELS = Map.of(SWING_MODE_ON,
+            "@text/state.climate.swing-mode.on", SWING_MODE_OFF, "@text/state.climate.swing-mode.off");
+
+    private static final String PRESET_MODE_NONE = "none";
+
+    public static class Configuration extends EntityConfiguration {
+        private final boolean retain, optimistic;
+
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT HVAC");
+            retain = getBoolean("retain");
+            optimistic = getBoolean("optimistic");
         }
 
-        protected @Nullable Boolean optimistic;
+        @Nullable
+        Value getCurrentHumidityTemplate() {
+            return getOptionalValue("current_humidity_template");
+        }
 
-        @SerializedName("action_template")
-        protected @Nullable String actionTemplate;
-        @SerializedName("action_topic")
-        protected @Nullable String actionTopic;
+        @Nullable
+        String getCurrentHumidityTopic() {
+            return getOptionalString("current_humidity_topic");
+        }
 
-        @SerializedName("aux_command_topic")
-        protected @Nullable String auxCommandTopic;
-        @SerializedName("aux_state_template")
-        protected @Nullable String auxStateTemplate;
-        @SerializedName("aux_state_topic")
-        protected @Nullable String auxStateTopic;
+        @Nullable
+        Value getCurrentTemperatureTemplate() {
+            return getOptionalValue("current_temperature_template");
+        }
 
-        @SerializedName("away_mode_command_topic")
-        protected @Nullable String awayModeCommandTopic;
-        @SerializedName("away_mode_state_template")
-        protected @Nullable String awayModeStateTemplate;
-        @SerializedName("away_mode_state_topic")
-        protected @Nullable String awayModeStateTopic;
+        @Nullable
+        String getCurrentTemperatureTopic() {
+            return getOptionalString("current_temperature_topic");
+        }
 
-        @SerializedName("current_humidity_template")
-        protected @Nullable String currentHumidityTemplate;
-        @SerializedName("current_humidity_topic")
-        protected @Nullable String currentHumidityTopic;
+        @Nullable
+        Value getFanModeCommandTemplate() {
+            return getOptionalValue("fan_mode_command_template");
+        }
 
-        @SerializedName("current_temperature_template")
-        protected @Nullable String currentTemperatureTemplate;
-        @SerializedName("current_temperature_topic")
-        protected @Nullable String currentTemperatureTopic;
+        @Nullable
+        String getFanModeCommandTopic() {
+            return getOptionalString("fan_mode_command_topic");
+        }
 
-        @SerializedName("fan_mode_command_template")
-        protected @Nullable String fanModeCommandTemplate;
-        @SerializedName("fan_mode_command_topic")
-        protected @Nullable String fanModeCommandTopic;
-        @SerializedName("fan_mode_state_template")
-        protected @Nullable String fanModeStateTemplate;
-        @SerializedName("fan_mode_state_topic")
-        protected @Nullable String fanModeStateTopic;
-        @SerializedName("fan_modes")
-        protected List<String> fanModes = Arrays.asList("auto", "low", "medium", "high");
+        List<String> getFanModes() {
+            return getStringList("fan_modes");
+        }
 
-        @SerializedName("hold_command_template")
-        protected @Nullable String holdCommandTemplate;
-        @SerializedName("hold_command_topic")
-        protected @Nullable String holdCommandTopic;
-        @SerializedName("hold_state_template")
-        protected @Nullable String holdStateTemplate;
-        @SerializedName("hold_state_topic")
-        protected @Nullable String holdStateTopic;
-        @SerializedName("hold_modes")
-        protected @Nullable List<String> holdModes; // Are there default modes? Now the channel will be ignored without
-                                                    // hold modes.
+        @Nullable
+        Value getFanModeStateTemplate() {
+            return getOptionalValue("fan_mode_state_template");
+        }
 
-        @SerializedName("mode_command_template")
-        protected @Nullable String modeCommandTemplate;
-        @SerializedName("mode_command_topic")
-        protected @Nullable String modeCommandTopic;
-        @SerializedName("mode_state_template")
-        protected @Nullable String modeStateTemplate;
-        @SerializedName("mode_state_topic")
-        protected @Nullable String modeStateTopic;
-        protected List<String> modes = Arrays.asList("auto", "off", "cool", "heat", "dry", "fan_only");
+        @Nullable
+        String getFanModeStateTopic() {
+            return getOptionalString("fan_mode_state_topic");
+        }
 
-        @SerializedName("preset_mode_command_template")
-        protected @Nullable String presetModeCommandTemplate;
-        @SerializedName("preset_mode_command_topic")
-        protected @Nullable String presetModeCommandTopic;
-        @SerializedName("preset_mode_state_topic")
-        protected @Nullable String presetModeStateTopic;
-        @SerializedName("preset_mode_value_template")
-        protected @Nullable String presetModeStateTemplate;
-        @SerializedName("preset_modes")
-        protected List<String> presetModes = List.of(); // defaults heavily depend on the
-                                                        // type of the device
+        @Nullable
+        Value getTargetHumidityCommandTemplate() {
+            return getOptionalValue("target_humidity_command_template");
+        }
 
-        @SerializedName("swing_command_template")
-        protected @Nullable String swingCommandTemplate;
-        @SerializedName("swing_command_topic")
-        protected @Nullable String swingCommandTopic;
-        @SerializedName("swing_state_template")
-        protected @Nullable String swingStateTemplate;
-        @SerializedName("swing_state_topic")
-        protected @Nullable String swingStateTopic;
-        @SerializedName("swing_modes")
-        protected List<String> swingModes = Arrays.asList("on", "off");
+        @Nullable
+        String getTargetHumidityCommandTopic() {
+            return getOptionalString("target_humidity_command_topic");
+        }
 
-        @SerializedName("target_humidity_command_template")
-        protected @Nullable String targetHumidityCommandTemplate;
-        @SerializedName("target_humidity_command_topic")
-        protected @Nullable String targetHumidityCommandTopic;
-        @SerializedName("target_humidity_state_template")
-        protected @Nullable String targetHumidityStateTemplate;
-        @SerializedName("target_humidity_state_topic")
-        protected @Nullable String targetHumidityStateTopic;
+        double getMinHumidity() {
+            return getDouble("min_humidity");
+        }
 
-        @SerializedName("temperature_command_template")
-        protected @Nullable String temperatureCommandTemplate;
-        @SerializedName("temperature_command_topic")
-        protected @Nullable String temperatureCommandTopic;
-        @SerializedName("temperature_state_template")
-        protected @Nullable String temperatureStateTemplate;
-        @SerializedName("temperature_state_topic")
-        protected @Nullable String temperatureStateTopic;
+        double getMaxHumidity() {
+            return getDouble("max_humidity");
+        }
 
-        @SerializedName("temperature_high_command_template")
-        protected @Nullable String temperatureHighCommandTemplate;
-        @SerializedName("temperature_high_command_topic")
-        protected @Nullable String temperatureHighCommandTopic;
-        @SerializedName("temperature_high_state_template")
-        protected @Nullable String temperatureHighStateTemplate;
-        @SerializedName("temperature_high_state_topic")
-        protected @Nullable String temperatureHighStateTopic;
+        @Nullable
+        Value getTargetHumidityStateTemplate() {
+            return getOptionalValue("target_humidity_state_template");
+        }
 
-        @SerializedName("temperature_low_command_template")
-        protected @Nullable String temperatureLowCommandTemplate;
-        @SerializedName("temperature_low_command_topic")
-        protected @Nullable String temperatureLowCommandTopic;
-        @SerializedName("temperature_low_state_template")
-        protected @Nullable String temperatureLowStateTemplate;
-        @SerializedName("temperature_low_state_topic")
-        protected @Nullable String temperatureLowStateTopic;
+        @Nullable
+        String getTargetHumidityStateTopic() {
+            return getOptionalString("target_humidity_state_topic");
+        }
 
-        @SerializedName("power_command_topic")
-        protected @Nullable String powerCommandTopic;
+        @Nullable
+        Value getModeCommandTemplate() {
+            return getOptionalValue("mode_command_template");
+        }
 
-        @SerializedName("max_humidity")
-        protected BigDecimal maxHumidity = new BigDecimal(99);
-        @SerializedName("min_humidity")
-        protected BigDecimal minHumidity = new BigDecimal(30);
+        @Nullable
+        String getModeCommandTopic() {
+            return getOptionalString("mode_command_topic");
+        }
 
-        protected Integer initial = 21;
-        @SerializedName("max_temp")
-        protected @Nullable BigDecimal maxTemp;
-        @SerializedName("min_temp")
-        protected @Nullable BigDecimal minTemp;
-        @SerializedName("temperature_unit")
-        protected @Nullable TemperatureUnit temperatureUnit;
-        @SerializedName("temp_step")
-        protected BigDecimal tempStep = BigDecimal.ONE;
-        protected @Nullable BigDecimal precision;
-        @SerializedName("send_if_off")
-        protected Boolean sendIfOff = true;
+        List<String> getModes() {
+            return getStringList("modes");
+        }
+
+        @Nullable
+        Value getModeStateTemplate() {
+            return getOptionalValue("mode_state_template");
+        }
+
+        @Nullable
+        String getModeStateTopic() {
+            return getOptionalString("mode_state_topic");
+        }
+
+        boolean isOptimistic() {
+            return optimistic;
+        }
+
+        String getPayloadOn() {
+            return getString("payload_on");
+        }
+
+        String getPayloadOff() {
+            return getString("payload_off");
+        }
+
+        @Nullable
+        String getPowerCommandTopic() {
+            return getOptionalString("power_command_topic");
+        }
+
+        @Nullable
+        Value getPowerCommandTemplate() {
+            return getOptionalValue("power_command_template");
+        }
+
+        @Nullable
+        Double getPrecision() {
+            // Precision can be an int or a float
+            Object precision = config.get("precision");
+            if (precision instanceof Integer intValue) {
+                return intValue.doubleValue();
+            }
+            return (Double) precision;
+        }
+
+        boolean isRetain() {
+            return retain;
+        }
+
+        @Nullable
+        Value getActionTemplate() {
+            return getOptionalValue("action_template");
+        }
+
+        @Nullable
+        String getActionTopic() {
+            return getOptionalString("action_topic");
+        }
+
+        @Nullable
+        String getPresetModeCommandTopic() {
+            return getOptionalString("preset_mode_command_topic");
+        }
+
+        List<String> getPresetModes() {
+            return getStringList("preset_modes");
+        }
+
+        @Nullable
+        Value getPresetModeCommandTemplate() {
+            return getOptionalValue("preset_mode_command_template");
+        }
+
+        @Nullable
+        String getPresetModeStateTopic() {
+            return getOptionalString("preset_mode_state_topic");
+        }
+
+        @Nullable
+        Value getPresetModeValueTemplate() {
+            return getOptionalValue("preset_mode_value_template");
+        }
+
+        @Nullable
+        Value getSwingHorizontalModeCommandTemplate() {
+            return getOptionalValue("swing_horizontal_mode_command_template");
+        }
+
+        @Nullable
+        String getSwingHorizontalModeCommandTopic() {
+            return getOptionalString("swing_horizontal_mode_command_topic");
+        }
+
+        List<String> getSwingHorizontalModes() {
+            return getStringList("swing_horizontal_modes");
+        }
+
+        @Nullable
+        Value getSwingHorizontalModeStateTemplate() {
+            return getOptionalValue("swing_horizontal_mode_state_template");
+        }
+
+        @Nullable
+        String getSwingHorizontalModeStateTopic() {
+            return getOptionalString("swing_horizontal_mode_state_topic");
+        }
+
+        @Nullable
+        Value getSwingModeCommandTemplate() {
+            return getOptionalValue("swing_mode_command_template");
+        }
+
+        @Nullable
+        String getSwingModeCommandTopic() {
+            return getOptionalString("swing_mode_command_topic");
+        }
+
+        List<String> getSwingModes() {
+            return getStringList("swing_modes");
+        }
+
+        @Nullable
+        Value getSwingModeStateTemplate() {
+            return getOptionalValue("swing_mode_state_template");
+        }
+
+        @Nullable
+        String getSwingModeStateTopic() {
+            return getOptionalString("swing_mode_state_topic");
+        }
+
+        @Nullable
+        Double getTempInitial() {
+            return getOptionalDouble("initial");
+        }
+
+        @Nullable
+        Double getMinTemp() {
+            return getOptionalDouble("min_temp");
+        }
+
+        @Nullable
+        Double getMaxTemp() {
+            return getOptionalDouble("max_temp");
+        }
+
+        double getTempStep() {
+            return getDouble("temp_step");
+        }
+
+        @Nullable
+        Value getTemperatureCommandTemplate() {
+            return getOptionalValue("temperature_command_template");
+        }
+
+        @Nullable
+        String getTemperatureCommandTopic() {
+            return getOptionalString("temperature_command_topic");
+        }
+
+        @Nullable
+        Value getTemperatureHighCommandTemplate() {
+            return getOptionalValue("temperature_high_command_template");
+        }
+
+        @Nullable
+        String getTemperatureHighCommandTopic() {
+            return getOptionalString("temperature_high_command_topic");
+        }
+
+        @Nullable
+        Value getTemperatureHighStateTemplate() {
+            return getOptionalValue("temperature_high_state_template");
+        }
+
+        @Nullable
+        String getTemperatureHighStateTopic() {
+            return getOptionalString("temperature_high_state_topic");
+        }
+
+        @Nullable
+        Value getTemperatureLowCommandTemplate() {
+            return getOptionalValue("temperature_low_command_template");
+        }
+
+        @Nullable
+        String getTemperatureLowCommandTopic() {
+            return getOptionalString("temperature_low_command_topic");
+        }
+
+        @Nullable
+        Value getTemperatureLowStateTemplate() {
+            return getOptionalValue("temperature_low_state_template");
+        }
+
+        @Nullable
+        String getTemperatureLowStateTopic() {
+            return getOptionalString("temperature_low_state_topic");
+        }
+
+        @Nullable
+        Value getTemperatureStateTemplate() {
+            return getOptionalValue("temperature_state_template");
+        }
+
+        @Nullable
+        String getTemperatureStateTopic() {
+            return getOptionalString("temperature_state_topic");
+        }
+
+        @Nullable
+        String getTemperatureUnit() {
+            return getOptionalString("temperature_unit");
+        }
+
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
-    public Climate(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Climate(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        TemperatureUnit temperatureUnit = channelConfiguration.temperatureUnit;
-        if (channelConfiguration.temperatureUnit == null) {
-            if (ImperialUnits.FAHRENHEIT.equals(componentConfiguration.getUnitProvider().getUnit(Temperature.class))) {
-                temperatureUnit = TemperatureUnit.FAHRENHEIT;
-            } else {
-                temperatureUnit = TemperatureUnit.CELSIUS;
-            }
-        }
-        BigDecimal precision = channelConfiguration.precision != null ? channelConfiguration.precision
+        TemperatureUnit temperatureUnit = getTemperatureUnit(config.getTemperatureUnit());
+
+        Double configPrecision = config.getPrecision();
+        BigDecimal precision = configPrecision != null ? BigDecimal.valueOf(configPrecision)
                 : temperatureUnit.getDefaultPrecision();
-        final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
+        final ChannelStateUpdateListener updateListener = componentContext.getUpdateListener();
 
-        ComponentChannel actionChannel = buildOptionalChannel(ACTION_CH_ID, ComponentChannelType.STRING,
-                new TextValue(ACTION_MODES.toArray(new String[0])), updateListener, null, null,
-                channelConfiguration.actionTemplate, channelConfiguration.actionTopic, null);
-
-        final Predicate<Command> commandFilter = channelConfiguration.sendIfOff ? null
-                : getCommandFilter(actionChannel);
-
-        buildOptionalChannel(AUX_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
-                channelConfiguration.auxCommandTopic, channelConfiguration.auxStateTemplate,
-                channelConfiguration.auxStateTopic, commandFilter);
-
-        buildOptionalChannel(AWAY_MODE_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
-                channelConfiguration.awayModeCommandTopic, channelConfiguration.awayModeStateTemplate,
-                channelConfiguration.awayModeStateTopic, commandFilter);
+        buildOptionalChannel(ACTION_CH_ID, ComponentChannelType.STRING,
+                new TextValue(ACTION_MODES.toArray(new String[0])), "Action", updateListener, null, null,
+                config.getActionTemplate(), config.getActionTopic());
 
         buildOptionalChannel(CURRENT_HUMIDITY_CH_ID, ComponentChannelType.HUMIDITY,
-                new NumberValue(new BigDecimal(0), new BigDecimal(100), null, Units.PERCENT), updateListener, null,
-                null, channelConfiguration.currentHumidityTemplate, channelConfiguration.currentHumidityTopic, null);
+                new NumberValue(new BigDecimal(0), new BigDecimal(100), null, Units.PERCENT), "Current Humidity",
+                updateListener, null, null, config.getCurrentHumidityTemplate(), config.getCurrentHumidityTopic());
 
         buildOptionalChannel(CURRENT_TEMPERATURE_CH_ID, ComponentChannelType.TEMPERATURE,
-                new NumberValue(null, null, precision, temperatureUnit.getUnit()), updateListener, null, null,
-                channelConfiguration.currentTemperatureTemplate, channelConfiguration.currentTemperatureTopic,
-                commandFilter);
+                new NumberValue(null, null, precision, temperatureUnit.getUnit()), "Current Temperature",
+                updateListener, null, null, config.getCurrentTemperatureTemplate(),
+                config.getCurrentTemperatureTopic());
 
+        Map<String, String> modes = config.getFanModes().stream()
+                .collect(Collectors.toMap(m -> m, m -> m, (a, b) -> a, LinkedHashMap::new));
         buildOptionalChannel(FAN_MODE_CH_ID, ComponentChannelType.STRING,
-                new TextValue(channelConfiguration.fanModes.toArray(new String[0])), updateListener,
-                channelConfiguration.fanModeCommandTemplate, channelConfiguration.fanModeCommandTopic,
-                channelConfiguration.fanModeStateTemplate, channelConfiguration.fanModeStateTopic, commandFilter);
+                new TextValue(modes, modes, FAN_MODE_LABELS, FAN_MODE_LABELS), "Fan Mode", updateListener,
+                config.getFanModeCommandTemplate(), config.getFanModeCommandTopic(), config.getFanModeStateTemplate(),
+                config.getFanModeStateTopic());
 
-        List<String> holdModes = channelConfiguration.holdModes;
-        if (holdModes != null && !holdModes.isEmpty()) {
-            buildOptionalChannel(HOLD_CH_ID, ComponentChannelType.STRING,
-                    new TextValue(holdModes.toArray(new String[0])), updateListener,
-                    channelConfiguration.holdCommandTemplate, channelConfiguration.holdCommandTopic,
-                    channelConfiguration.holdStateTemplate, channelConfiguration.holdStateTopic, commandFilter);
-        }
-
+        modes = config.getModes().stream().collect(Collectors.toMap(m -> m, m -> m, (a, b) -> a, LinkedHashMap::new));
         buildOptionalChannel(MODE_CH_ID, ComponentChannelType.STRING,
-                new TextValue(channelConfiguration.modes.toArray(new String[0])), updateListener,
-                channelConfiguration.modeCommandTemplate, channelConfiguration.modeCommandTopic,
-                channelConfiguration.modeStateTemplate, channelConfiguration.modeStateTopic, commandFilter);
+                new TextValue(modes, modes, MODE_LABELS, MODE_LABELS), "Mode", updateListener,
+                config.getModeCommandTemplate(), config.getModeCommandTopic(), config.getModeStateTemplate(),
+                config.getModeStateTopic());
 
+        List<String> presetModes = new ArrayList<>(config.getPresetModes());
+        if (!presetModes.isEmpty()) {
+            presetModes.add(0, PRESET_MODE_NONE);
+        }
         buildOptionalChannel(PRESET_MODE_CH_ID, ComponentChannelType.STRING,
-                new TextValue(channelConfiguration.presetModes.toArray(new String[0])), updateListener,
-                channelConfiguration.presetModeCommandTemplate, channelConfiguration.presetModeCommandTopic,
-                channelConfiguration.presetModeStateTemplate, channelConfiguration.presetModeStateTopic, commandFilter);
+                new TextValue(presetModes.toArray(new String[0])), "Preset", updateListener,
+                config.getPresetModeCommandTemplate(), config.getPresetModeCommandTopic(),
+                config.getPresetModeValueTemplate(), config.getPresetModeStateTopic());
 
+        modes = config.getSwingModes().stream()
+                .collect(Collectors.toMap(m -> m, m -> m, (a, b) -> a, LinkedHashMap::new));
         buildOptionalChannel(SWING_CH_ID, ComponentChannelType.STRING,
-                new TextValue(channelConfiguration.swingModes.toArray(new String[0])), updateListener,
-                channelConfiguration.swingCommandTemplate, channelConfiguration.swingCommandTopic,
-                channelConfiguration.swingStateTemplate, channelConfiguration.swingStateTopic, commandFilter);
+                new TextValue(modes, modes, SWING_MODE_LABELS, SWING_MODE_LABELS), "Swing Mode", updateListener,
+                config.getSwingModeCommandTemplate(), config.getSwingModeCommandTopic(),
+                config.getSwingModeStateTemplate(), config.getSwingModeStateTopic());
 
         buildOptionalChannel(TARGET_HUMIDITY_CH_ID, ComponentChannelType.HUMIDITY,
-                new NumberValue(channelConfiguration.minHumidity, channelConfiguration.maxHumidity, null,
-                        Units.PERCENT),
-                updateListener, channelConfiguration.targetHumidityCommandTemplate,
-                channelConfiguration.targetHumidityCommandTopic, channelConfiguration.targetHumidityStateTemplate,
-                channelConfiguration.targetHumidityStateTopic, commandFilter);
+                new NumberValue(BigDecimal.valueOf(config.getMinHumidity()),
+                        BigDecimal.valueOf(config.getMaxHumidity()), null, Units.PERCENT),
+                "Target Humidity", updateListener, config.getTargetHumidityCommandTemplate(),
+                config.getTargetHumidityCommandTopic(), config.getTargetHumidityStateTemplate(),
+                config.getTargetHumidityStateTopic());
 
+        Double configMinTemp = config.getMinTemp(), configMaxTemp = config.getMaxTemp(),
+                configTempStep = config.getTempStep();
+        BigDecimal minTemp = configMinTemp != null ? BigDecimal.valueOf(configMinTemp) : null;
+        BigDecimal maxTemp = configMaxTemp != null ? BigDecimal.valueOf(configMaxTemp) : null;
+        BigDecimal tempStep = BigDecimal.valueOf(configTempStep);
         buildOptionalChannel(TEMPERATURE_CH_ID, ComponentChannelType.TEMPERATURE,
-                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
-                        channelConfiguration.tempStep, temperatureUnit.getUnit()),
-                updateListener, channelConfiguration.temperatureCommandTemplate,
-                channelConfiguration.temperatureCommandTopic, channelConfiguration.temperatureStateTemplate,
-                channelConfiguration.temperatureStateTopic, commandFilter);
+                new NumberValue(minTemp, maxTemp, tempStep, temperatureUnit.getUnit()), "Target Temperature",
+                updateListener, config.getTemperatureCommandTemplate(), config.getTemperatureCommandTopic(),
+                config.getTemperatureStateTemplate(), config.getTemperatureStateTopic());
 
         buildOptionalChannel(TEMPERATURE_HIGH_CH_ID, ComponentChannelType.TEMPERATURE,
-                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
-                        channelConfiguration.tempStep, temperatureUnit.getUnit()),
-                updateListener, channelConfiguration.temperatureHighCommandTemplate,
-                channelConfiguration.temperatureHighCommandTopic, channelConfiguration.temperatureHighStateTemplate,
-                channelConfiguration.temperatureHighStateTopic, commandFilter);
+                new NumberValue(minTemp, maxTemp, tempStep, temperatureUnit.getUnit()), "Highest Allowed Temperature",
+                updateListener, config.getTemperatureHighCommandTemplate(), config.getTemperatureHighCommandTopic(),
+                config.getTemperatureHighStateTemplate(), config.getTemperatureHighStateTopic());
 
         buildOptionalChannel(TEMPERATURE_LOW_CH_ID, ComponentChannelType.TEMPERATURE,
-                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
-                        channelConfiguration.tempStep, temperatureUnit.getUnit()),
-                updateListener, channelConfiguration.temperatureLowCommandTemplate,
-                channelConfiguration.temperatureLowCommandTopic, channelConfiguration.temperatureLowStateTemplate,
-                channelConfiguration.temperatureLowStateTopic, commandFilter);
+                new NumberValue(minTemp, maxTemp, tempStep, temperatureUnit.getUnit()), "Lowest Allowed Temperature",
+                updateListener, config.getTemperatureLowCommandTemplate(), config.getTemperatureLowCommandTopic(),
+                config.getTemperatureLowStateTemplate(), config.getTemperatureLowStateTopic());
 
-        buildOptionalChannel(POWER_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
-                channelConfiguration.powerCommandTopic, null, null, null);
+        buildOptionalChannel(POWER_CH_ID, ComponentChannelType.SWITCH,
+                new OnOffValue(config.getPayloadOn(), config.getPayloadOff()), "Power", updateListener,
+                config.getPowerCommandTemplate(), config.getPowerCommandTopic(), null, null);
 
         finalizeChannels();
     }
 
     @Nullable
-    private ComponentChannel buildOptionalChannel(String channelId, ComponentChannelType channelType, Value valueState,
-            ChannelStateUpdateListener channelStateUpdateListener, @Nullable String commandTemplate,
-            @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic,
-            @Nullable Predicate<Command> commandFilter) {
+    private ComponentChannel buildOptionalChannel(String channelId, ComponentChannelType channelType,
+            org.openhab.binding.mqtt.generic.values.Value valueState, String name,
+            ChannelStateUpdateListener channelStateUpdateListener, @Nullable Value commandTemplate,
+            @Nullable String commandTopic, @Nullable Value stateTemplate, @Nullable String stateTopic) {
         if ((commandTopic != null && !commandTopic.isBlank()) || (stateTopic != null && !stateTopic.isBlank())) {
-            return buildChannel(channelId, channelType, valueState, getName(), channelStateUpdateListener)
-                    .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
-                    .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
-                            commandTemplate)
-                    .inferOptimistic(channelConfiguration.optimistic).commandFilter(commandFilter).build();
+            return buildChannel(channelId, channelType, valueState, name, channelStateUpdateListener)
+                    .stateTopic(stateTopic, stateTemplate, config.getValueTemplate())
+                    .commandTopic(commandTopic, config.isRetain(), config.getQos(), commandTemplate)
+                    .inferOptimistic(config.isOptimistic()).build();
         }
         return null;
-    }
-
-    private @Nullable Predicate<Command> getCommandFilter(@Nullable ComponentChannel actionChannel) {
-        if (actionChannel == null) {
-            return null;
-        }
-        final var val = actionChannel.getState().getCache();
-        return command -> !ACTION_OFF_STATE.equals(val.getChannelState());
     }
 }

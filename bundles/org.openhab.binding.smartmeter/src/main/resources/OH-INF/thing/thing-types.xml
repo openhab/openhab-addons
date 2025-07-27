@@ -8,6 +8,7 @@
 	<thing-type id="meter">
 		<label>Smart Meter</label>
 		<description>The meter device to read the SML or IEC 62056-21 messages from</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>

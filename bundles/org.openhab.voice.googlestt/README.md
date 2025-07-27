@@ -8,14 +8,14 @@ You can find pricing information on the [documentation page](https://cloud.googl
 
 Before you can integrate this service with your Google Cloud Speech-to-Text, you must have a Google API Console project:
 
-- Select or create a GCP project. [link](https://console.cloud.google.com/cloud-resource-manager)
-- Make sure that billing is enabled for your project. [link](https://cloud.google.com/billing/docs/how-to/modify-project)
-- Enable the Cloud Speech-to-Text API. [link](https://console.cloud.google.com/apis/dashboard)
+- Select or create a GCP project. [see cloud resource manager](https://console.cloud.google.com/cloud-resource-manager).
+- Make sure that billing is enabled for your project. [see billing documentation](https://cloud.google.com/billing/docs/how-to/modify-project)
+- Enable the Cloud Speech-to-Text API. [see dashboard](https://console.cloud.google.com/apis/dashboard)
 - Set up authentication:
-  - Go to the "APIs & Services" -> "Credentials" page in the GCP Console and your project. [link](https://console.cloud.google.com/apis/credentials)
+  - Go to the "APIs & Services" -> "Credentials" page in the GCP Console and your project. [see credentials page](https://console.cloud.google.com/apis/credentials)
   - From the "Create credentials" drop-down list, select "OAuth client ID".
   - Select application type "Web application" and enter a name into the "Name" field.
-  - Add "https://www.google.com" to the "Authorized redirect URIs".
+  - Add "<https://www.google.com>" to the "Authorized redirect URIs".
   - Click Create. A pop-up appears, showing your "client ID" and "client secret".
 
 ## Configuration
@@ -30,7 +30,7 @@ Using your favorite configuration UI to edit **Settings / Other Services - Googl
   **Please go to your browser ...**
   [https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<clientId>](https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<clientId>) (replace `<clientId>` by your Client Id)
   **... to generate an authorization code and paste it here**.
-  After your browser has been redirected to https://www.google.com, the authorization code will be set in the browser URL as value of the "code" URL query parameter.
+  After your browser has been redirected to <https://www.google.com>, the authorization code will be set in the browser URL as value of the "code" URL query parameter.
   After initial authorization, this code is not needed anymore.
   It is recommended to clear this configuration parameter afterwards.
 

@@ -17,6 +17,10 @@
 		<label>Current Head</label>
 		<description>Current head</description>
 		<category>Water</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -37,6 +41,10 @@
 		<label>Motor Speed</label>
 		<description>Current rotation of the pump motor</description>
 		<category>Fan</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
 
@@ -50,6 +58,7 @@
 		<label>Grundfos Alpha Reader MI401</label>
 		<description>A Grundfos Alpha Reader MI401</description>
 		<category>Pump</category>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
@@ -83,6 +92,7 @@
 		<label>Grundfos Alpha3</label>
 		<description>A Grundfos Alpha3 circulator pump</description>
 		<category>Pump</category>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>

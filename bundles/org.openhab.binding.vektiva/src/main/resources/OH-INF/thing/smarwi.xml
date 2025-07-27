@@ -41,6 +41,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
 		<description>Control channel for Smarwi thing.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Status Channel Type -->

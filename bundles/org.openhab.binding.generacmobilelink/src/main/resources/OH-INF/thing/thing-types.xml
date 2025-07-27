@@ -7,6 +7,7 @@
 	<bridge-type id="account">
 		<label>MobileLink Account</label>
 		<description>MobileLink Cloud Account</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:generacmobilelink:account"/>
 	</bridge-type>
 
@@ -16,6 +17,7 @@
 		</supported-bridge-type-refs>
 		<label>MobileLink Generator</label>
 		<description>MobileLink Generator</description>
+		<semantic-equipment-tag>Generator</semantic-equipment-tag>
 		<channels>
 			<channel id="heroImageUrl" typeId="heroImageUrl"/>
 			<channel id="statusLabel" typeId="statusLabel"/>
@@ -64,6 +66,10 @@
 		<item-type>String</item-type>
 		<label>Status Text</label>
 		<description>The longer description of the current status.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="heroImageUrl">
@@ -124,24 +130,40 @@
 		<item-type>Number:Time</item-type>
 		<label>Run Hours</label>
 		<description>Number of hours run.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="batteryVoltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>The battery voltage.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="hoursOfProtection">
 		<item-type>Number:Time</item-type>
 		<label>Hours of Protection</label>
 		<description>Number of hours of protection the generator has provided.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="signalStrength">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Signal Strength</label>
 		<description>The Wi-Fi signal strength of the generator</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>SignalStrength</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

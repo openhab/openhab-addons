@@ -11,7 +11,7 @@
 
 		<label>Heat Recovery Ventilation</label>
 		<description>Sensor and actuator to control heat recovery ventilation units (EEP: D2-50)</description>
-
+		<semantic-equipment-tag>HeatRecovery</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

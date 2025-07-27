@@ -11,24 +11,54 @@ Tested models: Emotiva XMC-2
 
 ## Discovery
 
-The binding automatically discovers devices on your network.
+The binding can discover devices on your network as long as port 7001 is opened on the openHAB machine.
+
+### Network Openings
+
+The following ports are required to be opened in the firewall of you openHAB machine to have a fully working binding:
+
+- 7001/udp - Used for device discovery, cannot be changed.
+- 7003/udp - Used for regular notifications from the Emotiva device, can be changed via the **notifyPort** configuration.
+- 7005/udp - Used for menu notifications from the Emotiva device, can be changed via the **menuNotifyPort** configuration.
 
 ## Thing Configuration
 
 The Emotiva Processor thing requires the `ipAddress` it can connect to.
 There are more parameters which all have defaults set.
 
-| Parameter             | Values                                                        | Default |
-|-----------------------|---------------------------------------------------------------|---------|
-| ipAddress             | IP address of the processor                                   | -       |
-| controlPort           | port number, e.g. 7002                                        | 7002    |
-| notifyPort            | port number, e.g. 7003                                        | 7003    |
-| infoPort              | port number, e.g. 7004                                        | 7004    |
-| setupPortTCP          | port number, e.g. 7100                                        | 7100    |
-| menuNotifyPort        | port number, e.g. 7005                                        | 7005    |
-| protocolVersion       | Emotiva Network Protocol version, e.g. 3.0                    | 2.0     |
-| keepAlive             | Time between notification update from device, in milliseconds | 7500    |
-| retryConnectInMinutes | Time between connection retry, in minutes                     | 2       |
+| Parameter              | Values                                                        | Default |
+|------------------------|---------------------------------------------------------------|---------|
+| ipAddress              | IP address of the processor                                   | -       |
+| controlPort            | port number, e.g. 7002                                        | 7002    |
+| notifyPort             | port number, e.g. 7003                                        | 7003    |
+| infoPort               | port number, e.g. 7004                                        | 7004    |
+| setupPortTCP           | port number, e.g. 7100                                        | 7100    |
+| menuNotifyPort         | port number, e.g. 7005                                        | 7005    |
+| activateFrontBar       | Activates Front Bar channels                                  | false   |
+| activateOSDMenu        | Activates OSD menu channels                                   | false   |
+| activateZone2          | Activates Zone 2 channels                                     | false   |
+| protocolVersion        | Emotiva Network Protocol version, 2.0 or 3.0 supported        | 3.0     |
+| keepAlive              | Time between notification update from device, in milliseconds | 7500    |
+| retryConnectInMinutes  | Time between connection retry, in minutes                     | 2       |
+
+### Dynamic channels and extended functionality
+
+Emotiva processors have limited processing power, so if the binding subscribes to all channels simultaneously the device might grind to a halt after a while, requiring a manual reboot of the device.
+The binding is designed to dynamically enable and disabled channels based on the selected source.
+Furthermore, the configuration values **activateFrontBar**, **activateOSDMenu** and **activateZone2** controls extra functionality this is default off to reduce the overall load on the device.
+
+### Protocol Version
+
+Protocol version is usually reported by the device to the binding during discovery, but if a device is added manually, version 3.0 is set by default.
+Most modern Emotiva devices supports Emotiva Network Protocol version 3.0, but some devices with older firmware versions might require version 2.0.
+
+### Keep Alive
+
+A job to monitor the availability of the device is started whenever a successful connection is made.
+This monitors the regular a notification message received via the Control Protocol, and whenever a keep alive message is not received, the device is set OFFLINE.
+This might be an indication the device either has been disconnected or has been turned off manually.
+The binding will retry connecting to the device every 2 minutes, so if a device is turned back on it will automatically be discovered by the binding.
+If the devices goes away within minutes after an initial connection, this might be an indication that the **notifyPort** has not been opened in the firewall.
 
 ## Channels
 

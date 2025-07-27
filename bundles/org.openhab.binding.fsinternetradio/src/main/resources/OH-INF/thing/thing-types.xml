@@ -7,6 +7,7 @@
 	<thing-type id="radio">
 		<label>Internet Radio</label>
 		<description>An internet radio device based on the Frontier Silicon chipset.</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power"/>
@@ -53,6 +54,10 @@
 		<label>Power</label>
 		<description>Switch the radio on or off.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="preset">
 		<item-type>Number</item-type>
@@ -64,6 +69,10 @@
 		<label>Volume</label>
 		<description>Volume (min=0, max=32).</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="32" step="1"/>
 	</channel-type>
 	<channel-type id="volume-percent">
@@ -71,12 +80,20 @@
 		<label>Volume</label>
 		<description>Volume (in percent).</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" step="3"/> <!-- 3% correspond to 1 absolute step -->
 	</channel-type>
 	<channel-type id="mute">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mute the radio.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="play-info-name">
 		<item-type>String</item-type>

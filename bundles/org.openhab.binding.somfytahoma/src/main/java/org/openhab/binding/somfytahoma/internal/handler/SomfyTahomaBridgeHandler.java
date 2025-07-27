@@ -247,9 +247,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     public synchronized void login() {
         if (thingConfig.getEmail().isEmpty() || thingConfig.getPassword().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Can not access device as username and/or password are null");
-            return;
+            if (!thingConfig.isDevMode() || (thingConfig.isDevMode() && thingConfig.getToken().isEmpty())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Can not access device as username and/or password are null");
+                return;
+            }
         }
 
         if (tooManyRequests || Instant.now().minusSeconds(LOGIN_LIMIT_TIME).isBefore(lastLoginTimestamp)) {
@@ -269,15 +271,17 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             lastLoginTimestamp = Instant.now();
 
             if (thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)) {
+                // make sure all requests will be sent to cloud
+                thingConfig.setDevMode(false);
                 if (!loginCozyTouch()) {
                     return;
                 }
             } else {
-                loginTahoma();
-            }
-
-            if (thingConfig.isDevMode()) {
-                initializeLocalMode();
+                if (thingConfig.isDevMode()) {
+                    initializeLocalMode();
+                } else {
+                    loginTahoma();
+                }
             }
 
             String id = registerEvents();
@@ -309,12 +313,6 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                     "Getting login cookie interrupted");
             Thread.currentThread().interrupt();
         }
-    }
-
-    private void doOAuthLogin() throws ExecutionException, InterruptedException, TimeoutException {
-        lastLoginTimestamp = Instant.now();
-
-        loginTahoma();
     }
 
     private boolean loginCozyTouch()
@@ -356,13 +354,13 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         if (!thingConfig.getIp().isEmpty() && !thingConfig.getPin().isEmpty()) {
             try {
                 if (thingConfig.getToken().isEmpty()) {
+                    loginTahoma();
                     localToken = getNewLocalToken();
                     logger.debug("Local token retrieved");
                     activateLocalToken();
                     updateConfiguration();
                 } else {
                     localToken = thingConfig.getToken();
-                    activateLocalToken();
                 }
                 logger.debug("Local mode initialized, waiting for cloud sync");
                 Thread.sleep(3000);
@@ -598,7 +596,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
         if (tokenNeedsRefresh()) {
             logger.debug("The access token expires soon, refreshing the cloud access token");
-            refreshToken();
+            reLogin();
         }
 
         List<SomfyTahomaEvent> events = getEvents();
@@ -608,19 +606,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void refreshToken() {
-        try {
-            doOAuthLogin();
-        } catch (ExecutionException | TimeoutException e) {
-            logger.debug("Token refresh failed");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
     private boolean tokenNeedsRefresh() {
         return !thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)
-                && Instant.now().plusSeconds(thingConfig.getRefresh()).isAfter(tokenExpirationTime);
+                && Instant.now().plusSeconds(thingConfig.getRefresh()).isAfter(tokenExpirationTime)
+                && !isDevModeReady();
     }
 
     private void processEvent(SomfyTahomaEvent event) {

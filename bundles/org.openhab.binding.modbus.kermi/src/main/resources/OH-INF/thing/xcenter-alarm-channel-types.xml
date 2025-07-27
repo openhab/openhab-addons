@@ -7,5 +7,8 @@
 		<item-type>Contact</item-type>
 		<label>Alarm State</label>
 		<description>Current alarm-state of your heat pump</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

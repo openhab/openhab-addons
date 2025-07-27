@@ -1,0 +1,259 @@
+{
+    "user": {
+        "uid": "e86c72ef-93f8-4121-bd21-b634ba5d4f51",
+        "name": "openHAB",
+        "audience": "homesmart.local",
+        "email": "",
+        "createdTimestamp": "2024-10-08T14:14:33.000Z",
+        "verifiedUid": "",
+        "role": "home_member",
+        "remoteUser": 0
+    },
+    "hub": {
+        "id": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1",
+        "relationId": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+        "type": "gateway",
+        "deviceType": "gateway",
+        "createdAt": "2024-03-08T06:39:04.019Z",
+        "isReachable": true,
+        "lastSeen": "2024-10-27T20:14:00.811Z",
+        "attributes": {
+            "customName": "Townhouse",
+            "model": "DIRIGERA Hub for smart products",
+            "manufacturer": "IKEA of Sweden",
+            "firmwareVersion": "2.660.5",
+            "hardwareVersion": "P2.5",
+            "serialNumber": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+            "identifyStarted": "2024-10-17T02:30:32.000Z",
+            "identifyPeriod": 65534,
+            "otaStatus": "upToDate",
+            "otaState": "readyToCheck",
+            "otaProgress": 100,
+            "otaPolicy": "autoDownload",
+            "otaScheduleStart": "00:00",
+            "otaScheduleEnd": "00:00",
+            "permittingJoin": false,
+            "backendConnected": true,
+            "backendConnectionPersistent": true,
+            "backendOnboardingComplete": true,
+            "backendRegion": "eu-central-1",
+            "backendCountryCode": "DE",
+            "userConsents": [
+                {
+                    "name": "analytics",
+                    "value": "disabled"
+                },
+                {
+                    "name": "diagnostics",
+                    "value": "enabled"
+                }
+            ],
+            "logLevel": 3,
+            "coredump": false,
+            "timezone": "Europe/Berlin",
+            "nextSunSet": "2024-10-28T16:10:00.000Z",
+            "nextSunRise": "2024-10-28T06:11:00.000Z",
+            "homestate": "home",
+            "countryCode": "EN",
+            "coordinates": {
+                "latitude": 1.23,
+                "longitude": 9.876,
+                "accuracy": -1
+            },
+            "isOn": false
+        },
+        "capabilities": {
+            "canSend": [],
+            "canReceive": [
+                "customName",
+                "permittingJoin",
+                "userConsents",
+                "logLevel",
+                "time",
+                "timezone",
+                "countryCode",
+                "coordinates"
+            ]
+        },
+        "deviceSet": [],
+        "remoteLinks": [],
+        "environment": "prod"
+    },
+    "devices": [
+        {
+            "id": "854bdf30-86b8-48f5-b070-16ff5ab12be4_1",
+            "relationId": "854bdf30-86b8-48f5-b070-16ff5ab12be4",
+            "type": "controller",
+            "deviceType": "shortcutController",
+            "createdAt": "2024-10-17T14:23:58.000Z",
+            "isReachable": true,
+            "lastSeen": "2024-10-27T18:11:55.000Z",
+            "attributes": {
+                "customName": "Clicky",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "1",
+                "manufacturer": "IKEA of Sweden",
+                "model": "SOMRIG shortcut button",
+                "productCode": "E2213",
+                "serialNumber": "ECF64CFFFE1EE52F",
+                "batteryPercentage": 89,
+                "switchLabel": "Shortcut 1",
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate"
+            },
+            "capabilities": {
+                "canSend": [
+                    "singlePress",
+                    "longPress",
+                    "doublePress"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "854bdf30-86b8-48f5-b070-16ff5ab12be4_2",
+            "relationId": "854bdf30-86b8-48f5-b070-16ff5ab12be4",
+            "type": "controller",
+            "deviceType": "shortcutController",
+            "createdAt": "2024-10-17T14:23:58.000Z",
+            "isReachable": true,
+            "lastSeen": "2024-10-27T18:11:55.000Z",
+            "attributes": {
+                "customName": "",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "1",
+                "manufacturer": "IKEA of Sweden",
+                "model": "SOMRIG shortcut button",
+                "productCode": "E2213",
+                "serialNumber": "ECF64CFFFE1EE52F",
+                "switchLabel": "Shortcut 2",
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate"
+            },
+            "capabilities": {
+                "canSend": [
+                    "singlePress",
+                    "longPress",
+                    "doublePress"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        }
+    ],
+    "users": [
+    ],
+    "scenes": [
+    ],
+    "rooms": [
+        {
+            "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+            "name": "Lobby HWR",
+            "color": "ikea_pink_no_4",
+            "icon": "rooms_drill"
+        },
+        {
+            "id": "4328471f-03cd-4372-aa1e-e3e9f3be3da4",
+            "name": "Schlafzimmer ",
+            "color": "ikea_beige_no_3",
+            "icon": "rooms_bed"
+        },
+        {
+            "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+            "name": "Loft",
+            "color": "ikea_green_no_65",
+            "icon": "rooms_sofa"
+        },
+        {
+            "id": "c9e407e5-5bfa-4e73-aaf3-c0258d9ccb5f",
+            "name": "Gäste WC",
+            "color": "ikea_blue_no_58",
+            "icon": "rooms_sink"
+        },
+        {
+            "id": "7bc86420-cf4a-4a58-beff-7dcf462258da",
+            "name": "Badezimmer",
+            "color": "ikea_blue_no_58",
+            "icon": "rooms_bathtub"
+        },
+        {
+            "id": "921edb07-e344-4c70-a09e-11935c727f58",
+            "name": "Esszimmer",
+            "color": "ikea_yellow_no_31",
+            "icon": "rooms_cutlery"
+        },
+        {
+            "id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+            "name": "Küche",
+            "color": "ikea_red_no_39",
+            "icon": "rooms_kitchen"
+        }
+    ],
+    "deviceSets": [],
+    "adaptiveProfiles": [
+        {
+            "id": "f7fd67f5-4c3f-401b-9dea-211fba48a844",
+            "adaptiveSchedule": [
+                {
+                    "startTime": "07:00",
+                    "lightLevel": 25,
+                    "colorTemperature": 3000
+                },
+                {
+                    "startTime": "09:00",
+                    "lightLevel": 75,
+                    "colorTemperature": 3900
+                },
+                {
+                    "startTime": "13:00",
+                    "lightLevel": 100,
+                    "colorTemperature": 4000
+                },
+                {
+                    "startTime": "17:00",
+                    "lightLevel": 70,
+                    "colorTemperature": 4000
+                },
+                {
+                    "startTime": "20:00",
+                    "lightLevel": 20,
+                    "colorTemperature": 3900
+                },
+                {
+                    "startTime": "22:00",
+                    "lightLevel": 1,
+                    "colorTemperature": 3000
+                }
+            ]
+        }
+    ]
+}

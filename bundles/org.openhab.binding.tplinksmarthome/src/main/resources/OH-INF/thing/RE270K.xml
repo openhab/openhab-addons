@@ -8,7 +8,7 @@
 		<label>RE270K</label>
 		<description>TP-Link AC750 Wi-Fi Range Extender with Smart Plug</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switch-readonly"/>
 			<channel id="rssi" typeId="rssi"/>

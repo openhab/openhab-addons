@@ -7,7 +7,7 @@
 	<bridge-type id="fs-site">
 		<label>ForecastSolar Site</label>
 		<description>Site location for Forecast Solar</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="power-estimate" typeId="power-estimate"/>
 			<channel id="energy-estimate" typeId="energy-estimate"/>

@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    // Participate in workspace
+    "composite": true,
+
+    // Add compatibility with CommonJS modules
+    "esModuleInterop": true,
+
+    // Compile incrementally using tsbuildinfo state file
+    "incremental": true,
+
+    // We should probably boost this at least to ES 2017
+    "target": "es2022",
+
+    // Generate modules as ES2020 or CommonJS
+    "module": "node16",
+
+    // Use node-style dependency resolution
+    "moduleResolution": "node16",
+
+    "lib": ["ES2022", "DOM"],
+
+    // Do not load globals from node_modules by default
+    "types": [
+      "node"
+    ],
+
+    // Enforce a subset of our code conventions
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "outDir": "dist"
+  },
+    "include": ["src/**/*.ts"]
+}

@@ -6,6 +6,7 @@
 	<thing-type id="pentair">
 		<label>Pentair Pool Controller</label>
 		<description>A Pentair pool control thing represents an Autelis pool controller for Pentair systems</description>
+		<semantic-equipment-tag>SwimmingPool</semantic-equipment-tag>
 		<channels>
 			<channel id="system-runstate" typeId="system-runstate"/>
 			<channel id="system-model" typeId="system-model"/>
@@ -323,6 +324,10 @@
 		<label>Pool Temp</label>
 		<description>The current pool temperature. Note: Only accurate when pool is running</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -331,6 +336,10 @@
 		<label>Spa Temperature</label>
 		<description>The current spa temperature. Note: Only accurate when spa is running</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -339,6 +348,10 @@
 		<label>Air Temperature</label>
 		<description>The current temperature measured by the air sensor</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -347,6 +360,10 @@
 		<label>Solar Temperature</label>
 		<description>The current temperature measured by the solar sensor</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -444,6 +461,10 @@
 		<item-type>Number</item-type>
 		<label>Chlorine Salt Level</label>
 		<description>Chlorine Salt Level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>

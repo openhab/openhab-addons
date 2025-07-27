@@ -7,6 +7,7 @@
 	<thing-type id="mystromplug">
 		<label>myStrom Smart Plug</label>
 		<description>Controls the myStrom smart plug</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="switch" typeId="system.power"/>
@@ -156,6 +157,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power Consumption</label>
 		<description>The current power delivered by the plug</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -163,6 +168,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Consumption</label>
 		<description>Energy consumed since last API call</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -171,6 +180,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The current temperature at the plug</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -185,6 +198,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>The color mode we want the Bulb to set to</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="rgb">RGB</option>

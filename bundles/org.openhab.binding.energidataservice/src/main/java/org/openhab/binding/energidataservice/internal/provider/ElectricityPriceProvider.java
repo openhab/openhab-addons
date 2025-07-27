@@ -17,28 +17,31 @@ import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBi
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.energidataservice.internal.ApiController;
 import org.openhab.binding.energidataservice.internal.api.ChargeType;
+import org.openhab.binding.energidataservice.internal.api.Dataset;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameter;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameterType;
 import org.openhab.binding.energidataservice.internal.api.GlobalLocationNumber;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecord;
+import org.openhab.binding.energidataservice.internal.api.dto.DayAheadPriceRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
 import org.openhab.binding.energidataservice.internal.provider.cache.DatahubPriceSubscriptionCache;
@@ -81,6 +84,7 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     private @Nullable ScheduledFuture<?> refreshFuture;
     private @Nullable ScheduledFuture<?> priceUpdateFuture;
     private RetryStrategy retryPolicy = RetryPolicyFactory.initial();
+    private LocalDate dayAheadTransitionDate = DAY_AHEAD_TRANSITION_DATE;
 
     @Activate
     public ElectricityPriceProvider(final @Reference Scheduler scheduler,
@@ -90,9 +94,24 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
         this.apiController = new ApiController(httpClientFactory.getCommonHttpClient(), timeZoneProvider);
     }
 
+    protected ElectricityPriceProvider(final Scheduler scheduler, final ApiController apiController,
+            final TimeZoneProvider timeZoneProvider) {
+        this.scheduler = scheduler;
+        this.timeZoneProvider = timeZoneProvider;
+        this.apiController = apiController;
+    }
+
     @Deactivate
     public void deactivate() {
         stopJobs();
+    }
+
+    public void setDayAheadTransitionDate(LocalDate transitionDate) {
+        dayAheadTransitionDate = transitionDate;
+    }
+
+    public LocalDate getDayAheadTransitionDate() {
+        return dayAheadTransitionDate;
     }
 
     public void subscribe(ElectricityPriceListener listener, Subscription subscription) {
@@ -142,48 +161,25 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     private void refreshElectricityPrices() {
         RetryStrategy retryPolicy;
         try {
-            Set<ElectricityPriceListener> spotPricesUpdatedListeners = new HashSet<>();
-            boolean spotPricesSubscribed = false;
-            long numberOfFutureSpotPrices = 0;
-
             for (Entry<Subscription, Set<ElectricityPriceListener>> subscriptionListener : subscriptionToListeners
                     .entrySet()) {
                 Subscription subscription = subscriptionListener.getKey();
                 Set<ElectricityPriceListener> listeners = subscriptionListener.getValue();
 
-                boolean pricesUpdated = downloadPrices(subscription, false);
-                if (subscription instanceof SpotPriceSubscription) {
-                    spotPricesSubscribed = true;
-                    if (pricesUpdated) {
-                        spotPricesUpdatedListeners.addAll(listeners);
-                    }
-                    long numberOfFutureSpotPricesForSubscription = getSpotPriceSubscriptionDataCache(subscription)
-                            .getNumberOfFuturePrices();
-                    if (numberOfFutureSpotPrices == 0
-                            || numberOfFutureSpotPricesForSubscription < numberOfFutureSpotPrices) {
-                        numberOfFutureSpotPrices = numberOfFutureSpotPricesForSubscription;
-                    }
-                }
+                boolean spotPricesUpdated = downloadPricesIfNotCached(subscription)
+                        && subscription instanceof SpotPriceSubscription;
+
                 updateCurrentPrices(subscription);
                 publishPricesFromCache(subscription, listeners);
+
+                if (spotPricesUpdated && getSpotPriceSubscriptionDataCache(subscription).arePricesFullyCached()) {
+                    listeners.forEach(listener -> listener.onDayAheadAvailable());
+                }
             }
 
             reschedulePriceUpdateJob();
 
-            if (spotPricesSubscribed) {
-                LocalTime now = LocalTime.now(NORD_POOL_TIMEZONE);
-
-                if (numberOfFutureSpotPrices >= 13 || (numberOfFutureSpotPrices == 12
-                        && now.isAfter(DAILY_REFRESH_TIME_CET.minusHours(1)) && now.isBefore(DAILY_REFRESH_TIME_CET))) {
-                    spotPricesUpdatedListeners.forEach(listener -> listener.onDayAheadAvailable());
-                    retryPolicy = RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
-                } else {
-                    logger.warn("Spot prices are not available, retry scheduled (see details in Thing properties)");
-                    retryPolicy = RetryPolicyFactory.whenExpectedSpotPriceDataMissing();
-                }
-            } else {
-                retryPolicy = RetryPolicyFactory.atFixedTime(LocalTime.MIDNIGHT, timeZoneProvider.getTimeZone());
-            }
+            retryPolicy = determineRetryPolicy();
         } catch (DataServiceException e) {
             if (e.getHttpStatus() != 0) {
                 listenerToSubscriptions.keySet().forEach(
@@ -202,6 +198,33 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
         }
 
         reschedulePriceRefreshJob(retryPolicy);
+    }
+
+    private RetryStrategy determineRetryPolicy() {
+        if (!hasAnySpotPriceSubscriptions()) {
+            return RetryPolicyFactory.atFixedTime(LocalTime.MIDNIGHT, timeZoneProvider.getTimeZone());
+        }
+
+        if (areSpotPricesFullyCachedForAllSubscriptions()) {
+            return RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
+        }
+
+        logger.warn("Spot prices are not available, retry scheduled (see details in Thing properties)");
+        return RetryPolicyFactory.whenExpectedSpotPriceDataMissing();
+    }
+
+    private boolean hasAnySpotPriceSubscriptions() {
+        return getSpotPriceSubscriptions().findAny().isPresent();
+    }
+
+    private boolean areSpotPricesFullyCachedForAllSubscriptions() {
+        return getSpotPriceSubscriptions()
+                .allMatch(subscription -> getSpotPriceSubscriptionDataCache(subscription).arePricesFullyCached());
+    }
+
+    private Stream<SpotPriceSubscription> getSpotPriceSubscriptions() {
+        return subscriptionToListeners.keySet().stream().filter(SpotPriceSubscription.class::isInstance)
+                .map(SpotPriceSubscription.class::cast);
     }
 
     /**
@@ -225,30 +248,10 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     }
 
     /**
-     * Force refresh prices for {@link Subscription} even if already cached.
-     * The prices are not returned, but will be stored in the cache and can
-     * be obtained by {@link #getCurrentPriceIfCached(Subscription)}
-     * or {@link #getPricesIfCached(Subscription)}.
-     *
-     * @return true if cached values were changed as a result of the refresh
-     */
-    public boolean forceRefreshPrices(Subscription subscription) {
-        try {
-            return downloadPrices(subscription, true);
-        } catch (DataServiceException e) {
-            logger.debug("Error force retrieving prices", e);
-            return false;
-        } catch (InterruptedException e) {
-            logger.debug("Force refresh interrupted");
-            Thread.currentThread().interrupt();
-            return false;
-        }
-    }
-
-    /**
      * Get all prices for given {@link Subscription}.
      * If the prices are not already cached, they will be fetched
-     * from the service.
+     * from the service unless there are active listeners.
+     * In that case a retry policy should already be in effect.
      *
      * @param subscription Subscription for which to get prices
      * @return Map of available prices
@@ -257,62 +260,99 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
      */
     public Map<Instant, BigDecimal> getPrices(Subscription subscription)
             throws InterruptedException, DataServiceException {
-        downloadPrices(subscription, false);
+        if (getListeners(subscription).isEmpty()) {
+            logger.debug("{} has no listeners, trigger download if not cached", subscription);
+            downloadPricesIfNotCached(subscription);
+        }
 
+        // If there are listeners for the subscription, do not short-circuit
+        // the download flow; Just return what is already cached.
+        // Method refreshElectricityPrices is responsible for downloading new
+        // prices and notifying listeners when new spot proces are available.
         return getSubscriptionDataCache(subscription).get();
     }
 
-    private boolean downloadPrices(Subscription subscription, boolean force)
+    /**
+     * PLEASE NOTE: This method should only be called when there are no listeners
+     * or by {@link #refreshElectricityPrices}, because it will manage the retry
+     * policy and notify listeners when new day-ahead prices are available.
+     */
+    private boolean downloadPricesIfNotCached(Subscription subscription)
             throws InterruptedException, DataServiceException {
         if (subscription instanceof SpotPriceSubscription spotPriceSubscription) {
-            return downloadSpotPrices(spotPriceSubscription, false);
+            return downloadSpotPricesIfNotCached(spotPriceSubscription);
         } else if (subscription instanceof DatahubPriceSubscription datahubPriceSubscription) {
-            return downloadTariffs(datahubPriceSubscription, false);
+            return downloadTariffsIfNotCached(datahubPriceSubscription);
         }
         throw new IllegalArgumentException("Subscription " + subscription + " is not supported");
     }
 
-    private boolean downloadSpotPrices(SpotPriceSubscription subscription, boolean force)
+    private boolean downloadSpotPricesIfNotCached(SpotPriceSubscription subscription)
             throws InterruptedException, DataServiceException {
         SpotPriceSubscriptionCache cache = getSpotPriceSubscriptionDataCache(subscription);
 
-        if (!force && cache.arePricesFullyCached()) {
+        if (cache.arePricesFullyCached()) {
             logger.debug("Cached spot prices still valid, skipping download.");
             return false;
         }
+
         DateQueryParameter start;
-        if (!force && cache.areHistoricPricesCached()) {
+        if (cache.areHistoricPricesCached()) {
             start = DateQueryParameter.of(DateQueryParameterType.UTC_NOW);
         } else {
             start = DateQueryParameter.of(DateQueryParameterType.UTC_NOW,
                     Duration.ofHours(-ElectricityPriceSubscriptionCache.NUMBER_OF_HISTORIC_HOURS));
         }
+
+        return downloadSpotPrices(subscription, start);
+    }
+
+    private boolean downloadSpotPrices(SpotPriceSubscription subscription, DateQueryParameter start)
+            throws InterruptedException, DataServiceException {
+        SpotPriceSubscriptionCache cache = getSpotPriceSubscriptionDataCache(subscription);
+
         Map<String, String> properties = new HashMap<>();
         boolean isUpdated = false;
         try {
-            ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(subscription.getPriceArea(),
-                    subscription.getCurrency(), start, DateQueryParameter.EMPTY, properties);
-            isUpdated = cache.put(spotPriceRecords);
+            if (getDayAheadDataset() == Dataset.SpotPrices) {
+                ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(subscription.getPriceArea(),
+                        subscription.getCurrency(), start, DateQueryParameter.EMPTY, properties);
+                isUpdated = cache.put(spotPriceRecords);
+            } else {
+                DayAheadPriceRecord[] dayAheadRecords = apiController.getDayAheadPrices(subscription.getPriceArea(),
+                        subscription.getCurrency(), start, DateQueryParameter.EMPTY, properties);
+                isUpdated = cache.put(dayAheadRecords);
+            }
         } finally {
             listenerToSubscriptions.keySet().forEach(listener -> listener.onPropertiesUpdated(properties));
         }
         return isUpdated;
     }
 
-    private boolean downloadTariffs(DatahubPriceSubscription subscription, boolean force)
+    private boolean downloadTariffsIfNotCached(DatahubPriceSubscription subscription)
             throws InterruptedException, DataServiceException {
         GlobalLocationNumber globalLocationNumber = subscription.getGlobalLocationNumber();
         if (globalLocationNumber.isEmpty()) {
             return false;
         }
         DatahubPriceSubscriptionCache cache = getDatahubPriceSubscriptionDataCache(subscription);
-        if (!force && cache.areTariffsValidTomorrow()) {
+        if (cache.areTariffsValidTomorrow()) {
             logger.debug("Cached tariffs of type {} still valid, skipping download.", subscription.getDatahubTariff());
             cache.update();
             return false;
-        } else {
-            return cache.put(downloadPriceLists(subscription));
         }
+
+        return downloadTariffs(subscription);
+    }
+
+    private boolean downloadTariffs(DatahubPriceSubscription subscription)
+            throws InterruptedException, DataServiceException {
+        GlobalLocationNumber globalLocationNumber = subscription.getGlobalLocationNumber();
+        if (globalLocationNumber.isEmpty()) {
+            return false;
+        }
+        DatahubPriceSubscriptionCache cache = getDatahubPriceSubscriptionDataCache(subscription);
+        return cache.put(downloadPriceLists(subscription));
     }
 
     private Collection<DatahubPricelistRecord> downloadPriceLists(DatahubPriceSubscription subscription)
@@ -367,6 +407,17 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
         return dataCache;
     }
 
+    private Duration getDayAheadResolution() {
+        return getDayAheadDataset() == Dataset.SpotPrices ? Duration.ofHours(1) : Duration.ofMinutes(15);
+    }
+
+    private Dataset getDayAheadDataset() {
+        return Instant.now()
+                .isBefore(dayAheadTransitionDate.atTime(DAILY_REFRESH_TIME_CET).atZone(NORD_POOL_TIMEZONE).toInstant())
+                        ? Dataset.SpotPrices
+                        : Dataset.DayAheadPrices;
+    }
+
     private void publishPricesFromCache(Subscription subscription, Set<ElectricityPriceListener> listeners) {
         if (subscription instanceof SpotPriceSubscription spotPriceSubscription) {
             SpotPriceSubscriptionCache cache = getSpotPriceSubscriptionDataCache(subscription);
@@ -412,7 +463,13 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
             this.priceUpdateFuture = null;
         }
 
-        Instant nextUpdate = Instant.now().plus(1, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS);
+        // Calculate time until the next multiple of the resolution
+        Instant now = Instant.now();
+        long resolutionMillis = getDayAheadResolution().toMillis();
+        long elapsedMillis = Duration.between(Instant.EPOCH, now).toMillis();
+        long nextMillis = ((elapsedMillis / resolutionMillis) + 1) * resolutionMillis;
+        Instant nextUpdate = Instant.EPOCH.plusMillis(nextMillis);
+
         this.priceUpdateFuture = scheduler.at(this::updatePricesForAllSubscriptions, nextUpdate);
         logger.debug("Price update job rescheduled at {}", nextUpdate);
     }

@@ -8,6 +8,7 @@
 	<thing-type id="DCH-S150">
 		<label>Motion Sensor</label>
 		<description>D-Link DCH-S150 WiFi motion sensor</description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="motion" typeId="system.trigger">

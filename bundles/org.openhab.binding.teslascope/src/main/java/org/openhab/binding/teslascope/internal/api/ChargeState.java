@@ -45,8 +45,20 @@ public class ChargeState {
     @SerializedName("charge_limit_soc")
     public int chargeLimitSoc;
 
+    @SerializedName("charge_limit_soc_max")
+    public int chargeLimitSocMax;
+
+    @SerializedName("charge_limit_soc_min")
+    public int chargeLimitSocMin;
+
+    @SerializedName("charge_limit_soc_std")
+    public int chargeLimitSocStd;
+
     @SerializedName("charge_port_door_open")
     public int chargePortDoorOpen;
+
+    @SerializedName("charge_port_latch")
+    public String chargePortLatch = "";
 
     @SerializedName("charge_rate")
     public float chargeRate;
@@ -68,6 +80,18 @@ public class ChargeState {
 
     @SerializedName("scheduled_charging_start_time")
     public String scheduledChargingStartTime = " ";
+
+    @SerializedName("charge_amps")
+    public float chargeAmps;
+
+    @SerializedName("charge_current_request")
+    public int chargeCurrentRequest;
+
+    @SerializedName("charge_current_request_max")
+    public int chargeCurrentRequestMax;
+
+    @SerializedName("detailed_charge_state")
+    public String detailedChargeState = "";
 
     private ChargeState() {
     }

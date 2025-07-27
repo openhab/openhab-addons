@@ -656,7 +656,6 @@ public class WhisperSTTService implements STTService {
                 throw new STTException("Failed to retrieve transcription: HTTP status code " + statusCode);
             }
             return response.getContentAsString();
-
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
             throw new STTException("Exception during attempt to get speech recognition result from api", e);
         }

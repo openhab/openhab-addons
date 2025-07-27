@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="casokitchen"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current Zone Temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="set-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Target Zone Temperature</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="light-switch">
+		<item-type>Switch</item-type>
+		<label>Light Switch</label>
+		<description>Switching lights on and off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="hint">
+		<item-type>String</item-type>
+		<label>Hint</label>
+		<description>Textual hint for device status</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last-update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Time stamp of latest device communication</description>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

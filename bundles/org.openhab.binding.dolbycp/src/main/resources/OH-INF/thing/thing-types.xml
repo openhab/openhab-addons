@@ -7,6 +7,7 @@
 	<thing-type id="cp750">
 		<label>CP750 Device</label>
 		<description>Binding for Dolby Cinema Processor CP750</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="fader" typeId="fader"/>
@@ -51,16 +52,23 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
 	<channel-type id="fader">
 		<item-type>Dimmer</item-type>
 		<label>Fader</label>
 		<description>Fader state</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="mute">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mute state</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input">
 		<item-type>String</item-type>

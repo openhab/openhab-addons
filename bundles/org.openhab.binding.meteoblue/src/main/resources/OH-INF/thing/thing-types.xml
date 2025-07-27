@@ -12,6 +12,7 @@
 
 		<label>Weather Information</label>
 		<description>Weather data from the meteoblue service</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="forecastToday" typeId="forecast">
@@ -123,6 +124,10 @@
 		<item-type>DateTime</item-type>
 		<label>Forecast Date</label>
 		<description>Forecast date</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -131,6 +136,10 @@
 		<label>Minimum Temperature</label>
 		<description>The low temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -139,6 +148,10 @@
 		<label>Maximum Temperature</label>
 		<description>The high temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -147,6 +160,10 @@
 		<label>Mean Temperature</label>
 		<description>The average temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -171,6 +188,10 @@
 		<label>Minimum Relative Humidity</label>
 		<description>The minimum relative humidity in %</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%">
 		</state>
 	</channel-type>
@@ -180,6 +201,10 @@
 		<label>Maximum Relative Humidity</label>
 		<description>The maximum relative humidity in %</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%">
 		</state>
 	</channel-type>
@@ -189,6 +214,10 @@
 		<label>Mean Relative Humidity</label>
 		<description>The average relative humidity in %</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%">
 		</state>
 	</channel-type>
@@ -197,6 +226,10 @@
 		<item-type>String</item-type>
 		<label>Cardinal Wind Direction</label>
 		<description>The cardinal direction of the wind</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
@@ -206,6 +239,10 @@
 		<label>Wind Direction</label>
 		<description>Wind direction (in degrees)</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f °">
 		</state>
 	</channel-type>
@@ -215,6 +252,10 @@
 		<label>Maximum Wind Speed</label>
 		<description>The maximum wind speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -223,6 +264,10 @@
 		<label>Minimum Wind Speed</label>
 		<description>The minimum wind speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -231,6 +276,10 @@
 		<label>Mean Wind Speed</label>
 		<description>The mean wind speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -239,6 +288,10 @@
 		<label>Low Pressure</label>
 		<description>Low Pressure</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -247,6 +300,10 @@
 		<label>High Pressure</label>
 		<description>High Pressure</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -255,6 +312,10 @@
 		<label>Mean Pressure</label>
 		<description>Mean Pressure</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -262,6 +323,10 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV Index</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f">
 		</state>
 	</channel-type>
@@ -271,6 +336,10 @@
 		<label>Precipitation</label>
 		<description>Prediction of total precipitation</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -279,6 +348,10 @@
 		<label>Convective Precipitation</label>
 		<description>Prediction of convective precipitation (rainfall)</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -290,6 +363,10 @@
 			east
 			(e.g. 2112211093222219212110112229922133311912239022192).</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -306,6 +383,10 @@
 		<label>Snow Fraction</label>
 		<description>Prediction of the fraction of total precipitation that will fall as snow</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -314,6 +395,10 @@
 		<label>Snowfall</label>
 		<description>Prediction of snowfall</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -321,6 +406,10 @@
 		<item-type>Number</item-type>
 		<label>Precipitation Probability</label>
 		<description>Probability of precipitation (as %)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%">
 		</state>
 	</channel-type>
@@ -337,6 +426,10 @@
 		<item-type>Number</item-type>
 		<label>Precipitation Hours</label>
 		<description>The predicted number of hours having precipitation</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" min="0" max="24" pattern="%d">
 		</state>
 	</channel-type>
@@ -345,6 +438,10 @@
 		<item-type>Number</item-type>
 		<label>Humidity Greater Than 90 Hours</label>
 		<description>The predicted number of hours having humidity greater than 90%</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="24" pattern="%d">
 		</state>
 	</channel-type>

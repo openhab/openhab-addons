@@ -1,0 +1,135 @@
+{
+    "type": "event",
+    "event": {
+        "source": "controller",
+        "event": "node removed",
+        "node": {
+            "nodeId": 25,
+            "index": 0,
+            "status": 3,
+            "ready": false,
+            "isSecure": true,
+            "interviewAttempts": 0,
+            "endpoints": [
+                {
+                    "nodeId": 83,
+                    "index": 0,
+                    "deviceClass": null,
+                    "commandClasses": [
+                        {
+                            "id": 94,
+                            "name": "Z-Wave Plus Info",
+                            "version": 2,
+                            "isSecure": false
+                        },
+                        {
+                            "id": 85,
+                            "name": "Transport Service",
+                            "version": 2,
+                            "isSecure": false
+                        },
+                        {
+                            "id": 159,
+                            "name": "Security 2",
+                            "version": 1,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 134,
+                            "name": "Version",
+                            "version": 2,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 37,
+                            "name": "Binary Switch",
+                            "version": 1,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 133,
+                            "name": "Association",
+                            "version": 2,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 89,
+                            "name": "Association Group Information",
+                            "version": 1,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 114,
+                            "name": "Manufacturer Specific",
+                            "version": 2,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 90,
+                            "name": "Device Reset Locally",
+                            "version": 1,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 115,
+                            "name": "Powerlevel",
+                            "version": 1,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 112,
+                            "name": "Configuration",
+                            "version": 3,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 91,
+                            "name": "Central Scene",
+                            "version": 3,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 44,
+                            "name": "Scene Actuator Configuration",
+                            "version": 1,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 43,
+                            "name": "Scene Activation",
+                            "version": 1,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 108,
+                            "name": "Supervision",
+                            "version": 1,
+                            "isSecure": true
+                        },
+                        {
+                            "id": 122,
+                            "name": "Firmware Update Meta Data",
+                            "version": 4,
+                            "isSecure": true
+                        }
+                    ]
+                }
+            ],
+            "values": [],
+            "deviceClass": null,
+            "interviewStage": "None",
+            "statistics": {
+                "commandsTX": 0,
+                "commandsRX": 0,
+                "commandsDroppedRX": 0,
+                "commandsDroppedTX": 0,
+                "timeoutResponse": 0
+            },
+            "highestSecurityClass": 1,
+            "isControllerNode": false,
+            "keepAwake": false,
+            "protocol": 0
+        },
+        "reason": 2
+    }
+}

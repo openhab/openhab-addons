@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Warning Device</label>
 		<category>Siren</category>
+		<semantic-equipment-tag>Siren</semantic-equipment-tag>
 		<channels>
 			<channel typeId="alert" id="alert"/>
 		</channels>
@@ -26,6 +27,7 @@
 		<label>Window Covering</label>
 		<description>A device to cover windows.</description>
 		<category>Blinds</category>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channels>
 			<channel typeId="position" id="position"/>
 		</channels>
@@ -42,6 +44,7 @@
 
 		<label>On/Off Light</label>
 		<description>A light that can be turned on or off.</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel typeId="system.power" id="switch"/>
@@ -63,10 +66,18 @@
 		</supported-bridge-type-refs>
 		<label>Dimmable Light</label>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+
 		<channels>
-			<channel typeId="system.brightness" id="brightness"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.brightness" id="brightness">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -85,11 +96,21 @@
 		<label>Color-Temperature Light</label>
 		<description>A dimmable light with adjustable color temperature.</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+
 		<channels>
-			<channel typeId="system.brightness" id="brightness"/>
-			<channel typeId="system.color-temperature-abs" id="color_temperature"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.brightness" id="brightness">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="system.color-temperature-abs" id="color_temperature">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -108,10 +129,18 @@
 		<label>Color Light</label>
 		<description>A dimmable light with adjustable color.</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+
 		<channels>
-			<channel typeId="system.color" id="color"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.color" id="color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -130,11 +159,21 @@
 		<label>Color Light</label>
 		<description>A dimmable light with adjustable color.</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+
 		<channels>
-			<channel typeId="system.color" id="color"/>
-			<channel typeId="system.color-temperature-abs" id="color_temperature"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.color" id="color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="system.color-temperature-abs" id="color_temperature">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -153,6 +192,8 @@
 		<label>Doorlock</label>
 		<description>A doorlock that can be locked (ON) or unlocked (OFF).</description>
 		<category>Lock</category>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
+
 		<channels>
 			<channel typeId="lock" id="switch"/>
 		</channels>
@@ -166,6 +207,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state pattern="%.1f %%"/>
 	</channel-type>
 
@@ -180,7 +225,8 @@
 		<item-type>String</item-type>
 		<label>Effect Channel</label>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
@@ -188,7 +234,8 @@
 		<item-type>Number</item-type>
 		<label>Effect Speed Channel</label>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Speed</tag>
 		</tags>
 		<state min="0" max="10" step="1"/>
 	</channel-type>
@@ -197,6 +244,10 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<category>Alarm</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="none">No Alarm</option>
@@ -209,6 +260,10 @@
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

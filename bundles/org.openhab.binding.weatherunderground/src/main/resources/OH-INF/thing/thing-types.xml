@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>Weather Information</label>
 		<description>Provides various weather data from the Weather Underground service</description>
-
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="current" typeId="current"/>
 			<channel-group id="forecastToday" typeId="forecast">
@@ -214,6 +214,10 @@
 		<item-type>String</item-type>
 		<label>Observation Location</label>
 		<description>Weather observation location</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
@@ -257,6 +261,10 @@
 		<label>Minimum Temperature</label>
 		<description>Minimum temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -265,6 +273,10 @@
 		<label>Maximum Temperature</label>
 		<description>Maximum temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -273,6 +285,10 @@
 		<label>Dew Point Temperature</label>
 		<description>Dew Point temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -289,6 +305,10 @@
 		<label>Wind Chill Temperature</label>
 		<description>Wind chill temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -297,6 +317,10 @@
 		<label>Feeling Temperature</label>
 		<description>Feeling temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -305,6 +329,10 @@
 		<label>Relative Humidity</label>
 		<description>Forecast relative humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%">
 		</state>
 	</channel-type>
@@ -313,6 +341,10 @@
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
@@ -356,6 +388,10 @@
 		<label>Maximum Wind Speed</label>
 		<description>Maximum wind speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -364,6 +400,10 @@
 		<label>Average Wind Speed</label>
 		<description>Average wind speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -372,6 +412,10 @@
 		<label>Wind Gust</label>
 		<description>Wind gust</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -380,6 +424,10 @@
 		<label>Pressure Trend</label>
 		<description>Pressure evolution trend (up, down, stable)</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="up">up</option>
@@ -400,6 +448,10 @@
 		<item-type>Number:Intensity</item-type>
 		<label>Solar Radiation</label>
 		<description>Solar radiation</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
@@ -408,6 +460,10 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV Index</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f">
 		</state>
 	</channel-type>
@@ -417,6 +473,10 @@
 		<label>Rain Fall Day</label>
 		<description>Rain fall during the day</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -425,6 +485,10 @@
 		<label>Rain Fall Hour</label>
 		<description>Rain fall during the last hour</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -433,6 +497,10 @@
 		<label>Snow Fall</label>
 		<description>Snow fall</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -440,6 +508,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Precipitation Probability</label>
 		<description>Probability of precipitation</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%">
 		</state>
 	</channel-type>

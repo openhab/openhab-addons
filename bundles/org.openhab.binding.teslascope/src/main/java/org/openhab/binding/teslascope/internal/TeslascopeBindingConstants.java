@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.teslascope.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -27,8 +29,11 @@ public class TeslascopeBindingConstants {
     private static final String BINDING_ID = "teslascope";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID TESLASCOPE_THING = new ThingTypeUID(BINDING_ID, "vehicle");
+    public static final ThingTypeUID TESLASCOPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID TESLASCOPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
 
+    // List of Config ids
+    public static final String CONFIG_PUBLICID = "publicID";
     // List of all Channel ids
     public static final String CHANNEL_VIN = "vin";
     public static final String CHANNEL_VEHICLE_NAME = "vehicle-name";
@@ -52,8 +57,15 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_CENTER_REAR_SEAT_HEATER = "center-rear-seat-heater";
     public static final String CHANNEL_CHARGE = "charge";
     public static final String CHANNEL_CHARGE_ENERGY_ADDED = "charge-energy-added";
+    public static final String CHANNEL_CHARGE_AMPS = "charge-amps";
+    public static final String CHANNEL_CHARGE_CURRENT_REQUEST = "charge-current-request";
+    public static final String CHANNEL_CHARGE_CURRENT_REQUEST_MAX = "charge-current-request-max";
+    public static final String CHANNEL_CHARGE_LIMIT_SOC = "charge-limit-soc";
+    public static final String CHANNEL_CHARGE_LIMIT_SOC_MIN = "charge-limit-soc-min";
+    public static final String CHANNEL_CHARGE_LIMIT_SOC_MAX = "charge-limit-soc-max";
     public static final String CHANNEL_CHARGE_LIMIT_SOC_STANDARD = "charge-limit-soc-standard";
     public static final String CHANNEL_CHARGE_PORT = "charge-port";
+    public static final String CHANNEL_CHARGE_PORT_LATCH = "charge-port-latch";
     public static final String CHANNEL_CHARGE_RATE = "charge-rate";
     public static final String CHANNEL_CHARGER_POWER = "charger-power";
     public static final String CHANNEL_CHARGER_VOLTAGE = "charger-voltage";
@@ -74,6 +86,9 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_LEFT_REAR_SEAT_HEATER = "left-rear-seat-heater";
     public static final String CHANNEL_LEFT_SEAT_HEATER = "left-seat-heater";
     public static final String CHANNEL_LEFT_TEMP_DIRECTION = "left-temp-direction";
+    public static final String CHANNEL_LOCATED_AT_HOME = "located-at-home";
+    public static final String CHANNEL_LOCATED_AT_WORK = "located-at-work";
+    public static final String CHANNEL_LOCATED_AT_FAVORITE = "located-at-favorite";
     public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_MIN_AVAILABLE_TEMP = "min-available-temp";
     public static final String CHANNEL_MAX_AVAILABLE_TEMP = "max-available-temp";
@@ -102,4 +117,7 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_USABLE_BATTERY_LEVEL = "usable-battery-level";
     public static final String CHANNEL_VALET_MODE = "valet-mode";
     public static final String CHANNEL_WIPER_BLADE_HEATER = "wiper-blade-heater";
+
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(TESLASCOPE_ACCOUNT);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TESLASCOPE_ACCOUNT, TESLASCOPE_VEHICLE);
 }

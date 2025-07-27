@@ -8,6 +8,15 @@ This can be used to plan energy consumption, for example to calculate the cheape
 
 All channels are available for thing type `service`.
 
+## Binding Configuration
+
+This advanced configuration option can be used if the transition to the Day-Ahead Prices dataset is postponed.
+For the latest updates, please refer to the [Energi Data Service news](https://energidataservice.dk/news).
+
+| Name                   | Type    | Description                                                            | Default    | Required |
+| ---------------------- | ------- | ---------------------------------------------------------------------- | ---------- | -------- |
+| dayAheadTransitionDate | text    | The date when the addon switches to using the Day-Ahead Prices dataset | 2025-09-30 | no       |
+
 ## Thing Configuration
 
 ### `service` Thing Configuration
@@ -34,7 +43,7 @@ To obtain the Global Location Number of your grid company:
 - Open the file and look for the rows having **Price_type** = "Subscription".
 - In the columns **Name** and/or **Description** you should see the name of your grid company.
 - In column **Owner** you can find the GLN ("Global Location Number").
-- Most rows will have this **Owner**. If in doubt, try to look for rows __not__ having 5790000432752 as owner.
+- Most rows will have this **Owner**. If in doubt, try to look for rows _not_ having 5790000432752 as owner.
 
 #### Reduced electricity tax applies
 
@@ -207,12 +216,14 @@ See also [Datahub Price List](https://www.energidataservice.dk/tso-electricity/D
 ##### Filter Examples
 
 _N1:_
+
 | Parameter       | Value   |
 | --------------- | ------- |
 | chargeTypeCodes | CD,CD R |
 | notes           |         |
 
 _Nord Energi Net:_
+
 | Parameter       | Value      |
 | --------------- | ---------- |
 | chargeTypeCodes | TAC        |
@@ -319,6 +330,15 @@ result = eds.calculate_cheapest_period(Instant.now, 2.hours.from_now.to_instant,
 
 :::
 
+::: tab Python
+
+```python
+eds_actions = Things.getActions("energidataservice", "energidataservice:service:energidataservice")
+result = eds_actions.calculateCheapestPeriod(datetime.now(tz=timezone.utc), datetime.now(tz=timezone.utc) + timedelta(hours=12), timedelta(minutes=90));
+```
+
+:::
+
 ::::
 
 #### `calculateCheapestPeriod` from Duration and Power
@@ -360,6 +380,15 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 ```ruby
 eds = things["energidataservice:service:energidataservice"]
 result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant, 90.minutes, 250 | "W")
+```
+
+:::
+
+::: tab Python
+
+```python
+eds_actions = Things.getActions("energidataservice", "energidataservice:service:energidataservice")
+result = eds_actions.calculateCheapestPeriod(datetime.now(tz=timezone.utc), datetime.now(tz=timezone.utc) + timedelta(hours=12), timedelta(minutes=90), QuantityType("250 W"))
 ```
 
 :::
@@ -466,6 +495,37 @@ result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant
 
 :::
 
+::: tab Python
+
+```python
+duration_phases = [
+    timedelta(minutes=37),
+    timedelta(minutes=8),
+    timedelta(minutes=4),
+    timedelta(minutes=2),
+    timedelta(minutes=4),
+    timedelta(minutes=36),
+    timedelta(minutes=41),
+    timedelta(minutes=104)
+]
+
+power_phases = [
+    QuantityType("162.162 W"),
+    QuantityType("750 W"),
+    QuantityType("1500 W"),
+    QuantityType("3000 W"),
+    QuantityType("1500 W"),
+    QuantityType("166.666 W"),
+    QuantityType("146.341 W"),
+    QuantityType("0 W")
+]
+
+eds_actions = Things.getActions("energidataservice", "energidataservice:service:energidataservice")
+result = eds_actions.calculateCheapestPeriod(datetime.now(tz=timezone.utc), datetime.now(tz=timezone.utc) + timedelta(hours=12), duration_phases, power_phases)
+```
+
+:::
+
 ::::
 
 Please note that the total duration will be calculated automatically as a sum of provided duration phases.
@@ -546,6 +606,26 @@ result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant
 
 :::
 
+::: tab Python
+
+```python
+duration_phases = [
+    timedelta(minutes=37),
+    timedelta(minutes=8),
+    timedelta(minutes=4),
+    timedelta(minutes=2),
+    timedelta(minutes=4),
+    timedelta(minutes=36),
+    timedelta(minutes=41)
+]
+
+# 0.7 kWh is used in total (number of phases × energy used per phase)
+eds_actions = Things.getActions("energidataservice", "energidataservice:service:energidataservice")
+result = eds_actions.calculateCheapestPeriod(datetime.now(tz=timezone.utc), datetime.now(tz=timezone.utc) + timedelta(hours=12), timedelta(minutes=236), duration_phases, QuantityType("0.1 kWh"))
+```
+
+:::
+
 ::::
 
 ### `calculatePrice`
@@ -588,6 +668,15 @@ var price = edsActions.calculatePrice(time.Instant.now(), time.ZonedDateTime.now
 ```ruby
 eds = things["energidataservice:service:energidataservice"]
 price = eds.calculate_price(Instant.now, 4.hours.from_now.to_instant, 200 | "W")
+```
+
+:::
+
+::: tab Python
+
+```python
+eds_actions = Things.getActions("energidataservice", "energidataservice:service:energidataservice")
+price = eds_actions.calculatePrice(datetime.now(tz=timezone.utc), datetime.now(tz=timezone.utc) + timedelta(hours=4), QuantityType("200 W"))
 ```
 
 :::
@@ -645,6 +734,18 @@ var priceMap = utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff")
 ```ruby
 eds = things["energidataservice:service:energidataservice"]
 price_map = eds.get_prices("SpotPrice,GridTariff")
+```
+
+:::
+
+::: tab Python
+
+```python
+eds_actions = Things.getActions("energidataservice", "energidataservice:service:energidataservice")
+price_dict = {
+    datetime.fromtimestamp(entry.getKey().getEpochSecond(), tz=timezone.utc): float(entry.getValue().doubleValue())
+    for entry in eds_actions.getPrices("SpotPrice,GridTariff").entrySet()
+}
 ```
 
 :::
@@ -890,6 +991,80 @@ result = eds.calculate_cheapest_period(ZonedDateTime.now.to_instant,
                                           236.minutes,
                                           duration_phases,
                                           0.1 | "kWh")
+```
+
+:::
+
+::: tab Python
+
+```python
+from datetime import datetime, timedelta, timezone
+from openhab import rule
+from openhab.actions import Things
+from org.openhab.core.library.types import QuantityType
+
+eds_actions = Things.getActions("energidataservice", "energidataservice:service:energidataservice")
+
+# Get prices and convert to Python dictionary with datetime as keys.
+price_dict = {
+    datetime.fromtimestamp(entry.getKey().getEpochSecond(), tz=timezone.utc): float(entry.getValue().doubleValue())
+    for entry in eds_actions.getPrices().entrySet()
+}
+hour_start = datetime.now(tz=timezone.utc).replace(minute=0, second=0, microsecond=0)
+self.logger.info("Current total price excl. VAT: {}".format(price_dict.get(hour_start)))
+
+price_dict = {
+    datetime.fromtimestamp(entry.getKey().getEpochSecond(), tz=timezone.utc): float(entry.getValue().doubleValue())
+    for entry in eds_actions.getPrices("SpotPrice,GridTariff").entrySet()
+}
+self.logger.info("Current spot price + grid tariff excl. VAT: {}".format(price_dict.get(hour_start)))
+
+price = eds_actions.calculatePrice(datetime.now(tz=timezone.utc), datetime.now(tz=timezone.utc) + timedelta(hours=1), QuantityType("150 W"))
+if price is not None:
+    self.logger.info("Total price for using 150 W for the next hour: {}".format(price))
+
+duration_phases = [
+    timedelta(minutes=37),
+    timedelta(minutes=8),
+    timedelta(minutes=4),
+    timedelta(minutes=2),
+    timedelta(minutes=4),
+    timedelta(minutes=36),
+    timedelta(minutes=41),
+    timedelta(minutes=104)
+]
+
+power_phases = [
+    QuantityType("162.162 W"),
+    QuantityType("750 W"),
+    QuantityType("1500 W"),
+    QuantityType("3000 W"),
+    QuantityType("1500 W"),
+    QuantityType("166.666 W"),
+    QuantityType("146.341 W"),
+    QuantityType("0 W")
+]
+
+result = eds_actions.calculateCheapestPeriod(datetime.now(tz=timezone.utc), datetime.now(tz=timezone.utc) + timedelta(hours=12), duration_phases, power_phases)
+self.logger.info("Cheapest start: {}".format(result.get("CheapestStart")))
+self.logger.info("Lowest price: {}".format(result.get("LowestPrice")))
+self.logger.info("Highest price: {}".format(result.get("HighestPrice")))
+self.logger.info("Most expensive start: {}".format(result.get("MostExpensiveStart")))
+
+# This is a simpler version taking advantage of the fact that each interval here represents 0.1 kWh of consumed energy.
+# In this example we have to provide the total duration to make sure we fit the latest end. This is because there is no
+# registered consumption in the last phase.
+duration_phases = [
+    timedelta(minutes=37),
+    timedelta(minutes=8),
+    timedelta(minutes=4),
+    timedelta(minutes=2),
+    timedelta(minutes=4),
+    timedelta(minutes=36),
+    timedelta(minutes=41)
+]
+
+result = eds_actions.calculateCheapestPeriod(datetime.now(tz=timezone.utc), datetime.now(tz=timezone.utc) + timedelta(hours=12), timedelta(minutes=236), duration_phases, QuantityType("0.1 kWh"))
 ```
 
 :::

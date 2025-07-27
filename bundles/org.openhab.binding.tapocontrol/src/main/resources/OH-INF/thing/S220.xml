@@ -12,6 +12,7 @@
 
 		<label>S220 Smart Switch</label>
 		<description>Tapo Smart Switch</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="actuator" typeId="smartPlug"/>
 			<channel-group id="device" typeId="childDeviceState"/>

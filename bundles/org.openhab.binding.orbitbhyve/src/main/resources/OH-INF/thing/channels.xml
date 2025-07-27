@@ -9,6 +9,10 @@
 		<item-type>String</item-type>
 		<label>Irrigation Mode</label>
 		<description>Channel representing mode of Orbit B-hyve Device (auto/manual)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="auto">Auto</option>
@@ -26,7 +30,14 @@
 		<item-type>Number:Time</item-type>
 		<label>Rain Delay</label>
 		<description>Channel representing rain delay in hours</description>
-		<state pattern="%d h"></state>
+		<state pattern="%d h">
+			<options>
+				<option value="0 h">OFF</option>
+				<option value="24 h">24h</option>
+				<option value="48 h">48h</option>
+				<option value="72 h">72h</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="watering_time">
 		<item-type>Number:Time</item-type>
@@ -38,6 +49,10 @@
 		<item-type>Switch</item-type>
 		<label>Sprinkler State Control</label>
 		<description>Channel for enabling/disabling the sprinkler (ON/OFF)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="smart_watering">
 		<item-type>Switch</item-type>

@@ -215,6 +215,7 @@ The following channels are supported:
 #### Channels
 
 The following channels are supported:
+
 | Channel Type ID            | Item Type             | Description                                                |
 |----------------------------|-----------------------|------------------------------------------------------------|
 | temperature                | Number:Temperature    | This channel reports the current temperature.              |
@@ -251,7 +252,7 @@ The following channels are supported:
 #### Configuration Options
 
 - `deviceId` - Device Id
-  - Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is removed, and the site id. The following naming convention is used for User presence on site id 123456789 for a user with email address test@gmail.com: 'uptestgmailcom123456789'. Installation ID can be found using DEBUG log settings.
+  - Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is removed, and the site id. The following naming convention is used for User presence on site id 123456789 for a user with email address <test@gmail.com>: 'uptestgmailcom123456789'. Installation ID can be found using DEBUG log settings.
 
 #### Channels
 

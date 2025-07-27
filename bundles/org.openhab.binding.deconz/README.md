@@ -152,7 +152,7 @@ The sensor devices support some of the following channels:
 | moisture              | Number:Dimensionless     | R           | Moisture                                                                                  | moisturesensor                                    |
 | on                    | Switch                   | R           | Some thermostats report their output state as switch                                      | thermostat                                        |
 | open                  | Contact                  | R           | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                                   |
-| orientation_x, _y, _z | Number                   | R           | Orientation of vibration sensor                                                           | vibrationsensor                                   |
+| orientation_x, y, z   | Number                   | R           | Orientation of vibration sensor                                                           | vibrationsensor                                   |
 | power                 | Number:Power             | R           | Power usage in Watts                                                                      | powersensor, sometimes for consumptionsensor      |
 | presence              | Switch                   | R           | Status of presence: `ON` = presence; `OFF` = no-presence                                  | presencesensor                                    |
 | pressure              | Number:Pressure          | R           | Pressure in hPa                                                                           | pressuresensor                                    |

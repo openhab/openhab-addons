@@ -1,0 +1,48 @@
+{
+	"id": "eadfad54-9d23-4475-92b6-0ee3d6f8b481_1",
+	"type": "blinds",
+	"deviceType": "blinds",
+	"createdAt": "2022-11-01T22:32:41.000Z",
+	"isReachable": true,
+	"lastSeen": "2022-11-18T22:11:51.000Z",
+	"attributes": {
+		"customName": "Office Blinder",
+		"model": "PRAKTLYSING cellular blind",
+		"manufacturer": "IKEA of Sweden",
+		"firmwareVersion": "2.3.088",
+		"hardwareVersion": "1",
+		"serialNumber": "0C4314FFFE293771",
+		"productCode": "E2021",
+		"batteryPercentage": 92,
+		"blindsTargetLevel": 60,
+		"blindsCurrentLevel": 60,
+		"blindsState": "stopped",
+		"permittingJoin": false,
+		"otaStatus": "upToDate",
+		"otaState": "readyToCheck",
+		"otaProgress": 0,
+		"otaPolicy": "autoUpdate",
+		"otaScheduleStart": "00:00",
+		"otaScheduleEnd": "00:00"
+	},
+	"capabilities": {
+		"canSend": [],
+		"canReceive": [
+			"customName",
+			"blindsCurrentLevel",
+			"blindsTargetLevel",
+			"blindsState"
+		]
+	},
+	"room": {
+		"id": "36e2e693-a042-4119-84ec-42d45a347534",
+		"name": "Office",
+		"color": "ikea_blue_no_63",
+		"icon": "rooms_display"
+	},
+	"deviceSet": [],
+	"remoteLinks": [
+		"9f96eced-7674-4b9f-bbf9-b9575d888638_1"
+	],
+	"isHidden": false
+}
