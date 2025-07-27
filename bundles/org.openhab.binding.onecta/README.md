@@ -1,28 +1,23 @@
-# Onecta Binding <img align="right" alt="discovery pictures"  src="doc/daikin.jpg" width="250"/>
+# Onecta Binding 
 
-With the newer Daikin units it is no longer possible to control them directly. The units can only be connected to the Daikin cloud called Onecta.
-The units can then 'only' be controlled with the Onecta app on a phone or tablet.
-This binding makes it possible to still control the units with OpenHAB. It's now done by connecting the binding to Daikin's Onecta.
-The unit information is then received from the Daikin cloud just like the app. Commands to the units also run via the Daikin Cloud.
-Older units can also be controlled with this binding as long as they are registered in Onecta.
 
-<img alt="discovery pictures"  src="doc/Onecta1.png" width="250"/>
-<img alt="discovery pictures"  src="doc/Onecta2.png" width="250"/><br>
-<img alt="discovery pictures"  src="doc/Things.png" width="500"/>
 
+This binding allows you to control Daikin units connected to Onecta. 
+Onecta is a Daikin cloud platform that allows user's to control their Daikin units via the internet.
+The Daikin Onecta app can be used to control the units and to register the units in the Daikin Onecta cloud.
+After the initial setup in de Daikin app, the binding will recognize all units connected to the Daikin cloud and create the corresponding things.
 
 ## Supported Things
 
 Basically all devices connected to Daikin Onecta cloud could be connected with the binding.
 
 - `bridge`: Ensures the connection to Onecta cloud and the recognition of connected units
+- 
 
 ## Discovery
 
-The bridge can be added using the UI or can be configured with a thing-file. 
-Once the bridge is set up and connected to the Daikin cloud it will receive all information about the connected units. 
-Based on this information it will recognize the different units. 
-All recognized units end up in the Inbox, are listed in the logging and in the UI they are shown in the thing properties.<br>
+The onecta binding supports auto-discovery of all devices. 
+When the bridge is added and connected, it will automatically discover and add onecta devices to the openHAB system. 
 Things that can be discovered are:
 - Daikin Onecta device (...)<br>Is the thing to control the unit.
 - Daikin Onecta (Gateway)<br>Is the thing for info about the network controler.

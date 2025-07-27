@@ -31,7 +31,7 @@ public class OnectaBridgeConstants {
     // List of all Device Types
     public static final String DEVICE_TYPE_GATEWAY = "gateway";
     public static final String DEVICE_TYPE_CLIMATECONTROL = "climate-control";
-    public static final String DEVICE_TYPE_WATERTANK = "domestic-hotwatertank";
+    public static final String DEVICE_TYPE_WATERTANK = "domestic-hot-water-tank";
     public static final String DEVICE_TYPE_INDOORUNIT = "indoor-unit";
 
     // List of config parameters
