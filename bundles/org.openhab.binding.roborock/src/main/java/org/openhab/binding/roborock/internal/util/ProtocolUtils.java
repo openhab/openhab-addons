@@ -14,13 +14,8 @@ package org.openhab.binding.roborock.internal.util;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -29,7 +24,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.zip.CRC32;
-import java.util.zip.GZIPInputStream;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -39,7 +33,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,7 +174,7 @@ public final class ProtocolUtils {
      * @return The decrypted byte array, or an empty array on failure.
      */
     public static byte[] decryptCbc(byte[] ciphertext, byte[] nonce) {
-        if (ciphertext == null || ciphertext.length == 0 || nonce == null || nonce.length == 0) {
+        if (ciphertext.length == 0 || nonce.length == 0) {
             logger.warn("Attempted to decrypt CBC with null or empty ciphertext/nonce.");
             return new byte[0];
         }
@@ -209,61 +202,6 @@ public final class ProtocolUtils {
             logger.error("Error during decryption or invalid ciphertext. Check key, IV, and data integrity.", e);
         }
         return new byte[0];
-    }
-
-    /**
-     * Performs PKCS7 unpadding on the given byte array.
-     *
-     * @param paddedData The byte array with PKCS7 padding.
-     * @return The unpadded byte array.
-     * @throws BadPaddingException if the padding is invalid.
-     */
-    private static byte[] pkcs7Unpad(byte[] paddedData) throws BadPaddingException {
-        if (paddedData == null || paddedData.length == 0) {
-            return new byte[0];
-        }
-
-        int paddingValue = paddedData[paddedData.length - 1] & 0xFF;
-
-        if (paddingValue == 0 || paddingValue > AES_BLOCK_SIZE || paddingValue > paddedData.length) {
-            throw new BadPaddingException("Invalid PKCS7 padding value: " + paddingValue);
-        }
-
-        for (int i = 0; i < paddingValue; i++) {
-            if ((paddedData[paddedData.length - 1 - i] & 0xFF) != paddingValue) {
-                throw new BadPaddingException("Invalid PKCS7 padding block.");
-            }
-        }
-
-        return Arrays.copyOfRange(paddedData, 0, paddedData.length - paddingValue);
-    }
-
-    /**
-     * Decompress GZIP compressed data.
-     *
-     * @param compressedData The compressed byte array.
-     * @return The decompressed byte array.
-     * @throws IOException if an I/O error occurs during decompression.
-     */
-    private static byte[] decompress(byte[] compressedData) throws IOException {
-        if (compressedData == null || compressedData.length == 0) {
-            return new byte[0];
-        }
-
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(compressedData);
-                GZIPInputStream gis = new GZIPInputStream(bis);
-                ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = gis.read(buffer)) != -1) {
-                bos.write(buffer, 0, len);
-            }
-            return bos.toByteArray();
-        } catch (IOException e) {
-            logger.error("Error during GZIP decompression: {}", e.getMessage(), e);
-            throw e; // Re-throw to allow caller to handle or log
-        }
     }
 
     /**
@@ -311,32 +249,7 @@ public final class ProtocolUtils {
      * @return An empty string, indicating no string result for image protocol.
      */
     private static String handleImageProtocol(byte[] message, MessageHeader header, byte[] nonce) {
-        logger.debug("Protocol 301 (image) received, not fully handled yet. Message length: {}", message.length);
-
-        int images = 0;
-        if (images == 1) {
-            byte[] payload = Arrays.copyOfRange(message, 0, 24);
-            String endpoint = new String(Arrays.copyOfRange(payload, 0, 8)).trim();
-            String unusedString = new String(Arrays.copyOfRange(payload, 8, 16)).trim();
-            int requestId = ByteBuffer.wrap(Arrays.copyOfRange(payload, 16, 22)).getShort();
-            String anotherUnusedString = new String(Arrays.copyOfRange(payload, 22, 24)).trim();
-            byte[] decrypted;
-            decrypted = decryptCbc(Arrays.copyOfRange(message, 24, message.length), nonce);
-            logger.debug("decrypted.length = {}, message.length = {}", decrypted.length, message.length);
-            byte[] decompressed;
-            try {
-                File mapFile = new File(OpenHAB.getUserDataFolder() + File.separator + "roborock" + File.separator
-                        + "decryptedmap.tmp");
-                Files.write(mapFile.toPath(), decrypted);
-                decompressed = decompress(decrypted);
-                logger.debug("decompressed.length = {}", decompressed.length);
-                File mapFile2 = new File(OpenHAB.getUserDataFolder() + File.separator + "roborock" + File.separator
-                        + "decompressedmap.tmp");
-                Files.write(mapFile2.toPath(), decompressed);
-            } catch (IOException e) {
-                logger.debug("Exception decompressing payload, {}", e.getMessage());
-            }
-        }
+        logger.debug("Protocol 301 (image) received, not handled yet.");
         return "";
     }
 
@@ -344,7 +257,7 @@ public final class ProtocolUtils {
      * Handles messages with protocol 102 (data payload).
      * Decrypts the payload and returns the result as a UTF-8 string.
      *
-     * @param message The full message byte array.
+     * @param message The full message byte array.e
      * @param header The parsed message header.
      * @param localKey The local key for decryption.
      * @return The decrypted payload as a string, or an empty string on decryption failure.
@@ -386,7 +299,7 @@ public final class ProtocolUtils {
      *         or the protocol is not handled.
      */
     public static String handleMessage(byte[] message, String localKey, byte[] nonce) {
-        if (message == null || message.length < HEADER_LENGTH_WITHOUT_CRC + CRC_LENGTH) {
+        if (message.length < HEADER_LENGTH_WITHOUT_CRC + CRC_LENGTH) {
             logger.warn("Invalid message length received. Minimum required: {}",
                     HEADER_LENGTH_WITHOUT_CRC + CRC_LENGTH);
             return "";
@@ -401,7 +314,7 @@ public final class ProtocolUtils {
 
         int messageCrc32 = readInt32BE(message, message.length - CRC_LENGTH);
         if (!validateCrc32(message, messageCrc32)) {
-            logger.warn("Message CRC32 checksum mismatch. Message discarded.");
+            // logger.warn("Message CRC32 checksum mismatch. Message discarded.");
             // return "";
         }
 
@@ -427,6 +340,8 @@ public final class ProtocolUtils {
      * Custom exception for cryptographic errors to provide more specific error handling.
      */
     public static class RoborockCryptoException extends Exception {
+        private static final long serialVersionUID = 529232811860854017L;
+
         public RoborockCryptoException(String message, Throwable cause) {
             super(message, cause);
         }

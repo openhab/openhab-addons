@@ -83,6 +83,7 @@ Bridge roborock:account:account [ email="xxxx", password="xxxx" ] {
 ```
 
 ### `example.items` Example
+
 ```java
 Group  gVac     "Roborock Robot Vacuum"      <fan>
 Group  gVacStat "Status Details"           <status> (gVac)

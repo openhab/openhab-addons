@@ -32,8 +32,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.CRC32;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -88,7 +86,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private @Nullable RoborockAccountConfiguration config;
     private final SchedulerTask initTask;
     private final SchedulerTask mqttConnectTask;
-    private @Nullable ScheduledFuture<?> pollFuture;
     private final RoborockWebTargets webTargets;
     private @Nullable Mqtt5AsyncClient mqttClient;
     private String token = "";
@@ -219,33 +216,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         initTask.setNamePrefix(getThing().getUID().getId());
         mqttConnectTask.setNamePrefix(getThing().getUID().getId());
         initTask.submit();
-        // schedulePoll();
-    }
-
-    private void schedulePoll() {
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 5, TimeUnit.MINUTES);
-    }
-
-    private void stopPoll() {
-        final ScheduledFuture<?> future = pollFuture;
-        if (future != null) {
-            future.cancel(true);
-            pollFuture = null;
-        }
-    }
-
-    private void pollStatus() {
-        if ((lastMQTTPublishTimestamp > lastMQTTMessageTimestamp)
-                && (((lastMQTTPublishTimestamp - lastMQTTMessageTimestamp) / 1000) > 300)) {
-            logger.trace("MQTT Message - Last Publish {}, last Message {}", lastMQTTPublishTimestamp,
-                    lastMQTTMessageTimestamp);
-            logger.debug("MQTT message - more than 5 minutes since Publish and no response");
-            // teardownAndScheduleReconnection();
-            // lastMQTTMessageTimestamp = System.currentTimeMillis();
-        } else if (this.mqttClient == null || !this.mqttClient.getState().isConnected()) {
-            // teardownAndScheduleReconnection();
-            mqttConnectTask.schedule(280);
-        }
     }
 
     @Override
@@ -353,7 +323,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public void dispose() {
         super.dispose();
         teardown(false);
-        stopPoll();
     }
 
     public void connectMqttClient() throws RoborockCommunicationException, InterruptedException {
@@ -546,11 +515,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             int randomInt = secureRandom.nextInt(90000) + 10000;
             int seq = secureRandom.nextInt(900000) + 100000;
 
-            // Header: "1.0" (3 bytes), Sequence (4 bytes), Random (4 bytes), Timestamp (4 bytes), Protocol (2 bytes),
-            // Payload Length (2 bytes)
-            // Total header size = 3 + 4 + 4 + 4 + 2 + 2 = 19 bytes
-            // Plus encrypted payload length
-            // Plus CRC32 (4 bytes) at the end
             int totalLength = 19 + encryptedPayload.length + 4;
             byte[] message = new byte[totalLength];
 
@@ -583,7 +547,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     public void onEventStreamFailure(Throwable error) {
         logger.debug("Device connection failed, reconnecting", error);
-        // mqttConnectTask.schedule(280);
+        mqttConnectTask.schedule(60);
     }
 
     @Override
