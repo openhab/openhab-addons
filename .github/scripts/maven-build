@@ -18,7 +18,7 @@ function mvnp() {
     set -o pipefail # exit build with error when pipes fail
     local reactor_size=$(find -name "pom.xml" | grep -vE '/src/|/target/' | wc -l)
     local padding=$(bc -l <<< "scale=0;2*(l($reactor_size)/l(10)+1)")
-    local command=(mvn $@)
+    local command=(./mvnw $@)
     exec "${command[@]}" 2>&1 | # execute, redirect stderr to stdout
         tee "$BUILD_LOG" | # write output to log
         stdbuf -oL grep -aE '^\[INFO\] Building .+ \[.+\]$' | # filter progress
@@ -30,7 +30,7 @@ function build_all() {
     echo
     echo "Building all projects"
     echo
-    echo "+ mvn $ARGUMENTS"
+    echo "+ ./mvnw $ARGUMENTS"
     echo
 
     mvnp $ARGUMENTS
@@ -79,16 +79,16 @@ function addon_projects() {
 
 function build_addon() {
     local addon="$1"
-    local mvn_command="mvn $ARGUMENTS -am -amd -pl $(addon_projects $addon)"
+    local command="./mvnw $ARGUMENTS -am -amd -pl $(addon_projects $addon)"
 
     echo
     echo "Building add-on: $addon"
     echo
-    echo "+ $mvn_command"
+    echo "+ $command"
     echo
 
     set -o pipefail # exit build with error when pipes fail
-    $mvn_command 2>&1 | tee "$BUILD_LOG"
+    $command 2>&1 | tee "$BUILD_LOG"
     exit $?
 }
 
@@ -104,5 +104,5 @@ function build_based_on_changes() {
     fi
 }
 
-mvn -v
+./mvnw -v
 build_based_on_changes
