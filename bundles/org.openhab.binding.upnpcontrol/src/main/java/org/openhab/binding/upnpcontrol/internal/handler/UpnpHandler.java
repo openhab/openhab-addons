@@ -651,4 +651,21 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected @Nullable RemoteDevice getDevice() {
         return device;
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Send a device search request to the UPnP remote device.
+     *
+     * Some devices, such as LinkPlay based systems (WiiM, Arylic, etc.) loose their registrations over time. Sending a
+     * periodic search request will help keep the device registered.
+     */
+    protected void sendDeviceSearchRequest() {
+        ControlPoint controlPoint = upnpService.getControlPoint();
+        if (controlPoint != null) {
+            controlPoint.search(new UDNHeader(new UDN(getUDN())));
+            logger.debug("M-SEARCH query sent for device UDN: {}", getUDN());
+        }
+    }
+>>>>>>> 259d892f7a (fix compile : need to review review rebase step to be sure don't miss anything)
 }

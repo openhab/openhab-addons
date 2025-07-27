@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
@@ -67,6 +68,12 @@ public class UpnpHandlerTest {
 
     @Mock
     protected @Nullable UpnpIOService upnpIOService;
+
+    @Mock
+    protected @Nullable UpnpService upnpService;
+
+    @Mock
+    protected @Nullable UpnpControlHandlerFactory handlerFactory;
 
     @Mock
     protected @Nullable UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
@@ -119,6 +126,16 @@ public class UpnpHandlerTest {
 
         // stub config for initialize
         when(config.as(UpnpControlConfiguration.class)).thenReturn(new UpnpControlConfiguration());
+
+        upnpService = mock(UpnpService.class);
+        Router router = mock(Router.class);
+        when(upnpService.getRouter()).thenReturn(router);
+        try {
+            doNothing().when(router).send(any(OutgoingSearchRequest.class));
+        } catch (RouterException e) {
+            // This will never happen in the test since doNothing doesn't trigger behavior
+            throw new RuntimeException("Unexpected exception in test setup", e);
+        }
     }
 
     protected void initHandler(UpnpHandler handler) {
