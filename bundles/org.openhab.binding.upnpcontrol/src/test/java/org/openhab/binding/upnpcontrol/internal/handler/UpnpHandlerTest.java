@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
@@ -74,6 +75,9 @@ public class UpnpHandlerTest {
 
     @Mock
     protected @Nullable UpnpService upnpService;
+
+    @Mock
+    protected @Nullable UpnpControlHandlerFactory handlerFactory;
 
     @Mock
     protected @Nullable UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
