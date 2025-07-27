@@ -11,7 +11,7 @@ This repository contains the official set of add-ons that are implemented on top
 Add-ons that got accepted in here will be maintained (e.g. adapted to new core APIs)
 by the [openHAB Add-on maintainers](https://github.com/orgs/openhab/teams/add-ons-maintainers).
 
-To get started with binding development, follow our guidelines and tutorials over at <https://www.openhab.org/docs/developer>.
+To get started with add-on development, follow our guidelines and tutorials over at <https://www.openhab.org/docs/developer>.
 
 If you are interested in openHAB Core development, we invite you to come by on <https://github.com/openhab/openhab-core>.
 
@@ -76,7 +76,7 @@ mvn clean install -pl :org.openhab.binding.astro
 
 If you have a binding that has dependencies that are dynamically as specified in the feature.xml you can create a `.kar` instead of a `.jar` file.
 A `.kar` file will include the feature.xml and when added to openHAB will load and activate any dependencies specified in the feature.xml file.
-To create a `.kar` file run maven with the goal `karaf:kar`:
+To create a `.kar` file run Maven with the goal `karaf:kar`:
 
 ```shell
 mvn clean install karaf:kar -pl :org.openhab.binding.astro
@@ -112,7 +112,7 @@ When translations are added or updated and approved in Crowdin, a pull request i
 Therefore translations should not be edited in the openHAB-addons repo, but only in Crowdin.
 Otherwise translation are overridden by the automatic process.
 
-To fill the English properties file run the following maven command on an add-on:
+To fill the English properties file run the following Maven command on an add-on:
 
 ```shell
 mvn i18n:generate-default-translations
@@ -124,7 +124,7 @@ In some cases the command does not work, and requires the full plug-in name.
 In that case use:
 
 ```shell
-mvn org.openhab.core.tools:i18n-maven-plugin:3.4.0:generate-default-translations
+mvn org.openhab.core.tools:i18n-maven-plugin:5.0.0:generate-default-translations
 ```
 
 #### Code Quality
