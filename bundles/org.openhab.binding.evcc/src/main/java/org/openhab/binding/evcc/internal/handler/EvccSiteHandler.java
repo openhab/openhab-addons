@@ -56,7 +56,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
                 }
             }
             String url = endpoint + "/" + datapoint + "/" + value;
-            logger.debug("Sendig command to this url: {}", url);
+            logger.debug("Sending command to this url: {}", url);
             sendCommand(url);
         } else {
             super.handleCommand(channelUID, command);

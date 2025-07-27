@@ -58,7 +58,7 @@
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.1f %unit%" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpoint-charge-remaining-duration">
 		<item-type unitHint="h">Number:Time</item-type>
@@ -70,7 +70,6 @@
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-charge-remaining-energy">
 		<item-type unitHint="Wh">Number:Energy</item-type>
@@ -82,7 +81,6 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-charged-energy">
 		<item-type unitHint="kWh">Number:Energy</item-type>
@@ -94,14 +92,12 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-charger-icon">
 		<item-type>String</item-type>
 		<label>Charger Icon</label>
 		<description>Icon used in the UI for this charger</description>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-charger-feature-heating">
 		<item-type>Switch</item-type>
@@ -118,7 +114,6 @@
 				<option value="OFF">False</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-charger-feature-integrated-device">
 		<item-type>Switch</item-type>
@@ -135,7 +130,6 @@
 				<option value="OFF">False</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-charger-phases1p3p">
 		<item-type>Switch</item-type>
@@ -152,7 +146,6 @@
 				<option value="OFF">False</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-charger-single-phase">
 		<item-type>Switch</item-type>
@@ -169,7 +162,6 @@
 				<option value="OFF">False</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-charger-status-reason">
 		<item-type>String</item-type>
@@ -181,12 +173,11 @@
 		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="unknown">Unkown</option>
+				<option value="unknown">Unknown</option>
 				<option value="waitingforauthorization">Waiting for authorization</option>
 				<option value="disconnectrequired">Disconnect required</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-charging">
 		<item-type>Switch</item-type>
@@ -203,7 +194,6 @@
 				<option value="OFF">Not charging</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-connected">
 		<item-type>Switch</item-type>
@@ -220,7 +210,6 @@
 				<option value="OFF">Not connected</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-connected-duration">
 		<item-type unitHint="h">Number:Time</item-type>
@@ -232,7 +221,6 @@
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-disable-delay">
 		<item-type unitHint="s">Number:Time</item-type>
@@ -243,16 +231,14 @@
 			<tag>Setpoint</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f %unit%"></state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-disable-threshold">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Disable Threshold</label>
 		<description>Threshold for the disable delay (negative values means feed in)</description>
 		<category>Energy</category>
-		<state pattern="%.0f %unit%"></state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-effective-limit-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -260,30 +246,26 @@
 		<description>Active state of charge the vehicle will be charged to</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-effective-max-current">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Active Maximum Current</label>
 		<description>Effective maximum amperage per connected phase that can be provided to the vehicle</description>
 		<category>Energy</category>
-		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state min="0" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-effective-min-current">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Active Minimum Current</label>
 		<description>Effective minimum amperage per connected phase that will be provided to the vehicle</description>
 		<category>Energy</category>
-		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state min="0" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-effective-plan-id">
 		<item-type>Number</item-type>
 		<label>Active Plan ID</label>
 		<description>ID of the currently active charging plan</description>
 		<state min="0" step="1" max="10" pattern="%.0f" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-effective-plan-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -291,7 +273,6 @@
 		<description>State of charge limit for the currently active charging plan</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-effective-plan-time">
 		<item-type>DateTime</item-type>
@@ -302,7 +283,6 @@
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-plan-projected-end">
 		<item-type>DateTime</item-type>
@@ -313,7 +293,6 @@
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-plan-projected-start">
 		<item-type>DateTime</item-type>
@@ -324,30 +303,26 @@
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-effective-priority">
 		<item-type>Number</item-type>
 		<label>Active Priority</label>
 		<description>Effective priority of this loadpoint</description>
 		<state pattern="%d" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-enable-delay">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Enable Delay</label>
 		<description>Delay in PV mode before starting the charging when enough power is available</description>
 		<category>Time</category>
-		<state pattern="%.0f %unit%"></state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-enable-threshold">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Enable Threshold</label>
 		<description>Threshold for the enable delay</description>
 		<category>Energy</category>
-		<state pattern="%.0f %unit%"></state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-enabled">
 		<item-type>Switch</item-type>
@@ -359,7 +334,6 @@
 				<option value="OFF">Locked</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-limit-energy">
 		<item-type unitHint="kWh">Number:Energy</item-type>
@@ -370,8 +344,7 @@
 			<tag>Control</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state min="0" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state min="0" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-limit-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -382,8 +355,7 @@
 			<tag>Control</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-max-current">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
@@ -394,8 +366,7 @@
 			<tag>Setpoint</tag>
 			<tag>Current</tag>
 		</tags>
-		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state min="0" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-min-current">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
@@ -406,8 +377,7 @@
 			<tag>Setpoint</tag>
 			<tag>Current</tag>
 		</tags>
-		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state min="0" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-mode">
 		<item-type>String</item-type>
@@ -418,7 +388,7 @@
 			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="off">Off</option>
 				<option value="now">Fast</option>
@@ -426,7 +396,6 @@
 				<option value="pv">Only PV</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-offered-current">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
@@ -438,7 +407,6 @@
 			<tag>Current</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-phase-action">
 		<item-type>String</item-type>
@@ -450,7 +418,6 @@
 				<option value="scale3p">Switching to 3 phases</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-phase-remaining">
 		<item-type unitHint="s">Number:Time</item-type>
@@ -461,7 +428,6 @@
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-phases-active">
 		<item-type>Number</item-type>
@@ -472,7 +438,6 @@
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-phases-configured">
 		<item-type>Number</item-type>
@@ -483,7 +448,6 @@
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-plan-active">
 		<item-type>Switch</item-type>
@@ -499,7 +463,6 @@
 				<option value="OFF">Deactivated</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-plan-energy">
 		<item-type unitHint="kWh">Number:Energy</item-type>
@@ -511,7 +474,6 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-plan-overrun">
 		<item-type unitHint="s">Number:Time</item-type>
@@ -521,8 +483,7 @@
 			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%d %unit%"></state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-plan-precondition">
 		<item-type unitHint="s">Number:Time</item-type>
@@ -534,7 +495,6 @@
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-priority">
 		<item-type>Number</item-type>
@@ -544,7 +504,6 @@
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-pv-action">
 		<item-type>String</item-type>
@@ -561,14 +520,12 @@
 				<option value="pvDisable">Disable PV Timer</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-pv-remaining">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Pv Remaining</label>
 		<description>Timer for enabling or disabling pv charging</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-session-co2-per-k-wh">
 		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
@@ -579,7 +536,6 @@
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-session-energy">
 		<item-type unitHint="kWh">Number:Energy</item-type>
@@ -590,7 +546,6 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-session-solar-percentage">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -600,19 +555,17 @@
 			<tag>Forecast</tag>
 			<tag>Info</tag>
 		</tags>
-		<state pattern="%.2f %unit%" readOnly="true"></state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpoint-session-price">
 		<item-type>Number:Currency</item-type>
 		<label>Session Price</label>
-		<description>Costs of the current charging seesion</description>
+		<description>Costs of the current charging session</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-session-price-per-k-wh">
 		<item-type>Number:EnergyPrice</item-type>
@@ -623,7 +576,6 @@
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-smart-cost-active">
 		<item-type>Switch</item-type>
@@ -639,21 +591,18 @@
 				<option value="OFF">Inactive</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-smart-cost-limit-co2">
 		<item-type>Number:EmissionIntensity</item-type>
 		<label>Smart Cost Limit</label>
 		<description>Below this limit the smart charging will start</description>
 		<state pattern="%d" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-smart-cost-limit-price">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Smart Cost Limit</label>
 		<description>Below this limit the smart charging will start</description>
 		<state pattern="%.3f" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-smart-cost-next-start">
 		<item-type>DateTime</item-type>
@@ -664,7 +613,6 @@
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-smart-feed-in-priority-active">
 		<item-type>Switch</item-type>
@@ -675,7 +623,6 @@
 			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-title">
 		<item-type>String</item-type>
@@ -683,7 +630,6 @@
 		<description>Name of the loadpoint as displayed in the UI</description>
 		<category>Text</category>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-climater-active">
 		<item-type>Switch</item-type>
@@ -714,14 +660,12 @@
 				<option value="OFF">Inactive</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-identity">
 		<item-type>String</item-type>
 		<label>Vehicle Identity</label>
 		<description>Transferred vehicle identity</description>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-limit-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -732,8 +676,7 @@
 			<tag>Setpoint</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-name">
 		<item-type>String</item-type>
@@ -747,7 +690,6 @@
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-odometer">
 		<item-type unitHint="km">Number:Length</item-type>
@@ -764,13 +706,11 @@
 		<item-type unitHint="km">Number:Length</item-type>
 		<label>Vehicle Range</label>
 		<description>Current range of the vehicle</description>
-		<category></category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -782,7 +722,6 @@
 			<tag>Energy</tag>
 		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-title">
 		<item-type>String</item-type>
@@ -790,7 +729,6 @@
 		<description>The name of the vehicle as displayed in the UI</description>
 		<category>Settings</category>
 		<state readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-welcome-active">
 		<item-type>Switch</item-type>
@@ -806,7 +744,6 @@
 				<option value="OFF">Inactive</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<!-- Heating relevant channels -->
@@ -820,7 +757,6 @@
 			<tag>Temperature</tag>
 		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpoint-limit-temperature">
 		<item-type>Number:Temperature</item-type>
@@ -831,8 +767,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-temperature">
 		<item-type>Number:Temperature</item-type>
@@ -844,6 +779,5 @@
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

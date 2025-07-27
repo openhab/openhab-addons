@@ -268,11 +268,11 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     Optional.ofNullable(responseJson).ifPresent(json -> {
                         if (json.has("error")) {
                             logger.debug("Sending command was unsuccessful, got this error:\n {}",
-                                    responseJson.get("error").getAsString());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    responseJson.get("error").getAsString());
+                                    json.get("error").getAsString());
+                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR,
+                                    json.get("error").getAsString());
                         } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR);
                             logger.warn("evcc API error: HTTP {}", response.getStatus());
                         }
                     });
