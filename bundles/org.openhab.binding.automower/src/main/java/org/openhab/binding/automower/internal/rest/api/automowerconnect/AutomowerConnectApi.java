@@ -64,7 +64,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.GET);
 
         ContentResponse response = executeRequest(appKey, token, request);
-
+        logger.trace("getMowers: {}", response.getContentAsString());
         return parseResponse(response, MowerListResult.class);
     }
 
