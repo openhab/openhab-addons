@@ -85,6 +85,8 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
 
     void startValveBoost(int valveId, int value) throws ShellyApiException;
 
+    void loraSendData(int id, String data) throws ShellyApiException;
+
     void muteSmokeAlarm(int smokeId) throws ShellyApiException;
 
     ShellyOtaCheckResult checkForUpdate() throws ShellyApiException;
