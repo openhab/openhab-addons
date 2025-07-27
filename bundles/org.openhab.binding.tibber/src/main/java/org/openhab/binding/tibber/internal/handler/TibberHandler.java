@@ -24,7 +24,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
@@ -38,6 +37,7 @@ import java.util.concurrent.TimeoutException;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -98,11 +98,11 @@ public class TibberHandler extends BaseThingHandler {
 
     private final ConcurrentLinkedQueue<String> messageQueue = new ConcurrentLinkedQueue<>();
     private TibberConfiguration tibberConfig = new TibberConfiguration();
-    private Optional<ScheduledFuture<?>> watchdog = Optional.empty();
-    private Optional<ScheduledCompletableFuture<?>> cronDaily = Optional.empty();
-    private Optional<TibberWebsocket> webSocket = Optional.empty();
-    private Optional<Boolean> realtimeEnabled = Optional.empty();
-    private Optional<String> currencyUnit = Optional.empty();
+    private @Nullable ScheduledFuture<?> watchdog;
+    private @Nullable ScheduledCompletableFuture<?> cronDaily;
+    private @Nullable TibberWebsocket webSocket;
+    private @Nullable Boolean realtimeEnabled;
+    private @Nullable String currencyUnit;
     private Object calculatorLock = new Object();
     private int retryCounter = 0;
     private boolean isDisposed = true;
@@ -111,7 +111,7 @@ public class TibberHandler extends BaseThingHandler {
     private TimeSeries levelCache = new TimeSeries(TimeSeries.Policy.REPLACE);
     private TimeSeries averageCache = new TimeSeries(TimeSeries.Policy.REPLACE);
 
-    protected Optional<PriceCalculator> calculator = Optional.empty();
+    protected @Nullable PriceCalculator calculator;
 
     public TibberHandler(Thing thing, HttpClient httpClient, CronScheduler cron, BundleContext bundleContext,
             TimeZoneProvider timeZoneProvider) {
@@ -161,18 +161,25 @@ public class TibberHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         isDisposed = true;
-        cronDaily.ifPresent(job -> {
-            job.cancel(true);
-        });
-        cronDaily = Optional.empty();
-        watchdog.ifPresent(job -> {
-            job.cancel(true);
-        });
-        watchdog = Optional.empty();
-        webSocket.ifPresent(socket -> {
-            socket.stop();
-        });
-        webSocket = Optional.empty();
+
+        ScheduledCompletableFuture<?> cronDaily = this.cronDaily;
+        if (cronDaily != null) {
+            cronDaily.cancel(true);
+        }
+        this.cronDaily = null;
+
+        ScheduledFuture<?> watchdog = this.watchdog;
+        if (watchdog != null) {
+            watchdog.cancel(true);
+        }
+        this.watchdog = null;
+
+        TibberWebsocket webSocket = this.webSocket;
+        if (webSocket != null) {
+            webSocket.stop();
+        }
+        this.webSocket = null;
+
         super.dispose();
     }
 
@@ -207,22 +214,21 @@ public class TibberHandler extends BaseThingHandler {
                     String currencyCode = currency.get("currency").getAsString();
                     Unit<?> unit = CurrencyUnits.getInstance().getUnit(currencyCode);
                     if (unit != null) {
-                        currencyUnit = Optional.of(currencyCode);
+                        currencyUnit = currencyCode;
                         logger.trace("Currency is set to {}", unit.getSymbol());
                     } else {
                         logger.trace("Currency {} is unknown, falling back to DecimalType", currencyCode);
                     }
 
                     // create websocket and watchdog
-                    webSocket = Optional.of(new TibberWebsocket(this, tibberConfig, httpClient));
-                    watchdog = Optional.of(scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES));
+                    webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
+                    watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
 
                     // start cron update for new spot prices
                     scheduler.schedule(this::updateSpotPrices, 0, TimeUnit.MINUTES);
                     int hour = tibberConfig.updateHour;
                     String cronHour = (hour < 0) ? "*" : String.valueOf(hour);
-                    cronDaily = Optional
-                            .of(cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, cronHour)));
+                    cronDaily = cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, cronHour));
                     return;
                 }
             } else {
@@ -233,30 +239,31 @@ public class TibberHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.initial-call-failed  [\"" + e.getMessage() + "\"]");
         }
-        watchdog = Optional.of(scheduler.schedule(this::doInitialize, 1, TimeUnit.MINUTES));
+        watchdog = scheduler.schedule(this::doInitialize, 1, TimeUnit.MINUTES);
     }
 
     private void watchdog() {
+        TibberWebsocket webSocket = this.webSocket;
         if (liveChannelsLinked() && isRealtimeEnabled()) {
-            webSocket.ifPresentOrElse(socket -> {
-                if (!socket.isConnected()) {
-                    socket.start();
+            if (webSocket != null) {
+                if (!webSocket.isConnected()) {
+                    webSocket.start();
                 } else {
-                    socket.ping();
+                    webSocket.ping();
                 }
-            }, () -> {
-                webSocket = Optional.of(new TibberWebsocket(this, tibberConfig, httpClient));
-                webSocket.get().start();
-            });
+            } else {
+                this.webSocket = webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
+                webSocket.start();
+            }
         } else {
-            webSocket.ifPresentOrElse(socket -> {
-                if (socket.isConnected()) {
-                    socket.stop();
+            if (webSocket != null) {
+                if (webSocket.isConnected()) {
+                    webSocket.stop();
                 }
-            }, () -> {
+            } else {
                 logger.trace("Websocket is kept offline - either feature disabled ({}) or channel mot linked ({})",
                         isRealtimeEnabled(), liveChannelsLinked());
-            });
+            }
         }
     }
 
@@ -313,11 +320,12 @@ public class TibberHandler extends BaseThingHandler {
                         levelCache = timeSeriesLevels;
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_PRICE_LEVELS),
                                 timeSeriesLevels);
+                        PriceCalculator calculator;
                         synchronized (calculatorLock) {
-                            calculator = Optional.of(new PriceCalculator(spotPrices));
+                            this.calculator = calculator = new PriceCalculator(spotPrices);
                         }
 
-                        TreeMap<Instant, Double> averagePrices = calculator.get().calculateAveragePrices();
+                        TreeMap<Instant, Double> averagePrices = calculator.calculateAveragePrices();
                         TimeSeries avgSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
                         averagePrices.forEach((key, value) -> {
                             String priceString = String.valueOf(value);
@@ -353,8 +361,9 @@ public class TibberHandler extends BaseThingHandler {
 
     public PriceCalculator getPriceCalculator() throws PriceCalculationException {
         synchronized (calculatorLock) {
-            if (calculator.isPresent()) {
-                return calculator.get();
+            PriceCalculator calculator = this.calculator;
+            if (calculator != null) {
+                return calculator;
             } else {
                 throw new PriceCalculationException(
                         "No PriceCalculator available! Maybe OFFLINE or Thing deactivated.");
@@ -364,8 +373,9 @@ public class TibberHandler extends BaseThingHandler {
 
     private State getEnergyPrice(String priceString) {
         State priceState;
-        if (currencyUnit.isPresent()) {
-            priceState = QuantityType.valueOf(priceString + " " + currencyUnit.get() + "/kWh");
+        String currencyUnit = this.currencyUnit;
+        if (currencyUnit != null) {
+            priceState = QuantityType.valueOf(priceString + " " + currencyUnit + "/kWh");
         } else {
             priceState = DecimalType.valueOf(priceString);
         }
@@ -373,8 +383,9 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     private boolean isRealtimeEnabled() {
-        if (realtimeEnabled.isPresent()) {
-            return realtimeEnabled.get();
+        Boolean realtimeEnabled = this.realtimeEnabled;
+        if (realtimeEnabled != null) {
+            return realtimeEnabled.booleanValue();
         } else {
             Request realtimeRequest = getRequest();
             String body = String.format(QUERY_CONTAINER,
@@ -390,8 +401,8 @@ public class TibberHandler extends BaseThingHandler {
                 JsonObject featuresObject = Utils.getJsonObject(object, REALTIME_FEATURE_JSON_PATH);
                 if (!featuresObject.isEmpty()) {
                     String rtEnabled = featuresObject.get("realTimeConsumptionEnabled").toString();
-                    realtimeEnabled = Optional.of(Boolean.valueOf(rtEnabled));
-                    return realtimeEnabled.get();
+                    this.realtimeEnabled = realtimeEnabled = Boolean.valueOf(rtEnabled);
+                    return realtimeEnabled.booleanValue();
                 }
             } catch (JsonSyntaxException | InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("Realtime feature query failed {}", e.getMessage());
@@ -455,8 +466,9 @@ public class TibberHandler extends BaseThingHandler {
             if (!EMPTY_VALUE.equals(value)) {
                 State costState;
                 if (!NULL_VALUE.equals(value)) {
-                    if (currencyUnit.isPresent()) {
-                        costState = QuantityType.valueOf(value + " " + currencyUnit.get());
+                    String currencyUnit = this.currencyUnit;
+                    if (currencyUnit != null) {
+                        costState = QuantityType.valueOf(value + " " + currencyUnit);
                     } else {
                         costState = DecimalType.valueOf(value);
                     }
