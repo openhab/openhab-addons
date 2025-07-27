@@ -102,6 +102,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
     private long lastSuccessfulPollTimestamp;
+    private boolean supportsRoutines = true;
     private final Gson gson = new Gson();
     private String lastHistoryID = "";
 
@@ -363,20 +364,27 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
             }
         }
-        String routinesResponse = bridgeHandler.getRoutines(getThing().getUID().getId());
-        if (!routinesResponse.isEmpty()
-                && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").isJsonArray()
-                && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray().size() > 0
-                && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray().get(0)
-                        .isJsonObject()) {
-            JsonArray routinesArray = JsonParser.parseString(routinesResponse).getAsJsonObject().get("result")
-                    .getAsJsonArray();
-            Map<String, Object> routines = new HashMap<>();
-            for (int i = 0; i < routinesArray.size(); ++i) {
-                JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
-                routines.put(routinesJsonObject.get("id").getAsString(), routinesJsonObject.get("name").getAsString());
+        if (supportsRoutines) {
+            String routinesResponse = bridgeHandler.getRoutines(getThing().getUID().getId());
+            if (!routinesResponse.isEmpty()
+                    && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").isJsonArray()
+                    && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray()
+                            .size() > 0
+                    && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray().get(0)
+                            .isJsonObject()) {
+                JsonArray routinesArray = JsonParser.parseString(routinesResponse).getAsJsonObject().get("result")
+                        .getAsJsonArray();
+                Map<String, Object> routines = new HashMap<>();
+                for (int i = 0; i < routinesArray.size(); ++i) {
+                    JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
+                    routines.put(routinesJsonObject.get("id").getAsString(),
+                            routinesJsonObject.get("name").getAsString());
+                }
+                updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
+            } else {
+                logger.debug("Routines not supported for device {}", getThing().getUID().getId());
+                supportsRoutines = false;
             }
-            updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
         }
 
         lastSuccessfulPollTimestamp = System.currentTimeMillis();
