@@ -356,6 +356,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_IX3, THING_TYPE_SHELLYIX3), //
             Map.entry(SHELLYDT_DIMMER, THING_TYPE_SHELLYDIMMER), //
             Map.entry(SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2), //
+
             Map.entry(SHELLYDT_DUO, THING_TYPE_SHELLYDUO), //
             Map.entry(SHELLYDT_DUORGBW, THING_TYPE_SHELLYDUORGBW), //
             Map.entry(SHELLYDT_BULB, THING_TYPE_SHELLYBULB), //
