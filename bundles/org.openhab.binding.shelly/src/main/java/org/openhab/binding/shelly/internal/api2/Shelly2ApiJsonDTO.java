@@ -59,6 +59,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RGBW_STATUS = "RGBW.GetStatus";
     public static final String SHELLYRPC_METHOD_RGBW_SET = "RGBW.Set";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
+    public static final String SHELLYRPC_METHOD_LORA_SENDDATA = "LoRa.SendBytes";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFILISTAPCLIENTS = "WiFi.ListAPClients";
@@ -1095,6 +1096,9 @@ public class Shelly2ApiJsonDTO {
             // Script
             public String name;
 
+            // LoRa.SendBytes
+            public String data;
+
             public Shelly2RpcRequestParams withConfig() {
                 config = new Shelly2ConfigParms();
                 return this;
@@ -1123,6 +1127,11 @@ public class Shelly2ApiJsonDTO {
 
         public Shelly2RpcRequest withName(String name) {
             params.name = name;
+            return this;
+        }
+
+        public Shelly2RpcRequest withData(String data) {
+            params.data = data;
             return this;
         }
     }
