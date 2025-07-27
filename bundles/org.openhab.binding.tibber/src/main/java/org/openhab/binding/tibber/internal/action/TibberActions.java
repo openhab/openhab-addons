@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,16 +54,17 @@ import com.google.gson.JsonParser;
 public class TibberActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(TibberActions.class);
 
-    private Optional<TibberHandler> thingHandler = Optional.empty();
+    private @Nullable TibberHandler thingHandler;
 
     @RuleAction(label = "@text/actionPriceInfoStartLabel", description = "@text/actionPriceInfoStartDescription")
     public @ActionOutput(name = "result", label = "Earliest Start", type = "java.time.Instant") Instant priceInfoStart() {
-        if (!thingHandler.isPresent()) {
+        TibberHandler thingHandler = this.thingHandler;
+        if (thingHandler == null) {
             logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
             return Instant.MAX;
         }
         try {
-            PriceCalculator calc = thingHandler.get().getPriceCalculator();
+            PriceCalculator calc = thingHandler.getPriceCalculator();
             return calc.priceInfoStart();
         } catch (PriceCalculationException e) {
             logger.warn("{}", e.getMessage());
@@ -74,12 +74,13 @@ public class TibberActions implements ThingActions {
 
     @RuleAction(label = "@text/actionPriceInfoEndLabel", description = "@text/actionPriceInfoEndDescription")
     public @ActionOutput(name = "result", label = "Latest End", type = "java.time.Instant") Instant priceInfoEnd() {
-        if (!thingHandler.isPresent()) {
+        TibberHandler thingHandler = this.thingHandler;
+        if (thingHandler == null) {
             logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
             return Instant.MIN;
         }
         try {
-            PriceCalculator calc = thingHandler.get().getPriceCalculator();
+            PriceCalculator calc = thingHandler.getPriceCalculator();
             return calc.priceInfoEnd();
         } catch (PriceCalculationException e) {
             logger.warn("{}", e.getMessage());
@@ -90,14 +91,15 @@ public class TibberActions implements ThingActions {
     @RuleAction(label = "@text/actionListPricesLabel", description = "@text/actionListPricesDescription")
     public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String listPrices(
             @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
-        if (!thingHandler.isPresent()) {
+        TibberHandler thingHandler = this.thingHandler;
+        if (thingHandler == null) {
             logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
             return "";
         }
         try {
             Map<String, Object> parameterMap = new HashMap<>();
             Utils.convertParameters(parameters, parameterMap);
-            PriceCalculator calc = thingHandler.get().getPriceCalculator();
+            PriceCalculator calc = thingHandler.getPriceCalculator();
             completeConfig(parameterMap);
             Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
             Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
@@ -118,14 +120,15 @@ public class TibberActions implements ThingActions {
     @RuleAction(label = "@text/actionBestPricePeriodLabel", description = "@text/actionBestPricePeriodDescription")
     public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String bestPricePeriod(
             @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
-        if (!thingHandler.isPresent()) {
+        TibberHandler thingHandler = this.thingHandler;
+        if (thingHandler == null) {
             logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
             return "";
         }
         try {
             Map<String, Object> parameterMap = new HashMap<>();
             Utils.convertParameters(parameters, parameterMap);
-            PriceCalculator calc = thingHandler.get().getPriceCalculator();
+            PriceCalculator calc = thingHandler.getPriceCalculator();
             completeConfig(parameterMap);
             Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
             Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
@@ -179,14 +182,15 @@ public class TibberActions implements ThingActions {
     @RuleAction(label = "@text/actionBestPriceScheduleLabel", description = "@text/actionBestPriceScheduleDescription")
     public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String bestPriceSchedule(
             @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
-        if (!thingHandler.isPresent()) {
+        TibberHandler thingHandler = this.thingHandler;
+        if (thingHandler == null) {
             logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
             return "";
         }
         try {
             Map<String, Object> parameterMap = new HashMap<>();
             Utils.convertParameters(parameters, parameterMap);
-            PriceCalculator calc = thingHandler.get().getPriceCalculator();
+            PriceCalculator calc = thingHandler.getPriceCalculator();
             completeConfig(parameterMap);
             Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
             Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
@@ -237,15 +241,14 @@ public class TibberActions implements ThingActions {
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        thingHandler = Optional.of((TibberHandler) handler);
+        if (handler instanceof TibberHandler tibberHandler) {
+            this.thingHandler = tibberHandler;
+        }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        if (thingHandler.isPresent()) {
-            return thingHandler.get();
-        }
-        return null;
+        return thingHandler;
     }
 
     /**
