@@ -24,7 +24,7 @@ Shelly.addEventHandler(function (event) {
   }
 
   console.log(
-    'LoRa Event:', JSON.stringify({info: event.info, }));
+    'LoRa Event:', JSON.stringify({info: event.info}));
 
   let message = atob(event.info.data);
   console.log('Received message:', message);
