@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ondilo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Ondilo Bridge Thing Type -->
+	<bridge-type id="account">
+		<label>Ondilo Account</label>
+		<description>The Ondilo account for central communication with the Ondilo API</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="poll-update" typeId="poll-update"/>
+		</channels>
+
+		<properties>
+			<property name="userInfo"/>
+		</properties>
+
+		<config-description>
+			<parameter name="url" type="text" required="true">
+				<label>openHAB URL</label>
+				<default>http://localhost:8080</default>
+				<description>The URL of the openHAB instance. Required for the redirect during oAuth2 flow</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<default>900</default>
+				<description>Polling interval</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Ondilo Thing Type -->
+	<thing-type id="ondilo">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Ondilo ICO</label>
+		<description>An Ondilo ICO Pool or Spa device</description>
+		<semantic-equipment-tag>WaterQualitySensor</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="measure" typeId="measure"/>
+			<channel-group id="recommendation" typeId="recommendation"/>
+			<channel-group id="configuration" typeId="configuration"/>
+		</channel-groups>
+
+		<properties>
+			<property name="name"/>
+			<property name="type"/>
+			<property name="volume"/>
+			<property name="disinfection"/>
+			<property name="address"/>
+			<property name="location"/>
+			<property name="uuid"/>
+			<property name="poolGuyNumber"/>
+			<property name="maintenanceDay"/>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description>
+			<parameter name="id" type="integer" required="true" min="1">
+				<label>Id</label>
+				<description>The Id of an Ondilo ICO Pool/Spa device. Set via discovery service</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="measure">
+		<label>Measures</label>
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-trend" typeId="temperature-trend"/>
+			<channel id="ph" typeId="ph"/>
+			<channel id="ph-trend" typeId="ph-trend"/>
+			<channel id="orp" typeId="orp"/>
+			<channel id="orp-trend" typeId="orp-trend"/>
+			<channel id="salt" typeId="salt"/>
+			<channel id="salt-trend" typeId="salt-trend"/>
+			<channel id="tds" typeId="tds"/>
+			<channel id="tds-trend" typeId="tds-trend"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="value-time" typeId="value-time"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="recommendation">
+		<label>Recommendations</label>
+		<channels>
+			<channel id="id" typeId="id"/>
+			<channel id="title" typeId="title"/>
+			<channel id="message" typeId="message"/>
+			<channel id="created-at" typeId="created-at"/>
+			<channel id="updated-at" typeId="updated-at"/>
+			<channel id="status" typeId="status"/>
+			<channel id="deadline" typeId="deadline"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="configuration">
+		<label>Configurations</label>
+		<channels>
+			<channel id="temperature-low" typeId="temperature-low-high"/>
+			<channel id="temperature-high" typeId="temperature-low-high">
+				<label>Maximum Water Temperature</label>
+				<description>Maximum water temperature</description>
+			</channel>
+			<channel id="ph-low" typeId="ph-low-high"/>
+			<channel id="ph-high" typeId="ph-low-high">
+				<label>Maximum PH Level</label>
+				<description>Maximum PH level</description>
+			</channel>
+			<channel id="orp-low" typeId="orp-low-high"/>
+			<channel id="orp-high" typeId="orp-low-high">
+				<label>Maximum ORP</label>
+				<description>Maximum Oxidation-Reduction Potential (ORP)</description>
+			</channel>
+			<channel id="salt-low" typeId="salt-low-high"/>
+			<channel id="salt-high" typeId="salt-low-high">
+				<label>Maximum Salt Level</label>
+				<description>Maximum salt level</description>
+			</channel>
+			<channel id="tds-low" typeId="tds-low-high"/>
+			<channel id="tds-high" typeId="tds-low-high">
+				<label>Maximum TDS</label>
+				<description>Maximum Total Dissolved Solids (TDS)</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- Bridge Channel Types -->
+	<channel-type id="poll-update" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Poll Update</label>
+		<description>Poll status update from the cloud (get latest measures, not a trigger for new measures)</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+	</channel-type>
+
+	<!-- Measure Channel Types -->
+	<channel-type id="temperature">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Water Temperature</label>
+		<description>Water temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature-trend" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Water Temperature Delta</label>
+		<description>Change in water temperature since last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ph">
+		<item-type>Number</item-type>
+		<label>PH Level</label>
+		<description>PH level</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+	<channel-type id="ph-trend" advanced="true">
+		<item-type>Number</item-type>
+		<label>PH Level Delta</label>
+		<description>Change in PH level since last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.2f"/>
+	</channel-type>
+	<channel-type id="orp">
+		<item-type unitHint="mV">Number:ElectricPotential</item-type>
+		<label>ORP</label>
+		<description>Oxidation-Reduction Potential (ORP)</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="orp-trend" advanced="true">
+		<item-type unitHint="mV">Number:ElectricPotential</item-type>
+		<label>ORP Delta</label>
+		<description>Change in ORP since last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.1f %unit%"/>
+	</channel-type>
+	<channel-type id="salt">
+		<item-type unitHint="mg/l">Number:Density</item-type>
+		<label>Salt</label>
+		<description>Salt level</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="salt-trend" advanced="true">
+		<item-type unitHint="mg/l">Number:Density</item-type>
+		<label>Salt Delta</label>
+		<description>Change in salt level since last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.0f %unit%"/>
+	</channel-type>
+	<channel-type id="tds">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>TDS</label>
+		<description>Total dissolved solids</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="tds-trend" advanced="true">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>TDS Delta</label>
+		<description>Change in TDS since last measure</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="Δ %+.1f %unit%"/>
+	</channel-type>
+	<channel-type id="rssi">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Signal strength (RSSI)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="value-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Value Time</label>
+		<description>Timestamp of the set of measures</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<!-- Recommendation Channel Types -->
+	<channel-type id="id" advanced="true">
+		<item-type>Number</item-type>
+		<label>ID</label>
+		<description>ID of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Title of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="message">
+		<item-type>String</item-type>
+		<label>Message</label>
+		<description>Message of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="created-at" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Created At</label>
+		<description>Creation time of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="updated-at" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Updated At</label>
+		<description>Update time of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Status of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="waiting">waiting</option>
+				<option value="ok">ok</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="deadline" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Deadline</label>
+		<description>Deadline of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Configuration Channel Types -->
+	<channel-type id="temperature-low-high" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Minimum Water Temperature</label>
+		<description>Minimum water temperature</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ph-low-high" advanced="true">
+		<item-type>Number</item-type>
+		<label>Minimum PH Level</label>
+		<description>Minimum PH level</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+	<channel-type id="orp-low-high" advanced="true">
+		<item-type unitHint="mV">Number:ElectricPotential</item-type>
+		<label>Minimum ORP</label>
+		<description>Minimum Oxidation-Reduction Potential (ORP)</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="salt-low-high" advanced="true">
+		<item-type unitHint="mg/l">Number:Density</item-type>
+		<label>Minimum Salt Level</label>
+		<description>Minimum salt level</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="tds-low-high" advanced="true">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>Minimum TDS</label>
+		<description>Minimum Total Dissolved Solids (TDS)</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

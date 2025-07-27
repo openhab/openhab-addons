@@ -11,6 +11,7 @@
 
 		<label>Dimmer Module</label>
 		<description>Nikobus Dimmer module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="output-1" typeId="dimmer-output">
@@ -58,6 +59,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Output</label>
 		<description>Dimmer Module's Output</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

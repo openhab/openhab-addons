@@ -119,12 +119,20 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
             setBrightness(percent.intValue()); // 0..100% = 0..100
         } else if (command instanceof DecimalType decimalCommand) {
             setBrightness(decimalCommand.intValue());
+        } else if (command instanceof OnOffType onOffCommand) {
+            handleOnOffCommand(onOffCommand);
         }
     }
 
     private void handleColorCommand(Command command) {
         if (command instanceof HSBType hsbCommand) {
             setColor(hsbCommand);
+        } else if (command instanceof OnOffType onOffCommand) {
+            handleOnOffCommand(onOffCommand);
+        } else if (command instanceof DecimalType decimalCommand) {
+            handleBrightnessCommand(decimalCommand);
+        } else if (command instanceof PercentType percentCommand) {
+            handleBrightnessCommand(percentCommand);
         }
     }
 
@@ -201,10 +209,14 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
      * @param command HSBType
      */
     protected void setColor(HSBType command) {
-        lightStripData.switchOn();
-        lightStripData.setHue(command.getHue().intValue());
-        lightStripData.setSaturation(command.getSaturation().intValue());
-        lightStripData.setBrightness(command.getBrightness().intValue());
+        if (PercentType.ZERO.equals(command.getBrightness())) {
+            lightStripData.switchOff();
+        } else {
+            lightStripData.switchOn();
+            lightStripData.setHue(command.getHue().intValue());
+            lightStripData.setSaturation(command.getSaturation().intValue());
+            lightStripData.setBrightness(command.getBrightness().intValue());
+        }
         connector.sendCommandAndQuery(lightStripData, true);
     }
 

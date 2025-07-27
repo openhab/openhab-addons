@@ -30,11 +30,11 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class LockTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "lock/0x0000000000000000_lock_zigbee2mqtt";
 
-    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -75,10 +75,10 @@ public class LockTests extends AbstractComponentTests {
         linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/lock/state", "LOCKED_");
-        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED_"));
+        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/lock/state", "UNLOCKED_");
-        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("UNLOCKED_"));
+        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("UNLOCKED"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.OFF);
         publishMessage("zigbee2mqtt/lock/state", "JAMMED");
         assertState(component, Lock.STATE_CHANNEL_ID, new StringType("JAMMED"));
@@ -88,30 +88,29 @@ public class LockTests extends AbstractComponentTests {
 
         component.getChannel(Lock.LOCK_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/lock/set/state", "UNLOCK_");
-        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("UNLOCKED_"));
+        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("UNLOCKED"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.OFF);
         component.getChannel(Lock.LOCK_CHANNEL_ID).getState().publishValue(OnOffType.ON);
         assertPublished("zigbee2mqtt/lock/set/state", "LOCK_");
-        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED_"));
+        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.ON);
-        component.getChannel(Lock.STATE_CHANNEL_ID).getState().publishValue(new StringType("UNLOCK_"));
+        component.getChannel(Lock.STATE_CHANNEL_ID).getState().publishValue(new StringType("UNLOCK"));
         assertPublished("zigbee2mqtt/lock/set/state", "UNLOCK_", 2);
-        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("UNLOCKED_"));
+        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("UNLOCKED"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.OFF);
-        component.getChannel(Lock.STATE_CHANNEL_ID).getState().publishValue(new StringType("LOCK_"));
+        component.getChannel(Lock.STATE_CHANNEL_ID).getState().publishValue(new StringType("LOCK"));
         assertPublished("zigbee2mqtt/lock/set/state", "LOCK_", 2);
-        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED_"));
+        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.ON);
 
         assertThrows(IllegalArgumentException.class,
-                () -> component.getChannel(Lock.STATE_CHANNEL_ID).getState().publishValue(new StringType("LOCK")));
+                () -> component.getChannel(Lock.STATE_CHANNEL_ID).getState().publishValue(new StringType("LOCK_")));
         assertThrows(IllegalArgumentException.class,
-                () -> component.getChannel(Lock.STATE_CHANNEL_ID).getState().publishValue(new StringType("OPEN")));
-        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED_"));
+                () -> component.getChannel(Lock.STATE_CHANNEL_ID).getState().publishValue(new StringType("OPEN_")));
+        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.ON);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testNoStateTopicIsOptimistic() throws InterruptedException {
         // @formatter:off
@@ -163,7 +162,6 @@ public class LockTests extends AbstractComponentTests {
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.ON);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testOpennable() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -198,7 +196,6 @@ public class LockTests extends AbstractComponentTests {
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.OFF);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testNonOptimistic() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """

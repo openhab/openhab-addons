@@ -26,6 +26,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -50,15 +51,18 @@ public class FlumeHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
+    private final StorageService storageService;
     public final SystemOfUnits systemOfUnits;
 
     @Activate
     public FlumeHandlerFactory(@Reference UnitProvider unitProvider, @Reference HttpClientFactory httpClientFactory,
-            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
+            final @Reference StorageService storageService) {
         this.systemOfUnits = unitProvider.getMeasurementSystem();
         this.httpClientFactory = httpClientFactory;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
+        this.storageService = storageService;
     }
 
     @Override
@@ -74,7 +78,7 @@ public class FlumeHandlerFactory extends BaseThingHandlerFactory {
             return new FlumeBridgeHandler((Bridge) thing, systemOfUnits, this.httpClientFactory.getCommonHttpClient(),
                     i18nProvider, localeProvider);
         } else if (THING_TYPE_METER.equals(thingTypeUID)) {
-            return new FlumeDeviceHandler(thing);
+            return new FlumeDeviceHandler(thing, systemOfUnits, storageService);
         }
 
         return null;

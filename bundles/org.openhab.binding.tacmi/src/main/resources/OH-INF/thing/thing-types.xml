@@ -32,6 +32,9 @@
 		<item-type>Switch</item-type>
 		<label>Digital Input (C.M.I. -> OH)</label>
 		<description>A digital channel sent from C.M.I. to openHAB</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
@@ -44,6 +47,9 @@
 		<item-type>Switch</item-type>
 		<label>Digital Output (OH -> C.M.I.)</label>
 		<description>A digital channel sent from OpenHAB to C.M.I.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
 				<label>Output</label>
@@ -60,6 +66,9 @@
 		<item-type>Number</item-type>
 		<label>Analog Input Channel (C.M.I. -> OH)</label>
 		<description>An Analog Channel received from the C.M.I.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
@@ -72,6 +81,9 @@
 		<item-type>Number</item-type>
 		<label>Analog Output Channel (OH -> C.M.I.)</label>
 		<description>A Analog Channel sent to the C.M.I.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
 				<label>Output</label>
@@ -150,34 +162,89 @@
 		<item-type>Switch</item-type>
 		<label>Switch State (Read-Only)</label>
 		<description>An On/Off state read from C.M.I.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
-		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>
 	<channel-type id="schema-switch-rw">
 		<item-type>Switch</item-type>
 		<label>Switch State (Changeable)</label>
 		<description>A modifiable On/Off state read from C.M.I.</description>
-		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="schema-numeric-ro">
 		<item-type>Number</item-type>
 		<label>Value</label>
 		<description>A numeric value read from C.M.I.</description>
-		<state readOnly="true"/>
-		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 	<channel-type id="schema-state-ro">
 		<item-type>String</item-type>
 		<label>Value</label>
 		<description>A state value read from C.M.I.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
-		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>
 	<channel-type id="schema-date-time-ro">
 		<item-type>DateTime</item-type>
 		<label>Time Value</label>
 		<description>A time read from C.M.I. - Only the time is supplied, the date part is set to the current day.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>
+
+	<!-- JSON -->
+
+	<thing-type id="cmiJSON" extensible="schema-switch-ro,schema-numeric-ro,schema-state-ro">
+		<label>TA C.M.I. JSON API Connection</label>
+		<description>Communication via the "JSONAPI" on a "Technische Alternative C.M.I. Control and Monitoring
+			Interface"</description>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>C.M.I. IP Address</label>
+				<description>Host name or IP address of the C.M.I.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>User Name</label>
+				<description>User name for authentication on the C.M.I.</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Password for authentication on the C.M.I.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="nodeId" type="integer" required="true" min="0">
+				<label>Node Id</label>
+				<description>The node ID of the device you want to monitor (CMI → CAN-Bus)</description>
+			</parameter>
+			<parameter name="params" type="text">
+				<label>API-Parameters</label>
+				<description><![CDATA[ The params to query. E.g. I,O,Sg (See the <a href="https://wiki.ta.co.at/C.M.I._JSON-API">API documentation</a> for details)<br />
+					Possible options are: Inputs (I), Outputs (O), General (Sg), Logging Analog (La), Logging Digital (Ld) ]]>
+				</description>
+				<default>I,O,Sg</default>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="10" required="true">
+				<label>Poll Interval</label>
+				<description>Poll interval in seconds. The documentation suggests 60s, but less is possible.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 </thing:thing-descriptions>

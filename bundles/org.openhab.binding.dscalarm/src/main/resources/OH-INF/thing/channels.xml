@@ -9,12 +9,20 @@
 		<item-type>Switch</item-type>
 		<label>Reset</label>
 		<description>Reset Switch</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="command">
 		<item-type>String</item-type>
 		<label>Send Command</label>
 		<description>Sends a DSC Alarm Command</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<!-- keypad -->
@@ -22,6 +30,10 @@
 		<item-type>Number</item-type>
 		<label>Keypad LED</label>
 		<description>Keypad LED (0=Off, 1=On, 2=Flashing)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%d" readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -53,12 +65,20 @@
 		<item-type>DateTime</item-type>
 		<label>Time</label>
 		<description>Time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="state">
 		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>State (On/Off)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- partition -->
@@ -81,6 +101,10 @@
 		<item-type>Contact</item-type>
 		<label>Zone Status</label>
 		<description>Zone Status (Open/Closed)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -88,6 +112,10 @@
 		<item-type>Switch</item-type>
 		<label>Bypass Mode</label>
 		<description>Bypass Mode (OFF=Armed, ON=Bypassed)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- common -->

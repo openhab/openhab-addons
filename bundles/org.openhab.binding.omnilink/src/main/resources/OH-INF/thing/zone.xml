@@ -35,6 +35,7 @@
 		<description>Contact state information of this zone.</description>
 		<category>Contact</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -88,6 +89,9 @@
 		<label>Bypass Zone</label>
 		<description>Send a 4 digit user code to bypass this zone.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="zone_restore">
@@ -95,6 +99,9 @@
 		<label>Restore Zone</label>
 		<description>Send a 4 digit user code to restore this zone.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

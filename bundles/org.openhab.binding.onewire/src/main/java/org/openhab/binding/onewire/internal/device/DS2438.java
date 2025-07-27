@@ -91,7 +91,7 @@ public class DS2438 extends AbstractOwDevice {
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
             logger.trace("refresh of sensor {} started", sensorId);
-            double Vcc = 5.0;
+            double vcc = 5.0;
 
             if (enabledChannels.contains(CHANNEL_TEMPERATURE) || enabledChannels.contains(CHANNEL_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
@@ -159,8 +159,8 @@ public class DS2438 extends AbstractOwDevice {
             }
 
             if (enabledChannels.contains(CHANNEL_SUPPLYVOLTAGE)) {
-                Vcc = ((DecimalType) bridgeHandler.readDecimalType(sensorId, supplyVoltageParameter)).doubleValue();
-                State supplyVoltage = new QuantityType<>(Vcc, Units.VOLT);
+                vcc = ((DecimalType) bridgeHandler.readDecimalType(sensorId, supplyVoltageParameter)).doubleValue();
+                State supplyVoltage = new QuantityType<>(vcc, Units.VOLT);
                 callback.postUpdate(CHANNEL_SUPPLYVOLTAGE, supplyVoltage);
             }
 
@@ -190,7 +190,7 @@ public class DS2438 extends AbstractOwDevice {
                             // workaround bug in DS2438
                             light = new QuantityType<>(0, Units.LUX);
                         } else {
-                            light = new QuantityType<>(Math.pow(10, (65 / 7.5) - (47 / 7.5) * (Vcc / measured)),
+                            light = new QuantityType<>(Math.pow(10, (65 / 7.5) - (47 / 7.5) * (vcc / measured)),
                                     Units.LUX);
                         }
                         callback.postUpdate(CHANNEL_LIGHT, light);

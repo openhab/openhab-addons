@@ -1,0 +1,285 @@
+ {
+	"data": {
+		"viewer": {
+			"home": {
+				"currentSubscription": {
+					"priceInfo": {
+						"current": {
+							"total": 0.3275,
+							"startsAt": "2025-05-18T22:00:00.000+02:00",
+							"level": "EXPENSIVE"
+						},
+						"tomorrow": [
+							{
+								"startsAt": "2025-05-19T00:00:00.000+02:00",
+								"total": 0.318,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T01:00:00.000+02:00",
+								"total": 0.3087,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T02:00:00.000+02:00",
+								"total": 0.3009,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T03:00:00.000+02:00",
+								"total": 0.2972,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T04:00:00.000+02:00",
+								"total": 0.3032,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T05:00:00.000+02:00",
+								"total": 0.3167,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T06:00:00.000+02:00",
+								"total": 0.3427,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T07:00:00.000+02:00",
+								"total": 0.3499,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T08:00:00.000+02:00",
+								"total": 0.3215,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T09:00:00.000+02:00",
+								"total": 0.2981,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T10:00:00.000+02:00",
+								"total": 0.2694,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T11:00:00.000+02:00",
+								"total": 0.2206,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-19T12:00:00.000+02:00",
+								"total": 0.2018,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-19T13:00:00.000+02:00",
+								"total": 0.1925,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-19T14:00:00.000+02:00",
+								"total": 0.1961,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-19T15:00:00.000+02:00",
+								"total": 0.2201,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-19T16:00:00.000+02:00",
+								"total": 0.2734,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T17:00:00.000+02:00",
+								"total": 0.3021,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T18:00:00.000+02:00",
+								"total": 0.3228,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T19:00:00.000+02:00",
+								"total": 0.3632,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T20:00:00.000+02:00",
+								"total": 0.4592,
+								"level": "VERY_EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T21:00:00.000+02:00",
+								"total": 0.3709,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T22:00:00.000+02:00",
+								"total": 0.3375,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T23:00:00.000+02:00",
+								"total": 0.3197,
+								"level": "EXPENSIVE"
+							}
+						],
+						"today": [
+							{
+								"startsAt": "2025-05-18T00:00:00.000+02:00",
+								"total": 0.3136,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T01:00:00.000+02:00",
+								"total": 0.3073,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T02:00:00.000+02:00",
+								"total": 0.3039,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T03:00:00.000+02:00",
+								"total": 0.3025,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T04:00:00.000+02:00",
+								"total": 0.3037,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T05:00:00.000+02:00",
+								"total": 0.3032,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T06:00:00.000+02:00",
+								"total": 0.2952,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T07:00:00.000+02:00",
+								"total": 0.2903,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T08:00:00.000+02:00",
+								"total": 0.2673,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T09:00:00.000+02:00",
+								"total": 0.1986,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T10:00:00.000+02:00",
+								"total": 0.1866,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T11:00:00.000+02:00",
+								"total": 0.1863,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T12:00:00.000+02:00",
+								"total": 0.1842,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T13:00:00.000+02:00",
+								"total": 0.1778,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T14:00:00.000+02:00",
+								"total": 0.1687,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T15:00:00.000+02:00",
+								"total": 0.1759,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T16:00:00.000+02:00",
+								"total": 0.1863,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T17:00:00.000+02:00",
+								"total": 0.1981,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T18:00:00.000+02:00",
+								"total": 0.2953,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T19:00:00.000+02:00",
+								"total": 0.3156,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T20:00:00.000+02:00",
+								"total": 0.3355,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T21:00:00.000+02:00",
+								"total": 0.3418,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T22:00:00.000+02:00",
+								"total": 0.3275,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T23:00:00.000+02:00",
+								"total": 0.3099,
+								"level": "EXPENSIVE"
+							}
+						]
+					}
+				},
+				"daily": {
+					"nodes": [
+						{
+							"from": "2025-05-17T00:00:00+02:00",
+							"to": "2025-05-18T00:00:00+02:00",
+							"cost": 0.0225707538,
+							"unitPrice": 0.296984,
+							"consumption": 0.076,
+							"consumptionUnit": "kWh"
+						}
+					]
+				},
+				"hourly": {
+					"nodes": [
+						{
+							"from": "2025-05-18T21:00:00+02:00",
+							"to": "2025-05-18T22:00:00+02:00",
+							"cost": 0.00136731,
+							"unitPrice": 0.3418275,
+							"consumption": 0.004,
+							"consumptionUnit": "kWh"
+						}
+					]
+				}
+			}
+		}
+	}
+}

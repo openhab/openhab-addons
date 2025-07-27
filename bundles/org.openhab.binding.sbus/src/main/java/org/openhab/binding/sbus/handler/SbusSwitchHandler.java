@@ -19,8 +19,9 @@ import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -98,10 +99,11 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                     } else if (BindingConstants.CHANNEL_TYPE_DIMMER.equals(channelTypeId)) {
                         updateState(channel.getUID(), new PercentType(statuses[channelConfig.channelNumber - 1]));
                     } else if (BindingConstants.CHANNEL_TYPE_PAIRED.equals(channelTypeId)) {
-                        updateState(channel.getUID(), isActive ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                        updateState(channel.getUID(), isActive ? UpDownType.UP : UpDownType.DOWN);
                     }
                 }
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             Bundle bundle = FrameworkUtil.getBundle(getClass());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -136,8 +138,10 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                     handleOnOffCommand(onOffCommand, config, channelConfig, channelUID, adapter);
                 } else if (command instanceof PercentType percentCommand) {
                     handlePercentCommand(percentCommand, config, channelConfig, channelUID, adapter);
-                } else if (command instanceof OpenClosedType openClosedCommand) {
-                    handleOpenClosedCommand(openClosedCommand, config, channelConfig, channelUID, adapter);
+                } else if (command instanceof UpDownType upDownCommand) {
+                    handleUpDownCommand(upDownCommand, config, channelConfig, channelUID, adapter);
+                } else if (command instanceof StopMoveType stopMoveCommand && stopMoveCommand == StopMoveType.STOP) {
+                    handleStopMoveCommand(config, channelConfig, channelUID, adapter);
                 }
             }
         } catch (Exception e) {
@@ -163,20 +167,20 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
         updateState(channelUID, command);
     }
 
-    private void handleOpenClosedCommand(OpenClosedType command, SbusDeviceConfig config,
-            SbusChannelConfig channelConfig, ChannelUID channelUID, SbusService adapter) throws Exception {
-        boolean isOpen = command == OpenClosedType.OPEN;
+    private void handleUpDownCommand(UpDownType command, SbusDeviceConfig config, SbusChannelConfig channelConfig,
+            ChannelUID channelUID, SbusService adapter) throws Exception {
+        boolean isUp = command == UpDownType.UP;
         // Set main channel
-        if (getChannelToClose(channelConfig, isOpen) > 0) {
-            adapter.writeSingleChannel(config.subnetId, config.id, getChannelToClose(channelConfig, isOpen), 0,
+        if (getChannelToClose(channelConfig, isUp) > 0) {
+            adapter.writeSingleChannel(config.subnetId, config.id, getChannelToClose(channelConfig, isUp), 0,
                     channelConfig.timer);
         }
         // Set paired channel to opposite state if configured
-        if (getChannelToOpen(channelConfig, isOpen) > 0) {
-            adapter.writeSingleChannel(config.subnetId, config.id, getChannelToOpen(channelConfig, isOpen), 0x64,
+        if (getChannelToOpen(channelConfig, isUp) > 0) {
+            adapter.writeSingleChannel(config.subnetId, config.id, getChannelToOpen(channelConfig, isUp), 0x64,
                     channelConfig.timer);
         }
-        updateState(channelUID, isOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+        updateState(channelUID, isUp ? UpDownType.UP : UpDownType.DOWN);
     }
 
     private int getChannelToOpen(SbusChannelConfig channelConfig, boolean state) {
@@ -185,5 +189,18 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
     private int getChannelToClose(SbusChannelConfig channelConfig, boolean state) {
         return state ? channelConfig.pairedChannelNumber : channelConfig.channelNumber;
+    }
+
+    private void handleStopMoveCommand(SbusDeviceConfig config, SbusChannelConfig channelConfig, ChannelUID channelUID,
+            SbusService adapter) throws Exception {
+        // For STOP command, we stop both channels by setting them to 0
+        if (channelConfig.channelNumber > 0) {
+            adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, 0, channelConfig.timer);
+        }
+        if (channelConfig.pairedChannelNumber > 0) {
+            adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.pairedChannelNumber, 0,
+                    channelConfig.timer);
+        }
+        // We don't update the state here as the rollershutter is neither UP nor DOWN after stopping
     }
 }

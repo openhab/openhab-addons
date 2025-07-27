@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.mybmw</artifactId>
@@ -23,7 +23,7 @@
           <!-- must be on the classpath -->
           <groupId>org.jacoco</groupId>
           <artifactId>org.jacoco.agent</artifactId>
-          <version>0.8.12</version>
+          <version>0.8.13</version>
           <classifier>runtime</classifier>
           <scope>test</scope>
         </dependency>
@@ -42,7 +42,7 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.12</version>
+            <version>0.8.13</version>
             <executions>
               <execution>
                 <id>default-instrument</id>
@@ -106,7 +106,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>3.5.2</version>
+            <version>3.5.3</version>
             <executions>
               <execution>
                 <goals>

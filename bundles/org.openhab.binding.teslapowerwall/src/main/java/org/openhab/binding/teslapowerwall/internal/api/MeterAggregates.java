@@ -14,8 +14,7 @@ package org.openhab.binding.teslapowerwall.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Class for holding the set of parameters used to read the battery soe.
@@ -25,47 +24,71 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class MeterAggregates {
-    public double gridInstpower;
-    public double batteryInstpower;
-    public double homeInstpower;
-    public double solarInstpower;
-    public double gridEnergyexported;
-    public double batteryEnergyexported;
-    public double homeEnergyexported;
-    public double solarEnergyexported;
-    public double gridEnergyimported;
-    public double batteryEnergyimported;
-    public double homeEnergyimported;
-    public double solarEnergyimported;
+    @SerializedName("site")
+    public @NonNullByDefault({}) MeterDetails siteMeterDetails;
 
-    private MeterAggregates() {
+    @SerializedName("battery")
+    public @NonNullByDefault({}) MeterDetails batteryMeterDetails;
+
+    @SerializedName("load")
+    public @NonNullByDefault({}) MeterDetails loadMeterDetails;
+
+    @SerializedName("solar")
+    public @NonNullByDefault({}) MeterDetails solarMeterDetails;
+
+    public class MeterDetails {
+        @SerializedName("last_communication_time")
+        public String lastCommunicationTime = "";
+
+        @SerializedName("instant_power")
+        public float instantPower;
+
+        @SerializedName("instant_reactive_power")
+        public float instantReactivePower;
+
+        @SerializedName("instant_apparent_power")
+        public float instantApparentPower;
+
+        @SerializedName("frequency")
+        public float frequency;
+
+        @SerializedName("energy_exported")
+        public float energyExported;
+
+        @SerializedName("energy_imported")
+        public float energyImported;
+
+        @SerializedName("instant_average_voltage")
+        public float instantAverageVoltage;
+
+        @SerializedName("instant_average_current")
+        public float instantAverageCurrent;
+
+        @SerializedName("i_a_current")
+        public float iaCurrent;
+
+        @SerializedName("i_b_current")
+        public float ibCurrent;
+
+        @SerializedName("i_c_current")
+        public float icCurrent;
+
+        @SerializedName("last_phase_voltage_communication_time")
+        public String lastPhaseVoltageCommunicationTime = "";
+
+        @SerializedName("last_phase_power_communication_time")
+        public String lastPhasePowerCommunicationTime = "";
+
+        @SerializedName("last_phase_energy_communication_time")
+        public String lastPhaseEnergyCommunicationTime = "";
+
+        @SerializedName("timeout")
+        public float timeout;
+
+        @SerializedName("instant_total_current")
+        public float instantTotalCurrent;
     }
 
-    public static MeterAggregates parse(String response) {
-        /* parse json string */
-        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-        MeterAggregates info = new MeterAggregates();
-
-        JsonObject sitejson = jsonObject.get("site").getAsJsonObject();
-        info.gridInstpower = sitejson.get("instant_power").getAsDouble() / 1000;
-        info.gridEnergyexported = sitejson.get("energy_exported").getAsDouble() / 1000;
-        info.gridEnergyimported = sitejson.get("energy_imported").getAsDouble() / 1000;
-
-        JsonObject batteryjson = jsonObject.get("battery").getAsJsonObject();
-        info.batteryInstpower = batteryjson.get("instant_power").getAsDouble() / 1000;
-        info.batteryEnergyexported = batteryjson.get("energy_exported").getAsDouble() / 1000;
-        info.batteryEnergyimported = batteryjson.get("energy_imported").getAsDouble() / 1000;
-
-        JsonObject loadjson = jsonObject.get("load").getAsJsonObject();
-        info.homeInstpower = loadjson.get("instant_power").getAsDouble() / 1000;
-        info.homeEnergyexported = loadjson.get("energy_exported").getAsDouble() / 1000;
-        info.homeEnergyimported = loadjson.get("energy_imported").getAsDouble() / 1000;
-
-        JsonObject solarjson = jsonObject.get("solar").getAsJsonObject();
-        info.solarInstpower = solarjson.get("instant_power").getAsDouble() / 1000;
-        info.solarEnergyexported = solarjson.get("energy_exported").getAsDouble() / 1000;
-        info.solarEnergyimported = solarjson.get("energy_imported").getAsDouble() / 1000;
-
-        return info;
+    private MeterAggregates() {
     }
 }

@@ -12,6 +12,7 @@
 		<label>@text/thing-type.mielecloud.hob.label</label>
 		<description>@text/thing-type.mielecloud.hob.description</description>
 		<category>WhiteGood</category>
+		<semantic-equipment-tag>Cooktop</semantic-equipment-tag>
 
 		<channels>
 			<channel id="operation_state" typeId="operation_state"/>

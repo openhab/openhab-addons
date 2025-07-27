@@ -42,7 +42,7 @@ Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=
 | Name      | Label               | Description                                                                                                                                                                                                                                        | Required |
 |-----------|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | payload   | Payload condition   | An optional condition on the value                                                                                                                                                                                                                 | false    |
-| separator | Separator character | The trigger channel payload usually only contains the received text. If you define a separator character, for example '#', the sender UID and received text will be in the trigger channel payload. For example: pavel@example.com#My Message Text | false    |
+| separator | Separator character | The trigger channel payload usually only contains the received text. If you define a separator character, for example '#', the sender UID and received text will be in the trigger channel payload. For example: `pavel@example.com#My Message Text` | false    |
 
 ## Example Rules
 

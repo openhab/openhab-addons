@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Xiaomi Aqara Door/Window Sensor</label>
 		<description>Contact sensor mounted on doors or windows. Detects states: open and closed.</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="isOpen" typeId="isOpen"/>
 			<channel id="lastOpened" typeId="lastOpened"/>

@@ -6,6 +6,7 @@
 	<bridge-type id="serialBus">
 		<label>Herzborg Serial Bus</label>
 		<description>RS485 bus</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>
@@ -22,6 +23,8 @@
 		</supported-bridge-type-refs>
 		<label>Herzborg Curtain Motor</label>
 		<description>Curtain motor</description>
+		<semantic-equipment-tag>Drapes</semantic-equipment-tag>
+
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="mode" typeId="mode"/>
@@ -50,6 +53,10 @@
 		<label>Position</label>
 		<description>Curtain position control</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>

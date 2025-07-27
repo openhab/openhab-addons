@@ -20,6 +20,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -41,6 +43,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -119,6 +122,11 @@ public class KeContactHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception during initialization of binding: " + e.toString());
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(KeContactActions.class);
     }
 
     private boolean isKebaReachable() throws IOException {
@@ -571,13 +579,7 @@ public class KeContactHandler extends BaseThingHandler {
                 }
                 case CHANNEL_DISPLAY: {
                     if (command instanceof StringType) {
-                        if (type == KebaType.P30 && (series == KebaSeries.C || series == KebaSeries.X)) {
-                            String cmd = command.toString();
-                            int maxLength = (cmd.length() < 23) ? cmd.length() : 23;
-                            transceiver.send("display 0 0 0 0 " + cmd.substring(0, maxLength), this);
-                        } else {
-                            logger.warn("'Display' is not supported on a KEBA KeContact {}:{}", type, series);
-                        }
+                        setDisplay(command.toString(), -1, -1);
                     }
                     break;
                 }
@@ -600,6 +602,23 @@ public class KeContactHandler extends BaseThingHandler {
                     break;
                 }
             }
+        }
+    }
+
+    public void setDisplay(String text, int durationMin, int durationMax) {
+        if (type == KebaType.P30 && (series == KebaSeries.C || series == KebaSeries.X)) {
+            int maxLength = (text.length() < 23) ? text.length() : 23;
+            int a = 1;
+            if (durationMax < 0 || durationMax < 0) {
+                a = 0;
+                durationMin = 0;
+                durationMax = 0;
+            }
+            transceiver.send(
+                    "display " + a + " " + durationMin + " " + durationMax + " 0 " + text.substring(0, maxLength),
+                    this);
+        } else {
+            logger.warn("'Display' is not supported on a KEBA KeContact {}:{}", type, series);
         }
     }
 }

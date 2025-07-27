@@ -1,6 +1,6 @@
 # Teslascope Binding
 
-This binding integrates [Tesla Electrical Vehicles](https://www.tesla.com).
+This binding integrates [Tesla Electric Vehicles](https://www.tesla.com).
 The integration happens through the [Teslascope](https://www.teslascope.com) API.
 
 ## Supported Things
@@ -10,14 +10,27 @@ Each vehicle is represented by its own `vehicle` Thing.
 
 ## Discovery
 
-Auto-discovery is not currently supported.
+After (manually) adding a Teslascope Account bridge, registered vehicles will be auto discovered.
 
-## Thing Configuration
+## `account` Bridge Configuration
 
-As a minimum, the apiKey and publicID are needed:
+Account configuration is necessary.
+The easiest way to do this is from the UI.
+Just add a new thing, select the Teslascope binding, then Teslascope Account Binding Thing, and enter the apiKey from the Teslascope website.
+
+As a minimum, the apiKey is needed:
+
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | apiKey          | N/A           | Yes      | No       | apiKey provided by Teslascope                                                        |
+| refreshInterval | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
+
+## `vehicle` Thing Configuration
+
+As a minimum, the publicID is needed:
+
+| Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
+|-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | publicID        | N/A           | Yes      | No       | Vehicle Public ID listed in Teslascope                                               |
 | refreshInterval | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
 
@@ -25,31 +38,42 @@ As a minimum, the apiKey and publicID are needed:
 
 All vehicles support a huge number of channels - the following list shows the standard ones:
 
-| Channel ID        | Item Type            | Label              | Description                                                                                 |
-|-------------------|----------------------|--------------------|---------------------------------------------------------------------------------------------|
-| auto-conditioning | Switch               | Auto Conditioning  | Turns on auto-conditioning (a/c or heating)                                                 |
-| battery-level     | Number:Dimensionless | Battery Level      | State of the battery in %                                                                   |
-| charging-state    | String               | Charging State     | “Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”                    |
-| charge-port       | Switch               | Charge Port        | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed) |
-| climate           | Switch               | Climate            | Climate status indicator                                                                    |
-| door-lock         | Switch               | Door Lock          | Lock or unlock the car                                                                      |
-| inside-temp       | Number:Temperature   | Inside Temperature | Indicates the inside temperature of the vehicle                                             |
-| location          | Location             | Location           | The actual position of the vehicle                                                          |
-| odometer          | Number:Length        | Odometer           | Odometer of the vehicle                                                                     |
-| speed             | Number:Speed         | Speed              | Vehicle speed                                                                               |
-| vin               | String               | VIN                | Vehicle Identification Number                                                               |
-| vehicle-name      | String               | Name               | Vehicle Name                                                                                |
-| vehicle-state     | String               | Vehicle State      | Vehicle State                                                                               |
+| Channel ID          | Item Type            | Label               | Description                                                                                 |
+|---------------------|----------------------|---------------------|---------------------------------------------------------------------------------------------|
+| auto-conditioning   | Switch               | Auto Conditioning   | Turns on auto-conditioning (a/c or heating)                                                 |
+| battery-level       | Number:Dimensionless | Battery Level       | State of the battery in %                                                                   |
+| charging-state      | String               | Charging State      | “Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”                    |
+| charge-port         | Switch               | Charge Port         | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed) |
+| climate             | Switch               | Climate             | Climate status indicator                                                                    |
+| door-lock           | Switch               | Door Lock           | Lock or unlock the car                                                                      |
+| inside-temp         | Number:Temperature   | Inside Temperature  | Indicates the inside temperature of the vehicle                                             |
+| located-at-home     | Switch               | Located at Home     | Indicates if the vehicle is located at the address set as Home                              |
+| located-at-work     | Switch               | Located at Work     | Indicates if the vehicle is located at the address set as Work                              |
+| located-at-favorite | Switch               | Located at Favorite | Indicates if the vehicle is located at an address set as a Favorite                         |
+| location            | Location             | Location            | The actual position of the vehicle                                                          |
+| odometer            | Number:Length        | Odometer            | Odometer of the vehicle                                                                     |
+| speed               | Number:Speed         | Speed               | Vehicle speed                                                                               |
+| vin                 | String               | VIN                 | Vehicle Identification Number                                                               |
+| vehicle-name        | String               | Name                | Vehicle Name                                                                                |
+| vehicle-state       | String               | Vehicle State       | Vehicle State                                                                               |
 
 Additionally, these advanced channels are available (not all are available on all vehicle types, e.g., the sunroof):
 
 | Channel ID                  | Item Type                | Label                         | Description                                                                                              |
 |-----------------------------|--------------------------|-------------------------------|----------------------------------------------------------------------------------------------------------|
 | battery-range               | Number:Length            | Battery Range                 | Range of the battery                                                                                     |
+| car-version                 | String                   | Car Version                   | Current software version of the car                                                                      |
 | center-rear-seat-heater     | Switch                   | Center Rear Seat Heater       | Indicates if the center rear seat heater is switched on                                                  |
 | charge                      | Switch                   | Charge                        | Start (ON) or stop (OFF) charging                                                                        |
+| charge-amps                 | Number:ElectricCurrent   | Charger Current               | Current actually delivered by the charger                                                                |
+| charge-current-request      | Number:ElectricCurrent   | Charger Current Requested     | Current requested from the charger                                                                       |
+| charge-current-request-max  | Number:ElectricCurrent   | Max Charger Current Supported | Maximum current supported by the charger                                                                 |
 | charge-energy-added         | Number:Energy            | Charge Energy Added           | Energy added, in kWh, during the last charging session                                                   |
-| charge-limit-soc-standard   | Dimmer                   | Charge Limit SOC Standard     | Standard charging limit of the vehicle, in %                                                             |
+| charge-limit-soc            | Number:Dimensionless     | Charge Limit SOC              | Current charging limit of the vehicle, in %                                                              |
+| charge-limit-soc-min        | Number:Dimensionless     | Charge Limit SOC Min          | Minimum charging limit of the vehicle, in %                                                              |
+| charge-limit-soc-max        | Number:Dimensionless     | Charge Limit SOC Max          | Maximum charging limit of the vehicle, in %                                                              |
+| charge-limit-soc-standard   | Number:Dimensionless     | Charge Limit SOC Standard     | Standard charging limit of the vehicle, in %                                                             |
+| charge-port-latch           | Switch                   | Charge Port Latch             | Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)                                     |
 | charge-rate                 | Number:Speed             | Charge Rate                   | Distance per hour charging rate                                                                          |
 | charger-power               | Number:Power             | Charger Power                 | Power actually delivered by the charger                                                                  |
 | charger-voltage             | Number:ElectricPotential | Charger Voltage               | Voltage (V) actually presented by the charger                                                            |
@@ -106,14 +130,16 @@ Additionally, these advanced channels are available (not all are available on al
 | tpms-soft-warning-rr        | Switch                   | Tyre Pressure Soft Warning RR | Tyre Pressure Soft Warning Rear Right                                                                    |
 | usable-battery-level        | Number                   | Usable Battery Level          | Indicates the % of battery that can be used for vehicle functions like driving                           |
 | valet-mode                  | Switch                   | Valet Mode                    | Enable or disable Valet Mode                                                                             |
-| wiper-blade-heater          | Switch                   | Wiperblade Heater             | Indicates if the wiperblade heater is switched on                                                        |
+| wiper-blade-heater          | Switch                   | Wiper Blade Heater            | Indicates if the wiper blade heater is switched on                                                       |
 
 ## Full Example
 
 ### `demo.things` Example
 
 ```java
-teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
+Bridge teslascope:account:account [ apiKey="xxxx" ] {
+    teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
+}
 ```
 
 ### `example.items` Example
@@ -126,18 +152,30 @@ Number              TeslaSpeed                  {channel="teslascope:vehicle:mod
 String              TeslaShiftState             {channel="teslascope:vehicle:model3:shift-state"}
 Number              TeslaOdometer               {channel="teslascope:vehicle:model3:odometer"}
 Number              TeslaRange                  {channel="teslascope:vehicle:model3:range"}
+Switch              TeslaHome                   {channel="teslascope:vehicle:model3:located-at-home"}
+Switch              TeslaWork                   {channel="teslascope:vehicle:model3:located-at-work"}
+Switch              TeslaFavorite               {channel="teslascope:vehicle:model3:located-at-favorite"}
 
 Number              TeslaBatteryLevel           {channel="teslascope:vehicle:model3:battery-level"}
 Number              TeslaPower                  {channel="teslascope:vehicle:model3:power"}
 Number              TeslaBatteryRange           {channel="teslascope:vehicle:model3:battery-range"}
 Number              TeslaEstBatteryRange        {channel="teslascope:vehicle:model3:estimated-battery-range"}
 Switch              TeslaPreconditioning        {channel="teslascope:vehicle:model3:preconditioning"}
+String              TeslaCurrentVersion         {channel="teslascope:vehicle:model3:car-version"}
 
 Switch              TeslaCharge                 {channel="teslascope:vehicle:model3:charge"}
 
-Dimmer              TeslaChargeLimit            {channel="teslascope:vehicle:model3:charge-limit"}
+Number              TeslaChargeAmps             {channel="teslascope:vehicle:model3:charge-amps"}
+Number              TeslaChargeCurrRequest      {channel="teslascope:vehicle:model3:charge-current-request"}
+Number              TeslaChargeCurrRequestMax   {channel="teslascope:vehicle:model3:charge-current-request-max"}
+Number              TeslaChargeLimitSOC         {channel="teslascope:vehicle:model3:charge-limit-soc"}
+Number              TeslaChargeLimitSOCMin      {channel="teslascope:vehicle:model3:charge-limit-soc-min"}
+Number              TeslaChargeLimitSOCMax      {channel="teslascope:vehicle:model3:charge-limit-soc-max"}
+Number              TeslaChargeLimitSOCStd      {channel="teslascope:vehicle:model3:charge-limit-soc-std"}
 Number              TeslaChargeRate             {channel="teslascope:vehicle:model3:charge-rate"}
 String              TeslaChargingState          {channel="teslascope:vehicle:model3:charging-state"}
+Switch              TeslaChargePort             {channel="teslascope:vehicle:model3:charge-port"}
+Switch              TeslaChargePortLatch        {channel="teslascope:vehicle:model3:charge-port-latch"}
 Number              TeslaChargerPower           {channel="teslascope:vehicle:model3:charger-power"}
 Number              TeslaTimeToFullCharge       {channel="teslascope:vehicle:model3:time-to-full-charge"}
 
@@ -193,6 +231,10 @@ sitemap main label="Main"
             Text item=TeslaShiftState
             Text item=TeslaOdometer label="Odometer [%.1f miles]"
             Text item=TeslaRange
+            Text item=TeslaCurrentVersion
+            Switch item=TeslaHome label="Vehicle at Home?"
+            Switch item=TeslaWork label="Vehicle at Work?"
+            Switch item=TeslaFavorite label="Vehicle at Favorite?"
         }
         Frame
         {
@@ -211,8 +253,16 @@ sitemap main label="Main"
         Frame
         {
             Switch item=TeslaCharge label="Charge"
-            Slider item=TeslaChargeLimit label="Charge Limit [%.1f]"
+            Text item=TeslaChargeAmps label="Current Charging rate in A"
+            Text item=TeslaChargeCurrRequest label="Current Requested Charging rate in A"
+            Text item=TeslaChargeCurrRequestMax label="Maximum Supported Charging Current in A"
+            Slider item=TeslaChargeLimitSOC label="Charge Limit [%.0f]"
+            Text item=TeslaChargeLimitSOCMin label="Minimum Charge Limit [%.0f]"
+            Text item=TeslaChargeLimitSOCMax label="Maximum Charge Limit [%.0f]"
+            Text item=TeslaChargeLimitSOCStd label="Standard Charge Limit [%.0f]"
             Text item=TeslaChargingState label="Charging State [%s]" icon=""
+            Switch item=TeslaChargePort label="Charge Port Door Status"
+            Switch item=TeslaChargePortLatch label="Charge Port Latch Status"
             Text item=TeslaTimeToFullCharge label="Time To Full Charge [%.1f hours]"
             Text item=TeslaPreconditioning label="Preconditioning [%s]" icon=""
             Text item=TeslaChargeRate label="Charge Rate [%d miles/hr]"

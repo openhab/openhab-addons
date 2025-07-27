@@ -11,7 +11,7 @@
 
 		<label>Electricity Meter (Smarty V1.0)</label>
 		<description>This is an electricity meter that complies to the Luxembourg's Smarty V1.0 specification.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="emeter_equipment_identifier_v2_x" typeId="equipmentIdType"/>
 			<channel id="emeter_delivery_tariff0" typeId="totalImportedEnergyRegisterPType"/>

@@ -55,13 +55,16 @@ public class JablotronBindingConstants {
 
     // Constants
     public static final String JABLOTRON_API_URL = "https://api.jablonet.net/api/2.2/";
-    public static final String AGENT = "net.jablonet/8.3.5.3331 (iPhone 14 Pro Max; iOS 17.4; )";
-    public static final int TIMEOUT_SEC = 10;
+    public static final String JABLOTRON_GQL_URL = "https://graph.jablotron.cloud/graphql";
+    public static final String APP_VERSION = "8.6.1.3887";
+    public static final String AGENT = "net.jablonet/" + APP_VERSION;
+    public static final int TIMEOUT_SEC = 15;
+    public static final int TIMEOUT_LIMIT = 3;
     public static final String SYSTEM = "openHAB";
     public static final String VENDOR = "JABLOTRON:Jablotron";
-    public static final String CLIENT_VERSION = "MYJ-PUB-IOS-8.3.5.3331";
-    public static final String CLIENT_DEVICE = "Apple|iPhone 14 Pro Max|17.4";
+    public static final String CLIENT_VERSION = "MYJ-PUB-IOS-" + APP_VERSION;
     public static final String APPLICATION_JSON = "application/json";
+    public static final String MULTIPART_MIXED = "multipart/mixed;deferSpec=20220824";
     public static final String WWW_FORM_URLENCODED = "application/x-www-form-urlencoded; charset=UTF-8";
     public static final String AUTHENTICATION_CHALLENGE = "Authentication challenge without WWW-Authenticate header";
     public static final String PROPERTY_SERVICE_ID = "serviceId";

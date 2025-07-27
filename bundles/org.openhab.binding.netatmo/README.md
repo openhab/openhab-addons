@@ -103,13 +103,13 @@ Netatmo servers can send push notifications to the Netatmo Binding by using a ca
 The webhook URL is setup at Netatmo Account level using "Webhook Address" parameter.
 You will define here public way to access your openHAB server:
 
-```
+```text
 http(s)://xx.yy.zz.ww:443
 ```
 
 Your Netatmo App will be configured automatically by the bridge to the endpoint:
 
-```
+```text
 http(s)://xx.yy.zz.ww:443/netatmo/webhook/<_CLIENT_ID_><webHookPostfix>
 ```
 
@@ -130,8 +130,7 @@ First login with your user.
 Then some examples of the documentation contain the **real results** of your weather station.
 In order to try the examples, you need the `device_id` of your Netatmo station.
 You can find it in the configuration menu of the app (android or apple).
-Get the IDs of your devices (indoor, outdoor, rain gauge)
-[here](https://dev.netatmo.com/resources/technical/reference/weather/getstationsdata).
+Get the IDs of your devices (indoor, outdoor, rain gauge) from the [official documentation](https://dev.netatmo.com/resources/technical/reference/weather/getstationsdata).
 
 `main_device` is the ID of the "main device", the indoor sensor.
 This is equal to the MAC address of the Netatmo.

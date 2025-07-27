@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.api.EvccAPI;
 import org.openhab.binding.evcc.internal.api.EvccApiException;
 import org.openhab.binding.evcc.internal.api.dto.Battery;
+import org.openhab.binding.evcc.internal.api.dto.Grid;
 import org.openhab.binding.evcc.internal.api.dto.Loadpoint;
 import org.openhab.binding.evcc.internal.api.dto.PV;
 import org.openhab.binding.evcc.internal.api.dto.Plan;
@@ -65,6 +66,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Florian Hotze - Initial contribution
  * @author Luca Arnecke - Update to evcc version 0.123.1
+ * @author Marcel Goerentz - Update to evcc version 0.133.0
  */
 @NonNullByDefault
 public class EvccHandler extends BaseThingHandler {
@@ -420,7 +422,7 @@ public class EvccHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             Battery[] batteries = result.getBattery();
             batteryConfigured = ((batteries != null) && (batteries.length > 0));
-            gridConfigured = (result.getGridPower() != null);
+            gridConfigured = result.getGridConfigured();
             PV[] pvs = result.getPV();
             pvConfigured = ((pvs != null) && (pvs.length > 0));
             createChannelsGeneral();
@@ -712,7 +714,13 @@ public class EvccHandler extends BaseThingHandler {
         }
         boolean gridConfigured = this.gridConfigured;
         if (gridConfigured) {
+            // handling gridPower prior to changes in evcc version 0.133.0
             float gridPower = ((result.getGridPower() == null) ? 0.0f : result.getGridPower());
+            Grid grid = result.getGrid();
+            if (grid != null) {
+                // handling gridPower since evcc version 0.133.0
+                gridPower = ((grid.getPower() == null) ? 0.0f : grid.getPower());
+            }
             channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_GRID_POWER);
             updateState(channel, new QuantityType<>(gridPower, Units.WATT));
         }

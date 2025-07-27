@@ -55,6 +55,7 @@ All devices support the following channels:
 |-----------------|-----------------|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | channelSet      | Number (1-9999) | Current Channel - Request (SETCH)     | Displays the current channel number. When changed, tunes the DVR to the specified channel (unless a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work.                                                 |
 | channelForce    | Number (1-9999) | Current Channel - Forced (FORCECH)    | Displays the current channel number. When changed, tunes the DVR to the specified channel, **cancelling any recordings in progress if necessary** i.e. when all tuners are already in use / recording. The TiVo must be in Live TV mode for this command to work. |
+| isRecording     | Number (0-1)    | Recording                             | Indicates if the current channel is recording.                                                                                                                                                                                                                    |
 | menuTeleport    | String          | Change Special/Menu Screen (TELEPORT) | Change to one of the following TiVo menu screens: TIVO (Home), LIVETV, GUIDE, NOWPLAYING (My Shows), SEARCH, NETFLIX.                                                                                                                                             |
 | irCommand       | String          | Remote Control Button (IRCOMMAND)     | Send a simulated button push from the remote control to the TiVo. See below for available IR COMMANDS.                                                                                                                                                            |
 | kbdCommand      | String          | Keyboard Command (KEYBOARD)           | Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes.                                                                                 |
@@ -125,14 +126,14 @@ All devices support the following channels:
 
 ## Full Example
 
-### `tivo.things` Example 
+### `tivo.things` Example
 
 ```java
 tivo:sckt:Living_Room "Living Room TiVo" [ host="192.168.0.19" ]
 
 ```
 
-### `tivo.items` Example 
+### `tivo.items` Example
 
 ```java
 String      TiVo_Status         "Status"          {channel="tivo:sckt:Living_Room:dvrStatus"}
@@ -150,7 +151,7 @@ String      TiVo_KeyboardStr    "Search String"
 - A simulated remote control widget is available using the Buttongrid sitemap element described below.
 - A more advanced simulated remote can also be implemented as described here: (<https://community.openhab.org/t/bogob-big-ol-grid-o-buttons-is-this-even-possible-yes-yes-it-is/115343>).
 
-### `tivo.sitemap` Example 
+### `tivo.sitemap` Example
 
 ```perl
 sitemap tivo label="Tivo Central" {
@@ -176,7 +177,7 @@ sitemap tivo label="Tivo Central" {
 
 - This example does not use the 'Current Channel - Forced (FORCECH)' channel. This method will interrupt your recordings in progress when all your tuners are busy, so it is omitted for safety's sake.
 
-### `tivo.map` Example 
+### `tivo.map` Example
 
 ```text
 NULL=Unknown

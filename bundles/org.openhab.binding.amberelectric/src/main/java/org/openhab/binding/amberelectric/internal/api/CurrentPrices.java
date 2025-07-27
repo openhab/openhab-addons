@@ -14,10 +14,6 @@ package org.openhab.binding.amberelectric.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 /**
  * Container class for Current Pricing, related to amberelectric
  *
@@ -26,43 +22,27 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class CurrentPrices {
-    public double elecPerKwh;
-    public double clPerKwh;
-    public double feedInPerKwh;
-    public String elecStatus = "";
-    public String clStatus = "";
-    public String feedInStatus = "";
-    public double renewables;
-    public String spikeStatus = "";
+    public String type = "";
+    public String date = "";
+    public int duration;
+    public String startTime = "";
+    public String endTime = "";
     public String nemTime = "";
+    public double perKwh;
+    public double renewables;
+    public double spotPerKwh;
+    public String channelType = "";
+    public String spikeStatus = "";
+    public String descriptor = "";
+    public boolean estimate;
+    public @NonNullByDefault({}) AdvancedPrice advancedPrice;
 
-    private CurrentPrices() {
+    public class AdvancedPrice {
+        public double low;
+        public double predicted;
+        public double high;
     }
 
-    public static CurrentPrices parse(String response) {
-        /* parse json string */
-        JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
-        JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
-        CurrentPrices currentprices = new CurrentPrices();
-        currentprices.nemTime = jsonObject.get("nemTime").getAsString();
-        currentprices.renewables = jsonObject.get("renewables").getAsDouble();
-        currentprices.spikeStatus = jsonObject.get("spikeStatus").getAsString();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            jsonObject = jsonArray.get(i).getAsJsonObject();
-            if ("general".equals(jsonObject.get("channelType").getAsString())) {
-                currentprices.elecPerKwh = jsonObject.get("perKwh").getAsDouble();
-                currentprices.elecStatus = jsonObject.get("descriptor").getAsString();
-            }
-            if ("feedIn".equals(jsonObject.get("channelType").getAsString())) {
-                // Multiple value from API by -1 to make the value match the app
-                currentprices.feedInPerKwh = -1 * jsonObject.get("perKwh").getAsDouble();
-                currentprices.feedInStatus = jsonObject.get("descriptor").getAsString();
-            }
-            if ("controlledLoad".equals(jsonObject.get("channelType").getAsString())) {
-                currentprices.clPerKwh = jsonObject.get("perKwh").getAsDouble();
-                currentprices.clStatus = jsonObject.get("descriptor").getAsString();
-            }
-        }
-        return currentprices;
+    private CurrentPrices() {
     }
 }

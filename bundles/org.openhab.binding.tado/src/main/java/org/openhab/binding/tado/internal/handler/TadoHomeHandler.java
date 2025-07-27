@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.tado.internal.handler;
 
+import static org.openhab.binding.tado.internal.TadoBindingConstants.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
+import org.openhab.binding.tado.internal.servlet.TadoAuthenticationServlet;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 import org.openhab.binding.tado.swagger.codegen.api.model.HomeInfo;
@@ -31,6 +34,9 @@ import org.openhab.binding.tado.swagger.codegen.api.model.HomeState;
 import org.openhab.binding.tado.swagger.codegen.api.model.PresenceState;
 import org.openhab.binding.tado.swagger.codegen.api.model.User;
 import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
+import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -48,35 +54,59 @@ import org.slf4j.LoggerFactory;
  * The {@link TadoHomeHandler} is the bridge of all home-based things.
  *
  * @author Dennis Frommknecht - Initial contribution
+ * @author Andrew Fiddian-Green - OAuth RFC18628 authentication
  */
 @NonNullByDefault
-public class TadoHomeHandler extends BaseBridgeHandler {
+public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
 
-    private Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
+    // thing status description i18n text pointers
+    private static final String CONF_ERROR_NO_HOME = "@text/tado.home.status.nohome";
+    private static final String CONF_ERROR_NO_HOME_ID = "@text/tado.home.status.nohomeid";
+    private static final String CONF_PENDING_OAUTH_CREDS = //
+            "@text/tado.home.status.oauth [\"http(s)://<YOUROPENHAB>:<YOURPORT>%s?%s=%s\"]";
 
-    private TadoHomeConfig configuration;
-    private final HomeApi api;
+    private final Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
+
+    private final TadoBatteryChecker batteryChecker;
+    private final TadoHandlerFactory tadoHandlerFactory;
+    private final HomePresence cachedHomePresence;
+
+    private @NonNullByDefault({}) TadoHomeConfig configuration;
+    private @NonNullByDefault({}) String confPendingText;
+    private @NonNullByDefault({}) HomeApi api;
 
     private @Nullable Long homeId;
-    private final TadoBatteryChecker batteryChecker;
     private @Nullable ScheduledFuture<?> initializationFuture;
+    private @Nullable OAuthClientService oAuthClientService;
 
-    public TadoHomeHandler(Bridge bridge) {
+    public TadoHomeHandler(Bridge bridge, TadoHandlerFactory tadoHandlerFactory) {
         super(bridge);
-        batteryChecker = new TadoBatteryChecker(this);
-        configuration = getConfigAs(TadoHomeConfig.class);
-        api = new HomeApiFactory().create(configuration.username, configuration.password);
+        this.batteryChecker = new TadoBatteryChecker(this);
+        this.configuration = getConfigAs(TadoHomeConfig.class);
+        this.tadoHandlerFactory = tadoHandlerFactory;
+        this.cachedHomePresence = new HomePresence();
     }
 
     public TemperatureUnit getTemperatureUnit() {
-        String temperatureUnitStr = this.thing.getProperties()
-                .getOrDefault(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, "CELSIUS");
+        String temperatureUnitStr = this.thing.getProperties().getOrDefault(PROPERTY_HOME_TEMPERATURE_UNIT, "CELSIUS");
         return TemperatureUnit.valueOf(temperatureUnitStr);
     }
 
     @Override
     public void initialize() {
         configuration = getConfigAs(TadoHomeConfig.class);
+        String user = Boolean.TRUE.equals(configuration.rfcWithUser)
+                ? configuration.username instanceof String name && !name.isBlank() ? name : null
+                : null;
+
+        OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this, user);
+        oAuthClientService.addAccessTokenRefreshListener(this);
+        this.api = new HomeApiFactory().create(oAuthClientService);
+        this.oAuthClientService = oAuthClientService;
+        logger.trace("initialize() api v2 created");
+        confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH,
+                TadoAuthenticationServlet.PARAM_NAME_USER, user != null ? user : "");
+
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
         if (initializationFuture == null || initializationFuture.isDone()) {
             this.initializationFuture = scheduler.scheduleWithFixedDelay(
@@ -84,7 +114,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void initializeBridgeStatusAndPropertiesIfOffline() {
+    private synchronized void initializeBridgeStatusAndPropertiesIfOffline() {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             for (Thing thing : getThing().getThings()) {
                 ThingHandler handler = thing.getHandler();
@@ -101,21 +131,36 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                 // Get user info to verify successful authentication and connection to server
                 User user = api.showUser();
                 if (user == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Cannot connect to server. Username and/or password might be invalid");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, confPendingText);
                     return;
                 }
 
                 List<UserHomes> homes = user.getHomes();
                 if (homes == null || homes.isEmpty()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "User does not have access to any home");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, CONF_ERROR_NO_HOME);
                     return;
                 }
 
+                /*
+                 * If there is only one home, or if there is no valid configuration.homeId entry, then use the first
+                 * home id. Otherwise use the configuration.homeId entry value (if one exists). If there is no valid
+                 * configuration.homeId entry but there are multiple homes then log the available home to help the
+                 * user set up the proper configuration.homeId entry.
+                 */
                 Integer firstHomeId = homes.get(0).getId();
+                if (homes.size() > 1) {
+                    Integer configHomeId = configuration.homeId;
+                    if (configHomeId == null || configHomeId == 0) {
+                        logger.info("Trying first Home Id in the list [{}]", homes.stream()
+                                .map(home -> String.valueOf(home.getId())).collect(Collectors.joining(",")));
+                    } else {
+                        firstHomeId = homes.stream().map(home -> home.getId()).filter(id -> configHomeId.equals(id))
+                                .findFirst().orElse(null);
+                    }
+                }
+
                 if (firstHomeId == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Missing Home Id");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, CONF_ERROR_NO_HOME_ID);
                     return;
                 }
 
@@ -126,11 +171,10 @@ public class TadoHomeHandler extends BaseBridgeHandler {
             HomeInfo homeInfo = api.showHome(homeId);
             TemperatureUnit temperatureUnit = org.openhab.binding.tado.swagger.codegen.api.model.TemperatureUnit.FAHRENHEIT == homeInfo
                     .getTemperatureUnit() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
-            updateProperty(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
+            updateProperty(PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
         } catch (IOException | ApiException e) {
-            logger.debug("Error accessing tado server: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to server due to " + e.getMessage());
+            logger.debug("Error accessing tado server: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, confPendingText);
             return;
         }
 
@@ -140,6 +184,11 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
+        OAuthClientService oAuthClientService = this.oAuthClientService;
+        if (oAuthClientService != null) {
+            tadoHandlerFactory.unsubscribeOAuthClientService(this);
+            oAuthClientService.removeAccessTokenRefreshListener(this);
+        }
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
         if (initializationFuture != null && !initializationFuture.isCancelled()) {
             initializationFuture.cancel(true);
@@ -160,8 +209,11 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     public void updateHomeState() {
         try {
-            updateState(TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE,
-                    OnOffType.from(getHomeState().getPresence() == PresenceState.HOME));
+            HomeState homeState = getHomeState();
+            PresenceState homePresence = homeState.getPresence();
+            cachedHomePresence.setHomePresence(homePresence);
+            updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(PresenceState.HOME == homePresence));
+            updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.from(!homeState.isPresenceLocked()));
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
         }
@@ -176,23 +228,63 @@ public class TadoHomeHandler extends BaseBridgeHandler {
             return;
         }
 
+        final @Nullable HomePresence newHomePresence;
+        String commandString = command.toFullString().toUpperCase();
         switch (id) {
-            case TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE:
-                HomePresence presence = new HomePresence();
-                presence.setHomePresence("ON".equals(command.toFullString().toUpperCase())
-                        || "HOME".equals(command.toFullString().toUpperCase()) ? PresenceState.HOME
-                                : PresenceState.AWAY);
-                try {
-                    api.updatePresenceLock(homeId, presence);
-                } catch (IOException | ApiException e) {
-                    logger.warn("Error setting home presence: {}", e.getMessage(), e);
+            case CHANNEL_HOME_GEOFENCING_ENABLED:
+                switch (commandString) {
+                    case "ON":
+                        newHomePresence = null;
+                        break;
+                    case "OFF":
+                        newHomePresence = cachedHomePresence;
+                        break;
+                    default:
+                        return;
                 }
-
                 break;
+
+            case CHANNEL_HOME_PRESENCE_MODE:
+                switch (commandString) {
+                    case "ON", "HOME":
+                        newHomePresence = new HomePresence();
+                        newHomePresence.setHomePresence(PresenceState.HOME);
+                        cachedHomePresence.setHomePresence(PresenceState.HOME);
+                        break;
+                    case "OFF", "AWAY":
+                        newHomePresence = new HomePresence();
+                        newHomePresence.setHomePresence(PresenceState.AWAY);
+                        cachedHomePresence.setHomePresence(PresenceState.AWAY);
+                        break;
+                    default:
+                        return;
+                }
+                break;
+
+            default:
+                return;
+        }
+
+        try {
+            api.updatePresenceLock(homeId, newHomePresence);
+        } catch (ApiException e) {
+            if (CHANNEL_HOME_GEOFENCING_ENABLED.equals(id) && "ON".equals(commandString)) {
+                updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.OFF);
+                logger.warn("Failed to enable geofencing. You need a tado Auto Assist subscription.");
+            } else {
+                logger.warn("Error setting home presence: {}", e.getMessage(), e);
+            }
+        } catch (IOException e) {
+            logger.warn("Error setting home presence: {}", e.getMessage(), e);
         }
     }
 
     public TadoBatteryChecker getBatteryChecker() {
         return this.batteryChecker;
+    }
+
+    @Override
+    public void onAccessTokenResponse(AccessTokenResponse atr) {
+        initializeBridgeStatusAndPropertiesIfOffline();
     }
 }

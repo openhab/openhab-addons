@@ -98,7 +98,7 @@ The follow channels are implemented:
 | flowtemperature        | Number    | Temperature sensor of the ciruit flow                 |
 | pump                   | Switch    | Pump state                                            |
 | operationmode          | Number    | Operationmode                                         |
-| currentmode            | Number    | Current Mode
+| currentmode            | Number    | Current Mode                                          |
 | savemode               | Switch    | Savemode on/off                                       |
 | partymode              | Switch    | Partymode on/off                                      |
 | party_temp_setpoint    | Number    | Party mode temperature setpoint (target)              |

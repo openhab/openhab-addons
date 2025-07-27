@@ -20,11 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.wemo.internal.InsightParser;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.WemoPowerBank;
 import org.openhab.binding.wemo.internal.config.WemoInsightConfiguration;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -51,8 +51,8 @@ public class WemoInsightHandler extends WemoHandler {
     private int currentPowerSlidingSeconds;
     private int currentPowerDeltaTrigger;
 
-    public WemoInsightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoInsightHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class WemoInsightHandler extends WemoHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+                new Object[] { variable, value, service, getThing().getUID() });
 
         updateStatus(ThingStatus.ONLINE);
 
@@ -99,7 +99,7 @@ public class WemoInsightHandler extends WemoHandler {
                     String channel = entry.getKey();
                     State state = entry.getValue();
 
-                    logger.trace("New InsightParam {} '{}' for device '{}' received", channel, state,
+                    logger.trace("New InsightParam {} '{}' for thing '{}' received", channel, state,
                             getThing().getUID());
                     updateState(channel, state);
                     if (channel.equals(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW)

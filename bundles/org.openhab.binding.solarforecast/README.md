@@ -7,18 +7,18 @@ Look ahead the next days in order to identify surplus / shortages in your energy
 Supported Services
 
 - [Solcast](https://solcast.com/)
-    - Free [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist) with registration
+  - Free [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist) with registration
 - [Forecast.Solar](https://forecast.solar/)
-    - Public, Personal and Professional [plans](https://forecast.solar/#accounts) available
+  - Public, Personal and Professional [plans](https://forecast.solar/#accounts) available
 
 Display Power values of Forecast and PV Inverter items
 
-<img src="./doc/SolcastPower.png" width="640" height="400"/>
+![Solar Forecast Power Chart](doc/SolcastPower.png)
 
 Display Energy values of Forecast and PV inverter items
-Yellow line shows *Daily Total Forecast*.
+Yellow line shows _Daily Total Forecast_.
 
-<img src="./doc/SolcastCumulated.png" width="640" height="400"/>
+![Solar Forecast Energy Chart](doc/SolcastCumulated.png)
 
 ## Supported Things
 
@@ -39,7 +39,7 @@ A free version for your personal home PV system is available in [Hobbyist Plan](
 You need to configure your home photovoltaic system within the web interface.
 The `resourceId` for each PV plane is provided afterwards.
 
-In order to receive proper timestamps double check your time zone in *openHAB - Settings - Regional Settings*.
+In order to receive proper timestamps double check your time zone in _openHAB - Settings - Regional Settings_.
 Correct time zone is necessary to show correct forecast times in UI.
 
 ### Solcast Bridge Configuration
@@ -64,9 +64,9 @@ See [DateTime](#date-time) section for more information.
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
-`refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
+`refreshInterval` of forecast data needs to respect the throttling of the Solcast service.
 
-With parameter `guessActuals=true` a plane needs 1 API call per update. 
+With parameter `guessActuals=true` a plane needs 1 API call per update.
 If not 2 API calls per update are placed.
 A refresh interval of 150 minutes will result in approx 10 calls per day.
 
@@ -94,7 +94,7 @@ Scenarios are clustered in groups:
 - `pessimistic` scenario: 10th percentile
 - `optimistic` scenario: 90th percentile
 
-| Channel                 | Type          | Unit | Description                                     | 
+| Channel                 | Type          | Unit | Description                                     |
 |-------------------------|---------------|------|-------------------------------------------------|
 | power-estimate          | Number:Power  | W    | Power forecast for next hours/days              |
 | energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             |
@@ -114,13 +114,13 @@ The `api-count` channel delivers a JSON object with 3 different counters:
 
 - 200 - succesful API calls
 - 429 - unsuccessful API calls due to throttling, too many calls
-- other - unsuccesful API calls due to other problems 
+- other - unsuccesful API calls due to other problems
 
-```
+```json
 {"200":2,"other":0,"429":0} 
 ```
 
-<img src="./doc/APICountTransformation.png" width="320" height="300"/>
+<img src="doc/APICountTransformation.png" alt="API Count Transformation Example" width="320" height="300"/>
 
 You can connect a Number item to this channel using a [JSONPATH transformation](https://www.openhab.org/addons/transformations/jsonpath/) referring the wanted JSON key e.g. `$.200`.
 
@@ -164,7 +164,7 @@ In case of empty the location configured in openHAB is obtained.
 
 #### Advanced Configuration
 
-Advanced configuration parameters are available to *fine tune* your forecast data.
+Advanced configuration parameters are available to _fine tune_ your forecast data.
 Read linked documentation in order to know what you're doing.
 
 [Damping factors](https://doc.forecast.solar/doku.php?id=damping) for morning and evening.
@@ -173,7 +173,7 @@ Read linked documentation in order to know what you're doing.
 This configuration item is aimed to expert users.
 You need to understand the [horizon concept](https://joint-research-centre.ec.europa.eu/pvgis-photovoltaic-geographical-information-system/getting-started-pvgis/pvgis-user-manual_en#ref-2-using-horizon-information).
 Shadow obstacles like mountains, hills, buildings can be expressed here.
-First step can be a download from [PVGIS tool](https://re.jrc.ec.europa.eu/pvg_tools/en/) and downloading the *terrain shadows*.
+First step can be a download from [PVGIS tool](https://re.jrc.ec.europa.eu/pvg_tools/en/) and downloading the _terrain shadows_.
 But it doesn't fit 100% to the required configuration.
 Currently there's no tool available which is providing the configuration information 1 to 1.
 So you need to know what you're doing.
@@ -204,7 +204,7 @@ Actions provides an interface to execute more sophisticated handling in rules.
 You can execute this for each `xx-plane` for specific plane values or `xx-site` to sum up all attached planes.
 
 See [Date Time](#date-time) section for more information.
-Double check your time zone in *openHAB - Settings - Regional Settings* which is crucial for calculation.
+Double check your time zone in _openHAB -> Settings -> Regional Settings_ which is crucial for calculation.
 
 ### `getForecastBegin`
 
@@ -348,9 +348,9 @@ Number:Energy    Solcast_Site_Pessimistic_Today               "Today's total ene
 
 // site API call counter 
 Number           Solcast_Site_API_Sucess_Counter              "Site API Counter"                                                       {channel="solarforecast:sc-site:homeSite:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
-Number           Solcast_Site_API_Throttle_Counter            "Site API Throttle Counter"                                              {channel="solarforecast:sc-site:homeSite:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
-Number           Solcast_Site_API_Error_Counter               "Site API ErrorCounter"                                                  {channel="solarforecast:sc-site:homeSite:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
-DateTime         Solcast_Site_API_LastUpdate                  "Site API Last Update"                                                   {channel="solarforecast:sc-site:homeSite:update#lastest-update"}
+Number           Solcast_Site_API_Throttle_Counter            "Site API Throttle Counter"                                              {channel="solarforecast:sc-site:homeSite:update#api-count" [ profile="transform:JSONPATH", function="$.429"]}
+Number           Solcast_Site_API_Error_Counter               "Site API ErrorCounter"                                                  {channel="solarforecast:sc-site:homeSite:update#api-count" [ profile="transform:JSONPATH", function="$.other"]}
+DateTime         Solcast_Site_API_LastUpdate                  "Site API Last Update"                                                   {channel="solarforecast:sc-site:homeSite:update#latest-update"}
 
 // estimation items
 Group            influxdb
@@ -381,9 +381,9 @@ Number:Energy    Solcast_Plane_Pessimistic_Today_SW           "SW Today's pessim
 
 // plane API call counter
 Number           Solcast_Plane_API_Sucess_Counter             "Plane API Counter"                                                      {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
-Number           Solcast_Plane_API_Throttle_Counter           "Plane API Throttle Counter"                                             {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
-Number           Solcast_Plane_API_Error_Counter              "Plane API ErrorCounter"                                                 {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
-DateTime         Solcast_Plane_API_LastUpdate                 "Plane API Last Update"                                                  {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#lastest-update"}
+Number           Solcast_Plane_API_Throttle_Counter           "Plane API Throttle Counter"                                             {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#api-count" [ profile="transform:JSONPATH", function="$.429"]}
+Number           Solcast_Plane_API_Error_Counter              "Plane API ErrorCounter"                                                 {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#api-count" [ profile="transform:JSONPATH", function="$.other"]}
+DateTime         Solcast_Plane_API_LastUpdate                 "Plane API Last Update"                                                  {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#latest-update"}
 
 // plane estimation items
 Number:Power     Solcast_Plane_Average_Power_Estimate         "Plane Average Power estimations"                          (influxdb)    {channel="solarforecast:sc-plane:homeSite:planeSouthWest:average#power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W"}

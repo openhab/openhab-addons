@@ -1,0 +1,79 @@
+{
+	"data": {
+		"id": "086f4a37-ebe8-4fd4-9a25-a0220a1e5f58",
+		"info": {
+			"name": "Lightmode Christmas",
+			"icon": "scenes_tree"
+		},
+		"type": "userScene",
+		"triggers": [
+			{
+				"id": "987ec615-24d8-411c-9aa9-d03c447b246b",
+				"type": "app",
+				"triggeredAt": "2024-10-16T00:21:15.942Z",
+				"disabled": false
+			}
+		],
+		"actions": [
+			{
+				"id": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+				"type": "device",
+				"deviceId": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+				"enabled": true,
+				"attributes": {
+					"isOn": true,
+					"lightLevel": 100,
+					"colorHue": 0,
+					"colorSaturation": 1
+				}
+			},
+			{
+				"id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+				"type": "device",
+				"deviceId": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+				"enabled": true,
+				"attributes": {
+					"isOn": true,
+					"lightLevel": 100,
+					"colorHue": 90,
+					"colorSaturation": 1
+				}
+			},
+			{
+				"id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+				"type": "device",
+				"deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+				"enabled": true,
+				"attributes": {
+					"isOn": true,
+					"lightLevel": 100,
+					"colorHue": 90,
+					"colorSaturation": 1
+				}
+			},
+			{
+				"id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+				"type": "device",
+				"deviceId": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+				"enabled": true,
+				"attributes": {
+					"isOn": true,
+					"lightLevel": 100,
+					"colorHue": 90,
+					"colorSaturation": 1
+				}
+			}
+		],
+		"commands": [],
+		"createdAt": "2024-10-15T11:13:42.273Z",
+		"lastCompleted": "2024-10-16T00:21:15.977Z",
+		"lastTriggered": "2024-10-16T00:21:15.977Z",
+		"undoAllowedDuration": 30,
+		"lastUndo": "2024-10-15T19:36:59.273Z"
+	},
+	"specversion": "3.163.0",
+	"id": "382f5a61-0b3a-4c55-b601-d89c003ac27c",
+	"time": "2024-10-17T21:17:48.000Z",
+	"source": "urn:com:ikea:homesmart:iotc:zigbee",
+	"type": "sceneCreated"
+}

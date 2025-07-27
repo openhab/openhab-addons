@@ -20,28 +20,22 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Connection;
+import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTests;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * @author Jochen Klein - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
-public class HAConfigurationTests {
-
-    private Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory())
-            .create();
+public class HAConfigurationTests extends AbstractHomeAssistantTests {
 
     private static String readTestJson(final String name) {
         StringBuilder result = new StringBuilder();
@@ -63,13 +57,13 @@ public class HAConfigurationTests {
     public void testAbbreviations() {
         String json = readTestJson("configA.json");
 
-        AbstractChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson);
+        Switch.Configuration config = AbstractComponentConfiguration.create(PYTHON, "switch", json,
+                Switch.Configuration.class);
 
         assertThat(config.getName(), is("A"));
-        assertThat(config.getIcon(), is("2"));
         assertThat(config.getQos(), is(1));
         assertThat(config.isRetain(), is(true));
-        assertThat(config.getValueTemplate(), is("B"));
+        assertThat(config.getValueTemplate().toString(), is("Template<template=(B) renders=0>"));
         assertThat(config.getUniqueId(), is("C"));
         assertThat(config.getAvailabilityTopic(), is("D/E"));
         assertThat(config.getPayloadAvailable(), is("F"));
@@ -80,12 +74,6 @@ public class HAConfigurationTests {
         Device device = config.getDevice();
         if (device != null) {
             assertThat(device.getIdentifiers(), contains("H"));
-            assertThat(device.getConnections(), is(notNullValue()));
-            List<Connection> connections = device.getConnections();
-            if (connections != null) {
-                assertThat(connections.get(0).getType(), is("I1"));
-                assertThat(connections.get(0).getIdentifier(), is("I2"));
-            }
             assertThat(device.getName(), is("J"));
             assertThat(device.getModel(), is("K"));
             assertThat(device.getSwVersion(), is("L"));
@@ -97,12 +85,12 @@ public class HAConfigurationTests {
     public void testTildeSubstritution() {
         String json = readTestJson("configB.json");
 
-        Switch.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
-                Switch.ChannelConfiguration.class);
+        Switch.Configuration config = AbstractComponentConfiguration.create(PYTHON, "switch", json,
+                Switch.Configuration.class);
 
         assertThat(config.getAvailabilityTopic(), is("D/E"));
-        assertThat(config.stateTopic, is("O/D/"));
-        assertThat(config.commandTopic, is("P~Q"));
+        assertThat(config.getStateTopic(), is("O/D/"));
+        assertThat(config.getCommandTopic(), is("P~Q"));
         assertThat(config.getDevice(), is(notNullValue()));
 
         Device device = config.getDevice();
@@ -115,8 +103,7 @@ public class HAConfigurationTests {
     public void testSampleFanConfig() {
         String json = readTestJson("configFan.json");
 
-        Fan.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
-                Fan.ChannelConfiguration.class);
+        Fan.Configuration config = AbstractComponentConfiguration.create(PYTHON, "fan", json, Fan.Configuration.class);
         assertThat(config.getName(), is("Bedroom Fan"));
     }
 
@@ -124,8 +111,7 @@ public class HAConfigurationTests {
     public void testDeviceListConfig() {
         String json = readTestJson("configDeviceList.json");
 
-        Fan.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
-                Fan.ChannelConfiguration.class);
+        Fan.Configuration config = AbstractComponentConfiguration.create(PYTHON, "fan", json, Fan.Configuration.class);
         assertThat(config.getDevice(), is(notNullValue()));
 
         Device device = config.getDevice();
@@ -138,8 +124,7 @@ public class HAConfigurationTests {
     public void testDeviceSingleStringConfig() {
         String json = readTestJson("configDeviceSingleString.json");
 
-        Fan.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
-                Fan.ChannelConfiguration.class);
+        Fan.Configuration config = AbstractComponentConfiguration.create(PYTHON, "fan", json, Fan.Configuration.class);
         assertThat(config.getDevice(), is(notNullValue()));
 
         Device device = config.getDevice();
@@ -148,12 +133,11 @@ public class HAConfigurationTests {
         }
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testTS0601ClimateConfig() {
         String json = readTestJson("configTS0601ClimateThermostat.json");
-        Climate.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
-                Climate.ChannelConfiguration.class);
+        Climate.Configuration config = AbstractComponentConfiguration.create(PYTHON, "climate", json,
+                Climate.Configuration.class);
         assertThat(config.getDevice(), is(notNullValue()));
         assertThat(config.getDevice().getIdentifiers(), is(notNullValue()));
         assertThat(config.getDevice().getIdentifiers().get(0), is("zigbee2mqtt_0x847127fffe11dd6a"));
@@ -162,93 +146,76 @@ public class HAConfigurationTests {
         assertThat(config.getDevice().getName(), is("th1"));
         assertThat(config.getDevice().getSwVersion(), is("Zigbee2MQTT 1.18.2"));
 
-        assertThat(config.actionTemplate, is(
-                "{% set values = {'idle':'off','heat':'heating','cool':'cooling','fan only':'fan'} %}{{ values[value_json.running_state] }}"));
-        assertThat(config.actionTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.awayModeCommandTopic, is("zigbee2mqtt/th1/set/away_mode"));
-        assertThat(config.awayModeStateTemplate, is("{{ value_json.away_mode }}"));
-        assertThat(config.awayModeStateTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.currentTemperatureTemplate, is("{{ value_json.local_temperature }}"));
-        assertThat(config.currentTemperatureTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.holdCommandTopic, is("zigbee2mqtt/th1/set/preset"));
-        assertThat(config.holdModes, is(List.of("schedule", "manual", "boost", "complex", "comfort", "eco")));
-        assertThat(config.holdStateTemplate, is("{{ value_json.preset }}"));
-        assertThat(config.holdStateTopic, is("zigbee2mqtt/th1"));
+        assertThat(config.getActionTemplate().toString(), is(
+                "Template<template=({% set values = {'idle':'off','heat':'heating','cool':'cooling','fan only':'fan'} %}{{ values[value_json.running_state] }}) renders=0>"));
+        assertThat(config.getActionTopic(), is("zigbee2mqtt/th1"));
+        assertThat(config.getCurrentTemperatureTemplate().toString(),
+                is("Template<template=({{ value_json.local_temperature }}) renders=0>"));
+        assertThat(config.getCurrentTemperatureTopic(), is("zigbee2mqtt/th1"));
         assertThat(config.getJsonAttributesTopic(), is("zigbee2mqtt/th1"));
-        assertThat(config.maxTemp, is(new BigDecimal(35)));
-        assertThat(config.minTemp, is(new BigDecimal(5)));
-        assertThat(config.modeCommandTopic, is("zigbee2mqtt/th1/set/system_mode"));
-        assertThat(config.modeStateTemplate, is("{{ value_json.system_mode }}"));
-        assertThat(config.modeStateTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.modes, is(List.of("heat", "auto", "off")));
+        assertThat(config.getMaxTemp(), is(35d));
+        assertThat(config.getMinTemp(), is(5d));
+        assertThat(config.getModeCommandTopic(), is("zigbee2mqtt/th1/set/system_mode"));
+        assertThat(config.getModeStateTemplate().toString(),
+                is("Template<template=({{ value_json.system_mode }}) renders=0>"));
+        assertThat(config.getModeStateTopic(), is("zigbee2mqtt/th1"));
+        assertThat(config.getModes(), is(List.of("heat", "auto", "off")));
         assertThat(config.getName(), is("th1"));
-        assertThat(config.tempStep, is(new BigDecimal("0.5")));
-        assertThat(config.temperatureCommandTopic, is("zigbee2mqtt/th1/set/current_heating_setpoint"));
-        assertThat(config.temperatureStateTemplate, is("{{ value_json.current_heating_setpoint }}"));
-        assertThat(config.temperatureStateTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.CELSIUS));
+        assertThat(config.getTempStep(), is(0.5d));
+        assertThat(config.getTemperatureCommandTopic(), is("zigbee2mqtt/th1/set/current_heating_setpoint"));
+        assertThat(config.getTemperatureStateTemplate().toString(),
+                is("Template<template=({{ value_json.current_heating_setpoint }}) renders=0>"));
+        assertThat(config.getTemperatureStateTopic(), is("zigbee2mqtt/th1"));
+        assertThat(AbstractComponent.TemperatureUnit.fromString(Objects.requireNonNull(config.getTemperatureUnit())),
+                is(AbstractComponent.TemperatureUnit.CELSIUS));
         assertThat(config.getUniqueId(), is("0x847127fffe11dd6a_climate_zigbee2mqtt"));
-
-        assertThat(config.initial, is(21));
-        assertThat(config.sendIfOff, is(true));
     }
 
     @Test
     public void testClimateConfig() {
         String json = readTestJson("configClimate.json");
-        Climate.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
-                Climate.ChannelConfiguration.class);
-        assertThat(config.actionTemplate, is("a"));
-        assertThat(config.actionTopic, is("b"));
-        assertThat(config.auxCommandTopic, is("c"));
-        assertThat(config.auxStateTemplate, is("d"));
-        assertThat(config.auxStateTopic, is("e"));
-        assertThat(config.awayModeCommandTopic, is("f"));
-        assertThat(config.awayModeStateTemplate, is("g"));
-        assertThat(config.awayModeStateTopic, is("h"));
-        assertThat(config.currentTemperatureTemplate, is("i"));
-        assertThat(config.currentTemperatureTopic, is("j"));
-        assertThat(config.fanModeCommandTemplate, is("k"));
-        assertThat(config.fanModeCommandTopic, is("l"));
-        assertThat(config.fanModeStateTemplate, is("m"));
-        assertThat(config.fanModeStateTopic, is("n"));
-        assertThat(config.fanModes, is(List.of("p1", "p2")));
-        assertThat(config.holdCommandTemplate, is("q"));
-        assertThat(config.holdCommandTopic, is("r"));
-        assertThat(config.holdStateTemplate, is("s"));
-        assertThat(config.holdStateTopic, is("t"));
-        assertThat(config.holdModes, is(List.of("u1", "u2", "u3")));
-        assertThat(config.getJsonAttributesTemplate(), is("v"));
+        Climate.Configuration config = AbstractComponentConfiguration.create(PYTHON, "climate", json,
+                Climate.Configuration.class);
+        assertThat(config.getActionTemplate().toString(), is("Template<template=(a) renders=0>"));
+        assertThat(config.getActionTopic(), is("b"));
+        assertThat(config.getCurrentTemperatureTemplate().toString(), is("Template<template=(i) renders=0>"));
+        assertThat(config.getCurrentTemperatureTopic(), is("j"));
+        assertThat(config.getFanModeCommandTemplate().toString(), is("Template<template=(k) renders=0>"));
+        assertThat(config.getFanModeCommandTopic(), is("l"));
+        assertThat(config.getFanModeStateTemplate().toString(), is("Template<template=(m) renders=0>"));
+        assertThat(config.getFanModeStateTopic(), is("n"));
+        assertThat(config.getFanModes(), is(List.of("p1", "p2")));
+        assertThat(config.getJsonAttributesTemplate().toString(), is("Template<template=(v) renders=0>"));
         assertThat(config.getJsonAttributesTopic(), is("w"));
-        assertThat(config.modeCommandTemplate, is("x"));
-        assertThat(config.modeCommandTopic, is("y"));
-        assertThat(config.modeStateTemplate, is("z"));
-        assertThat(config.modeStateTopic, is("A"));
-        assertThat(config.modes, is(List.of("B1", "B2")));
-        assertThat(config.swingCommandTemplate, is("C"));
-        assertThat(config.swingCommandTopic, is("D"));
-        assertThat(config.swingStateTemplate, is("E"));
-        assertThat(config.swingStateTopic, is("F"));
-        assertThat(config.swingModes, is(List.of("G1")));
-        assertThat(config.temperatureCommandTemplate, is("H"));
-        assertThat(config.temperatureCommandTopic, is("I"));
-        assertThat(config.temperatureStateTemplate, is("J"));
-        assertThat(config.temperatureStateTopic, is("K"));
-        assertThat(config.temperatureHighCommandTemplate, is("L"));
-        assertThat(config.temperatureHighCommandTopic, is("N"));
-        assertThat(config.temperatureHighStateTemplate, is("O"));
-        assertThat(config.temperatureHighStateTopic, is("P"));
-        assertThat(config.temperatureLowCommandTemplate, is("Q"));
-        assertThat(config.temperatureLowCommandTopic, is("R"));
-        assertThat(config.temperatureLowStateTemplate, is("S"));
-        assertThat(config.temperatureLowStateTopic, is("T"));
-        assertThat(config.powerCommandTopic, is("U"));
-        assertThat(config.initial, is(10));
-        assertThat(config.maxTemp, is(new BigDecimal(40)));
-        assertThat(config.minTemp, is(BigDecimal.ZERO));
-        assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.FAHRENHEIT));
-        assertThat(config.tempStep, is(BigDecimal.ONE));
-        assertThat(config.precision, is(new BigDecimal("0.5")));
-        assertThat(config.sendIfOff, is(false));
+        assertThat(config.getModeCommandTemplate().toString(), is("Template<template=(x) renders=0>"));
+        assertThat(config.getModeCommandTopic(), is("y"));
+        assertThat(config.getModeStateTemplate().toString(), is("Template<template=(z) renders=0>"));
+        assertThat(config.getModeStateTopic(), is("A"));
+        assertThat(config.getModes(), is(List.of("B1", "B2")));
+        assertThat(config.getSwingModeCommandTemplate().toString(), is("Template<template=(C) renders=0>"));
+        assertThat(config.getSwingModeCommandTopic(), is("D"));
+        assertThat(config.getSwingModeStateTemplate().toString(), is("Template<template=(E) renders=0>"));
+        assertThat(config.getSwingModeStateTopic(), is("F"));
+        assertThat(config.getSwingModes(), is(List.of("G1")));
+        assertThat(config.getTemperatureCommandTemplate().toString(), is("Template<template=(H) renders=0>"));
+        assertThat(config.getTemperatureCommandTopic(), is("I"));
+        assertThat(config.getTemperatureStateTemplate().toString(), is("Template<template=(J) renders=0>"));
+        assertThat(config.getTemperatureStateTopic(), is("K"));
+        assertThat(config.getTemperatureHighCommandTemplate().toString(), is("Template<template=(L) renders=0>"));
+        assertThat(config.getTemperatureHighCommandTopic(), is("N"));
+        assertThat(config.getTemperatureHighStateTemplate().toString(), is("Template<template=(O) renders=0>"));
+        assertThat(config.getTemperatureHighStateTopic(), is("P"));
+        assertThat(config.getTemperatureLowCommandTemplate().toString(), is("Template<template=(Q) renders=0>"));
+        assertThat(config.getTemperatureLowCommandTopic(), is("R"));
+        assertThat(config.getTemperatureLowStateTemplate().toString(), is("Template<template=(S) renders=0>"));
+        assertThat(config.getTemperatureLowStateTopic(), is("T"));
+        assertThat(config.getPowerCommandTopic(), is("U"));
+        assertThat(config.getTempInitial(), is(10d));
+        assertThat(config.getMaxTemp(), is(40d));
+        assertThat(config.getMinTemp(), is(0d));
+        assertThat(AbstractComponent.TemperatureUnit.fromString(Objects.requireNonNull(config.getTemperatureUnit())),
+                is(AbstractComponent.TemperatureUnit.FAHRENHEIT));
+        assertThat(config.getTempStep(), is(1d));
+        assertThat(config.getPrecision(), is(0.5d));
     }
 }

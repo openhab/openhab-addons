@@ -65,7 +65,7 @@ public class NikoHomeControlDiscoveryService
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     /**

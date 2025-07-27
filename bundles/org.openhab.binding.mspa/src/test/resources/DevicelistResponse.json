@@ -1,0 +1,39 @@
+ {
+	"code": 0,
+	"message": "SUCCESS",
+	"request_id": "5feda4b22cd811f08c2c0242ac480009",
+	"data": {
+		"list": [
+			{
+				"enduser_id": "test_enduser_id",
+				"device_id": "test_device_id",
+				"app_id": "test_app_id",
+				"registration_id": null,
+				"binding_role": 1,
+				"is_current": true,
+				"software_version": "116",
+				"device_alias": "F-OS063W",
+				"binding_time": "2025-05-07 23:14:17",
+				"activate_time": "2025-05-07-15",
+				"product_id": "test_product_id",
+				"mac": "test_mac",
+				"sn": "test_serial",
+				"modelid": null,
+				"product_series": "OSLO",
+				"wifi_version": "116",
+				"mcu_version": null,
+				"product_model": "F-OS063W",
+				"name": "F-OS063W",
+				"record_time": "2025-05-07 15:14:16",
+				"type": null,
+				"is_online": true,
+				"is_connect": true,
+				"service_region": "eu-central-1",
+				"activate_ip": "ip",
+				"url": "https://s3.eu-central-1.amazonaws.com/donghuiprodpic/a7bdbcbebbd7e7634b86c258d195ca180614e056/1660288071.796046.png",
+				"product_tub_pk": "test",
+				"device_uuid": null
+			}
+		]
+	}
+}

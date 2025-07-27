@@ -13,6 +13,7 @@
 
 		<label>Airthings Wave Mini</label>
 		<description>Indoor air quality monitor</description>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
@@ -137,42 +138,70 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Humidity level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="airthings_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<description>Pressure</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO₂ Level</label>
 		<description>Carbon dioxide level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_tvoc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>TVOC Level</label>
 		<description>Total volatile organic compounds</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_radon_st_avg">
 		<item-type>Number:RadiationSpecificActivity</item-type>
 		<label>Radon Short Term Average Level</label>
 		<description>Radon gas level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Radon</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_radon_lt_avg">
 		<item-type>Number:RadiationSpecificActivity</item-type>
 		<label>Radon Long Term Average Level</label>
 		<description>Radon gas level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Radon</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

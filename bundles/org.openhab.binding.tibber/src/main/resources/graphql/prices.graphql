@@ -1,0 +1,20 @@
+{
+  viewer {
+    home(id: \"%s\") {
+      currentSubscription {
+        priceInfo {
+          tomorrow {
+            startsAt
+            total
+            level
+          }
+          today {
+            startsAt
+            total
+            level
+          }
+        }
+      }
+    }
+  }
+}
