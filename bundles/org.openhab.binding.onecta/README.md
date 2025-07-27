@@ -1,7 +1,5 @@
 # Onecta Binding 
 
-
-
 This binding allows you to control Daikin units connected to Onecta. 
 Onecta is a Daikin cloud platform that allows user's to control their Daikin units via the internet.
 The Daikin Onecta app can be used to control the units and to register the units in the Daikin Onecta cloud.
@@ -11,22 +9,18 @@ After the initial setup in de Daikin app, the binding will recognize all units c
 
 Basically all devices connected to Daikin Onecta cloud could be connected with the binding.
 
-- `bridge`: Ensures the connection to Onecta cloud and the recognition of connected units
-- 
+- `acount`: The bidge ensures the connection to Onecta cloud and the recognition of connected units
+- `climate-control`: The unit itself. With this items like climate can controled.
+- `gateway`: The network controller of the unit.
+- `IndoorUnit`: Gives information about the indoor unit.
+- `domestic-hot-water-tank`: Is the thing to control the Hot water tank.
 
 ## Discovery
 
 The onecta binding supports auto-discovery of all devices. 
 When the bridge is added and connected, it will automatically discover and add onecta devices to the openHAB system. 
-Things that can be discovered are:
-- Daikin Onecta device (...)<br>Is the thing to control the unit.
-- Daikin Onecta (Gateway)<br>Is the thing for info about the network controler.
-- Daikin Onecta (IndoorUnit)<br>Is the thing for info about the indoor unit.
-- Daikin Onecta (DomesticHotWaterTank)<br> Is the thing to control the Hot water tank. 
 
-<img alt="discovery pictures"  src="doc/Discovered.png" width="500"/>
-
-## Bridge Thing Configuration
+## Accound / bridge Thing Configuration
 
 
 | Name             | Type    | Description                                                    | Default | Required | Advanced |
@@ -39,24 +33,20 @@ Things that can be discovered are:
 | Name            | Type    | Description                                                                                              | Default | Required | Advanced |
 |-----------------|---------|----------------------------------------------------------------------------------------------------------|---------|----------|----------|
 | `unitID`        | text    | UID Unique Identifier. <br>If this thing is created in a thing-file this UID can be found in the logging | N/A     | yes      | no       |
-| `refreshDelay`  | integer | Refresh Delay in sec. <br>Only available for thing 'device' and 'DomesticHotWaterTank'                   | 15      | yes      | no       |
+| `refreshDelay`  | integer | Refresh Delay in sec. <br>Only available for thing 'device' and 'domestic-hot-water-tank'                | 15      | yes      | no       |
 
-Explanation Refresh Delay: <br>
+### Explanation Refresh Delay:
 If a command is sent from the binding to OnectaCloud, it needs time to be processed by Daikin. 
-This can cause items to flip-flop. <br>For example: You switch a Unit 'On' with the binding. 
+This can cause items to flip-flop. <br>
+For example: You switch a Unit 'On' with the binding. 
 Daikin will process this command and control the unit, this processing can take 15 seconds. 
 During this time, the binding may have requested a data refresh from OnectaCloud. 
 If this 'On' command has not yet been processed by Daikin, this will result in the OH item returning to 'Off'. 
-After a while, when Daikin has processed it and another data refresh is performed by the binding, 
-the OH item will return to 'On'. <br> The Refresh Delay prevents an item from being refreshed (for x seconds) after a command has been issued from this item.
-Other items will be updated during this time with a data refresh
+After a while, when Daikin has processed it and another data refresh is performed by the binding, the OH item will return to 'On'. <br> 
+The Refresh Delay prevents an item from being refreshed (for x seconds) after a command has been issued from this item.
+Other items will be updated during this time with a data refresh.
 
-## Channels
 
-### Unit
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
 
 ## Full Example
 
@@ -66,12 +56,12 @@ Other items will be updated during this time with a data refresh
 Bridge onecta:account:bridge "Daikin Onecta Bridge" [refreshInterval=600] {
         Thing climate-control livingRoom "Onecta living room Unit" [unitID="80100dc5-a289-47c1-bbdb-****************", refreshDelay=15]
         Thing gateway livingRoom "Onecta living room Gateway" [unitID="80100dc5-a289-47c1-bbdb-****************", refreshDelay=15]
-        Thing domesticHotWaterTank livingRoom "Onecta living room Watertank" [unitID="80100dc5-a289-47c1-bbdb-****************", refreshDelay=15]
-        Thing indoorUnit livingRoom "Onecta Woonkamer living room" [unitID="80100dc5-a289-47c1-bbdb-****************", refreshDelay=15]
+        Thing domestic-hot-water-tank livingRoom "Onecta living room Watertank" [unitID="80100dc5-a289-47c1-bbdb-****************", refreshDelay=15]
+        Thing indoor-unit livingRoom "Onecta Woonkamer living room" [unitID="80100dc5-a289-47c1-bbdb-****************", refreshDelay=15]
         }
 ```
 
-### Item Configuration device
+### Item Configuration climate-control
 
 ```java
 Switch               Power              "Power for the AC unit"      <switch>      ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#power"}
@@ -266,51 +256,45 @@ String        ModelInfo               "Model info"                              
 String        IPAddress               "IP Address"                   <network>           ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#ip-address", readOnly="true"}
 String        MacAddress              "MAC Address"                  <network>           ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#mac-address", readOnly="true"}
 ```
-### Item Configuration hotwatertank
+### Item Configuration domestic-hot-water-tank
 
 ```java
-Switch        Power                     "Power for the AC unit"    <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#power"}
-Switch        IsInErrorState            "Is in error state"        <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#isinerrorstate", readOnly="true"}
-Switch        IsInWarningState          "Is in warning state"      <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#isinwarningstate", readOnly="true"}
-Switch        IsInInstallerState        "Is in installer state"    <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#isininstallerstate", readOnly="true"}
-Switch        IsInEmergencyState        "Is in imergency state"    <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#isinemergencystate", readOnly="true"}
-Switch        IsHolidayModeActive       "Is holiday mode active"   <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#isholidaymodeactive", readOnly="true"}
-Switch        Powerfulmode              "Powerful mode"            <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#powerfulmode", readOnly="true"}
-String        HeatupMode                "Heatup mode"                               ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#heatupmode", readOnly="true"}
+Switch        Power                     "Power for the AC unit"    <switch>         ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#power"}
+Switch        IsInErrorState            "Is in error state"        <switch>         ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#isinerrorstate", readOnly="true"}
+Switch        IsInWarningState          "Is in warning state"      <switch>         ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#isinwarningstate", readOnly="true"}
+Switch        IsInInstallerState        "Is in installer state"    <switch>         ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#isininstallerstate", readOnly="true"}
+Switch        IsInEmergencyState        "Is in imergency state"    <switch>         ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#isinemergencystate", readOnly="true"}
+Switch        IsHolidayModeActive       "Is holiday mode active"   <switch>         ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#isholidaymodeactive", readOnly="true"}
+Switch        Powerfulmode              "Powerful mode"            <switch>         ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#powerfulmode", readOnly="true"}
+String        HeatupMode                "Heatup mode"                               ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#heatupmode", readOnly="true"}
 
-String               ErrorCode          "Error code"                                ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#errorcode", readOnly="true"}
-String               OperationMode      "Operation mode"                            ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#operationmode"}
-String               SetPointMode       "Setpoint mode"                             ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#setpointmode"}
+String               ErrorCode          "Error code"                                ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#errorcode", readOnly="true"}
+String               OperationMode      "Operation mode"                            ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#operationmode"}
+String               SetPointMode       "Setpoint mode"                             ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#setpointmode"}
 
-Number:Temperature   SetPoint           "SetTemp [%.1f °C]"          <Temperature>  ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#settemp"}
-Number:Temperature   SetPointMin        "SetTempMin [%.1f °C]"       <Temperature>  ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#settempmin", readOnly="true"}
-Number:Temperature   SetPointMax        "SetTempMax [%.1f °C]"       <Temperature>  ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#settempmax", readOnly="true"}
-Number:Temperature   SetPointStep       "SetTempStep [%.1f °C]"      <Temperature>  ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#settempstep", readOnly="true"}
+Number:Temperature   SetPoint           "SetTemp [%.1f °C]"          <Temperature>  ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#settemp"}
+Number:Temperature   SetPointMin        "SetTempMin [%.1f °C]"       <Temperature>  ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#settempmin", readOnly="true"}
+Number:Temperature   SetPointMax        "SetTempMax [%.1f °C]"       <Temperature>  ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#settempmax", readOnly="true"}
+Number:Temperature   SetPointStep       "SetTempStep [%.1f °C]"      <Temperature>  ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#settempstep", readOnly="true"}
 
-Number:Temperature   TankTemperature   "Tank temperature [%.1f °C]" <Temperature> ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#tanktemperature" , readOnly="true"}
+Number:Temperature   TankTemperature   "Tank temperature [%.1f °C]" <Temperature> ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#tanktemperature" , readOnly="true"}
 ```
 
-### Item Configuration Indoorunit
+### Item Configuration indoor-unit
 
 ```java
-String              ModelInformation      "Model information"                                  ["Point"] {channel="onecta:indoorUnit:bridge:livingroom:basic#modelinfo", readOnly="true"}
-String              SoftwareVersion       "Software version"                                   ["Point"] {channel="onecta:indoorUnit:bridge:livingroom:basic#softwareversion", readOnly="true"}
-String              EepromVersion         "Eeprom version"                                     ["Point"] {channel="onecta:indoorUnit:bridge:livingroom:basic#eepromversion", readOnly="true"}
+String              ModelInformation      "Model information"                                  ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#modelinfo", readOnly="true"}
+String              SoftwareVersion       "Software version"                                   ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#softwareversion", readOnly="true"}
+String              EepromVersion         "Eeprom version"                                     ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#eepromversion", readOnly="true"}
 
-Switch              DrykeepSetting        "Dry keep setting"                    <switch>       ["Point"] {channel="onecta:indoorUnit:bridge:livingroom:basic#isdrykeepsetting", readOnly="true"}
-Number:Temperature  DeltaDvalue           "DeltaD temperature [%.1f °C]"        <Temperature>  ["Point"] {channel="onecta:indoorUnit:bridge:livingroom:basic#deltadvalue"}
-Number:Frequency    FanMotorratationSpeed "Fanmotor rotation speed [%.1f RPM]"  <Temperature>  ["Point"] {channel="onecta:indoorUnit:bridge:livingroom:basic#fanmotorratationspeed", readOnly="true"}
+Switch              DrykeepSetting        "Dry keep setting"                    <switch>       ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#isdrykeepsetting", readOnly="true"}
+Number:Temperature  DeltaDvalue           "DeltaD temperature [%.1f °C]"        <Temperature>  ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#deltadvalue"}
+Number:Frequency    FanMotorratationSpeed "Fanmotor rotation speed [%.1f RPM]"  <Temperature>  ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#fanmotorratationspeed", readOnly="true"}
 
-Number:Temperature  HeatExchangerTemp     "Heatexchanger temperature [%.1f °C]" <Temperature>  ["Point"] {channel="onecta:indoorUnit:bridge:livingroom:basic#heatexchangertemp", readOnly="true"}
-Number:Temperature  SuctionTemp           "Suction temperature [%.1f °C]"       <Temperature>  ["Point"] {channel="onecta:indoorUnit:bridge:livingroom:basic#suctiontemp", readOnly="true"}
+Number:Temperature  HeatExchangerTemp     "Heatexchanger temperature [%.1f °C]" <Temperature>  ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#heatexchangertemp", readOnly="true"}
+Number:Temperature  SuctionTemp           "Suction temperature [%.1f °C]"       <Temperature>  ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#suctiontemp", readOnly="true"}
 ```
 
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
 
 ## Any custom content here!
 

@@ -9,8 +9,8 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Diakin Onecta Domestic HotWater Tank</label>
-		<description>Diakin Onecta Domestic HotWater Tank</description>
+		<label>Daikin Onecta Domestic HotWater Tank</label>
+		<description>Daikin Onecta Domestic HotWater Tank</description>
 
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-group-watertank"/>
@@ -25,7 +25,7 @@
 		<config-description>
 			<parameter name="unitID" type="text" required="true">
 				<label>Unit ID</label>
-				<description>Diakin unit</description>
+				<description>Daikin unit</description>
 			</parameter>
 			<parameter name="refreshDelay" type="integer" unit="s" min="5">
 				<label>Refresh delay</label>
@@ -103,8 +103,8 @@
 
 	<channel-type id="hwt-is-in-emergency-state">
 		<item-type>Switch</item-type>
-		<label>Is in imergency state</label>
-		<description>Is in imergency state</description>
+		<label>Is in emergency state</label>
+		<description>Is in emergency state</description>
 		<state readOnly="true"/>
 	</channel-type>
 
