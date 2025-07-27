@@ -9,7 +9,7 @@ After the initial setup in de Daikin app, the binding will recognize all units c
 
 Basically all devices connected to Daikin Onecta cloud could be connected with the binding.
 
-- `acount`: The bidge ensures the connection to Onecta cloud and the recognition of connected units
+- `account`: Acts as bridge and ensures the connection to Onecta cloud and the recognition of connected units
 - `climate-control`: The unit itself. With this items like climate can controled.
 - `gateway`: The network controller of the unit.
 - `IndoorUnit`: Gives information about the indoor unit.
@@ -20,8 +20,7 @@ Basically all devices connected to Daikin Onecta cloud could be connected with t
 The onecta binding supports auto-discovery of all devices. 
 When the bridge is added and connected, it will automatically discover and add onecta devices to the openHAB system. 
 
-## Accound / bridge Thing Configuration
-
+## Account Bridge Configuration
 
 | Name             | Type    | Description                                                    | Default | Required | Advanced |
 |------------------|---------|----------------------------------------------------------------|---------|----------|----------|
