@@ -510,7 +510,7 @@ Depending on the device type and firmware release channels might be not availabl
 ### LoRa Add-On - Channel Group lora
 
 The LoRa Add-On is a radio module for the LoRa WAN Network.
-This can be attacxhed to various Shelly Gen3 or Gen4 devices like Shelly Plus 1PM or Shelly Shutter.
+This can be attached to various Shelly Gen3 or Gen4 devices like Shelly Plus 1PM or Shelly Shutter.
 Gen1 or Gen2 devices do not support the LoRa Add-On even you might be able to activate it in the device's Web UI.
 Shelly Dimmer Gen 3 is an exception, it does NOT support any Add-Ons incl. the LoRa Add-On.
 
