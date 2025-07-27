@@ -249,6 +249,13 @@ public class ShellyUtils {
         throw new IllegalArgumentException("Invalid Number type for conversion: " + command);
     }
 
+    public static String getString(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string) {
+            return string.toString();
+        }
+        throw new IllegalArgumentException("Invalid StringType for conversion: " + command);
+    }
+
     public static OnOffType getOnOff(@Nullable Boolean value) {
         return OnOffType.from(value != null && value);
     }

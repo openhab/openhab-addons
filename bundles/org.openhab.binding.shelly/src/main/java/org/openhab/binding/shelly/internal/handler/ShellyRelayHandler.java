@@ -134,12 +134,18 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
+
             case CHANNEL_EMETER_RESETTOTAL:
                 String id = substringAfter(groupName, CHANNEL_GROUP_METER);
                 int mIdx = id.isEmpty() ? 0 : Integer.parseInt(id) - 1;
                 logger.debug("{}: Reset Meter Totals for meter {}", thingName, mIdx + 1);
                 api.resetMeterTotal(mIdx); // currently there is only 1 emdata component
                 updateChannel(groupName, CHANNEL_EMETER_RESETTOTAL, OnOffType.OFF);
+                break;
+
+            case CHANNEL_LORA_TXDATA:
+                logger.debug("{}: Send LoRa Data {}", thingName, command);
+                api.loraSendData(0, getString(command));
                 break;
         }
         return true;
