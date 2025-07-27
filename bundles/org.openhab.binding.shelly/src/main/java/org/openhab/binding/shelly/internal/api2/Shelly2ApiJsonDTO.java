@@ -1248,8 +1248,8 @@ public class Shelly2ApiJsonDTO {
         public Integer pid;
         @SerializedName("Battery")
         public Integer battery;
-        @SerializedName("Buttons")
-        public Integer[] buttonEvents;
+        @SerializedName("Button")
+        public Integer[] buttonEvent;
         @SerializedName("Illuminance")
         public Integer illuminance;
         @SerializedName("Window")
