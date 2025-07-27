@@ -344,6 +344,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (dc.lora100 != null && config.enableLoRa) {
             profile.settings.loraDetected = true;
             profile.settings.loraRxEnabled = dc.lora100.rxEnabled;
+            profile.settings.loraComponentIds = new Integer[1]; // so far only 1 add-on is supported
+            profile.settings.loraComponentIds[0] = dc.lora100.id != null ? dc.lora100.id : 100;
         }
 
         profile.initialized = true;
@@ -1213,6 +1215,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             apiRequest(SHELLYRPC_METHOD_RGBW_SET, params, String.class);
         }
         throw new ShellyApiException("API call not implemented");
+    }
+
+    @Override
+    public void loraSendData(int index, String data) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (profile.settings.loraComponentIds == null || index >= profile.settings.loraComponentIds.length) {
+            throw new IllegalArgumentException("Invalid LoRa component id");
+        }
+        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LORA_SENDDATA)
+                .withId(profile.settings.loraComponentIds[index]).withData(data);
+        apiRequest(req);
     }
 
     @Override
