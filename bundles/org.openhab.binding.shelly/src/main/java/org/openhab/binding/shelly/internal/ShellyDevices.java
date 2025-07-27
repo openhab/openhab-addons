@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.shelly.internal;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
@@ -7,6 +19,12 @@ import java.util.Set;
 
 import org.openhab.core.thing.ThingTypeUID;
 
+/**
+ * The {@link ShellyDevices} class defines common constants related to Shelly devices, which are
+ * used across the whole binding.
+ *
+ * @author Markus Michels - Initial contribution
+ */
 public class ShellyDevices {
 
     // Device Types
@@ -268,7 +286,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_ROLLER),
             Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_ROLLER));
 
-    public static final Set<ThingTypeUID> THING_TYPE_CLASSRY_3EM = Set.of( //
+    public static final Set<ThingTypeUID> THING_TYPE_CLASS_3EM = Set.of( //
             THING_TYPE_SHELLY3EM, THING_TYPE_SHELLYPLUSEM, THING_TYPE_SHELLYPLUS3EM63, THING_TYPE_SHELLYPRO3EM,
             THING_TYPE_SHELLYPROEM50, THING_TYPE_SHELLYPRO3EM63, THING_TYPE_SHELLYPRO3EM400);
 
