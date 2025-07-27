@@ -502,6 +502,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         updateChannel(getString(channelUID.getGroupId()), CHANNEL_SENSOR_MUTE, OnOffType.OFF);
                     }
                     break;
+
                 default:
                     update = handleDeviceCommand(channelUID, command);
                     break;
