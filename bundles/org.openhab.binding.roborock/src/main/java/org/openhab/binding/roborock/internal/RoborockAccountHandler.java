@@ -96,8 +96,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     /** The file we store definitions in */
     protected final Map<Thing, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
 
-    private long lastMQTTMessageTimestamp;
-    private long lastMQTTPublishTimestamp;
     private final Gson gson = new Gson();
 
     public RoborockAccountHandler(Bridge bridge, Storage<String> stateStorage, HttpClient httpClient) {
@@ -406,7 +404,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String receivedTopic = publish.getTopic().toString();
         String destination = receivedTopic.substring(receivedTopic.lastIndexOf('/') + 1);
         logger.debug("Received MQTT message for device {}", destination);
-        lastMQTTMessageTimestamp = System.currentTimeMillis();
 
         // check list of child handlers and send message to the right one
         for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
@@ -481,7 +478,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             logger.debug("Publishing {} message to {}", method, topic);
             mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
                     .whenComplete((mqtt5Publish, throwable) -> {
-                        lastMQTTPublishTimestamp = System.currentTimeMillis();
                         if (throwable != null) {
                             logger.debug("mqtt publish failed");
                         }
