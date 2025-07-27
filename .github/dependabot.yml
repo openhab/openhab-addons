@@ -28,6 +28,10 @@ updates:
     open-pull-requests-limit: 15
     labels:
       - dependencies
+    groups:
+      jacoco:
+        patterns:
+          - "*jacoco*"
     allow:
       - dependency-name: "org.apache.maven.plugins:*"
       - dependency-name: "org.codehaus.mojo:*"
