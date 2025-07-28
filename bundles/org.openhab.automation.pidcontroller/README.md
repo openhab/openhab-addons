@@ -123,15 +123,15 @@ The visualization could be done by adding a persistence and use Grafana for exam
 
 After you added a [Rule](https://www.openhab.org/docs/configuration/rules-dsl.html) with above trigger and action module and configured those, proceed with the following steps:
 
-> *Notice:* A good starting point for the derivative time constant `kdTimeConstant` is the response time of the control loop.
+> **Notice:** A good starting point for the derivative time constant `kdTimeConstant` is the response time of the control loop.
 E.g. the time it takes from opening the heater valve and seeing an effect of the measured temperature.
 
 1. Set `kp`, `ki` and `kd` to 0
-2. Increase `kp` until the system starts to oscillate (continuous over- and undershoot)
-3. Decrease `kp` a bit, that the system doesn't oscillate anymore
-4. Repeat the two steps for the `ki` parameter (keep `kp` set)
-5. Repeat the two steps for the `kd` parameter (keep `kp` and `ki` set)
-6. As the D-part acts as a damper, you should now be able to increase `kp` and `ki` further without resulting in oscillations
+1. Increase `kp` until the system starts to oscillate (continuous over- and undershoot)
+1. Decrease `kp` a bit, that the system doesn't oscillate anymore
+1. Repeat the two steps for the `ki` parameter (keep `kp` set)
+1. Repeat the two steps for the `kd` parameter (keep `kp` and `ki` set)
+1. As the D-part acts as a damper, you should now be able to increase `kp` and `ki` further without resulting in oscillations
 
 After each modification of above parameters, test the system response by introducing a setpoint deviation (error).
 This can be done either by changing the setpoint (e.g. 20°C -> 25°C) or by forcing the measured value to change (e.g. by opening a window).

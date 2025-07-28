@@ -12,6 +12,7 @@
  */
 package org.openhab.automation.jsscripting.internal;
 
+import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER;
 import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
 import java.util.Arrays;
@@ -98,7 +99,7 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
         ScriptContext ctx = delegate.getContext();
         Object fileName = ctx.getAttribute("javax.script.filename");
         Object ruleUID = ctx.getAttribute("ruleUID");
-        Object ohEngineIdentifier = ctx.getAttribute("oh.engine-identifier");
+        Object ohEngineIdentifier = ctx.getAttribute(CONTEXT_KEY_ENGINE_IDENTIFIER);
 
         String identifier = "stack";
         if (fileName != null) {

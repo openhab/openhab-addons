@@ -12,7 +12,7 @@ There is no need to configure anything for this service.
 
 MaryTTS comes with three packages voices, one for American English, two for German:
 
-```
+```shell
 > voice voices
 marytts:cmuslthsmm cmu-slt-hsmm (en_US)
 marytts:bits3hsmm bits3-hsmm (de)

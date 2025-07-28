@@ -49,7 +49,7 @@ public class AutomowerActions implements ThingActions {
 
     @RuleAction(label = "@text/action-start-label", description = "@text/action-start-desc")
     public void start(
-            @ActionInput(name = "duration", label = "@text/action-input-duration-label", description = "@text/action-input-duration-desc") int durationMin) {
+            @ActionInput(name = "duration-min", label = "@text/action-input-duration-min-label", description = "@text/action-input-duration-min-desc") long durationMin) {
         AutomowerHandler automowerHandler = handler;
         if (automowerHandler == null) {
             logger.warn("Automower Action service ThingHandler is null!");
@@ -58,8 +58,24 @@ public class AutomowerActions implements ThingActions {
         }
     }
 
-    public static void start(ThingActions actions, int durationMin) {
+    public static void start(ThingActions actions, long durationMin) {
         ((AutomowerActions) actions).start(durationMin);
+    }
+
+    @RuleAction(label = "@text/action-start-in-work-area-label", description = "@text/action-start-in-work-area-desc")
+    public void startInWorkArea(
+            @ActionInput(name = "work-area-id", label = "@text/action-input-work-area-id-label", description = "@text/action-input-work-area-id-desc") long workAreaId,
+            @ActionInput(name = "duration-min-opt", label = "@text/action-input-duration-min-opt-label", description = "@text/action-input-duration-min-opt-desc") @Nullable Long durationMin) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerCommand(AutomowerCommand.START_IN_WORK_AREA, workAreaId, durationMin);
+        }
+    }
+
+    public static void startInWorkArea(ThingActions actions, long workAreaId, @Nullable Long durationMin) {
+        ((AutomowerActions) actions).startInWorkArea(workAreaId, durationMin);
     }
 
     @RuleAction(label = "@text/action-pause-label", description = "@text/action-pause-desc")
@@ -106,7 +122,7 @@ public class AutomowerActions implements ThingActions {
 
     @RuleAction(label = "@text/action-park-label", description = "@text/action-park-desc")
     public void park(
-            @ActionInput(name = "duration", label = "@text/action-input-duration-label", description = "@text/action-input-duration-desc") int durationMin) {
+            @ActionInput(name = "duration-min", label = "@text/action-input-duration-min-label", description = "@text/action-input-duration-min-desc") long durationMin) {
         AutomowerHandler automowerHandler = handler;
         if (automowerHandler == null) {
             logger.warn("Automower Action service ThingHandler is null!");
@@ -115,7 +131,7 @@ public class AutomowerActions implements ThingActions {
         }
     }
 
-    public static void park(ThingActions actions, int durationMin) {
+    public static void park(ThingActions actions, long durationMin) {
         ((AutomowerActions) actions).park(durationMin);
     }
 
@@ -187,7 +203,7 @@ public class AutomowerActions implements ThingActions {
 
     @RuleAction(label = "@text/action-set-work-area-label", description = "@text/action-set-work-area-desc")
     public void setWorkArea(
-            @ActionInput(name = "workarea-id", label = "@text/action-input-workarea-id-label", description = "@text/action-input-workarea-id-desc") long workAreaId,
+            @ActionInput(name = "work-area-id", label = "@text/action-input-work-area-id-label", description = "@text/action-input-work-area-id-desc") long workAreaId,
             @ActionInput(name = "enable", label = "@text/action-input-enable-label", description = "@text/action-input-enable-desc") boolean enable,
             @ActionInput(name = "cutting-height", label = "@text/action-input-cutting-height-label", description = "@text/action-input-cutting-height-desc") byte cuttingHeight) {
         AutomowerHandler automowerHandler = handler;
@@ -220,7 +236,7 @@ public class AutomowerActions implements ThingActions {
 
     @RuleAction(label = "@text/action-set-calendartask-label", description = "@text/action-set-calendartask-desc")
     public void setCalendarTask(
-            @ActionInput(name = "workarea-id", label = "@text/action-input-workarea-id-label", description = "@text/action-input-workarea-id-desc") @Nullable Long workAreaId,
+            @ActionInput(name = "work-area-id", label = "@text/action-input-work-area-id-label", description = "@text/action-input-work-area-id-desc") @Nullable Long workAreaId,
             @ActionInput(name = "start", label = "@text/action-input-start-label", description = "@text/action-input-start-desc") short[] start,
             @ActionInput(name = "duration", label = "@text/action-input-duration-label", description = "@text/action-input-duration-desc") short[] duration,
             @ActionInput(name = "monday", label = "@text/action-input-monday-label", description = "@text/action-input-monday-desc") boolean[] monday,

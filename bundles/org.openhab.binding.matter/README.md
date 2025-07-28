@@ -30,7 +30,6 @@ Matter **requires** IPv6 to be enabled and be routable between openHAB and the M
 This means IPv6 needs to be enabled on the host openHAB is running, and the network must be able route IPv6 unicast and multicast messages.
 Docker, VLANs, subnets and other configurations can prohibit Matter from working if not configured correctly.
 
-
 # Matter Client
 
 This describes the Matter controller functionality for discovering and controlling Matter devices.
@@ -56,7 +55,7 @@ Bridged endpoints will be added to the inbox once the parent Node is added as a 
 
 ### Device Pairing: General
 
-The pairing action can be found in the settings of the "Controller" thing under the "Actions" -> "Pair Matter Device" 
+The pairing action can be found in the settings of the "Controller" thing under the "Actions" -> "Pair Matter Device"
 
 <img src="doc/pairing.png" alt="Matter Pairing" width="600"/>
 
@@ -88,7 +87,7 @@ Thread devices require a Thread Border Router and a bluetooth enabled device to 
 Until there is a supported thread border router integration in openHAB and the openHAB mobile apps, it's strongly recommended to pair the device to a commercial router with thread support first (Apple TV 4k, Google Nest Hub 2, Amazon Gen 4 Echo, etc... ), then generate a matter pairing code using that ecosystem and add the device normally.
 This will still allow openHAB to have direct access to the device using only the embedded thread border router and does not interact with the underlying providers home automation stack.
 
-Support for using a OpenThread Border Router has been verified to work and will be coming soon to openHAB, but in some cases requires strong expertise in IPv6 routing as well as support in our mobile clients. 
+Support for using a OpenThread Border Router has been verified to work and will be coming soon to openHAB, but in some cases requires strong expertise in IPv6 routing as well as support in our mobile clients.
 
 ### Enabling IPv6 Thread Connectivity on Linux Hosts
 
@@ -137,7 +136,7 @@ noipv6
 noipv6rs
 ```
 
-***NOTE:  Please ensure you use the right interface name for your network interface.*** The above examples use `wlan0` and `eth0` as examples.
+**NOTE:**  Please ensure you use the right interface name for your network interface. The above examples use `wlan0` and `eth0` as examples.
 You can find the correct interface name by running `ip a` and looking for the interface that has an IPv6 address assigned to it.
 
 ## Thing Configuration
@@ -154,7 +153,7 @@ Note: The controller nodeId must not be changed after a controller is created.
 
 ### Node Thing Configuration
 
-Nodes are discovered automatically (see [Discovery](#Discovery) for more information) and should not be added manually.
+Nodes are discovered automatically (see [Discovery](#discovery) for more information) and should not be added manually.
 
 | Name       | Type   | Description                        | Default | Required | Advanced |
 |------------|--------|------------------------------------|---------|----------|----------|
@@ -162,7 +161,7 @@ Nodes are discovered automatically (see [Discovery](#Discovery) for more informa
 
 ### Endpoint Thing Configuration
 
- Endpoints are discovered automatically once their parent Node has been added (see [Discovery](#Discovery) for more information) and should not be added manually.
+ Endpoints are discovered automatically once their parent Node has been added (see [Discovery](#discovery) for more information) and should not be added manually.
 
 | Name       | Type   | Description                        | Default | Required | Advanced |
 |------------|--------|------------------------------------|---------|----------|----------|
@@ -178,7 +177,6 @@ Nodes are discovered automatically (see [Discovery](#Discovery) for more informa
 | Generate a new pairing code for a Matter device | Generates a new manual and QR pairing code to be used to pair the Matter device with an external Matter controller                                                                                                                                                        |
 | List Connected Matter Fabrics                   | This will list all the Matter fabrics this node belongs to                                                                                                                                                                                                                |
 | Remove Connected Matter Fabric                  | This removes a connected Matter fabric from a device. Use the 'List connected Matter fabrics' action to retrieve the fabric index number                                                                                                                                  |
-
 
 For nodes that contain a Thread Border Router Management Cluster, the following additional actions will be present
 
@@ -389,12 +387,12 @@ Pairing codes and other options can be found in the MainUI under "Settings -> Ad
 
 ### Global Options
 
-* Endpoint Labels
-  *  By default, the Item label is used as the Matter label but can be overridden by adding a `label` key as a metadata option, either by itself or part of other options required for a device.
-  * Example: `[label="My Custom Label"]`
-* Fixed Labels
-  * Matter has a concept of "Fixed Labels" which allows devices to expose arbitrary label names and values which can be used by clients for tasks like grouping devices in rooms.
-  * Example: `[fixedLabels="room=Office, floor=1"]` 
+- Endpoint Labels
+  - By default, the Item label is used as the Matter label but can be overridden by adding a `label` key as a metadata option, either by itself or part of other options required for a device.
+  - Example: `[label="My Custom Label"]`
+- Fixed Labels
+  - Matter has a concept of "Fixed Labels" which allows devices to expose arbitrary label names and values which can be used by clients for tasks like grouping devices in rooms.
+  - Example: `[fixedLabels="room=Office, floor=1"]`
 
 ### Thermostat group member tags
 
@@ -477,13 +475,13 @@ Switch                TestFanSingleItem         "On/Off"                        
 
 ### Bridge FAQ
 
-* Alexa: When pairing, after a minute Alexa reports "Something went wrong" 
-  * Alexa can take 3-4 seconds per device to process which can take longer then the Alexa UI is willing to wait.
+- Alexa: When pairing, after a minute Alexa reports "Something went wrong"
+  - Alexa can take 3-4 seconds per device to process which can take longer then the Alexa UI is willing to wait.
   Eventually the pairing will complete, which for a large number of devices may be a few minutes.
-* Alexa: Suddenly stops working and says it could not connect to a device or device not responding.
-  * Check the Settings page in the Main UI to confirm the bridge is running
-  * Ensure the openHAB item has the proper matter tag, or that the item is being loaded at all (check item file errors)
-  * Rarely, you may need to reboot the Alexa device.
+- Alexa: Suddenly stops working and says it could not connect to a device or device not responding.
+  - Check the Settings page in the Main UI to confirm the bridge is running
+  - Ensure the openHAB item has the proper matter tag, or that the item is being loaded at all (check item file errors)
+  - Rarely, you may need to reboot the Alexa device.
   If you have multiple devices and not sure which is the primary matter connection, you may need to reboot all of them.
 
 # Matter Ecosystem Overview
@@ -521,17 +519,17 @@ They also handle the commissioning process when new devices are added to the net
 A **bridge** is a special type of node that connects non-Matter devices to a Matter network, effectively translating between protocols.
 Bridges allow legacy devices to be controlled via the Matter standard.
 
-openHAB fully supports connecting to Matter bridges. 
+openHAB fully supports connecting to Matter bridges.
 In addition, openHAB has support for running its own Matter bridge service, exposing openHAB items as Matter endpoints to 3rd party systems.
-See [Matter Bridge](#Matter-Bridge) for information on running a Bridge server.
+See [Matter Bridge](#matter-bridge) for information on running a Bridge server.
 
 **Example:**
 
-- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem. The Ikea Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
+- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem. The IKEA Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
 
 ### Thread Border Routers
 
-A **Thread Border Router** is a device that allows devices connected via Thread (a low-power wireless protocol) to communicate with devices on other networks, such as Wi-Fi or Ethernet. 
+A **Thread Border Router** is a device that allows devices connected via Thread (a low-power wireless protocol) to communicate with devices on other networks, such as Wi-Fi or Ethernet.
 It facilitates IPv6-based communication between Thread networks and the local IP network.
 
 **Example:**
@@ -563,7 +561,7 @@ For Matter devices to function correctly, **IPv6 must be enabled** and supported
 Without IPv6, devices won't be able to communicate properly within the Matter ecosystem.
 Ensure that your router has IPv6 enabled and that any Matter controllers (like smart hubs, apps or openHAB) are configured to support IPv6 as well.
 
-**Note that environments like Docker require special configurations to enable IPv6**
+**Note:** environments like Docker require special configurations to enable IPv6.
 
 ## Matter Commissioning and Pairing Codes
 
@@ -572,7 +570,8 @@ This process ensures that only authorized devices can join the network.
 
 ### Pairing Code from the Device
 
-When commissioning a new Matter device, it typically has a printed QR code or numeric pairing code that you scan or enter during setup. This pairing code allows the controller to establish a secure connection to the device and add it to the network.
+When commissioning a new Matter device, it typically has a printed QR code or numeric pairing code that you scan or enter during setup.
+This pairing code allows the controller to establish a secure connection to the device and add it to the network.
 Once a device pairing code is in use, it typically can not be used again to pair other controllers.
 
 ### Additional Pairing Code from a Controller
@@ -583,4 +582,5 @@ Apple Home, Google Home, Amazon Alexa and openHAB all support generating pairing
 
 ### Example:
 
-- When setting up a smart lock, you may scan a QR code directly from the lock, or use the 11 digit pairing code printed on it to pair it with openHAB. If you later want to control the lock from another app or hub, you would retrieve a new pairing code directly from openHAB.
+- When setting up a smart lock, you may scan a QR code directly from the lock, or use the 11 digit pairing code printed on it to pair it with openHAB.
+If you later want to control the lock from another app or hub, you would retrieve a new pairing code directly from openHAB.

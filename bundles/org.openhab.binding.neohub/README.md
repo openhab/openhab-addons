@@ -74,6 +74,7 @@ The device name is automatically discovered by the NeoHub Thing, and it is also 
 ## Channels for "NeoHub"
 
 The following Channels, and their associated channel types are shown below.
+
 | Channel        | Data Type            | Description                                                                                                                                  |
 |----------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | meshNetworkQoS | Number:Dimensionless | RF mesh network Quality-of-Service; this is the percentage of configured devices that are currently connected online via the RF mesh network |

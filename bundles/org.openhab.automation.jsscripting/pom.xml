@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.jsscripting</artifactId>
@@ -17,7 +17,7 @@
   <properties>
     <!-- Remember to check if the fix https://github.com/openhab/openhab-core/pull/4437 still works when upgrading GraalJS -->
     <graaljs.version>24.2.1</graaljs.version>
-    <ohjs.version>openhab@5.11.1</ohjs.version>
+    <ohjs.version>openhab@5.12.0</ohjs.version>
   </properties>
 
   <dependencies>

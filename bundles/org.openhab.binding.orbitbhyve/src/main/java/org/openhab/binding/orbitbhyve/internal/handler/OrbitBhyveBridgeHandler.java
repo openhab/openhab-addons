@@ -256,7 +256,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     public synchronized void processStatusResponse(String content) {
         updateStatus(ThingStatus.ONLINE);
-        logger.trace("Got message: {}", content);
+        logger.trace("Processing message: {}", content);
         OrbitBhyveSocketEvent event = gson.fromJson(content, OrbitBhyveSocketEvent.class);
         if (event != null) {
             processEvent(event);

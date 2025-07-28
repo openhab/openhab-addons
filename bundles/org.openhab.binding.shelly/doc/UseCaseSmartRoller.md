@@ -1,16 +1,17 @@
 # Smartify Roller Shutters with openHAB and Shelly
 
-![](https://shelly.cloud/wp-content/uploads/2020/03/know_base.png)
+![Shelly Knowledge Base](https://shelly.cloud/wp-content/uploads/2020/03/know_base.png)
 
-**How openHAB and Shelly 2.5 provide an enhance experience when controlling rollers**
+## How openHAB and Shelly 2.5 provide an enhance experience when controlling rollers
 
 ## Use Case
 
-![](images/oh_image1.png)   ![](https://shelly.cloud/wp-content/uploads/2020/06/shelly25.jpg)   ![](images/oh_image2.png)
+![openHAB Image 1](images/oh_image1.png)   ![Shelly 2.5 Device](https://shelly.cloud/wp-content/uploads/2020/06/shelly25.jpg)   ![openHAB Image 2](images/oh_image2.png)
 
 More and more people have rollers, which are equipped with a motor and button control improving your comfort when operating the shutter.
 
 This use case description covers the following aspects
+
 - Operate the roller manual as usual - don't loose some of those features when bringing in the Shelly
 - Use openHAB to control the roller (up/down/stop, positioning)
 - Utilize device's position favorites
@@ -22,12 +23,14 @@ Therefore a struct requirement: make if "compatible for my wife" and avoid "that
 One more aspect is some kind of protection to avoid physical damage when something gets wrong. The Shellies provide some interesting features to do.
 
 This use case description might also apply to Venetian Blinds, but I don't have those and can't judge on that.
-Feel free to adapt the concept and report ideas and experiences to the [community](https://community.openhab.org/t/shelly-binding/56862/1702?u=markus7017) 
+Feel free to adapt the concept and report ideas and experiences to the [community](https://community.openhab.org/t/shelly-binding/56862/1702?u=markus7017)
 
 ## Technical pre-requisites
 
 To implement this use case you need
+
 - Roller motor can be attached to the Shelly
+
 For this how-to a roller with an electrical motor is required and will be controlled using A/C and a momentary switch.
 The same solutions works with other switch types (DC/AC, 2 button switch etc.).
 In this case you need to look into details and user a different Shelly configuration or adapt technical installation.
@@ -52,16 +55,18 @@ and it will not become part of the 2.5.x distribution, because this only receive
 #### openHAB version
 
 It's strongly recommended to get on one of the pretty stable openHAB releases
+
 - The good one: openHAB 2.5.9 or newer
 - The new kid on the block: 3.0 will be release by end of 2020
 - Older versions might worked, but are not covered here.
 
 Refer to the documentation how to upgrade to the current version and where you should watch for necessary adaptions.
 By the way: There is a good README for the binding, RTFM if you know what I mean :-)
-Latest version is always available [here](https://github.com/markus7017/myfiles/blob/master/shelly/README.md) as part of the DEV build (see below).
+Latest version is always available [from the Shelly README](https://github.com/markus7017/myfiles/blob/master/shelly/README.md) as part of the DEV build (see below).
 
 Ideally the upgrade could be performed on a Raspberry with
-```
+
+```bash
 openhab-cli stop
 openhab-cli clean-cache
 apt-get update
@@ -96,33 +101,38 @@ No worries, openHAB will restore you channel/item linkings.
 
 ### Shelly setup - General
 
-![](images/uiroller_1.png)   ![](images/uiroller_2.png)   ![](images/uiroller_3.png)   ![](images/uiroller_4.png)   
+![Shelly Web UI Roller Setup 1](images/uiroller_1.png)   ![Shelly Web UI Roller Setup 2](images/uiroller_2.png)   ![Shelly Web UI Roller Setup 3](images/uiroller_3.png)   ![Shelly Web UI Roller Setup 4](images/uiroller_4.png)
 
 There are some settings required to prepare your Shelly for this use case.
+
 - Open the Web UI simply by launching 'http://&lt;shelly ip&gt; in the browser, this opens the device's UI
 - Go to Settings:DEVICE TYPE and select Roller-Shutter
 - POWER ON PARAMETERS: "STOP" will make sure that the roller doesn't start moving on a power failure recovery
 - INPUT BUTTONS MODE: This depend on your installed button, if you only have a single one use "One button", if you have 2 buttons or one with 2 positions select "One button"
 - POSITIONING CONTROLS: Enable them to have the controls in the App (UP/STOP/DOWN + relative positions), this helps during installation
 
-
 For safety reasons you might consider:
+
 - OPEN/CLOSE WORKING TIME
-This feature makes sure that the Shelly stops the motor after a certain time even the motor doesn't stop by itself. 
+
+This feature makes sure that the Shelly stops the motor after a certain time even the motor doesn't stop by itself.
 Start the roller, measure the number of seconds until the shutter stops.
 Maybe add 2-3 seconds for safe and set the values for both directions in the UI
 
-![](images/uiroller_wt.png)
+![Shelly Roller Working Time Settings](images/uiroller_wt.png)
 
 - OBSTACLE DETECTION under Safety in the Web UI
+
 Shelly 2.5 has an integrated detection on roller obstacles based on measuring the motor power.
 The detection needs to be enabled, "While Moving" cover open and close.
 Action Stop makes most sense, you should manually verify the problem.
 
-![](images/uiroller_obs1.png)   ![](images/uiroller_obs2.png)      ![](images/uiroller_obs3.png)
+![Shelly Obstacle Detection 1](images/uiroller_obs1.png)   ![Shelly Obstacle Detection 2](images/uiroller_obs2.png)      ![Shelly Obstacle Detection 3](images/uiroller_obs3.png)
 
 and there are some more options:
+
 - MAX POWER PROTECTION
+
 A roller should never consume high power - in this case you could assume an electrical problem.
 Therefore you could configure the Shelly to turn off power when exceeding a certain limit (e.g. 250W - value depend on your roller motor).
 
@@ -137,8 +147,8 @@ With version 1.9 Allterco introduced an interesting feature called Favorites.
 Those allow to store up to 4 pre-defined positions in the device, e.g. 15%, 50%, 65%, 98%.
 Once defined you have kind of a short-cut to bring the roller to that position and those favorites are also supported by the binding (see below).
 
-![](images/uiroller_fav1.png)   ![](images/uiroller_fav2.png)
-   
+![Shelly Roller Favorites Setup 1](images/uiroller_fav1.png)   ![Shelly Roller Favorites Setup 2](images/uiroller_fav2.png)
+
 To use this feature open the device's Web UI and click on Favorites(+) button.
 You could now specify 4 percentage values between 0% (closed) and 100% (open).
 Enter the values and try using the button line above the roller control and main UI buttons.
@@ -149,12 +159,13 @@ With this configuration your Shelly is ready to be integrated into openHAB.
 
 Once the Shelly is configured you could start the discovery within openHAB.
 Important: If you want to password protect your Shellys (strong recommendation) you could set a default user/password in the binding settings and avoid to specify those per thing:
+
 - Open the Binding Configuration in the openHAB UI
 - Set User Id and Password, save
 - Remove all Shellys from the Inbox (if any)
 - and restart the Discovery
 
-![](images/uiroller_rlogin.png) 
+![Shelly Roller Login Configuration](images/uiroller_rlogin.png)
 
 Now all Shellys should pop up with the correct device names and types.
 The binding also adds some information to the Thing Name making the identification easier.
@@ -171,7 +182,7 @@ There is also a dedicated channel (roller#rollerFav), which accepts this ids and
 
 ### Device events
 
-As you might know the binding supports the Allterco Shelly CoIoT protocol. 
+As you might know the binding supports the Allterco Shelly CoIoT protocol.
 The device supports so called I/O URL Actions, which are kind of a callback to an application for certain events.
 Whenever possible you should prefer CoIoT events, because they are triggered near realtime and provide way more information compared to the Action URLs.
 The binding uses those CoIoT updates as triggers, but also to update the channel data.
@@ -181,6 +192,7 @@ Refer to the [README](../README.md) for more information on CoIoT.
 
 Beside manual operation the binding provide various options to control the roller from within openHAB rules.
 For example
+
 - link channel roller#control and use 'sendCommand(&lt;item&gt;, UP)' to open the shutter or 'sendCommand(&lt;item&gt;, DOWN)' to close it.
 - get status updates from roller operations by observing channel 'roller#state' and 'roller#stopReason', those report an updated status once the operation is completed
 - select a position by sending a number value of 100..0 to channel 'roller#rollerpos'
@@ -197,23 +209,27 @@ There are two valuable options, which even extend and improve the user experienc
 - Button-1
 
 Using the described setup you could add a Button-1 to trigger rules, e.g.
+
 - 1xshort: open roller
 - 2xshort: go to 25% (because disturbs enjoying your morning coffee with your wife or husband)
 - 3xshort: go to 75% (sun is disturbing while watching your TV)
 - long   : close shutter (if not done by some automation)
 
 - Voice control
+
 And of course you could utilize openHAB's voice integration, e.g. with Alexa, Siri or Google Home.
 
 - Scenes
-There are more of less limits when integrating even more advanced roller control based on openHAB rules. 
+
+There are more of less limits when integrating even more advanced roller control based on openHAB rules.
 This allows to provide a scene to the user, which does a lot of complex stuff under the hood.
 
 Be welcome to contribute your ideas to the community, this is what creates the difference between openHAB/Shelly setup compared to rollers with button control.
 
 ### Resources
 
-There is a bunch of ressources you could browse around openHAB, Shelly or the binding
+There is a bunch of resources you could browse around openHAB, Shelly or the binding
+
 - [Binding README](../README.md)
 - [Bugs/Features](https://github.com/openhab/openhab-addons/issues?q=is%3Aissue+is%3Aopen+%5Bshelly%5D)
 - [Firmware Index](https://repo.shelly.cloud/files/firmware/?fbclid=IwAR0Kz6bjMGoq_HYU85QAdl8b-xh7E3IPa4ENKjqsvmMAYQ6QGC8ODvqPzUs)
@@ -224,4 +240,3 @@ Note: The binding version included in the final OH 3.0 distro is significantly o
 - [Shelly Support Group (English)](https://www.facebook.com/groups/ShellyIoTCommunitySupport)
 
 and the [openHAB Community thread specifically for the binding](https://community.openhab.org/t/shelly-binding/56862/1701)
-

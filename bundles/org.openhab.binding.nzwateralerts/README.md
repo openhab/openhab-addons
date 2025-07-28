@@ -20,7 +20,7 @@ The binding and thing ID is `nzwateralerts:wateralert`.
 | Value           | Type         | Description                            |
 | --------------- | ------------ | -------------------------------------- |
 | location        | string       | The location to get water data from. Refer to the list below for values. |
-| refreshInterval | number       | The time interval (in hours) to refresh the data.
+| refreshInterval | number       | The time interval (in hours) to refresh the data. |
 
 ### Supported city/area list
 

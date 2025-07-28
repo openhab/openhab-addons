@@ -11,7 +11,7 @@ The binding offers things for the two usual tariff classes (proposed by example 
 - `base`: This is the basic subscription with a fixed kWh price.
 - `hphc`: Alternative subscription offering variable price in a given hour set (low hours/high hours).
 - `tempo`: Alternative suscription with different price in regards of day colors and day or night.
-    Day colors can be Red, White or Blue. 
+    Day colors can be Red, White or Blue.
     Red day are the one where there is most energy demands in France, and are the most higher price.
     White day are intermediate pricing, for day where energy demands is not almost important as red day.
     Blue day are the one with the lower price.
@@ -77,7 +77,7 @@ All channels are read-only.
 
 ## Full Example
 
-### Thing Configuration
+### Thing Configuration Example
 
 ```java
 Thing frenchgovtenergydata:base:local "Tarification Actuelle Base" [puissance=9]

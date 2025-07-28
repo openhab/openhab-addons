@@ -14,8 +14,6 @@ package org.openhab.binding.tibber.internal;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
@@ -39,6 +37,6 @@ public class TibberHandlerMock extends TibberHandler {
     }
 
     public void setPriceCalculator(PriceCalculator calc) {
-        super.calculator = Optional.of(calc);
+        super.calculator = calc;
     }
 }
