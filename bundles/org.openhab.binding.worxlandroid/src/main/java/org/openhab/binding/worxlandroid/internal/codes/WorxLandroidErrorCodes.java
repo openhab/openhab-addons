@@ -44,7 +44,7 @@ public enum WorxLandroidErrorCodes {
     @SerializedName("8")
     BLADE_MOTOR_BLOCKED,
     @SerializedName("9")
-    WHEEL_MOTOR_BLOKED,
+    WHEEL_MOTOR_BLOCKED,
     @SerializedName("10")
     TRAPPED_TIMEOUT,
     @SerializedName("11")

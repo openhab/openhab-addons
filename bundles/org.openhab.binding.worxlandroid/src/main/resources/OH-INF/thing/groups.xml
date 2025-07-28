@@ -27,7 +27,7 @@
 
 	<channel-group-type id="aws-group-type">
 		<label>Aws</label>
-		<description>MQTT connexion to AWS</description>
+		<description>MQTT connection to AWS</description>
 		<channels>
 			<channel id="poll" typeId="switch-rw">
 				<label>Poll AWS</label>
