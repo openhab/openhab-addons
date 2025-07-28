@@ -527,6 +527,12 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellyInputState {
+        public ShellyInputState(int id) {
+            input = id;
+            event = "";
+            eventCount = 0;
+        }
+
         public Integer input;
 
         // Shelly Button
@@ -821,6 +827,10 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsInput {
+        public ShellySettingsInput(String btnType) {
+            this.btnType = btnType;
+        }
+
         @SerializedName("btn_type")
         public String btnType;
     }

@@ -501,17 +501,17 @@ public class ShellyThingCreator {
 
     private static final Map<String, String> BLU_SERVICE_NAMES_BY_MODEL = Map.ofEntries( //
             // with specific model id
-            Map.entry(SHELLYDT_BLUBUTTON1, "shellyplusbutton"), //
-            Map.entry(SHELLYDT_BLUWALLSWITCH4, "shellypluswallswitch4"), //
-            Map.entry(SHELLYDT_BLUWALLSWITCH4_2, "shellypluswallswitch4"), //
-            Map.entry(SHELLYDT_BLURCBUTTON4, "shellyplusrcbutton4"), //
-            Map.entry(SHELLYDT_BLUREMOTE, "shellyplusremote"), //
+            Map.entry(SHELLYDT_BLUBUTTON1, "shellyblubutton"), //
+            Map.entry(SHELLYDT_BLUWALLSWITCH4, "shellybluwallswitch4"), //
+            Map.entry(SHELLYDT_BLUWALLSWITCH4_2, "shellbluwallswitch4"), //
+            Map.entry(SHELLYDT_BLURCBUTTON4, "shellyblurcbutton4"), //
+            Map.entry(SHELLYDT_BLUREMOTE, "shellybluremote"), //
 
             // with unspecific model (string everything behind -
-            Map.entry(SHELLYDT_BLUBUTTONCLASS, "shellyplusbutton"), //
-            Map.entry(SHELLYDT_BLUDW, "shellyplusdw"), //
-            Map.entry(SHELLYDT_BLUMOTION, "shellyplusmotion"), //
-            Map.entry(SHELLYDT_BLUHT, "shellyplusht"));
+            Map.entry(SHELLYDT_BLUBUTTONCLASS, "shellyblubutton"), //
+            Map.entry(SHELLYDT_BLUDW, "shellybludw"), //
+            Map.entry(SHELLYDT_BLUMOTION, "shellyblumotion"), //
+            Map.entry(SHELLYDT_BLUHT, "shellybluht"));
 
     public static ThingUID getThingUID(String serviceName) {
         return getThingUID(serviceName, "", "");
