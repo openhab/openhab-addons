@@ -64,5 +64,5 @@ public enum WorxLandroidStatusCodes {
     @SerializedName("34")
     PAUSE,
     @SerializedName("99")
-    MANUEL_STOP;
+    MANUAL_STOP;
 }

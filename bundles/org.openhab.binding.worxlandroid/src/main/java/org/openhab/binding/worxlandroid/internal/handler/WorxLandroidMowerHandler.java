@@ -236,9 +236,9 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
                 setScheduledDays(theMower, groupId, channelId, command);
                 sendCommand(theMower,
                         theMower.scheduler2Supported()
-                                ? new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getSheduleArray1(),
-                                        theMower.getSheduleArray2())
-                                : new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getSheduleArray1()));
+                                ? new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1(),
+                                        theMower.getScheduleArray2())
+                                : new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1()));
             } else if (CHANNEL_DELAY.equals(channelId)) {
                 int delaySec = commandToInt(command, Units.SECOND);
                 sendCommand(theMower, new SetRainDelay(delaySec));
@@ -271,9 +271,9 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
             theMower.setEnable(OnOffType.ON.equals(command));
             sendCommand(theMower,
                     theMower.scheduler2Supported()
-                            ? new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getSheduleArray1(),
-                                    theMower.getSheduleArray2())
-                            : new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getSheduleArray1()));
+                            ? new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1(),
+                                    theMower.getScheduleArray2())
+                            : new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1()));
         } else {
             logger.warn("No action identified for command {} on channel {}", command, channel);
         }
@@ -296,9 +296,9 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
             theMower.setTimeExtension(command);
             sendCommand(theMower,
                     theMower.scheduler2Supported()
-                            ? new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getSheduleArray1(),
-                                    theMower.getSheduleArray2())
-                            : new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getSheduleArray1()));
+                            ? new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1(),
+                                    theMower.getScheduleArray2())
+                            : new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1()));
         } else {
             logger.warn("No action identified for command {} on channel {}", command, channel);
         }
