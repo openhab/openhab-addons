@@ -17,12 +17,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccJsonAwareHandler} is responsible for sharing the evcc api response
+ * The {@link EvccThingLifecycleAware} is responsible for sharing the evcc api response
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public interface EvccJsonAwareHandler {
+public interface EvccThingLifecycleAware {
     /**
      * This method shall update the channels from the JSON received from the evcc API
      * 

@@ -69,7 +69,7 @@ import com.google.gson.JsonObject;
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public abstract class EvccBaseThingHandler extends BaseThingHandler implements EvccJsonAwareHandler {
+public abstract class EvccBaseThingHandler extends BaseThingHandler implements EvccThingLifecycleAware {
 
     private final Logger logger = LoggerFactory.getLogger(EvccBaseThingHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;

@@ -54,7 +54,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     private final Gson gson = new Gson();
 
     private final HttpClient httpClient;
-    private final CopyOnWriteArrayList<EvccJsonAwareHandler> listeners = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<EvccThingLifecycleAware> listeners = new CopyOnWriteArrayList<>();
     private @Nullable ScheduledFuture<?> pollJob;
     private volatile JsonObject lastState = new JsonObject();
     private String endpoint = "";
@@ -120,11 +120,8 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
                 JsonObject returnValue = gson.fromJson(response.getContentAsString(), JsonObject.class);
                 if (null != returnValue) {
                     updateStatus(ThingStatus.ONLINE);
-                    if (returnValue.has("result")) {
-                        return Optional.of(returnValue.getAsJsonObject("result"));
-                    } else {
-                        return Optional.of(returnValue);
-                    }
+                    JsonObject result = returnValue.has("result") ? returnValue.getAsJsonObject("result") : returnValue;
+                    return Optional.of(result);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -138,7 +135,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     }
 
     private void notifyListeners(JsonObject state) {
-        for (EvccJsonAwareHandler listener : listeners) {
+        for (EvccThingLifecycleAware listener : listeners) {
             try {
                 listener.updateFromEvccState(state);
             } catch (Exception e) {
@@ -155,12 +152,12 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         return lastState;
     }
 
-    public void register(EvccJsonAwareHandler handler) {
+    public void register(EvccThingLifecycleAware handler) {
         listeners.addIfAbsent(handler);
         Optional.of(lastState).ifPresent(handler::updateFromEvccState);
     }
 
-    public void unregister(EvccJsonAwareHandler handler) {
+    public void unregister(EvccThingLifecycleAware handler) {
         listeners.remove(handler);
     }
 
