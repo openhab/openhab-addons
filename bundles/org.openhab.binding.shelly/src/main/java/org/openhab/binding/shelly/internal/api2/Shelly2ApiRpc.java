@@ -281,11 +281,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (profile.settings.inputs != null) {
             relayStatus.inputs = new ArrayList<>();
             for (int i = 0; i < profile.settings.inputs.size(); i++) {
-                ShellyInputState state = new ShellyInputState();
-                state.input = 0;
-                state.event = "";
-                state.eventCount = 0;
-                relayStatus.inputs.add(state);
+                relayStatus.inputs.add(new ShellyInputState(0));
             }
         }
         if (profile.isRoller) {
