@@ -17,4 +17,4 @@ ZONE_TRAINING=zone training
 BORDER_CUT=border cut
 SEARCHING_ZONE=searching zone
 PAUSE=pause
-MANUEL_STOP=manuel stop
+MANUAL_STOP=manual stop
