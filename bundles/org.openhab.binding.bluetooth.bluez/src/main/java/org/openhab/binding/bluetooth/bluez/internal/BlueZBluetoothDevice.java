@@ -237,23 +237,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return null;
     }
 
-    private @Nullable BluetoothGattDescriptor getDBusBlueZDescriptorByUUID(String uuid) {
-        BluetoothDevice dev = device;
-        if (dev == null) {
-            return null;
-        }
-        for (BluetoothGattService service : dev.getGattServices()) {
-            for (BluetoothGattCharacteristic c : service.getGattCharacteristics()) {
-                for (BluetoothGattDescriptor d : c.getGattDescriptors()) {
-                    if (d.getUuid().equalsIgnoreCase(uuid)) {
-                        return d;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     @Override
     public CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic) {
         BluetoothDevice dev = device;
