@@ -123,8 +123,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     protected UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
 
-    public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            UpnpControlBindingConfiguration configuration,
+    public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlBindingConfiguration configuration,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider) {
         super(thing);
@@ -679,7 +678,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Send a device search request to the UPnP remote device.
-     * 
+     *
      * Some devices, such as LinkPlay based systems (WiiM, Arylic, etc.) loose their registrations over time. Sending a
      * periodic search request will help keep the device registered.
      */
