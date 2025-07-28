@@ -802,22 +802,22 @@ for (product in schemas) {
             for (option of options) {
                 let value = optionToLabel(option);
                 var key = "channel-type.tuya._.command.option." + option.toLowerCase();
-                if (key in commands && value !== commands.get(key)) {
+                if (commands.has(key) && value !== commands.get(key)) {
                     key = "channel-type.tuya." + code.toLowerCase() + ".command.option." + option.toLowerCase();
                 }
-                if (key in commands && value !== commands.get(key)) {
+                if (commands.has(key) && value !== commands.get(key)) {
                     key = "channel-type.tuya." + code + ".command.option." + option.toLowerCase();
                 }
-                if (key in commands && value !== commands.get(key)) {
+                if (commands.has(key) && value !== commands.get(key)) {
                     key = "channel-type.tuya." + code.toLowerCase() + ".command.option." + option;
                 }
-                if (key in commands && value !== commands.get(key)) {
+                if (commands.has(key) && value !== commands.get(key)) {
                     key = "channel-type.tuya." + code + ".command.option." + option;
                 }
-                if (key in commands && value !== commands.get(key)) {
+                if (commands.has(key) && value !== commands.get(key)) {
                     key = "channel-type.tuya." + product + "_" + code + ".command.option." + option;
                 }
-                if (!(key in commands)) {
+                if (!commands.has(key)) {
                     commands.set(key, value);
                 }
             }
