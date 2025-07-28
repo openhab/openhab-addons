@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.bluetooth.grundfosalpha</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: GrundfosAlpha Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Grundfos Alpha Bluetooth Adapter</name>
 
   <dependencies>
     <dependency>
