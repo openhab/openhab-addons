@@ -172,28 +172,23 @@ public class ShellyDeviceProfile {
         }
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(device.numRollers);
-        List<ShellySettingsInput> inputs = settings.inputs;
-        if (isButton) {
+
+        if (isButton || isMultiButton) {
             // Initialize the tables
+            if (isButton) {
+                numInputs = 1;
+            }
             settings.inputs = new ArrayList<>();
-            ShellySettingsInput settings = new ShellySettingsInput();
-            settings.btnType = SHELLY_BTNT_MOMENTARY;
+            ShellySettingsInput isettings = new ShellySettingsInput(SHELLY_BTNT_MOMENTARY);
             if (isBlu && BLU_NUM_INPUTS.containsKey(thingTypeUID)) {
-                ShellyInputState input = new ShellyInputState();
-                input.input = 0;
-                input.event = "";
-                input.eventCount = 0;
-
+                ShellyInputState input = new ShellyInputState(0);
                 int numInputs = BLU_NUM_INPUTS.get(thingTypeUID);
-                logger.trace("{} ShellyBluApi constructor, number of inputs: {}", thingName, numInputs);
-
-                for (int i = 0; i < numInputs; i++) {
-                    inputs.set(i, settings);
-                    inputs.add(settings);
-                }
+            }
+            for (int i = 0; i < numInputs; i++) {
+                settings.inputs.add(isettings);
             }
         }
-        numInputs = inputs != null ? inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
+        numInputs = settings.inputs != null ? settings.inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
         numMeters = !isEMeter ? getInteger(device.numMeters) : getInteger(device.numEMeters);
