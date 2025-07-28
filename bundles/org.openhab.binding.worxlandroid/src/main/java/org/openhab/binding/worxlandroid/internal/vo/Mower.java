@@ -145,11 +145,11 @@ public class Mower {
         return result;
     }
 
-    public Object[] getSheduleArray1() {
+    public Object[] getScheduleArray1() {
         return getScheduleArray(schedules.get(0));
     }
 
-    public Object[] getSheduleArray2() {
+    public Object[] getScheduleArray2() {
         return scheduler2Supported() ? getScheduleArray(schedules.get(1)) : new Object[] {};
     }
 
