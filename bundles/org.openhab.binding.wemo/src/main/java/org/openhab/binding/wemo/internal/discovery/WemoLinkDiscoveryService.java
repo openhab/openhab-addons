@@ -18,6 +18,7 @@ import static org.openhab.binding.wemo.internal.WemoUtil.*;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -206,7 +207,7 @@ public class WemoLinkDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     @Override
     public String getUDN() {
-        return (String) thingHandler.getThing().getConfiguration().get(UDN);
+        return Objects.requireNonNullElse((String) thingHandler.getThing().getConfiguration().get(UDN), "");
     }
 
     @Override

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -749,7 +750,7 @@ public class SystemInfoHandler extends BaseThingHandler {
 
                 handleChannelConfigurationChange(oldChannel, newChannelConfig, PRIOIRITY_PARAM);
 
-                String newPriority = (String) newChannelConfig.get(PRIOIRITY_PARAM);
+                String newPriority = Objects.requireNonNullElse((String) newChannelConfig.get(PRIOIRITY_PARAM), "");
                 changeChannelPriority(channelUID, newPriority);
             }
 

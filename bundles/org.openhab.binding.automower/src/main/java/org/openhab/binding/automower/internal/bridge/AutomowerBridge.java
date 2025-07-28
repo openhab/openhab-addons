@@ -80,12 +80,20 @@ public class AutomowerBridge {
         }
     }
 
+    private String getAccessToken() throws AutomowerCommunicationException {
+        String token = authenticate().getAccessToken();
+        if (token == null) {
+            throw new AutomowerCommunicationException("Unable to authenticate, no access token available");
+        }
+        return token;
+    }
+
     /**
      * @return A result containing a list of mowers that are available for the current user
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public MowerListResult getAutomowers() throws AutomowerCommunicationException {
-        return automowerApi.getMowers(appKey, authenticate().getAccessToken());
+        return automowerApi.getMowers(appKey, getAccessToken());
     }
 
     /**
@@ -94,7 +102,7 @@ public class AutomowerBridge {
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public Mower getAutomowerStatus(String id) throws AutomowerCommunicationException {
-        return automowerApi.getMower(appKey, authenticate().getAccessToken(), id).getData();
+        return automowerApi.getMower(appKey, getAccessToken(), id).getData();
     }
 
     /**
@@ -103,7 +111,7 @@ public class AutomowerBridge {
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public MowerMessages getAutomowerMessages(String id) throws AutomowerCommunicationException {
-        return automowerApi.getMowerMessages(appKey, authenticate().getAccessToken(), id).getData();
+        return automowerApi.getMowerMessages(appKey, getAccessToken(), id).getData();
     }
 
     /**
@@ -136,7 +144,7 @@ public class AutomowerBridge {
 
         MowerCommandRequest request = new MowerCommandRequest();
         request.setData(mowerCommand);
-        automowerApi.sendCommand(appKey, authenticate().getAccessToken(), id, request);
+        automowerApi.sendCommand(appKey, getAccessToken(), id, request);
     }
 
     /**
@@ -161,8 +169,7 @@ public class AutomowerBridge {
         MowerCalendardRequest calendarRequest = new MowerCalendardRequest();
         calendarRequest.setData(mowerCalendar);
 
-        automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, hasWorkAreas, workAreaId,
-                calendarRequest);
+        automowerApi.sendCalendar(appKey, getAccessToken(), id, hasWorkAreas, workAreaId, calendarRequest);
     }
 
     /**
@@ -181,7 +188,7 @@ public class AutomowerBridge {
         MowerSettingsRequest settingsRequest = new MowerSettingsRequest();
         settingsRequest.setData(mowerSettings);
 
-        automowerApi.sendSettings(appKey, authenticate().getAccessToken(), id, settingsRequest);
+        automowerApi.sendSettings(appKey, getAccessToken(), id, settingsRequest);
     }
 
     /**
@@ -191,7 +198,7 @@ public class AutomowerBridge {
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public void sendAutomowerConfirmError(String id) throws AutomowerCommunicationException {
-        automowerApi.sendConfirmError(appKey, authenticate().getAccessToken(), id);
+        automowerApi.sendConfirmError(appKey, getAccessToken(), id);
     }
 
     /**
@@ -201,7 +208,7 @@ public class AutomowerBridge {
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public void sendAutomowerResetCuttingBladeUsageTime(String id) throws AutomowerCommunicationException {
-        automowerApi.sendResetCuttingBladeUsageTime(appKey, authenticate().getAccessToken(), id);
+        automowerApi.sendResetCuttingBladeUsageTime(appKey, getAccessToken(), id);
     }
 
     /**
@@ -221,7 +228,7 @@ public class AutomowerBridge {
         MowerStayOutZoneRequest zoneRequest = new MowerStayOutZoneRequest();
         zoneRequest.setData(zoneData);
 
-        automowerApi.sendStayOutZone(appKey, authenticate().getAccessToken(), id, zoneId, zoneRequest);
+        automowerApi.sendStayOutZone(appKey, getAccessToken(), id, zoneId, zoneRequest);
     }
 
     /**
@@ -241,6 +248,6 @@ public class AutomowerBridge {
         MowerWorkAreaRequest workAreaRequest = new MowerWorkAreaRequest();
         workAreaRequest.setData(workAreaData);
 
-        automowerApi.sendWorkArea(appKey, authenticate().getAccessToken(), id, workAreaId, workAreaRequest);
+        automowerApi.sendWorkArea(appKey, getAccessToken(), id, workAreaId, workAreaRequest);
     }
 }
