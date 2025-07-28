@@ -13,6 +13,7 @@
 package org.openhab.binding.bluetooth.bluez.internal;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -136,6 +137,12 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
         });
     }
 
+    private void onRSSIUpdate(String dbusPath, Variant<?> variant) {
+        if (variant.getValue() instanceof Short rssi) {
+            notifyListeners(new RssiEvent(dbusPath, rssi));
+        }
+    }
+
     private void onDiscoveringUpdate(String dbusPath, Variant<?> variant) {
         if (variant.getValue() instanceof Boolean discovered) {
             notifyListeners(new AdapterDiscoveringChangedEvent(dbusPath, discovered));
@@ -207,14 +214,25 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
     }
 
     private void onValueUpdate(String dbusPath, Variant<?> variant) {
-        if (variant.getValue() instanceof byte[] bytes) {
-            notifyListeners(new CharacteristicUpdateEvent(dbusPath, bytes));
+        Object value = variant.getValue();
+        if (value == null) {
+            return;
+        }
+
+        switch (value) {
+            case byte[] bytes -> notifyListeners(new CharacteristicUpdateEvent(dbusPath, bytes));
+            case List<?> byteList when !byteList.isEmpty() && byteList.get(0) instanceof Byte ->
+                notifyListeners(new CharacteristicUpdateEvent(dbusPath, toByteArray(byteList)));
+            default -> logger.debug("Unhandled Variant value type: {}", value != null ? value.getClass() : "null");
         }
     }
 
-    private void onRSSIUpdate(String dbusPath, Variant<?> variant) {
-        if (variant.getValue() instanceof Short rssi) {
-            notifyListeners(new RssiEvent(dbusPath, rssi));
+    private static byte[] toByteArray(List<?> list) {
+        byte[] bytes = new byte[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            Object element = list.get(i);
+            bytes[i] = (element instanceof Byte b) ? b : 0;
         }
+        return bytes;
     }
 }
