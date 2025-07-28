@@ -15,8 +15,8 @@ package org.openhab.binding.shelly.internal.discovery;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -205,11 +205,13 @@ public class ShellyThingCreatorTest {
                 Arguments.of("SPSW-102PE16EU", "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
                 Arguments.of("SPSW-202PE16EU", "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
                 Arguments.of(SHELLYDT_PRO3, "", THING_TYPE_SHELLYPRO3), //
-                Arguments.of(SHELLYDT_PROEM50, "", THING_TYPE_SHELLYPROEM50), //
-                Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
                 Arguments.of(SHELLYDT_PRO4PM, "", THING_TYPE_SHELLYPRO4PM), //
                 Arguments.of(SHELLYDT_PRO4PM_2, "", THING_TYPE_SHELLYPRO4PM), //
                 Arguments.of(SHELLYDT_4PRO, "", THING_TYPE_SHELLYPRO4PM), //
+                Arguments.of(SHELLYDT_PROEM50, "", THING_TYPE_SHELLYPROEM50), //
+                Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
+                Arguments.of(SHELLYDT_PRO3EM3CT63, "", THING_TYPE_SHELLYPRO3EM63), //
+                Arguments.of(SHELLYDT_PRO3EM400, "", THING_TYPE_SHELLYPRO3EM400), //
 
                 // BLU Series
                 Arguments.of(SHELLYDT_BLUBUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
