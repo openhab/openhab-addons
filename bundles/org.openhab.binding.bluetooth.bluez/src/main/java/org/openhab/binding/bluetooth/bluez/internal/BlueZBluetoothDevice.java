@@ -205,13 +205,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return false;
     }
 
-    private void ensureConnected() {
-        BluetoothDevice dev = device;
-        if (dev == null || Boolean.FALSE.equals(dev.isConnected())) {
-            throw new IllegalStateException("DBusBlueZ device is not set or not connected");
-        }
-    }
-
     private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByUUID(String uuid) {
         BluetoothDevice dev = device;
         if (dev == null) {
