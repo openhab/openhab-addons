@@ -21,6 +21,8 @@ import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.User;
 import org.apache.ftpserver.ftplet.UserManager;
 import org.apache.ftpserver.usermanager.UsernamePasswordAuthentication;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class FTPUserManager implements UserManager {
     private final Logger logger = LoggerFactory.getLogger(FTPUserManager.class);
 
@@ -37,7 +40,7 @@ public class FTPUserManager implements UserManager {
     private Map<String, UsernamePassword> authenticationData = new HashMap<>();
 
     @Override
-    public User authenticate(final Authentication inAuth) throws AuthenticationFailedException {
+    public User authenticate(final @Nullable Authentication inAuth) throws AuthenticationFailedException {
         logger.trace("authenticate: {}", inAuth);
 
         UsernamePasswordAuthentication upa = (UsernamePasswordAuthentication) inAuth;
@@ -50,7 +53,7 @@ public class FTPUserManager implements UserManager {
         return new FTPUser(login, idleTimeout);
     }
 
-    private boolean autheticate(String login, String password) {
+    private boolean autheticate(@Nullable String login, @Nullable String password) {
         boolean result = false;
 
         if (login != null && password != null) {
@@ -82,42 +85,42 @@ public class FTPUserManager implements UserManager {
     }
 
     @Override
-    public User getUserByName(final String login) throws FtpException {
+    public User getUserByName(final @Nullable String login) throws FtpException {
         logger.trace("getUserByName: {}", login);
         return new FTPUser(login, idleTimeout);
     }
 
     @Override
-    public void delete(String arg0) throws FtpException {
+    public void delete(@Nullable String arg0) throws FtpException {
         logger.trace("delete: {}", arg0);
     }
 
     @Override
-    public boolean doesExist(String arg0) throws FtpException {
+    public boolean doesExist(@Nullable String arg0) throws FtpException {
         logger.trace("doesExist: {}", arg0);
         return false;
     }
 
     @Override
-    public String getAdminName() throws FtpException {
+    public @Nullable String getAdminName() throws FtpException {
         logger.trace("getAdminName");
         return null;
     }
 
     @Override
-    public String[] getAllUserNames() throws FtpException {
+    public @Nullable String @Nullable [] getAllUserNames() throws FtpException {
         logger.trace("getAllUserNames");
         return null;
     }
 
     @Override
-    public boolean isAdmin(String arg0) throws FtpException {
+    public boolean isAdmin(@Nullable String arg0) throws FtpException {
         logger.trace("isAdmin: {}", arg0);
         return false;
     }
 
     @Override
-    public void save(User arg0) throws FtpException {
+    public void save(@Nullable User arg0) throws FtpException {
         logger.trace("save: {}", arg0);
     }
 }

@@ -14,8 +14,12 @@ package org.openhab.binding.folding.internal.handler;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.folding.internal.dto.SlotInfo;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -33,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marius Bjørnstad - Initial contribution
  */
+@NonNullByDefault
 public class SlotHandler extends BaseThingHandler implements SlotUpdateListener {
 
     private Logger logger = LoggerFactory.getLogger(SlotHandler.class);
@@ -46,8 +51,11 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
         getBridgeHandler().registerSlot(myId(), this);
     }
 
-    private FoldingClientHandler getBridgeHandler() {
-        return (FoldingClientHandler) super.getBridge().getHandler();
+    private @Nullable FoldingClientHandler getBridgeHandler() {
+        if (super.getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof FoldingClientHandler handler) {
+            return handler;
+        }
+        return null;
     }
 
     private String myId() {

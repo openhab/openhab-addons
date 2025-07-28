@@ -12,33 +12,28 @@
  */
 package org.openhab.binding.ftpupload.internal.ftp;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Simple wrapper class to store user name and password pairs.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 class UsernamePassword {
     private String username;
     private String password;
 
     UsernamePassword(String username, String password) {
-        this.setUsername(username);
-        this.setPassword(password);
+        this.username = username;
+        this.password = password;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
