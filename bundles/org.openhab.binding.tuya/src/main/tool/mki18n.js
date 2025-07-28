@@ -789,9 +789,9 @@ for (product in schemas) {
     for (code in schemas[product]) {
         var key = "channel-type.tuya." + code.toLowerCase() + ".label";
         let value = codeToLabel(code);
-        if (key in labels) {
+        if (labels.has(key)) {
             if (value !== labels.get(key)) {
-                process.stderr.write("Conflict for " + key + " labels: \"", labels.get(key), "\" and \"" + value + "\"");
+                process.stderr.write("Conflict for " + key + " labels: \"" + labels.get(key) + "\" and \"" + value + "\"");
             }
         } else {
             labels.set(key, value);
