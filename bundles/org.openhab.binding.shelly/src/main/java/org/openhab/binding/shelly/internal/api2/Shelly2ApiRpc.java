@@ -251,6 +251,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         }
 
+        if (profile.numInputs > 0) {
+            profile.status.inputs = new ArrayList<>();
+            relayStatus.inputs = new ArrayList<>();
+            for (int i = 0; i < profile.numInputs; i++) {
+                ShellyInputState input = new ShellyInputState(0);
+                profile.status.inputs.add(input);
+                relayStatus.inputs.add(input);
+            }
+        }
+
         // handle special cases, because there is no indicator for a meter in GetConfig
         // Pro 3EM has 3 meters
         // Pro 2 has 2 relays, but no meters
@@ -285,6 +295,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 relayStatus.inputs.add(new ShellyInputState(0));
             }
         }
+
         if (profile.isRoller) {
             profile.status.rollers = new ArrayList<>();
             for (int i = 0; i < profile.numRollers; i++) {

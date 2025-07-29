@@ -15,9 +15,10 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.buildBluServiceName;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorTmp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorAccel;
@@ -72,6 +74,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), //
             Map.entry("80", SHELLY_BTNEVENT_HOLDING), //
             Map.entry("254", SHELLY_BTNEVENT_HOLDING)); // for firmware prior to 1.0.20
+    private static final Map<ThingTypeUID, Integer> BLU_NUM_INPUTS = Map.ofEntries( //
+            Map.entry(THING_TYPE_SHELLYBLUBUTTON1, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
+            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4));
 
     /**
      * Regular constructor - called by Thing handler
@@ -82,6 +88,20 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      */
     public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
         super(thingName, thingTable, thing);
+
+        ShellyDeviceProfile profile = thing.getProfile();
+        ThingTypeUID thingTypeUID = thing.getThing().getThingTypeUID();
+        if (BLU_NUM_INPUTS.containsKey(thingTypeUID)) {
+            // Initialize the tables
+            profile.numInputs = BLU_NUM_INPUTS.get(thingTypeUID);
+            profile.settings.inputs = new ArrayList<>();
+            profile.status.inputs = new ArrayList<>();
+            for (int i = 0; i < profile.numInputs; i++) {
+                profile.settings.inputs.add(new ShellySettingsInput(SHELLY_BTNT_MOMENTARY));
+                profile.status.inputs.add(new ShellyInputState(0));
+            }
+        }
+        deviceStatus = profile.status;
     }
 
     @Override
@@ -155,6 +175,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         if (!connected) {
             throw new ShellyApiException("Thing is not yet initialized -> status not available");
         }
+
         return deviceStatus;
     }
 
@@ -253,12 +274,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.lux.isValid = true;
                             sensorData.lux.value = (double) e.data.illuminance;
                         }
-                        if (e.data.temperature != null) {
+                        if (e.data.temperatures != null) {
                             if (sensorData.tmp == null) {
                                 sensorData.tmp = new ShellySensorTmp();
                             }
                             sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
-                            sensorData.tmp.tC = e.data.temperature;
+                            sensorData.tmp.tC = e.data.temperatures[1]; // CHECK
                             sensorData.tmp.isValid = true;
                         }
                         if (e.data.humidity != null) {
@@ -282,10 +303,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                     gson.toJson(e.data.buttonEvents));
                             for (int bttnIdx = 0; bttnIdx < e.data.buttonEvents.length; bttnIdx++) {
                                 if (e.data.buttonEvents[bttnIdx] != 0) {
-                                    ShellyInputState input = deviceStatus.inputs != null
-                                            ? deviceStatus.inputs.get(bttnIdx)
-                                            : new ShellyInputState();
-                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE, e.data.buttonEvents[bttnIdx] + "");
+                                    ShellyInputState input = deviceStatus.inputs.get(bttnIdx);
+                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE,
+                                            e.data.buttonEvents[bttnIdx].toString());
                                     input.eventCount++;
                                     deviceStatus.inputs.set(bttnIdx, input);
 
@@ -293,9 +313,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                     String suffix = profile.getInputSuffix(bttnIdx);
                                     t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
                                             getStringType(input.event));
-                                    t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
-                                            getDecimal(input.eventCount));
-                                    t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
+                                    // ignore HOLDING events for counter and trigger
+                                    if (!SHELLY_BTNEVENT_HOLDING.equalsIgnoreCase(input.event)) {
+                                        t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
+                                                getDecimal(input.eventCount));
+                                        t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
+                                    }
                                 }
                             }
                         }

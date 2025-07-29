@@ -17,7 +17,6 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
@@ -55,10 +53,6 @@ public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
     private static final Pattern GEN1_VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
     private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]*)?");
-    private static final Map<ThingTypeUID, Integer> BLU_NUM_INPUTS = Map.ofEntries( //
-            Map.entry(THING_TYPE_SHELLYBLUBUTTON1, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
-            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4));
 
     public boolean initialized = false; // true when initialized
 
@@ -173,22 +167,6 @@ public class ShellyDeviceProfile {
         }
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(device.numRollers);
-
-        if (isButton || isMultiButton) {
-            // Initialize the tables
-            if (isButton) {
-                numInputs = 1;
-            }
-            settings.inputs = new ArrayList<>();
-            ShellySettingsInput isettings = new ShellySettingsInput(SHELLY_BTNT_MOMENTARY);
-            if (isBlu && BLU_NUM_INPUTS.containsKey(thingTypeUID)) {
-                ShellyInputState input = new ShellyInputState(0);
-                int numInputs = BLU_NUM_INPUTS.get(thingTypeUID);
-            }
-            for (int i = 0; i < numInputs; i++) {
-                settings.inputs.add(isettings);
-            }
-        }
         numInputs = settings.inputs != null ? settings.inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;

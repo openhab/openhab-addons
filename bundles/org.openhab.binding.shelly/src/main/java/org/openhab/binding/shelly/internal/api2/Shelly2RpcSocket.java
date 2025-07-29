@@ -274,8 +274,8 @@ public class Shelly2RpcSocket {
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
                                             ShellyBluSensorHandler.addBluThing(message.src, e, thingTable);
                                         } else {
-                                            logger.debug("{}: NotifyEvent {} for unknown device {}", message.src,
-                                                    e.event, e.data.name);
+                                            logger.debug("{}: NotifyEvent {} for unknown device {} ({})", message.src,
+                                                    e.event, e.data.name, e.data.addr);
                                         }
                                     }
                                 } else {
