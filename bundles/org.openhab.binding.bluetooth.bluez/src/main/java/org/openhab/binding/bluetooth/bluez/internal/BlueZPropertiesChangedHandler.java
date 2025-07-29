@@ -214,16 +214,8 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
     }
 
     private void onValueUpdate(String dbusPath, Variant<?> variant) {
-        Object value = variant.getValue();
-        if (value == null) {
-            return;
-        }
-
-        switch (value) {
-            case byte[] bytes -> notifyListeners(new CharacteristicUpdateEvent(dbusPath, bytes));
-            case List<?> byteList when !byteList.isEmpty() && byteList.get(0) instanceof Byte ->
-                notifyListeners(new CharacteristicUpdateEvent(dbusPath, toByteArray(byteList)));
-            default -> logger.debug("Unhandled Variant value type: {}", value != null ? value.getClass() : "null");
+        if (variant.getValue() instanceof List<?> byteList && !byteList.isEmpty() && byteList.get(0) instanceof Byte) {
+            notifyListeners(new CharacteristicUpdateEvent(dbusPath, toByteArray(byteList)));
         }
     }
 
