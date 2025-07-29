@@ -789,7 +789,7 @@ public class SmartThingsApiService implements SamsungTvService {
                         Optional<STSSEData> data = Optional.ofNullable(new Gson().fromJson(rawData, STSSEData.class));
                         data.ifPresentOrElse(d -> {
                             d.setTvInfo(tvInfo);
-                            // Disable this section for now, as not sure it works, or is neccessary
+                            // Disable this section for now, as not sure it works, or is necessary
                             // String[] inputList = d.getInputSourceList();
                             // if (inputList.length > 0) {
                             // logger.trace("{}: SSE Got input source list: {}", host, Arrays.asList(inputList));
