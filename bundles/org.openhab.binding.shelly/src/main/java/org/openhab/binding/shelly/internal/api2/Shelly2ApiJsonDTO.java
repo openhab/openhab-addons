@@ -135,6 +135,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_LPUSH = "long_push";
     public static final String SHELLY2_EVENT_SLPUSH = "short_long_push";
     public static final String SHELLY2_EVENT_LSPUSH = "long_short_push";
+    public static final String SHELLY2_EVENT_HOLDING = "holding";
 
     public static final String SHELLY2_EVENT_SLEEP = "sleep";
     public static final String SHELLY2_EVENT_CFGCHANGED = "config_changed";
@@ -1225,8 +1226,8 @@ public class Shelly2ApiJsonDTO {
         public Double rotation;
         @SerializedName("Motion")
         public Integer motionState;
-        @SerializedName("Temperature")
-        public Double temperature;
+        @SerializedName("Temperatures")
+        public Double[] temperatures;
         @SerializedName("Humidity")
         public Double humidity;
 
