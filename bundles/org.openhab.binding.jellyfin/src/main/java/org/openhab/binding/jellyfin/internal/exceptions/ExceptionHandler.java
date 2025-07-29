@@ -13,18 +13,19 @@
 package org.openhab.binding.jellyfin.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.i18n.ResourceHelper;
 
 /**
- * Base class for all JellyfinExceptions.
+ * Exception handler implementation
  * 
- * @author Patrik Gfeller - Initial Contribution
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public abstract class JellyfinException extends Exception {
-    private static final long serialVersionUID = 0L;
+public class ExceptionHandler implements org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType {
 
-    public JellyfinException(String message) {
-        super(message.startsWith("@text") ? ResourceHelper.getResourceString(message) : message);
+    public ExceptionHandler() {
+    }
+
+    @Override
+    public void handle(Exception exception) {
     }
 }

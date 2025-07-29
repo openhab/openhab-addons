@@ -58,8 +58,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected synchronized void startScan() {
         var configuration = BindingConfiguration.getConfiguration(configurationService);
-        ServerDiscoveryHelper discoverer = new ServerDiscoveryHelper(configuration.discoveryPort,
-                configuration.discoveryTimeout);
+        ServerDiscovery discoverer = new ServerDiscovery(configuration.discoveryPort, configuration.discoveryTimeout);
 
         List<ServerDiscoveryResult> servers = discoverer.discoverServers();
 
@@ -84,8 +83,9 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>();
 
         try {
+            var uri = server.getAddress();
             var client = new ApiClient();
-            client.updateBaseUri(server.getAddress());
+            client.updateBaseUri(uri);
 
             var systemApi = new SystemApi(client);
             var systemInformation = systemApi.getPublicSystemInfo();
@@ -93,6 +93,8 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, systemInformation.getId());
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemInformation.getVersion());
             properties.put(Thing.PROPERTY_VENDOR, "https://jellyfin.org");
+
+            properties.put(Constants.PROPERTY_SERVER_URI, uri);
         } catch (ApiException e) {
             logger.warn("Unable to get device properties: {}", e);
         }

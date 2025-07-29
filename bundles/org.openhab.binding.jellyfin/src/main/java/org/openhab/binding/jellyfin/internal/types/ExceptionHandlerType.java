@@ -20,6 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public interface JellyfinExceptionHandler {
+public interface ExceptionHandlerType {
     void handle(Exception exception);
 }

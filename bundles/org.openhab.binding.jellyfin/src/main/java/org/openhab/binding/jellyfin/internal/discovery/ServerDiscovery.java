@@ -35,10 +35,10 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial Contribution
  */
 @NonNullByDefault
-class ServerDiscoveryHelper {
+class ServerDiscovery {
     private static final String DISCOVERY_MESSAGE = "who is JellyfinServer?";
 
-    private final Logger logger = LoggerFactory.getLogger(ServerDiscoveryHelper.class);
+    private final Logger logger = LoggerFactory.getLogger(ServerDiscovery.class);
 
     private final List<ServerDiscoveryResult> serverList = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
@@ -46,7 +46,7 @@ class ServerDiscoveryHelper {
     private final int port;
     private final int timeout;
 
-    ServerDiscoveryHelper(int port, int timeout) {
+    ServerDiscovery(int port, int timeout) {
         this.port = port;
         this.timeout = timeout;
     }
