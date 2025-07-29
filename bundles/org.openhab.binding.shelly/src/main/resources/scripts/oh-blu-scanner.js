@@ -1,5 +1,5 @@
 // Device and Service IDs for BLE scanning
-let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBTR", "SBRC", "SBDW", "SBMO", "SBHT"];
+let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBRC", "SBDW", "SBMO", "SBHT"];
 let ALLTERCO_MFD_ID_STR = "0ba9";
 let BTHOME_SVC_ID_STR = "fcd2";
 
@@ -27,7 +27,7 @@ let BTH_BUTTON_INDEX = 0x3a;  // Button object ID
 let BTH = [];
 BTH[0x00] = { n: "pid", t: uint8 };                        // Packet ID
 BTH[0x01] = { n: "Battery", t: uint8, u: "%" };            // Battery level in percent
-BTH[0x02] = { n: "Temperature", t: int16, f: 0.01 };       // Temperature in °C (scaled by 0.01)
+BTH[0x02] = { n: "Temperatures", t: int16, f: 0.01 };      // Temperature in °C (scaled by 0.01)
 BTH[0x03] = { n: "Humidity", t: uint16, f: 0.01 };         // Relative humidity % (scaled by 0.01)
 BTH[0x05] = { n: "Illuminance", t: uint24, f: 0.01 };      // Light level (scaled by 0.01)
 BTH[0x08] = { n: "Dewpoint", t: int16, f: 0.01 };          // Dewpoint temperature (scaled by 0.01)
