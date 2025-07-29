@@ -97,6 +97,7 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PLUSSMOKE = "SNSN-0031Z";
     public static final String SHELLYDT_PLUSUNI = "SNSN-0043X";
     public static final String SHELLYDT_PLUSDIMMERUS = "SNDM-0013US";
+    public static final String SHELLYDT_PLUSDIMMERG3 = "S3DM-0A101WWL";
     public static final String SHELLYDT_PLUSDIMMER10V = "SNDM-00100WW";
     public static final String SHELLYDT_PLUSDIMMER0110VG3 = "S3DM-0010WW";
     public static final String SHELLYDT_PLUSWALLDISPLAY = "SAWD-0A1XX10EU1";
@@ -225,6 +226,7 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGUS = new ThingTypeUID(BINDING_ID, "shellyplusplugus");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMERUS = new ThingTypeUID(BINDING_ID, "shellypluswdus");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMER10V = new ThingTypeUID(BINDING_ID, "shellyplus10v");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMER = new ThingTypeUID(BINDING_ID, "shellyplusdimmer");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSRGBWPM = new ThingTypeUID(BINDING_ID, "shellyplusrgbwpm");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSSTRIP = new ThingTypeUID(BINDING_ID, "shellyplusstrip");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSEM = new ThingTypeUID(BINDING_ID, "shellyplusem");
@@ -316,6 +318,7 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMERUS),
             Map.entry(SHELLYDT_PLUSDIMMER10V, THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry(SHELLYDT_PLUSDIMMER0110VG3, THING_TYPE_SHELLYPLUSDIMMER10V),
+            Map.entry(SHELLYDT_PLUSDIMMERG3, THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry(SHELLYDT_PLUSRGBWPM, THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry(SHELLYDT_PLUSEM, THING_TYPE_SHELLYPLUSEM),
             Map.entry(SHELLYDT_PLUS3EM63, THING_TYPE_SHELLYPLUS3EM63),
@@ -438,6 +441,7 @@ public class ShellyThingCreator {
             Map.entry("shellyplusuni", THING_TYPE_SHELLYPLUSUNI),
             Map.entry("shellypluswdus", THING_TYPE_SHELLYPLUSDIMMERUS),
             Map.entry("shellyplus10v", THING_TYPE_SHELLYPLUSDIMMER10V),
+            Map.entry("shellyplusdimmer", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
             Map.entry("shellyplusem", THING_TYPE_SHELLYPLUSEM),

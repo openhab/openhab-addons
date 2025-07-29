@@ -80,7 +80,7 @@ public class ShellyDeviceProfile {
     public int numRelays = 0; // number of relays/outputs
     public int numRollers = 0; // number of Rollers, usually 1
     public boolean isRoller = false; // true for Shelly2 in roller mode
-    public boolean isDimmer = false; // true for a Shelly Dimmer (SHDM-1)
+    public boolean isDimmer = false; // true for a Shelly Dimmer
     public int numInputs = 0; // number of inputs
 
     public int numMeters = 0;
@@ -200,7 +200,8 @@ public class ShellyDeviceProfile {
         String type = getString(device.type);
         isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
                 || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS) || THING_TYPE_SHELLYPLUSDIMMERUS.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSDIMMER10V.equals(thingTypeUID);
+                || THING_TYPE_SHELLYPLUSDIMMER10V.equals(thingTypeUID)
+                || THING_TYPE_SHELLYPLUSDIMMER.equals(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = THING_TYPE_SHELLYDUO.equals(thingTypeUID) || THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID)
                 || THING_TYPE_SHELLYDUORGBW.equals(thingTypeUID);
@@ -305,6 +306,7 @@ public class ShellyDeviceProfile {
             return ""; // RGBW2 has only 1 channel
         } else if (isRoller || isDimmer) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
+            // Dimmer has up to 2 inputs to control light
             return String.valueOf(idx);
         } else if (hasRelays) {
             return numRelays == 1 && numInputs >= 2 ? String.valueOf(idx) : "";
