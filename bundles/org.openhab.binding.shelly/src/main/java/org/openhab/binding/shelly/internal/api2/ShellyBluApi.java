@@ -144,6 +144,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         if (!connected) {
             throw new ShellyApiException("Thing is not yet initialized -> status not available");
         }
+
         return deviceStatus;
     }
 
