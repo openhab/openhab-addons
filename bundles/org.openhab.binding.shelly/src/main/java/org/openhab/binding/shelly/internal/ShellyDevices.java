@@ -703,5 +703,8 @@ public class ShellyDevices {
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //
             Map.entry(THING_TYPE_SHELLYBLUBUTTON1, 1), //
             Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUDW, 1));
+            Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
+            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
+            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 1));
 }
