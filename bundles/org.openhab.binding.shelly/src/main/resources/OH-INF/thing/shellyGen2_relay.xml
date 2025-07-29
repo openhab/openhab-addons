@@ -541,6 +541,20 @@
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
+	<thing-type id="shellyplusdimmer">
+		<label>Shelly Plus Dimmer</label>
+		<description>@text/thing-type.shelly.shellyplusdimmer.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
 	<thing-type id="shellyplus3em63">
 		<label>Shelly Plues 3EM-63</label>
 		<description>@text/thing-type.shelly.shellyplus3em63.description</description>
