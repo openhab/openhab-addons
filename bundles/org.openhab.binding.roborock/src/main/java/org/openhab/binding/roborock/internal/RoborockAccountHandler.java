@@ -62,6 +62,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.lifecycle.MqttClientConnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
@@ -340,6 +341,19 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
         Mqtt5SimpleAuth auth = Mqtt5SimpleAuth.builder().username(mqttUser).password(mqttPassword.getBytes()).build();
 
+        final MqttClientConnectedListener connectedListener = ctx -> {
+            String topic = "rr/m/o/" + rriot.u + "/" + ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10)
+                    + "/#";
+            this.mqttClient.subscribeWith().topicFilter(topic).callback(this::handleMessage).send()
+                    .whenComplete((subAck, error) -> {
+                        if (error == null) {
+                            logger.debug("Subscribed to topic {}", topic);
+                        } else {
+                            logger.warn("Unable to subscribe to {}", topic, error);
+                        }
+                    });
+        };
+
         final MqttClientDisconnectedListener disconnectListener = ctx -> {
             boolean expectedShutdown = ctx.getSource() == MqttDisconnectSource.USER
                     && ctx.getCause() instanceof Mqtt5DisconnectException;
@@ -369,6 +383,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 .serverHost(mqttHost) //
                 .serverPort(mqttPort) //
                 .sslWithDefaultConfig() //
+                .addConnectedListener(connectedListener) //
                 .addDisconnectedListener(disconnectListener) //
                 .automaticReconnectWithDefaultConfig() //
                 .buildAsync();
@@ -378,14 +393,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             // client.connectWith().keepAlive(60).send();
             client.connect().get();
             logger.debug("Established MQTT connection.");
-
-            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
-            client.subscribeWith().topicFilter(topic).callback(this::handleMessage).send().get();
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             boolean isAuthFailure = cause instanceof Mqtt5ConnAckException connAckException
                     && connAckException.getMqttMessage().getReasonCode() == Mqtt5ConnAckReasonCode.NOT_AUTHORIZED;
-            // teardownAndScheduleReconnection();
             mqttConnectTask.cancel();
             mqttConnectTask.schedule(280);
             if (isAuthFailure) {
@@ -411,11 +422,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 try {
                     logger.trace("Submit response to child {} -> {}", destination, entry.getKey().getUID());
                     entry.getValue().handleMessage(publish.getPayloadAsBytes());
-                } catch (Exception e) {
-                    logger.error(
+                } catch (RuntimeException e) {
+                    logger.debug(
                             "Unhandled exception processing MQTT message for device {}. Message will be discarded.",
                             destination, e);
                 }
+                logger.trace("MQTT message processed - from AccountHandler");
                 return;
             }
         }

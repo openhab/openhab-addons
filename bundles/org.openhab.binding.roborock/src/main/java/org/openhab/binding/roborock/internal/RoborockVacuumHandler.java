@@ -351,7 +351,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                                 new DecimalType(homeData.result.devices[i].deviceStatus.sideBrushWorkTime));
                         updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
                                 new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
-                        // also look at array size of homeData.result.rooms[i] and populate rooms list....
+
                         homeRooms = homeData.result.rooms;
                         if (homeData.result.devices[i].online == true) {
                             sendAllMqttCommands();

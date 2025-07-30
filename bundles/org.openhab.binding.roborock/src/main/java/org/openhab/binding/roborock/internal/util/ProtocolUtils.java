@@ -229,9 +229,8 @@ public final class ProtocolUtils {
      * @return True if the CRC32 matches, false otherwise.
      */
     private static boolean validateCrc32(byte[] message, int expectedCrc32) {
-        byte[] buf = Arrays.copyOfRange(message, 0, message.length - CRC_LENGTH);
         CRC32 crc32 = new CRC32();
-        crc32.update(buf);
+        crc32.update(message, 0, message.length - CRC_LENGTH);
         if (crc32.getValue() != expectedCrc32) {
             logger.debug("CRC32 mismatch. Calculated: {}, Expected: {}", crc32.getValue(), expectedCrc32);
             return false;
