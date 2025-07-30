@@ -63,7 +63,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
                 case DISCONNECTING: // WOL will not stop the shutdown process, but we must not update the state to ON
                 case DISCONNECTED:
                     String macAddress = configProvider.getMacAddress();
-                    String broadcaseAddress = configProvider.getBroadcastAddress();
+                    String broadcastAddress = configProvider.getBroadcastAddress();
                     if (macAddress.isEmpty()) {
                         logger.debug("""
                                 Received ON - Turning TV on via API is not supported by LG WebOS TVs. \
@@ -75,13 +75,13 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
                         for (int i = 0; i < WOL_PACKET_RETRY_COUNT; i++) {
                             scheduler.schedule(() -> {
                                 try {
-                                    if (broadcaseAddress.isEmpty()) {
+                                    if (broadcastAddress.isEmpty()) {
                                         logger.debug("Sending WOL packet to {} without broadcast address.", macAddress);
                                         WakeOnLanUtility.sendWOLPacket(macAddress);
                                     } else {
                                         logger.debug("Sending WOL packet to {} with broadcast address {}.", macAddress,
-                                                broadcaseAddress);
-                                        WakeOnLanUtility.sendWOLPacket(macAddress, broadcaseAddress);
+                                                broadcastAddress);
+                                        WakeOnLanUtility.sendWOLPacket(macAddress, broadcastAddress);
                                     }
                                 } catch (IllegalArgumentException e) {
                                     logger.debug("Failed to send WOL packet: {}", e.getMessage());

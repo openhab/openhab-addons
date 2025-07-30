@@ -50,7 +50,7 @@ Parameters:
 ### Configuration for wake-on-lan in docker
 
 To be able to turn on the TV from within a docker container, the binding needs to know where to send the broadcast wakeonlan packet to. Configure the
-broadcast address of the network the TV is located in as `broadcaseAddress`.
+broadcast address of the network the TV is located in as `broadcastAddress`.
 
 Example: If your TV has the IP address `192.168.0.123`, the broadcast address is `192.168.0.255`.
 
