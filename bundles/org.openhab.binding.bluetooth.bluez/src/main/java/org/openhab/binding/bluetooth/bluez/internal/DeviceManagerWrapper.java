@@ -66,6 +66,7 @@ public class DeviceManagerWrapper {
         return null;
     }
 
+    @SuppressWarnings("null")
     public synchronized List<BluetoothDevice> getDevices(BluetoothAdapter adapter) {
         if (deviceManager != null) {
             return deviceManager.getDevices(adapter.getAddress(), true);
