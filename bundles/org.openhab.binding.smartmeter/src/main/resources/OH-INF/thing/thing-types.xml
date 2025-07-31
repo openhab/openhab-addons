@@ -72,6 +72,16 @@
 		</config-description>
 	</thing-type>
 
+	<channel-type id="volume">
+		<item-type>Number:Volume</item-type>
+		<label>Volume</label>
+		<description>The volume of gas/water consumed.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="generic">
 		<item-type>Number</item-type>
 		<label>Measurement</label>

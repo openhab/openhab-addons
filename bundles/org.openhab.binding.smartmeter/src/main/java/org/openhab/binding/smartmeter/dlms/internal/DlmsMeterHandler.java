@@ -154,6 +154,8 @@ public class DlmsMeterHandler extends BaseThingHandler {
                                 channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_ENERGY;
                             } else if (unit.isCompatible(Units.VAR)) {
                                 channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
+                            } else if (unit.isCompatible(Units.LITRE)) {
+                                channelTypeUID = SmartMeterBindingConstants.VOLUME_CHANNEL_UID;
                             } else {
                                 channelTypeUID = SmartMeterBindingConstants.GENERIC_CHANNEL_UID;
                             }
