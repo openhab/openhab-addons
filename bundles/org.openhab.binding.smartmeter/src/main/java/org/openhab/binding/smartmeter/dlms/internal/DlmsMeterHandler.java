@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.DlmsMeterConfiguration;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelInfo;
-import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsQuantity;
+import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsQuantityType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -84,6 +84,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
             try {
                 connection.close();
             } catch (IOException e) {
+                logger.debug("Error closing DLMS connection: {}", e.getMessage());
             }
             connection = null;
         }
@@ -139,7 +140,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
                     if (result.getResultCode() == AccessResultCode.SUCCESS) {
                         String data = result.getResultData().getValue();
                         try {
-                            Unit<?> unit = new DlmsQuantity<>(data).getUnit();
+                            Unit<?> unit = new DlmsQuantityType<>(data).getUnit();
                             ChannelTypeUID channelTypeUID;
                             if (unit.isCompatible(Units.AMPERE)) {
                                 channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_CURRENT;
@@ -226,7 +227,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
                     if (result.getResultCode() == AccessResultCode.SUCCESS) {
                         try {
                             String data = result.getResultData().getValue();
-                            QuantityType<?> state = new DlmsQuantity<>(data);
+                            QuantityType<?> state = new DlmsQuantityType<>(data);
                             updateState(info.getChannelId(), state);
                             logger.trace("Meter channel: {}, data: {}, state: {}", info, data, state);
                         } catch (ClassCastException | IllegalArgumentException e) {

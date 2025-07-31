@@ -29,11 +29,11 @@ import org.openhab.core.library.types.QuantityType;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class DlmsQuantity<T extends Quantity<T>> extends QuantityType<T> {
+public class DlmsQuantityType<T extends Quantity<T>> extends QuantityType<T> {
 
     private static final long serialVersionUID = 1305378390275793428L;
 
-    public DlmsQuantity(String meterValue) {
+    public DlmsQuantityType(String meterValue) {
         super(meter2uom(meterValue));
     }
 
@@ -44,7 +44,7 @@ public class DlmsQuantity<T extends Quantity<T>> extends QuantityType<T> {
      * @return a UoM string like '12345.678 kWh'
      */
     private static String meter2uom(String meterValue) {
-        String[] parts = meterValue.split("(");
+        String[] parts = meterValue.split("\\(");
         if (parts.length < 2) {
             throw new IllegalArgumentException("Invalid meter value: " + meterValue);
         }
