@@ -185,8 +185,9 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
 
             map.forEach((key, value) -> {
                 if (key instanceof UInt16 iKey && value instanceof Variant<?> vValue
-                        && vValue.getValue() instanceof byte[] bValue) {
-                    eventData.put(iKey.shortValue(), bValue);
+                        && vValue.getValue() instanceof List<?> byteList && !byteList.isEmpty()
+                        && byteList.get(0) instanceof Byte) {
+                    eventData.put(iKey.shortValue(), toByteArray(byteList));
                 }
             });
 
@@ -202,8 +203,9 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
 
             map.forEach((key, value) -> {
                 if (key instanceof String sKey && value instanceof Variant<?> vValue
-                        && vValue.getValue() instanceof byte[] bValue) {
-                    serviceData.put(sKey, bValue);
+                        && vValue.getValue() instanceof List<?> byteList && !byteList.isEmpty()
+                        && byteList.get(0) instanceof Byte) {
+                    serviceData.put(sKey, toByteArray(byteList));
                 }
             });
 
