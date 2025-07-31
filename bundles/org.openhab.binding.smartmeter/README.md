@@ -29,7 +29,7 @@ The smartmeter thing requires the serial port where the meter device is connecte
 
 ### `dlms-meter` Thing Configuration
 
-The `dlm-meter` thing requires the address of the serial port where the IEC 62056-21 optical read head is connected, and optionally a refresh interval.
+The `dlms-meter` thing requires the address of the serial port where the IEC 62056-21 optical read head is connected, and optionally a refresh interval.
 
 | Parameter   |  Description                                                                                                      | Required |
 |-------------|-------------------------------------------------------------------------------------------------------------------|----------|
