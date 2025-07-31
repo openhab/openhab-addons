@@ -4,16 +4,20 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="stiebeleltron-isg-sg-ready-em">
+	<thing-type id="stiebeleltron-heatpump-allwpm">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="tcp"/>
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
-		<label>Stiebel Eltron ISG plus SG Ready EM</label>
-		<description>The Stiebel Eltron ISG plus SG Ready Energy Management</description>
+		<label>@text/thing-type.modbus.stiebeleltron-heatpump-allwpm.label</label>
+		<description>@text/thing-type.modbus.stiebeleltron-heatpump-allwpm.description</description>
 		<category>heating</category>
 
 		<channel-groups>
+			<channel-group id="systemInformationAllWpm" typeId="system-information-allwpm"/>
+			<channel-group id="systemParameterAllWpm" typeId="system-parameter-allwpm"/>
+			<channel-group id="systemStateAllWpm" typeId="system-state-allwpm"/>
+			<channel-group id="energyRuntimeInformationAllWpm" typeId="energy-runtime-information-allwpm"/>
 			<channel-group id="sgReadyEnergyManagementSettings" typeId="sg-ready-energy-management-settings"/>
 			<channel-group id="sgReadyEnergyManagementSystemInformation"
 				typeId="sg-ready-energy-management-system-information"/>

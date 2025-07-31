@@ -13,7 +13,7 @@
 package org.openhab.binding.modbus.stiebeleltron.internal.dto;
 
 /**
- * Dto class extending System Information Block to support all system information values of any WPM/WPM3/WPM3i
+ * Dto class extending System Information Block to support all system information values of a WPM
  * compatible heat pump
  *
  * @author Thomas Burri - Initial contribution
@@ -65,12 +65,69 @@ public class SystemInformationBlockAllWpm extends SystemInformationBlock {
     public short pressureHigh;
     public short pressureLow;
 
-    // heat pump 1 to ... information - only first one for now
-    public short hp1TemperatureReturn;
-    public short hp1TemperatureFlow;
-    public short hp1TemperatureHotgas;
-    public short hp1PressureLow;
-    public short hp1PressureMean;
-    public short hp1PressureHigh;
-    public short hp1FlowRate;
+    public static class HeatPumpInfo {
+        public short temperatureReturn;
+        public short temperatureFlow;
+        public short temperatureHotgas;
+        public short pressureLow;
+        public short pressureMean;
+        public short pressureHigh;
+        public short flowRate;
+    }
+
+    public HeatPumpInfo[] heatPumps;
+
+    public SystemInformationBlockAllWpm(int nrOfHps) {
+        super();
+        heatPumps = new HeatPumpInfo[nrOfHps];
+        for (int i = 0; i < heatPumps.length; i++) {
+            heatPumps[i] = new HeatPumpInfo();
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("System Information Block {\n");
+        sb.append("  temperatureFe7=").append(temperatureFe7).append(",\n");
+        sb.append("  temperatureFe7SetPoint=").append(temperatureFe7SetPoint).append(",\n");
+        sb.append("  temperatureHc2=").append(temperatureHc2).append(",\n");
+        sb.append("  temperatureHc2SetPoint=").append(temperatureHc2SetPoint).append(",\n");
+        sb.append("  temperatureFlowHp=").append(temperatureFlowHp).append(",\n");
+        sb.append("  temperatureFlowNhz=").append(temperatureFlowNhz).append(",\n");
+        sb.append("  temperatureFlow=").append(temperatureFlow).append(",\n");
+        sb.append("  temperatureFixedSetPoint=").append(temperatureFixedSetPoint).append(",\n");
+        sb.append("  temperatureBuffer=").append(temperatureBuffer).append(",\n");
+        sb.append("  temperatureBufferSetPoint=").append(temperatureBufferSetPoint).append(",\n");
+        sb.append("  pressureHeating=").append(pressureHeating).append(",\n");
+        sb.append("  flowRate=").append(flowRate).append(",\n");
+        sb.append("  temperatureFanCooling=").append(temperatureFanCooling).append(",\n");
+        sb.append("  temperatureFanCoolingSetPoint=").append(temperatureFanCoolingSetPoint).append(",\n");
+        sb.append("  temperatureAreaCooling=").append(temperatureAreaCooling).append(",\n");
+        sb.append("  temperatureAreaCoolingSetPoint=").append(temperatureAreaCoolingSetPoint).append(",\n");
+        sb.append("  temperatureCollectorSolar=").append(temperatureCollectorSolar).append(",\n");
+        sb.append("  temperatureCylinderSolar=").append(temperatureCylinderSolar).append(",\n");
+        sb.append("  runtimeSolar=").append(runtimeSolar).append(",\n");
+        sb.append("  temperatureExtHeatSource=").append(temperatureExtHeatSource).append(",\n");
+        sb.append("  temperatureExtHeatSourceSetPoint=").append(temperatureExtHeatSourceSetPoint).append(",\n");
+        sb.append("  runtimeExtHeatSource=").append(runtimeExtHeatSource).append(",\n");
+        sb.append("  lowerHeatingLimit=").append(lowerHeatingLimit).append(",\n");
+        sb.append("  lowerWaterLimit=").append(lowerWaterLimit).append(",\n");
+        sb.append("  temperatureSourceMin=").append(temperatureSourceMin).append(",\n");
+        sb.append("  pressureSource=").append(pressureSource).append(",\n");
+        sb.append("  temperatureHotgas=").append(temperatureHotgas).append(",\n");
+        sb.append("  pressureHigh=").append(pressureHigh).append(",\n");
+        sb.append("  pressureLow=").append(pressureLow).append(",\n");
+        sb.append("  heatPumps=[\n");
+        for (HeatPumpInfo hp : heatPumps) {
+            sb.append("    {").append("temperatureReturn=").append(hp.temperatureReturn).append(", ")
+                    .append("temperatureFlow=").append(hp.temperatureFlow).append(", ").append("temperatureHotgas=")
+                    .append(hp.temperatureHotgas).append(", ").append("pressureLow=").append(hp.pressureLow)
+                    .append(", ").append("pressureMean=").append(hp.pressureMean).append(", ").append("pressureHigh=")
+                    .append(hp.pressureHigh).append(", ").append("flowRate=").append(hp.flowRate).append("},\n");
+        }
+        sb.append("  ]\n");
+        sb.append("}");
+        return sb.toString();
+    }
 }

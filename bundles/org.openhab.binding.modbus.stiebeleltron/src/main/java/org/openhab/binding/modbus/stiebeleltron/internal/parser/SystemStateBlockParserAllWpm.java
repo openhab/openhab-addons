@@ -13,11 +13,14 @@
 package org.openhab.binding.modbus.stiebeleltron.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlockAllWpm;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateControlAllWpm;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateControlAllWpm.SystemStateFeatureKeys;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * Parses modbus system state data of a a WPM/WPM3/WPM3i compatible heat pump into a System State Block
+ * Parses modbus system state data of a a WPM compatible heat pump into a System State Block
  *
  * @author Thomas Burri - Initial contribution
  *
@@ -25,17 +28,30 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 @NonNullByDefault
 public class SystemStateBlockParserAllWpm extends AbstractBaseParser {
 
-    public SystemStateBlockAllWpm parse(ModbusRegisterArray raw) {
+    @SuppressWarnings("null")
+    public SystemStateBlockAllWpm parse(ModbusRegisterArray raw, @Nullable SystemStateControlAllWpm control) {
         SystemStateBlockAllWpm block = new SystemStateBlockAllWpm();
 
         block.state = extractUInt16(raw, 0, 0);
         block.powerOff = extractUInt16(raw, 1, 0);
-        block.operatingStatus = extractUInt16(raw, 2, 0);
+        if (control.featureAvailable(SystemStateFeatureKeys.OPERATING_STATUS)) {
+            block.operatingStatus = extractUInt16(raw, 2, 0);
+            if (block.operatingStatus == 32768) {
+                control.setFeatureAvailable(SystemStateFeatureKeys.OPERATING_STATUS, false);
+            }
+        }
         block.faultStatus = extractUInt16(raw, 3, 0);
 
         // Stiebel Eltron Modbus User Manual tells type 6/unsigned short, but has range -4 to 0, so using extractInt16!
         block.busStatus = extractInt16(raw, 4, (short) 0);
-        block.defrostInitiated = extractUInt16(raw, 5, 0);
+
+        if (control.featureAvailable(SystemStateFeatureKeys.DEFROST_INITIATED)) {
+            block.defrostInitiated = extractUInt16(raw, 5, 0);
+            if (block.defrostInitiated == 32768) {
+                control.setFeatureAvailable(SystemStateFeatureKeys.DEFROST_INITIATED, false);
+            }
+        }
+
         block.activeError = extractUInt16(raw, 6, 0);
         return block;
     }

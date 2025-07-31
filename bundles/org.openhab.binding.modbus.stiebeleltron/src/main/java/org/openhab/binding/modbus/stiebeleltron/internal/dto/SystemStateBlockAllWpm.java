@@ -26,4 +26,11 @@ public class SystemStateBlockAllWpm extends SystemStateBlock {
     public short busStatus;
     public int defrostInitiated;
     public int activeError;
+
+    @Override
+    public String toString() {
+        return "System State Block {" + "\nstate=" + state + "\npowerOff=" + powerOff + "\noperatingStatus="
+                + operatingStatus + "\nfaultStatus=" + faultStatus + "\nbusStatus=" + busStatus + "\ndefrostInitiated="
+                + defrostInitiated + "\nactiveError=" + activeError + "\n}";
+    }
 }

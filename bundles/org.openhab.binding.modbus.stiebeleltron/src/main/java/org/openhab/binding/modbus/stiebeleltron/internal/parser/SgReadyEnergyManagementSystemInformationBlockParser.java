@@ -13,13 +13,15 @@
 package org.openhab.binding.modbus.stiebeleltron.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementControl;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementControl.SgReadyEnMgmtFeatureKeys;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementSystemInformationBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * Parses modbus SG Ready Energy Management System Information data of a WPM/WPM3/WPM3i compatible heat pump into a SG
- * Ready
- * Energy Management System Information Block
+ * Parses modbus SG Ready Energy Management System Information data of a WPM compatible heat pump into a SG
+ * Ready Energy Management System Information Block
  *
  * @author Thomas Burri - Initial contribution
  *
@@ -27,11 +29,20 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 @NonNullByDefault
 public class SgReadyEnergyManagementSystemInformationBlockParser extends AbstractBaseParser {
 
-    public SgReadyEnergyManagementSystemInformationBlock parse(ModbusRegisterArray raw) {
+    @SuppressWarnings("null")
+    public SgReadyEnergyManagementSystemInformationBlock parse(ModbusRegisterArray raw,
+            @Nullable SgReadyEnergyManagementControl control) {
         SgReadyEnergyManagementSystemInformationBlock block = new SgReadyEnergyManagementSystemInformationBlock();
 
-        block.sgReadyOperatingState = extractUInt16(raw, 0, 0);
-        block.sgReadyControllerIdentification = extractUInt16(raw, 1, 0);
+        if (control.featureAvailable(SgReadyEnMgmtFeatureKeys.EN_MGMT_SYS_INFO)) {
+            block.sgReadyOperatingState = extractUInt16(raw, 0, 0);
+            if (block.sgReadyOperatingState == 32768) {
+                control.setFeatureAvailable(SgReadyEnMgmtFeatureKeys.EN_MGMT_SYS_INFO, false);
+            } else {
+                block.sgReadyControllerIdentification = extractUInt16(raw, 1, 0);
+            }
+        }
+
         return block;
     }
 }

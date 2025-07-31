@@ -44,4 +44,19 @@ public class SystemParameterBlockAllWpm extends SystemParameterBlock {
 
     public int reset;
     public int restartIsg;
+
+    @Override
+    public String toString() {
+        return "System Parameter Block {" + "\nheatingCurveRiseHc1=" + heatingCurveRiseHc1
+                + "\ncomfortTemperatureHeatingHc2=" + comfortTemperatureHeatingHc2 + "\necoTemperatureHeatingHc2="
+                + ecoTemperatureHeatingHc2 + "\nheatingCurveRiseHc2=" + heatingCurveRiseHc2 + "\nfixedValueOperation="
+                + fixedValueOperation + "\ndualModeTemperatureHeating=" + dualModeTemperatureHeating
+                + "\nhotwaterStages=" + hotwaterStages + "\nhotwaterDualModeTemperature=" + hotwaterDualModeTemperature
+                + "\nflowTemperatureAreaCooling=" + flowTemperatureAreaCooling
+                + "\nflowTemperatureHysteresisAreaCooling=" + flowTemperatureHysteresisAreaCooling
+                + "\nroomTemperatureAreaCooling=" + roomTemperatureAreaCooling + "\nflowTemperatureFanCooling="
+                + flowTemperatureFanCooling + "\nflowTemperatureHysteresisFanCooling="
+                + flowTemperatureHysteresisFanCooling + "\nroomTemperatureFanCooling=" + roomTemperatureFanCooling
+                + "\nreset=" + reset + "\nrestartIsg=" + restartIsg + "\n}";
+    }
 }

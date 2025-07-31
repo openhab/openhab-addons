@@ -13,6 +13,9 @@
 package org.openhab.binding.modbus.stiebeleltron.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementControl;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementControl.SgReadyEnMgmtFeatureKeys;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementSettingsBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
@@ -26,12 +29,26 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 @NonNullByDefault
 public class SgReadyEnergyManagementSettingsBlockParser extends AbstractBaseParser {
 
-    public SgReadyEnergyManagementSettingsBlock parse(ModbusRegisterArray raw) {
+    @SuppressWarnings("null")
+    public SgReadyEnergyManagementSettingsBlock parse(ModbusRegisterArray raw,
+            @Nullable SgReadyEnergyManagementControl control) {
         SgReadyEnergyManagementSettingsBlock block = new SgReadyEnergyManagementSettingsBlock();
 
-        block.sgReadyOnOffSwitch = extractUInt16(raw, 0, 0);
-        block.sgReadyInput1 = extractUInt16(raw, 1, 0);
-        block.sgReadyInput2 = extractUInt16(raw, 2, 0);
+        if (control.featureAvailable(SgReadyEnMgmtFeatureKeys.EN_MGMT_SETTINGS)) {
+            block.sgReadyOnOffSwitch = extractUInt16(raw, 0, 0);
+            if (block.sgReadyOnOffSwitch == 32768) {
+                control.setFeatureAvailable(SgReadyEnMgmtFeatureKeys.EN_MGMT_SETTINGS, false);
+            } else {
+                block.sgReadyInput1 = extractUInt16(raw, 1, 0);
+                if (block.sgReadyInput1 == 32768) {
+                    control.setFeatureAvailable(SgReadyEnMgmtFeatureKeys.EN_MGMT_SETTINGS_INPUT1, false);
+                }
+                block.sgReadyInput2 = extractUInt16(raw, 2, 0);
+                if (block.sgReadyInput2 == 32768) {
+                    control.setFeatureAvailable(SgReadyEnMgmtFeatureKeys.EN_MGMT_SETTINGS_INPUT2, false);
+                }
+            }
+        }
         return block;
     }
 }

@@ -22,4 +22,10 @@ public class SgReadyEnergyManagementSystemInformationBlock {
 
     public int sgReadyOperatingState;
     public int sgReadyControllerIdentification;
+
+    @Override
+    public String toString() {
+        return "SgReadyEnergyManagementSystemInformationBlock{" + "\sgReadyOperatingState=" + sgReadyOperatingState
+                + "\nsgReadyControllerIdentification=" + sgReadyControllerIdentification + "\n}";
+    }
 }

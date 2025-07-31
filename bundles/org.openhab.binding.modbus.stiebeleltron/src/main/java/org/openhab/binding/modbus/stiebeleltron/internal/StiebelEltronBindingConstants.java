@@ -21,7 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * constants, which are used across the whole binding.
  *
  * @author Paul Frank - Initial contribution
- * @author Thomas Burri - Added constants for WPM3 and WPM3i compatible heat pumps
+ * @author Thomas Burri - Added constants for WPM compatible heat pumps
  *
  */
 @NonNullByDefault
@@ -31,14 +31,8 @@ public class StiebelEltronBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_HEATPUMP = new ThingTypeUID(BINDING_ID, "heatpump");
-    public static final ThingTypeUID THING_TYPE_STIEBELELTRON_HEATPUMP_WPMSYSTEM = new ThingTypeUID(BINDING_ID,
-            "stiebeleltron-heatpump-wpmsystem");
-    public static final ThingTypeUID THING_TYPE_STIEBELELTRON_HEATPUMP_WPM3 = new ThingTypeUID(BINDING_ID,
-            "stiebeleltron-heatpump-wpm3");
-    public static final ThingTypeUID THING_TYPE_STIEBELELTRON_HEATPUMP_WPM3I = new ThingTypeUID(BINDING_ID,
-            "stiebeleltron-heatpump-wpm3i");
-    public static final ThingTypeUID THING_TYPE_STIEBELELTRON_ISG_SG_READY_EM = new ThingTypeUID(BINDING_ID,
-            "stiebeleltron-isg-sg-ready-em");
+    public static final ThingTypeUID THING_TYPE_STIEBELELTRON_HEATPUMP_ALLWPM = new ThingTypeUID(BINDING_ID,
+            "stiebeleltron-heatpump-allwpm");
 
     // Channel group ids
     public static final String GROUP_SYSTEM_INFO = "systemInformation";
@@ -46,19 +40,13 @@ public class StiebelEltronBindingConstants {
     public static final String GROUP_SYSTEM_STATE = "systemState";
     public static final String GROUP_ENERGY_INFO = "energyInformation";
 
-    public static final String GROUP_SYSTEM_INFORMATION_WPM = "systemInformationWpm";
-    public static final String GROUP_SYSTEM_INFORMATION_WPM3 = "systemInformationWpm3";
-    public static final String GROUP_SYSTEM_INFORMATION_WPM3I = "systemInformationWpm3i";
+    public static final String GROUP_SYSTEM_INFORMATION_ALLWPM = "systemInformationAllWpm";
 
-    public static final String GROUP_SYSTEM_PARAMETER_WPM = "systemParameterWpm";
-    public static final String GROUP_SYSTEM_PARAMETER_WPM3WPM3I = "systemParameterWpm3Wpm3i";
+    public static final String GROUP_SYSTEM_PARAMETER_ALLWPM = "systemParameterAllWpm";
 
-    public static final String GROUP_SYSTEM_STATE_WPM = "systemStateWpm";
-    public static final String GROUP_SYSTEM_STATE_WPM3 = "systemStateWpm3";
-    public static final String GROUP_SYSTEM_STATE_WPM3I = "systemStateWpm3i";
+    public static final String GROUP_SYSTEM_STATE_ALLWPM = "systemStateAllWpm";
 
-    public static final String GROUP_ENERGY_RUNTIME_INFO_WPMWPM3 = "energyRuntimeInformationWpmWpm3";
-    public static final String GROUP_ENERGY_RUNTIME_INFO_WPM3I = "energyRuntimeInformationWpm3i";
+    public static final String GROUP_ENERGY_RUNTIME_INFO_ALLWPM = "energyRuntimeInformationAllWpm";
 
     public static final String GROUP_SG_READY_ENERGY_MANAGEMENT_SETTINGS = "sgReadyEnergyManagementSettings";
     public static final String GROUP_SG_READY_ENERGY_MANAGEMENT_SYSTEM_INFORMATION = "sgReadyEnergyManagementSystemInformation";
@@ -121,13 +109,14 @@ public class StiebelEltronBindingConstants {
     public static final String CHANNEL_HIGH_PRESSURE = "high-pressure";
     public static final String CHANNEL_LOW_PRESSURE = "low-pressure";
 
-    public static final String CHANNEL_HP1_RETRURN_TEMPERATURE = "hp1-return-temperature";
-    public static final String CHANNEL_HP1_FLOW_TEMPERATURE = "hp1-flow-temperature";
-    public static final String CHANNEL_HP1_HOTGAS_TEMPERATURE = "hp1-hotgas-temperature";
-    public static final String CHANNEL_HP1_LOW_PRESSURE = "hp1-low-pressure";
-    public static final String CHANNEL_HP1_MEAN_PRESSURE = "hp1-mean-pressure";
-    public static final String CHANNEL_HP1_HGH_PRESSURE = "hp1-high-pressure";
-    public static final String CHANNEL_HP1_FLOW_RATE = "hp1-flow-rate";
+    // String formats for HPx info blocks
+    public static final String CHANNEL_HP_RETURN_TEMPERATURE_FORMAT = "hp%d-return-temperature";
+    public static final String CHANNEL_HP_FLOW_TEMPERATURE_FORMAT = "hp%d-flow-temperature";
+    public static final String CHANNEL_HP_HOTGAS_TEMPERATURE_FORMAT = "hp%d-hotgas-temperature";
+    public static final String CHANNEL_HP_LOW_PRESSURE_FORMAT = "hp%d-low-pressure";
+    public static final String CHANNEL_HP_MEAN_PRESSURE_FORMAT = "hp%d-mean-pressure";
+    public static final String CHANNEL_HP_HIGH_PRESSURE_FORMAT = "hp%d-high-pressure";
+    public static final String CHANNEL_HP_FLOW_RATE_FORMAT = "hp%d-flow-rate";
 
     // Block 2 System Parameters (Read/write holding register)
     public static final String CHANNEL_OPERATION_MODE = "operation-mode";
@@ -185,8 +174,8 @@ public class StiebelEltronBindingConstants {
     public static final String CHANNEL_SUMMER_MODE_ACTIVE = "summer-mode-active";
     public static final String CHANNEL_COOLING_MODE_ACTIVE = "cooling-mode-active";
     public static final String CHANNEL_MIN_ONE_IWS_IN_DEFROSTING_MODE = "min-one-iws-in-defrosting-mode";
-    public static final String CHANNEL_SILENT_MODE1_ACTIVE = "silent-mode1-active"; // WPM + WPM3 only
-    public static final String CHANNEL_SILENT_MODE2_ACTIVE = "silent-mode2-active"; // WPM + WPM3 only
+    public static final String CHANNEL_SILENT_MODE1_ACTIVE = "silent-mode1-active";
+    public static final String CHANNEL_SILENT_MODE2_ACTIVE = "silent-mode2-active";
     public static final String CHANNEL_POWER_OFF = "power-off";
 
     // WPM3 only
@@ -208,7 +197,7 @@ public class StiebelEltronBindingConstants {
 
     public static final String CHANNEL_FAULT_STATUS = "fault-status";
     public static final String CHANNEL_BUS_STATUS = "bus-status";
-    public static final String CHANNEL_DEFROST_INITIATED = "defrost-initiated"; // WPM3 only
+    public static final String CHANNEL_DEFROST_INITIATED = "defrost-initiated";
     public static final String CHANNEL_ACTIVE_ERROR = "active-error";
 
     // Block 4 Energy and Runtime data (Read input register)
@@ -224,27 +213,29 @@ public class StiebelEltronBindingConstants {
     public static final String CHANNEL_PRODUCTION_NHZ_HEAT_TOTAL = "production-nhz-heat-total";
     public static final String CHANNEL_PRODUCTION_NHZ_WATER_TOTAL = "production-nhz-water-total";
 
-    public static final String CHANNEL_HP1_PRODUCTION_HEAT_TODAY = "hp1-production-heat-today";
-    public static final String CHANNEL_HP1_PRODUCTION_HEAT_TOTAL = "hp1-production-heat-total";
-    public static final String CHANNEL_HP1_PRODUCTION_WATER_TODAY = "hp1-production-water-today";
-    public static final String CHANNEL_HP1_PRODUCTION_WATER_TOTAL = "hp1-production-water-total";
-    public static final String CHANNEL_HP1_CONSUMPTION_HEAT_TODAY = "hp1-consumption-heat-today";
-    public static final String CHANNEL_HP1_CONSUMPTION_HEAT_TOTAL = "hp1-consumption-heat-total";
-    public static final String CHANNEL_HP1_CONSUMPTION_WATER_TODAY = "hp1-consumption-water-today";
-    public static final String CHANNEL_HP1_CONSUMPTION_WATER_TOTAL = "hp1-consumption-water-total";
+    public static final String CHANNEL_HP_PRODUCTION_HEAT_TODAY_FORMAT = "hp%d-production-heat-today";
+    public static final String CHANNEL_HP_PRODUCTION_HEAT_TOTAL_FORMAT = "hp%d-production-heat-total";
+    public static final String CHANNEL_HP_PRODUCTION_WATER_TODAY_FORMAT = "hp%d-production-water-today";
+    public static final String CHANNEL_HP_PRODUCTION_WATER_TOTAL_FORMAT = "hp%d-production-water-total";
+    public static final String CHANNEL_HP_CONSUMPTION_HEAT_TODAY_FORMAT = "hp%d-consumption-heat-today";
+    public static final String CHANNEL_HP_CONSUMPTION_HEAT_TOTAL_FORMAT = "hp%d-consumption-heat-total";
+    public static final String CHANNEL_HP_CONSUMPTION_WATER_TODAY_FORMAT = "hp%d-consumption-water-today";
+    public static final String CHANNEL_HP_CONSUMPTION_WATER_TOTAL_FORMAT = "hp%d-consumption-water-total";
 
-    public static final String CHANNEL_HP1_PRODUCTION_NHZ_HEAT_TOTAL = "hp1-production-nhz-heat-total";
-    public static final String CHANNEL_HP1_PRODUCTION_NHZ_WATER_TOTAL = "hp1-production-nhz-water-total";
+    public static final String CHANNEL_HP_PRODUCTION_NHZ_HEAT_TOTAL_FORMAT = "hp%d-production-nhz-heat-total";
+    public static final String CHANNEL_HP_PRODUCTION_NHZ_WATER_TOTAL_FORMAT = "hp%d-production-nhz-water-total";
 
-    public static final String CHANNEL_HP1_CP1_HEATING_RUNTIME = "hp1-cp1-heating-runtime";
-    public static final String CHANNEL_HP1_CP2_HEATING_RUNTIME = "hp1-cp2-heating-runtime";
-    public static final String CHANNEL_HP1_CP12_HEATING_RUNTIME = "hp1-cp12-heating-runtime";
-    public static final String CHANNEL_HP1_CP1_HOTWATER_RUNTIME = "hp1-cp1-hotwater-runtime";
-    public static final String CHANNEL_HP1_CP2_HOTWATER_RUNTIME = "hp1-cp2-hotwater-runtime";
-    public static final String CHANNEL_HP1_CP12_HOTWATER_RUNTIME = "hp1-cp-12-hotwater-runtime";
-    public static final String CHANNEL_HP1_COOLING_RUNTIME = "hp1-cooling-runtime";
+    public static final String CHANNEL_HP_CP1_HEATING_RUNTIME_FORMAT = "hp%d-cp1-heating-runtime";
+    public static final String CHANNEL_HP_CP2_HEATING_RUNTIME_FORMAT = "hp%d-cp2-heating-runtime";
+    public static final String CHANNEL_HP_CP12_HEATING_RUNTIME_FORMAT = "hp%d-cp12-heating-runtime";
+    public static final String CHANNEL_HP_CP1_HOTWATER_RUNTIME_FORMAT = "hp%d-cp1-hotwater-runtime";
+    public static final String CHANNEL_HP_CP2_HOTWATER_RUNTIME_FORMAT = "hp%d-cp2-hotwater-runtime";
+    public static final String CHANNEL_HP_CP12_HOTWATER_RUNTIME_FORMAT = "hp%d-cp-12-hotwater-runtime";
+    public static final String CHANNEL_HP_COOLING_RUNTIME_FORMAT = "hp%d-cooling-runtime";
+    public static final String CHANNEL_HP_NHZ1_RUNTIME_FORMAT = "hp%d-nhz1-runtime";
+    public static final String CHANNEL_HP_NHZ2_RUNTIME_FORMAT = "hp%d-nhz2-runtime";
+    public static final String CHANNEL_HP_NHZ12_RUNTIME_FORMAT = "hp%d-nhz12-runtime";
 
-    // WPM3i only - Runtime values
     public static final String CHANNEL_HEATING_RUNTIME = "heating-runtime";
     public static final String CHANNEL_HOTWATER_RUNTIME = "hotwater-runtime";
     public static final String CHANNEL_COOLING_RUNTIME = "cooling-runtime";
