@@ -24,10 +24,10 @@
 		<description>Indicates whether this battery is controllable or not</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="ON">Controllable</option>
 				<option value="OFF">Not Controllable</option>

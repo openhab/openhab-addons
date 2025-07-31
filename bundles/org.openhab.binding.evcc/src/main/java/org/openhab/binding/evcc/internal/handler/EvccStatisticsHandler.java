@@ -62,7 +62,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
 
     @Override
     public void updateFromEvccState(JsonObject state) {
-        state = state.getAsJsonObject(JSON_MEMBER_STATISTICS);
+        state = state.has(JSON_MEMBER_STATISTICS) ? state.getAsJsonObject(JSON_MEMBER_STATISTICS) : new JsonObject();
         for (String statisticsKey : state.keySet()) {
             JsonObject statistic = state.getAsJsonObject(statisticsKey);
             logger.debug("Extracting statistics for {}", statisticsKey);

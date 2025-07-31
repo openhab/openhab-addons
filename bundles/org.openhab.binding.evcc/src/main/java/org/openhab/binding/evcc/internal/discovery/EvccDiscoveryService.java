@@ -66,7 +66,7 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
 
     @Override
     protected void startScan() {
-        logger.debug("Start evcc Discovery…");
+        logger.debug("Starting evcc Discover");
         JsonObject state = thingHandler.getCachedEvccState();
         if (!state.isEmpty()) {
             for (EvccDiscoveryMapper mapper : mappers) {
