@@ -22,24 +22,28 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 
 /**
- * A class to hold information about a DLMS/COSEM meter channel.
+ * A class to parse and hold information about a DLMS/COSEM meter channel.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 public class DlmsChannelInfo {
 
-    public final int classId;
-    public final ObisCode obisCode;
+    private final int classId;
+    private final ObisCode obisCode;
+    private final int version;
+    private final String label;
 
-    public DlmsChannelInfo(DataObject item) throws IllegalArgumentException, ClassCastException {
-        if (item.getType() != Type.STRUCTURE) {
-            throw new IllegalArgumentException("Invalid meter information: " + item);
+    public DlmsChannelInfo(DataObject dataObject) throws IllegalArgumentException, ClassCastException {
+        if (dataObject.getType() != Type.STRUCTURE) {
+            throw new IllegalArgumentException("Invalid meter information: " + dataObject);
         }
-        List<DataObject> fields = item.getValue();
+        List<DataObject> fields = dataObject.getValue();
         classId = fields.get(0).getValue();
         byte[] obisBytes = fields.get(1).getValue();
         obisCode = new ObisCode(obisBytes);
+        version = fields.get(2).getValue();
+        label = fields.size() > 3 ? fields.get(3).getValue() : getChannelId();
     }
 
     public AttributeAddress getAttributeAddress() {
@@ -50,8 +54,13 @@ public class DlmsChannelInfo {
         return SmartMeterBindingConstants.getObisChannelId(obisCode.toString());
     }
 
+    public String getLabel() {
+        return label;
+    }
+
     @Override
     public String toString() {
-        return "DlmsChannelInfo [channelId=" + getChannelId() + ", classId=" + classId + "]";
+        return "DlmsChannelInfo [classId=%d, channelId=%s, version=%d, label=%s]" //
+                .formatted(classId, getChannelId(), version, label);
     }
 }
