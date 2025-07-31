@@ -160,9 +160,12 @@ public class DlmsMeterHandler extends BaseThingHandler {
                                 channelTypeUID = SmartMeterBindingConstants.GENERIC_CHANNEL_UID;
                             }
                             ChannelUID uid = new ChannelUID(getThing().getUID(), info.getChannelId());
-                            Channel channel = ChannelBuilder.create(uid).withLabel(info.getLabel())
-                                    .withType(channelTypeUID).build();
-                            channels.add(channel);
+                            ChannelBuilder channelBuilder = ChannelBuilder.create(uid).withType(channelTypeUID);
+                            String label = info.getLabel();
+                            if (!label.isBlank()) {
+                                channelBuilder.withLabel(label);
+                            }
+                            channels.add(channelBuilder.build());
                             logger.debug("Meter channel: {}, data: {}, added OH channel: {}", info, data, uid);
                         } catch (ClassCastException | IllegalArgumentException e) {
                             logger.debug("Meter channel: {}, data:{}, parse error:{}", info, data, e.getMessage());

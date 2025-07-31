@@ -43,7 +43,7 @@ public class DlmsChannelInfo {
         byte[] obisBytes = fields.get(1).getValue();
         obisCode = new ObisCode(obisBytes);
         version = fields.get(2).getValue();
-        label = fields.size() > 3 ? fields.get(3).getValue() : getChannelId();
+        label = fields.size() > 3 ? fields.get(3).getValue() : "";
     }
 
     public AttributeAddress getAttributeAddress() {
