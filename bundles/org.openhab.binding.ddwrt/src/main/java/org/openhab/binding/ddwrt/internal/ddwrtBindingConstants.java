@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ddwrt.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -27,8 +29,13 @@ public class ddwrtBindingConstants {
     private static final String BINDING_ID = "ddwrt";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_NETWORK = new ThingTypeUID(BINDING_ID, "network");
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_NETWORK, THING_TYPE_DEVICE);
+
+    // List of network Channel ids
+    public static final String CHANNEL_TOTAL_CLIENTS = "totalClients";
+    public static final String CHANNEL_WIRELESS_CLIENTS = "wirelessClients";
+    public static final String CHANNEL_WIRED_CLIENTS = "wiredClients";
 }
