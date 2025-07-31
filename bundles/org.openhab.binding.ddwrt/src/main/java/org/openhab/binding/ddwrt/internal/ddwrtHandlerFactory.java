@@ -14,8 +14,6 @@ package org.openhab.binding.ddwrt.internal;
 
 import static org.openhab.binding.ddwrt.internal.ddwrtBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
@@ -35,8 +33,6 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.ddwrt", service = ThingHandlerFactory.class)
 public class ddwrtHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -46,8 +42,8 @@ public class ddwrtHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new ddwrtHandler(thing);
+        if (THING_TYPE_NETWORK.equals(thingTypeUID)) {
+            return new ddwrtNetworkHandler(thing);
         }
 
         return null;

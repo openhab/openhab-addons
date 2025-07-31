@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal;
 
-import static org.openhab.binding.ddwrt.internal.ddwrtBindingConstants.CHANNEL_1;
+import static org.openhab.binding.ddwrt.internal.ddwrtBindingConstants.CHANNEL_TOTAL_CLIENTS;
 
 import java.io.File;
 import java.security.KeyPair;
@@ -25,35 +25,35 @@ import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ddwrtHandler} is responsible for handling commands, which are
+ * The {@link ddwrtNetworkHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class ddwrtHandler extends BaseThingHandler {
+public class ddwrtNetworkHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(ddwrtHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ddwrtNetworkHandler.class);
 
     private @Nullable ddwrtConfiguration config;
 
-    public ddwrtHandler(Thing thing) {
-        super(thing);
+    public ddwrtNetworkHandler(Bridge bridge) {
+        super(bridge);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
+        if (CHANNEL_TOTAL_CLIENTS.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
             }
