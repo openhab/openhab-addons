@@ -4,19 +4,15 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="ddwrtBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<bridge-type id="network">
 
-		<label>ddwrt Binding Thing</label>
-		<description>Sample thing for ddwrt Binding</description>
+		<label>DD-WRT Network</label>
+		<description>A Network containing DD-WRT devices</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="totalClients" typeId="totalClients"/>
+			<channel id="wirelessClients" typeId="wirelessClients"/>
+			<channel id="wiredClients" typeId="wiredClients"/>
 		</channels>
 
 		<config-description>
@@ -30,10 +26,10 @@
 				<description>Authentication settings. To use keys instead of password place the keys in $USER_DATA/ddwrt/keys</description>
 			</parameter-group>
 
-			<parameter name="hostname" type="text" required="true" groupName="connection">
-				<context>network-address</context>
+			<parameter name="hostnames" type="text" required="true" groupName="connection">
+				<context>network-addresses</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<description>Comma seperated list of hostnames or IP addresseses of the device</description>
 			</parameter>
 			<parameter name="port" type="integer" groupName="connection">
 				<label>SSH port</label>
@@ -44,27 +40,59 @@
 			<parameter name="user" type="text" required="true" groupName="authentication">
 				<context>user</context>
 				<label>User</label>
-				<description>Username to access the device</description>
+				<description>Username to access the devices</description>
 				<default>root</default>
 			</parameter>
 			<parameter name="password" type="text" required="false" groupName="authentication">
 				<context>password</context>
 				<label>Password</label>
-				<description>Password to access the device</description>
+				<description>Password to access the devices</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
+				<description>Interval the devices is polled in sec.</description>
 				<default>600</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
+
+	</bridge-type>
+
+	<!-- Sample Thing Type -->
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="network"/>
+		</supported-bridge-type-refs>
+
+		<label>DD-WRT Device</label>
+		<description>Sample thing for ddwrt Binding</description>
+
+		<channels>
+			<channel id="channel1" typeId="sample-channel"/>
+		</channels>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for ddwrt Binding</description>
+	<!-- Channels -->
+
+	<channel-type id="totalClients">
+		<item-type>Number</item-type>
+		<label>Total Clients</label>
+		<description>Total number of clients connected</description>
+		<state readOnly="true"></state>
 	</channel-type>
+
+	<channel-type id="wirelessClients">
+		<item-type>Number</item-type>
+		<label>Wireless Clients</label>
+		<description>Number of wireless clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="wiredClients">
+		<item-type>Number</item-type>
+		<label>Wired Clients</label>
+		<description>Number of wired clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>
