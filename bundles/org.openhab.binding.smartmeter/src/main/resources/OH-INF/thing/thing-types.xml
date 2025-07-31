@@ -58,6 +58,7 @@
 	<thing-type id="dlms-meter">
 		<label>DLMS/COSEM Smart Meter Binding Thing</label>
 		<description>Thing for reading DLMS/COSEM Smart Meters via an IEC 62056-21 optical read head.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<label>Port</label>
