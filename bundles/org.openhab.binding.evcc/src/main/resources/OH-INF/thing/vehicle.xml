@@ -17,7 +17,7 @@
 		<description>Capacity of vehicle battery</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Info</tag>
+			<tag>Status</tag>
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
