@@ -1,0 +1,244 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.smartmeter.dlms.internal;
+
+import static org.openhab.core.thing.DefaultSystemChannelTypeProvider.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+
+import javax.measure.Unit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartmeter.DlmsMeterConfiguration;
+import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
+import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelInfo;
+import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsQuantity;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.SerialConnectionBuilder;
+import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.datatypes.DataObject.Type;
+import org.openmuc.jdlms.internal.WellKnownInstanceIds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link DlmsMeterHandler} reads values from a DLMS/COSEM Smart Meter via
+ * an IEC 62056-21 optical read head.
+ *
+ * @author Andrew Fiddian-Green - Initial contribution
+ */
+@NonNullByDefault
+public class DlmsMeterHandler extends BaseThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(DlmsMeterHandler.class);
+
+    private final Set<DlmsChannelInfo> dlmsChannelInfos = new HashSet<>();
+
+    private @NonNullByDefault({}) DlmsMeterConfiguration config;
+    private @Nullable DlmsConnection connection;
+    private @Nullable ScheduledFuture<?> refreshTask;
+
+    public DlmsMeterHandler(Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    public void dispose() {
+        if (refreshTask != null) {
+            refreshTask.cancel(true);
+            refreshTask = null;
+        }
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (IOException e) {
+            }
+            connection = null;
+        }
+        super.dispose();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            updateChannels();
+        }
+    }
+
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+        config = getConfigAs(DlmsMeterConfiguration.class);
+        SerialConnectionBuilder connectionBuilder = new SerialConnectionBuilder(config.port);
+        // TODO baud rate, and other serial port params
+        // .setBaudRate(config.baudrate)
+        // .setBaudRateChangeTime(config.baudrateChangeDelay)
+        try {
+            connection = connectionBuilder.build();
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
+        scheduler.execute(() -> {
+            Set<DlmsChannelInfo> infos = getMeterInfos();
+            if (!infos.isEmpty()) {
+                this.dlmsChannelInfos.clear();
+                this.dlmsChannelInfos.addAll(infos);
+                createChannels();
+                updateStatus(ThingStatus.ONLINE);
+                refreshTask = scheduler.scheduleWithFixedDelay(() -> updateChannels(), 5, config.refresh,
+                        java.util.concurrent.TimeUnit.SECONDS);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No meter channels found");
+            }
+        });
+    }
+
+    /**
+     * Create the OH channels from the list of meter channels.
+     */
+    private void createChannels() {
+        DlmsConnection connection = this.connection;
+        if (connection != null) {
+            List<Channel> channels = new ArrayList<>();
+            dlmsChannelInfos.forEach(info -> {
+                try {
+                    GetResult result = connection.get(info.getAttributeAddress());
+                    if (result.getResultCode() == AccessResultCode.SUCCESS) {
+                        String data = result.getResultData().getValue();
+                        try {
+                            Unit<?> unit = new DlmsQuantity<>(data).getUnit();
+                            ChannelTypeUID channelTypeUID;
+                            if (unit.isCompatible(Units.AMPERE)) {
+                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_CURRENT;
+                            } else if (unit.isCompatible(Units.VOLT)) {
+                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_VOLTAGE;
+                            } else if (unit.isCompatible(Units.WATT_HOUR)) {
+                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_ENERGY;
+                            } else if (unit.isCompatible(Units.WATT)) {
+                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
+                            } else if (unit.isCompatible(Units.VAR_HOUR)) {
+                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_ENERGY;
+                            } else if (unit.isCompatible(Units.VAR)) {
+                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
+                            } else {
+                                channelTypeUID = SmartMeterBindingConstants.GENERIC_CHANNEL_UID;
+                            }
+                            ChannelUID uid = new ChannelUID(getThing().getUID(), info.getChannelId());
+                            Channel channel = ChannelBuilder.create(uid).withType(channelTypeUID).build();
+                            channels.add(channel);
+                            logger.debug("Meter channel: {}, data: {}, added OH channel: {}", info, data, uid);
+                        } catch (ClassCastException | IllegalArgumentException e) {
+                            logger.debug("Meter channel: {}, data:{}, parse error:{}", info, data, e.getMessage());
+                        }
+                    } else {
+                        logger.debug("Meter channel: {}, read error: {}", info, result);
+                    }
+                } catch (IOException e) {
+                    logger.debug("Meter channel: {}, read error: {}", info, e.getMessage());
+                }
+            });
+            if (!channels.isEmpty()) {
+                updateThing(editThing().withChannels(channels).build());
+            }
+        }
+    }
+
+    /**
+     * Populate the list of meter channel informations.
+     */
+    private Set<DlmsChannelInfo> getMeterInfos() {
+        Set<DlmsChannelInfo> infos = new HashSet<>();
+        DlmsConnection connection = this.connection;
+        if (connection != null) {
+            try {
+                AttributeAddress address = new AttributeAddress(15,
+                        new ObisCode(WellKnownInstanceIds.CURRENT_ASSOCIATION_ID), 2);
+                GetResult result = connection.get(address);
+                if (result.getResultCode() == AccessResultCode.SUCCESS) {
+                    DataObject root = result.getResultData();
+                    logger.trace("Channel response: {}", root);
+                    if (root.getType() == Type.ARRAY) {
+                        List<DataObject> datas = root.getValue();
+                        datas.forEach(data -> {
+                            try {
+                                DlmsChannelInfo info = new DlmsChannelInfo(data);
+                                infos.add(info);
+                                logger.debug("Meter channel: {} added", info);
+                            } catch (ClassCastException | IllegalArgumentException e) {
+                                logger.debug("Meter channel: {}, parse error: {}", data, e.getMessage());
+                            }
+                        });
+                    } else {
+                        logger.debug("Root data error: {}", root);
+                    }
+                } else {
+                    logger.debug("Root data error: {}", result);
+                }
+            } catch (IOException e) {
+                logger.debug("Root data error: {}", e.getMessage());
+            }
+        }
+        return infos;
+    }
+
+    /**
+     * Update the state of the OH channels.
+     */
+    private void updateChannels() {
+        DlmsConnection connection = this.connection;
+        if (connection != null) {
+            dlmsChannelInfos.forEach(info -> {
+                try {
+                    GetResult result = connection.get(info.getAttributeAddress());
+                    if (result.getResultCode() == AccessResultCode.SUCCESS) {
+                        try {
+                            String data = result.getResultData().getValue();
+                            QuantityType<?> state = new DlmsQuantity<>(data);
+                            updateState(info.getChannelId(), state);
+                            logger.trace("Meter channel: {}, data: {}, state: {}", info, data, state);
+                        } catch (ClassCastException | IllegalArgumentException e) {
+                            logger.debug("Meter channel: {}, data: {}, error: {}", info, result, e.getMessage());
+                        }
+                    } else {
+                        logger.debug("Meter channel: {}, read error: {}", info, result);
+                    }
+                } catch (IOException e) {
+                    logger.debug("Meter channel: {}, read error: {}", info, e.getMessage());
+                }
+            });
+        }
+    }
+}

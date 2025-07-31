@@ -55,4 +55,31 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="dlms-meter">
+		<label>DLMS/COSEM Smart Meter Binding Thing</label>
+		<description>Thing for reading DLMS/COSEM Smart Meters via an IEC 62056-21 optical read head.</description>
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Port</label>
+				<description>Serial port of the IEC 62056-21 optical read head.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s" min="10">
+				<label>Refresh Interval</label>
+				<description>Interval at which the readings are polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="generic">
+		<item-type>Number</item-type>
+		<label>Measurement</label>
+		<description>Generic measurement value.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
