@@ -55,10 +55,8 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
 
     public static void addBluThing(String gateway, Shelly2NotifyEvent e, @Nullable ShellyThingTable thingTable) {
         String model = getString(e.data.name);
-
         String bluClass = substringBefore(model, "-").toUpperCase();
-        String mac = e.data.addr.replaceAll(":", "");
-        LOGGER.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
+        String mac = getString(e.data.addr).replaceAll(":", "");
 
         ThingTypeUID thingTypeUID;
         switch (bluClass) {
@@ -107,6 +105,7 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
         addProperty(properties, CONFIG_DEVICEADDRESS, mac);
 
         if (thingTable != null) {
+            LOGGER.debug("{}: Create thing {} for BLU device {} / {}", gateway, thingTypeUID, model, mac);
             thingTable.discoveredResult(thingTypeUID, model, serviceName, mac, properties);
         }
     }

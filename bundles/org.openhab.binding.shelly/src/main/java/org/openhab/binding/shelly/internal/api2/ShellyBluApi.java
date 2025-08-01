@@ -144,6 +144,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.device = devInfo;
         }
         profile.isBlu = true;
+        profile.alwaysOn = false;
         profile.settingsJson = "{}";
         profile.thingName = thingName;
         profile.name = getString(profile.settings.name);
