@@ -217,7 +217,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         ShellySettingsDevice device = profile.device;
         if (config.serviceName.isBlank()) {
             config.serviceName = getString(profile.device.hostname);
-            logger.debug("{}: {} is used as serviceName", thingName, config.serviceName);
+            logger.trace("{}: {} is used as serviceName", thingName, config.serviceName);
         }
         profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
@@ -1345,7 +1345,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private void disconnect() {
         if (rpcSocket.isConnected()) {
-            logger.debug("{}: Disconnect Rpc Socket", thingName);
+            logger.trace("{}: Disconnect Rpc Socket", thingName);
         }
         rpcSocket.disconnect();
     }
