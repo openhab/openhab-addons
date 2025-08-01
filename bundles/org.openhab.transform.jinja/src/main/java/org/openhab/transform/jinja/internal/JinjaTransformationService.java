@@ -12,41 +12,63 @@
  */
 package org.openhab.transform.jinja.internal;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.Value;
+import org.graalvm.python.embedding.GraalPyResources;
+import org.graalvm.python.embedding.VirtualFileSystem;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hubspot.jinjava.Jinjava;
-import com.hubspot.jinjava.interpret.FatalTemplateErrorsException;
 
 /**
  * <p>
  * The implementation of {@link TransformationService} which transforms the input by Jinja2 Expressions.
  *
- * @author Jochen Klein - Initial contribution
+ * @author Cody Cutrer - Initial contribution
  *
  */
 @NonNullByDefault
 @Component(property = { "openhab.transform=JINJA" })
 public class JinjaTransformationService implements TransformationService {
+    private static final String PYTHON = "python";
 
     private final Logger logger = LoggerFactory.getLogger(JinjaTransformationService.class);
 
-    private final Jinjava jinjava = new Jinjava();
+    private final Context context;
+    private final Value bindings;
+    private final Source transformSource;
+
+    @Activate
+    public JinjaTransformationService() {
+        VirtualFileSystem vfs = VirtualFileSystem.newBuilder().resourceLoadingClass(JinjaTransformationService.class)
+                .build();
+        context = GraalPyResources.contextBuilder(vfs).build();
+        bindings = context.getBindings(PYTHON);
+
+        context.eval(PYTHON, """
+                import jinja2
+                import json
+
+                environment = jinja2.Environment(extensions=['jinja2.ext.loopcontrols'])
+                """);
+
+        transformSource = Source.newBuilder(PYTHON, """
+                template = environment.from_string(template_string)
+                try:
+                    value_json = json.loads(value)
+                except json.JSONDecodeError:
+                    value_json = None
+                result = template.render(value=value, value_json=value_json)
+                result
+                """, "transform.py").buildLiteral();
+    }
 
     /**
      * Transforms the input <code>value</code> by Jinja template.
@@ -58,57 +80,29 @@ public class JinjaTransformationService implements TransformationService {
     @Override
     public @Nullable String transform(String template, String value) throws TransformationException {
         String transformationResult;
-        Map<String, @Nullable Object> bindings = new HashMap<>();
 
-        logger.debug("about to transform '{}' by the function '{}'", value, template);
+        logger.debug("About to transform '{}' with template '{}'", value, template);
 
-        bindings.put("value", value);
-
-        try {
-            JsonNode tree = new ObjectMapper().readTree(value);
-            bindings.put("value_json", toObject(tree));
-        } catch (IOException e) {
-            // ok, then value_json is null...
-        }
+        bindings.putMember("template_string", template);
+        bindings.putMember("value", value);
 
         try {
-            transformationResult = jinjava.render(template, bindings);
-        } catch (FatalTemplateErrorsException e) {
-            throw new TransformationException("An error occurred while transformation. " + e.getMessage(), e);
+            transformationResult = context.eval(transformSource).asString();
+        } catch (PolyglotException e) {
+            String message = e.getMessage();
+            if (message == null) {
+                message = "Unknown error";
+            }
+            throw new TransformationException(message, e);
+        } finally {
+            bindings.removeMember("template_string");
+            bindings.removeMember("value");
+            bindings.removeMember("template");
+            bindings.removeMember("value_json");
         }
 
-        logger.debug("transformation resulted in '{}'", transformationResult);
+        logger.debug("Result: '{}'", transformationResult);
 
         return transformationResult;
-    }
-
-    private static @Nullable Object toObject(JsonNode node) {
-        switch (node.getNodeType()) {
-            case ARRAY: {
-                List<@Nullable Object> result = new ArrayList<>();
-                for (JsonNode el : node) {
-                    result.add(toObject(el));
-                }
-                return result;
-            }
-            case NUMBER:
-                return node.decimalValue();
-            case OBJECT: {
-                Map<String, @Nullable Object> result = new HashMap<>();
-                Iterator<Entry<String, JsonNode>> it = node.fields();
-                while (it.hasNext()) {
-                    Entry<String, JsonNode> field = it.next();
-                    result.put(field.getKey(), toObject(field.getValue()));
-                }
-                return result;
-            }
-            case STRING:
-                return node.asText();
-            case BOOLEAN:
-                return node.asBoolean();
-            case NULL:
-            default:
-                return null;
-        }
     }
 }
