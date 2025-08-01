@@ -66,22 +66,22 @@ public class SmartMeterChannelTypeProvider extends AbstractStorageBasedTypeProvi
 
     private ChannelType getChannelType(@Nullable Unit<?> unit, String obis) {
         String obisChannelId = SmartMeterBindingConstants.getObisChannelId(obis);
-        StateChannelTypeBuilder stateChannelBuilder;
+        StateChannelTypeBuilder stateChannelTypeBuilder;
         if (unit != null) {
             String dimension = UnitUtils.getDimensionName(unit);
-            stateChannelBuilder = ChannelTypeBuilder
+            stateChannelTypeBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID, obisChannelId), obis,
                             CoreItemFactory.NUMBER + ":" + dimension)
                     .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true)
                             .withPattern("%.2f %unit%").build())
                     .withConfigDescriptionURI(URI.create(SmartMeterBindingConstants.CHANNEL_TYPE_METERREADER_OBIS));
         } else {
-            stateChannelBuilder = ChannelTypeBuilder
+            stateChannelTypeBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID, obisChannelId), obis,
                             CoreItemFactory.STRING)
                     .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true).build());
         }
-        return stateChannelBuilder.build();
+        return stateChannelTypeBuilder.build();
     }
 
     @Override
