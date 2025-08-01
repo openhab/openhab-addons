@@ -58,9 +58,15 @@ public class CloudLoginDTO {
     @SerializedName("location")
     @Expose
     private String location;
-    @SerializedName("captchaUrl")
+    @SerializedName("capchaUrl")
     @Expose
-    private Object captchaUrl;
+    private String capchaUrl;
+    @SerializedName("callback")
+    @Expose
+    private String callback;
+    @SerializedName("notificationUrl")
+    @Expose
+    private String notificationUrl;
 
     public String getSsecurity() {
         return ssecurity != null ? ssecurity : "";
@@ -114,11 +120,27 @@ public class CloudLoginDTO {
         return desc;
     }
 
-    public Object getCaptchaUrl() {
-        return captchaUrl;
+    public String getCapchaUrl() {
+        return capchaUrl;
     }
 
-    public void setCaptchaUrl(Object captchaUrl) {
-        this.captchaUrl = captchaUrl;
+    public void setCapchaUrl(String capchaUrl) {
+        this.capchaUrl = capchaUrl;
+    }
+
+    public String getCallback() {
+        return callback;
+    }
+
+    public void setCallback(String callback) {
+        this.callback = callback;
+    }
+
+    public String getNotificationUrl() {
+        return notificationUrl;
+    }
+
+    public void setNotificationUrl(String notificationUrl) {
+        this.notificationUrl = notificationUrl;
     }
 }

@@ -124,6 +124,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Xiaomi Mi IO background discovery with cloudDiscoveryMode: {}", getCloudDiscoveryMode());
+        cloudThingDiscovery();
         final @Nullable ScheduledFuture<?> miIoDiscoveryJob = this.miIoDiscoveryJob;
         if (miIoDiscoveryJob == null || miIoDiscoveryJob.isCancelled()) {
             this.miIoDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discover, 0, SEARCH_INTERVAL,
@@ -156,6 +157,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     protected void startScan() {
         String cloudDiscoveryMode = getCloudDiscoveryMode();
         logger.debug("Start Xiaomi Mi IO discovery with cloudDiscoveryMode: {}", cloudDiscoveryMode);
+        cloudThingDiscovery();
         if (!cloudDiscoveryMode.contentEquals(DISABLED)) {
             cloudDiscovery();
         }
@@ -240,6 +242,34 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
             }
         }
         submitDiscovery(ip, token, id, label, model, country, isOnline, parent);
+    }
+
+    private void cloudThingDiscovery() {
+        logger.debug("Discovering standard cloud connector thing");
+        DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CLOUD, "cloudConnector"))
+                .withLabel("Cloud Connector");
+        final Configuration miioConfig = this.miioConfig;
+        if (miioConfig != null) {
+            try {
+                Dictionary<String, @Nullable Object> properties = miioConfig.getProperties();
+                if (properties != null) {
+                    @Nullable
+                    String username = (String) properties.get("username");
+                    if (username != null) {
+                        dr = dr.withProperty("username", username);
+                    }
+                    @Nullable
+                    String password = (String) properties.get("password");
+                    if (password != null) {
+                        dr = dr.withProperty("password", password);
+                    }
+                }
+            } catch (ClassCastException | SecurityException e) {
+                logger.debug("Error getting cloud discovery configuration: {}", e.getMessage());
+            }
+        }
+
+        thingDiscovered(dr.build());
     }
 
     private void submitDiscovery(String ip, String token, String id, String label, String model, String country,

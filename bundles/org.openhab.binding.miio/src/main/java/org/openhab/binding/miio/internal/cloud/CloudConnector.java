@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
+import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginMode;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -66,6 +67,12 @@ public class CloudConnector {
     private String username = "";
     private String password = "";
     private String country = "ru,us,tw,sg,cn,de,i2";
+    private @Nullable String userId;
+    private @Nullable String clientId;
+    private @Nullable String ssecurity;
+    private @Nullable String serviceToken;
+    private CloudLoginMode loginMode = CloudLoginMode.QRCODE;
+
     private List<CloudDeviceDTO> deviceList = new ArrayList<>();
     private boolean connected;
     private final HttpClient httpClient;
@@ -154,6 +161,13 @@ public class CloudConnector {
 
     public boolean isConnected() {
         return isConnected(false);
+    }
+
+    public void registerListener(CloudLogonListener cloudLogonListener) {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            cl.registerListener(cloudLogonListener);
+        }
     }
 
     public boolean isConnected(boolean force) {
@@ -253,6 +267,16 @@ public class CloudConnector {
         }
     }
 
+    public void setCredentials(@Nullable String username, @Nullable String password, @Nullable String country,
+            @Nullable String clientId, @Nullable String userId, @Nullable String serviceToken,
+            @Nullable String ssecurity) {
+        setCredentials(username, password, country);
+        this.clientId = clientId;
+        this.userId = userId;
+        this.serviceToken = serviceToken;
+        this.ssecurity = ssecurity;
+    }
+
     private boolean logon() {
         if (username.isEmpty() || password.isEmpty()) {
             logger.debug("No Xiaomi cloud credentials. Cloud connectivity disabled");
@@ -261,7 +285,24 @@ public class CloudConnector {
             return connected;
         }
         try {
-            final MiCloudConnector cl = new MiCloudConnector(username, password, httpClient);
+
+            logger.info("Login mode is {}", this.loginMode);
+
+            // switch (this.loginMode) {
+            // case CloudLoginMode.TOKEN:
+            final MiCloudConnector cl = new MiCloudConnector(username, password, httpClient, this.clientId, this.userId,
+                    this.serviceToken, this.ssecurity);
+            // break;
+            // case CloudLoginMode.PASSWORD:
+            // final MiCloudConnector cl = new MiCloudUserIdLogonConnector(username, password, httpClient,
+            // this.clientId, this.userId, this.serviceToken, this.ssecurity);
+            // break;
+            // case CloudLoginMode.QRCODE:
+            // final MiCloudConnector cl = new MiCloudQRConnector(username, password, httpClient, this.clientId,
+            // this.userId, this.serviceToken, this.ssecurity);
+            // break;
+            // }
+
             this.cloudConnector = cl;
             connected = cl.login();
             if (connected) {
@@ -363,5 +404,50 @@ public class CloudConnector {
             return getRoom(id, false);
         }
         return null;
+    }
+
+    public boolean hasLoginToken() {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        return cl == null ? false : cl.hasLoginToken();
+    }
+
+    public String getUserId() {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        return cl == null ? "" : cl.getUserId();
+    }
+
+    public void setUserId(String userId) {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl != null) {
+            cl.setUserId(userId);
+        }
+    }
+
+    public String getServiceToken() {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        return cl == null ? "" : cl.getServiceToken();
+    }
+
+    public void setServiceToken(String serviceToken) {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl != null) {
+            cl.setServiceToken(serviceToken);
+        }
+    }
+
+    public String getSsecurity() {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        return cl == null ? "" : cl.getSsecurity();
+    }
+
+    public void setSsecurity(String ssecurity) {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl != null) {
+            cl.setSsecurity(ssecurity);
+        }
+    }
+
+    public void setLoginMode(CloudLoginMode loginMode) {
+        this.loginMode = loginMode;
     }
 }

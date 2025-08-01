@@ -25,6 +25,7 @@ import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
+import org.openhab.binding.miio.internal.handler.MiIoCloudThingHandler;
 import org.openhab.binding.miio.internal.handler.MiIoGatewayHandler;
 import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.internal.handler.MiIoLumiHandler;
@@ -83,13 +84,17 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.cloudConnector = cloudConnector;
-        @Nullable
-        String username = (String) properties.get("username");
-        @Nullable
-        String password = (String) properties.get("password");
-        @Nullable
-        String country = (String) properties.get("country");
-        cloudConnector.setCredentials(username, password, country);
+        /*
+         * @Nullable
+         * String username = (String) properties.get("username");
+         * 
+         * @Nullable
+         * String password = (String) properties.get("password");
+         * 
+         * @Nullable
+         * String country = (String) properties.get("country");
+         * cloudConnector.setCredentials(username, password, country);
+         */
         try {
             if (!scheduler.isShutdown()) {
                 scheduledTask = scheduler.submit(() -> cloudConnector.isConnected(true));
@@ -136,6 +141,9 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
                     i18nProvider, localeProvider);
+        }
+        if (thingTypeUID.equals(THING_TYPE_CLOUD)) {
+            return new MiIoCloudThingHandler(thing, cloudConnector, httpClientFactory.getCommonHttpClient());
         }
         return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector,
                 httpClientFactory.getCommonHttpClient(), i18nProvider, localeProvider);

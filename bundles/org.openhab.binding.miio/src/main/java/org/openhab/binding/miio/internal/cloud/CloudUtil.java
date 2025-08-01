@@ -47,6 +47,7 @@ import org.slf4j.Logger;
 public class CloudUtil {
 
     private static final Random RANDOM = new SecureRandom();
+    private static final String UNEXPECTED = "Unexpected :";
 
     /**
      * Saves the Xiaomi cloud device info with tokens to file
@@ -115,6 +116,95 @@ public class CloudUtil {
                 sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * Generate signature for the request (Python equivalent).
+     *
+     * @param url the full request url. e.g.: http://api.xiaomi.com/getUser?id=123321
+     * @param signedNonce secret key for encryption (Base64 encoded).
+     * @param nonce
+     * @param params request params. This should be a Map.
+     * @return BASE64 encoded HMAC-SHA256 signature
+     * @throws MiIoCryptoException
+     */
+    /*
+     * REMOVED: not used
+     * public static String generateSignaturePy(String url, String signedNonce, String nonce, Map<String, String>
+     * params)
+     * throws MiIoCryptoException {
+     * String path = url.split("com", 2)[1];
+     * List<String> signatureParams = new ArrayList<>();
+     * signatureParams.add(path);
+     * signatureParams.add(signedNonce);
+     * signatureParams.add(nonce);
+     * for (Map.Entry<String, String> entry : params.entrySet()) {
+     * signatureParams.add(entry.getKey() + "=" + entry.getValue());
+     * }
+     * String signatureString = String.join("&", signatureParams);
+     * return CloudCrypto.hMacSha256Encode(Base64.getDecoder().decode(signedNonce),
+     * signatureString.getBytes(StandardCharsets.UTF_8));
+     * }
+     */
+    /**
+     * Generate encrypted signature (SHA1, base64) for the request.
+     *
+     * @param url the full request url
+     * @param method HTTP method (GET/POST)
+     * @param signedNonce secret key for encryption (Base64 encoded)
+     * @param params request params
+     * @return BASE64 encoded SHA1 signature
+     */
+    public static String generateEncSignature(String url, String method, String signedNonce,
+            Map<String, String> params) {
+        String path = url.split("com", 2)[1].replace("/app/", "/");
+        List<String> signatureParams = new ArrayList<>();
+        signatureParams.add(method.toUpperCase());
+        signatureParams.add(path);
+
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            signatureParams.add(entry.getKey() + "=" + entry.getValue());
+        }
+
+        signatureParams.add(signedNonce);
+        String signatureString = String.join("&", signatureParams);
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-1");
+            byte[] digest = md.digest(signatureString.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(digest);
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-1 algorithm not found", e);
+        }
+    }
+
+    /**
+     * Generate encrypted parameters for the request.
+     *
+     * @param url the full request url
+     * @param method HTTP method (GET/POST)
+     * @param signedNonce secret key for encryption (Base64 encoded)
+     * @param nonce nonce value
+     * @param params request params (will not be modified)
+     * @param ssecurity ssecurity value
+     * @return Map with encrypted parameters and required fields
+     * @throws Exception
+     */
+    public static Map<String, String> generateEncParams(String url, String method, String signedNonce, String nonce,
+            Map<String, String> params, String ssecurity) throws Exception {
+        Map<String, String> encParams = new java.util.HashMap<>(params);
+        // Step 1: Add rc4_hash__
+        String rc4Hash = generateEncSignature(url, method, signedNonce, encParams);
+        encParams.put("rc4_hash__", rc4Hash);
+        // Step 2: Encrypt all values with RC4
+        for (Map.Entry<String, String> entry : new java.util.HashMap<>(encParams).entrySet()) {
+            String encrypted = CloudCrypto.encryptRc4(signedNonce, entry.getValue());
+            encParams.put(entry.getKey(), encrypted);
+        }
+        // Step 3: Add signature, ssecurity, _nonce
+        encParams.put("signature", generateEncSignature(url, method, signedNonce, encParams));
+        encParams.put("ssecurity", ssecurity);
+        encParams.put("_nonce", nonce);
+        return encParams;
+    }
+
     public static String generateNonce(long milli) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(output);
@@ -136,5 +226,13 @@ public class CloudUtil {
     public static void writeBytesToFileNio(byte[] bFile, String fileDest) throws IOException {
         Path path = Paths.get(fileDest);
         Files.write(path, bFile);
+    }
+
+    public static String parseJson(String data) {
+        if (data.contains("&&&START&&&")) {
+            return data.replace("&&&START&&&", "");
+        } else {
+            return UNEXPECTED.concat(data);
+        }
     }
 }

@@ -40,10 +40,11 @@ public final class MiIoBindingConstants {
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
     public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
+    public static final ThingTypeUID THING_TYPE_CLOUD = new ThingTypeUID(BINDING_ID, "cloud");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_MIIO, THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY,
-                    THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED).collect(Collectors.toSet()));
+                    THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED, THING_TYPE_CLOUD).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> NONGENERIC_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED)
@@ -108,6 +109,10 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_HISTORY_DUSTCOLLECTION = "cleaning#last_clean_dustcollection_status";
     public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
     public static final String CHANNEL_VACUUM_MAP = "cleaning#map";
+
+    public static final String CHANNEL_CAPTCHA = "captcha";
+    public static final String CHANNEL_CAPTCHA_RESPONSE = "captcharesponse";
+    public static final String CHANNEL_TWOFA = "twofa";
 
     public static final String PROPERTY_HOST_IP = "host";
     public static final String PROPERTY_DID = "deviceId";

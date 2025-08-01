@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="miio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cloud">
+		<label>Cloud Logon Helper Thing</label>
+		<description>Cloud Logon Helper Thing supporting captcha and 2FA authentication</description>
+
+		<channels>
+			<channel id="captcha" typeId="captcha"/>
+			<channel id="captcharesponse" typeId="captcharesponse"/>
+			<channel id="twofa" typeId="twofa"/>
+		</channels>
+
+		<config-description>
+			<parameter name="username" type="text" required="false">
+				<label>Xiaomi cloud username</label>
+				<description>Xiaomi cloud username. Typically your email</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<label>Xiaomi cloud password</label>
+			</parameter>
+			<parameter name="loginMethod" type="text" required="false">
+				<label>Cloud login method</label>
+				<default>QRCODE</default>
+				<options>
+					<option value="QRCODE">With QR code (Default)</option>
+					<option value="PASSWORD">With username and password. (possibly requiring captcha and 2fa)</option>
+				</options>
+			</parameter>
+			<parameter name="country" type="text" required="false">
+				<label>Xiaomi server country</label>
+				<description>Xiaomi server country(s) (e.g. sg,de). Separate multiple servers with comma. Leave empty for all. See
+					binding readme for country to server mapping</description>
+			</parameter>
+			<parameter name="cloudDiscoveryMode" type="text" required="false">
+				<default>disabled</default>
+				<label>Cloud Discovery Mode</label>
+				<description>Allow for discovery via the cloud. This may be used for devices that are not on the same network as
+					OpenHAB server</description>
+				<options>
+					<option value="disabled">Local discovery only (Default)</option>
+					<option value="supportedOnly">Discover online supported devices from Xiaomi cloud</option>
+					<option value="all">Discover all on &amp; offline devices from Xiaomi cloud (advanced, see readme for usage)</option>
+				</options>
+			</parameter>
+
+			<parameter name="userId" type="text" required="false">
+				<label>Xiaomi Cloud User Id</label>
+				<description>Xiaomi cloud user Id, automatically retreived at logon</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="clientId" type="text" required="false">
+				<label>Xiaomi cloud client Id</label>
+				<description>Xiaomi cloud clientId Id identifies this client</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="serviceToken" type="text" required="false">
+				<label>Xiaomi cloud service Token</label>
+				<description>Xiaomi cloud service Token, automatically retreived at logon</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ssecurity" type="text" required="false">
+				<label>Xiaomi cloud ssecurity</label>
+				<description>Xiaomi ssecurity value, automatically retreived at logon</description>
+				<advanced>true</advanced>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<channel-type id="captcha">
+		<item-type>Image</item-type>
+		<label>Captcha Image</label>
+		<description>Enter the captcha value in the captcha response channel.</description>
+		<category>settings</category>
+	</channel-type>
+
+	<channel-type id="captcharesponse">
+		<item-type>String</item-type>
+		<label>Capcha Response</label>
+		<description>Enter in this channel the value as seen in the captcha.</description>
+		<category>settings</category>
+	</channel-type>
+
+	<channel-type id="twofa">
+		<item-type>Number</item-type>
+		<label>2 Factor Authentication Response</label>
+		<description>Enter the 2 factor authentication code received by email.</description>
+		<category>settings</category>
+	</channel-type>
+
+
+	<!-- <channel-groups> <channel-group id="logon" typeId="logon" /> </channel-groups> </thing-type> <channel-group-type id="logon">
+		<label>Logon</label> <channels> <channel id="captcha" typeId="captcha" /> <channel id="captcharesponse" typeId="captcharesponse"
+		/> <channel id="twofa" typeId="twofa" /> </channels> </channel-group-type> -->
+</thing:thing-descriptions>
