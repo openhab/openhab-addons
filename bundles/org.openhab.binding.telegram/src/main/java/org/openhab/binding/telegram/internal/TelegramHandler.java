@@ -14,6 +14,7 @@ package org.openhab.binding.telegram.internal;
 
 import static org.openhab.binding.telegram.internal.TelegramBindingConstants.*;
 
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.time.Instant;
@@ -37,6 +38,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.telegram.internal.action.TelegramActions;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -54,6 +57,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.UpdatesListener;
@@ -90,6 +95,14 @@ public class TelegramHandler extends BaseThingHandler {
             this.replyId = replyId;
         }
 
+        public Long getChatId() {
+            return this.chatId;
+        }
+
+        public String getReplyId() {
+            return this.replyId;
+        }
+
         @Override
         public int hashCode() {
             return Objects.hash(chatId, replyId);
@@ -124,16 +137,20 @@ public class TelegramHandler extends BaseThingHandler {
     // Keep track of message id sent with reply markup because we want to remove the
     // markup after the user provided an
     // answer and need the id of the original message
-    private final Map<ReplyKey, Integer> replyIdToMessageId = new HashMap<>();
+    private Map<ReplyKey, Integer> replyIdToMessageId = new HashMap<>();
+    // StorageService for the replyIdToMessageId values
+    private Storage<String> internalStorage;
 
     private @Nullable TelegramBot bot;
     private @Nullable OkHttpClient botLibClient;
     private @Nullable HttpClient downloadDataClient;
     private @Nullable ParseMode parseMode;
 
-    public TelegramHandler(Thing thing, @Nullable HttpClient httpClient) {
+    public TelegramHandler(Thing thing, @Nullable HttpClient httpClient, StorageService storageService) {
         super(thing);
         downloadDataClient = httpClient;
+        this.internalStorage = storageService.getStorage(thing.getUID().toString(),
+                TelegramHandler.class.getClassLoader());
     }
 
     @Override
@@ -188,6 +205,32 @@ public class TelegramHandler extends BaseThingHandler {
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(botLibClient).build();
         localBot.setUpdatesListener(this::handleUpdates, this::handleExceptions,
                 getGetUpdatesRequest(config.getLongPollingTime()));
+
+        try {
+            String json = internalStorage.get(thing.getUID().toString());
+
+            if (json != null) { // there are already some values -> get them from the json string
+                Gson gson = new Gson();
+                Type mapType = new TypeToken<Map<String, String>>() {
+                }.getType();
+                Map<String, String> tmp = gson.fromJson(json, mapType);
+
+                for (Map.Entry<String, String> entry : tmp.entrySet()) { // get single parts for filling
+                                                                         // replyIdToMessageId
+                    Integer messageId = Integer.valueOf(entry.getKey());
+                    @Nullable
+                    String value = entry.getValue();
+                    if (value != null) {
+                        String[] parts = value.split("\\|", 2);
+                        Long chatId = Long.valueOf(parts[0]);
+                        String replyId = parts[1];
+                        replyIdToMessageId.put(new ReplyKey(chatId, replyId), messageId);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.info("Cannot load stored replyIdToMessageId mappings!");
+        }
     }
 
     private void createReceiverChatIdsAndAuthorizedSenderChatIds(List<String> chatIds) {
@@ -511,6 +554,19 @@ public class TelegramHandler extends BaseThingHandler {
 
     public void addMessageId(Long chatId, String replyId, Integer messageId) {
         replyIdToMessageId.put(new ReplyKey(chatId, replyId), messageId);
+
+        // persist current replyIdToMessageId entries in thing storage
+        JsonObject root = new JsonObject();
+        for (Map.Entry<ReplyKey, Integer> entry : replyIdToMessageId.entrySet()) {
+            @Nullable
+            ReplyKey replyKey = entry.getKey();
+            @Nullable
+            Integer intMsgId = entry.getValue();
+            String strMsgId = intMsgId.toString();
+            String strValue = replyKey.getChatId() + "|" + replyKey.getReplyId();
+            root.add(strMsgId, new JsonPrimitive(strValue));
+        }
+        internalStorage.put(thing.getUID().toString(), root.toString());
     }
 
     @Nullable
