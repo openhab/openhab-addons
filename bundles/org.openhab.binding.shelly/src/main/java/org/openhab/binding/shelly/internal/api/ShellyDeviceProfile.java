@@ -198,10 +198,14 @@ public class ShellyDeviceProfile {
         isGen2 = isGeneration2(thingTypeUID);
 
         String type = getString(device.type);
-        isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
-                || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS) || THING_TYPE_SHELLYPLUSDIMMERUS.equals(thingTypeUID)
+        isDimmer = THING_TYPE_SHELLYDIMMER.equals(thingTypeUID) || THING_TYPE_SHELLYDIMMER2.equals(thingTypeUID)
+                || THING_TYPE_SHELLYPLUSDIMMER.equals(thingTypeUID)
+                || THING_TYPE_SHELLYPLUSDALIDIMMER.equals(thingTypeUID)
+                || THING_TYPE_SHELLYPLUSDIMMERUS.equals(thingTypeUID)
                 || THING_TYPE_SHELLYPLUSDIMMER10V.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSDIMMER.equals(thingTypeUID);
+                || THING_TYPE_SHELLYPRODIMMER1PM.equals(thingTypeUID)
+                || THING_TYPE_SHELLYPRODIMMER2PM.equals(thingTypeUID)
+                || THING_TYPE_SHELLYPRODIMMER10V.equals(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = THING_TYPE_SHELLYDUO.equals(thingTypeUID) || THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID)
                 || THING_TYPE_SHELLYDUORGBW.equals(thingTypeUID);
@@ -259,7 +263,7 @@ public class ShellyDeviceProfile {
         }
         int idx = i + 1;
         if (isDimmer) {
-            return CHANNEL_GROUP_DIMMER_CONTROL;
+            return numMeters <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL : CHANNEL_GROUP_DIMMER_CONTROL + idx;
         } else if (isRoller) {
             return numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
         } else if (hasRelays) {

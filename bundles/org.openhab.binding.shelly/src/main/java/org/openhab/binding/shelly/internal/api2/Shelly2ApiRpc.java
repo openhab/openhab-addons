@@ -212,6 +212,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         List<ShellySettingsRoller> rollers = profile.settings.rollers;
         profile.numRollers = rollers != null ? rollers.size() : 0;
+
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
@@ -278,6 +279,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.numMeters = 3;
         } else if (dc.em10 != null) {
             profile.numMeters = 2;
+        } else if (profile.isDimmer) {
+            profile.numMeters = dc.light1 != null ? 2 : 1;
         }
 
         if (profile.numMeters > 0) {
@@ -302,11 +305,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         if (profile.isDimmer) {
-            ArrayList<@Nullable ShellySettingsDimmer> dimmers = new ArrayList<>();
-            dimmers.add(new ShellySettingsDimmer());
-            profile.settings.dimmers = dimmers;
+            profile.settings.dimmers = new ArrayList<>();
             profile.status.dimmers = new ArrayList<>();
+            profile.settings.dimmers.add(new ShellySettingsDimmer());
             profile.status.dimmers.add(new ShellyShortLightStatus());
+            if (dc.light1 != null) {
+                profile.settings.dimmers.add(new ShellySettingsDimmer());
+                profile.status.dimmers.add(new ShellyShortLightStatus());
+            }
             fillDimmerSettings(profile, dc);
         }
         profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
