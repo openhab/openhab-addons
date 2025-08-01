@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.smartmeter.dlms.internal.helper;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.openmuc.jdlms.datatypes.DataObject.Type;
 
 /**
  * A class to parse and hold information about a DLMS/COSEM meter channel.
@@ -32,18 +33,23 @@ public class DlmsChannelInfo {
     private final int classId;
     private final ObisCode obisCode;
     private final int version;
-    private final String label;
+    private final @Nullable String label;
 
-    public DlmsChannelInfo(DataObject dataObject) throws IllegalArgumentException, ClassCastException {
-        if (dataObject.getType() != Type.STRUCTURE) {
+    @SuppressWarnings("unchecked")
+    public DlmsChannelInfo(DataObject dataObject) throws IllegalArgumentException {
+        List<DataObject> entries;
+        if (dataObject.getValue() instanceof List<?> dataList) {
+            entries = (List<DataObject>) dataList;
+        } else if (dataObject.getValue() instanceof DataObject[] dataArray) {
+            entries = Arrays.asList(dataArray);
+        } else {
             throw new IllegalArgumentException("Invalid meter information: " + dataObject);
         }
-        List<DataObject> fields = dataObject.getValue();
-        classId = fields.get(0).getValue();
-        byte[] obisBytes = fields.get(1).getValue();
+        classId = entries.get(0).getValue();
+        byte[] obisBytes = entries.get(1).getValue();
         obisCode = new ObisCode(obisBytes);
-        version = fields.get(2).getValue();
-        label = fields.size() > 3 ? fields.get(3).getValue() : "";
+        version = entries.get(2).getValue();
+        label = entries.size() > 3 ? entries.get(3).getValue() : null;
     }
 
     public AttributeAddress getAttributeAddress() {
@@ -54,7 +60,7 @@ public class DlmsChannelInfo {
         return SmartMeterBindingConstants.getObisChannelId(obisCode.toString());
     }
 
-    public String getLabel() {
+    public @Nullable String getLabel() {
         return label;
     }
 

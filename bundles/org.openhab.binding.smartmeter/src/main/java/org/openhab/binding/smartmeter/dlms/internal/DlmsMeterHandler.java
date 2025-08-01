@@ -16,6 +16,7 @@ import static org.openhab.core.thing.DefaultSystemChannelTypeProvider.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +49,6 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SerialConnectionBuilder;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.openmuc.jdlms.internal.WellKnownInstanceIds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,9 +138,9 @@ public class DlmsMeterHandler extends BaseThingHandler {
                 try {
                     GetResult result = connection.get(info.getAttributeAddress());
                     if (result.getResultCode() == AccessResultCode.SUCCESS) {
-                        String data = result.getResultData().getValue();
+                        String resultData = result.getResultData().getValue();
                         try {
-                            Unit<?> unit = new DlmsQuantityType<>(data).getUnit();
+                            Unit<?> unit = new DlmsQuantityType<>(resultData).getUnit();
                             ChannelTypeUID channelTypeUID;
                             if (unit.isCompatible(Units.AMPERE)) {
                                 channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_CURRENT;
@@ -162,13 +162,14 @@ public class DlmsMeterHandler extends BaseThingHandler {
                             ChannelUID uid = new ChannelUID(getThing().getUID(), info.getChannelId());
                             ChannelBuilder channelBuilder = ChannelBuilder.create(uid).withType(channelTypeUID);
                             String label = info.getLabel();
-                            if (!label.isBlank()) {
+                            if (label != null && !label.isBlank()) {
                                 channelBuilder.withLabel(label);
                             }
                             channels.add(channelBuilder.build());
-                            logger.debug("Meter channel: {}, data: {}, added OH channel: {}", info, data, uid);
-                        } catch (ClassCastException | IllegalArgumentException e) {
-                            logger.debug("Meter channel: {}, data:{}, parse error:{}", info, data, e.getMessage());
+                            logger.debug("Meter channel: {}, data: {}, added OH channel: {}", info, resultData, uid);
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Meter channel: {}, data:{}, parse error:{}", info, resultData,
+                                    e.getMessage());
                         }
                     } else {
                         logger.debug("Meter channel: {}, read error: {}", info, result);
@@ -186,6 +187,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
     /**
      * Populate the list of meter channel informations.
      */
+    @SuppressWarnings("unchecked")
     private Set<DlmsChannelInfo> getMeterInfos() {
         Set<DlmsChannelInfo> infos = new HashSet<>();
         DlmsConnection connection = this.connection;
@@ -197,15 +199,20 @@ public class DlmsMeterHandler extends BaseThingHandler {
                 if (result.getResultCode() == AccessResultCode.SUCCESS) {
                     DataObject root = result.getResultData();
                     logger.trace("Channel response: {}", root);
-                    if (root.getType() == Type.ARRAY) {
-                        List<DataObject> datas = root.getValue();
-                        datas.forEach(data -> {
+                    List<DataObject> rootEntries = null;
+                    if (root.getValue() instanceof List<?> rootList) {
+                        rootEntries = (List<DataObject>) rootList;
+                    } else if (root.getValue() instanceof DataObject[] rootArray) {
+                        rootEntries = Arrays.asList(rootArray);
+                    }
+                    if (rootEntries != null) {
+                        rootEntries.forEach(entry -> {
                             try {
-                                DlmsChannelInfo info = new DlmsChannelInfo(data);
+                                DlmsChannelInfo info = new DlmsChannelInfo(entry);
                                 infos.add(info);
                                 logger.debug("Meter channel: {} added", info);
-                            } catch (ClassCastException | IllegalArgumentException e) {
-                                logger.debug("Meter channel: {}, parse error: {}", data, e.getMessage());
+                            } catch (IllegalArgumentException e) {
+                                logger.debug("Meter channel: {}, parse error: {}", entry, e.getMessage());
                             }
                         });
                     } else {
