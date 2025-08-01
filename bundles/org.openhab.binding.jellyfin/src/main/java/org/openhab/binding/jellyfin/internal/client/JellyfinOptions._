@@ -1,0 +1,156 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.jellyfin.internal.client;
+
+import java.util.Objects;
+
+import org.openhab.binding.jellyfin.internal.client.api.client.ApiClientFactory;
+import org.openhab.binding.jellyfin.internal.client.model.ClientInfo;
+import org.openhab.binding.jellyfin.internal.client.model.DeviceInfo;
+import org.openhab.binding.jellyfin.internal.client.model.ServerVersion;
+
+/**
+ * Configuration options for the Jellyfin client
+ *
+ * @author Patrik Gfeller, Initial contribution (based on Android SDK by Peter Feller)
+ */
+public class JellyfinOptions {
+    private final ClientInfo clientInfo;
+    private final DeviceInfo deviceInfo;
+    private final ApiClientFactory apiClientFactory;
+    private final ServerVersion minimumServerVersion;
+
+    /**
+     * Create a new JellyfinOptions instance
+     *
+     * @param clientInfo Client information or null
+     * @param deviceInfo Device information or null
+     * @param apiClientFactory Factory for creating API clients
+     * @param minimumServerVersion Minimum supported server version
+     */
+    public JellyfinOptions(ClientInfo clientInfo, DeviceInfo deviceInfo, ApiClientFactory apiClientFactory,
+            ServerVersion minimumServerVersion) {
+        this.clientInfo = clientInfo;
+        this.deviceInfo = deviceInfo;
+        this.apiClientFactory = apiClientFactory;
+        this.minimumServerVersion = minimumServerVersion;
+    }
+
+    /**
+     * Get the client information
+     *
+     * @return Client information or null if not set
+     */
+    public ClientInfo getClientInfo() {
+        return clientInfo;
+    }
+
+    /**
+     * Get the device information
+     *
+     * @return Device information or null if not set
+     */
+    public DeviceInfo getDeviceInfo() {
+        return deviceInfo;
+    }
+
+    /**
+     * Get the API client factory
+     *
+     * @return The API client factory
+     */
+    public ApiClientFactory getApiClientFactory() {
+        return apiClientFactory;
+    }
+
+    /**
+     * Get the minimum supported server version
+     *
+     * @return The minimum supported server version
+     */
+    public ServerVersion getMinimumServerVersion() {
+        return minimumServerVersion;
+    }
+
+    /**
+     * Builder for JellyfinOptions
+     */
+    public static class Builder {
+        private ClientInfo clientInfo;
+        private DeviceInfo deviceInfo;
+        private ApiClientFactory apiClientFactory;
+        private ServerVersion minimumServerVersion = Jellyfin.getMinimumVersion();
+
+        /**
+         * Create a new builder instance
+         */
+        public Builder() {
+        }
+
+        /**
+         * Set the client information
+         *
+         * @param clientInfo Client information
+         * @return This builder for method chaining
+         */
+        public Builder setClientInfo(ClientInfo clientInfo) {
+            this.clientInfo = clientInfo;
+            return this;
+        }
+
+        /**
+         * Set the device information
+         *
+         * @param deviceInfo Device information
+         * @return This builder for method chaining
+         */
+        public Builder setDeviceInfo(DeviceInfo deviceInfo) {
+            this.deviceInfo = deviceInfo;
+            return this;
+        }
+
+        /**
+         * Set the API client factory
+         *
+         * @param apiClientFactory API client factory
+         * @return This builder for method chaining
+         */
+        public Builder setApiClientFactory(ApiClientFactory apiClientFactory) {
+            this.apiClientFactory = apiClientFactory;
+            return this;
+        }
+
+        /**
+         * Set the minimum supported server version
+         *
+         * @param minimumServerVersion Minimum supported server version
+         * @return This builder for method chaining
+         */
+        public Builder setMinimumServerVersion(ServerVersion minimumServerVersion) {
+            this.minimumServerVersion = minimumServerVersion;
+            return this;
+        }
+
+        /**
+         * Build a JellyfinOptions instance
+         *
+         * @return The new JellyfinOptions instance
+         */
+        public JellyfinOptions build() {
+            Objects.requireNonNull(apiClientFactory, "API client factory must be set");
+            Objects.requireNonNull(minimumServerVersion, "Minimum server version must be set");
+
+            return new JellyfinOptions(clientInfo, deviceInfo, apiClientFactory, minimumServerVersion);
+        }
+    }
+}
