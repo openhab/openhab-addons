@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
-import org.openhab.binding.shelly.internal.handler.ShellyBluSensorHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyProtectedHandler;
@@ -119,14 +118,14 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyProtectedHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
-        } else if (LIGHT_THING_TYPES.contains(thingTypeUID)) {
+        } else if (THING_TYPE_CLASS_LIGHT.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
-        } else if (BLU_SENSOR_THING_TYPES.contains(thingTypeUID)) {
+        } else if (THING_TYPE_CLASS_BLU.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyBluSensorHandler", thing.getLabel(),
                     thingTypeUID.toString());
-            handler = new ShellyBluSensorHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
+            handler = new ShellyBluHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
         } else if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyRelayHandler", thing.getLabel(),
                     thingTypeUID.toString());

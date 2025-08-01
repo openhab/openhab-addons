@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -189,8 +189,8 @@ public class ShellyDeviceProfileTest {
         return Stream.of( //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, "", 0, 0, 0, 0, CHANNEL_GROUP_DIMMER_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, "", 0, 0, 0, 0, CHANNEL_GROUP_DIMMER_CONTROL),
-                Arguments.of(THING_TYPE_SHELLYDIMMER, "", 0, 0, 0, 0, CHANNEL_GROUP_STATUS + "1"),
-                Arguments.of(THING_TYPE_SHELLYDIMMER2, "", 0, 0, 0, 1, CHANNEL_GROUP_STATUS + "2"),
+                Arguments.of(THING_TYPE_SHELLYDIMMER, "", 0, 0, 0, 0, CHANNEL_GROUP_DIMMER_CONTROL),
+                Arguments.of(THING_TYPE_SHELLYDIMMER2, "", 0, 0, 0, 1, CHANNEL_GROUP_DIMMER_CONTROL),
                 Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 0, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
                 Arguments.of(THING_TYPE_SHELLY2_ROLLER, "Roller", 1, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
                 Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 2, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL + "4"),
