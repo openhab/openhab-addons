@@ -84,7 +84,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
 
     public void discoveredResult(ThingTypeUID tuid, String model, String serviceName, String address,
             Map<String, Object> properties) {
-        ThingUID uid = ShellyThingCreator.getThingUIDForUnknown(serviceName, model, "");
+        ThingUID uid = ShellyThingCreator.getThingUID(serviceName, model, "");
         logger.debug("Adding discovered thing with id {}", uid.toString());
         properties.put(PROPERTY_MAC_ADDRESS, address);
         String thingLabel = "Shelly BLU " + model + " (" + serviceName + ")";
