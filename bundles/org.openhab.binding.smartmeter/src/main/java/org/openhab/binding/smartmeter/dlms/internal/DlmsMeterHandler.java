@@ -197,12 +197,12 @@ public class DlmsMeterHandler extends BaseThingHandler {
                         new ObisCode(WellKnownInstanceIds.CURRENT_ASSOCIATION_ID), 2);
                 GetResult result = connection.get(address);
                 if (result.getResultCode() == AccessResultCode.SUCCESS) {
-                    DataObject root = result.getResultData();
-                    logger.trace("Channel response: {}", root);
+                    DataObject rootData = result.getResultData();
+                    logger.trace("Channel response: {}", rootData);
                     List<DataObject> rootEntries = null;
-                    if (root.getValue() instanceof List<?> rootList) {
+                    if (rootData.getValue() instanceof List<?> rootList) {
                         rootEntries = (List<DataObject>) rootList;
-                    } else if (root.getValue() instanceof DataObject[] rootArray) {
+                    } else if (rootData.getValue() instanceof DataObject[] rootArray) {
                         rootEntries = Arrays.asList(rootArray);
                     }
                     if (rootEntries != null) {
@@ -216,7 +216,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
                             }
                         });
                     } else {
-                        logger.debug("Root data error: {}", root);
+                        logger.debug("Root data error: {}", rootData);
                     }
                 } else {
                     logger.debug("Root data error: {}", result);
