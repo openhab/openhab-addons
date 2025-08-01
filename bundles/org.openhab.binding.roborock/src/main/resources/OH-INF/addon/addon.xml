@@ -5,6 +5,6 @@
 
 	<type>binding</type>
 	<name>Roborock Binding</name>
-	<description>This is the binding for roborock.</description>
+	<description>This is the binding for Roborock robot vacuum cleaners.</description>
 
 </addon:addon>
