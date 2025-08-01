@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evcc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="pv" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+
+		<label>Photovoltaic</label>
+		<description>A photovoltaic system configured in your evcc instance</description>
+	</thing-type>
+	<!-- Already declared in site.xml maybe evcc is going to change it in the future -->
+	<channel-type id="pv-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>PV Power</label>
+		<description>Current power of this photovoltaic system in Watt</description>
+		<category>Power</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="pv-title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Name of the photovoltaic system as displayed in the UI</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+</thing:thing-descriptions>
