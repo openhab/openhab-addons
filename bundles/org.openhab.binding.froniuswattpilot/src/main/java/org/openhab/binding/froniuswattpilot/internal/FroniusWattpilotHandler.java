@@ -41,16 +41,16 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.florianhotze.wattpilot.WattpilotClient;
-import com.florianhotze.wattpilot.WattpilotClientListener;
-import com.florianhotze.wattpilot.WattpilotInfo;
-import com.florianhotze.wattpilot.WattpilotStatus;
-import com.florianhotze.wattpilot.commands.SetChargingCurrentCommand;
-import com.florianhotze.wattpilot.commands.SetChargingModeCommand;
-import com.florianhotze.wattpilot.commands.SetEnforcedChargingStateCommand;
-import com.florianhotze.wattpilot.commands.SetSurplusPowerThresholdCommand;
-import com.florianhotze.wattpilot.dto.ChargingMode;
-import com.florianhotze.wattpilot.dto.EnforcedChargingState;
+import dev.digiried.wattpilot.WattpilotClient;
+import dev.digiried.wattpilot.WattpilotClientListener;
+import dev.digiried.wattpilot.WattpilotInfo;
+import dev.digiried.wattpilot.WattpilotStatus;
+import dev.digiried.wattpilot.commands.SetChargingCurrentCommand;
+import dev.digiried.wattpilot.commands.SetChargingModeCommand;
+import dev.digiried.wattpilot.commands.SetEnforcedChargingStateCommand;
+import dev.digiried.wattpilot.commands.SetSurplusPowerThresholdCommand;
+import dev.digiried.wattpilot.dto.ChargingMode;
+import dev.digiried.wattpilot.dto.EnforcedChargingState;
 
 /**
  * The {@link FroniusWattpilotHandler} is responsible for handling commands, which are

@@ -4,7 +4,7 @@
 
 	<feature name="openhab-binding-froniuswattpilot" description="Fronius Wattpilot Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle dependency="true">mvn:com.florianhotze.sdk/wattpilot4j/1.3.0</bundle>
+		<bundle dependency="true">mvn:dev.digiried/wattpilot4j/2.0.0</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.froniuswattpilot/${project.version}</bundle>
 	</feature>
 </features>
