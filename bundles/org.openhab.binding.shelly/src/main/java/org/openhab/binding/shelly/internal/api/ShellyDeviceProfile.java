@@ -13,8 +13,8 @@
 package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.HashMap;
@@ -198,39 +198,29 @@ public class ShellyDeviceProfile {
         isGen2 = isGeneration2(thingTypeUID);
 
         String type = getString(device.type);
-        isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
-                || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS) || THING_TYPE_SHELLYPLUSDIMMERUS.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSDIMMER10V.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSDIMMER.equals(thingTypeUID);
+        isDimmer = THING_TYPE_CLASS_DIMMER.contains(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
-        isDuo = THING_TYPE_SHELLYDUO.equals(thingTypeUID) || THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID)
-                || THING_TYPE_SHELLYDUORGBW.equals(thingTypeUID);
-        isRGBW2 = THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID) || THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID);
+        isDuo = THING_TYPE_CLASS_DUO.contains(thingTypeUID);
+        isRGBW2 = THING_TYPE_CLASS_RGBW2.contains(thingTypeUID);
         isLight = isBulb || isDuo || isRGBW2;
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
             maxTemp = isBulb ? MAX_COLOR_TEMP_BULB : MAX_COLOR_TEMP_DUO;
         }
 
-        boolean isFlood = THING_TYPE_SHELLYFLOOD.equals(thingTypeUID);
-        isSmoke = THING_TYPE_SHELLYSMOKE.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSSMOKE.equals(thingTypeUID);
-        boolean isGas = THING_TYPE_SHELLYGAS.equals(thingTypeUID);
-        boolean isUNI = THING_TYPE_SHELLYUNI.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSUNI.equals(thingTypeUID);
-        isHT = THING_TYPE_SHELLYHT.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSHT.equals(thingTypeUID)
-                || THING_TYPE_SHELLYBLUHT.equals(thingTypeUID);
-        isDW = THING_TYPE_SHELLYDOORWIN.equals(thingTypeUID) || THING_TYPE_SHELLYDOORWIN2.equals(thingTypeUID)
-                || THING_TYPE_SHELLYBLUDW.equals(thingTypeUID);
-        isMotion = THING_TYPE_SHELLYMOTION.equals(thingTypeUID) || THING_TYPE_SHELLYBLUMOTION.equals(thingTypeUID);
+        boolean isFlood = THING_TYPE_CLASS_FLOOD.contains(thingTypeUID);
+        boolean isGas = THING_TYPE_CLASS_GAS.contains(thingTypeUID);
+        boolean isUNI = THING_TYPE_CLASS_UNI.contains(thingTypeUID);
+        isSmoke = THING_TYPE_CLASS_SMOKE.contains(thingTypeUID);
+        isHT = THING_TYPE_CLASS_HT.contains(thingTypeUID);
+        isDW = THING_TYPE_CLASS_DW.contains(thingTypeUID);
+        isMotion = THING_TYPE_CLASS_MOTION.contains(thingTypeUID);
         isSense = THING_TYPE_SHELLYSENSE.equals(thingTypeUID);
-        isIX = THING_TYPE_SHELLYIX3.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSI4.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSI4DC.equals(thingTypeUID);
-        isButton = THING_TYPE_SHELLYBUTTON1.equals(thingTypeUID) || THING_TYPE_SHELLYBUTTON2.equals(thingTypeUID)
-                || THING_TYPE_SHELLYBLUBUTTON.equals(thingTypeUID);
+        isIX = THING_TYPE_CLASS_IX.contains(thingTypeUID);
+        isButton = THING_TYPE_CLASS_BUTTON.contains(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID);
-        is3EM = THING_TYPE_SHELLY3EM.equals(thingTypeUID) || THING_TYPE_SHELLYPRO3EM.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSEM.equals(thingTypeUID) || THING_TYPE_SHELLYPLUS3EM63.equals(thingTypeUID);
+        is3EM = THING_TYPE_CLASS_3EM.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
@@ -413,13 +403,13 @@ public class ShellyDeviceProfile {
     public static boolean isGeneration2(ThingTypeUID thingTypeUID) {
         String thingTypeID = thingTypeUID.getId();
         return thingTypeID.startsWith(THING_TYPE_SHELLYPLUS_PREFIX)
-                || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX) || thingTypeID.contains("mini")
-                || THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID)
-                || isBluSeries(thingTypeUID) | isBluSeries(thingTypeUID) || THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
+                || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX)
+                || thingTypeID.contains(THING_TYPE_SHELLYMINI_MIDDLE) || THING_TYPE_CLASS_WALL.contains(thingTypeUID)
+                || isBluSeries(thingTypeUID) || THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {
-        return BLU_SENSOR_THING_TYPES.contains(thingTypeUID) && !THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
+        return THING_TYPE_CLASS_BLU.contains(thingTypeUID) && !THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
     }
 
     public boolean coiotEnabled() {

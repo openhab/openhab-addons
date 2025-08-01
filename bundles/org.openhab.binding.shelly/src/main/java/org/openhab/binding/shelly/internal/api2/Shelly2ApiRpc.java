@@ -13,9 +13,9 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
@@ -268,9 +268,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         // Pro 3EM has 3 meters
         // Pro 2 has 2 relays, but no meters
         // Mini PM has 1 meter, but no relay
-        if (THING_TYPE_SHELLYPRO2.equals(thingTypeUID)) {
-            profile.numMeters = 0;
-        } else if (THING_TYPE_SHELLYPRO3EM.equals(thingTypeUID)) {
+        if (THING_TYPE_CAP_NUM_METERS.containsKey(thingTypeUID)) {
+            profile.numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
+        } else if (THING_TYPE_CLASS_3EM.contains(thingTypeUID)) {
             profile.numMeters = 3;
         } else if (dc.pm10 != null) {
             profile.numMeters = 1;
