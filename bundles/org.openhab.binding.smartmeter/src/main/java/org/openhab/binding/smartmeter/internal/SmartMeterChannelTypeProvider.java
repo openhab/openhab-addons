@@ -31,7 +31,9 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.util.UnitUtils;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * A {@link ChannelTypeProvider} that listens for changes to the {@link MeterDevice} and updates the
@@ -45,7 +47,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = { ChannelTypeProvider.class, SmartMeterChannelTypeProvider.class })
 public class SmartMeterChannelTypeProvider extends AbstractStorageBasedTypeProvider implements MeterValueListener {
 
-    protected SmartMeterChannelTypeProvider(StorageService storageService) {
+    @Activate
+    public SmartMeterChannelTypeProvider(@Reference StorageService storageService) {
         super(storageService);
     }
 

@@ -41,9 +41,9 @@ class DlmsMeterTests {
         return Stream.of(
         //@formatter:off
             Arguments.of(QuantityType.valueOf("12345.678 kWh"), "1-0:1.8.0(12345.678*kWh)"), //
-            Arguments.of(QuantityType.valueOf("230.0 V"), "1-0:32.7.0(230.0*V"), //
-            Arguments.of(QuantityType.valueOf("1.5 A"), "1-0:31.7.0(1.5*A"), //
-            Arguments.of(QuantityType.valueOf("0.345 kW"), "1-0:16.7.0(0.345*kW")
+            Arguments.of(QuantityType.valueOf("230.0 V"), "1-0:32.7.0(230.0*V)"), //
+            Arguments.of(QuantityType.valueOf("1.5 A"), "1-0:31.7.0(1.5*A)"), //
+            Arguments.of(QuantityType.valueOf("0.345 kW"), "1-0:16.7.0(0.345*kW)")
         //@formatter:on
         );
     }
