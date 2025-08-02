@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.plclogo.internal;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -81,27 +79,25 @@ public class PLCLogoBindingConstants {
     public static final String NI_ANALOG = "NAI"; // Network analog input
     public static final String NQ_ANALOG = "NAQ"; // Network analog output
 
-    private static final Map<Integer, String> LOGO_STATES_0BA7;
-    static {
-        Map<Integer, String> buffer = new HashMap<>();
-        // buffer.put(???, "Network access error"); // Netzwerkzugriffsfehler
-        // buffer.put(???, "Expansion module bus error"); // Erweiterungsmodul-Busfehler
-        // buffer.put(???, "SD card read/write error"); // Fehler beim Lesen oder Schreiben der SD-Karte
-        // buffer.put(???, "SD card write protection"); // Schreibschutz der SD-Karte
-        LOGO_STATES_0BA7 = Collections.unmodifiableMap(buffer);
-    }
+    public static final Map<Integer, String> LOGO_STATES_0BA7 = Map.ofEntries(
+            // Not official error message
+            Map.entry(0, "logo.diagnostics.ok"), // "Keep the line break" comment
+            Map.entry(1, "logo.diagnostics.network.access"), // "Keep the line break" comment
+            Map.entry(2, "logo.diagnostics.expansion.bus"), // "Keep the line break" comment
+            Map.entry(4, "logo.diagnostics.sdcard.io"), // "Keep the line break" comment
+            Map.entry(8, "logo.diagnostics.sdcard.write") // "Keep the line break" comment
+    );
 
-    private static final Map<Integer, String> LOGO_STATES_0BA8;
-    static {
-        Map<Integer, String> buffer = new HashMap<>();
-        buffer.put(1, "Ethernet link error"); // Netzwerk Verbindungsfehler
-        buffer.put(2, "Expansion module changed"); // Ausgetauschtes Erweiterungsmodul
-        buffer.put(4, "SD card read/write error"); // Fehler beim Lesen oder Schreiben der SD-Karte
-        buffer.put(8, "SD Card does not exist"); // "SD-Karte nicht vorhanden"
-        buffer.put(16, "SD Card is full"); // SD-Karte voll
-        // buffer.put(???, "Network S7 Tcp Error"); //
-        LOGO_STATES_0BA8 = Collections.unmodifiableMap(buffer);
-    }
+    public static final Map<Integer, String> LOGO_STATES_0BA8 = Map.ofEntries(
+            // Not official error message
+            Map.entry(0, "logo.diagnostics.ok"), // "Keep the line break" comment
+            Map.entry(1, "logo.diagnostics.ethernet.access"), // "Keep the line break" comment
+            Map.entry(2, "logo.diagnostics.expansion.module"), // "Keep the line break" comment
+            Map.entry(4, "logo.diagnostics.sdcard.io"), // "Keep the line break" comment
+            Map.entry(8, "logo.diagnostics.sdcard.miss"), // "Keep the line break" comment
+            Map.entry(16, "logo.diagnostics.sdcard.full"), // "Keep the line break" comment
+            Map.entry(32, "logo.diagnostics.network.s7tcp") // "Keep the line break" comment
+    );
 
     public static final Map<String, Map<Integer, String>> LOGO_STATES = Map.ofEntries(
             Map.entry(LOGO_0BA7, LOGO_STATES_0BA7), // Possible diagnostic states for LOGO! 7
