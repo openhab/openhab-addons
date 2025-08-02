@@ -262,7 +262,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String sessionStoreRriot = sessionStorage.get("rriot");
 
         if (!(sessionStoreToken == null) && !(sessionStoreRriot == null)) {
-            logger.trace("Retrieved token and rriot values from sessionStorage");
+            logger.debug("Retrieved token and rriot values from sessionStorage");
             token = sessionStoreToken;
             @Nullable
             Rriot rriotTemp = gson.fromJson(sessionStoreRriot, Rriot.class);
@@ -270,7 +270,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 rriot = rriotTemp;
             }
         } else {
-            logger.trace("No available token or rriot values from sessionStorage, logging in");
+            logger.debug("No available token or rriot values from sessionStorage, logging in");
             Login loginResponse = doLogin();
             if (loginResponse.code.equals("200")) {
                 sessionStorage.put("token", loginResponse.data.token);
@@ -305,7 +305,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private void establishMQTTConnection() {
         if (token.isEmpty() || rriot.r == null || rriot.r.m.isEmpty() || rriot.k.isEmpty() || rriot.s.isEmpty()
                 || rriot.u.isEmpty()) {
-            logger.trace("token and/or rriot are empty, delay connection to MQTT server");
+            logger.debug("token and/or rriot are empty, delay connection to MQTT server");
             return;
         }
 
@@ -350,7 +350,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                         if (error == null) {
                             logger.debug("Subscribed to topic {}", topic);
                         } else {
-                            logger.warn("Unable to subscribe to {}", topic, error);
+                            logger.debug("Unable to subscribe to {}", topic, error);
                         }
                     });
         };
@@ -363,12 +363,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             if (!expectedShutdown) {
                 logger.debug("{}: MQTT disconnected (source {}): {}", getThing().getUID().getId(), ctx.getSource(),
                         ctx.getCause().getMessage());
-                String errorMessage = ctx.getCause().getMessage();
-                if (errorMessage.contains("NOT_AUTHORIZED")) {
-                    logger.trace("MQTT can't connect due to being unauthorised. Pause and reconnect.");
-                    // sessionStorage.put("token", null);
-                    // sessionStorage.put("rriot", null);
-                }
                 mqttConnectTask.cancel();
                 mqttConnectTask.schedule(60);
             }
@@ -407,8 +401,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     public void handleMessage(@Nullable Mqtt5Publish publish) {
-        if (publish == null || publish.getPayload().isEmpty()) { // Check payload presence
-            logger.debug("handleMessage - null publish received");
+        if (publish == null || publish.getPayload().isEmpty()) {
+            logger.debug("handleMessage - empty publish received");
             return;
         }
 
@@ -420,14 +414,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
             if (entry.getKey().getUID().getAsString().contains(destination)) {
                 try {
-                    logger.trace("Submit response to child {} -> {}", destination, entry.getKey().getUID());
+                    logger.debug("Submit response to child {} -> {}", destination, entry.getKey().getUID());
                     entry.getValue().handleMessage(publish.getPayloadAsBytes());
                 } catch (RuntimeException e) {
                     logger.debug(
                             "Unhandled exception processing MQTT message for device {}. Message will be discarded.",
                             destination, e);
                 }
-                logger.trace("MQTT message processed - from AccountHandler");
                 return;
             }
         }
