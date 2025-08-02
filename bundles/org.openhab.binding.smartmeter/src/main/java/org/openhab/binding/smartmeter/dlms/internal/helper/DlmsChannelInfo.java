@@ -53,7 +53,7 @@ public class DlmsChannelInfo {
     }
 
     public AttributeAddress getAttributeAddress() {
-        return new AttributeAddress(classId, obisCode, 2);
+        return new AttributeAddress(classId, obisCode, ATTRIBUTE_INDEX_VALUE);
     }
 
     public String getChannelId() {
