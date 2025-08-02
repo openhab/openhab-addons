@@ -44,7 +44,7 @@ public class DlmsQuantityType<T extends Quantity<T>> extends QuantityType<T> {
      * @return a UoM string like '12345.678 kWh'
      */
     private static String meter2uom(String meterValue) {
-        String[] parts = meterValue.split("\\(");
+        String[] parts = meterValue.split(METER_VALUE_SPLIT_REGEX);
         if (parts.length < 2) {
             throw new IllegalArgumentException("Invalid meter value: " + meterValue);
         }
