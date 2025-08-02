@@ -14,8 +14,14 @@ package org.openhab.binding.sbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import ro.ciprianpascu.sbus.msg.SbusRequest;
+import ro.ciprianpascu.sbus.msg.SbusResponse;
+import ro.ciprianpascu.sbus.net.SbusMessageListener;
+
 /**
- * The {@link SbusService} defines the interface for handling Sbus communication.
+ * The {@link SbusService} defines a minimal facade interface that mirrors SbusAdapter.
+ * This provides a clean abstraction layer for OpenHAB handlers while keeping the
+ * core transaction logic in the j2sbus library.
  *
  * @author Ciprian Pascu - Initial contribution
  */
@@ -23,74 +29,44 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface SbusService {
 
     /**
-     * Reads temperature values from a device.
+     * Executes a synchronous SBUS transaction (request/response).
+     * This is the core method for all SBUS communication.
      *
-     * @param subnetId the subnet ID of the device
-     * @param id the device ID
-     * @param temperatureUnit The unit of measurement (FAHRENHEIT or CELSIUS)
-     * @return array of temperature values in Celsius
-     * @throws Exception if reading fails
+     * @param request The SBUS request to send
+     * @return The SBUS response received
+     * @throws Exception If the transaction fails or times out
      */
-    float[] readTemperatures(int subnetId, int id, TemperatureUnit temperatureUnit) throws Exception;
+    SbusResponse executeTransaction(SbusRequest request) throws Exception;
 
     /**
-     * Reads RGBW values from a device channel.
+     * Adds a message listener for unsolicited SBUS messages.
+     * The listener will be notified when messages arrive that are not
+     * part of a synchronous request/response transaction.
      *
-     * @param subnetId the subnet ID of the device
-     * @param id the device ID
-     * @param channelNumber the channel number to read
-     * @return array of RGBW values [R, G, B, W]
-     * @throws Exception if reading fails
+     * @param listener the listener to add for unsolicited messages
+     * @throws Exception if the connection is not established
      */
-    int[] readRgbw(int subnetId, int id, int channelNumber) throws Exception;
+    void addMessageListener(SbusMessageListener listener) throws Exception;
 
     /**
-     * Reads status values from device channels.
+     * Removes a previously registered message listener.
      *
-     * @param subnetId the subnet ID of the device
-     * @param id the device ID
-     * @return array of channel status values
-     * @throws Exception if reading fails
+     * @param listener the listener to remove
+     * @throws Exception if the connection is not established
      */
-    int[] readStatusChannels(int subnetId, int id) throws Exception;
+    void removeMessageListener(SbusMessageListener listener);
 
     /**
-     * Reads contact status values from device channels.
+     * Initializes the service with connection parameters.
      *
-     * @param subnetId the subnet ID of the device
-     * @param id the device ID
-     * @return array of contact status values (true for open, false for closed)
-     * @throws Exception if reading fails
+     * @param host the host address of the Sbus device
+     * @param port the port number to use
+     * @throws Exception if initialization fails
      */
-    boolean[] readContactStatusChannels(int subnetId, int id) throws Exception;
-
-    /**
-     * Writes RGBW values to a device channel.
-     *
-     * @param subnetId the subnet ID of the device
-     * @param id the device ID
-     * @param channelNumber the channel number to write to
-     * @param color An array of 4 integers representing RGBW values (0-255 each)
-     * @throws Exception if writing fails
-     */
-    void writeRgbw(int subnetId, int id, int channelNumber, int[] color) throws Exception;
-
-    /**
-     * Writes a value to a single channel.
-     *
-     * @param subnetId the subnet ID of the device
-     * @param id the device ID
-     * @param channelNumber the channel number to write to
-     * @param value the value to write
-     * @param timer timer value (-1 for no timer)
-     * @throws Exception if writing fails
-     */
-    void writeSingleChannel(int subnetId, int id, int channelNumber, int value, int timer) throws Exception;
+    void initialize(String host, int port) throws Exception;
 
     /**
      * Closes the service and releases resources.
      */
     void close();
-
-    void initialize(String host, int port) throws Exception;
 }
