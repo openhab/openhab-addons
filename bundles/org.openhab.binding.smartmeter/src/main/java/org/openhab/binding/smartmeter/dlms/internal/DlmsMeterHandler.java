@@ -109,7 +109,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
         try {
             connection = connectionBuilder.build();
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
         scheduler.execute(() -> {
