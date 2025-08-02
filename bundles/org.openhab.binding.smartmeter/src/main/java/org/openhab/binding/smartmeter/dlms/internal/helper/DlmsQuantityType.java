@@ -47,7 +47,8 @@ public class DlmsQuantityType<T extends Quantity<T>> extends QuantityType<T> {
     private static String meterStringToUomString(String meterValue) {
         String[] parts = meterValue.split(METER_VALUE_SPLIT_REGEX);
         if (parts.length < 2) {
-            throw new IllegalArgumentException("Invalid meter value: " + meterValue);
+            throw new IllegalArgumentException(
+                    "Invalid meter value '%s' - expected format like '1-0:1.8.0(12345.678*kWh)'".formatted(meterValue));
         }
         return parts[1].replace("*", " ").replace(")", "").trim();
     }
