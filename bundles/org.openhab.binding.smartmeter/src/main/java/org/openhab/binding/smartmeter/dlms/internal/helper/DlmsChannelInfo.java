@@ -30,6 +30,8 @@ import org.openmuc.jdlms.datatypes.DataObject;
 @NonNullByDefault
 public class DlmsChannelInfo {
 
+    private static final int ATTRIBUTE_INDEX_VALUE = 2;
+
     private final int classId;
     private final ObisCode obisCode;
     private final int version;

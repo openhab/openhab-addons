@@ -62,6 +62,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DlmsMeterHandler extends BaseThingHandler {
 
+    private static final long INITIAL_REFRESH_DELAY_SECONDS = 5;
+    private static final int ASSOCIATION_LOGICAL_NAME_CLASS_ID = 15;
+
     private final Logger logger = LoggerFactory.getLogger(DlmsMeterHandler.class);
 
     private final Set<DlmsChannelInfo> dlmsChannelInfos = new HashSet<>();
@@ -117,8 +120,8 @@ public class DlmsMeterHandler extends BaseThingHandler {
                 this.dlmsChannelInfos.addAll(infos);
                 createChannels();
                 updateStatus(ThingStatus.ONLINE);
-                refreshTask = scheduler.scheduleWithFixedDelay(() -> updateChannels(), INITIAL_REFRESH_DELAY_SECONDS, config.refresh,
-                        java.util.concurrent.TimeUnit.SECONDS);
+                refreshTask = scheduler.scheduleWithFixedDelay(() -> updateChannels(), INITIAL_REFRESH_DELAY_SECONDS,
+                        config.refresh, java.util.concurrent.TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No meter channels found");
             }
