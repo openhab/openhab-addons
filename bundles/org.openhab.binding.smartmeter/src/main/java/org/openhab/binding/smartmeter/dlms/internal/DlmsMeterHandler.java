@@ -105,6 +105,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
+        cancelTasks();
         reconnectTask = scheduler.scheduleWithFixedDelay(() -> goOnline(), 0, CONNECTION_RETRY_INTERVAL.toSeconds(),
                 TimeUnit.SECONDS);
     }
