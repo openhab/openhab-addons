@@ -415,21 +415,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void handleMessage(byte[] payload) {
-        logger.trace("Received MQTT message for: {}", getThing().getUID().getId());
+        logger.debug("Received MQTT message for: {}", getThing().getUID().getId());
         String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
         if (response.isEmpty()) {
-            logger.trace("MQTT message processed - invalid message format received");
+            logger.debug("MQTT message processed - invalid message format received");
             return;
         }
-        logger.trace("MQTT message output: {}", response);
         try {
             if (JsonParser.parseString(response).isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")) {
-                logger.trace("MQTT message processing");
                 String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
                         .get("102").getAsString();
-                logger.trace("MQTT message processing, jsonString={}", jsonString);
                 if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
@@ -503,14 +500,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()) {
                     JsonObject dpsJsonObject = JsonParser.parseString(response).getAsJsonObject().get("dps")
                             .getAsJsonObject();
-                    if (dpsJsonObject.has("122")) {
-                        int battery = dpsJsonObject.get("122").getAsInt();
-                        updateState(CHANNEL_BATTERY, new DecimalType(battery));
-                    } else if (dpsJsonObject.has("121")) {
+                    if (dpsJsonObject.has("121")) {
                         int stateInt = dpsJsonObject.get("121").getAsInt();
                         StatusType state = StatusType.getType(stateInt);
                         updateState(CHANNEL_STATE, new StringType(state.getDescription()));
                         updateState(CHANNEL_STATE_ID, new DecimalType(stateInt));
+                    } else if (dpsJsonObject.has("122")) {
+                        int battery = dpsJsonObject.get("122").getAsInt();
+                        updateState(CHANNEL_BATTERY, new DecimalType(battery));
                     }
                 }
             }
@@ -518,7 +515,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             // Occasionally get non-JSON returned from the Roborock MQTT server
             logger.debug("Invalid JSON response", e);
         }
-        logger.trace("MQTT message processed");
     }
 
     private void handleGetStatus(String response) {
