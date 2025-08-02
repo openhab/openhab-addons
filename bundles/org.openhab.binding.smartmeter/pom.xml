@@ -45,6 +45,11 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.openmuc</groupId>
+      <artifactId>jdlms</artifactId>
+      <version>1.8.0</version>
+    </dependency>
   </dependencies>
 
   <build>
