@@ -15,14 +15,34 @@
   <name>openHAB Add-ons :: Bundles :: XMPPClient Binding</name>
 
   <properties>
-    <smack.version>4.5.0-beta2</smack.version>
+    <smack.version>4.5.0-beta5</smack.version>
     <bnd.importpackage>sun.security.*;resolution:=optional</bnd.importpackage>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.jxmpp</groupId>
+        <artifactId>jxmpp-core</artifactId>
+        <version>1.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jxmpp</groupId>
+        <artifactId>jxmpp-jid</artifactId>
+        <version>1.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.minidns</groupId>
+        <artifactId>minidns-core</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-java8</artifactId>
+      <artifactId>smack-java11</artifactId>
       <version>${smack.version}</version>
       <scope>provided</scope>
     </dependency>
