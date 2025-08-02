@@ -337,19 +337,6 @@ public class ShellyDevices {
     public static final Set<ThingTypeUID> GROUP_WALLDISPLAY_THING_TYPES = Set.of(THING_TYPE_SHELLYPLUSWALLDISPLAY);
 
     /*
-     * Capabilities for specific thing types
-     */
-
-    // Number of meters, if they can't be auto-detected
-    public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
-            Map.entry(THING_TYPE_SHELLYPRO2, 0), //
-            Map.entry(THING_TYPE_SHELLYPRO3, 0), //
-            Map.entry(THING_TYPE_SHELLYPROEM50, 2), //
-            Map.entry(THING_TYPE_SHELLY3EM, 3), //
-            Map.entry(THING_TYPE_SHELLYPLUS3EM63, 3), //
-            Map.entry(THING_TYPE_SHELLYPRO3EM, 3));
-
-    /*
      * Aggregated list of supported devices / thing types
      */
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(
@@ -382,6 +369,109 @@ public class ShellyDevices {
                     THING_TYPE_SHELLYPROTECTED, // password protected devices
                     THING_TYPE_SHELLYUNKNOWN // unknown device
             )).flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
+
+    public static final Map<String, ThingTypeUID> THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
+            // Gen 1
+            Map.entry(SHELLYDT_1PM, THING_TYPE_SHELLY1PM), //
+            Map.entry(SHELLYDT_1L, THING_TYPE_SHELLY1L), //
+            Map.entry(SHELLYDT_1, THING_TYPE_SHELLY1), //
+            Map.entry(SHELLYDT_SHPRO, THING_TYPE_SHELLY4PRO), //
+            Map.entry(SHELLYDT_3EM, THING_TYPE_SHELLY3EM), //
+            Map.entry(SHELLYDT_EM, THING_TYPE_SHELLYEM), //
+            Map.entry(SHELLYDT_SHPLG_S, THING_TYPE_SHELLYPLUGS), //
+            Map.entry(SHELLYDT_SHPLG_U1, THING_TYPE_SHELLYPLUGU1), //
+            Map.entry(SHELLYDT_GAS, THING_TYPE_SHELLYGAS), //
+            Map.entry(SHELLYDT_DW, THING_TYPE_SHELLYDOORWIN), //
+            Map.entry(SHELLYDT_DW2, THING_TYPE_SHELLYDOORWIN2), //
+            Map.entry(SHELLYDT_DUO, THING_TYPE_SHELLYDUO), //
+            Map.entry(SHELLYDT_DUORGBW, THING_TYPE_SHELLYDUORGBW), //
+            Map.entry(SHELLYDT_BULB, THING_TYPE_SHELLYBULB), //
+            Map.entry(SHELLYDT_VINTAGE, THING_TYPE_SHELLYVINTAGE), //
+            Map.entry(SHELLYDT_DIMMER, THING_TYPE_SHELLYDIMMER), //
+            Map.entry(SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2), //
+            Map.entry(SHELLYDT_IX3, THING_TYPE_SHELLYIX3), //
+            Map.entry(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1),
+            Map.entry(SHELLYDT_BUTTON2, THING_TYPE_SHELLYBUTTON2), //
+            Map.entry(SHELLYDT_UNI, THING_TYPE_SHELLYUNI), //
+            Map.entry(SHELLYDT_HT, THING_TYPE_SHELLYHT), //
+            Map.entry(SHELLYDT_TRV, THING_TYPE_SHELLYTRV), //
+            Map.entry(SHELLYDT_MOTION, THING_TYPE_SHELLYMOTION),
+
+            // Plus Series
+            Map.entry(SHELLYDT_PLUS1, THING_TYPE_SHELLYPLUS1), //
+            Map.entry(SHELLYDT_PLUS1G3, THING_TYPE_SHELLYPLUS1), //
+            Map.entry(SHELLYDT_PLUS1G4, THING_TYPE_SHELLYPLUS1), //
+            Map.entry(SHELLYDT_PLUS1UL, THING_TYPE_SHELLYPLUS1), //
+            Map.entry(SHELLYDT_PLUS1PM, THING_TYPE_SHELLYPLUS1PM),
+            Map.entry(SHELLYDT_PLUS1PMG3, THING_TYPE_SHELLYPLUS1PM),
+            Map.entry(SHELLYDT_PLUS1PMG4, THING_TYPE_SHELLYPLUS1PM),
+            Map.entry(SHELLYDT_PLUS1PMUL, THING_TYPE_SHELLYPLUS1PM),
+            Map.entry(SHELLYDT_PLUS1L, THING_TYPE_SHELLYPLUS1L), //
+            Map.entry(SHELLYDT_PLUS2L, THING_TYPE_SHELLYPLUS2L),
+            Map.entry(SHELLYDT_PLUSSHUTTER, THING_TYPE_SHELLYPLUSSHUTTER),
+            Map.entry(SHELLYDT_PLUSPLUGS, THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry(SHELLYDT_PLUSPLUGS_2, THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry(SHELLYDT_PLUSPLUGSG3, THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry(SHELLYDT_PLUSPLUGIT, THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry(SHELLYDT_PLUSPLUGOUTDOORSG3, THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry(SHELLYDT_PLUSPLUGUK, THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry(SHELLYDT_PLUSPLUGUS, THING_TYPE_SHELLYPLUSPLUGUS),
+            Map.entry(SHELLYDT_PLUSSTRIP, THING_TYPE_SHELLYPLUSSTRIP),
+            Map.entry(SHELLYDT_PLUSI4, THING_TYPE_SHELLYPLUSI4), //
+            Map.entry(SHELLYDT_PLUSI4G3, THING_TYPE_SHELLYPLUSI4),
+            Map.entry(SHELLYDT_PLUSI4DC, THING_TYPE_SHELLYPLUSI4DC),
+            Map.entry(SHELLYDT_PLUSHT, THING_TYPE_SHELLYPLUSHT), //
+            Map.entry(SHELLYDT_PLUSHTG3, THING_TYPE_SHELLYPLUSHT),
+            Map.entry(SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE),
+            Map.entry(SHELLYDT_PLUSUNI, THING_TYPE_SHELLYPLUSUNI),
+            Map.entry(SHELLYDT_PLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMERUS),
+            Map.entry(SHELLYDT_PLUSDIMMER10V, THING_TYPE_SHELLYPLUSDIMMER10V),
+            Map.entry(SHELLYDT_PLUSDIMMER0110VG3, THING_TYPE_SHELLYPLUSDIMMER10V),
+            Map.entry(SHELLYDT_PLUSDIMMERG3, THING_TYPE_SHELLYPLUSDIMMER),
+            Map.entry(SHELLYDT_PLUSRGBWPM, THING_TYPE_SHELLYPLUSRGBWPM),
+            Map.entry(SHELLYDT_PLUSEM, THING_TYPE_SHELLYPLUSEM),
+            Map.entry(SHELLYDT_PLUS3EM63, THING_TYPE_SHELLYPLUS3EM63),
+            Map.entry(SHELLYDT_PLUSBLUGW, THING_TYPE_SHELLYPLUSBLUGW), //
+            Map.entry(SHELLYDT_PLUSBLUGWG3, THING_TYPE_SHELLYPLUSBLUGW),
+
+            // Plus Mini Series
+            Map.entry(SHELLYDT_MINI_1, THING_TYPE_SHELLYMINI_1), //
+            Map.entry(SHELLYDT_MINI_1G3, THING_TYPE_SHELLYMINI_1),
+            Map.entry(SHELLYDT_MINI_1G4, THING_TYPE_SHELLYMINI_1),
+            Map.entry(SHELLYDT_MINI_PM, THING_TYPE_SHELLYMINI_PM),
+            Map.entry(SHELLYDT_MINI_PMG3, THING_TYPE_SHELLYMINI_PM),
+            Map.entry(SHELLYDT_MINI_EM, THING_TYPE_SHELLYMINI_PM),
+            Map.entry(SHELLYDT_MINI_1PM, THING_TYPE_SHELLYMINI_1PM),
+            Map.entry(SHELLYDT_MINI_1PMG3, THING_TYPE_SHELLYMINI_1PM),
+            Map.entry(SHELLYDT_MINI_1PMG4, THING_TYPE_SHELLYMINI_1PM),
+
+            // Pro Series
+            Map.entry(SHELLYDT_PRO1, THING_TYPE_SHELLYPRO1), //
+            Map.entry(SHELLYDT_PRO1_2, THING_TYPE_SHELLYPRO1), //
+            Map.entry(SHELLYDT_PRO1_3, THING_TYPE_SHELLYPRO1), //
+            Map.entry(SHELLYDT_PRO1PM, THING_TYPE_SHELLYPRO1PM), //
+            Map.entry(SHELLYDT_PRO1PM_2, THING_TYPE_SHELLYPRO1PM),
+            Map.entry(SHELLYDT_PRO1PM_3, THING_TYPE_SHELLYPRO1PM), //
+            Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB), //
+            Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2), //
+            Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2), //
+            Map.entry(SHELLYDT_PRO2_3, THING_TYPE_SHELLYPRO2), //
+            Map.entry(SHELLYDT_PRO3, THING_TYPE_SHELLYPRO3), //
+            Map.entry(SHELLYDT_PRO4PM, THING_TYPE_SHELLYPRO4PM), //
+            Map.entry(SHELLYDT_PRO4PM_2, THING_TYPE_SHELLYPRO4PM), //
+            Map.entry(SHELLYDT_4PRO, THING_TYPE_SHELLYPRO4PM), //
+            Map.entry(SHELLYDT_PROEM50, THING_TYPE_SHELLYPROEM50), //
+            Map.entry(SHELLYDT_PRO3EM, THING_TYPE_SHELLYPRO3EM), //
+            Map.entry(SHELLYDT_PRO3EM_2, THING_TYPE_SHELLYPRO3EM), //
+
+            // BLU Series
+            Map.entry(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON),
+            Map.entry(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW),
+            Map.entry(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION),
+            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
+
+            // Wall displays
+            Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
 
     // Relay devices (mode="relay")
     public static final Map<String, ThingTypeUID> RELAY_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
@@ -505,4 +595,18 @@ public class ShellyDevices {
 
             // Password protected device
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED));
+
+    /*
+     * Capabilities for specific thing types
+     */
+
+    // Number of meters, if they can't be auto-detected
+    public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
+            Map.entry(THING_TYPE_SHELLYPRO2, 0), //
+            Map.entry(THING_TYPE_SHELLYPRO3, 0), //
+            Map.entry(THING_TYPE_SHELLYPROEM50, 2), //
+            Map.entry(THING_TYPE_SHELLY3EM, 3), //
+            Map.entry(THING_TYPE_SHELLYPLUS3EM63, 3), //
+            Map.entry(THING_TYPE_SHELLYPRO3EM, 3));
+
 }

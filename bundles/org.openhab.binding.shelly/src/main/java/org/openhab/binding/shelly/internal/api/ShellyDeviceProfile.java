@@ -201,7 +201,7 @@ public class ShellyDeviceProfile {
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
-        isLight = isBulb || isDuo || isRGBW2;
+        isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
             maxTemp = isBulb ? MAX_COLOR_TEMP_BULB : MAX_COLOR_TEMP_DUO;
@@ -409,7 +409,7 @@ public class ShellyDeviceProfile {
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {
-        return GROUP_BLU_THING_TYPES.contains(thingTypeUID) && !THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
+        return GROUP_BLU_THING_TYPES.contains(thingTypeUID);
     }
 
     public boolean coiotEnabled() {
