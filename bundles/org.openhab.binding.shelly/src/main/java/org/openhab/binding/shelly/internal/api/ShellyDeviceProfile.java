@@ -405,11 +405,11 @@ public class ShellyDeviceProfile {
         return thingTypeID.startsWith(THING_TYPE_SHELLYPLUS_PREFIX)
                 || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX)
                 || thingTypeID.contains(THING_TYPE_SHELLYMINI_MIDDLE) || THING_TYPE_CLASS_WALL.contains(thingTypeUID)
-                || isBluSeries(thingTypeUID) || THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
+                || isBluSeries(thingTypeUID) || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_CLASS_BLU.contains(thingTypeUID) && !THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
+        return THING_TYPE_CLASS_BLU.contains(thingTypeUID) && !THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
     }
 
     public boolean coiotEnabled() {
