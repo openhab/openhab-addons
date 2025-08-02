@@ -268,8 +268,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         // Pro 3EM has 3 meters
         // Pro 2 has 2 relays, but no meters
         // Mini PM has 1 meter, but no relay
-        if (THING_TYPE_CAP_NUM_METERS.containsKey(thingTypeUID)) {
-            profile.numMeters = getInteger(THING_TYPE_CAP_NUM_METERS.get(thingTypeUID));
+        Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
+        if (numMeters != null) {
+            profile.numMeters = numMeters;
         } else if (dc.pm10 != null) {
             profile.numMeters = 1;
         } else if (dc.em0 != null) {
