@@ -24,5 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class DlmsMeterConfiguration {
 
     public String port = "/dev/ttyUSB0";
-    public Integer refresh = 10;
+    public Integer refresh = 60;
 }
