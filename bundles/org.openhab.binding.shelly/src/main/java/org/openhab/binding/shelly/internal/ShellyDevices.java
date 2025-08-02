@@ -323,9 +323,7 @@ public class ShellyDevices {
 
     // 3EM devices (not the regular EM)
     public static final Set<ThingTypeUID> GROUP_3EM_THING_TYPES = Set.of( //
-            THING_TYPE_SHELLY3EM, // Gen1
-            THING_TYPE_SHELLYPLUSEM, THING_TYPE_SHELLYPLUS3EM63, // Plus
-            THING_TYPE_SHELLYPRO3EM, THING_TYPE_SHELLYPROEM50); // Pro
+            THING_TYPE_SHELLY3EM, THING_TYPE_SHELLYPLUS3EM63, THING_TYPE_SHELLYPRO3EM);
 
     // Mini Devices
     public static final Set<ThingTypeUID> GROUP_MINI_THING_TYPES = Set.of(THING_TYPE_SHELLYMINI_1,
@@ -345,7 +343,11 @@ public class ShellyDevices {
     // Nuber of meters, if they can't be auto-detected
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
             Map.entry(THING_TYPE_SHELLYPRO2, 0), //
-            Map.entry(THING_TYPE_SHELLYPRO3, 0));
+            Map.entry(THING_TYPE_SHELLYPRO3, 0), //
+            Map.entry(THING_TYPE_SHELLYPROEM50, 2), //
+            Map.entry(THING_TYPE_SHELLY3EM, 3), //
+            Map.entry(THING_TYPE_SHELLYPLUS3EM63, 3), //
+            Map.entry(THING_TYPE_SHELLYPRO3EM, 3));
 
     /*
      * Aggregated list of supported devices / thing types
