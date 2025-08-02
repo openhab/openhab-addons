@@ -37,7 +37,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyE
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
-import org.openhab.binding.shelly.internal.handler.ShellyBluSensorHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.slf4j.Logger;
@@ -272,7 +272,7 @@ public class Shelly2RpcSocket {
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            ShellyBluSensorHandler.addBluThing(message.src, e, thingTable);
+                                            ShellyBluHandler.addBluThing(message.src, e, thingTable);
                                         } else {
                                             logger.debug("{}: NotifyEvent {} for unknown device {}", message.src,
                                                     e.event, e.data.name);

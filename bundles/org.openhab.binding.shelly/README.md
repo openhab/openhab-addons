@@ -108,6 +108,8 @@ See section [Discovery](#discovery) for details.
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
+| shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
+| shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
 
 ### Shelly Plus Mini series (Generation 2+3+4)
 
@@ -141,8 +143,6 @@ See section [Discovery](#discovery) for details.
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW                    |
 | shellyblumotion   | Shelly BLU Motion                                      | SBMO                    |
 | shellybluht       | Shelly BLU H&T                                         | SBMO                    |
-| shellyblugw       | Shelly BLU Gateway                                     | SNGW-BT01               |
-| shellyblugw3      | Shelly BLU Gateway 3                                   | S3GW-1DBT001            |
 
 ### Special Thing Types
 

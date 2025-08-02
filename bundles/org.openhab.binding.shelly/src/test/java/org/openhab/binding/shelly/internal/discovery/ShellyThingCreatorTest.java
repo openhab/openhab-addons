@@ -15,8 +15,8 @@ package org.openhab.binding.shelly.internal.discovery;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -54,7 +54,7 @@ public class ShellyThingCreatorTest {
     @Test
     void getThingUIDForUnknownReturnsThingUidForUnknown() {
         ThingUID actual = ShellyThingCreator.getThingUIDForUnknown("johndoe-" + DEVICE_ID, "", "");
-        ThingUID expected = new ThingUID(BINDING_ID, THING_TYPE_SHELLYPROTECTED_STR, DEVICE_ID);
+        ThingUID expected = new ThingUID(BINDING_ID, THING_TYPE_SHELLYUNKNOWN_STR, DEVICE_ID);
 
         assertThat(actual, is(equalTo(expected)));
     }
@@ -217,7 +217,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_BLUDW, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of(SHELLYDT_BLUMOTION, "", THING_TYPE_SHELLYBLUMOTION), //
                 Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
-                Arguments.of(SHELLYDT_BLUGW, "", THING_TYPE_SHELLYBLUGW), //
+                Arguments.of(SHELLYDT_PLUSBLUGW, "", THING_TYPE_SHELLYPLUSBLUGW), //
 
                 // Wall displays
                 Arguments.of(SHELLYDT_PLUSWALLDISPLAY, "", THING_TYPE_SHELLYPLUSWALLDISPLAY));
