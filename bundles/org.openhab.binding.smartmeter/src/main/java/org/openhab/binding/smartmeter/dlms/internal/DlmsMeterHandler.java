@@ -16,12 +16,15 @@ import static org.openhab.binding.smartmeter.SmartMeterBindingConstants.*;
 import static org.openhab.core.thing.DefaultSystemChannelTypeProvider.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
@@ -62,7 +65,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DlmsMeterHandler extends BaseThingHandler {
 
-    private static final long INITIAL_REFRESH_DELAY_SECONDS = 5;
+    private static final Duration INITIAL_REFRESH_DELAY = Duration.ofSeconds(5);
+    private static final Duration CONNECTION_RETRY_INTERVAL = Duration.ofMinutes(5);
 
     private final Logger logger = LoggerFactory.getLogger(DlmsMeterHandler.class);
 
@@ -71,6 +75,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
     private @NonNullByDefault({}) DlmsMeterConfiguration config;
     private @Nullable DlmsConnection connection;
     private @Nullable ScheduledFuture<?> refreshTask;
+    private @Nullable ScheduledFuture<?> reconnectTask;
 
     public DlmsMeterHandler(Thing thing) {
         super(thing);
@@ -78,19 +83,16 @@ public class DlmsMeterHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (refreshTask != null) {
-            refreshTask.cancel(true);
-            refreshTask = null;
-        }
+        cancelTasks();
+        DlmsConnection connection = this.connection;
         if (connection != null) {
+            this.connection = null;
             try {
                 connection.close();
             } catch (IOException e) {
                 logger.debug("Error closing DLMS connection: {}", e.getMessage());
             }
-            connection = null;
         }
-        super.dispose();
     }
 
     @Override
@@ -103,37 +105,65 @@ public class DlmsMeterHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
+        reconnectTask = scheduler.scheduleWithFixedDelay(() -> goOnline(), 0, CONNECTION_RETRY_INTERVAL.toSeconds(),
+                TimeUnit.SECONDS);
+    }
+
+    private void cancelTasks() {
+        Future<?> task = reconnectTask;
+        if (task != null) {
+            task.cancel(false);
+        }
+        task = refreshTask;
+        if (task != null) {
+            task.cancel(false);
+        }
+        reconnectTask = null;
+        refreshTask = null;
+    }
+
+    private void goOffline(@Nullable String cause) {
+        cancelTasks();
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause);
+        connection = null;
+        reconnectTask = scheduler.scheduleWithFixedDelay(() -> goOnline(), CONNECTION_RETRY_INTERVAL.toSeconds(),
+                CONNECTION_RETRY_INTERVAL.toSeconds(), TimeUnit.SECONDS);
+    }
+
+    private void goOnline() {
+        cancelTasks();
         config = getConfigAs(DlmsMeterConfiguration.class);
-        // note: the connection uses auto baudrate negotiation by default
+        // note: the connection process uses auto baudrate negotiation by default
         SerialConnectionBuilder connectionBuilder = new SerialConnectionBuilder(config.port);
         try {
             connection = connectionBuilder.build();
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            goOffline(e.getMessage());
             return;
         }
-        scheduler.execute(() -> {
-            Set<DlmsChannelInfo> infos = getMeterInfos();
-            if (!infos.isEmpty()) {
-                this.dlmsChannelInfos.clear();
-                this.dlmsChannelInfos.addAll(infos);
-                createChannels();
+        Set<DlmsChannelInfo> infos = getMeterInfos();
+        if (!infos.isEmpty()) {
+            dlmsChannelInfos.clear();
+            dlmsChannelInfos.addAll(infos);
+            if (createdChannels()) {
+                refreshTask = scheduler.scheduleWithFixedDelay(() -> updateChannels(),
+                        INITIAL_REFRESH_DELAY.toSeconds(), config.refresh, TimeUnit.SECONDS);
                 updateStatus(ThingStatus.ONLINE);
-                refreshTask = scheduler.scheduleWithFixedDelay(() -> updateChannels(), INITIAL_REFRESH_DELAY_SECONDS,
-                        config.refresh, java.util.concurrent.TimeUnit.SECONDS);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No meter channels found");
+                return;
             }
-        });
+        }
+        goOffline("@text/no-meter-channels-found");
     }
 
     /**
      * Create the OH channels from the list of meter channels.
+     *
+     * @return true if the meter contains any channels.
      */
-    private void createChannels() {
+    private boolean createdChannels() {
+        List<Channel> channels = new ArrayList<>();
         DlmsConnection connection = this.connection;
         if (connection != null) {
-            List<Channel> channels = new ArrayList<>();
             dlmsChannelInfos.forEach(info -> {
                 try {
                     GetResult result = connection.get(info.getAttributeAddress());
@@ -178,10 +208,11 @@ public class DlmsMeterHandler extends BaseThingHandler {
                     logger.debug("Meter channel: {}, read error: {}", info, e.getMessage());
                 }
             });
-            if (!channels.isEmpty()) {
+            if (!thing.getChannels().equals(channels)) {
                 updateThing(editThing().withChannels(channels).build());
             }
         }
+        return !channels.isEmpty();
     }
 
     /**
@@ -223,6 +254,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
                 }
             } catch (IOException e) {
                 logger.debug("Root data error: {}", e.getMessage());
+                goOffline(e.getMessage());
             }
         }
         return infos;
@@ -256,6 +288,8 @@ public class DlmsMeterHandler extends BaseThingHandler {
                     }
                 } catch (IOException e) {
                     logger.debug("Meter channel: {}, read error: {}", info, e.getMessage());
+                    goOffline(e.getMessage());
+                    return;
                 }
             });
         }
