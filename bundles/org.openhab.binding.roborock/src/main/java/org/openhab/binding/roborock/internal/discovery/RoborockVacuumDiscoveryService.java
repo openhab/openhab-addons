@@ -71,9 +71,8 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
 
             if (homeData != null) {
                 for (int i = 0; i < homeData.result.devices.length; i++) {
-                    if (homeData.result.devices[i].sn != null) {
-                        Map<String, Object> properties = Map.of("sn", homeData.result.devices[i].sn);
-                    }
+                    Map<String, Object> properties = Map.of("sn",
+                            (homeData.result.devices[i].sn != null) ? homeData.result.devices[i].sn : "N/A");
                     ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, homeData.result.devices[i].duid);
                     thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
                             .withLabel(homeData.result.devices[i].name).build());
