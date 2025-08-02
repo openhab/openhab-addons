@@ -62,7 +62,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUGW, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
                 // Shelly Bulb
                 Arguments.of(THING_TYPE_SHELLYBULB, false, false), //
                 // Generation 1

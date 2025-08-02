@@ -217,7 +217,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_BLUDW, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of(SHELLYDT_BLUMOTION, "", THING_TYPE_SHELLYBLUMOTION), //
                 Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
-                Arguments.of(SHELLYDT_BLUGW, "", THING_TYPE_SHELLYBLUGW), //
+                Arguments.of(SHELLYDT_PLUSBLUGW, "", THING_TYPE_SHELLYPLUSBLUGW), //
 
                 // Wall displays
                 Arguments.of(SHELLYDT_PLUSWALLDISPLAY, "", THING_TYPE_SHELLYPLUSWALLDISPLAY));
