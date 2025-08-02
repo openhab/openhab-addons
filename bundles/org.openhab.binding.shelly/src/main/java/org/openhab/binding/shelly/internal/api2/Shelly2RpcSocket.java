@@ -116,7 +116,7 @@ public class Shelly2RpcSocket {
             request.setHeader("Pragma", "no-cache");
             request.setHeader("Cache-Control", "no-cache");
 
-            logger.debug("{}: Connect WebSocket, URI={}", thingName, uri);
+            logger.trace("{}: Connect WebSocket, URI={}", thingName, uri);
             client = new WebSocketClient();
             connectLatch = new CountDownLatch(1);
             client.start();
@@ -201,7 +201,7 @@ public class Shelly2RpcSocket {
             Session session = this.session;
             if (session != null) {
                 if (session.isOpen()) {
-                    logger.debug("{}: Disconnecting WebSocket ({} -> {})", thingName, session.getLocalAddress(),
+                    logger.trace("{}: Disconnecting WebSocket ({} -> {})", thingName, session.getLocalAddress(),
                             session.getRemoteAddress());
                 }
                 session.disconnect();
@@ -274,8 +274,9 @@ public class Shelly2RpcSocket {
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
                                             ShellyBluSensorHandler.addBluThing(message.src, e, thingTable);
                                         } else {
-                                            logger.debug("{}: NotifyEvent {} for unknown device {}", message.src,
-                                                    e.event, e.data.name);
+                                            logger.debug(
+                                                    "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
+                                                    message.src, e.event, e.data.addr);
                                         }
                                     }
                                 } else {
@@ -291,7 +292,7 @@ public class Shelly2RpcSocket {
                 logger.debug("{}: No Rpc listener registered for device {}, skip message: {}", thingName,
                         getString(message.src), receivedMessage);
             }
-        } catch (ShellyApiException | IllegalArgumentException e) {
+        } catch (ShellyApiException | RuntimeException e) {
             logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
         }
     }
