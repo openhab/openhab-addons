@@ -265,8 +265,77 @@ public class ShellyDevices {
      * Make sure to add a new device/thing type to those groups if it requires special handling
      */
 
-    // Relay dxevcices (mode="relay")
-    public static final Map<String, ThingTypeUID> THING_TYPE_CLASS_RELAY_BY_DEVICE_TYPE = Map.ofEntries(
+    // Dimmer devices
+    public static final Set<ThingTypeUID> GROUP_DIMMER_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYDIMMER, THING_TYPE_SHELLYDIMMER2, // Gen 1
+            THING_TYPE_SHELLYPLUSDIMMER, THING_TYPE_SHELLYPLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMER10V); // Plus
+
+    // Light Bulbs / RGBW devices
+    public static final Set<ThingTypeUID> GROUP_LIGHT_THING_TYPES = Set.of(THING_TYPE_SHELLYBULB, THING_TYPE_SHELLYDUO,
+            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYDUORGBW,
+            THING_TYPE_SHELLYVINTAGE, THING_TYPE_SHELLYPLUSRGBWPM);
+
+    // Duo devices
+    public static final Set<ThingTypeUID> GROUP_DUO_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYDUO, THING_TYPE_SHELLYDUORGBW, THING_TYPE_SHELLYVINTAGE);
+
+    // RGBW2 devices
+    public static final Set<ThingTypeUID> GROUP_RGBW2_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYPLUSRGBWPM);
+
+    // iX Decvices
+    public static final Set<ThingTypeUID> GROUP_IX_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYIX3, THING_TYPE_SHELLYPLUSI4, THING_TYPE_SHELLYPLUSI4DC);
+
+    // Single Button devices
+    public static final Set<ThingTypeUID> GROUP_BUTTON_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYBUTTON1, THING_TYPE_SHELLYBUTTON2, THING_TYPE_SHELLYBLUBUTTON);
+
+    // HT Sensors
+    public static final Set<ThingTypeUID> GROUP_HT_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYHT, THING_TYPE_SHELLYPLUSHT, THING_TYPE_SHELLYBLUHT);
+
+    // DW Sensors
+    public static final Set<ThingTypeUID> GROUP_DW_THING_TYPES = Set.of(THING_TYPE_SHELLYDOORWIN,
+            THING_TYPE_SHELLYBLUDW);
+
+    // Motion Sensors
+    public static final Set<ThingTypeUID> GROUP_MOTION_THING_TYPES = Set.of(THING_TYPE_SHELLYMOTION,
+            THING_TYPE_SHELLYBLUMOTION);
+
+    // Smoke Sensors
+    public static final Set<ThingTypeUID> GROUP_SMOKE_THING_TYPES = Set.of(THING_TYPE_SHELLYSMOKE,
+            THING_TYPE_SHELLYPLUSSMOKE);
+
+    // Flood Sensors
+    public static final Set<ThingTypeUID> GROUP_FLOOD_THING_TYPES = Set.of(THING_TYPE_SHELLYFLOOD);
+
+    // Gas Sensors
+    public static final Set<ThingTypeUID> GROUP_GAS_THING_TYPES = Set.of(THING_TYPE_SHELLYGAS);
+
+    // UNI Sensors
+    public static final Set<ThingTypeUID> GROUP_UNI_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYUNI, THING_TYPE_SHELLYPLUSUNI);
+
+    // 3EM devices (not the regular EM)
+    public static final Set<ThingTypeUID> GROUP_3EM_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLY3EM, // Gen1
+            THING_TYPE_SHELLYPLUSEM, THING_TYPE_SHELLYPLUS3EM63, // Plus
+            THING_TYPE_SHELLYPRO3EM, THING_TYPE_SHELLYPROEM50); // Pro
+
+    // BLU Devices
+    public static final Set<ThingTypeUID> GROUP_BLU_THING_TYPES = Set.of(THING_TYPE_SHELLYBLUBUTTON,
+            THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUHT);
+
+    // Wall Displays
+    public static final Set<ThingTypeUID> GROUP_WALLDISPLAY_THING_TYPES = Set.of(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+
+    /*
+     * Mapping to thing types depending on mode
+     */
+
+    // Relay devices (mode="relay")
+    public static final Map<String, ThingTypeUID> RELAY_BY_DEVICE_TYPE = Map.ofEntries(
             // Plus Series
             Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_RELAY),
@@ -280,7 +349,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_RELAY));
 
     // Roller devices (mode="roller")
-    public static final Map<String, ThingTypeUID> THING_TYPE_CLASS_ROLLER_BY_DEVICE_TYPE = Map.ofEntries(
+    public static final Map<String, ThingTypeUID> ROLLER_BY_DEVICE_TYPE = Map.ofEntries(
             // Plus Series
             Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_ROLLER),
             Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_ROLLER),
@@ -293,74 +362,10 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_ROLLER),
             Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_ROLLER));
 
-    // Dimmer devices
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_DIMMER = Set.of( //
-            THING_TYPE_SHELLYDIMMER, THING_TYPE_SHELLYDIMMER2, // Gen 1
-            THING_TYPE_SHELLYPLUSDIMMER, THING_TYPE_SHELLYPLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMER10V); // Plus
-
-    // Light Bulbs / RGBW devices
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_LIGHT = Set.of(THING_TYPE_SHELLYBULB, THING_TYPE_SHELLYDUO,
-            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYDUORGBW,
-            THING_TYPE_SHELLYVINTAGE, THING_TYPE_SHELLYPLUSRGBWPM);
-
-    // Duo devices
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_DUO = Set.of( //
-            THING_TYPE_SHELLYDUO, THING_TYPE_SHELLYDUORGBW, THING_TYPE_SHELLYVINTAGE);
-
-    // RGBW2 devices
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_RGBW2 = Set.of( //
-            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYPLUSRGBWPM);
-
-    // iX Decvices
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_IX = Set.of( //
-            THING_TYPE_SHELLYIX3, THING_TYPE_SHELLYPLUSI4, THING_TYPE_SHELLYPLUSI4DC);
-
-    // Single Button devices
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_BUTTON = Set.of( //
-            THING_TYPE_SHELLYBUTTON1, THING_TYPE_SHELLYBUTTON2, THING_TYPE_SHELLYBLUBUTTON);
-
-    // HT Sensors
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_HT = Set.of( //
-            THING_TYPE_SHELLYHT, THING_TYPE_SHELLYPLUSHT, THING_TYPE_SHELLYBLUHT);
-
-    // DW Sensors
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_DW = Set.of(THING_TYPE_SHELLYDOORWIN,
-            THING_TYPE_SHELLYBLUDW);
-
-    // Motion Sensors
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_MOTION = Set.of(THING_TYPE_SHELLYMOTION,
-            THING_TYPE_SHELLYBLUMOTION);
-
-    // Smoke Sensors
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_SMOKE = Set.of(THING_TYPE_SHELLYSMOKE,
-            THING_TYPE_SHELLYPLUSSMOKE);
-
-    // Flood Sensors
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_FLOOD = Set.of(THING_TYPE_SHELLYFLOOD);
-
-    // Gas Sensors
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_GAS = Set.of(THING_TYPE_SHELLYGAS);
-
-    // UNI Sensors
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_UNI = Set.of( //
-            THING_TYPE_SHELLYUNI, THING_TYPE_SHELLYPLUSUNI);
-
-    // 3EM devices (not the regular EM)
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_3EM = Set.of( //
-            THING_TYPE_SHELLY3EM, // Gen1
-            THING_TYPE_SHELLYPLUSEM, THING_TYPE_SHELLYPLUS3EM63, // Plus
-            THING_TYPE_SHELLYPRO3EM, THING_TYPE_SHELLYPROEM50); // Pro
-
-    // BLU Devices
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_BLU = Set.of(THING_TYPE_SHELLYBLUBUTTON,
-            THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUHT);
-
-    // Wall Displays
-    public static final Set<ThingTypeUID> THING_TYPE_CLASS_WALL = Set.of(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-
     /*
      * Capabilities for specific thing types
      */
+
     // Nuber of meters, if they can't be auto-detected
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
             Map.entry(THING_TYPE_SHELLYPRO2, 0), //

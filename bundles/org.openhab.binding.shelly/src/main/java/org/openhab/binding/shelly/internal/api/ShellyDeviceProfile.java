@@ -200,27 +200,27 @@ public class ShellyDeviceProfile {
         String type = getString(device.type);
         isDimmer = THING_TYPE_CLASS_DIMMER.contains(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
-        isDuo = THING_TYPE_CLASS_DUO.contains(thingTypeUID);
-        isRGBW2 = THING_TYPE_CLASS_RGBW2.contains(thingTypeUID);
+        isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
+        isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
         isLight = isBulb || isDuo || isRGBW2;
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
             maxTemp = isBulb ? MAX_COLOR_TEMP_BULB : MAX_COLOR_TEMP_DUO;
         }
 
-        boolean isFlood = THING_TYPE_CLASS_FLOOD.contains(thingTypeUID);
-        boolean isGas = THING_TYPE_CLASS_GAS.contains(thingTypeUID);
-        boolean isUNI = THING_TYPE_CLASS_UNI.contains(thingTypeUID);
-        isSmoke = THING_TYPE_CLASS_SMOKE.contains(thingTypeUID);
-        isHT = THING_TYPE_CLASS_HT.contains(thingTypeUID);
-        isDW = THING_TYPE_CLASS_DW.contains(thingTypeUID);
-        isMotion = THING_TYPE_CLASS_MOTION.contains(thingTypeUID);
+        boolean isFlood = GROUP_FLOOD_THING_TYPES.contains(thingTypeUID);
+        boolean isGas = GROUP_GAS_THING_TYPES.contains(thingTypeUID);
+        boolean isUNI = GROUP_UNI_THING_TYPES.contains(thingTypeUID);
+        isSmoke = GROUP_SMOKE_THING_TYPES.contains(thingTypeUID);
+        isHT = GROUP_HT_THING_TYPES.contains(thingTypeUID);
+        isDW = GROUP_DW_THING_TYPES.contains(thingTypeUID);
+        isMotion = GROUP_MOTION_THING_TYPES.contains(thingTypeUID);
         isSense = THING_TYPE_SHELLYSENSE.equals(thingTypeUID);
-        isIX = THING_TYPE_CLASS_IX.contains(thingTypeUID);
-        isButton = THING_TYPE_CLASS_BUTTON.contains(thingTypeUID);
+        isIX = GROUP_IX_THING_TYPES.contains(thingTypeUID);
+        isButton = GROUP_BUTTON_THING_TYPES.contains(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID);
-        is3EM = THING_TYPE_CLASS_3EM.contains(thingTypeUID);
+        is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
@@ -404,12 +404,12 @@ public class ShellyDeviceProfile {
         String thingTypeID = thingTypeUID.getId();
         return thingTypeID.startsWith(THING_TYPE_SHELLYPLUS_PREFIX)
                 || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX)
-                || thingTypeID.contains(THING_TYPE_SHELLYMINI_MIDDLE) || THING_TYPE_CLASS_WALL.contains(thingTypeUID)
+                || thingTypeID.contains(THING_TYPE_SHELLYMINI_MIDDLE) || GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID)
                 || isBluSeries(thingTypeUID) || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_CLASS_BLU.contains(thingTypeUID) && !THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
+        return GROUP_BLU_THING_TYPES.contains(thingTypeUID) && !THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
     }
 
     public boolean coiotEnabled() {
