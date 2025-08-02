@@ -212,7 +212,7 @@ public class ShellyDeviceProfile {
         boolean isUNI = GROUP_UNI_THING_TYPES.contains(thingTypeUID);
         isSmoke = GROUP_SMOKE_THING_TYPES.contains(thingTypeUID);
         isHT = GROUP_HT_THING_TYPES.contains(thingTypeUID);
-        isDW = GROUP_DW_THING_TYPES.contains(thingTypeUID);
+        isDW = GROUP_DOORWINDOW_THING_TYPES.contains(thingTypeUID);
         isMotion = GROUP_MOTION_THING_TYPES.contains(thingTypeUID);
         isSense = THING_TYPE_SHELLYSENSE.equals(thingTypeUID);
         isIX = GROUP_IX_THING_TYPES.contains(thingTypeUID);
