@@ -117,7 +117,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
                 this.dlmsChannelInfos.addAll(infos);
                 createChannels();
                 updateStatus(ThingStatus.ONLINE);
-                refreshTask = scheduler.scheduleWithFixedDelay(() -> updateChannels(), 5, config.refresh,
+                refreshTask = scheduler.scheduleWithFixedDelay(() -> updateChannels(), INITIAL_REFRESH_DELAY_SECONDS, config.refresh,
                         java.util.concurrent.TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No meter channels found");
