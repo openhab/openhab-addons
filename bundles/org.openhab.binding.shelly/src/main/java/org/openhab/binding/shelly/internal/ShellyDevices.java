@@ -340,7 +340,7 @@ public class ShellyDevices {
      * Capabilities for specific thing types
      */
 
-    // Nuber of meters, if they can't be auto-detected
+    // Number of meters, if they can't be auto-detected
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
             Map.entry(THING_TYPE_SHELLYPRO2, 0), //
             Map.entry(THING_TYPE_SHELLYPRO3, 0), //
