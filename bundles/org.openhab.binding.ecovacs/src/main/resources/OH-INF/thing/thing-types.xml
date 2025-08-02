@@ -151,6 +151,7 @@
 				<option value="spotArea">@text/ecovacs.cleaning-mode.spotArea</option>
 				<option value="customArea">@text/ecovacs.cleaning-mode.customArea</option>
 				<option value="singleRoom">@text/ecovacs.cleaning-mode.singleRoom</option>
+				<option value="scene">@text/ecovacs.cleaning-mode.scene</option>
 			</options>
 		</state>
 	</channel-type>
