@@ -61,7 +61,7 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
             final NetworkInterface device;
             try {
                 device = NetworkInterface.getByInetAddress(address);
-                if (!device.isUp() || device.isLoopback()) {
+                if ((device == null) || !device.isUp() || device.isLoopback()) {
                     continue;
                 }
             } catch (SocketException exception) {

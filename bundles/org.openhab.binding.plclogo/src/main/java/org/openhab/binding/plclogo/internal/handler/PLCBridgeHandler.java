@@ -55,6 +55,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +72,8 @@ import Moka7.S7Client;
 public class PLCBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
+
+    private final Bundle bundle = FrameworkUtil.getBundle(getClass());
     private final TranslationProvider translation;
 
     private final Map<ChannelUID, String> oldValues = new HashMap<>();
@@ -183,7 +186,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                     case DIAGNOSTIC_CHANNEL -> {
                         final var states = LOGO_STATES.get(getLogoFamily());
                         if (states != null) {
-                            final var bundle = FrameworkUtil.getBundle(getClass());
                             final var stateText = Integer.toBinaryString(buffer[0]);
                             var message = translation.getText(bundle, states.get((int) buffer[0]), stateText, null);
                             for (var bit = 0; bit < Integer.SIZE; ++bit) {
