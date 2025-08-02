@@ -122,7 +122,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
-        } else if (THING_TYPE_CLASS_BLU.contains(thingTypeUID)) {
+        } else if (GROUP_BLU_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyBluSensorHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyBluHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
