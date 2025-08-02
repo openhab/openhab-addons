@@ -10,16 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.handler;
+package org.openhab.binding.sbus.internal.handler;
 
 import static org.openhab.binding.sbus.BindingConstants.BINDING_ID;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.internal.SbusService;
+import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -47,7 +47,6 @@ import ro.ciprianpascu.sbus.net.SbusMessageListener;
  *
  * @author Ciprian Pascu - Initial contribution
  */
-@NonNullByDefault
 public abstract class AbstractSbusHandler extends BaseThingHandler implements SbusMessageListener {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -93,13 +92,11 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
         startPolling();
 
         // Register this handler as a listener for async messages
-        if (sbusAdapter != null) {
-            try {
-                sbusAdapter.addMessageListener(this);
-                logger.debug("Registered handler {} as message listener", getThing().getUID());
-            } catch (Exception e) {
-                logger.warn("Failed to register message listener for {}: {}", getThing().getUID(), e.getMessage());
-            }
+        try {
+            sbusAdapter.addMessageListener(this);
+            logger.debug("Registered handler {} as message listener", getThing().getUID());
+        } catch (Exception e) {
+            logger.warn("Failed to register message listener for {}: {}", getThing().getUID(), e.getMessage());
         }
     }
 
@@ -220,12 +217,10 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
         if (job != null) {
             job.cancel(true);
         }
-        final SbusService adapter = sbusAdapter;
-        if (adapter != null) {
+        if (sbusAdapter != null) {
             // Unregister this handler as a listener
-            adapter.removeMessageListener(this);
+            sbusAdapter.removeMessageListener(this);
             logger.debug("Unregistered handler {} as message listener", getThing().getUID());
-            adapter.close();
         }
         pollingJob = null;
         sbusAdapter = null;

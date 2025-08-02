@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.handler;
+package org.openhab.binding.sbus.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sbus.handler.config.SbusChannelConfig;
-import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.internal.SbusService;
+import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
+import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OpenClosedType;
@@ -41,7 +41,6 @@ import ro.ciprianpascu.sbus.procimg.InputRegister;
  *
  * @author Ciprian Pascu - Initial contribution
  */
-@NonNullByDefault
 public class SbusContactHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusContactHandler.class);

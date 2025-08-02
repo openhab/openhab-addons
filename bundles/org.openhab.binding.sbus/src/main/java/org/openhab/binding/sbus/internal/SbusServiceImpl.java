@@ -14,8 +14,6 @@ package org.openhab.binding.sbus.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sbus.handler.SbusService;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +28,6 @@ import ro.ciprianpascu.sbus.net.SbusMessageListener;
  *
  * @author Ciprian Pascu - Initial contribution
  */
-@Component(service = SbusService.class)
 @NonNullByDefault
 public class SbusServiceImpl implements SbusService {
 
@@ -43,7 +40,7 @@ public class SbusServiceImpl implements SbusService {
             adapter = new SbusAdapter(host, port);
             logger.debug("SBUS adapter initialized for {}:{}", host, port);
         } catch (SbusException e) {
-            throw new Exception("Failed to initialize SBUS adapter: " + e.getMessage(), e);
+            throw new IllegalStateException("Failed to initialize SBUS adapter: " + e.getMessage(), e);
         }
     }
 
@@ -53,7 +50,7 @@ public class SbusServiceImpl implements SbusService {
         try {
             return sbusAdapter.executeTransaction(request);
         } catch (SbusException e) {
-            throw new Exception("SBUS transaction failed: " + e.getMessage(), e);
+            throw new IllegalStateException("SBUS transaction failed: " + e.getMessage(), e);
         }
     }
 

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.handler;
+package org.openhab.binding.sbus.internal.handler;
 
 import static org.openhab.binding.sbus.BindingConstants.*;
 
@@ -41,14 +41,8 @@ import org.slf4j.LoggerFactory;
 public class SbusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SbusHandlerFactory.class);
-    private @Nullable SbusService sbusService;
     private @Nullable TranslationProvider translationProvider;
     private @Nullable LocaleProvider localeProvider;
-
-    @Reference
-    public void setSbusService(final SbusService service) {
-        this.sbusService = service;
-    }
 
     @Reference
     public void setTranslationProvider(TranslationProvider translationProvider) {
@@ -81,7 +75,7 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_UDP_BRIDGE)) {
             logger.debug("Creating Sbus UDP bridge handler for thing {}", thing.getUID());
-            return new SbusBridgeHandler((Bridge) thing, sbusService, tp, lp);
+            return new SbusBridgeHandler((Bridge) thing, tp, lp);
         }
 
         if (thingTypeUID.equals(THING_TYPE_SWITCH)) {
