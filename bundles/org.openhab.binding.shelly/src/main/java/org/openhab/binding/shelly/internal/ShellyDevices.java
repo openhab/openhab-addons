@@ -333,38 +333,6 @@ public class ShellyDevices {
     public static final Set<ThingTypeUID> GROUP_WALLDISPLAY_THING_TYPES = Set.of(THING_TYPE_SHELLYPLUSWALLDISPLAY);
 
     /*
-     * Mapping to thing types depending on mode
-     */
-
-    // Relay devices (mode="relay")
-    public static final Map<String, ThingTypeUID> RELAY_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
-            // Plus Series
-            Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_RELAY),
-            Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_RELAY),
-            Map.entry(SHELLYDT_PLUS2PMG3, THING_TYPE_SHELLYPLUS2PM_RELAY),
-            Map.entry(SHELLYDT_PLUS2PMG4, THING_TYPE_SHELLYPLUS2PM_RELAY),
-            Map.entry(SHELLYDT_PLUS2PMUL, THING_TYPE_SHELLYPLUS2PM_RELAY),
-
-            // Pro Series
-            Map.entry(SHELLYDT_PRO2PM, THING_TYPE_SHELLYPRO2PM_RELAY),
-            Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_RELAY),
-            Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_RELAY));
-
-    // Roller devices (mode="roller")
-    public static final Map<String, ThingTypeUID> ROLLER_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
-            // Plus Series
-            Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_ROLLER),
-            Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_ROLLER),
-            Map.entry(SHELLYDT_PLUS2PMUL, THING_TYPE_SHELLYPLUS2PM_ROLLER),
-            Map.entry(SHELLYDT_PLUS2PMG3, THING_TYPE_SHELLYPLUS2PM_ROLLER),
-            Map.entry(SHELLYDT_PLUS2PMG4, THING_TYPE_SHELLYPLUS2PM_ROLLER),
-
-            // Pro Series
-            Map.entry(SHELLYDT_PRO2PM, THING_TYPE_SHELLYPRO2PM_ROLLER),
-            Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_ROLLER),
-            Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_ROLLER));
-
-    /*
      * Capabilities for specific thing types
      */
 
@@ -523,6 +491,34 @@ public class ShellyDevices {
 
             // Wall displays
             Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
+
+    // Relay devices (mode="relay")
+    public static final Map<String, ThingTypeUID> RELAY_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
+            // Plus Series
+            Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_RELAY),
+            Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_RELAY),
+            Map.entry(SHELLYDT_PLUS2PMG3, THING_TYPE_SHELLYPLUS2PM_RELAY),
+            Map.entry(SHELLYDT_PLUS2PMG4, THING_TYPE_SHELLYPLUS2PM_RELAY),
+            Map.entry(SHELLYDT_PLUS2PMUL, THING_TYPE_SHELLYPLUS2PM_RELAY),
+
+            // Pro Series
+            Map.entry(SHELLYDT_PRO2PM, THING_TYPE_SHELLYPRO2PM_RELAY),
+            Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_RELAY),
+            Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_RELAY));
+
+    // Roller devices (mode="roller")
+    public static final Map<String, ThingTypeUID> ROLLER_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
+            // Plus Series
+            Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry(SHELLYDT_PLUS2PMUL, THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry(SHELLYDT_PLUS2PMG3, THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry(SHELLYDT_PLUS2PMG4, THING_TYPE_SHELLYPLUS2PM_ROLLER),
+
+            // Pro Series
+            Map.entry(SHELLYDT_PRO2PM, THING_TYPE_SHELLYPRO2PM_ROLLER),
+            Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_ROLLER),
+            Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_ROLLER));
 
     public static final Map<String, ThingTypeUID> THING_TYPE_BY_SERVICE_NAME = Map.ofEntries(
             // Shelly Gen1
