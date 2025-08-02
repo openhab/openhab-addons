@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,9 +15,9 @@ package org.openhab.binding.philipsair.internal.discovery;
 /*
  * import static org.junit.jupiter.api.Assertions.assertNotNull;
  * import static org.mockito.Mockito.when;
- * 
+ *
  * import java.net.URISyntaxException;
- * 
+ *
  * import org.junit.jupiter.api.BeforeAll;
  * import org.junit.jupiter.api.BeforeEach;
  * import org.junit.jupiter.api.Disabled;
@@ -42,45 +42,45 @@ package org.openhab.binding.philipsair.internal.discovery;
 
 /*
  * public class PhilipsAirUpnpDiscoveryParticipantTest extends JavaTest {
- * 
+ *
  * @Mock
  * RemoteDevice device;
- * 
+ *
  * @Mock
  * DeviceDetails deviceDetails;
- * 
+ *
  * @Mock
  * RemoteDeviceIdentity remoteDeviceIdentity;
- * 
+ *
  * @Mock
  * ModelDetails modelDetails;
- * 
+ *
  * @BeforeAll
  * public static void setUpBeforeClass() throws Exception {
  * }
- * 
+ *
  * @BeforeEach
  * public void setUp() throws Exception {
  * MockitoAnnotations.initMocks(this);
  * }
- * 
+ *
  * @SuppressWarnings("deprecation")
- * 
+ *
  * @Disabled
  * public void testGetThingUID() throws URISyntaxException {
  * PhilipsAirUpnpDiscoveryParticipant participant = new PhilipsAirUpnpDiscoveryParticipant();
  * when(device.getDetails()).thenReturn(deviceDetails);
- * 
+ *
  * when(device.getDisplayString()).thenReturn("dummy");
  * when(device.getIdentity()).thenReturn(remoteDeviceIdentity);
  * when(deviceDetails.getModelDetails()).thenReturn(modelDetails);
- * 
+ *
  * when(modelDetails.getModelName()).thenReturn("AirPurifier");
  * when(modelDetails.getModelNumber()).thenReturn("AC2889");
  * when(remoteDeviceIdentity.getUdn()).thenReturn(new UDN("12345678-1234-1234-1234-e8c1d7007123"));
- * 
+ *
  * ThingUID thing = participant.getThingUID(device);
- * 
+ *
  * assertNotNull(thing);
  * // TODO: Fix the assertThat's
  * /*

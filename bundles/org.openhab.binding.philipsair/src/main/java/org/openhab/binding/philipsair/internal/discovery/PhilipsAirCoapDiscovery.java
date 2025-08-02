@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.eclipse.californium.core.Utils;
 import org.eclipse.californium.core.coap.CoAP.Type;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.network.CoapEndpoint;
-import org.eclipse.californium.core.network.config.NetworkConfig;
+import org.eclipse.californium.elements.config.Configuration;
 import org.eclipse.californium.elements.exception.ConnectorException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,15 +57,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link PhilipsAirUpnpDiscoveryParticipantTest} is responsible for discovering
+ * The {@link PhilipsAirCoapDiscovery} is responsible for discovering
  * new Philips Air Purifier things for COAP protocol devices
  *
  * @author Marcel Verpaalen - Initial contribution
  *
  */
-
 @NonNullByDefault
-
 @Component(service = DiscoveryService.class, configurationPid = "discovery.philipsair")
 public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     private static final int DISCOVERY_TIME = 15;
@@ -74,22 +72,22 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     private static final long BACKGROUND_DISCOVERY_INTERVAL = 1800;
 
     private final Gson gson = new Gson();
-
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirCoapDiscovery.class);
     private CoapClient client = new CoapClient();
     private @Nullable ScheduledFuture<?> coapDiscoveryJob;
-    private NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
 
     @Activate
     public PhilipsAirCoapDiscovery(@Reference ConfigurationAdmin configAdmin,
             @Reference NetworkAddressService networkAddressService) throws IllegalArgumentException {
         super(DISCOVERY_TIME);
-        NetworkConfig netConfig = NetworkConfig.createStandardWithoutFile();
-        CoapEndpoint endpoint = new CoapEndpoint.Builder().setNetworkConfig(netConfig).build();
-        this.networkAddressService = networkAddressService;
 
-        client = new CoapClient();
-        client.setEndpoint(endpoint);
+        Configuration netConfig = Configuration.getStandard();
+        CoapEndpoint endpoint = new CoapEndpoint.Builder().setConfiguration(netConfig).build();
+
+        this.networkAddressService = networkAddressService;
+        this.client = new CoapClient();
+        this.client.setEndpoint(endpoint);
     }
 
     @Override
@@ -125,12 +123,12 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Start COAP discovery");
-        HashSet<String> broadcastAddresses = new HashSet<String>(NetUtil.getAllBroadcastAddresses());
+        Set<String> broadcastAddresses = new HashSet<>(NetUtil.getAllBroadcastAddresses());
         String configuredBroadcastAddress = networkAddressService.getConfiguredBroadcastAddress();
         if (configuredBroadcastAddress != null) {
             broadcastAddresses.add(configuredBroadcastAddress);
         }
-        broadcastAddresses.add("224.0.1.187");
+        broadcastAddresses.add("224.0.1.187"); // CoAP All-Nodes multicast address
         logger.debug("Broadcast to {} addresses", broadcastAddresses.size());
         for (String host : broadcastAddresses) {
             try {
@@ -144,20 +142,14 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     public void discovered(String response, String host) {
         try {
             PhilipsAirPurifierDeviceDTO info = gson.fromJson(response, PhilipsAirPurifierDeviceDTO.class);
-            if (info == null) {
+            if (info == null || info.getDeviceId() == null) {
                 logger.debug(
-                        "Philips Air Purifier (COAP protocol) discovery result could not parse response from IP={}, '{}'",
+                        "Philips Air Purifier (COAP) discovery result from IP={} was incomplete or could not be parsed: '{}'",
                         host, response);
                 return;
             }
-            if (info.getDeviceId() == null) {
-                logger.debug(
-                        "Philips Air Purifier (COAP protocol) discovery result could not find deviceId  IP={}, '{}'",
-                        host, response);
-                return;
-            }
-            logger.debug("Creating Philips Air Purifier (COAP protocol) discovery result for: IP={}, {}", host,
-                    response);
+
+            logger.debug("Creating Philips Air Purifier (COAP) discovery result for: IP={}, {}", host, response);
             ThingUID thingUid = new ThingUID(PhilipsAirBindingConstants.THING_TYPE_COAP, info.getDeviceId());
             Map<String, Object> properties = new HashMap<>();
             addProperty(properties, PhilipsAirConfiguration.CONFIG_HOST, host);
@@ -166,14 +158,15 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
             addProperty(properties, PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
             addProperty(properties, PROPERTY_MODEL_ID, info.getModelId());
             addProperty(properties, PROPERTY_DEV_TYPE, info.getType());
+
             String label = String.format("Philips AirPurifier %s %s", info.getName(), info.getModelId());
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUid).withProperties(properties).withLabel(label)
                     .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID).build();
-            logger.debug("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(),
-                    result.getLabel());
+
+            logger.debug("DiscoveryResult with uid {} and label: '{}'", result.getThingUID(), result.getLabel());
             thingDiscovered(result);
         } catch (JsonSyntaxException e) {
-            logger.debug("Error while processing discovery result from IP={}, {}", host, response);
+            logger.debug("Error while processing JSON from discovery result. IP={}, Response={}", host, response, e);
         }
     }
 
@@ -183,21 +176,19 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
     private void mget(CoapClient client, int port, String resourcePath, String host)
             throws ConnectorException, IOException {
-        String uri;
-        uri = "coap://" + host + ":" + port + "/" + resourcePath;
+        String uri = "coap://" + host + ":" + port + "/" + resourcePath;
         logger.debug("Send discovery request: {}", uri);
         client.setURI(uri);
         Request multicastRequest = Request.newGet();
         multicastRequest.setType(Type.NON);
+
         // sends a multicast request
         MultiCoapHandler handler = new MultiCoapHandler(this, logger);
         client.advanced(handler, multicastRequest);
-        while (handler.waitOn(DISCOVERY_TIME * 1000)) {
-            ;
+        while (handler.waitOn(DISCOVERY_TIME * 1000L)) {
+            // Loop while waiting for responses
         }
     }
-
-    // private static final MultiCoapHandler handler = new MultiCoapHandler();
 
     private static class MultiCoapHandler implements CoapHandler {
 
@@ -215,6 +206,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
             try {
                 wait(timeout);
             } catch (InterruptedException e) {
+                // Restore the interrupted status
+                Thread.currentThread().interrupt();
             }
             return on;
         }
@@ -235,13 +228,13 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
                     philipsAirCoapDiscovery.discovered(response.getResponseText(), ip.getHostString());
                 }
             } else {
-                logger.debug("Received NULL coap response ");
+                logger.debug("Received NULL coap response");
             }
         }
 
         @Override
         public void onError() {
-            logger.info("Unspecified COAP error while running discovery");
+            logger.warn("An unspecified CoAP error occurred during discovery.");
         }
-    };
+    }
 }
