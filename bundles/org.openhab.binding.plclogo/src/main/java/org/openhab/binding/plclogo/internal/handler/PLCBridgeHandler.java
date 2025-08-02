@@ -42,6 +42,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.openhab.binding.plclogo.internal.config.PLCLogoBridgeConfiguration;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -54,6 +55,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +71,7 @@ import Moka7.S7Client;
 public class PLCBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
+    private final TranslationProvider translation;
 
     private final Map<ChannelUID, String> oldValues = new HashMap<>();
 
@@ -134,8 +137,9 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     /**
      * Constructor.
      */
-    public PLCBridgeHandler(Bridge bridge) {
+    public PLCBridgeHandler(Bridge bridge, TranslationProvider translation) {
         super(bridge);
+        this.translation = translation;
         config = getConfigAs(PLCLogoBridgeConfiguration.class);
     }
 
@@ -178,14 +182,23 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                     }
                     case DIAGNOSTIC_CHANNEL -> {
                         final var states = LOGO_STATES.get(getLogoFamily());
-                        for (final var key : (states != null ? states.keySet() : Set.<Integer> of())) {
-                            final var message = states.get(buffer[0] & key);
+                        if (states != null) {
+                            final var bundle = FrameworkUtil.getBundle(getClass());
+                            final var stateText = Integer.toBinaryString(buffer[0]);
+                            var message = translation.getText(bundle, states.get((int) buffer[0]), stateText, null);
+                            for (var bit = 0; bit < Integer.SIZE; ++bit) {
+                                if (((buffer[0] >>> bit) & 1) != 0) {
+                                    message = translation.getText(bundle, states.get(1 << bit), stateText, null);
+                                }
+                            }
                             synchronized (oldValues) {
                                 if ((message != null) && !Objects.equals(oldValues.get(channelUID), message)) {
                                     updateState(channelUID, new StringType(message));
                                     oldValues.put(channelUID, message);
                                 }
                             }
+                        } else {
+                            updateState(channelUID, new StringType("LOGO! family is not supported"));
                         }
                     }
                     case DAY_OF_WEEK_CHANNEL -> {
