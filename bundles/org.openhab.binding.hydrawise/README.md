@@ -66,7 +66,7 @@ Use Cases
 
 | channel group ID                      |
 |---------------------------------------|
-| [Controller](#controller-thing-1)     |
+| [Controller](#controller-thing)       |
 | [Zones](#zone-channel-group)          |
 | [All Zones](#all-zones-channel-group) |
 | [Sensor](#sensor-channel-group)       |

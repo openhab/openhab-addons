@@ -37,41 +37,41 @@ Discovery is supported only for Elero Channels. Just press the button in order t
 | control         | Rollershutter         | The channel allowing to control the shutter       |
 | status          | String                | Readonly channel providing a string with status information from the Elero Channel. Possible values are: NO_INFORMATION, TOP, BOTTOM, INTERMEDIATE, VENTILATION, BLOCKING, OVERHEATED, TIMEOUT, START_MOVE_UP, START_MOVE_DOWN, MOVING_UP, MOVING_DOWN, STOPPED, TOP_TILT, BOTTOM_INTERMEDIATE, SWITCHED_OFF, SWITCHED_ON |
 
-#### control
+#### Control
 
 The binding does not support all percentage values as the Elero API does not allow to drive shutter to an exact position.
 It only accepts the following distinct percentages:
 
-Percentage | Rollershutter Command | Result                                            |
------------|-----------------------|---------------------------------------------------|
-0          | UP                    | rollershutter drives completely up                |
-25         | -                     | rollershutter drives to the INTERMEDIATE position |
-75         | -                     | rollershutter drives to the VENTILATION position  |
-100        | DOWN                  | rollershutter drives completely down              |
+| Percentage | Rollershutter Command | Result                                            |
+|------------|-----------------------|---------------------------------------------------|
+| 0          | UP                    | rollershutter drives completely up                |
+| 25         | -                     | rollershutter drives to the INTERMEDIATE position |
+| 75         | -                     | rollershutter drives to the VENTILATION position  |
+| 100        | DOWN                  | rollershutter drives completely down              |
 
-#### status
+#### Status
 
 Status values reported by the stick are translated to percentages using the following mapping:
 
-Status              | Rollershutter Percentage |
---------------------|--------------------------|
-NO_INFORMATION      | -                        |
-TOP                 | 0                        |
-BOTTOM              | 100                      |
-INTERMEDIATE        | 25                       |
-VENTILATION         | 75                       |
-BLOCKING            | 50                       |
-OVERHEATED          | 50                       |
-TIMEOUT             | 50                       |
-START_MOVE_UP       | 50                       |
-START_MOVE_DOWN     | 50                       |
-MOVING_UP           | 50                       |
-MOVING_DOWN         | 50                       |
-STOPPED             | 50                       |
-TOP_TILT            | 50                       |
-BOTTOM_INTERMEDIATE | 50                       |
-SWITCHED_OFF        | 50                       |
-SWITCHED_ON         | 50                       |
+| Status              | Rollershutter Percentage |
+|---------------------|--------------------------|
+| NO_INFORMATION      | -                        |
+| TOP                 | 0                        |
+| BOTTOM              | 100                      |
+| INTERMEDIATE        | 25                       |
+| VENTILATION         | 75                       |
+| BLOCKING            | 50                       |
+| OVERHEATED          | 50                       |
+| TIMEOUT             | 50                       |
+| START_MOVE_UP       | 50                       |
+| START_MOVE_DOWN     | 50                       |
+| MOVING_UP           | 50                       |
+| MOVING_DOWN         | 50                       |
+| STOPPED             | 50                       |
+| TOP_TILT            | 50                       |
+| BOTTOM_INTERMEDIATE | 50                       |
+| SWITCHED_OFF        | 50                       |
+| SWITCHED_ON         | 50                       |
 
 ## Full Example
 

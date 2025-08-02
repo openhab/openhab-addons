@@ -127,7 +127,6 @@ Channel names in **bold** are read/write, everything else is read-only
 | energyMonth     | Number:Energy          | Total energy of month in kWh                         | WHOGPLUG          |                     |
 | energyYear      | Number:Energy          | Total energy of year in kWh                          | WHOGPLUG          |                     |
 
-
 ## Full Example
 
 ### Configuration (*.things)

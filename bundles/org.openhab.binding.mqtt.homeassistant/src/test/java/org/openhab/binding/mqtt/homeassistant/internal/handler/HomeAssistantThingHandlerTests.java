@@ -92,7 +92,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
     protected void setupThingHandler() {
         thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry, gson, python, unitProvider, SUBSCRIBE_TIMEOUT,
+                stateDescriptionProvider, channelTypeRegistry, gson, PYTHON, unitProvider, SUBSCRIBE_TIMEOUT,
                 ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
@@ -368,7 +368,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     @Test
     public void testDuplicateChannelId() {
         thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry, gson, python, unitProvider, SUBSCRIBE_TIMEOUT,
+                stateDescriptionProvider, channelTypeRegistry, gson, PYTHON, unitProvider, SUBSCRIBE_TIMEOUT,
                 ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
@@ -426,7 +426,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     @Test
     public void testDuplicateChannelIdComplex() {
         thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry, gson, python, unitProvider, SUBSCRIBE_TIMEOUT,
+                stateDescriptionProvider, channelTypeRegistry, gson, PYTHON, unitProvider, SUBSCRIBE_TIMEOUT,
                 ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);

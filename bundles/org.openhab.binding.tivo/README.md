@@ -126,14 +126,14 @@ All devices support the following channels:
 
 ## Full Example
 
-### `tivo.things` Example 
+### `tivo.things` Example
 
 ```java
 tivo:sckt:Living_Room "Living Room TiVo" [ host="192.168.0.19" ]
 
 ```
 
-### `tivo.items` Example 
+### `tivo.items` Example
 
 ```java
 String      TiVo_Status         "Status"          {channel="tivo:sckt:Living_Room:dvrStatus"}
@@ -151,7 +151,7 @@ String      TiVo_KeyboardStr    "Search String"
 - A simulated remote control widget is available using the Buttongrid sitemap element described below.
 - A more advanced simulated remote can also be implemented as described here: (<https://community.openhab.org/t/bogob-big-ol-grid-o-buttons-is-this-even-possible-yes-yes-it-is/115343>).
 
-### `tivo.sitemap` Example 
+### `tivo.sitemap` Example
 
 ```perl
 sitemap tivo label="Tivo Central" {
@@ -177,7 +177,7 @@ sitemap tivo label="Tivo Central" {
 
 - This example does not use the 'Current Channel - Forced (FORCECH)' channel. This method will interrupt your recordings in progress when all your tuners are busy, so it is omitted for safety's sake.
 
-### `tivo.map` Example 
+### `tivo.map` Example
 
 ```text
 NULL=Unknown

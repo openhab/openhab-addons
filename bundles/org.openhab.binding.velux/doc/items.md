@@ -1,3 +1,5 @@
+# Velux Items Example
+
 ```java
 //  Group for simulating push buttons
 
@@ -24,20 +26,20 @@ String  V_BRIDGE_PRODUCTS   "Velux Bridge Products"             { channel="velux
 
 // Velux Scene channels
 
-Switch  V_DG_M_W_OPEN       "Velux DG Window open"     	    (gV) { channel="velux:scene:home:windowOpened:action" }
+Switch  V_DG_M_W_OPEN       "Velux DG Window open"          (gV) { channel="velux:scene:home:windowOpened:action" }
 Switch  V_DG_M_W_UNLOCKED   "Velux DG Window a little open" (gV) { channel="velux:scene:home:windowUnlocked:action" }
-Switch  V_DG_M_W_CLOSED	    "Velux DG Window closed"        (gV) { channel="velux:scene:home:windowClosed:action" }
+Switch  V_DG_M_W_CLOSED     "Velux DG Window closed"        (gV) { channel="velux:scene:home:windowClosed:action" }
 
 // Velux Bridge channel
 
-Rollershutter RS2 	    "Velux Rolladen 2 [%d]"   		 { channel="velux:klf200:home:shutter#0,V_DG_Shutter_Ost_000,100,V_DG_Shutter_Ost_100", channel="knx:device:bridge:control:VeluxFenster" }
+Rollershutter RS2        "Velux Rolladen 2 [%d]"      { channel="velux:klf200:home:shutter#0,V_DG_Shutter_Ost_000,100,V_DG_Shutter_Ost_100", channel="knx:device:bridge:control:VeluxFenster" }
 
 
 // Velux Actuator channels
 
-Rollershutter	V_DG_M_W	"DG Fenster Bad [%d]"    	{ channel="velux:klf200:home:V_DG_M_W" }
-Rollershutter	V_DG_M_W2	"DG Fenster Bad [%d]"		{ channel="velux:klf200:home:V_DG_M_W2" }
-Rollershutter	V_DG_M_S    	"DG Bad  [%d]"			{ channel="velux:klf200:home:V_DG_M_S" }
-Rollershutter	V_DG_W_S    	"DG West [%d]"			{ channel="velux:klf200:home:V_DG_W_S" }
-Rollershutter	V_DG_O_S    	"DG Ost  [%d]"			{ channel="velux:klf200:home:V_DG_O_S" }
+Rollershutter   V_DG_M_W    "DG Fenster Bad [%d]"     { channel="velux:klf200:home:V_DG_M_W" }
+Rollershutter   V_DG_M_W2   "DG Fenster Bad [%d]"     { channel="velux:klf200:home:V_DG_M_W2" }
+Rollershutter   V_DG_M_S       "DG Bad  [%d]"         { channel="velux:klf200:home:V_DG_M_S" }
+Rollershutter   V_DG_W_S       "DG West [%d]"         { channel="velux:klf200:home:V_DG_W_S" }
+Rollershutter   V_DG_O_S       "DG Ost  [%d]"         { channel="velux:klf200:home:V_DG_O_S" }
 ```

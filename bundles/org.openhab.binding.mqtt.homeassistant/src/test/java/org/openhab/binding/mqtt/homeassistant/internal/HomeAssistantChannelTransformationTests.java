@@ -109,17 +109,17 @@ public class HomeAssistantChannelTransformationTests extends AbstractHomeAssista
     }
 
     protected @Nullable Object transform(String template, Object value) {
-        return new HomeAssistantChannelTransformation(python, component, python.newRawTemplate(template), false)
+        return new HomeAssistantChannelTransformation(PYTHON, component, PYTHON.newRawTemplate(template), false)
                 .transform(value);
     }
 
     protected @Nullable Object transform(String template, Object value, boolean command) {
-        return new HomeAssistantChannelTransformation(python, component, python.newRawTemplate(template), command)
+        return new HomeAssistantChannelTransformation(PYTHON, component, PYTHON.newRawTemplate(template), command)
                 .transform(value);
     }
 
     protected @Nullable Object transform(String template, Object value, String defaultValue) {
-        return new HomeAssistantChannelTransformation(python, component, python.newRawTemplate(template), defaultValue)
+        return new HomeAssistantChannelTransformation(PYTHON, component, PYTHON.newRawTemplate(template), defaultValue)
                 .transform(value);
     }
 }

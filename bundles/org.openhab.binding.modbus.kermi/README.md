@@ -37,7 +37,7 @@ The needed Bridge can be found in the **Modbus Binding** and have to be added ma
 1. Create _Modbus TCP Slave (Bridge)_ with matching Settings of your Kermi Device:
 
 - **IP Address** - IP Address or hostname of your heatpump
-- **Port** - Port of modbus on your heatpump (normally 502) 
+- **Port** - Port of modbus on your heatpump (normally 502)
 - **Device ID** - ID on modbus, 40 is default for Kermi (see [Device IDs](#device-ids))
 
 1. Create _Kermi Heat Pump X-Center_ and attach it to the previous installed _Modbus TCP Slave (Bridge)_.
@@ -64,7 +64,6 @@ Select as Bridge your previously created Modbus TCP Slave.
 |-----------|---------|----------------------------------------------------------------|
 | refresh   | integer | Refresh Rate of X-Center values in Milliseconds (default:5000) |
 | pvEnabled | boolean | Read PV-Modulation (default:false)                             |
-
 
 ### Kermi StorageSystemModule (support planned in future releases)
 
@@ -127,9 +126,9 @@ Possible states:
 
 #### Power and efficiency
 
-| Channel Id                     | Channel Label                         | Type          | Description                                      |   
+| Channel Id                     | Channel Label                         | Type          | Description                                      |
 |--------------------------------|---------------------------------------|---------------|--------------------------------------------------|
-| cop                            | Current COP                           | Number        | current cop overall (Coefficient Of Performance) |  
+| cop                            | Current COP                           | Number        | current cop overall (Coefficient Of Performance) |
 | cop-heating                    | Current COP heating                   | Number        | cop for heating                                  |
 | cop-drinkingwater              | Current COP drinking water            | Number        | cop for drinking water                           |
 | cop-cooling                    | Current COP cooling                   | Number        | cop for cooling                                  |
@@ -222,7 +221,6 @@ You can / should persist some items you want to track, maybe you track your powe
 Suggestion / Optional:  
 As these (power & temperature) values are long-running ones, maybe you should invest a little amount of time using influxDB as persistence (additionally to your existing default persistence in openHAB).
 InfluxDB is a good storage-solution for long terms and uses very small space for its data. Please read the documentation for better understanding how it works.
-
 
 ### Visualization
 

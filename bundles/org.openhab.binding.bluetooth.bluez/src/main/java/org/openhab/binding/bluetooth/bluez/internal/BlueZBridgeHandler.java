@@ -112,9 +112,9 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             discoveryJob = null;
         }
 
-        BluetoothAdapter localAdatper = this.adapter;
-        if (localAdatper != null) {
-            localAdatper.stopDiscovery();
+        BluetoothAdapter adapter = this.adapter;
+        if (adapter != null) {
+            adapter.stopDiscovery();
             this.adapter = null;
         }
 

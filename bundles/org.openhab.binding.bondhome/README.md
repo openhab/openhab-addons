@@ -42,6 +42,7 @@ They are dependent on how the device is configured in the Bond Home app.
 | command    | String   | Send a command to the device                                    |
 
 Available commands:
+
 | Command                   | Description                                       |
 |---------------------------|---------------------------------------------------|
 | STOP                      | Stop any in-progress dimming operation            |

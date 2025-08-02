@@ -81,7 +81,7 @@ For the connection from the Resol binding the bridge requires the configuration 
 
 Depending on the solar/heating controller you have attached to your VBUS there will be a "controller" and several other things like heat quantity meters, heating circuit controls, etc.
 These do not require any configuration parameters and will pop up in your inbox after the bridge has received data from them.
-The name of the devices is usually the Resol name with spaced replaced by _ and a "-Controller" suffix like "DeltaSol_MX-Controller".
+The name of the devices is usually the Resol name with spaced replaced by `_` and a "-Controller" suffix like "DeltaSol_MX-Controller".
 For configuration in files you can enable the logging with at least DEBUG level for the resol binding and search the logs for "ThingHandler for (.*) not registered." to identify the names of the things you can add for your VBUS devices.
 
 ## Emulated EM Configuration

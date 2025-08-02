@@ -161,7 +161,6 @@
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.foobot</module>
     <module>org.openhab.binding.freeathome</module>
-    <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.freeboxos</module>
     <module>org.openhab.binding.freecurrency</module>
     <module>org.openhab.binding.frenchgovtenergydata</module>

@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.ambientweather.internal.processor;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
@@ -34,13 +38,14 @@ public class ProcessorFactory {
     // Single Gson instance shared by processors
     private static final Gson GSON = new Gson();
 
-    // Supported weather stations
-    private @Nullable static Ws1400ipProcessor WS1400IP_PROCESSOR;
-    private @Nullable static Ws2902aProcessor WS2902A_PROCESSOR;
-    private @Nullable static Ws2902bProcessor WS2902B_PROCESSOR;
-    private @Nullable static Ws8482Processor WS8482_PROCESSOR;
-    private @Nullable static Ws0900ipProcessor WS0900IP_PROCESSOR;
-    private @Nullable static Ws0265Processor WS0265_PROCESSOR;
+    // Map of thing types to their processor suppliers
+    private static final Map<String, Supplier<AbstractProcessor>> PROCESSOR_SUPPLIERS = Map.of(
+            "ambientweather:ws1400ip", Ws1400ipProcessor::new, "ambientweather:ws2902a", Ws2902aProcessor::new,
+            "ambientweather:ws2902b", Ws2902bProcessor::new, "ambientweather:ws8482", Ws8482Processor::new,
+            "ambientweather:ws0900ip", Ws0900ipProcessor::new, "ambientweather:ws0265", Ws0265Processor::new);
+
+    // Thread-safe cache for processor instances
+    private static final Map<String, AbstractProcessor> PROCESSOR_CACHE = new ConcurrentHashMap<>();
 
     /**
      * Individual weather station processors use this one Gson instance,
@@ -49,69 +54,26 @@ public class ProcessorFactory {
      * @return instance of a Gson object
      */
     public static Gson getGson() {
-        return (GSON);
+        return GSON;
     }
 
     /**
      * Get a processor for a specific weather station type.
      *
-     * @param thing
+     * @param thing the Thing for which to get a processor
      * @return instance of a weather station processor
-     * @throws ProcessorNotFoundException
+     * @throws ProcessorNotFoundException if no processor exists for the thing type
      */
-    public static AbstractProcessor getProcessor(Thing thing) throws ProcessorNotFoundException {
-        // Return the processor for this thing type
+    public static @Nullable AbstractProcessor getProcessor(Thing thing) throws ProcessorNotFoundException {
         String thingType = thing.getThingTypeUID().getAsString().toLowerCase();
-        switch (thingType) {
-            case "ambientweather:ws1400ip": {
-                Ws1400ipProcessor processor = WS1400IP_PROCESSOR;
-                if (processor == null) {
-                    processor = new Ws1400ipProcessor();
-                    WS1400IP_PROCESSOR = processor;
-                }
-                return processor;
-            }
-            case "ambientweather:ws2902a": {
-                Ws2902aProcessor processor = WS2902A_PROCESSOR;
-                if (processor == null) {
-                    processor = new Ws2902aProcessor();
-                    WS2902A_PROCESSOR = processor;
-                }
-                return processor;
-            }
-            case "ambientweather:ws2902b": {
-                Ws2902bProcessor processor = WS2902B_PROCESSOR;
-                if (processor == null) {
-                    processor = new Ws2902bProcessor();
-                    WS2902B_PROCESSOR = processor;
-                }
-                return processor;
-            }
-            case "ambientweather:ws8482": {
-                Ws8482Processor processor = WS8482_PROCESSOR;
-                if (processor == null) {
-                    processor = new Ws8482Processor();
-                    WS8482_PROCESSOR = processor;
-                }
-                return processor;
-            }
-            case "ambientweather:ws0900ip": {
-                Ws0900ipProcessor processor = WS0900IP_PROCESSOR;
-                if (processor == null) {
-                    processor = new Ws0900ipProcessor();
-                    WS0900IP_PROCESSOR = processor;
-                }
-                return processor;
-            }
-            case "ambientweather:ws0265": {
-                Ws0265Processor processor = WS0265_PROCESSOR;
-                if (processor == null) {
-                    processor = new Ws0265Processor();
-                    WS0265_PROCESSOR = processor;
-                }
-                return processor;
-            }
+
+        // Check if we have a supplier for this thing type
+        Supplier<AbstractProcessor> supplier = PROCESSOR_SUPPLIERS.get(thingType);
+        if (supplier == null) {
+            throw new ProcessorNotFoundException("No processor for thing type " + thingType);
         }
-        throw new ProcessorNotFoundException("No processor for thing type " + thingType);
+
+        // Use computeIfAbsent for thread-safe caching
+        return PROCESSOR_CACHE.computeIfAbsent(thingType, type -> supplier.get());
     }
 }

@@ -192,11 +192,11 @@ The meaning of the method parameters is as follows:
 
 Notes:
 
--<sup>1)</sup> ***WARNING*** inverters have different program `time segment`'s for each `programMode`.
+-<sup>1)</sup> **WARNING** inverters have different program `time segment`'s for each `programMode`.
 To prevent unexpected results do not overlap the `time segment`'s.
 
 -<sup>2)</sup> Depending on inverter type and `programMode` certain parameters may accept 'null' values.
-The 'mix', 'sph' and 'spa' types set the battery program in a single command, so all parameters - except `enableAcCharging` - <u>**must**</u> be ***non-*** 'null'.
+The 'mix', 'sph' and 'spa' types set the battery program in a single command, so all parameters - except `enableAcCharging` - <u>**must**</u> be _**non-**_ 'null'.
 By contrast 'tlx' types set the battery program in up to four partial commands, and you may pass 'null' parameters in order to omit a partial command.
 The permission for passing 'null' parameters, and the effect of such 'null' parameters, is shown in detail in the table below:
 
@@ -458,8 +458,8 @@ extvar = {"url": "http://127.0.0.1:8080/growatt"} // or ip address of openHAB (i
 ### Start Grott as a Service
 
 Finally you should set your computer to starts the Grott application automatically as a service when your computer starts.
-For Windows see wiki: https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Windows)
-For Linux see wiki: https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Linux)
+For Windows see wiki: <https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Windows)>
+For Linux see wiki: <https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Linux)>
 The service configuration for Linux is summarised below:
 
 - Copy the `grott.service` file to the `/etc/systemd/system/` folder
@@ -490,4 +490,4 @@ Otherwise if the computer changes its ip address dynamically, it can no longer i
 This means **YOU WILL NO LONGER BE ABLE TO RESET THE INVERTER** to its original settings!
 
 You need to use the Growatt App to tell the inverter to send its logging data to the Grott proxy instead of to the cloud.
-See wiki: https://github.com/johanmeijer/grott/wiki/Rerouting-Growatt-Wifi-TCPIP-data-via-your-Grott-Server for more information.
+See wiki: <https://github.com/johanmeijer/grott/wiki/Rerouting-Growatt-Wifi-TCPIP-data-via-your-Grott-Server> for more information.

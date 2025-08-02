@@ -1,6 +1,6 @@
 # Oceanic Binding
 
-This binding integrates the Oceanic water softener and management system (www.oceanic.be, but also distributed by Syr in Germany (www.syr.de)).
+This binding integrates the Oceanic water softener and management system (<www.oceanic.be>, but also distributed by Syr in Germany (<www.syr.de>)).
 The binding supports the Limex IQ and Limex Pro water softeners and require the optional CAN-Serial gateway has to be installed
 
 ## Supported Things

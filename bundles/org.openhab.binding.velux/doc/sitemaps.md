@@ -1,4 +1,6 @@
 
+# Velux Sitemap Example
+
 ```perl
 sitemap velux label="Velux Environment"
 {

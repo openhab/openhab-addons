@@ -170,7 +170,7 @@ The service automatically creates three default datasources with the properties 
 There is no `.items` parameter for the default datasources.
 This means that any Item with an allocated strategy in the `rrd4j.persist` file is persisted using one the default settings, unless the Item is explicitly listed in an `.items` property value of a datasource in the `rrd4j.cfg` file.
 
-#### default_numeric
+### default_numeric
 
 This datasource is used for plain `Number` items.
 It does not build averages over values, so that it is ensured that discrete values are kept when being read (e.g. an Item which has only states 0 and 1 will not be set to 0.5).
@@ -185,12 +185,12 @@ It uses 10 seconds as a step size for numeric values and allows a 10 minute sile
 It defines 5 archives:
 
 1. granularity of 10s for the last hour
-2. granularity of 1m for the last week
-3. granularity of 15m for the last year
-4. granularity of 1h for the last 5 years
-5. granularity of 1d for the last 10 years
+1. granularity of 1m for the last week
+1. granularity of 15m for the last year
+1. granularity of 1h for the last 5 years
+1. granularity of 1d for the last 10 years
 
-#### default_quantifiable
+### default_quantifiable
 
 This datasource is used for `Number` items with dimensions - it is therefore assumed that the values are measurement values that exist on a continuum.
 It thus builds averages over values, so that graphs can be smooth, even if there is only a coarse granularity available.
@@ -205,12 +205,12 @@ It uses 10 seconds as a step size for numeric values and allows a 10 minute sile
 It defines 5 archives:
 
 1. granularity of 10s for the last hour
-2. granularity of 1m for the last week
-3. granularity of 15m for the last year
-4. granularity of 1h for the last 5 years
-5. granularity of 1d for the last 10 years
+1. granularity of 1m for the last week
+1. granularity of 15m for the last year
+1. granularity of 1h for the last 5 years
+1. granularity of 1d for the last 10 years
 
-#### default_other
+### default_other
 
 This datasource is used for any other items.
 Their values are considered to be discrete, similar to the `default_numeric` datasource, but it keeps the data in more fine-granular archives.
@@ -225,9 +225,9 @@ It uses 5 seconds as a step size for discrete values and allows a 1h silence bet
 It defines 4 archives:
 
 1. granularity of 5s for the last hour
-2. granularity of 1m for the last week
-3. granularity of 15m for the last year
-4. granularity of 4h for the last 10 years
+1. granularity of 1m for the last week
+1. granularity of 15m for the last year
+1. granularity of 4h for the last 10 years
 
 ## Examples
 

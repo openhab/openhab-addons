@@ -8,7 +8,7 @@ and a json based protocol for newer receivers.
 
 ### Overview
 
-The http port 80 on the receiver is used with http POST requests for retrieving and changing the device state. The actual url is http://HOST/YamahaRemoteControl/ctrl.
+The http port 80 on the receiver is used with http POST requests for retrieving and changing the device state. The actual url is `http://HOST/YamahaRemoteControl/ctrl`.
 
 An example for retrieving data:
 
@@ -31,140 +31,142 @@ An example for changing the state of the receiver:
 
 ### XML Structure
 
-	System
-		Config
-			Model_Name
-			System_ID
-			Version
-			Feature_Existence
-				Main_Zone
-				Zone_2
-				Zone_3
-				Zone_4
-				Tuner
-				DAB
-				HD_Radio
-				SIRIUS
-				iPod
-				Bluetooth
-				UAW
-				Rhapsody
-				SIRIUS_IR
-				Pandora
-				Napster
-				PC
-				NET_RADIO
-				USB
-				iPod_USB
-				Spotify
-			Name
-				Input
-					... (for all HDMI_x, AV_x, USB, Spotify, etc)
+```text
+    System
+        Config
+            Model_Name
+            System_ID
+            Version
+            Feature_Existence
+                Main_Zone
+                Zone_2
+                Zone_3
+                Zone_4
+                Tuner
+                DAB
+                HD_Radio
+                SIRIUS
+                iPod
+                Bluetooth
+                UAW
+                Rhapsody
+                SIRIUS_IR
+                Pandora
+                Napster
+                PC
+                NET_RADIO
+                USB
+                iPod_USB
+                Spotify
+            Name
+                Input
+                    ... (for all HDMI_x, AV_x, USB, Spotify, etc)
 
 
-		Power_Control
-			Power
-			Auto_Power_Down
-		Party_Mode
-			Mode ("On"/"Off")
-			Target_Zone
-			Volume
-		Sound_Video
-		Input_Output
-		Speaker_Preout
-		Misc
-		Unit_Desc
-			Version
-			URL
-		Service_Info
-			Destination
-			Freq_Step
+        Power_Control
+            Power
+            Auto_Power_Down
+        Party_Mode
+            Mode ("On"/"Off")
+            Target_Zone
+            Volume
+        Sound_Video
+        Input_Output
+        Speaker_Preout
+        Misc
+        Unit_Desc
+            Version
+            URL
+        Service_Info
+            Destination
+            Freq_Step
 
-	Main Zone
-		Config
-			Feature_Availability
-			Name -> Zone/Scene
-		Basic_Status
-			Power_Control
-			Volume
-			Input
-			Surround
-			Party_Info
-			Pure_Direct
-			Sound_Video
-		Power_Control
-			Power
-			Sleep
-		Volume
-			Lvl
-			Mute
-			Max_Lvl
-			Init_Lvl
-			Memory
-		Input
-			Input_Sel
-			Input_Sel_Item_Info
-			Input_Sel_Item
-			Audio_Sel
-			Decoder_Sel
-		Scene
-			...
-		Sound_Video
-			...
-		Surround
-		Play_Control
-		List_Control
+    Main Zone
+        Config
+            Feature_Availability
+            Name -> Zone/Scene
+        Basic_Status
+            Power_Control
+            Volume
+            Input
+            Surround
+            Party_Info
+            Pure_Direct
+            Sound_Video
+        Power_Control
+            Power
+            Sleep
+        Volume
+            Lvl
+            Mute
+            Max_Lvl
+            Init_Lvl
+            Memory
+        Input
+            Input_Sel
+            Input_Sel_Item_Info
+            Input_Sel_Item
+            Audio_Sel
+            Decoder_Sel
+        Scene
+            ...
+        Sound_Video
+            ...
+        Surround
+        Play_Control
+        List_Control
 
-	Zone2,3
-		Config
-		Basic_Status
-		Power_Control
-		Volume
-		Input
-		Scene
-		Sound_Video
-		Play_Control
-		List_Control
+    Zone2,3
+        Config
+        Basic_Status
+        Power_Control
+        Volume
+        Input
+        Scene
+        Sound_Video
+        Play_Control
+        List_Control
 
-	Zone4
-		Config
-		Basic_Status
-		Power_Control
-		Input
-		Scene
-		Play_Control
-		List_Control
+    Zone4
+        Config
+        Basic_Status
+        Power_Control
+        Input
+        Scene
+        Play_Control
+        List_Control
 
-	USB
-		Config
-		Play_Control
-		Play_Info
-		List_Control
-		List_Info
+    USB
+        Config
+        Play_Control
+        Play_Info
+        List_Control
+        List_Info
 
-	Tuner
-		Config
-		Play_Control
-		Play_Info
+    Tuner
+        Config
+        Play_Control
+        Play_Info
 
-	iPod/USB/PC/NET_RADIO
-		Config
-		Play_Control
-		Play_Info
-		List_Control
-		List_Info
+    iPod/USB/PC/NET_RADIO
+        Config
+        Play_Control
+        Play_Info
+        List_Control
+        List_Info
+```
 
 ### XML Descriptor
 
 The AVR provides an XML file that describes features and commands available using this URL:
 
-```
+```text
 http://<Your_Yamaha_ID>/YamahaRemoteControl/desc.xml
 ```
 
 Or this URL:
 
-```
+```text
 http://<Your_Yamaha_ID>/YamahaRemoteControl/UnitDesc.xml
 ```
 

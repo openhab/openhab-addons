@@ -15,6 +15,7 @@ You can add the Iammeter device via the openHAB UI manually.
 The following table is taken from the official manual and contains all available channels.
 
 Single-phase energy meter (WEM3080/WEM3162)
+
 | Name           | Unit | Description                  | Type                     |
 |----------------|------|------------------------------|--------------------------|
 | voltage_a      | V    | Voltage                      | Number:ElectricPotential |
@@ -24,6 +25,7 @@ Single-phase energy meter (WEM3080/WEM3162)
 | exportgrid_a   | kWh  | Energy export to grid        | Number:Energy            |
 
 Three-phase energy meter (WEM3080T)
+
 | Name           | Unit | Description           | Type                     |
 |----------------|------|-----------------------|--------------------------|
 | voltage_a      | V    | A phase voltage       | Number:ElectricPotential |

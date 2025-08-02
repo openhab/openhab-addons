@@ -26,7 +26,7 @@ Given the value
 
 the template
 
-```
+```text
 {{value_json['AM2301'].Temperature}}`
 ```
 
@@ -38,13 +38,13 @@ The JINJA transformation can be used to publish simple JSON strings through, for
 
 Say we have a String Item which holds the following value:
 
-```
+```text
 This is my string
 ```
 
 Adding the following into the `commandTransformation` parameter of your HTTP Thing Channel
 
-```
+```text
 JINJA:{"msgtype":"m.text", "body":"{{value}}"}
 ```
 
@@ -58,12 +58,12 @@ will send the following string out of openHAB
 
 Note that if using \*.things files you must escape quotation marks, for example:
 
-```
+```text
 commandTransformation = "JINJA:{\"msgtype\":\"m.text\", \"body\":\"{{value}}\"}"
 ```
 
 ## Further Reading
 
-- Wikipedia on [Jinja](https://en.wikipedia.org/wiki/Jinja_(template_engine).
+- Wikipedia on [Jinja](https://en.wikipedia.org/wiki/Jinja_%28template_engine%29).
 - Home assistant [discovery](https://www.home-assistant.io/docs/mqtt/discovery/).
 - Home assistant [templating](https://www.home-assistant.io/docs/configuration/templating/).

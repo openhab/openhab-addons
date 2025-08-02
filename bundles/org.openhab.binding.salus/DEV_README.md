@@ -9,8 +9,8 @@ To execute the CLI program, run the `main` method from the `ReverseEngineerProto
 ### Running from an IDE
 
 1. Open the project in your IDE.
-2. Navigate to the `ReverseEngineerProtocol` class.
-3. Run the `main` method, passing in the required parameters.
+1. Navigate to the `ReverseEngineerProtocol` class.
+1. Run the `main` method, passing in the required parameters.
 
 ### Running from the Command Line
 
@@ -37,6 +37,7 @@ Finds and lists all devices associated with your Salus cloud account.
 Retrieves all properties for the device with the given Device Serial Number (DSN).
 
 **Parameters:**
+
 - `<dsn>`: The Device Serial Number of the target device.
 
 **Usage:**
@@ -50,6 +51,7 @@ Retrieves all properties for the device with the given Device Serial Number (DSN
 Initializes by loading all properties from the given device, then filters out the properties that have changed or remained unchanged. This method is useful for identifying which property corresponds to a specific value or state.
 
 **Parameters:**
+
 - `<dsn>`: The Device Serial Number of the target device.
 
 **Example Use Case:**
@@ -57,10 +59,10 @@ Initializes by loading all properties from the given device, then filters out th
 To find which property stores the "running" state of a device:
 
 1. Run `findDeltaInProperties <dsn>`.
-2. Filter out properties that have changed (this can be done multiple times).
-3. Trigger the device to change state (e.g., set the temperature higher than the current one to make the device run).
-4. Filter out properties that have not changed.
-5. Repeat steps 2-4 until the desired property is identified.
+1. Filter out properties that have changed (this can be done multiple times).
+1. Trigger the device to change state (e.g., set the temperature higher than the current one to make the device run).
+1. Filter out properties that have not changed.
+1. Repeat steps 2-4 until the desired property is identified.
 
 **Usage:**
 
@@ -73,6 +75,7 @@ To find which property stores the "running" state of a device:
 Monitors and retrieves the value of a specific property from a given device at specified intervals.
 
 **Parameters:**
+
 - `<dsn>`: The Device Serial Number of the target device.
 - `<propertyName>`: The name of the property to monitor.
 - `<sleep>`: (optional; default 1) The sleep interval (in seconds) between each check.

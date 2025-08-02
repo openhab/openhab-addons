@@ -34,7 +34,7 @@ There is no specific binding configuration required.
 
 ### `blaster` Thing Configuration
 
-The `blaster` Thing reuires an `ethernet` (Bridge) before it can be used.
+The `blaster` Thing requires an `ethernet` (Bridge) before it can be used.
 
 | Parameter | Description                                                                                                                                                                      | Config   | Default |
 |-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
@@ -72,9 +72,9 @@ The `blaster` Thing reuires an `ethernet` (Bridge) before it can be used.
 
 | Channel Type ID | Item Type | Description                                                                                                               |                                      |
 |-----------------|-----------|---------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
-| io              | String    | Allows to read infrared commands received by the blaster, as well as to write infrared commands to be sent by the blaster | [Channel configuration](#io-channel) |
+| io              | String    | Allows to read infrared commands received by the blaster, as well as to write infrared commands to be sent by the blaster | [Channel configuration](#blaster-channel) |
 
-*note*
+**note:**
 The IRtrans transceivers store infrared commands in a "remote,command" table, e.g. "telenet,power". Sending the literal text string "telenet,power" to the transceiver will make the transceiver "translate" that into the actual infrared command that will be emitted by the transceiver.  A "remote,command" string sent to a Channel that does not match the defined filter will be ignored.
 
 ## Full Example

@@ -54,7 +54,7 @@ Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working in th
 To start a discovery, just
 
 - Add a new bridge thing.
-- Configure the bridge selecting your cloud portal (www.tahomalink.com by default) and setting your email (login) and password to the cloud portal.
+- Configure the bridge selecting your cloud portal (<www.tahomalink.com> by default) and setting your email (login) and password to the cloud portal.
 
 If the supplied credentials are correct, the automatic discovery can be used to scan and detect your devices which will appear in your Inbox.
 If you are missing some device, check the debug log during the discovery and create an issue with the information about an unsupported thing from the log.
@@ -77,7 +77,7 @@ If you are missing some device, check the debug log during the discovery and cre
 | Gateway PIN    | pin           | Optional          | Gateway PIN in format ABCD-EFGH-IJKL, relevant only if developer mode is enabled     |
 | Local token    | token         | Optional          | Token for local communication, relevant only if developer mode is enabled            |
 
-For more information about the developer mode please see https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode.
+For more information about the developer mode please see <https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode>.
 If the gateway ip or pin are not provided, the binding tries to detect it automatically and saves it into the configuration.
 If the local token is not provided, the binding creates the local token automatically and saves it into the configuration.
 Please note that the action groups (scenarios) control does not work in local mode due to missing support in the gateway firmware.

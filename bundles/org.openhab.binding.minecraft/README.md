@@ -57,11 +57,11 @@ Depending on the thing type, different channels are provided:
 
 #### Active switch (Controllable from openHAB)
 
-<a href="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hMkNZSjJidGk4b28"><img src="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hMkNZSjJidGk4b28" style="width: 500px; max-width: 100%; height: auto" title="Click for the larger version." /></a>
+<a href="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hMkNZSjJidGk4b28"><img src="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hMkNZSjJidGk4b28" alt="Active switch configuration example" style="width: 500px; max-width: 100%; height: auto" title="Click for the larger version." /></a>
 
 #### Passive sensor
 
-<a href="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hUG1wd3h0MDUzUzQ"><img src="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hUG1wd3h0MDUzUzQ" style="width: 500px; max-width: 100%; height: auto" title="Click for the larger version." /></a>
+<a href="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hUG1wd3h0MDUzUzQ"><img src="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hUG1wd3h0MDUzUzQ" alt="Passive sensor configuration example" style="width: 500px; max-width: 100%; height: auto" title="Click for the larger version." /></a>
 
 ### Example Thing Definition
 

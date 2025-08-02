@@ -30,7 +30,7 @@ There is no configuration at binding level.
 |-----------------|---------|---------------------------------------------------|---------|----------|----------|
 | fileName        | text    | Name of the XML file in the configuration folder  | N/A     | yes      | no       |
 
-The file has to use the syntax described here: https://www.openhab.org/docs/configuration/actions.html#custom-bank-holidays
+The file has to use the syntax described here: <https://www.openhab.org/docs/configuration/actions.html#custom-bank-holidays>
 
 ### `dayset` Thing Configuration
 

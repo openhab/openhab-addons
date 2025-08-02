@@ -14,8 +14,8 @@ This binding supports the following thing types:
 | Thing ID          | Description                                                                                           |
 |-------------------|-------------------------------------------------------------------------------------------------------|
 | lgtv              | Generic LG TV thing. This thing should be used when there is no proper thing defined for your device. |
-| lgtv-LV-series    | This thing supports the LED LCD TV models LV and LW except *LV255C, *LV355B, *LV355C                  |
-| lgtv-LVx55-series | This thing supports the *LV255C, *LV355B, *LV355C models                                              |
+| lgtv-LV-series    | This thing supports the LED LCD TV models LV and LW except \*LV255C, \*LV355B, \*LV355C                  |
+| lgtv-LVx55-series | This thing supports the \*LV255C, \*LV355B, \*LV355C models                                              |
 | lgtv-LK-series    | This thing supports the LCD TV models LK                                                              |
 | lgtv-PW-series    | This thing supports the PLASMA TV models PW                                                           |
 | lgtv-M6503C       | This thing supports the M6503C monitor                                                                |
@@ -136,7 +136,7 @@ Here is the list of all the LG TV commands added to the binding, in channel type
 
 The following commands/channels are not currently implemented in the binding but the commands could be [sent via the raw channel](#using-raw-channel-via-rules-example).
 
-| Channel ID         | Command | Description
+| Channel ID         | Command | Description                                                                                                |
 |--------------------|---------|------------------------------------------------------------------------------------------------------------|
 | abnormal-state     | k z     | To read the power off status when in Stand-by mode                                                         |
 | auto-configuration | j u     | To adjust picture position and minimize image shaking automatically. Works only in RGB(PC) mode.           |

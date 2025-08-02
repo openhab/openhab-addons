@@ -6,7 +6,7 @@ They come in a variety of bulb shapes and sizes with options of full color with 
 This binding has been tested with various bulbs and switchable plugs.
 They are sold under the Philips brand name.
 (Wiz is owned by Signify (formerly Philips Lighting).)
-*Note* that while both are sold by Philips, WiZ bulbs are *not* part of the Hue ecosystem.
+_Note_ that while both are sold by Philips, WiZ bulbs are _not_ part of the Hue ecosystem.
 
 This binding operates completely within the local network - the discovery, control, and status monitoring is entirely over UDP in the local network.
 The binding never attempts to contact the WiZ servers in any way but does not stop them from doing so independently.
@@ -136,7 +136,7 @@ The binding supports the following Light Modes
 - Full-color bulbs operate in either color mode OR tunable white/color temperature mode.
 The RGB LED's are NOT used to control temperature - separate warm and cool white LED's are used.
 Sending a command on the color channel or the temperature channel will cause the bulb to switch the relevant mode.
-- Dimmable bulbs do not dim below 10%. 
+- Dimmable bulbs do not dim below 10%.
 - The binding attempts to immediately retrieve the actual state from the device after each command is acknowledged, sometimes this means your settings don't 'stick' this is because the device itself did not accept the command or setting.
 - Parameters can not be changed while the bulbs are off, sending any commands to change any settings will cause the bulbs to turn on.
 - Power on behavior is configured in the app.

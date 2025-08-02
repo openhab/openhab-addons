@@ -51,7 +51,7 @@ Alarm Sensor thing represents a generic sensor, relevant sensor channels will be
 
 ## Switch Shutters Channels
 
-| Channel Type ID   | Item Type          | Description
+| Channel Type ID   | Item Type          | Description                                                           |
 |-------------------|--------------------|-----------------------------------------------------------------------|
 | switch            | Switch             | This channel supports switching the device on and off.                |
 | shutter           | Rollershutter      | This channel controls the shutter position                            |
@@ -60,20 +60,20 @@ Alarm Sensor thing represents a generic sensor, relevant sensor channels will be
 
 ## Alarm Sensors Channels
 
-| Channel Type ID   | Item Type          | Description
+| Channel Type ID   | Item Type          | Description                                                           |
 |-------------------|--------------------|-----------------------------------------------------------------------|
 | illumination      | Number:Illuminance | This channel shows the current illuminance measured by the sensor.    |
 | temperature       | Number:Temperature | This channel shows the current temperature measured by the sensor.    |
 | leak              | Switch             | This channel alert when water leak is detected by the sensor          |
 | motion            | Switch             | This channel alert when motion detected by the sensor.                |
-| smoke             | Switch             | This channel alert when smoke detected by the sensor.                |
+| smoke             | Switch             | This channel alert when smoke detected by the sensor.                 |
 | isOpen            | Contact            | This channel shows the status of Door/Window sensor.                  |
 | battery_level     | Number             | This channel shows the battery level.                                 |
 | battery_low       | Switch             | This channel indicates whether the battery is low or not.             |
 
 ## Thermostat Channels
 
-| Channel Type ID   | Item Type          | Description
+| Channel Type ID   | Item Type          | Description                                                           |
 |-------------------|--------------------|-----------------------------------------------------------------------|
 | State             | Switch             | Set and read the device state ON or OFF.                              |
 | targetTemperature | Number:Temperature | Shows the current set point of the thrermostat.                       |

@@ -14,9 +14,9 @@ Both types of modules work fine with NibeGW.
 The difference between the two is, that the Max485 chip needs to be switched between RX mode and TX mode manually while the Max1348 chip do this automatically.
 That is why you need an extra "direction pin" on the Arduino to switch the module with Max485 chip between the two modes.
 
-#### Wiring diagram for Max1348 based modules
+### Wiring diagram for Max1348 based modules
 
-```
+```text
  TX  RX   5V  GND    Arduino
  |   |    |    |
  |   |    |    |
@@ -24,9 +24,9 @@ That is why you need an extra "direction pin" on the Arduino to switch the modul
  RX  TX  VCC  GND    Max1348 based module
 ```
 
-#### Wiring diagram for Max485 (PIN2 is used as direction pin here)
+### Wiring diagram for Max485 (PIN2 is used as direction pin here)
 
-```
+```text
  TX  RX  PIN2      5V  GND    Arduino
  |   |    |        |    |
  |   |    |        |    |
@@ -55,7 +55,7 @@ For compiling NibeGW, you have to make the following changes to the code:
 
 Comment out support for all special boards:
 
-```
+```c
 //#define PRODINO_BOARD
 //#define PRODINO_BOARD_ESP32
 //#define TRANSPORT_ETH_ENC28J6A0
@@ -64,7 +64,7 @@ Comment out support for all special boards:
 
 Comment out debugging on the serial console:
 
-```
+```c
 //#define ENABLE_SERIAL_DEBUG
 ```
 
@@ -75,7 +75,7 @@ Leave the serial configuration untouched - it is fine for Arduino Uno.
 
 Enable support for HARDWARE_SERIAL:
 
-```
+```c
 //#define HARDWARE_SERIAL_WITH_PINS
 #define HARDWARE_SERIAL
 ```
@@ -116,7 +116,7 @@ Todo
 Debugging messages are available by connecting to port 23 to your NibeGW via telnet.
 Enable debugging in Config.h:
 
-```
+```c
 #define ENABLE_DEBUG
 #define VERBOSE_LEVEL 5
 #define ENABLE_REMOTE_DEBUG     // Remote debug is available in telnet port 23
@@ -126,7 +126,7 @@ You can connect to NibeGW with any telnet client.
 You can also set some options via telnet.
 With 'h' you get a menu with all available options:
 
-```
+```shell
 Arduino NibeGW
 Commands:
  E -> exit
@@ -140,7 +140,7 @@ Commands:
 
 On the target IP you can see the receiving udp messages with netcat (if you changed the default target port 9999, you also have to adjust it here):
 
-```
+```shell
 nc -lu 9999 | hexdump -C
 ```
 

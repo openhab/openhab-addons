@@ -24,7 +24,7 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 Monoprice 10761 & 39261 or Dayton Audio DAX66 amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps and 6 source inputs are supported.
 Note: Compatible clones from McLELLAND, Factor, Soundavo, etc. should work as well.
 
-***The following thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types.***
+**_The following thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types._**
 
 Monoprice 44519 4 zone variants use the `monoprice4` thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.
 

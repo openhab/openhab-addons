@@ -7,7 +7,7 @@ Note, the binding currently assumes (and the configuration tested) that the moni
 If you have a device in a different configuration, feedback would be welcome and support might be added to the binding.
 
 Sense also allows smart plugs and other devices to provide real-time usage allowing Sense to incorporate accurate usage statistics into your data.
-This binding also supports creation of virtual proxy devices in openHAB which can send to Sense any energy usage for openHAB aware devices. 
+This binding also supports creation of virtual proxy devices in openHAB which can send to Sense any energy usage for openHAB aware devices.
 Here are several examples of how a virtual proxy device can be used:
 
 - A pool pump known in openHAB can update its power when on to Sense
@@ -18,8 +18,8 @@ Using the openHAB follow profile with the channel(s) of the proxy device is an e
 
 This binding builds off the following works in understanding the Sense API:
 
-- https://github.com/scottbonline/sense
-- https://github.com/cbpowell/SenseLink/
+- <https://github.com/scottbonline/sense>
+- <https://github.com/cbpowell/SenseLink/>
 
 ## Supported Things
 
@@ -69,7 +69,6 @@ In order to use, you need to enable "TP-Link HS110/HS300 Smart Plug" in the Sens
 | voltage     | decimal         | Voltage level for the proxy device.           | 120     | yes      | no       |
 | mac         | network-address | A spoof'ed MAC address for this proxy device. | random  | no       | yes      |
 
-
 #### Power Levels
 
 The power levels is a list representing different power levels or states of the device.
@@ -114,13 +113,13 @@ The monitor channels are organized into multiple groups.
 #### Discovered Devices, Self-Reporting Devices and Proxy Devices Channel Groups
 
 - Discovered devices are those which Sense has discovered using their algorithms.
-- Self-reporting devices are any devices which report their power usage to Sense (i.e. energy reporting smart plugs). 
+- Self-reporting devices are any devices which report their power usage to Sense (i.e. energy reporting smart plugs).
 - Proxy devices are any virtual proxy devices set up in openHAB where this binding reports their power usage.
 
 | Channel                 | id                | Type         | Read/Write | Advanced | Description                                                      |
 |-------------------------|-------------------|--------------|------------|----------|------------------------------------------------------------------|
-| *Label*: Power          | *id*-device-power | Number:Power | R          | N        | Power consumed by the device.                                    |
-| *Label*: On Off Trigger | *id*-trigger      | Trigger      | N/A        | Y        | Trigger channel to notify when device has been turned ON or OFF. |
+| _Label_: Power          | _id_-device-power | Number:Power | R          | N        | Power consumed by the device.                                    |
+| _Label_: On Off Trigger | _id_-trigger      | Trigger      | N/A        | Y        | Trigger channel to notify when device has been turned ON or OFF. |
 
 ### Proxy Device
 
@@ -236,7 +235,7 @@ end
 ## Special Notes
 
 For proxy device to work, openHAB must be on the same sub-net as the Sense monitor and be able to receive broadcast Datagram packets on port 9999.
-While the binding has not been tested in a Docker configuration, there are some potential issues with being able to receive on port 9999 (see https://github.com/cbpowell/SenseLink/).
+While the binding has not been tested in a Docker configuration, there are some potential issues with being able to receive on port 9999 (see <https://github.com/cbpowell/SenseLink/>).
 
 The Sense Energy Monitor can be configured in two different modes depending on whether the secondary current monitor is either attaced to the Solar circuit of another circuit in your house.
 Unfortunately, the JSON format from the API is different depending on the mode and currently the binding has only been tested and will work in the Solar mode.

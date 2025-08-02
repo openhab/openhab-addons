@@ -23,7 +23,7 @@ It can be bound to Switch and Dimmer items.
 If more than one DMX channel is defined, the item will be updated according to the state of the first DMX channel.
 There are two other things similar to the dimmer thing.
 One is the color thing, it can be bound to Switch, Dimmer or Color Items and is best used for RGB lamps.
-The second one is the tunable white thing, it allows to control the color temperature of lamps with seperate DMX channels for cool white and warm white.
+The second one is the tunable white thing, it allows to control the color temperature of lamps with separate DMX channels for cool white and warm white.
 
 The last supported thing is a chaser.
 It can contain one or more DMX channels and binds to Switch items only.

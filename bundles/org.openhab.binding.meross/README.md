@@ -9,7 +9,7 @@ Supported thing types
 - `gateway` : Acts as a Bridge to your Meross cloud account.
 - `light` : Represents a light device like a Smart ambient light.
 
-|   Meross Name       | Type   | Description         | Supported | Tested| 
+|   Meross Name       | Type   | Description         | Supported | Tested|
 |---------------------|--------|---------------------|-----------|--------|
 | Smart ambient light | msl430 | Smart ambient light | yes       | yes    |
 | Smart plug          | mss210 | Smart plug          | yes       | yes    |
@@ -28,7 +28,7 @@ Moreover, the devices should be in an online status
 
 | Name     | Type | Description                                              | Default                    | Required | Advanced |
 |----------|------|----------------------------------------------------------|----------------------------|----------|----------|
-| hostname | text | Meross Hostname or IP address (for Europe located users) | https://iotx-eu.meross.com | yes      | yes      |
+| hostname | text | Meross Hostname or IP address (for Europe located users) | <https://iotx-eu.meross.com> | yes      | yes      |
 | email    | text | Email of your Meross Account                             | N/A                        | yes      | no       |
 | password | text | Password of your Meross Account                          | N/A                        | yes      | no       |
 
@@ -36,8 +36,8 @@ Moreover, the devices should be in an online status
 
 | Location     | Hostname                   |
 |--------------|----------------------------|
-| Asia-Pacific | https://iotx-ap.meross.com |
-| US           | https://iotx-us.meross.com |
+| Asia-Pacific | <https://iotx-ap.meross.com> |
+| US           | <https://iotx-us.meross.com> |
 
 NOTICE: Due to  **Meross**&reg; security policy please minimize host connections in order to avoid TOO MANY TOKENS (code 1301) error occurs which leads to a  8-10 hours suspension of your account.
 

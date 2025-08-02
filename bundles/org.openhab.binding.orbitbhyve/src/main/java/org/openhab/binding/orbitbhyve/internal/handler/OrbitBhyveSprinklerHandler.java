@@ -81,7 +81,8 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
                 handler.stopWatering(deviceId);
                 return;
             }
-            if (CHANNEL_WATERING_TIME.equals(channelUID.getId()) && command instanceof QuantityType quantityCommand) {
+            if (CHANNEL_WATERING_TIME.equals(channelUID.getId())
+                    && command instanceof QuantityType<?> quantityCommand) {
                 final QuantityType<?> value = quantityCommand.toUnit(Units.MINUTE);
                 if (value != null) {
                     wateringTime = value.intValue();
@@ -110,10 +111,14 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
                 }
                 return;
             }
-            if (CHANNEL_RAIN_DELAY.equals(channelUID.getId()) && command instanceof DecimalType) {
-                final QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.HOUR);
-                if (value != null) {
-                    handler.setRainDelay(deviceId, value.intValue());
+            if (CHANNEL_RAIN_DELAY.equals(channelUID.getId())) {
+                if (command instanceof QuantityType<?> quantityCommand) {
+                    final QuantityType<?> value = quantityCommand.toUnit(Units.HOUR);
+                    if (value != null) {
+                        handler.setRainDelay(deviceId, value.intValue());
+                    }
+                } else if (command instanceof DecimalType decimalCommand) {
+                    handler.setRainDelay(deviceId, decimalCommand.intValue());
                 }
 
             }
@@ -197,7 +202,7 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
             updateState(CHANNEL_NEXT_START, dt);
             logger.debug("Next start time: {}", status.getNextStartTime());
         }
-        updateState(CHANNEL_RAIN_DELAY, new DecimalType(status.getDelay()));
+        updateState(CHANNEL_RAIN_DELAY, new QuantityType<>(status.getDelay(), Units.HOUR));
     }
 
     private void createProgram(OrbitBhyveProgram program) {

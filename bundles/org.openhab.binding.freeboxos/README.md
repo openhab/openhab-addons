@@ -48,15 +48,15 @@ Note that the discovered thing will be setup to use only HTTP API (and not HTTPS
 FreeboxOS binding has the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                                                                | Default |
-|-----------------|--------------|----------------------------------------------------------------------------|         |
+|-----------------|--------------|----------------------------------------------------------------------------|---------|
 | Timeout         | timeout      | The timeout for reading from the API in seconds.                           | 10      |
-| Callback URL    | callbackUrl  | URL to use for playing notification sounds, e.g. 'http://192.168.0.2:8080' |         |
+| Callback URL    | callbackUrl  | URL to use for playing notification sounds, e.g. `http://192.168.0.2:8080` |         |
 
 ## Thing Configuration
 
 ### Api Bridge
 
-The *api* bridge thing requires the following configuration parameters:
+The _api_ bridge thing requires the following configuration parameters:
 
 | Parameter Label               | Parameter ID        | Description                                                    | Required | Default              |
 |-------------------------------|---------------------|----------------------------------------------------------------|----------|----------------------|
@@ -68,12 +68,12 @@ The *api* bridge thing requires the following configuration parameters:
 | HTTPS port                    | httpsPort           | Port to use for HTTPS access to the Freebox Api                | No       | 443                  |
 | Websocket Reconnect Interval  | wsReconnectInterval | Disconnection interval, in minutes- 0 disables websocket usage | No       | 60                   |
 
-If the parameter *apiDomain* is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
-The bridge thing will initialize only if a valid application token (parameter *appToken*) is filled.
+If the parameter _apiDomain_ is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
+The bridge thing will initialize only if a valid application token (parameter _appToken_) is filled.
 
 ### Server Things
 
-The *revolution* or *delta* thing requires the following configuration parameters:
+The _revolution_ or _delta_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                              | Required | Default |
 |------------------|-----------------|--------------------------------------------------------------------------|----------|---------|
@@ -81,7 +81,7 @@ The *revolution* or *delta* thing requires the following configuration parameter
 
 ### Player Things
 
-The *player* or *active-player* thing requires the following configuration parameters:
+The _player_ or _active-player_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                                | Required | Default |
 |------------------|-----------------|----------------------------------------------------------------------------|----------|---------|
@@ -93,14 +93,14 @@ The *player* or *active-player* thing requires the following configuration param
 
 ### Phone Things
 
-The *fxs* or *dect* thing requires the following configuration parameters:
+The _fxs_ or _dect_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
 | ID               | id              | Id of the phone line                                                   | Yes      | 1       |
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone state. | No       | 30      |
 
-The *call* thing requires the following configuration parameters:
+The _call_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
@@ -108,14 +108,14 @@ The *call* thing requires the following configuration parameters:
 
 ### Network Device Things
 
-The *host* thing requires the following configuration parameters:
+The _host_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
 | MAC Address      | macAddress      | The MAC address of the network device.                                 | Yes      |         |
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll the device.      | No       | 30      |
 
-The *wifihost* thing requires the following configuration parameters:
+The _wifihost_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
@@ -128,7 +128,7 @@ This is useful with devices, especially Apple equipment, that uses randomly gene
 
 ### Freeplug Thing
 
-The *freeplug* thing requires the following configuration parameters:
+The _freeplug_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
@@ -137,7 +137,7 @@ The *freeplug* thing requires the following configuration parameters:
 
 ### Repeater Thing
 
-The *repeater* thing requires the following configuration parameters:
+The _repeater_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                         | Required | Default |
 |------------------|-----------------|---------------------------------------------------------------------|----------|---------|
@@ -147,7 +147,7 @@ The *repeater* thing requires the following configuration parameters:
 
 ### Virtual Machine Thing
 
-The *vm* thing requires the following configuration parameters:
+The _vm_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                                | Required | Default |
 |------------------|-----------------|----------------------------------------------------------------------------|----------|---------|
@@ -157,7 +157,7 @@ The *vm* thing requires the following configuration parameters:
 
 ### Home Node Things
 
-The *basic-shutter*, *shutter*, *kfb* or *alarm* thing requires the following configuration parameters:
+The _basic-shutter_, _shutter_, _kfb_ or _alarm_ thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                      | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------|----------|---------|
@@ -184,7 +184,7 @@ Once initialized, the thing will generate all available channels.
 
 The following channels are supported:
 
-| Thing Type            | Channel Grpup ID  | Channel ID           | Item Type               | Access Mode | Description                                                                    |
+| Thing Type            | Channel Group ID  | Channel ID           | Item Type               | Access Mode | Description                                                                    |
 |-----------------------|-------------------|----------------------|-------------------------|-------------|--------------------------------------------------------------------------------|
 | revolution            | display           | lcd-brightness       | Number:Dimensionless    | RW          | Brightness level of the screen in percent                                      |
 | revolution            | display           | lcd-orientation      | Number                  | RW          | Screen Orientation in degrees (0 or 90 or 180 or 270)                          |
@@ -243,9 +243,9 @@ The following channels are supported:
 | call                  | outgoing          | duration             | Number:Time             | R           | Last outgoing call duration in seconds                                         |
 | call                  | outgoing          | timestamp            | DateTime                | R           | Last outgoing call creation timestamp                                          |
 | call                  | outgoing          | name                 | String                  | R           | Last outgoing called name                                                      |
-| basic-shutter | basic-shutter#basic-shutter | RollerShutter | W           | Up, stop and down commands for a RTS shutter                                   |
+| basic-shutter         |                   | basic-shutter        | Rollershutter           | W           | Up, stop and down commands for a RTS shutter                                   |
 
-(*): any thing type amongst *active-player*, *player*, *host*, *wifihost*, *repeater* and *vm*.
+(*): any thing type amongst _active-player_, _player_, _host_, _wifihost_, _repeater_ and _vm_.
 
 ## Actions for rules
 

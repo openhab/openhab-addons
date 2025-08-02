@@ -59,7 +59,7 @@ This binding supports the following thing types:
 | controller      |   Thing    | Pentair EasyTouch, SunTouch, or IntelliTouch pool controller.      |
 | intelliflo      |   Thing    | Pentair IntelliFlo variable speed pump. |
 | intellichlor    |   Thing    | Pentair IntelliChlor chlorinator.       |
-| intellichem     |   Thing    | Pentair IntelliChem.
+| intellichem     |   Thing    | Pentair IntelliChem.                     |
 
 ## Binding Configuration
 

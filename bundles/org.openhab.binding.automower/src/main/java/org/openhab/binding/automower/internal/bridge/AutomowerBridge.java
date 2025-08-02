@@ -68,7 +68,7 @@ public class AutomowerBridge {
         this.automowerApi = new AutomowerConnectApi(httpClient);
     }
 
-    private AccessTokenResponse authenticate() throws AutomowerCommunicationException {
+    public synchronized AccessTokenResponse authenticate() throws AutomowerCommunicationException {
         try {
             AccessTokenResponse result = authService.getAccessTokenResponse();
             if (result == null || result.isExpired(Instant.now(), 120)) {
@@ -112,17 +112,27 @@ public class AutomowerBridge {
      * @param id The id of the mower
      * @param command The command that should be sent. Valid values are: "Start", "ResumeSchedule", "Pause", "Park",
      *            "ParkUntilNextSchedule", "ParkUntilFurtherNotice"
-     * @param commandDuration The duration of the command. This is only evaluated for "Start" and "Park" commands
+     * @param commandDuration The duration of the command. This is only evaluated for "Start", "StartInWorkArea" and
+     *            "Park" commands
+     * @param commandWorkAreaId The work area id to be used for the command. This is only evaluated for
+     *            "StartInWorkArea" command
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-    public void sendAutomowerCommand(String id, AutomowerCommand command, long commandDuration)
-            throws AutomowerCommunicationException {
-        MowerCommandAttributes attributes = new MowerCommandAttributes();
-        attributes.setDuration(commandDuration);
-
+    public void sendAutomowerCommand(String id, AutomowerCommand command, @Nullable Long commandWorkAreaId,
+            @Nullable Long commandDuration) throws AutomowerCommunicationException {
         MowerCommand mowerCommand = new MowerCommand();
         mowerCommand.setType(command.getCommand());
-        mowerCommand.setAttributes(attributes);
+
+        if (commandDuration != null || commandWorkAreaId != null) {
+            MowerCommandAttributes attributes = new MowerCommandAttributes();
+            if (commandDuration != null) {
+                attributes.setDuration(commandDuration);
+            }
+            if (commandWorkAreaId != null) {
+                attributes.setWorkAreaId(commandWorkAreaId);
+            }
+            mowerCommand.setAttributes(attributes);
+        }
 
         MowerCommandRequest request = new MowerCommandRequest();
         request.setData(mowerCommand);
