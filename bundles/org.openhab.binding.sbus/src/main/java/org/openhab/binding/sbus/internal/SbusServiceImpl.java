@@ -15,12 +15,15 @@ package org.openhab.binding.sbus.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.handler.SbusService;
-import org.openhab.binding.sbus.handler.TemperatureUnit;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import ro.ciprianpascu.sbus.SbusException;
 import ro.ciprianpascu.sbus.facade.SbusAdapter;
+import ro.ciprianpascu.sbus.msg.SbusRequest;
+import ro.ciprianpascu.sbus.msg.SbusResponse;
+import ro.ciprianpascu.sbus.net.SbusMessageListener;
 
 /**
  * The {@link SbusServiceImpl} implements the SbusService interface by delegating to SbusAdapter.
@@ -30,82 +33,41 @@ import ro.ciprianpascu.sbus.facade.SbusAdapter;
 @Component(service = SbusService.class)
 @NonNullByDefault
 public class SbusServiceImpl implements SbusService {
+
+    private final Logger logger = LoggerFactory.getLogger(SbusServiceImpl.class);
     private @Nullable SbusAdapter adapter;
 
-    @Activate
-    public SbusServiceImpl() {
-        // Service is activated but adapter is initialized later with connection parameters
-    }
-
-    /**
-     * Initializes the underlying SbusAdapter with connection parameters.
-     *
-     * @param host the host address of the Sbus device
-     * @param port the port number to use
-     * @throws Exception if initialization fails
-     */
     @Override
     public void initialize(String host, int port) throws Exception {
-        this.adapter = new SbusAdapter(host, port);
-    }
-
-    @Deactivate
-    public void deactivate() {
-        close();
+        try {
+            adapter = new SbusAdapter(host, port);
+            logger.debug("SBUS adapter initialized for {}:{}", host, port);
+        } catch (SbusException e) {
+            throw new Exception("Failed to initialize SBUS adapter: " + e.getMessage(), e);
+        }
     }
 
     @Override
-    public float[] readTemperatures(int subnetId, int id, TemperatureUnit temperatureUnit) throws Exception {
-        final SbusAdapter adapter = this.adapter;
-        if (adapter == null) {
-            throw new IllegalStateException("SbusAdapter not initialized");
+    public SbusResponse executeTransaction(SbusRequest request) throws Exception {
+        SbusAdapter sbusAdapter = getAdapter();
+        try {
+            return sbusAdapter.executeTransaction(request);
+        } catch (SbusException e) {
+            throw new Exception("SBUS transaction failed: " + e.getMessage(), e);
         }
-        return adapter.readTemperatures(subnetId, id, temperatureUnit.getValue());
     }
 
     @Override
-    public int[] readRgbw(int subnetId, int id, int channelNumber) throws Exception {
-        final SbusAdapter adapter = this.adapter;
-        if (adapter == null) {
-            throw new IllegalStateException("SbusAdapter not initialized");
-        }
-        return adapter.readRgbw(subnetId, id, channelNumber);
+    public void addMessageListener(SbusMessageListener listener) throws Exception {
+        SbusAdapter sbusAdapter = getAdapter();
+        sbusAdapter.addMessageListener(listener);
     }
 
     @Override
-    public int[] readStatusChannels(int subnetId, int id) throws Exception {
-        final SbusAdapter adapter = this.adapter;
-        if (adapter == null) {
-            throw new IllegalStateException("SbusAdapter not initialized");
+    public void removeMessageListener(SbusMessageListener listener) {
+        if (this.adapter != null) {
+            adapter.removeMessageListener(listener);
         }
-        return adapter.readExecutionStatusChannels(subnetId, id);
-    }
-
-    @Override
-    public boolean[] readContactStatusChannels(int subnetId, int id) throws Exception {
-        final SbusAdapter adapter = this.adapter;
-        if (adapter == null) {
-            throw new IllegalStateException("SbusAdapter not initialized");
-        }
-        return adapter.readContactStatusChannels(subnetId, id);
-    }
-
-    @Override
-    public void writeRgbw(int subnetId, int id, int channelNumber, int[] color) throws Exception {
-        final SbusAdapter adapter = this.adapter;
-        if (adapter == null) {
-            throw new IllegalStateException("SbusAdapter not initialized");
-        }
-        adapter.writeRgbw(subnetId, id, channelNumber, color);
-    }
-
-    @Override
-    public void writeSingleChannel(int subnetId, int id, int channelNumber, int value, int timer) throws Exception {
-        final SbusAdapter adapter = this.adapter;
-        if (adapter == null) {
-            throw new IllegalStateException("SbusAdapter not initialized");
-        }
-        adapter.writeSingleExecutionChannel(subnetId, id, channelNumber, value, timer);
     }
 
     @Override
@@ -115,5 +77,13 @@ public class SbusServiceImpl implements SbusService {
             adapter.close();
             this.adapter = null;
         }
+    }
+
+    private SbusAdapter getAdapter() throws Exception {
+        SbusAdapter sbusAdapter = adapter;
+        if (sbusAdapter == null) {
+            throw new IllegalStateException("SBUS adapter not initialized. Call initialize() first.");
+        }
+        return sbusAdapter;
     }
 }

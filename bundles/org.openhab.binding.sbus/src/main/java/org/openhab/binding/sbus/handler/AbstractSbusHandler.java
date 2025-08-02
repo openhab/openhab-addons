@@ -38,6 +38,9 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ro.ciprianpascu.sbus.msg.SbusResponse;
+import ro.ciprianpascu.sbus.net.SbusMessageListener;
+
 /**
  * The {@link AbstractSbusHandler} is the base class for all Sbus device handlers.
  * It provides common functionality for device initialization, channel management, and polling.
@@ -45,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Ciprian Pascu - Initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractSbusHandler extends BaseThingHandler {
+public abstract class AbstractSbusHandler extends BaseThingHandler implements SbusMessageListener {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected @Nullable SbusService sbusAdapter;
@@ -88,6 +91,16 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
         }
 
         startPolling();
+
+        // Register this handler as a listener for async messages
+        if (sbusAdapter != null) {
+            try {
+                sbusAdapter.addMessageListener(this);
+                logger.debug("Registered handler {} as message listener", getThing().getUID());
+            } catch (Exception e) {
+                logger.warn("Failed to register message listener for {}: {}", getThing().getUID(), e.getMessage());
+            }
+        }
     }
 
     /**
@@ -147,6 +160,60 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
      */
     protected abstract void pollDevice();
 
+    /**
+     * Process an asynchronous message received from the network.
+     * This method should be implemented by concrete handlers to process messages
+     * specific to their device type using their existing protocol adaptation methods.
+     *
+     * @param response the received SBUS response message
+     */
+    protected abstract void processAsyncMessage(SbusResponse response);
+
+    /**
+     * Reset the polling timer by cancelling the current polling job and starting a new one.
+     * This should be called when an async message is successfully processed to reduce
+     * unnecessary polling when the device is actively sending updates.
+     */
+    protected void resetPollingTimer() {
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(false); // Don't interrupt if already running
+        }
+        startPolling();
+        logger.debug("Reset polling timer for handler {}", getThing().getUID());
+    }
+
+    // SbusMessageListener implementation
+
+    @Override
+    public void onMessageReceived(SbusResponse response) {
+        try {
+            // Check if this message is relevant to this handler
+            if (isMessageRelevant(response)) {
+                logger.debug("Processing async message for handler {}", getThing().getUID());
+                processAsyncMessage(response);
+                resetPollingTimer();
+            }
+        } catch (Exception e) {
+            logger.warn("Error processing async message for handler {}: {}", getThing().getUID(), e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void onError(Exception error, byte[] rawMessage) {
+        logger.warn("Error in message listener for handler {}: {}", getThing().getUID(), error.getMessage(), error);
+    }
+
+    /**
+     * Check if the received message is relevant to this handler.
+     * This method should be implemented by concrete handlers to filter messages
+     * based on subnet ID, unit ID, or other criteria.
+     *
+     * @param response the received SBUS response message
+     * @return true if the message is relevant to this handler
+     */
+    protected abstract boolean isMessageRelevant(SbusResponse response);
+
     @Override
     public void dispose() {
         ScheduledFuture<?> job = pollingJob;
@@ -155,6 +222,9 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
         }
         final SbusService adapter = sbusAdapter;
         if (adapter != null) {
+            // Unregister this handler as a listener
+            adapter.removeMessageListener(this);
+            logger.debug("Unregistered handler {} as message listener", getThing().getUID());
             adapter.close();
         }
         pollingJob = null;
