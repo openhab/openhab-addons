@@ -25,7 +25,7 @@ public class SgReadyEnergyManagementSystemInformationBlock {
 
     @Override
     public String toString() {
-        return "SgReadyEnergyManagementSystemInformationBlock{" + "\sgReadyOperatingState=" + sgReadyOperatingState
+        return "SgReadyEnergyManagementSystemInformationBlock{" + "\nsgReadyOperatingState=" + sgReadyOperatingState
                 + "\nsgReadyControllerIdentification=" + sgReadyControllerIdentification + "\n}";
     }
 }

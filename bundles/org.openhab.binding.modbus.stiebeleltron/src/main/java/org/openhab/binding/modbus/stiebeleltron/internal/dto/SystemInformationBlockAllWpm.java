@@ -119,12 +119,14 @@ public class SystemInformationBlockAllWpm extends SystemInformationBlock {
         sb.append("  pressureHigh=").append(pressureHigh).append(",\n");
         sb.append("  pressureLow=").append(pressureLow).append(",\n");
         sb.append("  heatPumps=[\n");
+        int idx = 1;
         for (HeatPumpInfo hp : heatPumps) {
-            sb.append("    {").append("temperatureReturn=").append(hp.temperatureReturn).append(", ")
-                    .append("temperatureFlow=").append(hp.temperatureFlow).append(", ").append("temperatureHotgas=")
-                    .append(hp.temperatureHotgas).append(", ").append("pressureLow=").append(hp.pressureLow)
-                    .append(", ").append("pressureMean=").append(hp.pressureMean).append(", ").append("pressureHigh=")
-                    .append(hp.pressureHigh).append(", ").append("flowRate=").append(hp.flowRate).append("},\n");
+            sb.append("    {hp").append(idx++).append(": temperatureReturn=").append(hp.temperatureReturn)
+                    .append(",\n      ").append("temperatureFlow=").append(hp.temperatureFlow).append(",\n      ")
+                    .append("temperatureHotgas=").append(hp.temperatureHotgas).append(",\n      ")
+                    .append("pressureLow=").append(hp.pressureLow).append(",\n      ").append("pressureMean=")
+                    .append(hp.pressureMean).append(",\n      ").append("pressureHigh=").append(hp.pressureHigh)
+                    .append(",\n      ").append("flowRate=").append(hp.flowRate).append("},\n");
         }
         sb.append("  ]\n");
         sb.append("}");

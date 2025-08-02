@@ -24,6 +24,7 @@
 
 	<channel-group-type id="system-information-allwpm">
 		<label>@text/channel-group-type.modbus.system-information-allwpm.label</label>
+		<description>@text/channel-group-type.modbus.system-information-allwpm.description</description>
 		<channels>
 			<channel id="fe7-temperature" typeId="fe7-temperature-type"/>
 			<channel id="fe7-temperature-setpoint" typeId="fe7-temperature-setpoint-type"/>
@@ -124,6 +125,7 @@
 
 	<channel-group-type id="system-parameter-allwpm">
 		<label>@text/channel-group-type.modbus.system-parameter-allwpm.label</label>
+		<description>@text/channel-group-type.modbus.system-parameter-allwpm.description</description>
 		<channels>
 			<channel id="operating-mode" typeId="operating-mode-type"/>
 			<channel id="hc1-comfort-temperature" typeId="hc1-comfort-temperature-type"/> <!-- same as "comfort-temperature-heating" -->
@@ -162,6 +164,7 @@
 
 	<channel-group-type id="system-state-allwpm">
 		<label>@text/channel-group-type.modbus.system-state-allwpm.label</label>
+		<description>@text/channel-group-type.modbus.system-state-allwpm.description</description>
 		<channels>
 			<channel id="hc1-pump-active" typeId="hc1-pump-active-type"/>         <!-- same as "is-pumping" -->
 			<channel id="hc2-pump-active" typeId="hc2-pump-active-type"/>
@@ -213,6 +216,7 @@
 
 	<channel-group-type id="energy-runtime-information-allwpm">
 		<label>@text/channel-group-type.modbus.energy-runtime-information-allwpm.label</label>
+		<description>@text/channel-group-type.modbus.energy-runtime-information-allwpm.description</description>
 		<channels>
 			<channel id="production-heat-today" typeId="production-heat-today-type"/>
 			<channel id="production-heat-total" typeId="production-heat-total-type"/>
@@ -355,6 +359,7 @@
 
 	<channel-group-type id="sg-ready-energy-management-settings">
 		<label>@text/channel-group-type.modbus.sg-ready-energy-management-settings.label</label>
+		<description>@text/channel-group-type.modbus.sg-ready-energy-management-settings.description</description>
 		<channels>
 			<channel id="sg-ready-on-off-switch" typeId="sg-ready-on-off-switch-type"/>
 			<channel id="sg-ready-input-lines" typeId="sg-ready-input-lines-type"/>
@@ -362,6 +367,7 @@
 	</channel-group-type>
 	<channel-group-type id="sg-ready-energy-management-system-information">
 		<label>@text/channel-group-type.modbus.sg-ready-energy-management-system-information.label</label>
+		<description>@text/channel-group-type.modbus.sg-ready-energy-management-system-information.description</description>
 		<channels>
 			<channel id="sg-ready-operating-state" typeId="sg-ready-operating-state-type"/>
 			<channel id="sg-ready-controller-identification" typeId="sg-ready-controller-identification-type"/>

@@ -47,16 +47,17 @@ public class SystemParameterBlockAllWpm extends SystemParameterBlock {
 
     @Override
     public String toString() {
-        return "System Parameter Block {" + "\nheatingCurveRiseHc1=" + heatingCurveRiseHc1
-                + "\ncomfortTemperatureHeatingHc2=" + comfortTemperatureHeatingHc2 + "\necoTemperatureHeatingHc2="
-                + ecoTemperatureHeatingHc2 + "\nheatingCurveRiseHc2=" + heatingCurveRiseHc2 + "\nfixedValueOperation="
-                + fixedValueOperation + "\ndualModeTemperatureHeating=" + dualModeTemperatureHeating
-                + "\nhotwaterStages=" + hotwaterStages + "\nhotwaterDualModeTemperature=" + hotwaterDualModeTemperature
-                + "\nflowTemperatureAreaCooling=" + flowTemperatureAreaCooling
-                + "\nflowTemperatureHysteresisAreaCooling=" + flowTemperatureHysteresisAreaCooling
-                + "\nroomTemperatureAreaCooling=" + roomTemperatureAreaCooling + "\nflowTemperatureFanCooling="
-                + flowTemperatureFanCooling + "\nflowTemperatureHysteresisFanCooling="
-                + flowTemperatureHysteresisFanCooling + "\nroomTemperatureFanCooling=" + roomTemperatureFanCooling
-                + "\nreset=" + reset + "\nrestartIsg=" + restartIsg + "\n}";
+        return "System Parameter Block {" + "\n  heatingCurveRiseHc1=" + heatingCurveRiseHc1
+                + "\n  comfortTemperatureHeatingHc2=" + comfortTemperatureHeatingHc2 + "\n  ecoTemperatureHeatingHc2="
+                + ecoTemperatureHeatingHc2 + "\n  heatingCurveRiseHc2=" + heatingCurveRiseHc2
+                + "\n  fixedValueOperation=" + fixedValueOperation + "\n  dualModeTemperatureHeating="
+                + dualModeTemperatureHeating + "\n  hotwaterStages=" + hotwaterStages
+                + "\n  hotwaterDualModeTemperature=" + hotwaterDualModeTemperature + "\n  flowTemperatureAreaCooling="
+                + flowTemperatureAreaCooling + "\n  flowTemperatureHysteresisAreaCooling="
+                + flowTemperatureHysteresisAreaCooling + "\n  roomTemperatureAreaCooling=" + roomTemperatureAreaCooling
+                + "\n  flowTemperatureFanCooling=" + flowTemperatureFanCooling
+                + "\n  flowTemperatureHysteresisFanCooling=" + flowTemperatureHysteresisFanCooling
+                + "\n  roomTemperatureFanCooling=" + roomTemperatureFanCooling + "\n  reset=" + reset
+                + "\n  restartIsg=" + restartIsg + "\n}";
     }
 }

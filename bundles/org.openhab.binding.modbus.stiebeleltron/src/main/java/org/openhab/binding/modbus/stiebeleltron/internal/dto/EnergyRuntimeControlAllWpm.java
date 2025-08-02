@@ -96,7 +96,7 @@ public class EnergyRuntimeControlAllWpm {
         sb.append("\nfeatureReported=").append(java.util.Arrays.toString(featureReported)).append(", ");
         sb.append("\nhpEgRtList=[");
         for (int i = 0; i < hpEgRtList.length; i++) {
-            sb.append("\nHpFeature: ").append(i).append(" { ");
+            sb.append("\nHpFeature ").append(i).append(": { ");
             sb.append("featureAvailable=").append(java.util.Arrays.toString(hpEgRtList[i].featureAvailable))
                     .append(", ");
             sb.append(" / featureReported=").append(java.util.Arrays.toString(hpEgRtList[i].featureReported));

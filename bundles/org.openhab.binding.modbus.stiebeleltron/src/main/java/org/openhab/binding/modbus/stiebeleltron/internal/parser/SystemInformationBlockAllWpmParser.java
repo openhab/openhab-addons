@@ -59,7 +59,7 @@ public class SystemInformationBlockAllWpmParser extends AbstractBaseParser {
 
         block.temperatureHc1SetPoint = extractInt16(raw, 9, (short) 0);
 
-        // documents tell "HC1 Set Point temperature" of WPM3i would be on address 509, but on my WPM3i it is also on
+        // documents tell "HC1 Setpoint temperature" of WPM3i would be on address 509, but on my WPM3i it is also on
         // 510
         block.temperatureHc1SetPoint = extractInt16(raw, 9, (short) -32768);
         if (block.temperatureHc1SetPoint == -32768) {

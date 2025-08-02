@@ -4,951 +4,1567 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- system information block -->
+	<!-- system information & value channels -->
 	<!-- old channels -->
 	<channel-type id="fek-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FEK Temperature</label>
+		<label>@text/channel-type.modbus.fek-temperature-type.label</label>
+		<description>@text/channel-type.modbus.fek-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FEK Temperature Set Point</label>
+		<label>@text/channel-type.modbus.fek-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.fek-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-humidity-type">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>FEK Humidity</label>
+		<label>@text/channel-type.modbus.fek-humidity-type.label</label>
+		<description>@text/channel-type.modbus.fek-humidity-type.description</description>
 		<category>humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-dewpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FEK Dewpoint Temperature</label>
+		<label>@text/channel-type.modbus.fek-dewpoint-type.label</label>
+		<description>@text/channel-type.modbus.fek-dewpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="outdoor-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Outdoor Temperature</label>
+		<label>@text/channel-type.modbus.outdoor-temperature-type.label</label>
+		<description>@text/channel-type.modbus.outdoor-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hk1-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HK1 Temperature</label>
+		<label>@text/channel-type.modbus.hk1-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hk1-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hk1-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HK1 Temperature Set Point</label>
+		<label>@text/channel-type.modbus.hk1-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.hk1-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="supply-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Supply Temperature</label>
+		<label>@text/channel-type.modbus.supply-temperature-type.label</label>
+		<description>@text/channel-type.modbus.supply-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="return-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Return Temperature</label>
+		<label>@text/channel-type.modbus.return-temperature-type.label</label>
+		<description>@text/channel-type.modbus.return-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="source-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Source Temperature</label>
+		<label>@text/channel-type.modbus.source-temperature-type.label</label>
+		<description>@text/channel-type.modbus.source-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="water-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Water Temperature</label>
+		<label>@text/channel-type.modbus.water-temperature-type.label</label>
+		<description>@text/channel-type.modbus.water-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="water-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Water Temperature Set Point</label>
+		<label>@text/channel-type.modbus.water-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.water-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- new channels -->
 	<channel-type id="fe7-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FE7 Temperature</label>
+		<label>@text/channel-type.modbus.fe7-temperature-type.label</label>
+		<description>@text/channel-type.modbus.fe7-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fe7-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FE7 Temperature Set Point</label>
+		<label>@text/channel-type.modbus.fe7-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.fe7-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc1-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HC1 Temperature</label>
+		<label>@text/channel-type.modbus.hc1-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hc1-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc1-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HC1 Temperature Set Point</label>
+		<label>@text/channel-type.modbus.hc1-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.hc1-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc2-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HC2 Temperature</label>
+		<label>@text/channel-type.modbus.hc2-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hc2-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc2-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HC2 Temperature Set Point</label>
+		<label>@text/channel-type.modbus.hc2-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.hc2-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="nhz-flow-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Electric Reheating Flow Temperature</label>
+		<label>@text/channel-type.modbus.nhz-flow-temperature-type.label</label>
+		<description>@text/channel-type.modbus.nhz-flow-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="flow-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Flow Temperature</label>
+		<label>@text/channel-type.modbus.flow-temperature-type.label</label>
+		<description>@text/channel-type.modbus.flow-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fixed-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Fixed Temperature Set Point</label>
+		<label>@text/channel-type.modbus.fixed-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.fixed-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="buffer-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Buffer Temperature</label>
+		<label>@text/channel-type.modbus.buffer-temperature-type.label</label>
+		<description>@text/channel-type.modbus.buffer-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="buffer-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Buffer Temperature Set Point</label>
+		<label>@text/channel-type.modbus.buffer-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.buffer-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heating-pressure-type">
 		<item-type>Number:Pressure</item-type>
-		<label>Heating Pressure</label>
+		<label>@text/channel-type.modbus.heating-pressure-type.label</label>
+		<description>@text/channel-type.modbus.heating-pressure-type.description</description>
 		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="flow-rate-type">
 		<item-type>Number:VolumetricFlowRate</item-type>
-		<label>Flow Rate</label>
+		<label>@text/channel-type.modbus.flow-rate-type.label</label>
+		<description>@text/channel-type.modbus.flow-rate-type.description</description>
 		<category>flow</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Water Temperature</label>
+		<label>@text/channel-type.modbus.hotwater-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hotwater-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Water Temperature Set Point</label>
+		<label>@text/channel-type.modbus.hotwater-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.hotwater-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Fan Cooling Temperature</label>
+		<label>@text/channel-type.modbus.fan-cooling-temperature-type.label</label>
+		<description>@text/channel-type.modbus.fan-cooling-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Fan Cooling Temperature Set Point</label>
+		<label>@text/channel-type.modbus.fan-cooling-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.fan-cooling-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Area Cooling Temperature</label>
+		<label>@text/channel-type.modbus.area-cooling-temperature-type.label</label>
+		<description>@text/channel-type.modbus.area-cooling-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Area Cooling Temperature Set Point</label>
+		<label>@text/channel-type.modbus.area-cooling-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.area-cooling-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-thermal-collector-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Solar Thermal Collector Temperature</label>
+		<label>@text/channel-type.modbus.solar-thermal-collector-temperature-type.label</label>
+		<description>@text/channel-type.modbus.solar-thermal-collector-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-thermal-cylinder-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Solar Thermal Cylinder Temperature</label>
+		<label>@text/channel-type.modbus.solar-thermal-cylinder-temperature-type.label</label>
+		<description>@text/channel-type.modbus.solar-thermal-cylinder-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-thermal-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Solar Thermal Runtime</label>
+		<label>@text/channel-type.modbus.solar-thermal-runtime-type.label</label>
+		<description>@text/channel-type.modbus.solar-thermal-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="external-heat-source-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>External Heat Source Temperature</label>
+		<label>@text/channel-type.modbus.external-heat-source-temperature-type.label</label>
+		<description>@text/channel-type.modbus.external-heat-source-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="external-heat-source-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>External Heat Source Temperature Set Point</label>
+		<label>@text/channel-type.modbus.external-heat-source-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.external-heat-source-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="lower-application-limit-heating-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Lower Application Limit Heating</label>
+		<label>@text/channel-type.modbus.lower-application-limit-heating-type.label</label>
+		<description>@text/channel-type.modbus.lower-application-limit-heating-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="lower-application-limit-hotwater-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Lower Application Limit Hot Water</label>
+		<label>@text/channel-type.modbus.lower-application-limit-hotwater-type.label</label>
+		<description>@text/channel-type.modbus.lower-application-limit-hotwater-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="external-heat-source-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>External Heat Source Runtime</label>
+		<label>@text/channel-type.modbus.external-heat-source-runtime-type.label</label>
+		<description>@text/channel-type.modbus.external-heat-source-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="min-source-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Minimal Source Temperature</label>
+		<label>@text/channel-type.modbus.min-source-temperature-type.label</label>
+		<description>@text/channel-type.modbus.min-source-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="source-pressure-type">
 		<item-type>Number:Pressure</item-type>
-		<label>Source Pressure</label>
+		<label>@text/channel-type.modbus.source-pressure-type.label</label>
+		<description>@text/channel-type.modbus.source-pressure-type.description</description>
 		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hotgas-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Gas Temperature</label>
+		<label>@text/channel-type.modbus.hotgas-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hotgas-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="high-pressure-type">
 		<item-type>Number:Pressure</item-type>
-		<label>High Pressure</label>
+		<label>@text/channel-type.modbus.high-pressure-type.label</label>
+		<description>@text/channel-type.modbus.high-pressure-type.description</description>
 		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="mean-pressure-type">
 		<item-type>Number:Pressure</item-type>
-		<label>Mean Pressure</label>
+		<label>@text/channel-type.modbus.mean-pressure-type.label</label>
+		<description>@text/channel-type.modbus.mean-pressure-type.description</description>
 		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="low-pressure-type">
 		<item-type>Number:Pressure</item-type>
-		<label>Low Pressure</label>
+		<label>@text/channel-type.modbus.low-pressure-type.label</label>
+		<description>@text/channel-type.modbus.low-pressure-type.description</description>
 		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<!-- system parameters block -->
+
+	<!-- system parameters channels -->
 	<!-- heatpump channels -->
 	<channel-type id="operation-mode-type">
 		<item-type>Number</item-type>
-		<label>Operation Mode</label>
+		<label>@text/channel-type.modbus.operation-mode-type.label</label>
+		<description>@text/channel-type.modbus.operation-mode-type.description</description>
 		<category>settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="0">Emergency</option>
-				<option value="1">Ready</option>
-				<option value="2">Program</option>
-				<option value="3">Comfort</option>
-				<option value="4">Eco</option>
-				<option value="5">Water</option>
+				<option value="0">@text/channel-type.modbus.operation-mode-type.state.option.0</option>
+				<option value="1">@text/channel-type.modbus.operation-mode-type.state.option.1</option>
+				<option value="2">@text/channel-type.modbus.operation-mode-type.state.option.2</option>
+				<option value="3">@text/channel-type.modbus.operation-mode-type.state.option.3</option>
+				<option value="4">@text/channel-type.modbus.operation-mode-type.state.option.4</option>
+				<option value="5">@text/channel-type.modbus.operation-mode-type.state.option.5</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="comfort-temperature-heating-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Comfort Temperature Heating</label>
+		<label>@text/channel-type.modbus.comfort-temperature-heating-type.label</label>
+		<description>@text/channel-type.modbus.comfort-temperature-heating-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="eco-temperature-heating-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Eco Temperature Heating</label>
+		<label>@text/channel-type.modbus.eco-temperature-heating-type.label</label>
+		<description>@text/channel-type.modbus.eco-temperature-heating-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="comfort-temperature-water-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Comfort Temperature Water</label>
+		<label>@text/channel-type.modbus.comfort-temperature-water-type.label</label>
+		<description>@text/channel-type.modbus.comfort-temperature-water-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="eco-temperature-water-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Eco Temperature Water</label>
+		<label>@text/channel-type.modbus.eco-temperature-water-type.label</label>
+		<description>@text/channel-type.modbus.eco-temperature-water-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- WPM3 + WPM3i channels -->
 	<channel-type id="operating-mode-type">
 		<item-type>Number</item-type>
-		<label>Operating Mode</label>
+		<label>@text/channel-type.modbus.operating-mode-type.label</label>
+		<description>@text/channel-type.modbus.operating-mode-type.description</description>
 		<category>heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="0">Emergency</option>
-				<option value="1">Ready</option>
-				<option value="2">Program</option>
-				<option value="3">Comfort</option>
-				<option value="4">Eco</option>
-				<option value="5">Hot Water</option>
+				<option value="0">@text/channel-type.modbus.operating-mode-type.state.option.0</option>
+				<option value="1">@text/channel-type.modbus.operating-mode-type.state.option.1</option>
+				<option value="2">@text/channel-type.modbus.operating-mode-type.state.option.2</option>
+				<option value="3">@text/channel-type.modbus.operating-mode-type.state.option.3</option>
+				<option value="4">@text/channel-type.modbus.operating-mode-type.state.option.4</option>
+				<option value="5">@text/channel-type.modbus.operating-mode-type.state.option.5</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="hc1-comfort-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HC1 Comfort Temperature</label>
+		<label>@text/channel-type.modbus.hc1-comfort-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hc1-comfort-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc1-eco-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HC1 Eco Temperature</label>
+		<label>@text/channel-type.modbus.hc1-eco-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hc1-eco-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc1-heating-curve-rise-type">
 		<item-type>Number</item-type>
-		<label>HC1 Heating Curve Rise</label>
+		<label>@text/channel-type.modbus.hc1-heating-curve-rise-type.label</label>
+		<description>@text/channel-type.modbus.hc1-heating-curve-rise-type.description</description>
 		<category>line</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="hc2-comfort-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HC2 Comfort Temperature</label>
+		<label>@text/channel-type.modbus.hc2-comfort-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hc2-comfort-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc2-eco-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HC2 Eco Temperature</label>
+		<label>@text/channel-type.modbus.hc2-eco-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hc2-eco-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hc2-heating-curve-rise-type">
 		<item-type>Number</item-type>
-		<label>HC2 Heating Curve Rise</label>
+		<label>@text/channel-type.modbus.hc2-heating-curve-rise-type.label</label>
+		<description>@text/channel-type.modbus.hc2-heating-curve-rise-type.description</description>
 		<category>line</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="fixed-value-operation-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Fixed Value Operation</label>
+		<label>@text/channel-type.modbus.fixed-value-operation-type.label</label>
+		<description>@text/channel-type.modbus.fixed-value-operation-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heating-dual-mode-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Heating DualMode Temperature (bivalence)</label>
+		<label>@text/channel-type.modbus.heating-dual-mode-temperature-type.label</label>
+		<description>@text/channel-type.modbus.heating-dual-mode-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-comfort-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Water Comfort Temperature</label>
+		<label>@text/channel-type.modbus.hotwater-comfort-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hotwater-comfort-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-eco-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Water Eco Temperature</label>
+		<label>@text/channel-type.modbus.hotwater-eco-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hotwater-eco-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-stages-type">
 		<item-type>Number</item-type>
-		<label>Hot Water Stages</label>
+		<label>@text/channel-type.modbus.hotwater-stages-type.label</label>
+		<description>@text/channel-type.modbus.hotwater-stages-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%u"/>
 	</channel-type>
 	<channel-type id="hotwater-dual-mode-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Water DualMode Temperature (bivalence)</label>
+		<label>@text/channel-type.modbus.hotwater-dual-mode-temperature-type.label</label>
+		<description>@text/channel-type.modbus.hotwater-dual-mode-temperature-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-flow-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Area Cooling Flow Temperature Set Point</label>
+		<label>@text/channel-type.modbus.area-cooling-flow-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.area-cooling-flow-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-flow-temperature-hysteresis-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Area Cooling Flow Temperature Hysteresis</label>
+		<label>@text/channel-type.modbus.area-cooling-flow-temperature-hysteresis-type.label</label>
+		<description>@text/channel-type.modbus.area-cooling-flow-temperature-hysteresis-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="area-cooling-room-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Area Cooling Room Temperature Set Point</label>
+		<label>@text/channel-type.modbus.area-cooling-room-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.area-cooling-room-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-flow-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Fan Cooling Flow Temperature Set Point</label>
+		<label>@text/channel-type.modbus.fan-cooling-flow-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.fan-cooling-flow-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-flow-temperature-hysteresis-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Fan Cooling Flow Temperature Hysteresis</label>
+		<label>@text/channel-type.modbus.fan-cooling-flow-temperature-hysteresis-type.label</label>
+		<description>@text/channel-type.modbus.fan-cooling-flow-temperature-hysteresis-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fan-cooling-room-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Fan Cooling Room Temperature Set Point</label>
+		<label>@text/channel-type.modbus.fan-cooling-room-temperature-setpoint-type.label</label>
+		<description>@text/channel-type.modbus.fan-cooling-room-temperature-setpoint-type.description</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="reset-type">
 		<item-type>Number</item-type>
-		<label>Reset</label>
+		<label>@text/channel-type.modbus.reset-type.label</label>
+		<description>@text/channel-type.modbus.reset-type.description</description>
 		<category>settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="0">Off</option>
-				<option value="1">System Reset (Factory Reset) !!!</option>
-				<option value="2">Fault List Reset</option>
-				<option value="3">Heat Pump Reset</option>
+				<option value="0">@text/channel-type.modbus.reset-type.state.option.0</option>
+				<option value="1">@text/channel-type.modbus.reset-type.state.option.1</option>
+				<option value="2">@text/channel-type.modbus.reset-type.state.option.2</option>
+				<option value="3">@text/channel-type.modbus.reset-type.state.option.3</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="restart-isg-type">
 		<item-type>Number</item-type>
-		<label>Restart ISG</label>
+		<label>@text/channel-type.modbus.restart-isg-type.label</label>
+		<description>@text/channel-type.modbus.restart-isg-type.description</description>
 		<category>settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="0">Off</option>
-				<option value="1">Restart</option>
-				<option value="2">Service Key</option>
+				<option value="0">@text/channel-type.modbus.restart-isg-type.state.option.0</option>
+				<option value="1">@text/channel-type.modbus.restart-isg-type.state.option.1</option>
+				<option value="2">@text/channel-type.modbus.restart-isg-type.state.option.2</option>
 			</options>
 		</state>
 	</channel-type>
 
 
-	<!-- system state block -->
+	<!-- system state channels -->
 	<!-- old channels -->
 	<channel-type id="is-heating-type">
 		<item-type>Contact</item-type>
-		<label>Currently Heating</label>
+		<label>@text/channel-type.modbus.is-heating-type.label</label>
+		<description>@text/channel-type.modbus.is-heating-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-heating-water-type">
 		<item-type>Contact</item-type>
-		<label>Currently Heating Water</label>
+		<label>@text/channel-type.modbus.is-heating-water-type.label</label>
+		<description>@text/channel-type.modbus.is-heating-water-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-cooling-type">
 		<item-type>Contact</item-type>
-		<label>Currently Cooling</label>
+		<label>@text/channel-type.modbus.is-cooling-type.label</label>
+		<description>@text/channel-type.modbus.is-cooling-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-pumping-type">
 		<item-type>Contact</item-type>
-		<label>Currently Pumping</label>
+		<label>@text/channel-type.modbus.is-pumping-type.label</label>
+		<description>@text/channel-type.modbus.is-pumping-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-summer-type">
 		<item-type>Contact</item-type>
-		<label>Summer Operation Mode</label>
+		<label>@text/channel-type.modbus.is-summer-type.label</label>
+		<description>@text/channel-type.modbus.is-summer-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- new channels -->
 	<channel-type id="hc1-pump-active-type">
 		<item-type>Contact</item-type>
-		<label>HC1 Pump Active</label>
+		<label>@text/channel-type.modbus.hc1-pump-active-type.label</label>
+		<description>@text/channel-type.modbus.hc1-pump-active-type.description</description>
 		<category>pump</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hc2-pump-active-type">
 		<item-type>Contact</item-type>
-		<label>HC2 Pump Active</label>
+		<label>@text/channel-type.modbus.hc2-pump-active-type.label</label>
+		<description>@text/channel-type.modbus.hc2-pump-active-type.description</description>
 		<category>pump</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="heat-up-program-active-type">
 		<item-type>Contact</item-type>
-		<label>Heat-Up Program Active</label>
+		<label>@text/channel-type.modbus.heat-up-program-active-type.label</label>
+		<description>@text/channel-type.modbus.heat-up-program-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nhz-stages-running-type">
 		<item-type>Contact</item-type>
-		<label>Electric Reheating Stages Active</label>
+		<label>@text/channel-type.modbus.nhz-stages-running-type.label</label>
+		<description>@text/channel-type.modbus.nhz-stages-running-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hp-in-heating-mode-type">
 		<item-type>Contact</item-type>
-		<label>Currently Heating</label>
+		<label>@text/channel-type.modbus.hp-in-heating-mode-type.label</label>
+		<description>@text/channel-type.modbus.hp-in-heating-mode-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hp-in-hotwater-mode-type">
 		<item-type>Contact</item-type>
-		<label>Currently Heating Hot Water</label>
+		<label>@text/channel-type.modbus.hp-in-hotwater-mode-type.label</label>
+		<description>@text/channel-type.modbus.hp-in-hotwater-mode-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor-running-type">
 		<item-type>Contact</item-type>
-		<label>Compressor Running</label>
+		<label>@text/channel-type.modbus.compressor-running-type.label</label>
+		<description>@text/channel-type.modbus.compressor-running-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="summer-mode-active-type">
 		<item-type>Contact</item-type>
-		<label>Summer Mode Active</label>
+		<label>@text/channel-type.modbus.summer-mode-active-type.label</label>
+		<description>@text/channel-type.modbus.summer-mode-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="cooling-mode-active-type">
 		<item-type>Contact</item-type>
-		<label>Currently Cooling</label>
+		<label>@text/channel-type.modbus.cooling-mode-active-type.label</label>
+		<description>@text/channel-type.modbus.cooling-mode-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="min-one-iws-in-defrosting-mode-type">
 		<item-type>Contact</item-type>
-		<label>Min. One IWS In Defrosting Mode</label>
+		<label>@text/channel-type.modbus.min-one-iws-in-defrosting-mode-type.label</label>
+		<description>@text/channel-type.modbus.min-one-iws-in-defrosting-mode-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="silent-mode1-active-type">
 		<item-type>Contact</item-type>
-		<label>Silent Mode 1 Active</label>
+		<label>@text/channel-type.modbus.silent-mode1-active-type.label</label>
+		<description>@text/channel-type.modbus.silent-mode1-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="silent-mode2-active-type">
 		<item-type>Contact</item-type>
-		<label>Silent Mode 2 Active</label>
+		<label>@text/channel-type.modbus.silent-mode2-active-type.label</label>
+		<description>@text/channel-type.modbus.silent-mode2-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-off-type">
 		<item-type>Contact</item-type>
-		<label>Power Off</label>
+		<label>@text/channel-type.modbus.power-off-type.label</label>
+		<description>@text/channel-type.modbus.power-off-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-
-	<!-- operating state WPM 3 only -->
 	<channel-type id="compressor1-active-type">
 		<item-type>Contact</item-type>
-		<label>Compressor 1 Active</label>
+		<label>@text/channel-type.modbus.compressor1-active-type.label</label>
+		<description>@text/channel-type.modbus.compressor1-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor2-active-type">
 		<item-type>Contact</item-type>
-		<label>Compressor 2 Active</label>
+		<label>@text/channel-type.modbus.compressor2-active-type.label</label>
+		<description>@text/channel-type.modbus.compressor2-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor3-active-type">
 		<item-type>Contact</item-type>
-		<label>Compressor 3 Active</label>
+		<label>@text/channel-type.modbus.compressor3-active-type.label</label>
+		<description>@text/channel-type.modbus.compressor3-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor4-active-type">
 		<item-type>Contact</item-type>
-		<label>Compressor 4 Active</label>
+		<label>@text/channel-type.modbus.compressor4-active-type.label</label>
+		<description>@text/channel-type.modbus.compressor4-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor5-active-type">
 		<item-type>Contact</item-type>
-		<label>Compressor 5 Active</label>
+		<label>@text/channel-type.modbus.compressor5-active-type.label</label>
+		<description>@text/channel-type.modbus.compressor5-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="compressor6-active-type">
 		<item-type>Contact</item-type>
-		<label>Compressor 6 Active</label>
+		<label>@text/channel-type.modbus.compressor6-active-type.label</label>
+		<description>@text/channel-type.modbus.compressor6-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump1-active-type">
 		<item-type>Contact</item-type>
-		<label>Buffer Charging Pump 1 Active</label>
+		<label>@text/channel-type.modbus.buffer-charging-pump1-active-type.label</label>
+		<description>@text/channel-type.modbus.buffer-charging-pump1-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump2-active-type">
 		<item-type>Contact</item-type>
-		<label>Buffer Charging Pump 2 Active</label>
+		<label>@text/channel-type.modbus.buffer-charging-pump2-active-type.label</label>
+		<description>@text/channel-type.modbus.buffer-charging-pump2-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump3-active-type">
 		<item-type>Contact</item-type>
-		<label>Buffer Charging Pump 3 Active</label>
+		<label>@text/channel-type.modbus.buffer-charging-pump3-active-type.label</label>
+		<description>@text/channel-type.modbus.buffer-charging-pump3-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump4-active-type">
 		<item-type>Contact</item-type>
-		<label>Buffer Charging Pump 4 Active</label>
+		<label>@text/channel-type.modbus.buffer-charging-pump4-active-type.label</label>
+		<description>@text/channel-type.modbus.buffer-charging-pump4-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump5-active-type">
 		<item-type>Contact</item-type>
-		<label>Buffer Charging Pump 5 Active</label>
+		<label>@text/channel-type.modbus.buffer-charging-pump5-active-type.label</label>
+		<description>@text/channel-type.modbus.buffer-charging-pump5-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="buffer-charging-pump6-active-type">
 		<item-type>Contact</item-type>
-		<label>Buffer Charging Pump 6 Active</label>
+		<label>@text/channel-type.modbus.buffer-charging-pump6-active-type.label</label>
+		<description>@text/channel-type.modbus.buffer-charging-pump6-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nhz1-active-type">
 		<item-type>Contact</item-type>
-		<label>Electric Reheating Stage 1 Active</label>
+		<label>@text/channel-type.modbus.nhz1-active-type.label</label>
+		<description>@text/channel-type.modbus.nhz1-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nhz2-active-type">
 		<item-type>Contact</item-type>
-		<label>Electric Reheating Stage 2 Active</label>
+		<label>@text/channel-type.modbus.nhz2-active-type.label</label>
+		<description>@text/channel-type.modbus.nhz2-active-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="fault-status-type">
 		<item-type>Number</item-type>
-		<label>Fault Status</label>
+		<label>@text/channel-type.modbus.fault-status-type.label</label>
+		<description>@text/channel-type.modbus.fault-status-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="0">No Fault</option>
-				<option value="1">Fault</option>
+				<option value="0">@text/channel-type.modbus.fault-status-type.state.option.0</option>
+				<option value="1">@text/channel-type.modbus.fault-status-type.state.option.1</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="bus-status-type">
 		<item-type>Number</item-type>
-		<label>Bus Status</label>
+		<label>@text/channel-type.modbus.bus-status-type.label</label>
+		<description>@text/channel-type.modbus.bus-status-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="0">Status OK</option>
-				<option value="-1">Status ERROR</option>
-				<option value="-2">Error-Passive</option>
-				<option value="-3">Bus-Off</option>
-				<option value="-4">Physical-Error</option>
+				<option value="0">@text/channel-type.modbus.bus-status-type.state.option.0</option>
+				<option value="-1">@text/channel-type.modbus.bus-status-type.state.option.-1</option>
+				<option value="-2">@text/channel-type.modbus.bus-status-type.state.option.-2</option>
+				<option value="-3">@text/channel-type.modbus.bus-status-type.state.option.-3</option>
+				<option value="-4">@text/channel-type.modbus.bus-status-type.state.option.-4</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="defrost-initiated-type">
 		<item-type>Number</item-type>
-		<label>Defrost Initiated</label>
+		<label>@text/channel-type.modbus.defrost-initiated-type.label</label>
+		<description>@text/channel-type.modbus.defrost-initiated-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="0">OFF</option>
-				<option value="1">INITIATED</option>
+				<option value="0">@text/channel-type.modbus.defrost-initiated-type.state.option.0</option>
+				<option value="1">@text/channel-type.modbus.defrost-initiated-type.state.option.1</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="active-error-type">
 		<item-type>Number</item-type>
-		<label>Active Error</label>
+		<label>@text/channel-type.modbus.active-error-type.label</label>
+		<description>@text/channel-type.modbus.active-error-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true" pattern="%u"/>
 	</channel-type>
 
 
-	<!-- energy and runtime block -->
+	<!-- energy and runtime channels -->
 	<!-- old channels -->
 	<channel-type id="production-heat-today-type">
 		<item-type>Number:Energy</item-type>
-		<label>Heating Quantity Today</label>
+		<label>@text/channel-type.modbus.production-heat-today-type.label</label>
+		<description>@text/channel-type.modbus.production-heat-today-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.f %unit%"/>
 	</channel-type>
 	<channel-type id="production-heat-total-type">
 		<item-type>Number:Energy</item-type>
-		<label>Heating Quantity Total</label>
+		<label>@text/channel-type.modbus.production-heat-total-type.label</label>
+		<description>@text/channel-type.modbus.production-heat-total-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-water-today-type">
 		<item-type>Number:Energy</item-type>
-		<label>Hot Water Quantity Today</label>
+		<label>@text/channel-type.modbus.production-water-today-type.label</label>
+		<description>@text/channel-type.modbus.production-water-today-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-water-total-type">
 		<item-type>Number:Energy</item-type>
-		<label>Hot Water Quantity Total</label>
+		<label>@text/channel-type.modbus.production-water-total-type.label</label>
+		<description>@text/channel-type.modbus.production-water-total-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-heat-today-type">
 		<item-type>Number:Energy</item-type>
-		<label>Power Consumption for Heating Today</label>
+		<label>@text/channel-type.modbus.consumption-heat-today-type.label</label>
+		<description>@text/channel-type.modbus.consumption-heat-today-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-heat-total-type">
 		<item-type>Number:Energy</item-type>
-		<label>Power Consumption for Heating Total</label>
+		<label>@text/channel-type.modbus.consumption-heat-total-type.label</label>
+		<description>@text/channel-type.modbus.consumption-heat-total-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-water-today-type">
 		<item-type>Number:Energy</item-type>
-		<label>Power Consumption for Hot Water Today</label>
+		<label>@text/channel-type.modbus.consumption-water-today-type.label</label>
+		<description>@text/channel-type.modbus.consumption-water-today-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-water-total-type">
 		<item-type>Number:Energy</item-type>
-		<label>Power Consumption for Hot Water Total</label>
+		<label>@text/channel-type.modbus.consumption-water-total-type.label</label>
+		<description>@text/channel-type.modbus.consumption-water-total-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<!-- new channels -->
 	<channel-type id="production-nhz-heat-total-type">
 		<item-type>Number:Energy</item-type>
-		<label>Electric Reheating Heat Quantity Total</label>
+		<label>@text/channel-type.modbus.production-nhz-heat-total-type.label</label>
+		<description>@text/channel-type.modbus.production-nhz-heat-total-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-nhz-water-total-type">
 		<item-type>Number:Energy</item-type>
-		<label>Electric Reheating Hot Water Quantity Total</label>
+		<label>@text/channel-type.modbus.production-nhz-water-total-type.label</label>
+		<description>@text/channel-type.modbus.production-nhz-water-total-type.description</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-
 	<channel-type id="heating-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Heating Compressor Runtime</label>
+		<label>@text/channel-type.modbus.heating-runtime-type.label</label>
+		<description>@text/channel-type.modbus.heating-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="hotwater-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Hot Water Compressor Runtime</label>
+		<label>@text/channel-type.modbus.hotwater-runtime-type.label</label>
+		<description>@text/channel-type.modbus.hotwater-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="cooling-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Cooling Compressor Runtime</label>
+		<label>@text/channel-type.modbus.cooling-runtime-type.label</label>
+		<description>@text/channel-type.modbus.cooling-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="nhz1-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Emergency Heating Stage 1 Runtime</label>
+		<label>@text/channel-type.modbus.nhz1-runtime-type.label</label>
+		<description>@text/channel-type.modbus.nhz1-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="nhz2-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Emergency Heating Stage 2 Runtime</label>
+		<label>@text/channel-type.modbus.nhz2-runtime-type.label</label>
+		<description>@text/channel-type.modbus.nhz2-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="nhz12-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Emergency Heating Stages 1+2 Runtime</label>
+		<label>@text/channel-type.modbus.nhz12-runtime-type.label</label>
+		<description>@text/channel-type.modbus.nhz12-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="cp1-heating-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Heating Compressor 1 Runtime</label>
+		<label>@text/channel-type.modbus.cp1-heating-runtime-type.label</label>
+		<description>@text/channel-type.modbus.cp1-heating-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="cp2-heating-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Heating Compressor 2 Runtime</label>
+		<label>@text/channel-type.modbus.cp2-heating-runtime-type.label</label>
+		<description>@text/channel-type.modbus.cp2-heating-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="cp12-heating-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Heating Compressor 1/2 Runtime</label>
+		<label>@text/channel-type.modbus.cp12-heating-runtime-type.label</label>
+		<description>@text/channel-type.modbus.cp12-heating-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="cp1-hotwater-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>HeatHot Watering Compressor 1 Runtime</label>
+		<label>@text/channel-type.modbus.cp1-hotwater-runtime-type.label</label>
+		<description>@text/channel-type.modbus.cp1-hotwater-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="cp2-hotwater-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Hot Water Compressor 2 Runtime</label>
+		<label>@text/channel-type.modbus.cp2-hotwater-runtime-type.label</label>
+		<description>@text/channel-type.modbus.cp2-hotwater-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 	<channel-type id="cp12-hotwater-runtime-type">
 		<item-type>Number:Time</item-type>
-		<label>Hot Water Compressor 1/2 Runtime</label>
+		<label>@text/channel-type.modbus.cp12-hotwater-runtime-type.label</label>
+		<description>@text/channel-type.modbus.cp12-hotwater-runtime-type.description</description>
 		<category>time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
 
-	<channel-type id="cp1-heating-runtime-type">
-		<item-type>Number:Time</item-type>
-		<label>Heating Compressor 1 Runtime</label>
-		<category>time</category>
-		<state readOnly="true" pattern="%u %unit%"/>
-	</channel-type>
-	<channel-type id="cp2-heating-runtime-type">
-		<item-type>Number:Time</item-type>
-		<label>Heating Compressor 2 Runtime</label>
-		<category>time</category>
-		<state readOnly="true" pattern="%u %unit%"/>
-	</channel-type>
-	<channel-type id="cp12-heating-runtime-type">
-		<item-type>Number:Time</item-type>
-		<label>Heating Compressor 1/2 Runtime</label>
-		<category>time</category>
-		<state readOnly="true" pattern="%u %unit%"/>
-	</channel-type>
-	<channel-type id="cp1-hotwater-runtime-type">
-		<item-type>Number:Time</item-type>
-		<label>Hot Water Compressor 1 Runtime</label>
-		<category>time</category>
-		<state readOnly="true" pattern="%u %unit%"/>
-	</channel-type>
-	<channel-type id="cp2-hotwater-runtime-type">
-		<item-type>Number:Time</item-type>
-		<label>Hot Water Compressor 2 Runtime</label>
-		<category>time</category>
-		<state readOnly="true" pattern="%u %unit%"/>
-	</channel-type>
-	<channel-type id="cp12-hotwater-runtime-type">
-		<item-type>Number:Time</item-type>
-		<label>Hot Water Compressor 1/2 Runtime</label>
-		<category>time</category>
-		<state readOnly="true" pattern="%u %unit%"/>
-	</channel-type>
-	<channel-type id="cooling-runtime-type">
-		<item-type>Number:Time</item-type>
-		<label>Cooling Compressor Runtime</label>
-		<category>time</category>
-		<state readOnly="true" pattern="%u %unit%"/>
-	</channel-type>
 
+	<!-- SG Ready Energy Management Settings and System Information channels -->
 	<channel-type id="sg-ready-on-off-switch-type">
 		<item-type>Number</item-type>
-		<label>SG Ready On/Off Switch</label>
+		<label>@text/channel-type.modbus.sg-ready-on-off-switch-type.label</label>
+		<description>@text/channel-type.modbus.sg-ready-on-off-switch-type.description</description>
 		<category>settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
-				<option value="0">On</option>
-				<option value="1">Off</option>
+				<option value="0">@text/channel-type.modbus.sg-ready-on-off-switch-type.state.option.0</option>
+				<option value="1">@text/channel-type.modbus.sg-ready-on-off-switch-type.state.option.1</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="sg-ready-input-lines-type">
 		<item-type>Number</item-type>
-		<label>SG Ready Input Lines</label>
-		<description>
-			Two binary input lines for setting the operating state of the heat pump by the connected appliance.
-			Only
-			OS1 to OS4 can be used for setting. Other values are for indication.
-		</description>
+		<label>@text/channel-type.modbus.sg-ready-input-lines-type.label</label>
+		<description>@text/channel-type.modbus.sg-ready-input-lines-type.description</description>
 		<category>settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
-				<option value="-1">No lines connected</option>
-				<option value="0">SG Ready switched off</option>
-				<option value="1">OS1: lowest temperatures</option>
-				<option value="2">OS2: automatic / program</option>
-				<option value="3">OS3: accelerated mode</option>
-				<option value="4">OS4: max. temperatures</option>
+				<option value="-1">@text/channel-type.modbus.sg-ready-input-lines-type.state.option.-1</option>
+				<option value="0">@text/channel-type.modbus.sg-ready-input-lines-type.state.option.0</option>
+				<option value="1">@text/channel-type.modbus.sg-ready-input-lines-type.state.option.1</option>
+				<option value="2">@text/channel-type.modbus.sg-ready-input-lines-type.state.option.2</option>
+				<option value="3">@text/channel-type.modbus.sg-ready-input-lines-type.state.option.3</option>
+				<option value="4">@text/channel-type.modbus.sg-ready-input-lines-type.state.option.4</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="sg-ready-operating-state-type">
 		<item-type>Number</item-type>
-		<label>SG Ready Operating State</label>
+		<label>@text/channel-type.modbus.sg-ready-operating-state-type.label</label>
+		<description>@text/channel-type.modbus.sg-ready-operating-state-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="0">Switched Off</option>
-				<option value="1">OS1: lowest temperatures</option>
-				<option value="2">OS2: automatic / program</option>
-				<option value="3">OS3: accelerated mode </option>
-				<option value="4">OS4: max. temperatures </option>
+				<option value="0">@text/channel-type.modbus.sg-ready-operating-state-type.state.option.0</option>
+				<option value="1">@text/channel-type.modbus.sg-ready-operating-state-type.state.option.1</option>
+				<option value="2">@text/channel-type.modbus.sg-ready-operating-state-type.state.option.2</option>
+				<option value="3">@text/channel-type.modbus.sg-ready-operating-state-type.state.option.3</option>
+				<option value="4">@text/channel-type.modbus.sg-ready-operating-state-type.state.option.4</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="sg-ready-controller-identification-type">
 		<item-type>Number</item-type>
-		<label>SG Ready Controller Identification</label>
+		<label>@text/channel-type.modbus.sg-ready-controller-identification-type.label</label>
+		<description>@text/channel-type.modbus.sg-ready-controller-identification-type.description</description>
 		<category>status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="390">WPM 3</option>
-				<option value="391">WPM 3i</option>
+				<option value="390">WPM3</option>
+				<option value="391">WPM3i</option>
 				<option value="392">WPMsystem</option>
 			</options>
 		</state>

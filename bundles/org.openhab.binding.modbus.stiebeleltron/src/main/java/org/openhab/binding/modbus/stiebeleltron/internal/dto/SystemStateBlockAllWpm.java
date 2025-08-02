@@ -29,8 +29,8 @@ public class SystemStateBlockAllWpm extends SystemStateBlock {
 
     @Override
     public String toString() {
-        return "System State Block {" + "\nstate=" + state + "\npowerOff=" + powerOff + "\noperatingStatus="
-                + operatingStatus + "\nfaultStatus=" + faultStatus + "\nbusStatus=" + busStatus + "\ndefrostInitiated="
-                + defrostInitiated + "\nactiveError=" + activeError + "\n}";
+        return "System State Block {" + "\n  state=" + state + "\n  powerOff=" + powerOff + "\n  operatingStatus="
+                + operatingStatus + "\n  faultStatus=" + faultStatus + "\n  busStatus=" + busStatus
+                + "\n  defrostInitiated=" + defrostInitiated + "\n  activeError=" + activeError + "\n}";
     }
 }
