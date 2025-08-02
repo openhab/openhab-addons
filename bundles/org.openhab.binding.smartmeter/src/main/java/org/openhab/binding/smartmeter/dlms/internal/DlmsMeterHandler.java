@@ -102,10 +102,8 @@ public class DlmsMeterHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(DlmsMeterConfiguration.class);
+        // note: the connection uses auto baudrate negotiation by default
         SerialConnectionBuilder connectionBuilder = new SerialConnectionBuilder(config.port);
-        // TODO baud rate, and other serial port params
-        // .setBaudRate(config.baudrate)
-        // .setBaudRateChangeTime(config.baudrateChangeDelay)
         try {
             connection = connectionBuilder.build();
         } catch (IOException e) {
