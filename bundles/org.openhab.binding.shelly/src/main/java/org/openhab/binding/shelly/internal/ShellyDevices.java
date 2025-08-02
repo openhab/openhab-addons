@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -25,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class ShellyDevices {
 
     // Device Types
