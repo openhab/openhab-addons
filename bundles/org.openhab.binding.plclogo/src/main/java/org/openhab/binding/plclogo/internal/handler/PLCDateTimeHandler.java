@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.plclogo.internal.handler;
 
-import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.ANALOG_ITEM;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.BINDING_ID;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.BLOCK_PROPERTY;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.DATE_TIME_ITEM;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.MEMORY_WORD;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.VALUE_CHANNEL;
 
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.openhab.binding.plclogo.internal.config.PLCDateTimeConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
@@ -32,9 +32,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -54,16 +52,15 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCDateTimeHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DATETIME);
-
     private final Logger logger = LoggerFactory.getLogger(PLCDateTimeHandler.class);
-    private AtomicReference<PLCDateTimeConfiguration> config = new AtomicReference<>();
+    private volatile @NonNullByDefault({}) PLCDateTimeConfiguration config;
 
     /**
      * Constructor.
      */
     public PLCDateTimeHandler(Thing thing) {
         super(thing);
+        config = getConfigAs(PLCDateTimeConfiguration.class);
     }
 
     @Override
@@ -72,29 +69,29 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
             return;
         }
 
-        Channel channel = getThing().getChannel(channelUID.getId());
-        String name = config.get().getBlockName();
+        final var channel = getThing().getChannel(channelUID.getId());
+        final var name = config.getBlockName();
         if (!isValid(name) || (channel == null)) {
             logger.debug("Can not update channel {}, block {}.", channelUID, name);
             return;
         }
 
-        int address = getAddress(name);
-        PLCLogoClient client = getLogoClient();
+        final var address = getAddress(name);
+        final var client = getLogoClient();
         if ((address != INVALID) && (client != null)) {
             if (command instanceof RefreshType) {
-                byte[] buffer = new byte[getBufferLength()];
-                int result = client.readDBArea(1, 0, buffer.length, S7Client.S7WLByte, buffer);
+                final var buffer = new byte[getBufferLength()];
+                final var result = client.readBytes(0, buffer.length, buffer);
                 if (result == 0) {
                     updateChannel(channel, S7.GetShortAt(buffer, address));
                 } else {
                     logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
             } else if (command instanceof DateTimeType dateTimeCommand) {
-                byte[] buffer = new byte[2];
-                String type = channel.getAcceptedItemType();
+                final var buffer = new byte[2];
+                final var type = channel.getAcceptedItemType();
                 if (DATE_TIME_ITEM.equalsIgnoreCase(type)) {
-                    ZonedDateTime datetime = dateTimeCommand.getZonedDateTime(ZoneId.systemDefault());
+                    final var datetime = dateTimeCommand.getZonedDateTime(ZoneId.systemDefault());
                     if ("Time".equalsIgnoreCase(channelUID.getId())) {
                         buffer[0] = S7.ByteToBCD(datetime.getHour());
                         buffer[1] = S7.ByteToBCD(datetime.getMinute());
@@ -105,7 +102,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
-                int result = client.writeDBArea(1, address, buffer.length, S7Client.S7WLByte, buffer);
+                final var result = client.writeBytes(address, buffer.length, buffer);
                 if (result != 0) {
                     logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                 }
@@ -128,25 +125,23 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
             return;
         }
 
-        List<Channel> channels = getThing().getChannels();
+        final var channels = getThing().getChannels();
         if (channels.size() != getNumberOfChannels()) {
             logger.info("Received and configured channel sizes does not match.");
             return;
         }
 
-        String name = config.get().getBlockName();
-        Boolean force = config.get().isUpdateForced();
+        final var name = config.getBlockName();
+        final var force = config.isUpdateForced();
         for (Channel channel : channels) {
-            int address = getAddress(name);
+            final var address = getAddress(name);
             if (address != INVALID) {
-                DecimalType state = (DecimalType) getOldValue(name);
-                int value = S7.GetShortAt(data, address);
+                final var state = (DecimalType) getOldValue(name);
+                final var value = S7.GetShortAt(data, address);
                 if ((state == null) || (value != state.intValue()) || force) {
                     updateChannel(channel, value);
                 }
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Channel {} received [{}, {}].", channel.getUID(), data[address], data[address + 1]);
-                }
+                logger.trace("Channel {} received [{}, {}].", channel.getUID(), data[address], data[address + 1]);
             } else {
                 logger.info("Invalid channel {} found.", channel.getUID());
             }
@@ -157,20 +152,20 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
     protected void updateState(ChannelUID channelUID, State state) {
         super.updateState(channelUID, state);
         if (state instanceof DecimalType) {
-            setOldValue(config.get().getBlockName(), state);
+            setOldValue(config.getBlockName(), state);
         }
     }
 
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        config.set(getConfigAs(PLCDateTimeConfiguration.class));
+        config = getConfigAs(PLCDateTimeConfiguration.class);
     }
 
     @Override
     protected boolean isValid(final String name) {
-        if (3 <= name.length() && (name.length() <= 5)) {
-            String kind = getBlockKind();
+        if ((3 <= name.length()) && (name.length() <= 5)) {
+            final var kind = getBlockKind();
             if (Character.isDigit(name.charAt(2))) {
                 return name.startsWith(kind) && MEMORY_WORD.equalsIgnoreCase(kind);
             }
@@ -180,7 +175,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
 
     @Override
     protected String getBlockKind() {
-        return config.get().getBlockKind();
+        return config.getBlockKind();
     }
 
     @Override
@@ -190,19 +185,19 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
 
     @Override
     protected void doInitialization() {
-        Thing thing = getThing();
+        final var thing = getThing();
         logger.debug("Initialize LOGO! date/time handler.");
 
-        config.set(getConfigAs(PLCDateTimeConfiguration.class));
+        config = getConfigAs(PLCDateTimeConfiguration.class);
 
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
-            String block = config.get().getBlockType();
-            String text = "Time".equalsIgnoreCase(block) ? "Time" : "Date";
+            final var block = config.getBlockType();
+            final var text = "Time".equalsIgnoreCase(block) ? "Time" : "Date";
 
-            ThingBuilder tBuilder = editThing();
+            final var tBuilder = editThing();
 
-            String label = thing.getLabel();
+            var label = thing.getLabel();
             if (label == null) {
                 Bridge bridge = getBridge();
                 label = (bridge == null) || (bridge.getLabel() == null) ? "Siemens Logo!" : bridge.getLabel();
@@ -210,10 +205,10 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
             }
             tBuilder.withLabel(label);
 
-            String name = config.get().getBlockName();
-            String type = config.get().getChannelType();
-            ChannelUID uid = new ChannelUID(thing.getUID(), "Time".equalsIgnoreCase(block) ? "time" : "date");
-            ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
+            final var name = config.getBlockName();
+            final var type = config.getChannelType();
+            final var uid = new ChannelUID(thing.getUID(), "Time".equalsIgnoreCase(block) ? "time" : "date");
+            var cBuilder = ChannelBuilder.create(uid, type);
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
             cBuilder.withLabel(name);
             cBuilder.withDescription(text + " block parameter " + name);
@@ -234,20 +229,20 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
     }
 
     private void updateChannel(final Channel channel, int value) {
-        ChannelUID channelUID = channel.getUID();
-        PLCBridgeHandler handler = getBridgeHandler();
+        final var channelUID = channel.getUID();
+        final var handler = getBridgeHandler();
         if (handler == null) {
-            String name = config.get().getBlockName();
+            final var name = config.getBlockName();
             logger.debug("Can not update channel {}, block {}.", channelUID, name);
             return;
         }
 
-        String type = channel.getAcceptedItemType();
+        final var type = channel.getAcceptedItemType();
         if (DATE_TIME_ITEM.equalsIgnoreCase(type)) {
-            String channelId = channelUID.getId();
-            ZonedDateTime datetime = ZonedDateTime.from(handler.getLogoRTC());
+            final var channelId = channelUID.getId();
+            var datetime = handler.getLogoRTC();
 
-            byte[] data = new byte[2];
+            final var data = new byte[2];
             S7.SetShortAt(data, 0, value);
             if ("Time".equalsIgnoreCase(channelId)) {
                 if ((value < 0x0) || (value > 0x2359)) {
