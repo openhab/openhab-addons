@@ -197,8 +197,7 @@ public class ShellyDeviceProfile {
         isBlu = isBluSeries(thingTypeUID); // e.g. SBBT for BLU Button
         isGen2 = isGeneration2(thingTypeUID);
 
-        String type = getString(device.type);
-        isDimmer = THING_TYPE_CLASS_DIMMER.contains(thingTypeUID);
+        isDimmer = GROUP_DIMMER_THING_TYPES.contains(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
@@ -219,7 +218,7 @@ public class ShellyDeviceProfile {
         isIX = GROUP_IX_THING_TYPES.contains(thingTypeUID);
         isButton = GROUP_BUTTON_THING_TYPES.contains(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
-        isWall = THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID);
+        isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
 
@@ -404,8 +403,9 @@ public class ShellyDeviceProfile {
         String thingTypeID = thingTypeUID.getId();
         return thingTypeID.startsWith(THING_TYPE_SHELLYPLUS_PREFIX)
                 || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX)
-                || thingTypeID.contains(THING_TYPE_SHELLYMINI_MIDDLE) || GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID)
-                || isBluSeries(thingTypeUID) || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
+                || thingTypeID.contains(THING_TYPE_SHELLYMINI_MIDDLE)
+                || GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID) || isBluSeries(thingTypeUID)
+                || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {
