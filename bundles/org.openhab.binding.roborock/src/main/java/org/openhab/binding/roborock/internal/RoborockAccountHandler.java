@@ -62,6 +62,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.lifecycle.MqttClientConnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
@@ -390,8 +391,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
         try {
             this.mqttClient = client;
-            // client.connectWith().keepAlive(60).send();
-            client.connect().get();
+            client.connectWith().noSessionExpiry().cleanStart(false).send().get();
             logger.debug("Established MQTT connection.");
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
@@ -488,7 +488,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
         if (this.mqttClient != null && this.mqttClient.getState().isConnected()) {
             logger.debug("Publishing {} message to {}", method, topic);
-            mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
+            mqttClient.publishWith().topic(topic).qos(MqttQos.AT_LEAST_ONCE).payload(message).retain(false).send()
                     .whenComplete((mqtt5Publish, throwable) -> {
                         if (throwable != null) {
                             logger.debug("mqtt publish failed");
