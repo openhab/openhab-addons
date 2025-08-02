@@ -337,7 +337,7 @@ public class ShellyDevices {
      */
 
     // Relay devices (mode="relay")
-    public static final Map<String, ThingTypeUID> RELAY_BY_DEVICE_TYPE = Map.ofEntries(
+    public static final Map<String, ThingTypeUID> RELAY_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
             // Plus Series
             Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_RELAY),
@@ -351,7 +351,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_RELAY));
 
     // Roller devices (mode="roller")
-    public static final Map<String, ThingTypeUID> ROLLER_BY_DEVICE_TYPE = Map.ofEntries(
+    public static final Map<String, ThingTypeUID> ROLLER_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
             // Plus Series
             Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_ROLLER),
             Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_ROLLER),

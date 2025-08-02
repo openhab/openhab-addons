@@ -99,8 +99,8 @@ public class ShellyThingCreator {
 
         if (!deviceType.isEmpty()) {
             Map<String, ThingTypeUID> deviceTypeMap = switch (mode) {
-                case SHELLY_MODE_RELAY -> THING_TYPE_CLASS_RELAY_BY_DEVICE_TYPE;
-                case SHELLY_MODE_ROLLER -> THING_TYPE_CLASS_ROLLER_BY_DEVICE_TYPE;
+                case SHELLY_MODE_RELAY -> RELAY_THING_TYPE_BY_DEVICE_TYPE;
+                case SHELLY_MODE_ROLLER -> ROLLER_THING_TYPE_BY_DEVICE_TYPE;
                 default -> THING_TYPE_BY_DEVICE_TYPE;
             };
 
