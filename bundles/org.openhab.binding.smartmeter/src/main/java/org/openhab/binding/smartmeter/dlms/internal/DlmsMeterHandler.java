@@ -191,7 +191,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
         DlmsConnection connection = this.connection;
         if (connection != null) {
             try {
-                AttributeAddress address = new AttributeAddress(15,
+                AttributeAddress address = new AttributeAddress(ASSOCIATION_LOGICAL_NAME_CLASS_ID,
                         new ObisCode(WellKnownInstanceIds.CURRENT_ASSOCIATION_ID), 2);
                 GetResult result = connection.get(address);
                 if (result.getResultCode() == AccessResultCode.SUCCESS) {
