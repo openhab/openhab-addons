@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = //
-            Set.of(THING_TYPE_SMLREADER, THING_TYPE_DLMSREADER);
+            Set.of(THING_TYPE_SMLREADER, DLMS_THING_TYPE_METER);
 
     private @NonNullByDefault({}) SmartMeterChannelTypeProvider channelProvider;
     private @NonNullByDefault({}) Supplier<SerialPortManager> serialPortManagerSupplier = () -> null;
@@ -77,7 +77,7 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_SMLREADER)) {
             return new SmartMeterHandler(thing, channelProvider, serialPortManagerSupplier);
-        } else if (thingTypeUID.equals(THING_TYPE_DLMSREADER)) {
+        } else if (thingTypeUID.equals(DLMS_THING_TYPE_METER)) {
             return new DlmsMeterHandler(thing);
         }
 

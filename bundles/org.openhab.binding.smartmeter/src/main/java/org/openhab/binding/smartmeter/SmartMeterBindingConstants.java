@@ -53,7 +53,11 @@ public class SmartMeterBindingConstants {
     }
 
     // DLMS/COSEM thing and channel types
-    public static final ThingTypeUID THING_TYPE_DLMSREADER = new ThingTypeUID(BINDING_ID, "dlms-meter");
-    public static final ChannelTypeUID GENERIC_CHANNEL_UID = new ChannelTypeUID(BINDING_ID, "generic");
-    public static final ChannelTypeUID VOLUME_CHANNEL_UID = new ChannelTypeUID(BINDING_ID, "volume");
+    public static final ThingTypeUID DLMS_THING_TYPE_METER = new ThingTypeUID(BINDING_ID, "dlms-meter");
+    public static final ChannelTypeUID DLMS_CHANNEL_UID_GENERIC = new ChannelTypeUID(BINDING_ID, "generic");
+    public static final ChannelTypeUID DLMS_CHANNEL_UID_VOLUME = new ChannelTypeUID(BINDING_ID, "volume");
+
+    // DLMS/COSEM read request parameter ids
+    public static final int DLMS_ATTRIBUTE_ID_VALUE = 2;
+    public static final int DLMS_CLASS_ID_LOGICAL_NAME = 15;
 }

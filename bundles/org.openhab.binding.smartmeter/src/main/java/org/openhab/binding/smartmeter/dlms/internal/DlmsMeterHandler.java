@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smartmeter.dlms.internal;
 
+import static org.openhab.binding.smartmeter.SmartMeterBindingConstants.*;
 import static org.openhab.core.thing.DefaultSystemChannelTypeProvider.*;
 
 import java.io.IOException;
@@ -27,7 +28,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.DlmsMeterConfiguration;
-import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelInfo;
 import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsQuantityType;
 import org.openhab.core.library.types.QuantityType;
@@ -63,7 +63,6 @@ import org.slf4j.LoggerFactory;
 public class DlmsMeterHandler extends BaseThingHandler {
 
     private static final long INITIAL_REFRESH_DELAY_SECONDS = 5;
-    private static final int ASSOCIATION_LOGICAL_NAME_CLASS_ID = 15;
 
     private final Logger logger = LoggerFactory.getLogger(DlmsMeterHandler.class);
 
@@ -156,9 +155,9 @@ public class DlmsMeterHandler extends BaseThingHandler {
                             } else if (unit.isCompatible(Units.VAR)) {
                                 channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
                             } else if (unit.isCompatible(Units.LITRE)) {
-                                channelTypeUID = SmartMeterBindingConstants.VOLUME_CHANNEL_UID;
+                                channelTypeUID = DLMS_CHANNEL_UID_VOLUME;
                             } else {
-                                channelTypeUID = SmartMeterBindingConstants.GENERIC_CHANNEL_UID;
+                                channelTypeUID = DLMS_CHANNEL_UID_GENERIC;
                             }
                             ChannelUID uid = new ChannelUID(getThing().getUID(), info.getChannelId());
                             ChannelBuilder channelBuilder = ChannelBuilder.create(uid).withType(channelTypeUID);
@@ -194,8 +193,8 @@ public class DlmsMeterHandler extends BaseThingHandler {
         DlmsConnection connection = this.connection;
         if (connection != null) {
             try {
-                AttributeAddress address = new AttributeAddress(ASSOCIATION_LOGICAL_NAME_CLASS_ID,
-                        new ObisCode(WellKnownInstanceIds.CURRENT_ASSOCIATION_ID), 2);
+                AttributeAddress address = new AttributeAddress(DLMS_CLASS_ID_LOGICAL_NAME,
+                        new ObisCode(WellKnownInstanceIds.CURRENT_ASSOCIATION_ID), DLMS_ATTRIBUTE_ID_VALUE);
                 GetResult result = connection.get(address);
                 if (result.getResultCode() == AccessResultCode.SUCCESS) {
                     DataObject rootData = result.getResultData();
@@ -239,13 +238,18 @@ public class DlmsMeterHandler extends BaseThingHandler {
                 try {
                     GetResult result = connection.get(info.getAttributeAddress());
                     if (result.getResultCode() == AccessResultCode.SUCCESS) {
-                        try {
-                            String data = result.getResultData().getValue();
-                            QuantityType<?> state = new DlmsQuantityType<>(data);
-                            updateState(info.getChannelId(), state);
-                            logger.trace("Meter channel: {}, data: {}, state: {}", info, data, state);
-                        } catch (ClassCastException | IllegalArgumentException e) {
-                            logger.debug("Meter channel: {}, data: {}, error: {}", info, result, e.getMessage());
+                        Object rawValue = result.getResultData().getRawValue();
+                        if (rawValue instanceof String value) {
+                            try {
+                                QuantityType<?> state = new DlmsQuantityType<>(value);
+                                updateState(info.getChannelId(), state);
+                                logger.trace("Meter channel: {}, data: {}, state: {}", info, value, state);
+                            } catch (IllegalArgumentException e) {
+                                logger.debug("Meter channel: {}, data: {}, format error: {}", info, result,
+                                        e.getMessage());
+                            }
+                        } else {
+                            logger.debug("Meter channel: {}, read unexpected data: {}", info, rawValue);
                         }
                     } else {
                         logger.debug("Meter channel: {}, read error: {}", info, result);

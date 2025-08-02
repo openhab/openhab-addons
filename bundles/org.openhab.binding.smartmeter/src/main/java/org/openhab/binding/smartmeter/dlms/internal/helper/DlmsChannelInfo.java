@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smartmeter.dlms.internal.helper;
 
+import static org.openhab.binding.smartmeter.SmartMeterBindingConstants.DLMS_ATTRIBUTE_ID_VALUE;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,8 +32,6 @@ import org.openmuc.jdlms.datatypes.DataObject;
 @NonNullByDefault
 public class DlmsChannelInfo {
 
-    private static final int ATTRIBUTE_INDEX_VALUE = 2;
-
     private final int classId;
     private final ObisCode obisCode;
     private final int version;
@@ -47,6 +47,10 @@ public class DlmsChannelInfo {
         } else {
             throw new IllegalArgumentException("Invalid meter information: " + dataObject);
         }
+        if (entries.size() < 3) {
+            throw new IllegalArgumentException(
+                    "Meter information must contain 3 or more elements, but got: " + entries.size());
+        }
         classId = entries.get(0).getValue();
         byte[] obisBytes = entries.get(1).getValue();
         obisCode = new ObisCode(obisBytes);
@@ -55,7 +59,7 @@ public class DlmsChannelInfo {
     }
 
     public AttributeAddress getAttributeAddress() {
-        return new AttributeAddress(classId, obisCode, ATTRIBUTE_INDEX_VALUE);
+        return new AttributeAddress(classId, obisCode, DLMS_ATTRIBUTE_ID_VALUE);
     }
 
     public String getChannelId() {
