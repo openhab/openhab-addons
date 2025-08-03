@@ -16,7 +16,6 @@ At this point, the following devices are fully supported and verified to be work
 - Deebot OZMO 950
 - Deebot OZMO Slim 10/11
 - Deebot N8 series
-- Deebot X2 Omni
 - Deebot T30 OMNI
 
 The following devices will likely work because they are using similar protocols as the above ones:
