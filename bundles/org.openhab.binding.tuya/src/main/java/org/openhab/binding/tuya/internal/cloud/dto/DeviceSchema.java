@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tuya.internal.cloud.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,7 +56,7 @@ public class DeviceSchema {
         public double min = Double.MIN_VALUE;
         public double max = Double.MAX_VALUE;
         public int scale = 0;
-        public int step = 1;
+        public BigDecimal step = BigDecimal.ONE;
         public String unit = "";
     }
 
