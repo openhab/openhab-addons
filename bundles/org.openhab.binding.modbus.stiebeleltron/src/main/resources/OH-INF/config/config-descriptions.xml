@@ -4,6 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
+	<!-- heat pump -->
 	<config-description uri="thing-type:stiebeleltron:modbusconfig">
 
 		<parameter name="refresh" type="integer" min="1" unit="s">
@@ -20,29 +21,48 @@
 			<advanced>true</advanced>
 		</parameter>
 
+	</config-description>
+
+	<!-- stiebel eltron heat pump v2 -->
+	<config-description uri="thing-type:stiebeleltron:heatpump-v2-config">
+
+		<parameter name="refresh" type="integer" min="1" unit="s">
+			<label>@text/config.stiebeleltron.modbusconfig.refresh.label</label>
+			<description>@text/config.stiebeleltron.modbusconfig.refresh.description</description>
+			<default>5</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+
+		<parameter name="maxTries" type="integer" min="1">
+			<label>@text/config.stiebeleltron.modbusconfig.maxTries.label</label>
+			<default>3</default>
+			<description>@text/config.stiebeleltron.modbusconfig.maxTries.description</description>
+			<advanced>true</advanced>
+		</parameter>
+
 		<parameter name="stateBlockLength" type="integer" min="7">
-			<label>@text/config.stiebeleltron.modbusconfig.stateBlockLength.label</label>
 			<default>7</default>
-			<description>@text/config.stiebeleltron.modbusconfig.stateBlockLength.description</description>
+			<label>@text/config.stiebeleltron.heatpump-v2-config.stateBlockLength.label</label>
+			<description>@text/config.stiebeleltron.heatpump-v2-config.stateBlockLength.description</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="nrOfHps" type="integer" min="0" max="6">
-			<label>@text/config.stiebeleltron.modbusconfig.nrOfHps.label</label>
 			<default>0</default>
-			<description>@text/config.stiebeleltron.modbusconfig.nrOfHps.description</description>
+			<label>@text/config.stiebeleltron.heatpump-v2-config.nrOfHps.label</label>
+			<description>@text/config.stiebeleltron.heatpump-v2-config.nrOfHps.description</description>
 		</parameter>
 
 		<parameter name="wpmControllerId" type="integer">
-			<label>@text/config.stiebeleltron.modbusconfig.wpmControllerId.label</label>
 			<default>390</default>
-			<description>@text/config.stiebeleltron.modbusconfig.wpmControllerId.description</description>
+			<label>@text/config.stiebeleltron.heatpump-v2-config.wpmControllerId.label</label>
+			<description>@text/config.stiebeleltron.heatpump-v2-config.wpmControllerId.description</description>
 		</parameter>
 
 		<parameter name="pollSgReady" type="boolean">
-			<label>@text/config.stiebeleltron.modbusconfig.pollSgReady.label</label>
 			<default>false</default>
-			<description>@text/config.stiebeleltron.modbusconfig.pollSgReady.description</description>
+			<label>@text/config.stiebeleltron.heatpump-v2-config.pollSgReady.label</label>
+			<description>@text/config.stiebeleltron.heatpump-v2-config.pollSgReady.description</description>
 		</parameter>
 
 	</config-description>

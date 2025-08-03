@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
-import org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronConfiguration;
+import org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronHpV2Configuration;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyRuntimeBlockAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyRuntimeControlAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyRuntimeControlAllWpm.EnergyRuntimeFeatureKeys;
@@ -114,7 +114,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             logger.debug("Setting up regular polling");
 
             ModbusCommunicationInterface mycomms = StiebelEltronHandlerAllWpm.this.comms;
-            StiebelEltronConfiguration myconfig = StiebelEltronHandlerAllWpm.this.config;
+            StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
             if (myconfig == null || mycomms == null) {
                 throw new IllegalStateException("registerPollTask called without proper configuration");
             }
@@ -151,7 +151,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
     /**
      * Configuration instance
      */
-    protected @Nullable StiebelEltronConfiguration config = null;
+    protected @Nullable StiebelEltronHpV2Configuration config = null;
     /**
      * Parser used to convert incoming raw messages into system blocks
      */
@@ -245,7 +245,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        StiebelEltronConfiguration myconfig = StiebelEltronHandlerAllWpm.this.config;
+        StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
         ModbusCommunicationInterface mycomms = StiebelEltronHandlerAllWpm.this.comms;
 
         if (myconfig == null || mycomms == null) {
@@ -460,7 +460,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        config = getConfigAs(StiebelEltronConfiguration.class);
+        config = getConfigAs(StiebelEltronHpV2Configuration.class);
         logger.debug("Initializing thing with properties: {}", thing.getProperties());
 
         startUp();
@@ -572,7 +572,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                     }
                 };
                 poller.registerPollTask(5000, 2, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
-                sgReadyEnergyManagementSettingsPoller = poller;
+                sgReadyEnergyManagementSystemInformationPoller = poller;
             }
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -620,6 +620,22 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             poller.unregisterPollTask();
 
             energyRuntimePoller = null;
+        }
+
+        poller = sgReadyEnergyManagementSettingsPoller;
+        if (poller != null) {
+            logger.debug("Unregistering sgReadyEnergyManagementSettingsPoller from ModbusManager");
+            poller.unregisterPollTask();
+
+            sgReadyEnergyManagementSettingsPoller = null;
+        }
+
+        poller = sgReadyEnergyManagementSystemInformationPoller;
+        if (poller != null) {
+            logger.debug("Unregistering sgReadyEnergyManagementSystemInformationPoller from ModbusManager");
+            poller.unregisterPollTask();
+
+            sgReadyEnergyManagementSystemInformationPoller = null;
         }
 
         comms = null;
@@ -1127,8 +1143,8 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_STATE_ALLWPM, CHANNEL_MIN_ONE_IWS_IN_DEFROSTING_MODE),
                 (block.state & 512) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
 
-        if (config.getWpmControllerId() == StiebelEltronConfiguration.WPM3
-                || config.getWpmControllerId() == StiebelEltronConfiguration.WPMSYSTEM) {
+        if (config.getWpmControllerId() == StiebelEltronHpV2Configuration.WPM3
+                || config.getWpmControllerId() == StiebelEltronHpV2Configuration.WPMSYSTEM) {
             updateState(channelUID(GROUP_SYSTEM_STATE_ALLWPM, CHANNEL_SILENT_MODE1_ACTIVE),
                     (block.operatingStatus & 1024) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
             updateState(channelUID(GROUP_SYSTEM_STATE_ALLWPM, CHANNEL_SILENT_MODE2_ACTIVE),

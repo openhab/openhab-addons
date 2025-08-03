@@ -23,7 +23,7 @@
 				typeId="sg-ready-energy-management-system-information"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:stiebeleltron:modbusconfig"/>
+		<config-description-ref uri="thing-type:stiebeleltron:heatpump-v2-config"/>
 
 	</thing-type>
 
