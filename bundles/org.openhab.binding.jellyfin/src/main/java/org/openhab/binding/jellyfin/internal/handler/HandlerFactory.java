@@ -15,7 +15,7 @@ package org.openhab.binding.jellyfin.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Constants;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.binding.jellyfin.internal.api.ApiClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,13 +39,13 @@ import org.osgi.service.component.annotations.ServiceScope;
 @Component(scope = ServiceScope.SINGLETON, configurationPid = "binding.jellyfin", service = ThingHandlerFactory.class)
 public class HandlerFactory extends BaseThingHandlerFactory {
 
-    private HttpClientFactory httpClientFactory;
+    private ApiClientFactory apiClientFactory;
 
     @Activate
-    public HandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+    public HandlerFactory(@Reference final ApiClientFactory apiClientFactory) {
         super();
 
-        this.httpClientFactory = httpClientFactory;
+        this.apiClientFactory = apiClientFactory;
     }
 
     @Override
@@ -58,7 +58,12 @@ public class HandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (Constants.THING_TYPE_SERVER.equals(thingTypeUID)) {
-            return new ServerHandler((Bridge) thing);
+            var client = this.apiClientFactory.createApiClient();
+            var uri = thing.getProperties().get(Constants.PROPERTY_SERVER_URI);
+
+            client.updateBaseUri(uri);
+
+            return new ServerHandler((Bridge) thing, client);
         }
 
         return null;

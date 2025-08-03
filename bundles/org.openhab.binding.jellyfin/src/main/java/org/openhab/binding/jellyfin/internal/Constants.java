@@ -32,7 +32,7 @@ public class Constants {
 
     // Property names
     public static final String PROPERTY_API_VERSION = "apiVersion";
-    public static final String PROPERTY_SERVER_URI = "apiClient";
+    public static final String PROPERTY_SERVER_URI = "uri";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");

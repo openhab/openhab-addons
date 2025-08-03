@@ -14,13 +14,12 @@ package org.openhab.binding.jellyfin.internal.handler;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.core.thing.Bridge;
@@ -43,9 +42,9 @@ import org.slf4j.LoggerFactory;
 public class ServerHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ExceptionHandler exceptionHandler;
+    private final ApiClient apiClient;
 
     Map<String, @Nullable ScheduledFuture<?>> tasks = new HashMap<>();
-    private Optional<ApiClient> apiClient = Optional.empty();
 
     public static class TASKS {
         public static final String CONNECT = "Connect";
@@ -58,10 +57,11 @@ public class ServerHandler extends BaseBridgeHandler {
                 Map.entry(TASKS.REGISTER, 1), Map.entry(TASKS.POLL, 10));
     }
 
-    public ServerHandler(Bridge bridge) {
+    public ServerHandler(Bridge bridge, ApiClient apiClient) {
         super(bridge);
 
         this.exceptionHandler = new ExceptionHandler();
+        this.apiClient = apiClient;
     }
 
     @Override
@@ -101,7 +101,8 @@ public class ServerHandler extends BaseBridgeHandler {
 
         switch (taskId) {
             case TASKS.CONNECT -> {
-                task = new ConnectionTask(this, instance -> this.handleConnection(instance), this.exceptionHandler);
+                task = new ConnectionTask(this.apiClient, instance -> this.handleConnection(instance),
+                        this.exceptionHandler);
                 break;
             }
         }

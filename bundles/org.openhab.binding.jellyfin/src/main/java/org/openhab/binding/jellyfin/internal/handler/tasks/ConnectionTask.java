@@ -15,9 +15,7 @@ package org.openhab.binding.jellyfin.internal.handler.tasks;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.Constants;
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
-import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
+import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
 /**
@@ -25,22 +23,18 @@ import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
  */
 @NonNullByDefault
 public class ConnectionTask implements Runnable {
-    private final ApiClient client = new ApiClient();
 
     private final Consumer<ApiClient> acceptedHandler;
     private final ExceptionHandlerType exceptionHandler;
-    private final ServerHandler handler;
+    private final ApiClient client;
 
-    public ConnectionTask(ServerHandler handler, Consumer<ApiClient> connectionHandler,
+    public ConnectionTask(ApiClient client, Consumer<ApiClient> connectionHandler,
             ExceptionHandlerType exceptionHandler) {
 
-        this.handler = handler;
         this.acceptedHandler = connectionHandler;
         this.exceptionHandler = exceptionHandler;
 
-        var uri = handler.getThing().getProperties().get(Constants.PROPERTY_SERVER_URI);
-
-        this.client.updateBaseUri(uri);
+        this.client = client;
     }
 
     @Override
