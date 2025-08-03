@@ -245,7 +245,7 @@ public final class ProtocolUtils {
     private static boolean validateCrc32(byte[] message, int expectedCrc32) {
         CRC32 crc32 = new CRC32();
         crc32.update(message, 0, message.length - CRC_LENGTH);
-        if (crc32.getValue() != expectedCrc32) {
+        if (crc32.getValue() != (expectedCrc32 & 0xFFFFFFFFL)) {
             logger.debug("CRC32 mismatch. Calculated: {}, Expected: {}", crc32.getValue(), expectedCrc32);
             return false;
         }
@@ -327,8 +327,8 @@ public final class ProtocolUtils {
 
         int messageCrc32 = readInt32BE(message, message.length - CRC_LENGTH);
         if (!validateCrc32(message, messageCrc32)) {
-            // logger.warn("Message CRC32 checksum mismatch. Message discarded.");
-            // return "";
+            logger.warn("Message CRC32 checksum mismatch. Message discarded.");
+            return "";
         }
 
         switch (header.protocol) {
