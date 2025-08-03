@@ -151,7 +151,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                             new QuantityType<>(signal.hubRssi, Units.DECIBEL_MILLIWATTS));
                 } else {
                     updateState(DEVICE_CHANNEL_HUB_RSSI, UnDefType.UNDEF);
-                }
+                } 
 
                 if (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE)) {
                     updateThingCurfews(device);
