@@ -31,6 +31,8 @@ import org.openmuc.jdlms.datatypes.DataObject;
 @NonNullByDefault
 public class DlmsChannelInfo {
 
+    private static final int MINIMUM_METER_INFO_ENTRIES = 3;
+
     private final int classId;
     private final ObisCode obisCode;
     private final int version;
@@ -45,9 +47,9 @@ public class DlmsChannelInfo {
         } else {
             throw new IllegalArgumentException("Invalid meter information: " + dataObject);
         }
-        if (entries.size() < 3) {
-            throw new IllegalArgumentException(
-                    "Meter information must contain 3 or more elements, but got: " + entries.size());
+        if (entries.size() < MINIMUM_METER_INFO_ENTRIES) {
+            throw new IllegalArgumentException("Meter information must contain %d or more elements, but got %d"
+                    .formatted(MINIMUM_METER_INFO_ENTRIES, entries.size()));
         }
         classId = entries.get(0).getValue();
         byte[] obisBytes = entries.get(1).getValue();

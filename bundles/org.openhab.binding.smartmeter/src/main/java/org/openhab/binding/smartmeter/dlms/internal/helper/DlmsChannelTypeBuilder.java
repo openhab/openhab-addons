@@ -13,6 +13,7 @@
 package org.openhab.binding.smartmeter.dlms.internal.helper;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags;
@@ -31,6 +32,11 @@ import org.openmuc.jdlms.ObisCode.Medium;
  */
 @NonNullByDefault
 public class DlmsChannelTypeBuilder {
+
+    private static final String CATEGORY_CLIMATE = "climate";
+    private static final String CATEGORY_HEATING = "heating";
+    private static final String CATEGORY_WATER = "water";
+    private static final String CATEGORY_GAS = "gas";
 
     /**
      * Create a new channel type for the given channel type UID and medium. Specifically it creates the following
@@ -69,7 +75,7 @@ public class DlmsChannelTypeBuilder {
 
         String label = labelBuilder.toString();
         String itemType = itemTypeBuilder.toString();
-        String description = "@text/dlms.meter-reading-for [\"%s\"]".formatted(label);
+        String description = SmartMeterBindingConstants.DLMS_METER_READING_FOR.formatted(label);
 
         StateDescriptionFragment stateFragment = StateDescriptionFragmentBuilder.create().withReadOnly(true)
                 .withPattern("%.1f %unit%").build();
@@ -80,24 +86,24 @@ public class DlmsChannelTypeBuilder {
             case GAS:
                 semanticTags = new SemanticTag[] { DefaultSemanticTags.Point.MEASUREMENT,
                         DefaultSemanticTags.Property.GAS };
-                category = "gas";
+                category = CATEGORY_GAS;
                 break;
             case HOT_WATER:
             case COLD_WATER:
                 semanticTags = new SemanticTag[] { DefaultSemanticTags.Point.MEASUREMENT,
                         DefaultSemanticTags.Property.WATER };
-                category = "water";
+                category = CATEGORY_WATER;
                 break;
             case HEAT:
             case HEAT_COST_ALLOCATOR:
                 semanticTags = new SemanticTag[] { DefaultSemanticTags.Point.MEASUREMENT,
                         DefaultSemanticTags.Property.HEATING };
-                category = "heating";
+                category = CATEGORY_HEATING;
                 break;
             case COOLING:
                 semanticTags = new SemanticTag[] { DefaultSemanticTags.Point.MEASUREMENT,
                         DefaultSemanticTags.Property.AIRCONDITIONING };
-                category = "climate";
+                category = CATEGORY_CLIMATE;
                 break;
             default:
                 semanticTags = new SemanticTag[] { DefaultSemanticTags.Point.MEASUREMENT };

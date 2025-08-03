@@ -57,4 +57,8 @@ public class SmartMeterBindingConstants {
     // DLMS/COSEM read request parameter ids
     public static final int DLMS_ATTRIBUTE_ID_VALUE = 2;
     public static final int DLMS_CLASS_ID_LOGICAL_NAME = 15;
+
+    // DLMS/COSEM i18n text property keys
+    public static final String DLMS_NO_METER_CHANNELS_FOUND = "@text/dlms.no-meter-channels-found";
+    public static final String DLMS_METER_READING_FOR = "@text/dlms.meter-reading-for [\"%s\"]";
 }

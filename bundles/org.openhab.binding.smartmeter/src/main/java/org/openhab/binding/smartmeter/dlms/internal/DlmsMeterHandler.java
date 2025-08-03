@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DlmsMeterHandler extends BaseThingHandler {
 
-    private static final Duration INITIAL_REFRESH_DELAY = Duration.ofSeconds(5);
+    private static final Duration SCHEDULER_INITIAL_DELAY = Duration.ofSeconds(5);
     private static final Duration CONNECTION_RETRY_INTERVAL = Duration.ofMinutes(5);
 
     private final Logger logger = LoggerFactory.getLogger(DlmsMeterHandler.class);
@@ -114,8 +114,8 @@ public class DlmsMeterHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         cancelTasks();
-        reconnectTask = scheduler.scheduleWithFixedDelay(() -> goOnline(), 0, CONNECTION_RETRY_INTERVAL.toSeconds(),
-                TimeUnit.SECONDS);
+        reconnectTask = scheduler.scheduleWithFixedDelay(() -> goOnline(), SCHEDULER_INITIAL_DELAY.toSeconds(),
+                CONNECTION_RETRY_INTERVAL.toSeconds(), TimeUnit.SECONDS);
     }
 
     private void cancelTasks() {
@@ -156,12 +156,12 @@ public class DlmsMeterHandler extends BaseThingHandler {
             dlmsChannelInfos.addAll(infos);
             if (createdChannels()) {
                 refreshTask = scheduler.scheduleWithFixedDelay(() -> updateChannels(),
-                        INITIAL_REFRESH_DELAY.toSeconds(), config.refresh, TimeUnit.SECONDS);
+                        SCHEDULER_INITIAL_DELAY.toSeconds(), config.refresh, TimeUnit.SECONDS);
                 updateStatus(ThingStatus.ONLINE);
                 return;
             }
         }
-        goOffline("@text/dlms.no-meter-channels-found");
+        goOffline(DLMS_NO_METER_CHANNELS_FOUND);
     }
 
     /**

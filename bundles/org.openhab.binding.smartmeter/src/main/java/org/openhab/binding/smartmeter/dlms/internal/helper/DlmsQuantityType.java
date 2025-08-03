@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smartmeter.dlms.internal.helper;
 
+import java.util.regex.Pattern;
+
 import javax.measure.Quantity;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +34,9 @@ import org.openhab.core.library.types.QuantityType;
 public class DlmsQuantityType<T extends Quantity<T>> extends QuantityType<T> {
 
     private static final long serialVersionUID = 1305378390275793428L;
-    private static final String METER_VALUE_SPLIT_REGEX = "\\(";
+
+    private static final int EXPECTED_PARTS_LENGTH = 2;
+    private static final Pattern METER_VALUE_SPLIT_PATTERN = Pattern.compile("\\(");
 
     public DlmsQuantityType(String meterValue) {
         super(meterStringToUomString(meterValue));
@@ -45,8 +49,8 @@ public class DlmsQuantityType<T extends Quantity<T>> extends QuantityType<T> {
      * @return a UoM string like '12345.678 kWh'
      */
     private static String meterStringToUomString(String meterValue) {
-        String[] parts = meterValue.split(METER_VALUE_SPLIT_REGEX);
-        if (parts.length < 2) {
+        String[] parts = METER_VALUE_SPLIT_PATTERN.split(meterValue);
+        if (parts.length < EXPECTED_PARTS_LENGTH) {
             throw new IllegalArgumentException(
                     "Invalid meter value '%s' - expected format like '1-0:1.8.0(12345.678*kWh)'".formatted(meterValue));
         }
