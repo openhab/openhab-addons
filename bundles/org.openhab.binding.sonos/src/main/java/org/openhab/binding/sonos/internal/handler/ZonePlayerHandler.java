@@ -1128,6 +1128,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private Map<String, String> executeAction(String serviceId, String actionId, @Nullable Map<String, String> inputs) {
+        @Nullable
+        Map<String, String> input = inputs;
         Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
         result.forEach((variable, value) -> {
             this.onValueReceived(variable, value, serviceId);

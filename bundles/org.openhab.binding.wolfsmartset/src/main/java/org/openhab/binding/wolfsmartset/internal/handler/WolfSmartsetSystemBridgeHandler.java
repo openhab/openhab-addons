@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -87,7 +88,7 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler unitHandler, Thing unitThing) {
-        String unitId = (String) unitThing.getConfiguration().get(CONFIG_UNIT_ID);
+        String unitId = Objects.requireNonNullElse((String) unitThing.getConfiguration().get(CONFIG_UNIT_ID), "");
         unitHandlers.put(unitId, (WolfSmartsetUnitThingHandler) unitHandler);
         logger.debug("SystemBridge: Saving unit handler for {} with id {}", unitThing.getUID(), unitId);
         var accountBridgeHandler = getAccountBridgeHandler();

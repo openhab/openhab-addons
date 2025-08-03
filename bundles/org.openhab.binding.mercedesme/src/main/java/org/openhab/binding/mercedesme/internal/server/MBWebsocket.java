@@ -76,7 +76,7 @@ public class MBWebsocket {
     private final AccountHandler accountHandler;
     private final HttpClient httpClient;
     private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getPoolBasedSequentialScheduledExecutorService("mercedesme-websocket", null);
+            .getPoolBasedSequentialScheduledExecutorService("mercedesme-websocket", "");
 
     private Optional<ScheduledFuture<?>> refresher = Optional.empty();
     private Optional<WebSocketClient> webSocketClient = Optional.empty();

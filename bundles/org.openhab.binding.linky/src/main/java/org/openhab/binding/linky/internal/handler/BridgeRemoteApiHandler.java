@@ -142,8 +142,11 @@ public abstract class BridgeRemoteApiHandler extends BridgeRemoteBaseHandler {
                     .getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
 
             String accessToken = credentials.getAccessToken();
+            if (accessToken == null) {
+                throw new LinkyException("Unable to authenticate, no access token available");
+            }
 
-            logger.debug("Acces token: {}", accessToken);
+            logger.debug("Access token: {}", accessToken);
             return accessToken;
         } catch (RuntimeException | OAuthException | IOException e) {
             throw new LinkyException("Error during oAuth authorize :" + e.getMessage(), e);
