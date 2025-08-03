@@ -15,7 +15,6 @@ package org.openhab.binding.smartmeter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartmeter.internal.ObisCode;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link SmartMeterBindingConstants} class defines common constants, which are
@@ -52,10 +51,8 @@ public class SmartMeterBindingConstants {
         return getObisChannelIdPattern(obis).replaceAll("[^\\w-]", "");
     }
 
-    // DLMS/COSEM thing and channel types
+    // DLMS/COSEM thing type
     public static final ThingTypeUID DLMS_THING_TYPE_METER = new ThingTypeUID(BINDING_ID, "dlms-meter");
-    public static final ChannelTypeUID DLMS_CHANNEL_UID_GENERIC = new ChannelTypeUID(BINDING_ID, "generic");
-    public static final ChannelTypeUID DLMS_CHANNEL_UID_VOLUME = new ChannelTypeUID(BINDING_ID, "volume");
 
     // DLMS/COSEM read request parameter ids
     public static final int DLMS_ATTRIBUTE_ID_VALUE = 2;

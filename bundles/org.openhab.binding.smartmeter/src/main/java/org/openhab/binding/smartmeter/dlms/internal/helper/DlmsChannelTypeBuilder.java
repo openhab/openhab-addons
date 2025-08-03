@@ -25,7 +25,7 @@ import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openmuc.jdlms.ObisCode.Medium;
 
 /**
- * A helper class to create cha nnel types for DLMS/COSEM meters.
+ * A helper class to create channel types for DLMS/COSEM meters.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
