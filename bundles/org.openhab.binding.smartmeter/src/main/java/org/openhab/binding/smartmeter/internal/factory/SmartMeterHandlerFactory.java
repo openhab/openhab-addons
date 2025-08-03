@@ -45,7 +45,7 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = //
             Set.of(THING_TYPE_SMLREADER, DLMS_THING_TYPE_METER);
 
-    private @NonNullByDefault({}) SmartMeterChannelTypeProvider channelProvider;
+    private @NonNullByDefault({}) SmartMeterChannelTypeProvider channelTypeProvider;
     private @NonNullByDefault({}) Supplier<SerialPortManager> serialPortManagerSupplier = () -> null;
 
     @Override
@@ -55,11 +55,11 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
     @Reference
     protected void setSmartMeterChannelTypeProvider(SmartMeterChannelTypeProvider provider) {
-        this.channelProvider = provider;
+        this.channelTypeProvider = provider;
     }
 
     protected void unsetSmartMeterChannelTypeProvider(SmartMeterChannelTypeProvider provider) {
-        this.channelProvider = null;
+        this.channelTypeProvider = null;
     }
 
     @Reference
@@ -76,9 +76,9 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_SMLREADER)) {
-            return new SmartMeterHandler(thing, channelProvider, serialPortManagerSupplier);
+            return new SmartMeterHandler(thing, channelTypeProvider, serialPortManagerSupplier);
         } else if (thingTypeUID.equals(DLMS_THING_TYPE_METER)) {
-            return new DlmsMeterHandler(thing);
+            return new DlmsMeterHandler(thing, channelTypeProvider);
         }
 
         return null;

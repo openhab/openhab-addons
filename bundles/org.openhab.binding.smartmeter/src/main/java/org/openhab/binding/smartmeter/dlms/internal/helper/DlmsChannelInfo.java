@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
@@ -35,7 +34,6 @@ public class DlmsChannelInfo {
     private final int classId;
     private final ObisCode obisCode;
     private final int version;
-    private final @Nullable String label;
 
     @SuppressWarnings("unchecked")
     public DlmsChannelInfo(DataObject dataObject) throws IllegalArgumentException {
@@ -55,7 +53,6 @@ public class DlmsChannelInfo {
         byte[] obisBytes = entries.get(1).getValue();
         obisCode = new ObisCode(obisBytes);
         version = entries.get(2).getValue();
-        label = entries.size() > 3 ? entries.get(3).getValue() : null;
     }
 
     public AttributeAddress getAttributeAddress() {
@@ -66,13 +63,13 @@ public class DlmsChannelInfo {
         return SmartMeterBindingConstants.getObisChannelId(obisCode.toString());
     }
 
-    public @Nullable String getLabel() {
-        return label;
+    public ObisCode getObisCode() {
+        return obisCode;
     }
 
     @Override
     public String toString() {
-        return "DlmsChannelInfo [classId=%d, channelId=%s, version=%d, label=%s]" //
-                .formatted(classId, getChannelId(), version, label);
+        return "DlmsChannelInfo [classId=%d, channelId=%s, version=%d]" //
+                .formatted(classId, getChannelId(), version);
     }
 }

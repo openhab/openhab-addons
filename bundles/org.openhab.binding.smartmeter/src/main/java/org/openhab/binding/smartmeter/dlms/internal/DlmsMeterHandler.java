@@ -31,8 +31,11 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.DlmsMeterConfiguration;
+import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelInfo;
+import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelTypeBuilder;
 import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsQuantityType;
+import org.openhab.binding.smartmeter.internal.SmartMeterChannelTypeProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -42,6 +45,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -50,6 +54,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.ObisCode.Medium;
 import org.openmuc.jdlms.SerialConnectionBuilder;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.internal.WellKnownInstanceIds;
@@ -71,14 +76,16 @@ public class DlmsMeterHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DlmsMeterHandler.class);
 
     private final Set<DlmsChannelInfo> dlmsChannelInfos = new HashSet<>();
+    private final SmartMeterChannelTypeProvider channelTypeProvider;
 
     private @NonNullByDefault({}) DlmsMeterConfiguration config;
     private @Nullable DlmsConnection connection;
     private @Nullable ScheduledFuture<?> refreshTask;
     private @Nullable ScheduledFuture<?> reconnectTask;
 
-    public DlmsMeterHandler(Thing thing) {
+    public DlmsMeterHandler(Thing thing, SmartMeterChannelTypeProvider channelTypeProvider) {
         super(thing);
+        this.channelTypeProvider = channelTypeProvider;
     }
 
     @Override
@@ -154,7 +161,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
                 return;
             }
         }
-        goOffline("@text/no-meter-channels-found");
+        goOffline("@text/dlms.no-meter-channels-found");
     }
 
     /**
@@ -172,32 +179,42 @@ public class DlmsMeterHandler extends BaseThingHandler {
                     if (result.getResultCode() == AccessResultCode.SUCCESS) {
                         String resultData = result.getResultData().getValue();
                         try {
-                            Unit<?> unit = new DlmsQuantityType<>(resultData).getUnit();
-                            ChannelTypeUID channelTypeUID;
-                            if (unit.isCompatible(Units.AMPERE)) {
-                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_CURRENT;
-                            } else if (unit.isCompatible(Units.VOLT)) {
-                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_VOLTAGE;
-                            } else if (unit.isCompatible(Units.WATT_HOUR)) {
-                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_ENERGY;
-                            } else if (unit.isCompatible(Units.WATT)) {
-                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
-                            } else if (unit.isCompatible(Units.VAR_HOUR)) {
-                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_ENERGY;
-                            } else if (unit.isCompatible(Units.VAR)) {
-                                channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
-                            } else if (unit.isCompatible(Units.LITRE)) {
-                                channelTypeUID = DLMS_CHANNEL_UID_VOLUME;
-                            } else {
-                                channelTypeUID = DLMS_CHANNEL_UID_GENERIC;
+                            DlmsQuantityType<?> quantity = new DlmsQuantityType<>(resultData);
+                            Medium medium = info.getObisCode().medium();
+                            ChannelTypeUID channelTypeUID = null;
+
+                            // for electricity meters use the OH standard channel types
+                            if (Medium.ELECTRICITY == medium) {
+                                Unit<?> unit = quantity.getUnit();
+                                if (unit.isCompatible(Units.AMPERE)) {
+                                    channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_CURRENT;
+                                } else if (unit.isCompatible(Units.VOLT)) {
+                                    channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_VOLTAGE;
+                                } else if (unit.isCompatible(Units.WATT_HOUR)) {
+                                    channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_ENERGY;
+                                } else if (unit.isCompatible(Units.WATT)) {
+                                    channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
+                                } else if (unit.isCompatible(Units.VAR_HOUR)) {
+                                    channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_ENERGY;
+                                } else if (unit.isCompatible(Units.VAR)) {
+                                    channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
+                                }
                             }
+
+                            // if there is no standard channel type then build one
+                            if (channelTypeUID == null) {
+                                // uid uses the dimension class name e.g. "smartmeter:ELECTRIC_POTENTIAL"
+                                channelTypeUID = new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID,
+                                        quantity.getUnit().getDimension().getClass().getSimpleName());
+                                if (channelTypeProvider.getChannelType(channelTypeUID, null) == null) {
+                                    ChannelType channelType = DlmsChannelTypeBuilder.build(channelTypeUID, medium);
+                                    channelTypeProvider.putChannelType(channelType);
+                                }
+                            }
+
+                            // build the channel
                             ChannelUID uid = new ChannelUID(getThing().getUID(), info.getChannelId());
-                            ChannelBuilder channelBuilder = ChannelBuilder.create(uid).withType(channelTypeUID);
-                            String label = info.getLabel();
-                            if (label != null && !label.isBlank()) {
-                                channelBuilder.withLabel(label);
-                            }
-                            channels.add(channelBuilder.build());
+                            channels.add(ChannelBuilder.create(uid).withType(channelTypeUID).build());
                             logger.debug("Meter channel: {}, data: {}, added OH channel: {}", info, resultData, uid);
                         } catch (IllegalArgumentException e) {
                             logger.debug("Meter channel: {}, data:{}, parse error:{}", info, resultData,

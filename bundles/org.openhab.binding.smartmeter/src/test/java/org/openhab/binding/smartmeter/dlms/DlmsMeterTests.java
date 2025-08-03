@@ -12,16 +12,23 @@
  */
 package org.openhab.binding.smartmeter.dlms;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelTypeBuilder;
 import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsQuantityType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.StateDescription;
+import org.openmuc.jdlms.ObisCode.Medium;
 
 /**
  * Unit tests for DLMS/COSEM meter code.
@@ -46,5 +53,24 @@ class DlmsMeterTests {
             Arguments.of(QuantityType.valueOf("0.345 kW"), "1-0:16.7.0(0.345*kW)")
         //@formatter:on
         );
+    }
+
+    @Test
+    void testDlmsChannelTypeBuilder() {
+        ChannelTypeUID uid = new ChannelTypeUID("smartmeter", "WATER_AARDVARK_TEST");
+        ChannelType channelType = DlmsChannelTypeBuilder.build(uid, Medium.COLD_WATER);
+        assertNotNull(channelType);
+        assertEquals("water", channelType.getCategory());
+        assertEquals("Number:WaterAardvarkTest", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertEquals(uid, channelType.getUID());
+        assertEquals("Water Aardvark Test", channelType.getLabel());
+        assertEquals("@text/dlms.meter-reading-for [\"Water Aardvark Test\"]", channelType.getDescription());
+        assertTrue(channelType.getTags().contains("Measurement"));
+        assertTrue(channelType.getTags().contains("Water"));
+        StateDescription stateDescription = channelType.getState();
+        assertNotNull(stateDescription);
+        assertTrue(stateDescription.isReadOnly());
+        assertEquals("%.1f %unit%", stateDescription.getPattern());
     }
 }
