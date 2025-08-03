@@ -47,10 +47,6 @@ Fragment-Host: org.openhab.automation.jsscriptingnashorn
 	ch.qos.logback.classic;version='[1.3.14,1.3.15)',\
 	ch.qos.logback.core;version='[1.3.14,1.3.15)',\
 	org.osgi.service.component.annotations;version='[1.5.1,1.5.2)',\
-	com.fasterxml.jackson.core.jackson-annotations;version='[2.18.2,2.18.3)',\
-	com.fasterxml.jackson.core.jackson-core;version='[2.18.2,2.18.3)',\
-	com.fasterxml.jackson.core.jackson-databind;version='[2.18.2,2.18.3)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.18.2,2.18.3)',\
 	org.threeten.extra;version='[1.8.0,1.8.1)',\
 	com.sun.jna;version='[5.16.0,5.16.1)',\
 	org.apache.aries.spifly.dynamic.bundle;version='[1.3.7,1.3.8)',\
@@ -82,9 +78,13 @@ Fragment-Host: org.openhab.automation.jsscriptingnashorn
 	stax2-api;version='[4.2.2,4.2.3)',\
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
 	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.18.2,2.18.3)',\
-	org.yaml.snakeyaml;version='[2.3.0,2.3.1)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	org.openhab.core.semantics;version='[5.1.0,5.1.1)',\
 	de.focus_shift.jollyday-core;version='[1.5.4,1.5.5)',\
-	de.focus_shift.jollyday-jackson;version='[1.5.4,1.5.5)'
+	de.focus_shift.jollyday-jackson;version='[1.5.4,1.5.5)',\
+	com.fasterxml.jackson.core.jackson-annotations;version='[2.19.2,2.19.3)',\
+	com.fasterxml.jackson.core.jackson-core;version='[2.19.2,2.19.3)',\
+	com.fasterxml.jackson.core.jackson-databind;version='[2.19.2,2.19.3)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.19.2,2.19.3)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.19.2,2.19.3)',\
+	org.yaml.snakeyaml;version='[2.4.0,2.4.1)'
