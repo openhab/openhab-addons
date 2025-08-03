@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
 
-    public static final String DEV_TYPE_FAMILY_OUTLET = "OUT";
+    public static final List<String> DEV_TYPE_FAMILY_OUTLET = Arrays.asList("OUT");
     public static final int DEFAULT_OUTLET_POLL_RATE = 60;
     public static final String DEV_FAMILY_CORE_WHOG_PLUG = "WHOG";
     public static final VeSyncDeviceMetadata COREWHOPGPLUG = new VeSyncDeviceMetadata(DEV_FAMILY_CORE_WHOG_PLUG,
@@ -77,7 +77,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
     }
 
     @Override
-    public String getDeviceFamilyProtocolPrefix() {
+    public List<String> getDeviceFamilyProtocolPrefix() {
         return DEV_TYPE_FAMILY_OUTLET;
     }
 
