@@ -627,7 +627,7 @@
             "main_brush",
             "spot_area_cleaning",
             "custom_area_cleaning",
-            "cleaning_scenes",
+            "scenario_cleaning",
             "clean_speed_control",
             "voice_reporting",
             "read_network_info",
