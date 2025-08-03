@@ -41,6 +41,8 @@ public enum CleanMode {
     STOP,
     @SerializedName(value = "going", alternate = { "goCharging" })
     RETURNING,
+    @SerializedName("autoEmpty")
+    AUTO_EMPTY,
     @SerializedName("washing")
     WASHING,
     @SerializedName(value = "drying", alternate = { "spin-dry" })
@@ -50,10 +52,10 @@ public enum CleanMode {
 
     public boolean isActive() {
         return this == AUTO || this == EDGE || this == SPOT || this == SPOT_AREA || this == CUSTOM_AREA
-                || this == SINGLE_ROOM;
+                || this == SINGLE_ROOM || this == SCENE;
     }
 
     public boolean isIdle() {
-        return this == IDLE || this == DRYING || this == WASHING;
+        return this == IDLE || this == DRYING || this == WASHING || this == AUTO_EMPTY;
     }
 }

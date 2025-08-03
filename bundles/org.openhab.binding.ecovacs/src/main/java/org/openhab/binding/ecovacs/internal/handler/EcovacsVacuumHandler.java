@@ -530,6 +530,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         } catch (ConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         } catch (EcovacsApiException e) {
+            logger.debug("API Exception: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -673,7 +674,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             // Some devices already report charging state while returning to charging station, make sure to not report
             // charging in that case. The same applies for models with pad washing/drying station, as those states imply
             // the device being charging.
-            if (cleanMode != CleanMode.RETURNING && cleanMode != CleanMode.WASHING && cleanMode != CleanMode.DRYING) {
+            if (cleanMode != CleanMode.RETURNING && cleanMode != CleanMode.WASHING && cleanMode != CleanMode.DRYING
+                    && cleanMode != CleanMode.AUTO_EMPTY) {
                 return "charging";
             }
         }
