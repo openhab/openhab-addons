@@ -36,9 +36,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSinkReg;
@@ -54,6 +55,9 @@ import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.MediaCommandEnumType;
+import org.openhab.core.library.types.MediaCommandType;
+import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -62,6 +66,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.MediaDevice;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -103,6 +109,9 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     protected @NonNullByDefault({}) UpnpControlRendererConfiguration config;
     private UpnpRenderingControlConfiguration renderingControlConfiguration = new UpnpRenderingControlConfiguration();
+
+    private final MediaService mediaService;
+    private final UpnpControlHandlerFactory handlerFactory;
 
     private volatile List<CommandOption> favoriteCommandOptionList = List.of();
     private volatile List<CommandOption> playlistCommandOptionList = List.of();
@@ -155,23 +164,28 @@ public class UpnpRendererHandler extends UpnpHandler {
     private final Object notificationLock = new Object();
 
     // Track position and duration fields
+    private volatile String trackName = "";
+    private volatile String artistName = "";
+    private volatile String artUri = "";
+
     private volatile int trackDuration = 0;
     private volatile int trackPosition = 0;
     private volatile long expectedTrackend = 0;
     private volatile @Nullable ScheduledFuture<?> trackPositionRefresh;
     private volatile int posAtNotificationStart = 0;
 
-    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            UpnpAudioSinkReg audioSinkReg, UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
+    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlHandlerFactory handlerFactory,
+            UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, upnpService, configuration, upnpStateDescriptionProvider,
-                upnpCommandDescriptionProvider);
+            UpnpControlBindingConfiguration configuration, MediaService mediaService) {
+        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
 
+        this.handlerFactory = handlerFactory;
         this.audioSinkReg = audioSinkReg;
+        this.mediaService = mediaService;
     }
 
     @Override
@@ -201,6 +215,10 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
 
         initDevice();
+
+        mediaService.registerDevice(new MediaDevice("" + this.getThing().getUID().getId(),
+                "" + this.getThing().getLabel(), "", UpnpControlBindingConstants.BINDING_ID));
+
     }
 
     @Override
@@ -722,25 +740,35 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private void handleCommandStop(Command command) {
         if (OnOffType.ON.equals(command)) {
-            updateState(CONTROL, PlayPauseType.PAUSE);
             stop();
+            updateControlState();
             updateState(TRACK_POSITION, new QuantityType<>(0, Units.SECOND));
         }
+    }
+
+    public void setUpnpRenderer(String param) {
+        String uid = param;
+        if (uid.indexOf("/Root/upnpcontrol/") != 0) {
+            return;
+        }
+        uid = uid.replace("/Root/upnpcontrol/", "");
+        int p1 = uid.indexOf('/');
+        if (p1 >= 0) {
+            uid = uid.substring(0, p1);
+        }
+
+        logger.debug("uid:" + uid);
+
+        UpnpServerHandler serverHandler = this.handlerFactory.getUpnpServer("upnpcontrol:upnpserver:" + uid);
+        serverHandler.setUpnpRenderer(this);
+
     }
 
     private void handleCommandControl(ChannelUID channelUID, Command command) {
         String state;
         if (command instanceof RefreshType) {
             state = transportState;
-            State newState = UnDefType.UNDEF;
-            if ("PLAYING".equals(state)) {
-                newState = PlayPauseType.PLAY;
-            } else if ("STOPPED".equals(state)) {
-                newState = PlayPauseType.PAUSE;
-            } else if ("PAUSED_PLAYBACK".equals(state)) {
-                newState = PlayPauseType.PAUSE;
-            }
-            updateState(channelUID, newState);
+            updateControlState();
         } else if (command instanceof PlayPauseType) {
             if (PlayPauseType.PLAY.equals(command)) {
                 if (registeredQueue) {
@@ -751,9 +779,15 @@ public class UpnpRendererHandler extends UpnpHandler {
                 } else {
                     play();
                 }
+
+                updateControlState();
+
             } else if (PlayPauseType.PAUSE.equals(command)) {
                 checkPaused();
                 pause();
+
+                updateControlState();
+
             }
         } else if (command instanceof NextPreviousType) {
             if (NextPreviousType.NEXT.equals(command)) {
@@ -769,6 +803,67 @@ public class UpnpRendererHandler extends UpnpHandler {
                 pos = Integer.max(0, trackPosition - config.seekStep);
             }
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
+        } else if (command instanceof MediaCommandType) {
+            MediaCommandType mediaType = (MediaCommandType) command;
+            MediaCommandEnumType mediaTypeCommand = mediaType.getCommand();
+            String val = mediaType.getParam().toFullString();
+
+            logger.debug(val);
+
+            if (mediaTypeCommand == MediaCommandEnumType.VOLUME) {
+
+                soundVolume = new PercentType(val);
+                setVolume(soundVolume);
+
+                updateControlState();
+            } else if (mediaTypeCommand == MediaCommandEnumType.PLAY
+                    || mediaTypeCommand == MediaCommandEnumType.ENQUEUE) {
+                int idx = val.indexOf("/l");
+                val = val.substring(idx);
+
+                if (serverHandlers.isEmpty()) {
+                    setUpnpRenderer(mediaType.getParam().toFullString());
+                }
+
+                if (!serverHandlers.isEmpty()) {
+                    UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
+                    serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (Exception ex) {
+
+                    }
+
+                    serverHandler.serveMedia();
+                    pause();
+                    play();
+                    updateControlState();
+                }
+            }
+        } else if (command instanceof StringType) {
+            String val = ((StringType) command).toFullString();
+            logger.debug(val);
+
+            int idx = val.indexOf("/l");
+            val = val.substring(idx);
+
+            if (serverHandlers.isEmpty()) {
+                setUpnpRenderer("");
+            }
+
+            if (!serverHandlers.isEmpty()) {
+                UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
+                serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                try {
+                    Thread.sleep(2000);
+                } catch (Exception ex) {
+
+                }
+                // pause();
+                play();
+                updateControlState();
+            }
+
         }
     }
 
@@ -1026,7 +1121,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (!status) {
             removeSubscriptions();
 
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            updateControlState();
             cancelTrackPositionRefresh();
         }
         super.onStatusChanged(status);
@@ -1198,7 +1293,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             }
 
             cancelCheckPaused();
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            updateControlState();
             cancelTrackPositionRefresh();
             // Only go to next for first STOP command, then wait until we received PLAYING before moving
             // to next (avoids issues with renderers sending multiple stop states)
@@ -1229,13 +1324,13 @@ public class UpnpRendererHandler extends UpnpHandler {
             playerStopped = false;
             playing = true;
             registeredQueue = false; // reset queue registration flag as we are playing something
-            updateState(CONTROL, PlayPauseType.PLAY);
+            updateControlState();
             scheduleTrackPositionRefresh();
         } else if ("PAUSED_PLAYBACK".equals(value)) {
             cancelCheckPaused();
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            updateControlState();
         } else if ("NO_MEDIA_PRESENT".equals(value)) {
-            updateState(CONTROL, UnDefType.UNDEF);
+            updateControlState();
         }
     }
 
@@ -1352,6 +1447,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             trackPosition = 0;
             updateState(TRACK_POSITION, UnDefType.UNDEF);
             updateState(REL_TRACK_POSITION, UnDefType.UNDEF);
+            updateControlState();
         } else {
             try {
                 trackPosition = Arrays.stream(value.split("\\.")[0].split(":")).mapToInt(n -> Integer.parseInt(n))
@@ -1359,6 +1455,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                 updateState(TRACK_POSITION, new QuantityType<>(trackPosition, Units.SECOND));
                 int relPosition = (trackDuration != 0) ? trackPosition * 100 / trackDuration : 0;
                 updateState(REL_TRACK_POSITION, new PercentType(relPosition));
+                updateControlState();
             } catch (NumberFormatException e) {
                 logger.trace("Illegal format for track position {}", value);
                 return;
@@ -1563,7 +1660,34 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void resetPaused() {
-        updateState(CONTROL, PlayPauseType.PLAY);
+        updateControlState();
+    }
+
+    private void updateControlState() {
+        PlayPauseType state = PlayPauseType.NONE;
+        if ("PLAYING".equals(transportState)) {
+            state = PlayPauseType.PLAY;
+        } else if ("STOPPED".equals(transportState)) {
+            state = PlayPauseType.PAUSE;
+        } else if ("PAUSED_PLAYBACK".equals(transportState)) {
+            state = PlayPauseType.PAUSE;
+        }
+
+        MediaStateType mediaStateType = new MediaStateType(state, new StringType(this.getThing().getUID().getId()),
+                new StringType(UpnpControlBindingConstants.BINDING_ID));
+
+        mediaStateType.setCurrentPlayingPosition(trackPosition * 1000.00);
+        mediaStateType.setCurrentPlayingTrackDuration(trackDuration * 1000.00);
+        mediaStateType.setCurrentPlayingArtistName(artistName);
+        mediaStateType.setCurrentPlayingTrackName(trackName);
+        mediaStateType.setCurrentPlayingArtUri(artUri);
+        mediaStateType.setCurrentPlayingVolume(getCurrentVolume().doubleValue());
+        updateState(CONTROL, mediaStateType);
+    }
+
+    private void MediaType(MediaCommandType mediaType) {
+        // TODO Auto-generated method stub
+
     }
 
     private void cancelCheckPaused() {
@@ -1649,7 +1773,8 @@ public class UpnpRendererHandler extends UpnpHandler {
         logger.trace("Received meta data is for current entry: {}", isCurrent);
 
         if (!(isCurrent && media.getTitle().isEmpty())) {
-            updateState(TITLE, StringType.valueOf(media.getTitle()));
+            trackName = media.getTitle();
+            updateState(TITLE, StringType.valueOf(trackName));
         }
         if (!(isCurrent && (media.getAlbum().isEmpty() || media.getAlbum().matches("Unknown.*")))) {
             updateState(ALBUM, StringType.valueOf(media.getAlbum()));
@@ -1660,8 +1785,9 @@ public class UpnpRendererHandler extends UpnpHandler {
                 updateState(ALBUM_ART, UnDefType.UNDEF);
             } else {
                 State albumArt = null;
+                artUri = media.getAlbumArtUri().trim();
                 try {
-                    albumArt = HttpUtil.downloadImage(media.getAlbumArtUri().trim());
+                    albumArt = HttpUtil.downloadImage(artUri);
                 } catch (IllegalArgumentException e) {
                     logger.debug("Invalid album art URI: {}", media.getAlbumArtUri(), e);
                 }
@@ -1679,7 +1805,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             updateState(CREATOR, StringType.valueOf(media.getCreator()));
         }
         if (!(isCurrent && (media.getArtist().isEmpty() || media.getArtist().matches("Unknown.*")))) {
-            updateState(ARTIST, StringType.valueOf(media.getArtist()));
+            artistName = media.getArtist();
+            updateState(ARTIST, StringType.valueOf(artistName));
         }
         if (!(isCurrent && (media.getPublisher().isEmpty() || media.getPublisher().matches("Unknown.*")))) {
             updateState(PUBLISHER, StringType.valueOf(media.getPublisher()));
@@ -1692,6 +1819,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             State trackNumberState = (trackNumber != null) ? new DecimalType(trackNumber) : UnDefType.UNDEF;
             updateState(TRACK_NUMBER, trackNumberState);
         }
+
+        updateControlState();
+
     }
 
     private void clearMetaDataState() {
