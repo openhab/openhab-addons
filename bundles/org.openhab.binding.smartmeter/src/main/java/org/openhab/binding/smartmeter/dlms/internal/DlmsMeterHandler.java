@@ -17,7 +17,6 @@ import static org.openhab.core.thing.DefaultSystemChannelTypeProvider.*;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -164,7 +163,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
      * @return true if the meter contains any channels.
      */
     private boolean createdChannels() {
-        List<Channel> channels = new ArrayList<>();
+        Set<Channel> channels = new HashSet<>();
         DlmsConnection connection = this.connection;
         if (connection != null) {
             dlmsChannelInfos.forEach(info -> {
@@ -212,8 +211,8 @@ public class DlmsMeterHandler extends BaseThingHandler {
                 }
             });
             // thing needs updating only when channels (in any order) are different
-            if (!Objects.equals(new HashSet<>(thing.getChannels()), new HashSet<>(channels))) {
-                updateThing(editThing().withChannels(channels).build());
+            if (!Objects.equals(Set.copyOf(thing.getChannels()), channels)) {
+                updateThing(editThing().withChannels(List.copyOf(channels)).build());
             }
         }
         return !channels.isEmpty();
