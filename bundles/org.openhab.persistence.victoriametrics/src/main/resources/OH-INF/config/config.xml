@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="persistence:victoriametrics">
+
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>This group defines connection parameters.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter-group name="tags">
+			<label>Additional Tags</label>
+			<description>This group defines additional tags which can be added to your measurements.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter-group name="misc">
+			<label>Miscellaneous</label>
+			<description>This group defines miscellaneous parameters.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter name="url" type="text" required="true" groupName="connection">
+			<context>url</context>
+			<label>Victoria Metrics URL</label>
+			<!-- VictoriaMetrics default is port 8428, not 8086 -->
+			<description>The VictoriaMetrics base URL (e.g., http://127.0.0.1:8428)</description>
+			<default>http://127.0.0.1:8428</default>
+		</parameter>
+
+		<parameter name="user" type="text" required="false" groupName="connection">
+			<label>Username</label>
+			<!-- Only relevant if using HTTP basic auth (not default in VM OSS) -->
+			<description>Basic auth username (only needed if HTTP Basic Auth is enabled in VictoriaMetrics).</description>
+		</parameter>
+
+		<parameter name="password" type="text" required="false" groupName="connection">
+			<context>password</context>
+			<label>Password</label>
+			<!-- Only relevant if using HTTP basic auth (not default in VM OSS) -->
+			<description>Basic auth password (only needed if HTTP Basic Auth is enabled in VictoriaMetrics).</description>
+		</parameter>
+
+		<parameter name="token" type="text" required="false" groupName="connection">
+			<label>Authentication Token</label>
+			<!-- VM supports Bearer token only on some enterprise setups -->
+			<description>The token to authenticate (Bearer token, typically used in VictoriaMetrics Enterprise or if
+				reverse proxy
+				requires it).</description>
+		</parameter>
+
+		<parameter name="measurementPrefix" type="text" required="true" groupName="misc">
+			<label>Name prefix</label>
+			<description>Prefix for measurement names. If set, the prefix will be added to all measurements (e.g., "myPrefix_").
+				If not set, no prefix is added. This is applied after the item name is converted to snake_case (if enabled).</description>
+			<default>openhab_</default>
+		</parameter>
+
+		<parameter name="camelToSnakeCase" type="boolean" required="true" groupName="misc">
+			<label>Camel to Snake Case</label>
+			<description>Whether item names should be converted from CamelCase to snake_case ("TestItem" -> "test_item"). Only
+				for measurement name, not for tags. Also applies to alias names.</description>
+			<default>true</default>
+		</parameter>
+
+		<parameter name="addCategoryTag" type="boolean" required="true" groupName="tags">
+			<label>Add Category Tag</label>
+			<description>Should the category of the item be included as tag "category"? If no category is set, "n/a" is used.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addTypeTag" type="boolean" required="true" groupName="tags">
+			<label>Add Type Tag</label>
+			<description>Should the item type be included as tag "type"?</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addLabelTag" type="boolean" required="true" groupName="tags">
+			<label>Add Label Tag</label>
+			<description>Should the item label be included as tag "label"? If no label is set, "n/a" is used.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addUnitTag" type="boolean" required="true" groupName="tags">
+			<label>Add Unit Tag</label>
+			<description>Should the item measurement unit symbol be included as tag "unit" on QuantityType items? If no unit is
+				set tag will not be added.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
