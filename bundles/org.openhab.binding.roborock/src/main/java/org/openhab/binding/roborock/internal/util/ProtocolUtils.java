@@ -66,6 +66,20 @@ public final class ProtocolUtils {
         }
     }
 
+    /**
+     * Converts a byte array to its hexadecimal string representation.
+     *
+     * @param bytes The byte array to convert.
+     * @return The hexadecimal string.
+     */
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
     public static byte[] decrypt(byte[] payload, String key) throws RoborockCryptoException {
         try {
             byte[] aesKeyBytes = md5bin(key);
@@ -120,7 +134,7 @@ public final class ProtocolUtils {
      * @return The short integer value.
      */
     public static int readInt16BE(byte[] data, int start) {
-        return ByteBuffer.wrap(data, start, 2).getShort() & 0xFFFF; // Ensure unsigned short
+        return ByteBuffer.wrap(data, start, 2).getShort() & 0xFFFF;
     }
 
     /**
@@ -216,7 +230,7 @@ public final class ProtocolUtils {
         int random = readInt32BE(message, 7);
         int timestamp = readInt32BE(message, 11);
         int protocol = readInt16BE(message, 15);
-        int payloadLen = readInt16BE(message, 17); // For protocol 102
+        int payloadLen = readInt16BE(message, 17);
 
         return new MessageHeader(version, sequence, random, timestamp, protocol, payloadLen);
     }

@@ -94,7 +94,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final SchedulerTask initTask;
     private final SchedulerTask pollTask;
     private String token = "";
-    private @NonNullByDefault({}) Rooms[] homeRooms; // fixme should not be using nonnullbydefault
+    private Rooms[] homeRooms = new Rooms[0];
     private String rrHomeId = "";
     private String localKey = "";
     private final byte[] nonce = new byte[16];
@@ -106,7 +106,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final Gson gson = new Gson();
     private String lastHistoryID = "";
 
-    // Using a map to store request IDs for better management
     private final Map<String, Integer> outstandingRequests = new ConcurrentHashMap<>();
 
     private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
@@ -364,6 +363,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
             }
         }
+
         if (supportsRoutines) {
             String routinesResponse = bridgeHandler.getRoutines(getThing().getUID().getId());
             if (!routinesResponse.isEmpty()
@@ -416,12 +416,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     public void handleMessage(byte[] payload) {
         logger.debug("Received MQTT message for: {}", getThing().getUID().getId());
-        String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
-        if (response.isEmpty()) {
-            logger.debug("MQTT message processed - invalid message format received");
-            return;
-        }
         try {
+            String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
+            if (response.isEmpty()) {
+                logger.debug("MQTT message processed - invalid message format received");
+                return;
+            }
+
             if (JsonParser.parseString(response).isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")) {
@@ -491,7 +492,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             logger.debug("No handler for method: {}", methodName);
                             break;
                     }
-                    outstandingRequests.remove(methodName); // Remove once handled
+                    outstandingRequests.remove(methodName);
                 }
             } else {
                 // handle live updates ie any one (or more of values of dps)

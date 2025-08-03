@@ -15,7 +15,7 @@ package org.openhab.binding.roborock.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link RoborockAccountConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link RoborockVacuumConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Paul Smedley - Initial contribution
  */
@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class RoborockVacuumConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Vacuum configuration parameters.
      */
     public int refresh = 5; // in minutes
 }

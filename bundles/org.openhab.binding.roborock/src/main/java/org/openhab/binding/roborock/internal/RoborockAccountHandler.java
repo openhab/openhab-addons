@@ -451,7 +451,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         int protocol = 101;
         int id = secureRandom.nextInt(22767 + 1) + 10000;
 
-        String nonceHex = bytesToHex(nonce);
+        String nonceHex = ProtocolUtils.bytesToHex(nonce);
 
         Map<String, Object> security = new HashMap<>();
         security.put("endpoint", getEndpoint());
@@ -492,20 +492,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             logger.debug("Failed to publish {} message to {}, this.mqttClient == null", method, topic);
             return -1;
         }
-    }
-
-    /**
-     * Converts a byte array to its hexadecimal string representation.
-     *
-     * @param bytes The byte array to convert.
-     * @return The hexadecimal string.
-     */
-    private String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
     }
 
     byte[] build(String thingID, String localKey, int protocol, int timestamp, byte[] payload) {
