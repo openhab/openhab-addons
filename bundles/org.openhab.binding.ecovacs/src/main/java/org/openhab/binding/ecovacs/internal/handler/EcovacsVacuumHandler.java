@@ -773,6 +773,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             String[] splitted = command.split(":");
             if (splitted.length == 2) {
                 String scenarioId = splitted[1];
+                // Setting passes > 1 does not seem to have any effect (tested on T30).
+                // The number of passes can be defined in the scenario itself.
                 return new SceneCleaningCommand(scenarioId, 1);
             }
             logger.warn("{}: {} command needs to have the form {}:<scenarioId>", serialNumber, CMD_SCENE_CLEAN,
