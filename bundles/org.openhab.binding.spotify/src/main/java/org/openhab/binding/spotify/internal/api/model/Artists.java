@@ -13,18 +13,9 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api Artists data class : collection of Artist
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
-public class Playlist extends BaseEntry {
-
-    private String description;
-    private PlayListTracks tracks;
-    private String href;
-
-    public PlayListTracks getTracks() {
-        return tracks;
-    }
-
+public class Artists extends Paging<Artist> {
 }
