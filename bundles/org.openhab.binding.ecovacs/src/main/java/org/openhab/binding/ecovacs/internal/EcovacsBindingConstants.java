@@ -84,7 +84,7 @@ public class EcovacsBindingConstants {
     public static final String CMD_CHARGE = "charge";
     public static final String CMD_STOP = "stop";
     public static final String CMD_SPOT_AREA = "spotArea";
-    public static final String CMD_SCENE = "scene";
+    public static final String CMD_SCENE_CLEAN = "sceneClean";
     public static final String CMD_CUSTOM_AREA = "customArea";
 
     public static final StateOptionMapping<CleanMode> CLEAN_MODE_MAPPING = StateOptionMapping.of(
@@ -94,7 +94,7 @@ public class EcovacsBindingConstants {
             new StateOptionEntry<>(CleanMode.SPOT_AREA, "spotArea", DeviceCapability.SPOT_AREA_CLEANING),
             new StateOptionEntry<>(CleanMode.CUSTOM_AREA, "customArea", DeviceCapability.CUSTOM_AREA_CLEANING),
             new StateOptionEntry<>(CleanMode.SINGLE_ROOM, "singleRoom", DeviceCapability.SINGLE_ROOM_CLEANING),
-            new StateOptionEntry<>(CleanMode.SCENE, "scene", DeviceCapability.CLEANING_SCENES),
+            new StateOptionEntry<>(CleanMode.SCENE_CLEAN, "sceneClean", DeviceCapability.SCENARIO_CLEANING),
             new StateOptionEntry<>(CleanMode.PAUSE, "pause"), //
             new StateOptionEntry<>(CleanMode.STOP, "stop"), new StateOptionEntry<>(CleanMode.AUTO_EMPTY, "autoEmpty"),
             new StateOptionEntry<>(CleanMode.WASHING, "washing"), //

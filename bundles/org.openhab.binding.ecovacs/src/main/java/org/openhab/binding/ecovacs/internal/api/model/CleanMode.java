@@ -34,7 +34,7 @@ public enum CleanMode {
     @SerializedName("singleRoom")
     SINGLE_ROOM,
     @SerializedName("sceneClean")
-    SCENE,
+    SCENE_CLEAN,
     @SerializedName("pause")
     PAUSE,
     @SerializedName("stop")
@@ -52,7 +52,7 @@ public enum CleanMode {
 
     public boolean isActive() {
         return this == AUTO || this == EDGE || this == SPOT || this == SPOT_AREA || this == CUSTOM_AREA
-                || this == SINGLE_ROOM || this == SCENE;
+                || this == SINGLE_ROOM || this == SCENE_CLEAN;
     }
 
     public boolean isIdle() {
