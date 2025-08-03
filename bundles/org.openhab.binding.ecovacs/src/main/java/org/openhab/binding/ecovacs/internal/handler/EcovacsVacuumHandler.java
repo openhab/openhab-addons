@@ -55,6 +55,7 @@ import org.openhab.binding.ecovacs.internal.api.commands.GoChargingCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.PauseCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.PlaySoundCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.ResumeCleaningCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.SceneCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetContinuousCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetDefaultCleanPassesCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetDustbinAutoEmptyCommand;
@@ -751,7 +752,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                             device.hasCapability(DeviceCapability.FREE_CLEAN_FOR_SPOT_AREA));
                 }
             } else {
-                logger.info("{}: spotArea command needs to have the form spotArea:<room1>[;<room2>][;<...roomX>][:x2]",
+                logger.warn("{}: spotArea command needs to have the form spotArea:<room1>[;<room2>][;<...roomX>][:x2]",
                         serialNumber);
             }
         }
@@ -765,16 +766,17 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     return new CustomAreaCleaningCommand(String.join(",", splittedAreaDef), passes);
                 }
             }
-            logger.info("{}: customArea command needs to have the form customArea:<x1>;<y1>;<x2>;<y2>[:x2]",
+            logger.warn("{}: customArea command needs to have the form customArea:<x1>;<y1>;<x2>;<y2>[:x2]",
                     serialNumber);
         }
         if (command.startsWith(CMD_SCENE_CLEAN) && device.hasCapability(DeviceCapability.SCENARIO_CLEANING)) {
             String[] splitted = command.split(":");
             if (splitted.length == 2) {
-                logger.info("{}: {} command is not yet supported", serialNumber, CMD_SCENE_CLEAN);
-                // return new SceneCleaningCommand(splitted[1]);
+                String scenarioId = splitted[1];
+                return new SceneCleaningCommand(scenarioId, 1);
             }
-            // logger.info("{}: scene command needs to have the form scene:<sceneName>", serialNumber);
+            logger.warn("{}: {} command needs to have the form {}:<scenarioId>", serialNumber, CMD_SCENE_CLEAN,
+                    CMD_SCENE_CLEAN);
         }
 
         return null;
