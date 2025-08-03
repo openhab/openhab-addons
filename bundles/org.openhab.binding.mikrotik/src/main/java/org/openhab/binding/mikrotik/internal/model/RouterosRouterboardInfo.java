@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mikrotik.internal.model;
 
+import java.lang.module.ModuleDescriptor;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,5 +51,10 @@ public class RouterosRouterboardInfo extends RouterosBaseData {
 
     public String getFirmwareVersion() {
         return getProp("current-firmware", "Unknown");
+    }
+
+    public boolean hasBuiltinCapsMan() {
+        return ModuleDescriptor.Version.parse(getFirmwareVersion())
+                .compareTo(ModuleDescriptor.Version.parse("7.13")) >= 1;
     }
 }
