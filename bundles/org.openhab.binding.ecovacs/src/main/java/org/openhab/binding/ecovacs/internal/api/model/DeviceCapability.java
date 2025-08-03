@@ -35,6 +35,8 @@ public enum DeviceCapability {
     CUSTOM_AREA_CLEANING,
     @SerializedName("single_room_cleaning")
     SINGLE_ROOM_CLEANING,
+    @SerializedName("scenario_cleaning")
+    SCENARIO_CLEANING,
     @SerializedName("clean_speed_control")
     CLEAN_SPEED_CONTROL,
     @SerializedName("mapping")

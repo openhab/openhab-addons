@@ -615,5 +615,42 @@
         "modelName": "DEEBOT X2 PRO OMNI",
         "deviceClass": "ip3mmy",
         "deviceClassLink": "e6ofmn"
+    },
+
+    {
+        "modelName": "DEEBOT T30 OMNI",
+        "deviceClass": "z4lvk7",
+        "protoVersion": "json_v2",
+        "usesMqtt": true,
+        "capabilities": [
+            "mopping_system",
+            "main_brush",
+            "spot_area_cleaning",
+            "custom_area_cleaning",
+            "scenario_cleaning",
+            "clean_speed_control",
+            "voice_reporting",
+            "read_network_info",
+            "unit_care_lifespan",
+            "true_detect_3d",
+            "mapping",
+            "auto_empty_station",
+            "uses_clean_results_log_api"
+        ]
+    },
+    {
+        "modelName": "DEEBOT T30 PRO OMNI",
+        "deviceClass": "4vhygi",
+        "deviceClassLink": "z4lvk7"
+    },
+    {
+        "modelName": "DEEBOT T30 PRO OMNI",
+        "deviceClass": "3w7j5e",
+        "deviceClassLink": "z4lvk7"
+    },
+    {
+        "modelName": "DEEBOT T30 PRO OMNI",
+        "deviceClass": "tlthqk",
+        "deviceClassLink": "z4lvk7"
     }
 ]
