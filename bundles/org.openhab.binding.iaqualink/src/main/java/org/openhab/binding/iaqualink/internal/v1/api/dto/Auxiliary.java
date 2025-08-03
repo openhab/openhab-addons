@@ -10,31 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iaqualink.internal.api.dto;
+package org.openhab.binding.iaqualink.internal.v1.api.dto;
 
 /**
- * OneTouch Macros.
+ * Auxiliary devices.
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
-public class OneTouch {
-
-    private String status;
+public class Auxiliary {
 
     private String state;
 
     private String label;
 
+    private String icon;
+
+    private String type;
+
+    private String subtype;
+
     private String name;
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public String getState() {
         return state;
@@ -50,6 +46,30 @@ public class OneTouch {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSubtype() {
+        return subtype;
+    }
+
+    public void setSubtype(String subtype) {
+        this.subtype = subtype;
     }
 
     public String getName() {
