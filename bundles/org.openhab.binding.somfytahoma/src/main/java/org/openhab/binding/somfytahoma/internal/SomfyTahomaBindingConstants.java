@@ -415,6 +415,7 @@ public class SomfyTahomaBindingConstants {
     public static final int RECONCILIATION_TIME = 600;
     public static final int LOGIN_LIMIT_TIME = 60;
     public static final int MAX_ERRORS = 5;
+    public static final int SECONDS_BEFORE_EXPIRATION = 30;
 
     // Commands
     public static final String COMMAND_MY = "my";
