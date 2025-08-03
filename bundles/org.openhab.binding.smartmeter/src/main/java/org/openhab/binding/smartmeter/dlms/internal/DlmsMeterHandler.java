@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -84,6 +85,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         cancelTasks();
+        dlmsChannelInfos.clear();
         DlmsConnection connection = this.connection;
         if (connection != null) {
             this.connection = null;
@@ -209,7 +211,8 @@ public class DlmsMeterHandler extends BaseThingHandler {
                     logger.debug("Meter channel: {}, read error: {}", info, e.getMessage());
                 }
             });
-            if (!thing.getChannels().equals(channels)) {
+            // thing needs updating only when channels (in any order) are different
+            if (!Objects.equals(new HashSet<>(thing.getChannels()), new HashSet<>(channels))) {
                 updateThing(editThing().withChannels(channels).build());
             }
         }
