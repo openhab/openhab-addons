@@ -408,7 +408,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             outstandingRequests.put("getFwFeatures", sendCommand(COMMAND_GET_FW_FEATURES));
             outstandingRequests.put("getMultiMapsList", sendCommand(COMMAND_GET_MULTI_MAP_LIST));
             outstandingRequests.put("getCustomizeCleanMode", sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
-            // outstandingRequests.put("getMap", sendCommand(COMMAND_GET_MAP)); // Uncomment if map command is needed
         } catch (UnsupportedEncodingException e) {
             logger.warn("Failed to send MQTT commands due to unsupported encoding: {}", e.getMessage());
         }
