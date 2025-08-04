@@ -31,4 +31,5 @@ public class HttpChannelConfig extends ChannelValueConverterConfig {
     public @Nullable List<String> stateTransformation;
     public @Nullable List<String> commandTransformation;
     public String stateContent = "";
+    public Boolean refreshAfterCommand = false;
 }
