@@ -87,6 +87,11 @@
 				<label>Peak Consumption</label>
 				<description>Peak power consumption since midnight in watts</description>
 			</add-channel>
+			<add-channel id="average-consumption" groupIds="live">
+				<type>tibber:power</type>
+				<label>Average Consumption</label>
+				<description>Average power consumption since midnight in watts</description>
+			</add-channel>
 			<add-channel id="production" groupIds="live">
 				<type>tibber:power</type>
 				<label>Live Production</label>
