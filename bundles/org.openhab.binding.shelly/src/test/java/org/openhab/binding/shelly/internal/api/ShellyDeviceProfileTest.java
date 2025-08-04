@@ -57,15 +57,8 @@ public class ShellyDeviceProfileTest {
 
     private static Stream<Arguments> provideTestCasesForApiDetermination() {
         return Stream.of( //
-                // Shelly BLU
-                Arguments.of(THING_TYPE_SHELLYBLUBUTTON, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
-                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
-                // Shelly Bulb
-                Arguments.of(THING_TYPE_SHELLYBULB, false, false), //
                 // Generation 1
+                Arguments.of(THING_TYPE_SHELLYBULB, false, false), //
                 Arguments.of(THING_TYPE_SHELLYDUO, false, false), //
                 Arguments.of(THING_TYPE_SHELLYDUORGBW, false, false), //
                 Arguments.of(THING_TYPE_SHELLYVINTAGE, false, false), //
@@ -117,6 +110,13 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYMINI_1PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYMINI_PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYMINI_EM, true, false), //
+
+                // Shelly BLU
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
+                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
 
                 // Shelly Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
@@ -192,7 +192,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYDIMMER, "", 0, 0, 0, 0, CHANNEL_GROUP_DIMMER_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYDIMMER2, "", 0, 0, 0, 1, CHANNEL_GROUP_DIMMER_CONTROL),
                 Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 0, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
-                Arguments.of(THING_TYPE_SHELLY2_ROLLER, "Roller", 1, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
+                Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 1, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
                 Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 2, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL + "4"),
                 Arguments.of(THING_TYPE_SHELLY25_RELAY, "", 0, 0, 0, 3, CHANNEL_GROUP_STATUS + "4"),
                 Arguments.of(THING_TYPE_SHELLY25_RELAY, "", 0, 1, 0, 3, CHANNEL_GROUP_RELAY_CONTROL),

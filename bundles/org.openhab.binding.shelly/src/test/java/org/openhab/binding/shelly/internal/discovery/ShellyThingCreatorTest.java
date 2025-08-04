@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -38,12 +40,7 @@ import org.openhab.core.thing.ThingUID;
 public class ShellyThingCreatorTest {
 
     private static final String DEVICE_ID = "000000000000";
-
-    @Test
-    void printSupportedThingTypes() {
-        System.out.println("Supported Things:");
-        SUPPORTED_THING_TYPES.stream().map(ThingTypeUID::toString).sorted().forEach(System.out::println);
-    }
+    private static final Set<ThingTypeUID> coveredUIDbyDeviceType = new HashSet<ThingTypeUID>();
 
     @ParameterizedTest
     @MethodSource("provideTestCasesForGetThingUIDThrowsForInvalidServiceName")
@@ -80,20 +77,17 @@ public class ShellyThingCreatorTest {
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset() {
         return Stream.of( //
                 Arguments.of("johndoe-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNKNOWN), //
-                Arguments.of("shellyazplug-" + DEVICE_ID, SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
-                Arguments.of("shellyoutdoorsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGOUTDOORSG3, "",
-                        THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyplug-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
                 Arguments.of("shellyplug-u1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
-                Arguments.of("shellyplugs-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS), //
                 Arguments.of("shellyplug-s-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS), //
                 Arguments.of("shellyplug-su1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS), //
                 Arguments.of("shellyplugu1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1), //
                 Arguments.of("shellyplugu12-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1), //
+                Arguments.of("shellyplusplug-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of("shellyplugsg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyplugus-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGUS), //
                 Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "color", THING_TYPE_SHELLYRGBW2_COLOR), //
-                Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYRGBW2_WHITE), //
-                Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "colour", THING_TYPE_SHELLYRGBW2_WHITE), //
+                Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "white", THING_TYPE_SHELLYRGBW2_WHITE), //
                 Arguments.of("shellymotion-" + DEVICE_ID, "", "", THING_TYPE_SHELLYMOTION), //
                 Arguments.of("shellymotion2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYMOTION), //
                 Arguments.of("shellymotionsensor-" + DEVICE_ID, "", "", THING_TYPE_SHELLYMOTION));
@@ -107,6 +101,10 @@ public class ShellyThingCreatorTest {
 
         assertThat("deviceType: " + deviceType + "; mode: " + mode, actual, is(equalTo(expected)));
         assertThat(SUPPORTED_THING_TYPES, hasItem(expectedThingTypeUid));
+
+        if (!coveredUIDbyDeviceType.contains(expectedThingTypeUid)) {
+            coveredUIDbyDeviceType.add(expectedThingTypeUid);
+        }
     }
 
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidByDeviceType() {
@@ -135,6 +133,10 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_HT, "", THING_TYPE_SHELLYHT), //
                 Arguments.of(SHELLYDT_TRV, "", THING_TYPE_SHELLYTRV), //
                 Arguments.of(SHELLYDT_MOTION, "", THING_TYPE_SHELLYMOTION), //
+                Arguments.of(SHELLYDT_SHELLY2, "relay", THING_TYPE_SHELLY2_RELAY), //
+                Arguments.of(SHELLYDT_SHELLY2, "roller", THING_TYPE_SHELLY2_ROLLER), //
+                Arguments.of(SHELLYDT_SHELLY25, "relay", THING_TYPE_SHELLY25_RELAY), //
+                Arguments.of(SHELLYDT_SHELLY25, "roller", THING_TYPE_SHELLY25_ROLLER), //
 
                 // Plus Series
                 Arguments.of(SHELLYDT_PLUS1, "", THING_TYPE_SHELLYPLUS1), //
@@ -146,14 +148,14 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUS1UL, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1PMUL, "", THING_TYPE_SHELLYPLUS1PM), //
                 Arguments.of(SHELLYDT_PLUS1L, "", THING_TYPE_SHELLYPLUS1L), //
-                Arguments.of("SNSW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
-                Arguments.of("SNSW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
-                Arguments.of("SNSW-102P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
-                Arguments.of("SNSW-102P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
-                Arguments.of("S3SW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
-                Arguments.of("S3SW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
-                Arguments.of("S4SW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
-                Arguments.of("S4SW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
+                Arguments.of(SHELLYDT_PLUS2PM, "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
+                Arguments.of(SHELLYDT_PLUS2PM, "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
+                Arguments.of(SHELLYDT_PLUS2PM_2, "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
+                Arguments.of(SHELLYDT_PLUS2PM_2, "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
+                Arguments.of(SHELLYDT_PLUS2PMG3, "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
+                Arguments.of(SHELLYDT_PLUS2PMG3, "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
+                Arguments.of(SHELLYDT_PLUS2PMG4, "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
+                Arguments.of(SHELLYDT_PLUS2PMG4, "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
                 Arguments.of(SHELLYDT_PLUS2L, "", THING_TYPE_SHELLYPLUS2L), //
                 Arguments.of(SHELLYDT_PLUSSHUTTER, "", THING_TYPE_SHELLYPLUSSHUTTER), //
                 Arguments.of(SHELLYDT_PLUSPLUGS, "", THING_TYPE_SHELLYPLUSPLUGS), //
@@ -176,6 +178,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSDIMMERG3, "", THING_TYPE_SHELLYPLUSDIMMER), //
                 Arguments.of(SHELLYDT_PLUSEM, "", THING_TYPE_SHELLYPLUSEM), //
                 Arguments.of(SHELLYDT_PLUS3EM63, "", THING_TYPE_SHELLYPLUS3EM63), //
+                Arguments.of(SHELLYDT_PLUSRGBWPM, "", THING_TYPE_SHELLYPLUSRGBWPM),
 
                 // Plus Mini Series
                 Arguments.of(SHELLYDT_MINI_1, "", THING_TYPE_SHELLYMINI_1), //
@@ -183,7 +186,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_MINI_1G4, "", THING_TYPE_SHELLYMINI_1), //
                 Arguments.of(SHELLYDT_MINI_PM, "", THING_TYPE_SHELLYMINI_PM), //
                 Arguments.of(SHELLYDT_MINI_PMG3, "", THING_TYPE_SHELLYMINI_PM), //
-                Arguments.of(SHELLYDT_MINI_EM, "", THING_TYPE_SHELLYMINI_PM), //
+                Arguments.of(SHELLYDT_MINI_EM, "", THING_TYPE_SHELLYMINI_EM), //
                 Arguments.of(SHELLYDT_MINI_1PM, "", THING_TYPE_SHELLYMINI_1PM), //
                 Arguments.of(SHELLYDT_MINI_1PMG3, "", THING_TYPE_SHELLYMINI_1PM), //
                 Arguments.of(SHELLYDT_MINI_1PMG4, "", THING_TYPE_SHELLYMINI_1PM), //
@@ -199,12 +202,12 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO2, "", THING_TYPE_SHELLYPRO2), //
                 Arguments.of(SHELLYDT_PRO2_2, "", THING_TYPE_SHELLYPRO2), //
                 Arguments.of(SHELLYDT_PRO2_3, "", THING_TYPE_SHELLYPRO2), //
-                Arguments.of("SPSW-002PE16EU", "relay", THING_TYPE_SHELLYPRO2PM_RELAY), //
-                Arguments.of("SPSW-102PE16EU", "relay", THING_TYPE_SHELLYPRO2PM_RELAY), //
-                Arguments.of("SPSW-202PE16EU", "relay", THING_TYPE_SHELLYPRO2PM_RELAY), //
-                Arguments.of("SPSW-002PE16EU", "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
-                Arguments.of("SPSW-102PE16EU", "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
-                Arguments.of("SPSW-202PE16EU", "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
+                Arguments.of(SHELLYDT_PRO2PM, "relay", THING_TYPE_SHELLYPRO2PM_RELAY), //
+                Arguments.of(SHELLYDT_PRO2PM_2, "relay", THING_TYPE_SHELLYPRO2PM_RELAY), //
+                Arguments.of(SHELLYDT_PRO2PM_3, "relay", THING_TYPE_SHELLYPRO2PM_RELAY), //
+                Arguments.of(SHELLYDT_PRO2PM, "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
+                Arguments.of(SHELLYDT_PRO2PM_2, "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
+                Arguments.of(SHELLYDT_PRO2PM_3, "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
                 Arguments.of(SHELLYDT_PRO3, "", THING_TYPE_SHELLYPRO3), //
                 Arguments.of(SHELLYDT_PROEM50, "", THING_TYPE_SHELLYPROEM50), //
                 Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
@@ -261,5 +264,24 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shell-001", false), //
                 Arguments.of("ShellyPlusPMMini", false), //
                 Arguments.of("ShellyPlusPMMini - Test", false));
+    }
+
+    @Test
+    void testCoverage() {
+        for (Map.Entry<String, ThingTypeUID> entry : THING_TYPE_BY_DEVICE_TYPE.entrySet()) {
+            assertThat(coveredUIDbyDeviceType, hasItem(entry.getValue()));
+        }
+        for (Map.Entry<String, ThingTypeUID> entry : RELAY_THING_TYPE_BY_DEVICE_TYPE.entrySet()) {
+            assertThat(coveredUIDbyDeviceType, hasItem(entry.getValue()));
+        }
+        for (Map.Entry<String, ThingTypeUID> entry : ROLLER_THING_TYPE_BY_DEVICE_TYPE.entrySet()) {
+            assertThat(coveredUIDbyDeviceType, hasItem(entry.getValue()));
+        }
+        for (ThingTypeUID entry : GROUP_BLU_THING_TYPES) {
+            assertThat(coveredUIDbyDeviceType, hasItem(entry));
+        }
+        for (ThingTypeUID entry : GROUP_MINI_THING_TYPES) {
+            assertThat(coveredUIDbyDeviceType, hasItem(entry));
+        }
     }
 }

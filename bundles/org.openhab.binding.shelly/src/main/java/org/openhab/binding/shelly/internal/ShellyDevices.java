@@ -410,7 +410,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_MINI_1G4, THING_TYPE_SHELLYMINI_1),
             Map.entry(SHELLYDT_MINI_PM, THING_TYPE_SHELLYMINI_PM),
             Map.entry(SHELLYDT_MINI_PMG3, THING_TYPE_SHELLYMINI_PM),
-            Map.entry(SHELLYDT_MINI_EM, THING_TYPE_SHELLYMINI_PM),
+            Map.entry(SHELLYDT_MINI_EM, THING_TYPE_SHELLYMINI_EM),
             Map.entry(SHELLYDT_MINI_1PM, THING_TYPE_SHELLYMINI_1PM),
             Map.entry(SHELLYDT_MINI_1PMG3, THING_TYPE_SHELLYMINI_1PM),
             Map.entry(SHELLYDT_MINI_1PMG4, THING_TYPE_SHELLYMINI_1PM),
@@ -487,10 +487,8 @@ public class ShellyDevices {
         SUPPORTED_THING_TYPES.addAll(THING_TYPE_BY_DEVICE_TYPE.values());
         SUPPORTED_THING_TYPES.addAll(RELAY_THING_TYPE_BY_DEVICE_TYPE.values());
         SUPPORTED_THING_TYPES.addAll(ROLLER_THING_TYPE_BY_DEVICE_TYPE.values());
-        SUPPORTED_THING_TYPES.addAll(GROUP_LIGHT_THING_TYPES);
+        SUPPORTED_THING_TYPES.addAll(GROUP_RGBW2_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(Set.of(//
-                THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER, //
-                THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLY25_ROLLER, //
                 THING_TYPE_SHELLYPLUG, //
                 THING_TYPE_SHELLYUNKNOWN, THING_TYPE_SHELLYPROTECTED));
     }
@@ -540,6 +538,7 @@ public class ShellyDevices {
             Map.entry("shellyplus2l", THING_TYPE_SHELLYPLUS2L), //
             Map.entry("shellyplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry("shellyplugsg3", THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry("shellyplusplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplusi4", THING_TYPE_SHELLYPLUSI4), //
             Map.entry("shellyi4g3", THING_TYPE_SHELLYPLUSI4), //
