@@ -156,8 +156,6 @@ public class ShellyDevices {
     public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
     public static final String SERVICE_NAME_SHELLYPLUSRANGE_PREFIX = "shellyplusrange";
 
-    public static final String SERVICE_NAME_SHELLY2_PREFIX = "shellyswitch";
-    public static final String SERVICE_NAME_SHELLY25_PREFIX = "shellyswitch25";
     public static final String SERVICE_NAME_SHELLYPLUG_PREFIX = "shellyplug";
     public static final String SERVICE_NAME_SHELLYPLUGS_PREFIX = "shellyplugs";
     public static final String SERVICE_NAME_SHELLYPLUGU1_PREFIX = "shellyplugu1"; // Shelly Plug US
