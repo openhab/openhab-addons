@@ -39,6 +39,12 @@ public class ShellyThingCreatorTest {
 
     private static final String DEVICE_ID = "000000000000";
 
+    @Test
+    void printSupportedThingTypes() {
+        System.out.println("Supported Things:");
+        SUPPORTED_THING_TYPES.stream().map(ThingTypeUID::toString).sorted().forEach(System.out::println);
+    }
+
     @ParameterizedTest
     @MethodSource("provideTestCasesForGetThingUIDThrowsForInvalidServiceName")
     void getThingUIDThrowsForInvalidServiceName(String serviceName) {
@@ -77,13 +83,6 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyazplug-" + DEVICE_ID, SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyoutdoorsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGOUTDOORSG3, "",
                         THING_TYPE_SHELLYPLUSPLUGS), //
-                Arguments.of("shellyswitch25-" + DEVICE_ID, "", "relay", THING_TYPE_SHELLY25_RELAY), //
-                Arguments.of("shellyswitch25xx-" + DEVICE_ID, "", "relay", THING_TYPE_SHELLY25_RELAY), //
-                Arguments.of("shellyswitch25xx-" + DEVICE_ID, "", "", THING_TYPE_SHELLY25_ROLLER), //
-                Arguments.of("shellyswitch25xx-" + DEVICE_ID, "", "relax", THING_TYPE_SHELLY25_ROLLER), //
-                Arguments.of("shellyswitch26xx-" + DEVICE_ID, "", "relay", THING_TYPE_SHELLY2_RELAY), //
-                Arguments.of("shellyswitch-" + DEVICE_ID, "", "relay", THING_TYPE_SHELLY2_RELAY), //
-                Arguments.of("shellyswitch-" + DEVICE_ID, "", "", THING_TYPE_SHELLY2_ROLLER), //
                 Arguments.of("shellyplug-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
                 Arguments.of("shellyplug-u1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
                 Arguments.of("shellyplugs-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS), //
@@ -96,6 +95,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYRGBW2_WHITE), //
                 Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "colour", THING_TYPE_SHELLYRGBW2_WHITE), //
                 Arguments.of("shellymotion-" + DEVICE_ID, "", "", THING_TYPE_SHELLYMOTION), //
+                Arguments.of("shellymotion2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYMOTION), //
                 Arguments.of("shellymotionsensor-" + DEVICE_ID, "", "", THING_TYPE_SHELLYMOTION));
     }
 
@@ -117,11 +117,11 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_SHPRO, "", THING_TYPE_SHELLY4PRO), //
                 Arguments.of(SHELLYDT_3EM, "", THING_TYPE_SHELLY3EM), //
                 Arguments.of(SHELLYDT_EM, "", THING_TYPE_SHELLYEM), //
-                Arguments.of(SHELLYDT_SHPLG_S, "", THING_TYPE_SHELLYPLUGS), //
-                Arguments.of(SHELLYDT_SHPLG_U1, "", THING_TYPE_SHELLYPLUGU1), //
+                Arguments.of(SHELLYDT_PLUGSS, "", THING_TYPE_SHELLYPLUGS), //
+                Arguments.of(SHELLYDT_PLUGU1, "", THING_TYPE_SHELLYPLUGU1), //
                 Arguments.of(SHELLYDT_GAS, "", THING_TYPE_SHELLYGAS), //
-                Arguments.of(SHELLYDT_DW, "", THING_TYPE_SHELLYDOORWIN), //
-                Arguments.of(SHELLYDT_DW2, "", THING_TYPE_SHELLYDOORWIN2), //
+                Arguments.of(SHELLYDT_DOORWINDOW, "", THING_TYPE_SHELLYDOORWIN), //
+                Arguments.of(SHELLYDT_DOORWINDOW2, "", THING_TYPE_SHELLYDOORWIN2), //
                 Arguments.of(SHELLYDT_DUO, "", THING_TYPE_SHELLYDUO), //
                 Arguments.of(SHELLYDT_DUORGBW, "", THING_TYPE_SHELLYDUORGBW), //
                 Arguments.of(SHELLYDT_BULB, "", THING_TYPE_SHELLYBULB), //

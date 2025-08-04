@@ -69,13 +69,6 @@ public class ShellyThingCreator {
             throw new IllegalArgumentException("Invalid serviceName format: " + serviceName);
         }
 
-        // First check for special handling
-        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLY25_PREFIX)) { // Shelly v2.5
-            return getRelayOrRollerType(THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLY25_ROLLER, mode);
-        }
-        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLY2_PREFIX)) { // Shelly v2
-            return getRelayOrRollerType(THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER, mode);
-        }
         if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUG_PREFIX) && !serviceNameLowerCase.contains("plugus")
                 && !serviceNameLowerCase.contains("plugsg3")) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
@@ -92,10 +85,6 @@ public class ShellyThingCreator {
         if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYRGBW2_PREFIX)) {
             return SHELLY_MODE_COLOR.equals(mode) ? THING_TYPE_SHELLYRGBW2_COLOR : THING_TYPE_SHELLYRGBW2_WHITE;
         }
-        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYMOTION_PREFIX)) {
-            // depending on firmware release the Motion advertises under shellymotion-xxx or shellymotionsensor-xxxx
-            return THING_TYPE_SHELLYMOTION;
-        }
 
         if (!deviceType.isEmpty()) {
             Map<String, ThingTypeUID> deviceTypeMap = switch (mode) {
@@ -111,10 +100,6 @@ public class ShellyThingCreator {
         }
 
         return THING_TYPE_BY_SERVICE_NAME.getOrDefault(type, THING_TYPE_SHELLYUNKNOWN);
-    }
-
-    private static ThingTypeUID getRelayOrRollerType(ThingTypeUID relayType, ThingTypeUID rollerType, String mode) {
-        return SHELLY_MODE_RELAY.equals(mode) ? relayType : rollerType;
     }
 
     public static boolean isValidShellyServiceName(String serviceName) {

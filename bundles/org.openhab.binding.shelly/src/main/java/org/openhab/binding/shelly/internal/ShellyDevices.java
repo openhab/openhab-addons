@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,17 +36,17 @@ public class ShellyDevices {
     public static final String SHELLYDT_1 = "SHSW-1";
     public static final String SHELLYDT_1PM = "SHSW-PM";
     public static final String SHELLYDT_1L = "SHSW-L";
-    public static final String SHELLYDT_SHPLG = "SHPLG-1";
-    public static final String SHELLYDT_SHPLG_S = "SHPLG-S";
-    public static final String SHELLYDT_SHPLG_U1 = "SHPLG-U1";
+    public static final String SHELLYDT_PLUG = "SHPLG-1";
+    public static final String SHELLYDT_PLUGSS = "SHPLG-S";
+    public static final String SHELLYDT_PLUGU1 = "SHPLG-U1";
     public static final String SHELLYDT_SHELLY2 = "SHSW-21";
     public static final String SHELLYDT_SHELLY25 = "SHSW-25";
     public static final String SHELLYDT_SHPRO = "SHSW-44";
     public static final String SHELLYDT_EM = "SHEM";
     public static final String SHELLYDT_3EM = "SHEM-3";
     public static final String SHELLYDT_HT = "SHHT-1";
-    public static final String SHELLYDT_DW = "SHDW-1";
-    public static final String SHELLYDT_DW2 = "SHDW-2";
+    public static final String SHELLYDT_DOORWINDOW = "SHDW-1";
+    public static final String SHELLYDT_DOORWINDOW2 = "SHDW-2";
     public static final String SHELLYDT_SENSE = "SHSEN-1";
     public static final String SHELLYDT_MOTION = "SHMOS-01";
     public static final String SHELLYDT_MOTION2 = "SHMOS-02";
@@ -150,7 +151,6 @@ public class ShellyDevices {
     // Thing Type ID prefixes
     public static final String THING_TYPE_SHELLYPLUS_PREFIX = "shellyplus";
     public static final String THING_TYPE_SHELLYPRO_PREFIX = "shellypro";
-    public static final String THING_TYPE_SHELLYMINI_MIDDLE = "mini"; // format is shellyXXmini
 
     // Service name prefixes
     public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
@@ -301,7 +301,7 @@ public class ShellyDevices {
 
     // DW Sensors
     public static final Set<ThingTypeUID> GROUP_DOORWINDOW_THING_TYPES = Set.of(THING_TYPE_SHELLYDOORWIN,
-            THING_TYPE_SHELLYBLUDW);
+            THING_TYPE_SHELLYDOORWIN2, THING_TYPE_SHELLYBLUDW);
 
     // Motion Sensors
     public static final Set<ThingTypeUID> GROUP_MOTION_THING_TYPES = Set.of(THING_TYPE_SHELLYMOTION,
@@ -337,38 +337,8 @@ public class ShellyDevices {
     public static final Set<ThingTypeUID> GROUP_WALLDISPLAY_THING_TYPES = Set.of(THING_TYPE_SHELLYPLUSWALLDISPLAY);
 
     /*
-     * Aggregated list of supported devices / thing types
+     * Mapping of device type (model id from device profile) to thing type
      */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(
-            // Grouped types
-            GROUP_DIMMER_THING_TYPES, GROUP_LIGHT_THING_TYPES, GROUP_IX_THING_TYPES, GROUP_BUTTON_THING_TYPES,
-            GROUP_HT_THING_TYPES, GROUP_DOORWINDOW_THING_TYPES, GROUP_MOTION_THING_TYPES, GROUP_SMOKE_THING_TYPES,
-            GROUP_FLOOD_THING_TYPES, GROUP_GAS_THING_TYPES, GROUP_UNI_THING_TYPES, GROUP_3EM_THING_TYPES,
-            GROUP_MINI_THING_TYPES, GROUP_BLU_THING_TYPES, GROUP_WALLDISPLAY_THING_TYPES,
-
-            // Remaining individual types (not covered in above groups)
-            Set.of(// Gen1
-                    THING_TYPE_SHELLYPLUG, THING_TYPE_SHELLYPLUGS, THING_TYPE_SHELLYPLUGU1, //
-                    THING_TYPE_SHELLY1, THING_TYPE_SHELLY1L, THING_TYPE_SHELLY1PM, //
-                    THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER, //
-                    THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY4PRO, //
-                    THING_TYPE_SHELLYEM, THING_TYPE_SHELLYSENSE, THING_TYPE_SHELLYEYE, THING_TYPE_SHELLYTRV,
-
-                    // Plus series
-                    THING_TYPE_SHELLYPLUSPLUGS, THING_TYPE_SHELLYPLUSPLUGUS, THING_TYPE_SHELLYPLUSSTRIP, //
-                    THING_TYPE_SHELLYPLUS1, THING_TYPE_SHELLYPLUS1PM, THING_TYPE_SHELLYPLUS1L, //
-                    THING_TYPE_SHELLYPLUS2PM_RELAY, THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPLUS2L,
-                    THING_TYPE_SHELLYPLUSSHUTTER, //
-
-                    // Pro Series
-                    THING_TYPE_SHELLYPRO1, THING_TYPE_SHELLYPRO1PM, THING_TYPE_SHELLYPRO1CB, //
-                    THING_TYPE_SHELLYPRO2, THING_TYPE_SHELLYPRO2PM_RELAY, THING_TYPE_SHELLYPRO2PM_ROLLER,
-                    THING_TYPE_SHELLYPRO3, THING_TYPE_SHELLYPRO4PM, //
-
-                    // Other
-                    THING_TYPE_SHELLYPROTECTED, // password protected devices
-                    THING_TYPE_SHELLYUNKNOWN // unknown device
-            )).flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
 
     public static final Map<String, ThingTypeUID> THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
             // Gen 1
@@ -378,11 +348,11 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_SHPRO, THING_TYPE_SHELLY4PRO), //
             Map.entry(SHELLYDT_3EM, THING_TYPE_SHELLY3EM), //
             Map.entry(SHELLYDT_EM, THING_TYPE_SHELLYEM), //
-            Map.entry(SHELLYDT_SHPLG_S, THING_TYPE_SHELLYPLUGS), //
-            Map.entry(SHELLYDT_SHPLG_U1, THING_TYPE_SHELLYPLUGU1), //
+            Map.entry(SHELLYDT_PLUGSS, THING_TYPE_SHELLYPLUGS), //
+            Map.entry(SHELLYDT_PLUGU1, THING_TYPE_SHELLYPLUGU1), //
             Map.entry(SHELLYDT_GAS, THING_TYPE_SHELLYGAS), //
-            Map.entry(SHELLYDT_DW, THING_TYPE_SHELLYDOORWIN), //
-            Map.entry(SHELLYDT_DW2, THING_TYPE_SHELLYDOORWIN2), //
+            Map.entry(SHELLYDT_DOORWINDOW, THING_TYPE_SHELLYDOORWIN), //
+            Map.entry(SHELLYDT_DOORWINDOW2, THING_TYPE_SHELLYDOORWIN2), //
             Map.entry(SHELLYDT_DUO, THING_TYPE_SHELLYDUO), //
             Map.entry(SHELLYDT_DUORGBW, THING_TYPE_SHELLYDUORGBW), //
             Map.entry(SHELLYDT_BULB, THING_TYPE_SHELLYBULB), //
@@ -475,6 +445,10 @@ public class ShellyDevices {
 
     // Relay devices (mode="relay")
     public static final Map<String, ThingTypeUID> RELAY_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
+            // Gen1 Series
+            Map.entry(SHELLYDT_SHELLY2, THING_TYPE_SHELLY2_RELAY),
+            Map.entry(SHELLYDT_SHELLY25, THING_TYPE_SHELLY25_RELAY),
+
             // Plus Series
             Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_RELAY),
@@ -489,6 +463,10 @@ public class ShellyDevices {
 
     // Roller devices (mode="roller")
     public static final Map<String, ThingTypeUID> ROLLER_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
+            // Gen1 Series
+            Map.entry(SHELLYDT_SHELLY2, THING_TYPE_SHELLY2_ROLLER),
+            Map.entry(SHELLYDT_SHELLY25, THING_TYPE_SHELLY25_ROLLER),
+
             // Plus Series
             Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_ROLLER),
             Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_ROLLER),
@@ -500,6 +478,22 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO2PM, THING_TYPE_SHELLYPRO2PM_ROLLER),
             Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_ROLLER),
             Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_ROLLER));
+
+    /*
+     * Aggregated list of supported devices / thing types
+     */
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>();
+    static {
+        SUPPORTED_THING_TYPES.addAll(THING_TYPE_BY_DEVICE_TYPE.values());
+        SUPPORTED_THING_TYPES.addAll(RELAY_THING_TYPE_BY_DEVICE_TYPE.values());
+        SUPPORTED_THING_TYPES.addAll(ROLLER_THING_TYPE_BY_DEVICE_TYPE.values());
+        SUPPORTED_THING_TYPES.addAll(GROUP_LIGHT_THING_TYPES);
+        SUPPORTED_THING_TYPES.addAll(Set.of(//
+                THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER, //
+                THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLY25_ROLLER, //
+                THING_TYPE_SHELLYPLUG, //
+                THING_TYPE_SHELLYUNKNOWN, THING_TYPE_SHELLYPROTECTED));
+    }
 
     public static final Map<String, ThingTypeUID> THING_TYPE_BY_SERVICE_NAME = Map.ofEntries(
             // Shelly Gen1
@@ -528,6 +522,8 @@ public class ShellyDevices {
             Map.entry("shellybutton1", THING_TYPE_SHELLYBUTTON1), //
             Map.entry("shellybutton2", THING_TYPE_SHELLYBUTTON2), //
             Map.entry("shellyuni", THING_TYPE_SHELLYUNI), //
+            Map.entry("shellymotion", THING_TYPE_SHELLYMOTION),
+            Map.entry("shellymotionsensor", THING_TYPE_SHELLYMOTION),
             Map.entry("shellymotion2", THING_TYPE_SHELLYMOTION),
 
             // Shelly Plus Series
@@ -554,9 +550,10 @@ public class ShellyDevices {
             Map.entry("shellypluswdus", THING_TYPE_SHELLYPLUSDIMMERUS),
             Map.entry("shellyplus10v", THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry("shellyplusdimmer", THING_TYPE_SHELLYPLUSDIMMER),
+            Map.entry("shellydimmerg3", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
-            Map.entry("shellyplusem", THING_TYPE_SHELLYPLUSEM),
+            Map.entry("shellyplusem", THING_TYPE_SHELLYPLUSEM), Map.entry("shellyemg3", THING_TYPE_SHELLYPLUSEM),
             Map.entry("shellyplus3em63", THING_TYPE_SHELLYPLUS3EM63),
             Map.entry("shellyblugw", THING_TYPE_SHELLYPLUSBLUGW), //
             Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW),
@@ -570,7 +567,8 @@ public class ShellyDevices {
             Map.entry("shelly1minig4", THING_TYPE_SHELLYMINI_1), //
             Map.entry("shellypmmini", THING_TYPE_SHELLYMINI_PM), //
             Map.entry("shellypmminig3", THING_TYPE_SHELLYMINI_PM), //
-            Map.entry("shellyemmini", THING_TYPE_SHELLYMINI_EM), // // G4 device was renamed to EM
+            Map.entry("shellyemmini", THING_TYPE_SHELLYMINI_EM), // PM device was renamed to EM
+            Map.entry("shellyemminig4", THING_TYPE_SHELLYMINI_EM),
             Map.entry("shelly1pmmini", THING_TYPE_SHELLYMINI_1PM), //
             Map.entry("shelly1pmminig3", THING_TYPE_SHELLYMINI_1PM),
             Map.entry("shelly1pmminig4", THING_TYPE_SHELLYMINI_1PM),
@@ -608,5 +606,4 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLY3EM, 3), //
             Map.entry(THING_TYPE_SHELLYPLUS3EM63, 3), //
             Map.entry(THING_TYPE_SHELLYPRO3EM, 3));
-
 }
