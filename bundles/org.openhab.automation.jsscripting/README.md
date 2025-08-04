@@ -10,20 +10,28 @@ to common openHAB functionality within rules including items, things, actions, l
 
 ## Configuration
 
-This add-on includes a version of the [openhab-js](https://github.com/openhab/openhab-js/) NPM library.
+This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports its namespaces onto the global namespace.
 
-Depending on the add-on configuration, it automatically exports all namespaces (see [Standard Library](#standard-library)) onto the global namespace.
-This allows the use of `items`, `actions`, `cache` and other APIs from the UI without the need to explicitly import them using `require()`.
-This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options:
+This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import them using `require()`.
+This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options.
 
-- Only inject the openhab-js namespaces globally for UI-based rules and scripts (recommended and default).
-- Inject the openhab-js namespaces globally for all scripts, including file-based rules and transformations.
-- Disable injection of the openhab-js namespaces everywhere, which means you need to import the library using `require()` in every script that uses it.
+By default, the injection of the [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached (using a special mechanism instead of `require()`) to improve performance and reduce memory usage.
 
-If enabled, the injection of the [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached (using a special mechanism instead of `require()`) to improve script loading performance.
-This can be disabled, which will allow you to use a different version of the library than the one included in the add-on.
+When configuring the add-on, you should ask yourself these questions:
 
-<!-- Paste the copied docs from openhab-js under this comment. -->
+1. Do I want to have the openhab-js namespaces automatically globally available (`injectionEnabled`)?
+   - Yes: "Use Built-In Variables" (default)
+   - No: "Do Not Use Built-In Variables", which will allow you to decide what to import and really speed up script loading, but you need to manually import the library, which actually will slow down script loading again.
+2. Do I want to have a different version injected other than the included one (`injectionCachingEnabled`)?
+   - Yes: "Do Not Cache Library Injection" and install your version to the `$OPENHAB_CONF/automation/js/node_modules` folder, which will slow down script loading, because the injection is not cached.
+   - No: "Cache Library Injection" (default), which will speed up the initial loading of a script because the library's injection is cached.
+
+Note that in case you disable caching or your code uses `require()` to import the library and there is no installation of the library found in the node_modules folder, the add-on will fallback to its included version.
+
+In general, the first run of a script will take longer than the subsequent runs.
+This is because on the first run both the globals (like `console`) and (if enabled) the library are injected into the script's context.
+
+<!-- Paste the copied docs from openhab-js under this comment. Do NOT forget the table of contents. -->
 
 ### UI Based Rules
 
@@ -74,11 +82,10 @@ See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of fu
 ### UI Event Object
 
 **NOTE**: Note that `event` object is different in UI based rules and file based rules! This section is only valid for UI based rules. If you use file based rules, refer to [file based rules event object documentation](#event-object).
-Note that `event` object is only available when the UI based rule was triggered by an event and is not called from another rule!
-Trying to access `event` in this case does not work and will lead to an error. Use `this.event` instead (will be `undefined` when it does not exist).
+Note that `event` object is only available when the UI based rule was triggered by an event and is not manually run!
+Trying to access `event` on manual run does not work (and will lead to an error), use `this.event` instead (will be `undefined` in case of manual run).
 
 When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
-When a rule is triggered, there is additional context available for the action in a variable called `event`.
 
 This table gives an overview over the `event` object for most common trigger types:
 
@@ -89,10 +96,8 @@ This table gives an overview over the `event` object for most common trigger typ
 | `itemCommand`  | sub-class of [org.openhab.core.types.Command](https://www.openhab.org/javadoc/latest/org/openhab/core/types/command) | `[item] received a command`            | Command that triggered event                                                                                  | `receivedCommand`      |
 | `itemName`     | string                                                                                                               | all                                    | Name of Item that triggered event                                                                             | `triggeringItem.name`  |
 | `type`         | string                                                                                                               | all                                    | Type of event that triggered event (`"ItemStateEvent"`, `"ItemStateChangedEvent"`, `"ItemCommandEvent"`, ...) | N/A                    |
-| `event`        | string                                                                                                               | channel based triggeres                | Event data published by the triggering channel.                                                               | `receivedEvent`        |
-| `payload`      | JSON formatted string                                                                                                | all                                    | Any additional information provided by the trigger not already exposed. "{}" there is none.             | N/A                    |
 
-Note that in UI based rules `event`, and therefore everything carried by `event` are Java types (not JavaScript). Care must be taken when comparing these with JavaScript types:
+Note that in UI based rules `event.itemState`, `event.oldItemState`, and `event.itemCommand` are Java types (not JavaScript), and care must be taken when comparing these with JavaScript types:
 
 ```javascript
 var { ON } = require("@runtime")
@@ -113,6 +118,26 @@ console.log(event.itemState.toString() == "test") // OK
 ## Scripting Basics
 
 The openHAB JavaScript Scripting runtime attempts to provide a familiar environment to JavaScript developers.
+
+### `let` and `const`
+
+Due to the way how openHAB runs UI based scripts, `let`, `const` and `class` are not supported at top-level.
+Use `var` instead or wrap your script inside a self-invoking function:
+
+```javascript
+// Wrap script inside a self-invoking function:
+(function (data) {
+  const C = 'Hello world';
+  console.log(C);
+})(this.event);
+
+// Defining a class using var:
+var Tree = class {
+  constructor (height) {
+    this.height = height;
+  }
+}
+```
 
 ### `require`
 
@@ -213,6 +238,7 @@ myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello mutation!"
 
 If you need to pass some variables to the timer but avoid that they can get mutated, pass those variables as parameters to `setTimeout`/`setInterval` or `createTimer`:
 
+
 ```javascript
 var myVar = 'Hello world!';
 
@@ -263,8 +289,8 @@ Use JavaScript Scripting as script transformation by:
    })(input);
    ```
 
-1. Using `JS(<scriptname>.js):%s` as Item state transformation.
-1. Passing parameters is also possible by using a URL like syntax: `JS(<scriptname>.js?arg=value)`.
+2. Using `JS(<scriptname>.js):%s` as Item state transformation.
+3. Passing parameters is also possible by using a URL like syntax: `JS(<scriptname>.js?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
 
 Simple transformations can aso be given as an inline script: `JS(|...)`, e.g. `JS(|"String has " + input.length + "characters")`.
@@ -291,7 +317,7 @@ See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for fu
   - .getItem(name, nullIfMissing) ⇒ `Item`
   - .getItems() ⇒ `Array[Item]`
   - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
-  - .addItem([itemConfig](#itemconfig), persist) ⇒ `Item`
+  - .addItem([itemConfig](#itemconfig)) ⇒ `Item`
   - .removeItem(itemOrItemName) ⇒ `Item|null`
   - .replaceItem([itemConfig](#itemconfig)) ⇒ `Item|null`
   - .safeItemName(s) ⇒ `string`
@@ -419,20 +445,6 @@ items.replaceItem({
 ```
 
 See [openhab-js : ItemConfig](https://openhab.github.io/openhab-js/global.html#ItemConfig) for full API documentation.
-
-#### Providing Items (& metadata & channel links) from Scripts
-
-The `addItem` method can be used to provide Items from scripts in a configuration-as-code manner.
-It also allows providing metadata and channel configurations for the Item, basically creating the Item as if it was defined in a `.items` file.
-The benefit of using `addItem` is that you can use loops, conditions or generator functions to create lots of Items without the need to write them all out in a file or manually in the UI.
-
-When called from file-based scripts, the created Item will share the lifecycle with the script, meaning it will be removed when the script is unloaded.
-You can use the `persist` parameter to optionally persist the Item from file-based scripts.
-
-When called from UI-based scripts, the Item will be stored permanently and will not be removed when the script is unloaded.
-Keep in mind that attempting to add an Item with the same name as an existing Item will result in an error.
-
-See [openhab-js : Item](https://openhab.github.io/openhab-js/items.html#.addItem) for full API documentation.
 
 #### `ItemPersistence`
 
@@ -716,6 +728,7 @@ actions.ScriptExecution.createTimer(string identifier, time.ZonedDateTime zdt, f
 - `hasTerminated()`: Whether the scheduled execution has already terminated. ⇒ `boolean`
 - `reschedule(time.ZonedDateTime)`: Reschedules a timer to a new starting time. This can also be called after a timer has terminated, which will result in another execution of the same code. ⇒ `boolean`: true, if rescheduling was successful
 
+
 ```javascript
 var now = time.ZonedDateTime.now();
 
@@ -861,14 +874,14 @@ See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for fu
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
 
-**Example** _(Get a previously set value with a default value (times = 0))_
+**Example** *(Get a previously set value with a default value (times = 0))*
 
 ```js
 var counter = cache.shared.get('counter', () => 0);
 console.log('Counter: ' + counter);
 ```
 
-**Example** _(Get a previously set value, modify and store it)_
+**Example** *(Get a previously set value, modify and store it)*
 
 ```js
 var counter = cache.private.get('counter');
@@ -909,7 +922,7 @@ Therefore, if you attempt to use the `DateTimeFormatter` and receive an error sa
 
 [JS-Joda Locales](https://github.com/js-joda/js-joda/tree/master/packages/locale#use-prebuilt-locale-packages) includes a list of all the supported locales.
 Each locale consists of a two letter language indicator followed by a "-" and a two letter dialect indicator: e.g. "EN-US".
-Installing a locale can be done through the command `npm install @js-joda/locale_de-de` from the _$OPENHAB_CONF/automation/js_ folder.
+Installing a locale can be done through the command `npm install @js-joda/locale_de-de` from the *$OPENHAB_CONF/automation/js* folder.
 
 To import and use a local into your rule you need to require it and create a `DateTimeFormatter` that uses it:
 
@@ -1485,8 +1498,8 @@ When it is run, `npm` will remove everything from `node_modules` that has not be
 Follow these steps to create your own library (it's called a CommonJS module):
 
 1. Create a separate folder for your library outside of `automation/js`, you may also initialize a Git repository.
-1. Run `npm init` from your newly created folder; at least provide responses for the `name`, `version` and `main` (e.g. `index.js`) fields.
-1. Create the main file of your library (`index.js`) and add some exports:
+2. Run `npm init` from your newly created folder; at least provide responses for the `name`, `version` and `main` (e.g. `index.js`) fields.
+3. Create the main file of your library (`index.js`) and add some exports:
 
    ```javascript
    var someProperty = 'Hello world!';
@@ -1500,12 +1513,9 @@ Follow these steps to create your own library (it's called a CommonJS module):
    };
    ```
 
-1. Tar it up by running `npm pack` from your library's folder.
-1. Install it by running `npm install <path-to-library-folder>/<name>-<version>.tgz` from the `automation/js` folder.
-1. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
-1. As you might have already noticed, the JavaScript Scripting add-on is reloading a script as soon as one of its dependencies changes.
-   When developing a library inside `node_modules`, this can cause regular reloads.
-   To avoid this situation, you can disable dependency tracking in the JavaScript Scripting add-on settings (you need to tick "show advanced" for the setting to come up).
+4. Tar it up by running `npm pack` from your library's folder.
+5. Install it by running `npm install <path-to-library-folder>/<name>-<version>.tgz` from the `automation/js` folder.
+6. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
 
 It is also possible to upload your library to [npm](https://npmjs.com) to share it with other users.
 
