@@ -160,7 +160,6 @@ public class ShellyDevices {
     public static final String SERVICE_NAME_SHELLYPLUGS_PREFIX = "shellyplugs";
     public static final String SERVICE_NAME_SHELLYPLUGU1_PREFIX = "shellyplugu1"; // Shelly Plug US
     public static final String SERVICE_NAME_SHELLYRGBW2_PREFIX = "shellyrgbw2";
-    public static final String SERVICE_NAME_SHELLYMOTION_PREFIX = "shellymotion";
 
     // Password protected or unknown device
     public static final String THING_TYPE_SHELLYPROTECTED_STR = "shellydevice";
