@@ -48,7 +48,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class WindowCoveringDevice extends GenericDevice {
+public class WindowCoveringDevice extends BaseDevice {
     private ScheduledExecutorService operationalStateScheduler = Executors.newSingleThreadScheduledExecutor();
     private @Nullable ScheduledFuture<?> operationalStateTimer = null;
     private @Nullable Integer lastTargetPercent = null;
