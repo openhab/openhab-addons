@@ -448,7 +448,7 @@ Number:EnergyPrice          Tibber_API_Average                  "Average Price" 
 Number:Power                Tibber_API_Live_Cosnumption         "Live Consumption"          {channel="tibber:tibberapi:xyz:live#consumption"}
 Number:Power                Tibber_API_Minimum_Cosnumption      "Minimum Consumption"       {channel="tibber:tibberapi:xyz:live#minimum-consumption"}
 Number:Power                Tibber_API_Peak_Cosnumption         "Peak Consumption"          {channel="tibber:tibberapi:xyz:live#peak-consumption"}
-Number:Power                Tibber_API_Average_Cosnumption      "Average Consumption"       {channel="tibber:tibberapi:xyz:live#average-consumption"}
+Number:Power                Tibber_API_Average_Consumption      "Average Consumption"       {channel="tibber:tibberapi:xyz:live#average-consumption"}
 Number:Power                Tibber_API_Live_Production          "Live Production"           {channel="tibber:tibberapi:xyz:live#production"}
 Number:Power                Tibber_API_Minimum_Production       "Minimum Production"        {channel="tibber:tibberapi:xyz:live#minimum-production"}
 Number:Power                Tibber_API_Peak_Production          "Peak Production"           {channel="tibber:tibberapi:xyz:live#peak-production"}
