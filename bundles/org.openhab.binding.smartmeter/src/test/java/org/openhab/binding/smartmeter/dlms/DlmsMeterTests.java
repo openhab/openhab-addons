@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelTypeBuilder;
+import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelUtils;
 import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsQuantityType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.type.ChannelKind;
@@ -57,17 +57,21 @@ class DlmsMeterTests {
 
     @Test
     void testDlmsChannelTypeBuilder() {
-        ChannelTypeUID uid = new ChannelTypeUID("smartmeter", "WATER_AARDVARK_TEST");
-        ChannelType channelType = DlmsChannelTypeBuilder.build(uid, Medium.COLD_WATER);
+        ChannelTypeUID channelTypeUID = DlmsChannelUtils.getChannelTypeUID(QuantityType.valueOf("1 V"));
+        assertNotNull(channelTypeUID);
+        assertEquals("smartmeter:electricpotential-volt", channelTypeUID.toString());
+
+        ChannelType channelType = DlmsChannelUtils.getChannelType(channelTypeUID, QuantityType.valueOf("1 V"),
+                Medium.COLD_WATER);
         assertNotNull(channelType);
         assertEquals("water", channelType.getCategory());
-        assertEquals("Number:WaterAardvarkTest", channelType.getItemType());
+        assertEquals("Number:ElectricPotential", channelType.getItemType());
         assertEquals(ChannelKind.STATE, channelType.getKind());
-        assertEquals(uid, channelType.getUID());
-        assertEquals("Water Aardvark Test", channelType.getLabel());
-        assertEquals("@text/dlms.meter-reading-for [\"Water Aardvark Test\"]", channelType.getDescription());
+        assertEquals(channelTypeUID, channelType.getUID());
+        assertEquals("Electric Potential [V]", channelType.getLabel());
         assertTrue(channelType.getTags().contains("Measurement"));
         assertTrue(channelType.getTags().contains("Water"));
+
         StateDescription stateDescription = channelType.getState();
         assertNotNull(stateDescription);
         assertTrue(stateDescription.isReadOnly());

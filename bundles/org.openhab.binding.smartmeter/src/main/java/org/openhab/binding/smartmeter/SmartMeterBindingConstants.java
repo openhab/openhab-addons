@@ -60,5 +60,4 @@ public class SmartMeterBindingConstants {
 
     // DLMS/COSEM i18n text property keys
     public static final String DLMS_NO_METER_CHANNELS_FOUND = "@text/dlms.no-meter-channels-found";
-    public static final String DLMS_METER_READING_FOR = "@text/dlms.meter-reading-for [\"%s\"]";
 }

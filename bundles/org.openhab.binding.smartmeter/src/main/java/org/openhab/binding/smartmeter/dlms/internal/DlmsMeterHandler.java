@@ -31,9 +31,8 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.DlmsMeterConfiguration;
-import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelInfo;
-import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelTypeBuilder;
+import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsChannelUtils;
 import org.openhab.binding.smartmeter.dlms.internal.helper.DlmsQuantityType;
 import org.openhab.binding.smartmeter.internal.SmartMeterChannelTypeProvider;
 import org.openhab.core.library.types.QuantityType;
@@ -194,28 +193,24 @@ public class DlmsMeterHandler extends BaseThingHandler {
                                     channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_ENERGY;
                                 } else if (unit.isCompatible(Units.WATT)) {
                                     channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
-                                } else if (unit.isCompatible(Units.VAR_HOUR)) {
-                                    channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_ENERGY;
-                                } else if (unit.isCompatible(Units.VAR)) {
-                                    channelTypeUID = SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER;
                                 }
                             }
 
-                            // if there is no standard channel type then build one
+                            // if there is no standard channel-type then build our own
                             if (channelTypeUID == null) {
-                                // uid uses the dimension class name e.g. "smartmeter:ELECTRIC_POTENTIAL"
-                                channelTypeUID = new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID,
-                                        quantity.getUnit().getDimension().getClass().getSimpleName());
+                                channelTypeUID = DlmsChannelUtils.getChannelTypeUID(quantity);
                                 if (channelTypeProvider.getChannelType(channelTypeUID, null) == null) {
-                                    ChannelType channelType = DlmsChannelTypeBuilder.build(channelTypeUID, medium);
+                                    ChannelType channelType = DlmsChannelUtils.getChannelType(channelTypeUID, quantity,
+                                            medium);
                                     channelTypeProvider.putChannelType(channelType);
                                 }
                             }
 
                             // build the channel
-                            ChannelUID uid = new ChannelUID(getThing().getUID(), info.getChannelId());
-                            channels.add(ChannelBuilder.create(uid).withType(channelTypeUID).build());
-                            logger.debug("Meter channel: {}, data: {}, added OH channel: {}", info, resultData, uid);
+                            ChannelUID channelUID = new ChannelUID(getThing().getUID(), info.getChannelId());
+                            channels.add(ChannelBuilder.create(channelUID).withType(channelTypeUID).build());
+                            logger.debug("Meter channel: {}, data: {}, added OH channel: {}", info, resultData,
+                                    channelUID);
                         } catch (IllegalArgumentException e) {
                             logger.debug("Meter channel: {}, data:{}, parse error:{}", info, resultData,
                                     e.getMessage());
