@@ -477,6 +477,8 @@ public class TibberHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "maxPower");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "averagePower");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_AVERAGE_CONSUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "powerProduction");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PRODUCTION, value, "W");
             value = Utils.getJsonValue(jsonData, "minPowerProduction");
