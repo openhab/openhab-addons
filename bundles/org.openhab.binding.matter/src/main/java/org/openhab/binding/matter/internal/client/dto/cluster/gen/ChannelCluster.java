@@ -61,7 +61,7 @@ public class ChannelCluster extends BaseCluster {
      * While the major and minor numbers in the ChannelInfoStruct support use of ATSC channel format, a lineup may use
      * other formats which can map into these numeric values.
      */
-    public class ChannelInfoStruct {
+    public static class ChannelInfoStruct {
         /**
          * This field shall indicate the channel major number value (for example, using ATSC format). When the channel
          * number is expressed as a string, such as &quot;13.1&quot; or &quot;256&quot;, the major number would be 13 or
@@ -118,7 +118,7 @@ public class ChannelCluster extends BaseCluster {
      * The Lineup Info allows references to external lineup sources like Gracenote. The combination of OperatorName,
      * LineupName, and PostalCode MUST uniquely identify a lineup.
      */
-    public class LineupInfoStruct {
+    public static class LineupInfoStruct {
         /**
          * This field shall indicate the name of the operator, for example “Comcast”.
          */
@@ -150,7 +150,7 @@ public class ChannelCluster extends BaseCluster {
     /**
      * This indicates a program within an electronic program guide (EPG).
      */
-    public class ProgramStruct {
+    public static class ProgramStruct {
         /**
          * This field shall indicate a unique identifier for a program within an electronic program guide list. The
          * identifier shall be unique across multiple channels.
@@ -280,7 +280,7 @@ public class ChannelCluster extends BaseCluster {
     /**
      * This object defines the category associated to a program.
      */
-    public class ProgramCategoryStruct {
+    public static class ProgramCategoryStruct {
         /**
          * This field shall represent the category or genre of the program. Ex. News.
          */
@@ -299,7 +299,7 @@ public class ChannelCluster extends BaseCluster {
     /**
      * This object provides the episode information related to a program.
      */
-    public class SeriesInfoStruct {
+    public static class SeriesInfoStruct {
         /**
          * This field shall represent the season of the series associated to the program.
          */
@@ -318,7 +318,7 @@ public class ChannelCluster extends BaseCluster {
     /**
      * This object provides the cast information related to a program.
      */
-    public class ProgramCastStruct {
+    public static class ProgramCastStruct {
         /**
          * This field shall represent the name of the cast member.
          */
@@ -337,7 +337,7 @@ public class ChannelCluster extends BaseCluster {
     /**
      * This object defines the pagination structure.
      */
-    public class PageTokenStruct {
+    public static class PageTokenStruct {
         /**
          * This field shall indicate the maximum number of entries that should be retrieved from the program guide in a
          * single response. It allows clients to specify the size of the paginated result set based on their needs.
@@ -368,7 +368,7 @@ public class ChannelCluster extends BaseCluster {
     /**
      * This object defines the paging structure that includes the previous and next pagination tokens.
      */
-    public class ChannelPagingStruct {
+    public static class ChannelPagingStruct {
         /**
          * This field shall indicate the token to retrieve the preceding page. Absence of this field denotes the
          * response as the initial page.

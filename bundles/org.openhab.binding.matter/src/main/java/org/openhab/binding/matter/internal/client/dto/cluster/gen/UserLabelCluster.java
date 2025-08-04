@@ -43,7 +43,7 @@ public class UserLabelCluster extends BaseCluster {
     /**
      * This is a string tuple with strings that are user defined.
      */
-    public class LabelStruct {
+    public static class LabelStruct {
         /**
          * The Label or Value semantic is not defined here. Label examples: &quot;room&quot;, &quot;zone&quot;,
          * &quot;group&quot;, &quot;direction&quot;.

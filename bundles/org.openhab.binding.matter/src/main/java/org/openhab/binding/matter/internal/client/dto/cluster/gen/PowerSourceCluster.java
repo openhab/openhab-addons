@@ -274,7 +274,7 @@ public class PowerSourceCluster extends BaseCluster {
      * The WiredFaultChange Event shall be generated when the set of wired faults currently detected by the Node on this
      * wired power source changes. This event shall correspond to a change in value of ActiveWiredFaults.
      */
-    public class WiredFaultChange {
+    public static class WiredFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per ActiveWiredFaults.
          */
@@ -294,7 +294,7 @@ public class PowerSourceCluster extends BaseCluster {
      * The BatFaultChange Event shall be generated when the set of battery faults currently detected by the Node on this
      * battery power source changes. This event shall correspond to a change in value of ActiveBatFaults.
      */
-    public class BatFaultChange {
+    public static class BatFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per ActiveBatFaults.
          */
@@ -314,7 +314,7 @@ public class PowerSourceCluster extends BaseCluster {
      * The BatChargeFaultChange Event shall be generated when the set of charge faults currently detected by the Node on
      * this battery power source changes. This event shall correspond to a change in value of ActiveBatChargeFaults.
      */
-    public class BatChargeFaultChange {
+    public static class BatChargeFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per ActiveBatChargeFaults.
          */

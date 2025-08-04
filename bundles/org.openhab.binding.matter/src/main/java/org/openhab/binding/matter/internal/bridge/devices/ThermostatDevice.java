@@ -46,7 +46,7 @@ import org.openhab.core.types.UnDefType;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class ThermostatDevice extends GenericDevice {
+public class ThermostatDevice extends BaseDevice {
     private final Map<String, GenericItem> itemMap = new HashMap<>();
     private final Map<String, String> attributeToItemNameMap = new HashMap<>();
     private final SystemModeMapper systemModeMapper = new SystemModeMapper();

@@ -81,7 +81,7 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Base
     /**
      * A Mode Tag is meant to be interpreted by the client for the purpose the cluster serves.
      */
-    public class ModeTagStruct {
+    public static class ModeTagStruct {
         /**
          * If the MfgCode field exists, the Value field shall be in the manufacturer-specific value range (see Section
          * 1.10.8, “Mode Namespace”).
@@ -107,7 +107,7 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Base
     /**
      * This is a struct representing a possible mode of the server.
      */
-    public class ModeOptionStruct {
+    public static class ModeOptionStruct {
         /**
          * This field shall indicate readable text that describes the mode option, so that a client can provide it to
          * the user to indicate what this option means. This field is meant to be readable and understandable by the
