@@ -50,6 +50,16 @@
       <artifactId>jdlms</artifactId>
       <version>1.8.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.beanit</groupId>
+      <artifactId>asn1bean</artifactId>
+      <version>1.14.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openmuc</groupId>
+      <artifactId>jrxtx</artifactId>
+      <version>1.0.1</version>
+    </dependency>
   </dependencies>
 
   <build>

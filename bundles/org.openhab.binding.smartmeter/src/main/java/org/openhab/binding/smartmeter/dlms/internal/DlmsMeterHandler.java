@@ -290,7 +290,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
                             try {
                                 QuantityType<?> state = new DlmsQuantityType<>(value);
                                 updateState(info.getChannelId(), state);
-                                logger.trace("Meter channel: {}, data: {}, state: {}", info, value, state);
+                                logger.trace("Meter channel: {}, data: {}, updated state: {}", info, value, state);
                             } catch (IllegalArgumentException e) {
                                 logger.debug("Meter channel: {}, data: {}, format error: {}", info, result,
                                         e.getMessage());

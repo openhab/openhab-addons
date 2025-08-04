@@ -6,7 +6,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="meter">
-		<label>Smart Meter</label>
+		<label>SML Smart Meter</label>
 		<description>The meter device to read the SML or IEC 62056-21 messages from</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<config-description>
@@ -56,7 +56,7 @@
 	</thing-type>
 
 	<thing-type id="dlms-meter">
-		<label>DLMS/COSEM Smart Meter Binding Thing</label>
+		<label>DLMS/COSEM Smart Meter</label>
 		<description>Thing for reading DLMS/COSEM Smart Meters via an IEC 62056-21 optical read head.</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<config-description>
