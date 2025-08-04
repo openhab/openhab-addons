@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Function;
@@ -166,11 +165,13 @@ public class DeviceFeature {
     }
 
     public double getLastMsgValueAsDouble(double defaultValue) {
-        return Optional.ofNullable(getLastMsgValue()).map(Double::doubleValue).orElse(defaultValue);
+        Double lastMsgValue = getLastMsgValue();
+        return lastMsgValue != null ? lastMsgValue.doubleValue() : defaultValue;
     }
 
     public int getLastMsgValueAsInteger(int defaultValue) {
-        return Optional.ofNullable(getLastMsgValue()).map(Double::intValue).orElse(defaultValue);
+        Double lastMsgValue = getLastMsgValue();
+        return lastMsgValue != null ? lastMsgValue.intValue() : defaultValue;
     }
 
     public synchronized @Nullable Msg getQueryMessage() {

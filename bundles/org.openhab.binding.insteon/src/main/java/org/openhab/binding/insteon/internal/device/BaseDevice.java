@@ -118,17 +118,18 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     }
 
     public double getLastMsgValueAsDouble(String name, double defaultValue) {
-        return Optional.ofNullable(getFeature(name)).map(DeviceFeature::getLastMsgValue).map(Double::doubleValue)
-                .orElse(defaultValue);
+        DeviceFeature feature = getFeature(name);
+        return feature != null ? feature.getLastMsgValueAsDouble(defaultValue) : defaultValue;
     }
 
     public int getLastMsgValueAsInteger(String name, int defaultValue) {
-        return Optional.ofNullable(getFeature(name)).map(DeviceFeature::getLastMsgValue).map(Double::intValue)
-                .orElse(defaultValue);
+        DeviceFeature feature = getFeature(name);
+        return feature != null ? feature.getLastMsgValueAsInteger(defaultValue) : defaultValue;
     }
 
     public @Nullable State getFeatureState(String name) {
-        return Optional.ofNullable(getFeature(name)).map(DeviceFeature::getState).orElse(null);
+        DeviceFeature feature = getFeature(name);
+        return feature != null ? feature.getState() : null;
     }
 
     public boolean getFlag(String key, boolean def) {
@@ -150,7 +151,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     }
 
     public boolean isOnline() {
-        return Optional.ofNullable(handler).map(InsteonThingHandler::isOnline).orElse(false);
+        InsteonThingHandler handler = getHandler();
+        return handler != null && handler.isOnline();
     }
 
     public void setModem(@Nullable InsteonModem modem) {
@@ -282,7 +284,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @return poll message
      */
     protected @Nullable Msg pollFeature(String name, long delay) {
-        return Optional.ofNullable(getFeature(name)).map(feature -> feature.poll(delay)).orElse(null);
+        DeviceFeature feature = getFeature(name);
+        return feature != null ? feature.poll(delay) : null;
     }
 
     /**
@@ -579,7 +582,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @return delay (in milliseconds) if necessary otherwise 0
      */
     private long checkNextRequestScheduledDelay() {
-        return Optional.ofNullable(peekNextRequest()).map(DeviceRequest::getScheduledDelay).orElse(0L);
+        DeviceRequest request = peekNextRequest();
+        return request != null ? request.getScheduledDelay() : 0L;
     }
 
     /**
