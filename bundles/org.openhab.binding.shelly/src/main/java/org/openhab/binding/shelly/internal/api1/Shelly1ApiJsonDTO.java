@@ -153,6 +153,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_APIERR_UNAUTHORIZED = "Unauthorized";
     public static final String SHELLY_APIERR_TIMEOUT = "Timeout";
     public static final String SHELLY_APIERR_NOT_CALIBRATED = "Not calibrated!";
+    public static final String SHELLY2_APIERR_NOT_CALIBRATED = "Output not calibrated!";
 
     // API device types / properties
     public static final String SHELLY_CLASS_RELAY = "relay"; // Relay: relay mode

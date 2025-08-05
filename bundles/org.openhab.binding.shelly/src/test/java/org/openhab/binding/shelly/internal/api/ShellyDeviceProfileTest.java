@@ -105,6 +105,10 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUS1PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS2PM_RELAY, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS2PM_ROLLER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDALIDIMMER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSPLUGS, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSPLUGUS, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4, true, false), //
@@ -129,6 +133,8 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPROEM50, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO4PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER1PM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //

@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.THING_TYPE_SHELLYPROTECTED;
 
 import java.util.HashMap;
 import java.util.Map;
