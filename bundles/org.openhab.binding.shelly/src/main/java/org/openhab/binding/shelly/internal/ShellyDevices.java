@@ -55,7 +55,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_MOTION2 = "SHMOS-02";
     public static final String SHELLYDT_SENSE = "SHSEN-1";
     public static final String SHELLYDT_GAS = "SHGS-1";
-    public static final String SHELLYDT_EYE = "SHSEN-1";
+    public static final String SHELLYDT_EYE = "SHEYE-1";
     public static final String SHELLYDT_DIMMER = "SHDM-1";
     public static final String SHELLYDT_DIMMER2 = "SHDM-2";
     public static final String SHELLYDT_IX3 = "SHIX3-1";
@@ -366,8 +366,9 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_SMOKE, THING_TYPE_SHELLYSMOKE), //
             Map.entry(SHELLYDT_FLOOD, THING_TYPE_SHELLYFLOOD), //
             Map.entry(SHELLYDT_UNI, THING_TYPE_SHELLYUNI), //
-            Map.entry(SHELLYDT_EYE, THING_TYPE_SHELLYEYE), //
             Map.entry(SHELLYDT_GAS, THING_TYPE_SHELLYGAS), //
+            Map.entry(SHELLYDT_EYE, THING_TYPE_SHELLYEYE), //
+            Map.entry(SHELLYDT_SENSE, THING_TYPE_SHELLYSENSE), //
             Map.entry(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1),
             Map.entry(SHELLYDT_BUTTON2, THING_TYPE_SHELLYBUTTON2), //
             Map.entry(SHELLYDT_TRV, THING_TYPE_SHELLYTRV), //
