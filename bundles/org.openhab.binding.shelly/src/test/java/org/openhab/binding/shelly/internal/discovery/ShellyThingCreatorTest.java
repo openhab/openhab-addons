@@ -78,9 +78,8 @@ public class ShellyThingCreatorTest {
         return Stream.of( //
                 Arguments.of("johndoe-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNKNOWN), //
                 Arguments.of("shellyplug-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
-                Arguments.of("shellyplug-u1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
                 Arguments.of("shellyplug-s-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS), //
-                Arguments.of("shellyplug-su1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS), //
+                Arguments.of("shellyplug-u1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
                 Arguments.of("shellyplugu1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1), //
                 Arguments.of("shellyplugu12-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1), //
                 Arguments.of("shellyplusplug-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGS), //
@@ -131,9 +130,12 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_SHELLY25, "relay", THING_TYPE_SHELLY25_RELAY), //
                 Arguments.of(SHELLYDT_SHELLY25, "roller", THING_TYPE_SHELLY25_ROLLER), //
                 Arguments.of(SHELLYDT_SHPRO, "", THING_TYPE_SHELLY4PRO), //
+                Arguments.of(SHELLYDT_PLUG, "", THING_TYPE_SHELLYPLUG), //
+                Arguments.of(SHELLYDT_PLUGU1, "", THING_TYPE_SHELLYPLUGU1), //
                 Arguments.of(SHELLYDT_3EM, "", THING_TYPE_SHELLY3EM), //
                 Arguments.of(SHELLYDT_EM, "", THING_TYPE_SHELLYEM), //
-                Arguments.of(SHELLYDT_PLUGSS, "", THING_TYPE_SHELLYPLUGS), //
+                Arguments.of(SHELLYDT_PLUG, "", THING_TYPE_SHELLYPLUG), //
+                Arguments.of(SHELLYDT_PLUGS, "", THING_TYPE_SHELLYPLUGS), //
                 Arguments.of(SHELLYDT_PLUGU1, "", THING_TYPE_SHELLYPLUGU1), //
                 Arguments.of(SHELLYDT_GAS, "", THING_TYPE_SHELLYGAS), //
                 Arguments.of(SHELLYDT_DOORWINDOW, "", THING_TYPE_SHELLYDOORWIN), //

@@ -37,8 +37,9 @@ public class ShellyDevices {
     public static final String SHELLYDT_1PM = "SHSW-PM";
     public static final String SHELLYDT_1L = "SHSW-L";
     public static final String SHELLYDT_PLUG = "SHPLG-1";
-    public static final String SHELLYDT_PLUGSS = "SHPLG-S";
+    public static final String SHELLYDT_PLUGS = "SHPLG-S";
     public static final String SHELLYDT_PLUGU1 = "SHPLG-U1";
+    public static final String SHELLYDT_PLUGU1_2 = "SHPLG-US";
     public static final String SHELLYDT_SHELLY2 = "SHSW-21";
     public static final String SHELLYDT_SHELLY25 = "SHSW-25";
     public static final String SHELLYDT_SHPRO = "SHSW-44";
@@ -158,7 +159,6 @@ public class ShellyDevices {
     // Service name prefixes
     public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
     public static final String SERVICE_NAME_SHELLYPLUSRANGE_PREFIX = "shellyplusrange";
-
     public static final String SERVICE_NAME_SHELLYPLUG_PREFIX = "shellyplug";
     public static final String SERVICE_NAME_SHELLYPLUGS_PREFIX = "shellyplugs";
     public static final String SERVICE_NAME_SHELLYPLUGU1_PREFIX = "shellyplugu1"; // Shelly Plug US
@@ -345,8 +345,10 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_1PM, THING_TYPE_SHELLY1PM), //
             Map.entry(SHELLYDT_1L, THING_TYPE_SHELLY1L), //
             Map.entry(SHELLYDT_1, THING_TYPE_SHELLY1), //
-            Map.entry(SHELLYDT_PLUGSS, THING_TYPE_SHELLYPLUGS), //
+            Map.entry(SHELLYDT_PLUG, THING_TYPE_SHELLYPLUG), //
+            Map.entry(SHELLYDT_PLUGS, THING_TYPE_SHELLYPLUGS), //
             Map.entry(SHELLYDT_PLUGU1, THING_TYPE_SHELLYPLUGU1), //
+            Map.entry(SHELLYDT_PLUGU1_2, THING_TYPE_SHELLYPLUGU1), //
             Map.entry(SHELLYDT_SHPRO, THING_TYPE_SHELLY4PRO), //
             Map.entry(SHELLYDT_IX3, THING_TYPE_SHELLYIX3), //
             Map.entry(SHELLYDT_DIMMER, THING_TYPE_SHELLYDIMMER), //
@@ -541,7 +543,7 @@ public class ShellyDevices {
             Map.entry("shellyplusshutter", THING_TYPE_SHELLYPLUSSHUTTER),
             Map.entry("shellyplus2l", THING_TYPE_SHELLYPLUS2L), //
             Map.entry("shellyplugus", THING_TYPE_SHELLYPLUSPLUGUS),
-            Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS), Map.entry("shellyplugu1", THING_TYPE_SHELLYPLUGU1),
             Map.entry("shellyplugsg3", THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry("shellyplusplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplusi4", THING_TYPE_SHELLYPLUSI4), //
