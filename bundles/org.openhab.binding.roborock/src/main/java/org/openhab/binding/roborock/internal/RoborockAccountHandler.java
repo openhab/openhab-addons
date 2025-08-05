@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -451,7 +452,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         int protocol = 101;
         int id = secureRandom.nextInt(22767 + 1) + 10000;
 
-        String nonceHex = ProtocolUtils.bytesToHex(nonce);
+        String nonceHex = HexFormat.of().formatHex(nonce);
 
         Map<String, Object> security = new HashMap<>();
         security.put("endpoint", getEndpoint());

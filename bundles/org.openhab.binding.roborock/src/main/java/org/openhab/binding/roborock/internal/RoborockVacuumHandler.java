@@ -422,6 +422,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 return;
             }
 
+            logger.trace("Received MQTT message: {}", response);
+
             if (JsonParser.parseString(response).isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")) {
@@ -436,7 +438,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             .orElse(null);
 
                     if (methodName == null) {
-                        logger.debug("Received response for unknown or already handled message ID: {}", messageId);
+                        logger.trace("Received response {} for unknown or already handled message ID: {}", response,
+                                messageId);
                         return;
                     }
 

@@ -66,20 +66,6 @@ public final class ProtocolUtils {
         }
     }
 
-    /**
-     * Converts a byte array to its hexadecimal string representation.
-     *
-     * @param bytes The byte array to convert.
-     * @return The hexadecimal string.
-     */
-    public static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
-    }
-
     public static byte[] decrypt(byte[] payload, String key) throws RoborockCryptoException {
         try {
             byte[] aesKeyBytes = md5bin(key);
