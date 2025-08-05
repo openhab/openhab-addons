@@ -159,6 +159,9 @@ public class ShellyDevices {
     // Service name prefixes
     public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
     public static final String SERVICE_NAME_SHELLYPLUSRANGE_PREFIX = "shellyplusrange";
+    public static final String SERVICE_NAME_SHELLYPLUG_PREFIX = "shellyplug";
+    public static final String SERVICE_NAME_SHELLYPLUGS_PREFIX = "shellyplugs";
+    public static final String SERVICE_NAME_SHELLYPLUGU1_PREFIX = "shellyplugu1"; // Shelly Plug US
     public static final String SERVICE_NAME_SHELLYRGBW2_PREFIX = "shellyrgbw2";
 
     // Password protected or unknown device
@@ -538,8 +541,9 @@ public class ShellyDevices {
             Map.entry("shellyplus2pm-roller", THING_TYPE_SHELLYPLUS2PM_ROLLER),
             Map.entry("shellyplusshutter", THING_TYPE_SHELLYPLUSSHUTTER),
             Map.entry("shellyplus2l", THING_TYPE_SHELLYPLUS2L), //
+            Map.entry("shellyplugu1", THING_TYPE_SHELLYPLUGU1), //
             Map.entry("shellyplugus", THING_TYPE_SHELLYPLUSPLUGUS),
-            Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS), Map.entry("shellyplugu1", THING_TYPE_SHELLYPLUGU1),
+            Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS), //
             Map.entry("shellyplugsg3", THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry("shellyplusplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplusi4", THING_TYPE_SHELLYPLUSI4), //

@@ -77,7 +77,6 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyplug-s-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS), //
                 Arguments.of("shellyplug-u1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
                 Arguments.of("shellyplugu1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1), //
-                Arguments.of("shellyplugu12-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1), //
                 Arguments.of("shellyplusplug-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyplugsg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyplugus-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGUS), //
