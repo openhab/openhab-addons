@@ -82,7 +82,6 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYDIMMER2, false, false), //
                 Arguments.of(THING_TYPE_SHELLYIX3, false, false), //
                 Arguments.of(THING_TYPE_SHELLYHT, false, false), //
-                Arguments.of(THING_TYPE_SHELLYSMOKE, false, false), //
                 Arguments.of(THING_TYPE_SHELLYGAS, false, false), //
                 Arguments.of(THING_TYPE_SHELLYFLOOD, false, false), //
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, false, false), //
@@ -92,6 +91,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, false, false), //
                 Arguments.of(THING_TYPE_SHELLYMOTION, false, false), //
                 Arguments.of(THING_TYPE_SHELLYTRV, false, false), //
+                Arguments.of(THING_TYPE_SHELLYEYE, false, false), //
 
                 // Shelly Plus
                 Arguments.of(THING_TYPE_SHELLYPLUS1, true, false), //
@@ -192,7 +192,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYDIMMER, "", 0, 0, 0, 0, CHANNEL_GROUP_DIMMER_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYDIMMER2, "", 0, 0, 0, 1, CHANNEL_GROUP_DIMMER_CONTROL),
                 Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 0, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
-                Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 1, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
+                Arguments.of(THING_TYPE_SHELLY2_ROLLER, "Roller", 1, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
                 Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 2, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL + "4"),
                 Arguments.of(THING_TYPE_SHELLY25_RELAY, "", 0, 0, 0, 3, CHANNEL_GROUP_STATUS + "4"),
                 Arguments.of(THING_TYPE_SHELLY25_RELAY, "", 0, 1, 0, 3, CHANNEL_GROUP_RELAY_CONTROL),
