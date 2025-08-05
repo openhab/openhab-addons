@@ -57,12 +57,13 @@ class DlmsMeterTests {
 
     @Test
     void testDlmsChannelTypeBuilder() {
-        ChannelTypeUID channelTypeUID = DlmsChannelUtils.getChannelTypeUID(QuantityType.valueOf("1 V"));
+        ChannelTypeUID channelTypeUID = DlmsChannelUtils.getChannelTypeUID(Medium.COLD_WATER,
+                QuantityType.valueOf("1 V"));
         assertNotNull(channelTypeUID);
-        assertEquals("smartmeter:electricpotential-volt", channelTypeUID.toString());
+        assertEquals("smartmeter:cold_water-electricpotential-volt", channelTypeUID.toString());
 
-        ChannelType channelType = DlmsChannelUtils.getChannelType(channelTypeUID, QuantityType.valueOf("1 V"),
-                Medium.COLD_WATER);
+        ChannelType channelType = DlmsChannelUtils.getChannelType(channelTypeUID, Medium.COLD_WATER,
+                QuantityType.valueOf("1 V"));
         assertNotNull(channelType);
         assertEquals("water", channelType.getCategory());
         assertEquals("Number:ElectricPotential", channelType.getItemType());

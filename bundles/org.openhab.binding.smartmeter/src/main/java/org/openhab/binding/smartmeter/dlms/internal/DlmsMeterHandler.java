@@ -17,10 +17,10 @@ import static org.openhab.core.thing.DefaultSystemChannelTypeProvider.*;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -169,7 +169,7 @@ public class DlmsMeterHandler extends BaseThingHandler {
      * @return true if the meter contains any channels.
      */
     private boolean createdChannels() {
-        Set<Channel> channels = new HashSet<>();
+        List<Channel> newChannels = new ArrayList<>();
         DlmsConnection connection = this.connection;
         if (connection != null) {
             dlmsChannelInfos.forEach(info -> {
@@ -196,19 +196,20 @@ public class DlmsMeterHandler extends BaseThingHandler {
                                 }
                             }
 
-                            // if there is no standard channel-type then build our own
+                            // if there is no standard channel-type, build a binding specific one
                             if (channelTypeUID == null) {
-                                channelTypeUID = DlmsChannelUtils.getChannelTypeUID(quantity);
+                                channelTypeUID = DlmsChannelUtils.getChannelTypeUID(medium, quantity);
                                 if (channelTypeProvider.getChannelType(channelTypeUID, null) == null) {
-                                    ChannelType channelType = DlmsChannelUtils.getChannelType(channelTypeUID, quantity,
-                                            medium);
+                                    ChannelType channelType = DlmsChannelUtils.getChannelType(channelTypeUID, medium,
+                                            quantity);
+                                    // add new binding specific channel-type to the channel type provider
                                     channelTypeProvider.putChannelType(channelType);
                                 }
                             }
 
                             // build the channel
                             ChannelUID channelUID = new ChannelUID(getThing().getUID(), info.getChannelId());
-                            channels.add(ChannelBuilder.create(channelUID).withType(channelTypeUID).build());
+                            newChannels.add(ChannelBuilder.create(channelUID).withType(channelTypeUID).build());
                             logger.debug("Meter channel: {}, data: {}, added OH channel: {}", info, resultData,
                                     channelUID);
                         } catch (IllegalArgumentException e) {
@@ -222,12 +223,14 @@ public class DlmsMeterHandler extends BaseThingHandler {
                     logger.debug("Meter channel: {}, read error: {}", info, e.getMessage());
                 }
             });
-            // thing needs updating only when channels (in any order) are different
-            if (!Objects.equals(Set.copyOf(thing.getChannels()), channels)) {
-                updateThing(editThing().withChannels(List.copyOf(channels)).build());
+            // thing needs updating only when old and new channel lists are different (in any order)
+            List<Channel> oldChannels = thing.getChannels();
+            if (newChannels.size() != oldChannels.size() || !newChannels.containsAll(oldChannels)) {
+                updateThing(editThing().withChannels(newChannels).build());
+                logger.info("Thing updated with {} channels.", newChannels.size());
             }
         }
-        return !channels.isEmpty();
+        return !newChannels.isEmpty();
     }
 
     /**

@@ -50,7 +50,7 @@ public class DlmsChannelUtils {
      * Create a {@link ChannelType} for the given {@link ChannelTypeUID}, {@link QuantityType}
      * and {@link Medium}, for example
      *
-     * <li>uid "smartmeter:electricpotential-volt"
+     * <li>uid "smartmeter:electricity-electricpotential-volt"
      * <li>channel type 'state'
      * <li>item type "Number:ElectricPotential"
      * <li>state pattern "%.1f %unit%"
@@ -58,7 +58,7 @@ public class DlmsChannelUtils {
      * <li>label "Electric Potential [V]"
      * <li>tags "Point:Measurement, Property:Energy"
      */
-    public static ChannelType getChannelType(ChannelTypeUID uid, QuantityType<?> quantity, Medium medium) {
+    public static ChannelType getChannelType(ChannelTypeUID uid, Medium medium, QuantityType<?> quantity) {
         String dimension = UnitUtils.getDimensionName(quantity.getUnit());
         if (dimension == null) {
             throw new IllegalArgumentException("Quantity has no dimension: " + quantity);
@@ -119,22 +119,22 @@ public class DlmsChannelUtils {
      * Create a @link ChannelTypeUID} for the given {@link QuantityType}, for example
      * "smartmeter:electricpotential-volt".
      */
-    public static ChannelTypeUID getChannelTypeUID(QuantityType<?> quantity) {
+    public static ChannelTypeUID getChannelTypeUID(Medium medium, QuantityType<?> quantity) {
         String dimension = UnitUtils.getDimensionName(quantity.getUnit());
         if (dimension == null) {
             throw new IllegalArgumentException("Quantity has no dimension: " + quantity);
         }
-        return getChannelTypeUID(quantity, dimension);
+        return getChannelTypeUID(medium, quantity, dimension);
     }
 
     /**
      * Internal method to create a {@link ChannelTypeUID} for the given {@link QuantityType} and
-     * dimension, for example "smartmeter:electricpotential-volt".
+     * dimension, for example "smartmeter:electricity-electricpotential-volt".
      */
-    private static ChannelTypeUID getChannelTypeUID(QuantityType<?> quantity, String dimension) {
+    private static ChannelTypeUID getChannelTypeUID(Medium medium, QuantityType<?> quantity, String dimension) {
         String unitId = quantity.getUnit().getName() instanceof String name ? name : quantity.getUnit().toString();
-        return new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID,
-                dimension.toLowerCase() + "-" + unitId.toLowerCase().replaceAll("[^a-z0-9]", "_"));
+        return new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID, medium.toString().toLowerCase() + "-"
+                + dimension.toLowerCase() + "-" + unitId.toLowerCase().replaceAll("[^a-z0-9]", "_"));
     }
 
     /**
