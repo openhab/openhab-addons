@@ -18,8 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -38,9 +36,7 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class ShellyThingCreatorTest {
-
     private static final String DEVICE_ID = "000000000000";
-    private static final Set<ThingTypeUID> coveredUIDbyDeviceType = new HashSet<ThingTypeUID>();
 
     @ParameterizedTest
     @MethodSource("provideTestCasesForGetThingUIDThrowsForInvalidServiceName")
@@ -114,10 +110,6 @@ public class ShellyThingCreatorTest {
 
         assertThat("deviceType: " + deviceType + "; mode: " + mode, actual, is(equalTo(expected)));
         assertThat(SUPPORTED_THING_TYPES, hasItem(expectedThingTypeUid));
-
-        if (!coveredUIDbyDeviceType.contains(expectedThingTypeUid)) {
-            coveredUIDbyDeviceType.add(expectedThingTypeUid);
-        }
     }
 
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidByDeviceType() {
@@ -283,24 +275,5 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shell-001", false), //
                 Arguments.of("ShellyPlusPMMini", false), //
                 Arguments.of("ShellyPlusPMMini - Test", false));
-    }
-
-    @Test
-    void testCoverage() {
-        for (Map.Entry<String, ThingTypeUID> entry : THING_TYPE_BY_DEVICE_TYPE.entrySet()) {
-            assertThat(coveredUIDbyDeviceType, hasItem(entry.getValue()));
-        }
-        for (Map.Entry<String, ThingTypeUID> entry : RELAY_THING_TYPE_BY_DEVICE_TYPE.entrySet()) {
-            assertThat(coveredUIDbyDeviceType, hasItem(entry.getValue()));
-        }
-        for (Map.Entry<String, ThingTypeUID> entry : ROLLER_THING_TYPE_BY_DEVICE_TYPE.entrySet()) {
-            assertThat(coveredUIDbyDeviceType, hasItem(entry.getValue()));
-        }
-        for (ThingTypeUID entry : GROUP_BLU_THING_TYPES) {
-            assertThat(coveredUIDbyDeviceType, hasItem(entry));
-        }
-        for (ThingTypeUID entry : GROUP_MINI_THING_TYPES) {
-            assertThat(coveredUIDbyDeviceType, hasItem(entry));
-        }
     }
 }

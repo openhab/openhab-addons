@@ -159,9 +159,6 @@ public class ShellyDevices {
     // Service name prefixes
     public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
     public static final String SERVICE_NAME_SHELLYPLUSRANGE_PREFIX = "shellyplusrange";
-    public static final String SERVICE_NAME_SHELLYPLUG_PREFIX = "shellyplug";
-    public static final String SERVICE_NAME_SHELLYPLUGS_PREFIX = "shellyplugs";
-    public static final String SERVICE_NAME_SHELLYPLUGU1_PREFIX = "shellyplugu1"; // Shelly Plug US
     public static final String SERVICE_NAME_SHELLYRGBW2_PREFIX = "shellyrgbw2";
 
     // Password protected or unknown device
@@ -494,7 +491,6 @@ public class ShellyDevices {
         SUPPORTED_THING_TYPES.addAll(ROLLER_THING_TYPE_BY_DEVICE_TYPE.values());
         SUPPORTED_THING_TYPES.addAll(GROUP_RGBW2_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(Set.of(//
-                THING_TYPE_SHELLYPLUG, //
                 THING_TYPE_SHELLYUNKNOWN, THING_TYPE_SHELLYPROTECTED));
     }
 

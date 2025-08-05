@@ -69,19 +69,6 @@ public class ShellyThingCreator {
             throw new IllegalArgumentException("Invalid serviceName format: " + serviceName);
         }
 
-        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUG_PREFIX) && !serviceNameLowerCase.contains("plugus")
-                && !serviceNameLowerCase.contains("plugsg3")) {
-            // shellyplug-s needs to be mapped to shellyplugs to follow the schema
-            // for the thing types: <thing type>-<mode>
-            if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUGS_PREFIX)
-                    || serviceNameLowerCase.contains("-s")) {
-                return THING_TYPE_SHELLYPLUGS;
-            }
-            if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUGU1_PREFIX)) {
-                return THING_TYPE_SHELLYPLUGU1;
-            }
-            return THING_TYPE_SHELLYPLUG;
-        }
         if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYRGBW2_PREFIX)) {
             return SHELLY_MODE_COLOR.equals(mode) ? THING_TYPE_SHELLYRGBW2_COLOR : THING_TYPE_SHELLYRGBW2_WHITE;
         }
