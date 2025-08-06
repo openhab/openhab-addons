@@ -46,13 +46,10 @@ public enum DockStatusType {
     public static DockStatusType getType(int value) {
         byte b;
         int i;
-        DockStatusType[] arrayOfDockStatusType;
-        for (i = (arrayOfDockStatusType = values()).length, b = 0; b < i;) {
-            DockStatusType st = arrayOfDockStatusType[b];
+        for (DockStatusType st : values()) {
             if (st.getId() == value) {
                 return st;
             }
-            b++;
         }
 
         return UNKNOWN;
