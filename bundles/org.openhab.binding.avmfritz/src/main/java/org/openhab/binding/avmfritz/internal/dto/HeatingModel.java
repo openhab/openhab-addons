@@ -109,13 +109,13 @@ public class HeatingModel implements BatteryModel {
             return MODE_ON;
         } else if (TEMP_FRITZ_OFF.compareTo(tsoll) == 0) {
             return MODE_OFF;
-        } else if (getWindowopenactiv() instanceof BigDecimal decimal && decimal.intValue() > 0) {
+        } else if (getWindowopenactiv() instanceof BigDecimal decimal && decimal.doubleValue() > 0.5) {
             return MODE_WINDOW_OPEN;
         } else if (komfort != null && komfort.compareTo(tsoll) == 0) {
             return MODE_COMFORT;
         } else if (absenk != null && absenk.compareTo(tsoll) == 0) {
             return MODE_ECO;
-        } else if ((getBoostactive() instanceof BigDecimal decimal && decimal.intValue() > 0)
+        } else if ((getBoostactive() instanceof BigDecimal decimal && decimal.doubleValue() > 0.5)
                 || TEMP_FRITZ_MAX.compareTo(tsoll) == 0) {
             return MODE_BOOST;
         } else {
