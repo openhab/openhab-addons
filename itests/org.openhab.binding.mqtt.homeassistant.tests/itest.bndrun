@@ -12,7 +12,9 @@ Import-Package: \
 	moquette-broker-[0-9.]*.jar;lib:=true
 
 -runrequires: \
-	bnd.identity;id='org.openhab.binding.mqtt.homeassistant.tests'
+	bnd.identity;id='org.openhab.binding.mqtt.homeassistant.tests',\
+	bnd.identity;id='org.graalvm.python.python-resources'
+
 
 # We would like to use the "volatile" storage only
 -runblacklist: \
@@ -121,9 +123,6 @@ Import-Package: \
 	org.openhab.core.test;version='[5.1.0,5.1.1)',\
 	org.openhab.core.thing;version='[5.1.0,5.1.1)',\
 	org.openhab.core.transform;version='[5.1.0,5.1.1)',\
-	com.fasterxml.jackson.core.jackson-annotations;version='[2.18.2,2.18.3)',\
-	com.fasterxml.jackson.core.jackson-core;version='[2.18.2,2.18.3)',\
-	com.fasterxml.jackson.core.jackson-databind;version='[2.18.2,2.18.3)',\
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	jakarta.inject.jakarta.inject-api;version='[1.0.5,1.0.6)',\
@@ -146,4 +145,8 @@ Import-Package: \
 	org.graalvm.truffle.truffle-api;version='[24.2.1,24.2.2)',\
 	org.graalvm.truffle.truffle-compiler;version='[24.2.1,24.2.2)',\
 	org.graalvm.truffle.truffle-nfi;version='[24.2.1,24.2.2)',\
-	org.graalvm.truffle.truffle-runtime;version='[24.2.1,24.2.2)'
+	org.graalvm.truffle.truffle-runtime;version='[24.2.1,24.2.2)',\
+	com.fasterxml.jackson.core.jackson-annotations;version='[2.19.2,2.19.3)',\
+	com.fasterxml.jackson.core.jackson-core;version='[2.19.2,2.19.3)',\
+	com.fasterxml.jackson.core.jackson-databind;version='[2.19.2,2.19.3)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'
