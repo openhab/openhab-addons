@@ -134,8 +134,8 @@ See section [Discovery](#discovery) for details.
 | shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU       |
 | shellyproem50       | Shelly Pro EM-50 - 2 channel, single phase energy meter  | SPEM-002CEBEU50                                |
 | shellypro3em        | Shelly Pro 3EM - 3-phase energy meter                    | SPEM-003CEBEU, SPEM-003CEBEU120                |
-| shellypro3em        | Shelly Pro 3EM-400 - 3-phase energy meter                | SPEM-003CEBEU400                               |
-| shellypro3em        | Shelly Pro 3EM-3CT63 - single or three-phase energy meter| SPEM-003CEBEU63                                |
+| shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter| SPEM-003CEBEU63                                |
+| shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                | SPEM-003CEBEU400                               |
 
 ### Shelly BLU
 
