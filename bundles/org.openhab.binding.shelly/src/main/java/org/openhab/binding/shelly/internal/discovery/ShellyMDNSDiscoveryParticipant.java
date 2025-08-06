@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.shelly.internal.discovery;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
+import static org.openhab.binding.shelly.internal.ShellyDevices.SUPPORTED_THING_TYPES;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;

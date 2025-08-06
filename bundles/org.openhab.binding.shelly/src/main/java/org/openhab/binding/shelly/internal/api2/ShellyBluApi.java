@@ -40,7 +40,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
-import org.openhab.binding.shelly.internal.handler.ShellyBluSensorHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
@@ -193,7 +193,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         logger.trace("{}: ShellyEvent received: {}", thingName, gson.toJson(message));
 
         boolean updated = false;
-        ShellyBluSensorHandler t = (ShellyBluSensorHandler) thing;
+        ShellyBluHandler t = (ShellyBluHandler) thing;
         if (t == null) {
             logger.debug("{}: Thing is not initialized -> ignore event", thingName);
             return;
