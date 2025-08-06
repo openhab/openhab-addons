@@ -352,7 +352,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                                 new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
 
                         homeRooms = homeData.result.rooms;
-                        if (homeData.result.devices[i].online == true) {
+                        if (homeData.result.devices[i].online) {
                             sendAllMqttCommands();
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

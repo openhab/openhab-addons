@@ -24,7 +24,6 @@ Just add a new thing, select the Roborock binding, then Roborock Account Binding
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | email           | N/A           | Yes      | No       | Email address for your Roborock account                                              |
 | password        | N/A           | Yes      | No       | Password for your Roborock account                                                   |
-| refresh         | 5             | No       | Yes      | The frequency with which to refresh information from Roborock specified in minutes   |
 
 ## `vacuum` Thing Configuration
 
@@ -40,7 +39,7 @@ These should be created via discovery as the thingID is set to the ID discovered
 | String  | network#ssid                      | Network SSID               |
 | String  | network#bssid                     | Network BSSID              |
 | Number  | network#rssi                      | Network RSSI               |
-| String  | actions#rpc                       | send commands via cloud.   |
+| String  | actions#rpc                       | Send command via cloud     |
 | Number  | status#segment_status             | Segment Status             |
 | Number  | status#map_status                 | Map Box Status             |
 | Number  | status#led_status                 | Led Box Status             |

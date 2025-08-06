@@ -70,7 +70,6 @@ import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5ConnAckException;
 import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5DisconnectException;
-import com.hivemq.client.mqtt.mqtt5.message.auth.Mqtt5SimpleAuth;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckReasonCode;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 
@@ -168,19 +167,15 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     @Nullable
     public String getRoutines(String deviceId) {
-        if (rriot != null) {
-            try {
-                return webTargets.getRoutines(deviceId, rriot);
-            } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication error " + e.getMessage());
-                return "";
-            } catch (RoborockCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Communication error " + e.getMessage());
-                return "";
-            }
-        } else {
+        try {
+            return webTargets.getRoutines(deviceId, rriot);
+        } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication error " + e.getMessage());
+            return "";
+        } catch (RoborockCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication error " + e.getMessage());
             return "";
         }
     }
@@ -208,7 +203,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         config = getConfigAs(RoborockAccountConfiguration.class);
-        if (config == null || config.email == null || config.email.isBlank()) {
+        if (config == null || config.email.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Missing email address configuration");
             return;
@@ -288,10 +283,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         mqttConnectTask.submit();
     }
 
-    private void teardownAndScheduleReconnection() {
-        teardown(true);
-    }
-
     private synchronized void teardown(boolean scheduleReconnection) {
         disconnectMqttClient();
 
@@ -340,8 +331,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         } catch (URISyntaxException e) {
             logger.error("Malformed mqtt URL");
         }
-
-        Mqtt5SimpleAuth auth = Mqtt5SimpleAuth.builder().username(mqttUser).password(mqttPassword.getBytes()).build();
 
         final MqttClientConnectedListener connectedListener = ctx -> {
             String topic = "rr/m/o/" + rriot.u + "/" + ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10)

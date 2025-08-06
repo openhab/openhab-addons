@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public final class ProtocolUtils {
-    private static final Logger logger = LoggerFactory.getLogger(ProtocolUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolUtils.class);
 
     private static final String MD5_ALGORITHM = "MD5";
     private static final String AES_ECB_PADDING = "AES/ECB/PKCS5Padding";
@@ -61,7 +61,7 @@ public final class ProtocolUtils {
             byte[] hashBytes = md.digest(data.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(hashBytes);
         } catch (NoSuchAlgorithmException e) {
-            logger.error("MD5 algorithm not found, this should not happen.", e);
+            LOGGER.error("MD5 algorithm not found, this should not happen.", e);
             return "";
         }
     }
@@ -175,7 +175,7 @@ public final class ProtocolUtils {
      */
     public static byte[] decryptCbc(byte[] ciphertext, byte[] nonce) {
         if (ciphertext.length == 0 || nonce.length == 0) {
-            logger.warn("Attempted to decrypt CBC with null or empty ciphertext/nonce.");
+            LOGGER.warn("Attempted to decrypt CBC with null or empty ciphertext/nonce.");
             return new byte[0];
         }
 
@@ -192,14 +192,14 @@ public final class ProtocolUtils {
             byte[] decryptedBytes = cipher.doFinal(ciphertext);
             return decryptedBytes;
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            logger.error("Error initializing cipher. Check algorithm and padding.", e);
+            LOGGER.error("Error initializing cipher. Check algorithm and padding.", e);
         } catch (InvalidKeyException e) {
-            logger.error("Invalid decryption key (token).", e);
+            LOGGER.error("Invalid decryption key (token).", e);
         } catch (InvalidAlgorithmParameterException e) {
-            logger.error("Invalid algorithm parameter (IV).", e);
+            LOGGER.error("Invalid algorithm parameter (IV).", e);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
             // BadPaddingException often indicates incorrect key, IV, or corrupted ciphertext.
-            logger.error("Error during decryption or invalid ciphertext. Check key, IV, and data integrity.", e);
+            LOGGER.error("Error during decryption or invalid ciphertext. Check key, IV, and data integrity.", e);
         }
         return new byte[0];
     }
@@ -232,7 +232,7 @@ public final class ProtocolUtils {
         CRC32 crc32 = new CRC32();
         crc32.update(message, 0, message.length - CRC_LENGTH);
         if (crc32.getValue() != (expectedCrc32 & 0xFFFFFFFFL)) {
-            logger.debug("CRC32 mismatch. Calculated: {}, Expected: {}", crc32.getValue(), expectedCrc32);
+            LOGGER.debug("CRC32 mismatch. Calculated: {}, Expected: {}", crc32.getValue(), expectedCrc32);
             return false;
         }
         return true;
@@ -248,7 +248,7 @@ public final class ProtocolUtils {
      * @return An empty string, indicating no string result for image protocol.
      */
     private static String handleImageProtocol(byte[] message, MessageHeader header, byte[] nonce) {
-        logger.debug("Protocol 301 (image) received, not handled yet.");
+        LOGGER.debug("Protocol 301 (image) received, not handled yet.");
         return "";
     }
 
@@ -266,14 +266,14 @@ public final class ProtocolUtils {
         int payloadEnd = payloadStart + header.payloadLen;
 
         if (payloadEnd > message.length - CRC_LENGTH) { // Payload should not extend into CRC area
-            logger.warn("Payload length ({}) exceeds message bounds for protocol 102. Message length: {}",
+            LOGGER.warn("Payload length ({}) exceeds message bounds for protocol 102. Message length: {}",
                     header.payloadLen, message.length);
             return "";
         }
 
         byte[] payload = Arrays.copyOfRange(message, payloadStart, payloadEnd);
 
-        logger.trace(
+        LOGGER.trace(
                 "Parsed message version: {}, sequence: {}, random: {}, timestamp: {}, protocol: {}, payloadLen: {}",
                 header.version, header.sequence, header.random, header.timestamp, header.protocol, header.payloadLen);
 
@@ -282,7 +282,7 @@ public final class ProtocolUtils {
             byte[] decryptedResult = decrypt(payload, encryptionKey);
             return new String(decryptedResult, StandardCharsets.UTF_8);
         } catch (RoborockCryptoException e) {
-            logger.debug("Exception decrypting payload for protocol 102: {}", e.getMessage(), e);
+            LOGGER.debug("Exception decrypting payload for protocol 102: {}", e.getMessage(), e);
             return "";
         }
     }
@@ -299,21 +299,21 @@ public final class ProtocolUtils {
      */
     public static String handleMessage(byte[] message, String localKey, byte[] nonce) {
         if (message.length < HEADER_LENGTH_WITHOUT_CRC + CRC_LENGTH) {
-            logger.warn("Invalid message length received. Minimum required: {}",
+            LOGGER.warn("Invalid message length received. Minimum required: {}",
                     HEADER_LENGTH_WITHOUT_CRC + CRC_LENGTH);
             return "";
         }
 
         MessageHeader header = parseMessageHeader(message);
         if (!VERSION_1_0.equals(header.version)) {
-            logger.debug("Received message version is not 1.0: {}", header.version);
+            LOGGER.debug("Received message version is not 1.0: {}", header.version);
             // Depending on protocol evolution, this might require a different handling path
             return "";
         }
 
         int messageCrc32 = readInt32BE(message, message.length - CRC_LENGTH);
         if (!validateCrc32(message, messageCrc32)) {
-            logger.warn("Message CRC32 checksum mismatch. Message discarded.");
+            LOGGER.warn("Message CRC32 checksum mismatch. Message discarded.");
             return "";
         }
 
@@ -323,7 +323,7 @@ public final class ProtocolUtils {
             case 102:
                 return handleDataProtocol(message, header, localKey);
             default:
-                logger.debug("Unknown protocol received: {}", header.protocol);
+                LOGGER.debug("Unknown protocol received: {}", header.protocol);
                 return "";
         }
     }

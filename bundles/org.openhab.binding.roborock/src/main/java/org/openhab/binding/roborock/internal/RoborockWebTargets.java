@@ -60,13 +60,13 @@ import com.google.gson.JsonSyntaxException;
 public class RoborockWebTargets {
     private static final int TIMEOUT_MS = 30000;
     private static final String EU_IOT_BASE_URL = "https://euiot.roborock.com";
-    private static final String getUrlByEmailUri = EU_IOT_BASE_URL + "/api/v1/getUrlByEmail";
-    private static final String getTokenPath = "/api/v1/login";
-    private static final String getHomeDetailPath = "/api/v1/getHomeDetail";
-    private static final String getHomeDatapath = "/user/homes/";
-    private static final String getRoutinesPath = "/user/scene/device/";
-    private static final String setRoutinePath = "/user/scene/";
-    private static final String setRoutinePathSuffix = "/execute";
+    private static final String GET_URL_BY_EMAIL_URI = EU_IOT_BASE_URL + "/api/v1/getUrlByEmail";
+    private static final String GET_TOKEN_PATH = "/api/v1/login";
+    private static final String GET_HOME_DETAIL_PATH = "/api/v1/getHomeDetail";
+    private static final String GET_HOME_DATA_PATH = "/user/homes/";
+    private static final String GET_ROUTINES_PATH = "/user/scene/device/";
+    private static final String SET_ROUTINE_PATH = "/user/scene/";
+    private static final String SET_ROUTINE_PATH_SUFFIX = "/execute";
 
     private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(RoborockWebTargets.class);
@@ -143,7 +143,7 @@ public class RoborockWebTargets {
 
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
         String payload = "?email=" + encodedEmail + "&needtwostepauth=false";
-        String response = invoke(getUrlByEmailUri + payload, HttpMethod.POST, null, null);
+        String response = invoke(GET_URL_BY_EMAIL_URI + payload, HttpMethod.POST, null, null);
 
         try {
             JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
@@ -187,7 +187,7 @@ public class RoborockWebTargets {
         String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
         String payload = "?username=" + encodedUsername + "&password=" + encodedPassword + "&needtwostepauth=false";
 
-        String response = invoke(baseUri + getTokenPath + payload, HttpMethod.POST, null, null);
+        String response = invoke(baseUri + GET_TOKEN_PATH + payload, HttpMethod.POST, null, null);
         return gson.fromJson(response, Login.class);
     }
 
@@ -204,7 +204,7 @@ public class RoborockWebTargets {
     @Nullable
     public Home getHomeDetail(String baseUri, String token)
             throws RoborockCommunicationException, RoborockAuthenticationException {
-        String response = invoke(baseUri + getHomeDetailPath, HttpMethod.GET, "Authorization", token);
+        String response = invoke(baseUri + GET_HOME_DETAIL_PATH, HttpMethod.GET, "Authorization", token);
         return gson.fromJson(response, Home.class);
     }
 
@@ -222,7 +222,7 @@ public class RoborockWebTargets {
     @Nullable
     public HomeData getHomeData(String rrHomeID, Rriot rriot) throws RoborockCommunicationException,
             RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
-        String path = getHomeDatapath + rrHomeID;
+        String path = GET_HOME_DATA_PATH + rrHomeID;
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         String response = invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token);
         return gson.fromJson(response, HomeData.class);
@@ -242,7 +242,7 @@ public class RoborockWebTargets {
     @Nullable
     public String getRoutines(String deviceID, Rriot rriot) throws RoborockCommunicationException,
             RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
-        String path = getRoutinesPath + deviceID;
+        String path = GET_ROUTINES_PATH + deviceID;
         String hawkToken = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         return invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", hawkToken);
     }
@@ -261,7 +261,7 @@ public class RoborockWebTargets {
     @Nullable
     public String setRoutine(String sceneID, Rriot rriot) throws RoborockCommunicationException,
             RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
-        String path = setRoutinePath + sceneID + setRoutinePathSuffix;
+        String path = SET_ROUTINE_PATH + sceneID + SET_ROUTINE_PATH_SUFFIX;
         String hawkToken = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         return invoke(rriot.r.a + path, HttpMethod.POST, "Authorization", hawkToken);
     }
