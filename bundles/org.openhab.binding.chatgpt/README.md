@@ -134,7 +134,7 @@ and
 
 The state updates can be used for a text-to-speech output and they will give your announcements at home a personal touch.
 
-### Example: Item control
+### Example: Item control using voice
 
 **Item**
 
