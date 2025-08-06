@@ -126,7 +126,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_PRO2PM_2 = "SPSW-102PE16EU";
     public static final String SHELLYDT_PRO2PM_3 = "SPSW-202PE16EU";
     public static final String SHELLYDT_PRO3 = "SPSW-003XE16EU";
-    public static final String SHELLYDT_PRO4PM = "SPSW-004PE16EU";
+    public static final String SHELLYDT_PRO4PM = "SPSW-104PE16EU";
     public static final String SHELLYDT_PRO4PM_2 = "SPSW-104PE16EU";
     public static final String SHELLYDT_4PRO = "SHPSW04P";
     public static final String SHELLYDT_PROEM50 = "SPEM-002CEBEU50";
@@ -595,9 +595,11 @@ public class ShellyDevices {
             Map.entry("shellypro3", THING_TYPE_SHELLYPRO3), //
             Map.entry("shellypro4pm", THING_TYPE_SHELLYPRO4PM), //
             Map.entry("shellyproem50", THING_TYPE_SHELLYPROEM50), //
-            Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM),
+            Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM), //
+            Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63), //
+            Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM),
+
             // THING_TYPE_SHELLYPRO3EM63 also uses shellypro3em -> detection via DT only
-            // THING_TYPE_SHELLYPRO3EM400 also uses shellypro3em -> detection via DT only
 
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON), //
