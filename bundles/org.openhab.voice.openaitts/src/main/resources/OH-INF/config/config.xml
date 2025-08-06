@@ -32,9 +32,16 @@
 			<options>
 				<option value="tts-1">tts-1</option>
 				<option value="tts-1-hd">tts-1-hd</option>
+				<option value="gpt-4o-mini-tts">gpt-4o-mini-tts</option>
 			</options>
 			<limitToOptions>false</limitToOptions>
-			<default>tts-1</default>
+			<default>gpt-4o-mini-tts</default>
+		</parameter>
+		<parameter name="instructions" type="text" groupName="tts">
+			<label>Instructions</label>
+			<description>Control the voice of your generated audio with additional instructions. Does not work with tts-1 or
+				tts-1-hd</description>
+			<default>Speak in a cheerful and positive tone.</default>
 		</parameter>
 		<parameter name="speed" type="decimal" min="0.25" max="4" groupName="tts">
 			<label>Speed</label>
