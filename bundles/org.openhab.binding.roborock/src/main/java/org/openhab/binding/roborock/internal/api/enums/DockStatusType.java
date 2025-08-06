@@ -44,8 +44,6 @@ public enum DockStatusType {
     }
 
     public static DockStatusType getType(int value) {
-        byte b;
-        int i;
         for (DockStatusType st : values()) {
             if (st.getId() == value) {
                 return st;

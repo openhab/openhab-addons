@@ -256,7 +256,7 @@ public final class ProtocolUtils {
      * Handles messages with protocol 102 (data payload).
      * Decrypts the payload and returns the result as a UTF-8 string.
      *
-     * @param message The full message byte array.e
+     * @param message The full message byte array.
      * @param header The parsed message header.
      * @param localKey The local key for decryption.
      * @return The decrypted payload as a string, or an empty string on decryption failure.
