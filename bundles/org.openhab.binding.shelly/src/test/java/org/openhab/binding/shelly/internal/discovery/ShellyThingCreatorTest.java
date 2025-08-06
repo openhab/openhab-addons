@@ -101,7 +101,16 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellydw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDOORWIN),
                 Arguments.of("shellydw2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDOORWIN2),
                 Arguments.of("shellygas-" + DEVICE_ID, "", "", THING_TYPE_SHELLYGAS),
-                Arguments.of("shellyuni-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNI));
+                Arguments.of("shellyuni-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNI),
+
+                Arguments.of("shellyem-" + DEVICE_ID, "", "", THING_TYPE_SHELLYEM),
+                Arguments.of("shellyem3-" + DEVICE_ID, "", "", THING_TYPE_SHELLY3EM),
+                Arguments.of("shellyemg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSEM),
+                Arguments.of("shelly3em63g-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUS3EM63),
+                Arguments.of("shellypro3em-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM),
+                Arguments.of("shellypro3em63-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM63),
+                Arguments.of("shellypro3em400-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM400) //
+        );
     }
 
     @ParameterizedTest

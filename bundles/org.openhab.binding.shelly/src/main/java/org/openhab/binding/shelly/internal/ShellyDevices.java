@@ -356,7 +356,6 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_IX3, THING_TYPE_SHELLYIX3), //
             Map.entry(SHELLYDT_DIMMER, THING_TYPE_SHELLYDIMMER), //
             Map.entry(SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2), //
-
             Map.entry(SHELLYDT_DUO, THING_TYPE_SHELLYDUO), //
             Map.entry(SHELLYDT_DUORGBW, THING_TYPE_SHELLYDUORGBW), //
             Map.entry(SHELLYDT_BULB, THING_TYPE_SHELLYBULB), //
@@ -565,10 +564,11 @@ public class ShellyDevices {
             Map.entry("shellydimmerg3", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
-            Map.entry("shellyplusem", THING_TYPE_SHELLYPLUSEM), //
-            Map.entry("shellyemg3", THING_TYPE_SHELLYPLUSEM), Map.entry("shellyplus3em63", THING_TYPE_SHELLYPLUS3EM63),
             Map.entry("shellyblugw", THING_TYPE_SHELLYPLUSBLUGW), //
-            Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW),
+            Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW), //
+            Map.entry("shellyplusem", THING_TYPE_SHELLYPLUSEM), //
+            Map.entry("shellyemg3", THING_TYPE_SHELLYPLUSEM), //
+            Map.entry("shelly3em63g", THING_TYPE_SHELLYPLUS3EM63), //
 
             // Wall Display
             Map.entry("shellywalldisplay", THING_TYPE_SHELLYPLUSWALLDISPLAY),
@@ -595,9 +595,9 @@ public class ShellyDevices {
             Map.entry("shellypro3", THING_TYPE_SHELLYPRO3), //
             Map.entry("shellypro4pm", THING_TYPE_SHELLYPRO4PM), //
             Map.entry("shellyproem50", THING_TYPE_SHELLYPROEM50), //
-            Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM), //
-            Map.entry("shellypro3em63", THING_TYPE_SHELLYPRO3EM63), // serivceName is unknown
-            Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400), // serivceName is unknown
+            Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM),
+            // THING_TYPE_SHELLYPRO3EM63 also uses shellypro3em -> detection via DT only
+            // THING_TYPE_SHELLYPRO3EM400 also uses shellypro3em -> detection via DT only
 
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON), //
