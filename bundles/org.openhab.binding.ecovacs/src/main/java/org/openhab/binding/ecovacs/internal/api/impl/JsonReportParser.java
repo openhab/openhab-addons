@@ -59,7 +59,8 @@ class JsonReportParser implements ReportParser {
         } catch (JsonSyntaxException e) {
             // The onFwBuryPoint-bd_sysinfo sends a JSON array instead of the expected JsonResponsePayloadBody object.
             // Since we don't do anything with it anyway, just ignore it
-            logger.debug("{}: Got invalid JSON message payload, ignoring: {}", device.getSerialNumber(), payload, e);
+            logger.debug("{}: Got invalid JSON data ({}), ignoring payload: {}", device.getSerialNumber(),
+                    e.getMessage(), payload);
             response = null;
         }
         if (response == null) {
