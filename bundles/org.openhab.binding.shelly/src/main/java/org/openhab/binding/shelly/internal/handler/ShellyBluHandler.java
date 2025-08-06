@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
@@ -34,15 +34,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ShellyBluSensorHandler} implements the thing handler for the BLU devices
+ * {@link ShellyBluHandler} implements the thing handler for the BLU devices
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyBluSensorHandler extends ShellyBaseHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyBluSensorHandler.class);
+public class ShellyBluHandler extends ShellyBaseHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyBluHandler.class);
 
-    public ShellyBluSensorHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
+    public ShellyBluHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient) {
         super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient);
