@@ -172,6 +172,10 @@ public class HeatingModel implements BatteryModel {
         return boostactive;
     }
 
+    public void setBoostactive(BigDecimal boostActive) {
+        this.boostactive = boostActive;
+    }
+
     public @Nullable BigDecimal getBoostactiveendtime() {
         return boostactiveendtime;
     }
