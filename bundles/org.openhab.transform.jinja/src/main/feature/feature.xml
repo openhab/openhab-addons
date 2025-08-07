@@ -4,12 +4,24 @@
 
 	<feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature dependency="true">openhab.tp-commons-net</feature>
-		<bundle dependency="true">mvn:org.openhab.osgiify/com.hubspot.jinjava.jinjava/2.7.4</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/com.google.re2j.re2j/1.2</bundle>
-		<bundle dependency="true">mvn:ch.obermuhlner/big-math/2.3.2</bundle>
-		<bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jdk8/${jackson.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/com.hubspot.immutables.immutables-exceptions/1.9</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.llvm.llvm-api/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.polyglot.polyglot/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.python.python-embedding/${graalpy.version}</bundle>
+		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-language/${graalpy.version}</bundle>
+		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-resources/${graalpy.version}</bundle>
+		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.regex.regex/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.collections/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.jniutils/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.nativeimage/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.word/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.icu4j/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.json/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.xz/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.tools.profiler-tool/${graalpy.version}</bundle>
+		<bundle dependency="true" start-level="79">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-api/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-nfi/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-runtime/${graalpy.version}</bundle>
 		<bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.jinja/${project.version}</bundle>
 	</feature>
 </features>

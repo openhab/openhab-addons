@@ -91,7 +91,7 @@ public class JinjaTransformationServiceTest {
         String transformedResponse = processor.transform("{{ missing is defined }}", "{\"string\": \"world\"}");
 
         // then missing variable is not defined
-        assertEquals("false", transformedResponse);
+        assertEquals("False", transformedResponse);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class JinjaTransformationServiceTest {
                 "{\"string\": \"world\"}");
 
         // then missing map key is not defined
-        assertEquals("false", transformedResponse);
+        assertEquals("False", transformedResponse);
     }
 
     @Test
@@ -111,6 +111,6 @@ public class JinjaTransformationServiceTest {
                 "{\"string\": \"world\"}");
 
         // then map key is defined
-        assertEquals("true", transformedResponse);
+        assertEquals("True", transformedResponse);
     }
 }
