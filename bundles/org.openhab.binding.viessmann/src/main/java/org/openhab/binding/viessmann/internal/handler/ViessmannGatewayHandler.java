@@ -269,7 +269,7 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
                         }
                     } else {
                         logger.warn("Features of Device ID \"{}\" is empty.", deviceId);
-                        String statusMessage = String.format("Features of Device ID \"{%s\" is empty.", deviceId);
+                        String statusMessage = String.format("Features of Device ID \"%s\" is empty.", deviceId);
                         handler.updateThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, statusMessage);
                     }
                 }
