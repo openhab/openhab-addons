@@ -568,7 +568,8 @@ public class ShellyDevices {
             Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW), //
             Map.entry("shellyplusem", THING_TYPE_SHELLYPLUSEM), //
             Map.entry("shellyemg3", THING_TYPE_SHELLYPLUSEM), //
-            Map.entry("shelly3em63g", THING_TYPE_SHELLYPLUS3EM63), //
+            Map.entry("shellyplus3em63", THING_TYPE_SHELLYPLUS3EM63), //
+            Map.entry("shelly3em63g3", THING_TYPE_SHELLYPLUS3EM63), //
 
             // Wall Display
             Map.entry("shellywalldisplay", THING_TYPE_SHELLYPLUSWALLDISPLAY),
@@ -597,7 +598,7 @@ public class ShellyDevices {
             Map.entry("shellyproem50", THING_TYPE_SHELLYPROEM50), //
             Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM), //
             Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63), //
-            Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM),
+            Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400),
 
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON), //

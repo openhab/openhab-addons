@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -106,9 +107,9 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyem-" + DEVICE_ID, "", "", THING_TYPE_SHELLYEM),
                 Arguments.of("shellyem3-" + DEVICE_ID, "", "", THING_TYPE_SHELLY3EM),
                 Arguments.of("shellyemg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSEM),
-                Arguments.of("shelly3em63g-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUS3EM63),
+                Arguments.of("shelly3em63g3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUS3EM63),
                 Arguments.of("shellypro3em-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM),
-                Arguments.of("shellypro3em63-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM63),
+                Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM63),
                 Arguments.of("shellypro3em400-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM400) //
         );
     }
@@ -252,10 +253,10 @@ public class ShellyThingCreatorTest {
 
     @Test
     void getThingUIDReturnsThingTypeMatchingServiceName() {
-        Set<ThingTypeUID> excludedThingTypeUids = Set.of(THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER,
-                THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLYPLUS2PM_RELAY,
-                THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPRO2, THING_TYPE_SHELLYPRO2PM_ROLLER,
-                THING_TYPE_SHELLYPRO2PM_RELAY, THING_TYPE_SHELLYRGBW2_COLOR);
+        Set<ThingTypeUID> excludedThingTypeUids = new HashSet<>();
+        excludedThingTypeUids.addAll(RELAY_THING_TYPE_BY_DEVICE_TYPE.values());
+        excludedThingTypeUids.addAll(ROLLER_THING_TYPE_BY_DEVICE_TYPE.values());
+        excludedThingTypeUids.addAll(GROUP_RGBW2_THING_TYPES);
 
         for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES.stream()
                 .filter(uid -> !excludedThingTypeUids.contains(uid)).toList()) {
