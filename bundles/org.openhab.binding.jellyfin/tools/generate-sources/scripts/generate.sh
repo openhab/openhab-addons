@@ -51,7 +51,7 @@ fi
 LATEST=$(curl -sL https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json | jq -r .info.version)
 echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m"
 
-echo -e "ℹ️  - Using Jersey2/Jetty configuration for OpenHAB integration"
+echo -e "ℹ️  - Using Jersey/Jetty configuration for OpenHAB integration"
 OPENAPI_JAVA_CONFIG="tools/generate-sources/scripts/java.config.json"
 
 # VERSIONS=("10.8.13" "10.10.7")
@@ -74,13 +74,13 @@ for i in "${VERSIONS[@]}"; do
     PACKAGE_API=${PACKAGE_BASE}
     PACKAGE_MODEL=${PACKAGE_BASE}.model
 
-    echo -e "  ➡️  generating Jersey2 API Version $i as \033[1m${ALIAS}\033[0m: ${PACKAGE_API}"
+    echo -e "  ➡️  generating Jersey API Version $i as \033[1m${ALIAS}\033[0m: ${PACKAGE_API}"
 
     FILENAME_JSON=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/json/jellyfin-openapi-${i}.json
     FILENAME_YAML=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/yaml/jellyfin-openapi-${i}.yaml
 
     mkdir -p logs/endpoints
-    jq ".paths | to_entries[] | {path: .key, methods: (.value | keys)}" ${FILENAME_JSON} | grep \"path\" >logs/endpoints/${i}-jersey2.txt
+    jq ".paths | to_entries[] | {path: .key, methods: (.value | keys)}" ${FILENAME_JSON} | grep \"path\" >logs/endpoints/${i}-jersey.txt
 
     if [ ! -e "${FILENAME_JSON}" ]; then
         echo "  ⏬ - Downloading OPENAPI definition for Version ${i}"

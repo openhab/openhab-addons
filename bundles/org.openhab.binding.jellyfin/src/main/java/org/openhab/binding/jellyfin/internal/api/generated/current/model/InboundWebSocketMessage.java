@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.core.GenericType;
-
 import org.openhab.binding.jellyfin.internal.api.generated.JSON;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -38,6 +36,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
+import jakarta.ws.rs.core.GenericType;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 @JsonDeserialize(using = InboundWebSocketMessage.InboundWebSocketMessageDeserializer.class)

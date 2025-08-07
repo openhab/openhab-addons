@@ -7,8 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import javax.ws.rs.core.GenericType;
-
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
@@ -35,6 +33,8 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.TimerIn
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.TimerInfoDtoQueryResult;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.TunerChannelMapping;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.TunerHostInfo;
+
+import jakarta.ws.rs.core.GenericType;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LiveTvApi {

@@ -1,6 +1,6 @@
 {
   "annotationLibrary": "none",
-  "library": "jersey2",
+  "library": "jersey3",
   "dateLibrary": "java8",
   "serializationLibrary": "jackson",
   "developerEmail": "patrik.gfeller@gmail.com",

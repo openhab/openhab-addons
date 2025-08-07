@@ -16,9 +16,9 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.ws.rs.core.GenericType;
-
 import com.fasterxml.jackson.annotation.JsonValue;
+
+import jakarta.ws.rs.core.GenericType;
 
 /**
  * Abstract class for oneOf,anyOf schemas defined in OpenAPI spec
