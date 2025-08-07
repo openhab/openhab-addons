@@ -456,6 +456,7 @@
     <module>org.openhab.binding.ventaair</module>
     <module>org.openhab.binding.verisure</module>
     <module>org.openhab.binding.vesync</module>
+    <module>org.openhab.binding.viessmann</module>
     <module>org.openhab.binding.vigicrues</module>
     <module>org.openhab.binding.visualcrossing</module>
     <module>org.openhab.binding.vitotronic</module>
