@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.PatternSyntaxException;
@@ -31,6 +32,7 @@ import java.util.regex.PatternSyntaxException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.exec.internal.ExecWhitelistWatchService;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -43,8 +45,6 @@ import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.StringUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +58,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ExecHandler extends BaseThingHandler {
+
+    private static final String EXEC_HANDLER_THREADPOOL_NAME = "execBinding";
+
     /**
      * Use this to separate between command and parameter, and also between parameters.
      */
@@ -72,8 +75,6 @@ public class ExecHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
 
-    private final BundleContext bundleContext;
-
     // List of Configurations constants
     public static final String INTERVAL = "interval";
     public static final String TIME_OUT = "timeout";
@@ -81,6 +82,7 @@ public class ExecHandler extends BaseThingHandler {
     public static final String TRANSFORM = "transform";
     public static final String AUTORUN = "autorun";
 
+    private ExecutorService executor;
     private @Nullable ScheduledFuture<?> executionJob;
     private @Nullable String lastInput;
 
@@ -90,8 +92,8 @@ public class ExecHandler extends BaseThingHandler {
 
     public ExecHandler(Thing thing, ExecWhitelistWatchService execWhitelistWatchService) {
         super(thing);
-        this.bundleContext = FrameworkUtil.getBundle(ExecHandler.class).getBundleContext();
         this.execWhitelistWatchService = execWhitelistWatchService;
+        this.executor = ThreadPoolManager.getPool(EXEC_HANDLER_THREADPOOL_NAME);
     }
 
     @Override
@@ -102,7 +104,7 @@ public class ExecHandler extends BaseThingHandler {
             if (channelUID.getId().equals(RUN)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        scheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
+                        executor.execute(this::execute);
                     }
                 }
             } else if (channelUID.getId().equals(INPUT)) {
@@ -113,7 +115,7 @@ public class ExecHandler extends BaseThingHandler {
                         if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN))) {
                             logger.trace("Executing command '{}' after a change of the input channel to '{}'",
                                     getConfig().get(COMMAND), lastInput);
-                            scheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
+                            executor.execute(this::execute);
                         }
                     }
                 }
@@ -125,10 +127,12 @@ public class ExecHandler extends BaseThingHandler {
     public void initialize() {
         channelTransformation = new ChannelTransformation((List<String>) getConfig().get(TRANSFORM));
 
-        if (executionJob == null || executionJob.isCancelled()) {
+        ScheduledFuture<?> job = executionJob;
+        if (job == null || job.isCancelled()) {
             if ((getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
                 int pollingInterval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
-                executionJob = scheduler.scheduleWithFixedDelay(this::execute, 0, pollingInterval, TimeUnit.SECONDS);
+                executionJob = scheduler.scheduleWithFixedDelay(this::triggerExecution, 0, pollingInterval,
+                        TimeUnit.SECONDS);
             }
         }
 
@@ -137,11 +141,16 @@ public class ExecHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (executionJob != null && !executionJob.isCancelled()) {
-            executionJob.cancel(true);
+        ScheduledFuture<?> job = executionJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
             executionJob = null;
         }
         channelTransformation = null;
+    }
+
+    public void triggerExecution() {
+        executor.execute(this::execute);
     }
 
     public void execute() {
@@ -353,7 +362,12 @@ public class ExecHandler extends BaseThingHandler {
 
     public static OS getOperatingSystemType() {
         if (os == OS.NOT_SET) {
-            String operSys = System.getProperty("os.name").toLowerCase();
+            String operSys = System.getProperty("os.name");
+            if (operSys == null) {
+                os = OS.UNKNOWN;
+                return os;
+            }
+            operSys = operSys.toLowerCase();
             if (operSys.contains("win")) {
                 os = OS.WINDOWS;
             } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
