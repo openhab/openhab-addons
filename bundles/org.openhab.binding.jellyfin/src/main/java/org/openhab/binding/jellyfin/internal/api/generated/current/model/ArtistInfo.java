@@ -19,9 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -102,6 +99,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -125,6 +123,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOriginalTitle() {
         return originalTitle;
     }
@@ -148,6 +147,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPath() {
         return path;
     }
@@ -171,6 +171,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMetadataLanguage() {
         return metadataLanguage;
     }
@@ -194,6 +195,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
@@ -225,6 +227,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getProviderIds() {
         return providerIds;
     }
@@ -248,6 +251,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_YEAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getYear() {
         return year;
     }
@@ -271,6 +275,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getIndexNumber() {
         return indexNumber;
     }
@@ -294,6 +299,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
@@ -317,6 +323,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getPremiereDate() {
         return premiereDate;
     }
@@ -340,6 +347,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_AUTOMATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsAutomated() {
         return isAutomated;
     }
@@ -371,6 +379,7 @@ public class ArtistInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SONG_INFOS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<SongInfo> getSongInfos() {
         return songInfos;
     }
@@ -442,230 +451,5 @@ public class ArtistInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `OriginalTitle` to the URL query string
-        if (getOriginalTitle() != null) {
-            joiner.add(String.format("%sOriginalTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOriginalTitle()))));
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `MetadataLanguage` to the URL query string
-        if (getMetadataLanguage() != null) {
-            joiner.add(String.format("%sMetadataLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataLanguage()))));
-        }
-
-        // add `MetadataCountryCode` to the URL query string
-        if (getMetadataCountryCode() != null) {
-            joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
-        }
-
-        // add `ProviderIds` to the URL query string
-        if (getProviderIds() != null) {
-            for (String _key : getProviderIds().keySet()) {
-                joiner.add(String.format("%sProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getProviderIds().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
-            }
-        }
-
-        // add `Year` to the URL query string
-        if (getYear() != null) {
-            joiner.add(String.format("%sYear%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getYear()))));
-        }
-
-        // add `IndexNumber` to the URL query string
-        if (getIndexNumber() != null) {
-            joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
-        }
-
-        // add `ParentIndexNumber` to the URL query string
-        if (getParentIndexNumber() != null) {
-            joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
-        }
-
-        // add `PremiereDate` to the URL query string
-        if (getPremiereDate() != null) {
-            joiner.add(String.format("%sPremiereDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
-        }
-
-        // add `IsAutomated` to the URL query string
-        if (getIsAutomated() != null) {
-            joiner.add(String.format("%sIsAutomated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAutomated()))));
-        }
-
-        // add `SongInfos` to the URL query string
-        if (getSongInfos() != null) {
-            for (int i = 0; i < getSongInfos().size(); i++) {
-                if (getSongInfos().get(i) != null) {
-                    joiner.add(getSongInfos().get(i).toUrlQueryString(String.format("%sSongInfos%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ArtistInfo instance;
-
-        public Builder() {
-            this(new ArtistInfo());
-        }
-
-        protected Builder(ArtistInfo instance) {
-            this.instance = instance;
-        }
-
-        public ArtistInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public ArtistInfo.Builder originalTitle(String originalTitle) {
-            this.instance.originalTitle = originalTitle;
-            return this;
-        }
-
-        public ArtistInfo.Builder path(String path) {
-            this.instance.path = path;
-            return this;
-        }
-
-        public ArtistInfo.Builder metadataLanguage(String metadataLanguage) {
-            this.instance.metadataLanguage = metadataLanguage;
-            return this;
-        }
-
-        public ArtistInfo.Builder metadataCountryCode(String metadataCountryCode) {
-            this.instance.metadataCountryCode = metadataCountryCode;
-            return this;
-        }
-
-        public ArtistInfo.Builder providerIds(Map<String, String> providerIds) {
-            this.instance.providerIds = providerIds;
-            return this;
-        }
-
-        public ArtistInfo.Builder year(Integer year) {
-            this.instance.year = year;
-            return this;
-        }
-
-        public ArtistInfo.Builder indexNumber(Integer indexNumber) {
-            this.instance.indexNumber = indexNumber;
-            return this;
-        }
-
-        public ArtistInfo.Builder parentIndexNumber(Integer parentIndexNumber) {
-            this.instance.parentIndexNumber = parentIndexNumber;
-            return this;
-        }
-
-        public ArtistInfo.Builder premiereDate(OffsetDateTime premiereDate) {
-            this.instance.premiereDate = premiereDate;
-            return this;
-        }
-
-        public ArtistInfo.Builder isAutomated(Boolean isAutomated) {
-            this.instance.isAutomated = isAutomated;
-            return this;
-        }
-
-        public ArtistInfo.Builder songInfos(List<SongInfo> songInfos) {
-            this.instance.songInfos = songInfos;
-            return this;
-        }
-
-        /**
-         * returns a built ArtistInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public ArtistInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ArtistInfo.Builder builder() {
-        return new ArtistInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ArtistInfo.Builder toBuilder() {
-        return new ArtistInfo.Builder().name(getName()).originalTitle(getOriginalTitle()).path(getPath())
-                .metadataLanguage(getMetadataLanguage()).metadataCountryCode(getMetadataCountryCode())
-                .providerIds(getProviderIds()).year(getYear()).indexNumber(getIndexNumber())
-                .parentIndexNumber(getParentIndexNumber()).premiereDate(getPremiereDate()).isAutomated(getIsAutomated())
-                .songInfos(getSongInfos());
     }
 }

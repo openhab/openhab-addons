@@ -1,29 +1,11 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -36,44 +18,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.ImageTy
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.ItemFields;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.ItemFilter;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PersonsApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public PersonsApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public PersonsApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -83,11 +55,39 @@ public class PersonsApi {
      * @param userId Optional. Filter by user id, and attach user data. (optional)
      * @return BaseItemDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Person returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Person not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDto getPerson(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResponse = getPersonWithHttpInfo(name, userId);
-        return localVarResponse.getData();
+        return getPersonWithHttpInfo(name, userId).getData();
     }
 
     /**
@@ -97,81 +97,58 @@ public class PersonsApi {
      * @param userId Optional. Filter by user id, and attach user data. (optional)
      * @return ApiResponse&lt;BaseItemDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Person returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Person not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDto> getPersonWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPersonRequestBuilder(name, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getPerson", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                            null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getPersonRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getPerson");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Persons/{name}".replaceAll("\\{name}", apiClient.escapeString(name.toString()));
 
-        String localVarPath = "/Persons/{name}".replace("{name}", ApiClient.urlEncode(name.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDto> localVarReturnType = new GenericType<BaseItemDto>() {
+        };
+        return apiClient.invokeAPI("PersonsApi.getPerson", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -195,6 +172,30 @@ public class PersonsApi {
      * @param enableImages Optional, include image information in output. (optional, default to true)
      * @return BaseItemDtoQueryResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Persons returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDtoQueryResult getPersons(@org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull String searchTerm,
@@ -208,10 +209,8 @@ public class PersonsApi {
             @org.eclipse.jdt.annotation.NonNull List<String> personTypes,
             @org.eclipse.jdt.annotation.NonNull UUID appearsInItemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getPersonsWithHttpInfo(limit, searchTerm, fields,
-                filters, isFavorite, enableUserData, imageTypeLimit, enableImageTypes, excludePersonTypes, personTypes,
-                appearsInItemId, userId, enableImages);
-        return localVarResponse.getData();
+        return getPersonsWithHttpInfo(limit, searchTerm, fields, filters, isFavorite, enableUserData, imageTypeLimit,
+                enableImageTypes, excludePersonTypes, personTypes, appearsInItemId, userId, enableImages).getData();
     }
 
     /**
@@ -235,6 +234,30 @@ public class PersonsApi {
      * @param enableImages Optional, include image information in output. (optional, default to true)
      * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Persons returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDtoQueryResult> getPersonsWithHttpInfo(@org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull String searchTerm,
@@ -248,111 +271,29 @@ public class PersonsApi {
             @org.eclipse.jdt.annotation.NonNull List<String> personTypes,
             @org.eclipse.jdt.annotation.NonNull UUID appearsInItemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPersonsRequestBuilder(limit, searchTerm, fields, filters,
-                isFavorite, enableUserData, imageTypeLimit, enableImageTypes, excludePersonTypes, personTypes,
-                appearsInItemId, userId, enableImages);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getPersons", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "limit", limit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "searchTerm", searchTerm));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "fields", fields));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "filters", filters));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isFavorite", isFavorite));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableUserData", enableUserData));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageTypeLimit", imageTypeLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "excludePersonTypes", excludePersonTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "personTypes", personTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "appearsInItemId", appearsInItemId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableImages", enableImages));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getPersonsRequestBuilder(@org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull String searchTerm,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFilter> filters,
-            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull List<String> excludePersonTypes,
-            @org.eclipse.jdt.annotation.NonNull List<String> personTypes,
-            @org.eclipse.jdt.annotation.NonNull UUID appearsInItemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Persons";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "limit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
-        localVarQueryParameterBaseName = "searchTerm";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("searchTerm", searchTerm));
-        localVarQueryParameterBaseName = "fields";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
-        localVarQueryParameterBaseName = "filters";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "filters", filters));
-        localVarQueryParameterBaseName = "isFavorite";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isFavorite", isFavorite));
-        localVarQueryParameterBaseName = "enableUserData";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
-        localVarQueryParameterBaseName = "imageTypeLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
-        localVarQueryParameterBaseName = "enableImageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        localVarQueryParameterBaseName = "excludePersonTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludePersonTypes", excludePersonTypes));
-        localVarQueryParameterBaseName = "personTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "personTypes", personTypes));
-        localVarQueryParameterBaseName = "appearsInItemId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("appearsInItemId", appearsInItemId));
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "enableImages";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDtoQueryResult> localVarReturnType = new GenericType<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("PersonsApi.getPersons", "/Persons", "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 }

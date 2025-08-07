@@ -51,6 +51,9 @@ fi
 LATEST=$(curl -sL https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json | jq -r .info.version)
 echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m"
 
+echo -e "ℹ️  - Using Jersey2/Jetty configuration for OpenHAB integration"
+OPENAPI_JAVA_CONFIG="tools/generate-sources/scripts/java.config.json"
+
 # VERSIONS=("10.8.13" "10.10.7")
 # VERSION_ALIAS=("legacy" "current")
 VERSIONS=("10.10.7")
@@ -60,34 +63,24 @@ DOCKER_VOLUME_WORK="/work"
 
 ROOT=$(pwd)
 
-OPENAPI_JAVA_CONFIG="tools/generate-sources/scripts/java.config.json"
 OPENAPI_SPECIFICATION_DIR="tools/generate-sources/scripts/specifications"
-FILENAME_ENDPOINTS=logs/endpoints/${i}.txt
-
-# if ! npx list openapi-filter &>/dev/null; then
-#     echo "ℹ️  - Installing openapi-filter@3.2.3"
-#     npm install --save-dev --no-audit --no-fund openapi-filter@3.2.3 1>/dev/null || {
-#         echo "❌ Error: Failed to install openapi-filter"
-#         exit 1
-#     }
-# fi
 
 OUTPUT=.
 
 INDEX=0
 for i in "${VERSIONS[@]}"; do
     ALIAS=${VERSION_ALIAS[INDEX++]}
-    PACKAGE=org.openhab.binding.jellyfin.internal.api.generated.${ALIAS}
-    PACKAGE_API=$PACKAGE
-    PACKAGE_MODEL=$PACKAGE.model
+    PACKAGE_BASE=org.openhab.binding.jellyfin.internal.api.generated.${ALIAS}
+    PACKAGE_API=${PACKAGE_BASE}
+    PACKAGE_MODEL=${PACKAGE_BASE}.model
 
-    echo -e "  ➡️  generating API Version $i as \033[1m${ALIAS}\033[0m: ${PACKAGE_API}"
+    echo -e "  ➡️  generating Jersey2 API Version $i as \033[1m${ALIAS}\033[0m: ${PACKAGE_API}"
 
     FILENAME_JSON=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/json/jellyfin-openapi-${i}.json
     FILENAME_YAML=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/yaml/jellyfin-openapi-${i}.yaml
 
     mkdir -p logs/endpoints
-    jq ".paths | to_entries[] | {path: .key, methods: (.value | keys)}" ${FILENAME_JSON} | grep \"path\" >logs/endpoints/${i}.txt
+    jq ".paths | to_entries[] | {path: .key, methods: (.value | keys)}" ${FILENAME_JSON} | grep \"path\" >logs/endpoints/${i}-jersey2.txt
 
     if [ ! -e "${FILENAME_JSON}" ]; then
         echo "  ⏬ - Downloading OPENAPI definition for Version ${i}"

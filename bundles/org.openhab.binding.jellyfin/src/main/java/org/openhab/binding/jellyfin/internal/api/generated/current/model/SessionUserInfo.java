@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,6 +50,7 @@ public class SessionUserInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -76,6 +74,7 @@ public class SessionUserInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUserName() {
         return userName;
     }
@@ -126,108 +125,5 @@ public class SessionUserInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `UserName` to the URL query string
-        if (getUserName() != null) {
-            joiner.add(String.format("%sUserName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserName()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private SessionUserInfo instance;
-
-        public Builder() {
-            this(new SessionUserInfo());
-        }
-
-        protected Builder(SessionUserInfo instance) {
-            this.instance = instance;
-        }
-
-        public SessionUserInfo.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public SessionUserInfo.Builder userName(String userName) {
-            this.instance.userName = userName;
-            return this;
-        }
-
-        /**
-         * returns a built SessionUserInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public SessionUserInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SessionUserInfo.Builder builder() {
-        return new SessionUserInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SessionUserInfo.Builder toBuilder() {
-        return new SessionUserInfo.Builder().userId(getUserId()).userName(getUserName());
     }
 }

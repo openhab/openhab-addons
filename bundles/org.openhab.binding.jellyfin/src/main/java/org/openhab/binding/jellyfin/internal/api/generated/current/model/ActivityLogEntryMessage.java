@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -75,6 +72,7 @@ public class ActivityLogEntryMessage {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ActivityLogEntry> getData() {
         return data;
     }
@@ -98,6 +96,7 @@ public class ActivityLogEntryMessage {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getMessageId() {
         return messageId;
     }
@@ -116,6 +115,7 @@ public class ActivityLogEntryMessage {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SessionMessageType getMessageType() {
         return messageType;
     }
@@ -162,124 +162,5 @@ public class ActivityLogEntryMessage {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            for (int i = 0; i < getData().size(); i++) {
-                if (getData().get(i) != null) {
-                    joiner.add(getData().get(i).toUrlQueryString(String.format("%sData%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `MessageId` to the URL query string
-        if (getMessageId() != null) {
-            joiner.add(String.format("%sMessageId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
-        }
-
-        // add `MessageType` to the URL query string
-        if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ActivityLogEntryMessage instance;
-
-        public Builder() {
-            this(new ActivityLogEntryMessage());
-        }
-
-        protected Builder(ActivityLogEntryMessage instance) {
-            this.instance = instance;
-        }
-
-        public ActivityLogEntryMessage.Builder data(List<ActivityLogEntry> data) {
-            this.instance.data = data;
-            return this;
-        }
-
-        public ActivityLogEntryMessage.Builder messageId(UUID messageId) {
-            this.instance.messageId = messageId;
-            return this;
-        }
-
-        public ActivityLogEntryMessage.Builder messageType(SessionMessageType messageType) {
-            this.instance.messageType = messageType;
-            return this;
-        }
-
-        /**
-         * returns a built ActivityLogEntryMessage instance.
-         *
-         * The builder is not reusable.
-         */
-        public ActivityLogEntryMessage build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ActivityLogEntryMessage.Builder builder() {
-        return new ActivityLogEntryMessage.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ActivityLogEntryMessage.Builder toBuilder() {
-        return new ActivityLogEntryMessage.Builder().data(getData()).messageId(getMessageId())
-                .messageType(getMessageType());
     }
 }

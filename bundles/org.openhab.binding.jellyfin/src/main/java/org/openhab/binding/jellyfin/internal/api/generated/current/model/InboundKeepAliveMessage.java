@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -50,6 +47,7 @@ public class InboundKeepAliveMessage {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SessionMessageType getMessageType() {
         return messageType;
     }
@@ -92,97 +90,5 @@ public class InboundKeepAliveMessage {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `MessageType` to the URL query string
-        if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private InboundKeepAliveMessage instance;
-
-        public Builder() {
-            this(new InboundKeepAliveMessage());
-        }
-
-        protected Builder(InboundKeepAliveMessage instance) {
-            this.instance = instance;
-        }
-
-        public InboundKeepAliveMessage.Builder messageType(SessionMessageType messageType) {
-            this.instance.messageType = messageType;
-            return this;
-        }
-
-        /**
-         * returns a built InboundKeepAliveMessage instance.
-         *
-         * The builder is not reusable.
-         */
-        public InboundKeepAliveMessage build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static InboundKeepAliveMessage.Builder builder() {
-        return new InboundKeepAliveMessage.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public InboundKeepAliveMessage.Builder toBuilder() {
-        return new InboundKeepAliveMessage.Builder().messageType(getMessageType());
     }
 }

@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,6 +45,7 @@ public class ForgotPasswordDto {
     @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENTERED_USERNAME)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getEnteredUsername() {
         return enteredUsername;
     }
@@ -96,97 +94,5 @@ public class ForgotPasswordDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `EnteredUsername` to the URL query string
-        if (getEnteredUsername() != null) {
-            joiner.add(String.format("%sEnteredUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnteredUsername()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ForgotPasswordDto instance;
-
-        public Builder() {
-            this(new ForgotPasswordDto());
-        }
-
-        protected Builder(ForgotPasswordDto instance) {
-            this.instance = instance;
-        }
-
-        public ForgotPasswordDto.Builder enteredUsername(String enteredUsername) {
-            this.instance.enteredUsername = enteredUsername;
-            return this;
-        }
-
-        /**
-         * returns a built ForgotPasswordDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public ForgotPasswordDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ForgotPasswordDto.Builder builder() {
-        return new ForgotPasswordDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ForgotPasswordDto.Builder toBuilder() {
-        return new ForgotPasswordDto.Builder().enteredUsername(getEnteredUsername());
     }
 }

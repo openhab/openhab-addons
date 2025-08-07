@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -66,6 +63,7 @@ public class SubtitleProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FORMAT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getFormat() {
         return format;
     }
@@ -89,6 +87,7 @@ public class SubtitleProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METHOD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SubtitleDeliveryMethod getMethod() {
         return method;
     }
@@ -112,6 +111,7 @@ public class SubtitleProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DIDL_MODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDidlMode() {
         return didlMode;
     }
@@ -135,6 +135,7 @@ public class SubtitleProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getLanguage() {
         return language;
     }
@@ -158,6 +159,7 @@ public class SubtitleProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getContainer() {
         return container;
     }
@@ -214,142 +216,5 @@ public class SubtitleProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Format` to the URL query string
-        if (getFormat() != null) {
-            joiner.add(String.format("%sFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
-        }
-
-        // add `Method` to the URL query string
-        if (getMethod() != null) {
-            joiner.add(String.format("%sMethod%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMethod()))));
-        }
-
-        // add `DidlMode` to the URL query string
-        if (getDidlMode() != null) {
-            joiner.add(String.format("%sDidlMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDidlMode()))));
-        }
-
-        // add `Language` to the URL query string
-        if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private SubtitleProfile instance;
-
-        public Builder() {
-            this(new SubtitleProfile());
-        }
-
-        protected Builder(SubtitleProfile instance) {
-            this.instance = instance;
-        }
-
-        public SubtitleProfile.Builder format(String format) {
-            this.instance.format = format;
-            return this;
-        }
-
-        public SubtitleProfile.Builder method(SubtitleDeliveryMethod method) {
-            this.instance.method = method;
-            return this;
-        }
-
-        public SubtitleProfile.Builder didlMode(String didlMode) {
-            this.instance.didlMode = didlMode;
-            return this;
-        }
-
-        public SubtitleProfile.Builder language(String language) {
-            this.instance.language = language;
-            return this;
-        }
-
-        public SubtitleProfile.Builder container(String container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        /**
-         * returns a built SubtitleProfile instance.
-         *
-         * The builder is not reusable.
-         */
-        public SubtitleProfile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SubtitleProfile.Builder builder() {
-        return new SubtitleProfile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SubtitleProfile.Builder toBuilder() {
-        return new SubtitleProfile.Builder().format(getFormat()).method(getMethod()).didlMode(getDidlMode())
-                .language(getLanguage()).container(getContainer());
     }
 }

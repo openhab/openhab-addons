@@ -15,10 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,6 +69,7 @@ public class SendCommand {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GROUP_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGroupId() {
         return groupId;
     }
@@ -95,6 +93,7 @@ public class SendCommand {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getPlaylistItemId() {
         return playlistItemId;
     }
@@ -118,6 +117,7 @@ public class SendCommand {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_WHEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getWhen() {
         return when;
     }
@@ -141,6 +141,7 @@ public class SendCommand {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getPositionTicks() {
         return positionTicks;
     }
@@ -164,6 +165,7 @@ public class SendCommand {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COMMAND)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SendCommandType getCommand() {
         return command;
     }
@@ -187,6 +189,7 @@ public class SendCommand {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_EMITTED_AT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getEmittedAt() {
         return emittedAt;
     }
@@ -245,153 +248,5 @@ public class SendCommand {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `GroupId` to the URL query string
-        if (getGroupId() != null) {
-            joiner.add(String.format("%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        // add `When` to the URL query string
-        if (getWhen() != null) {
-            joiner.add(String.format("%sWhen%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
-        }
-
-        // add `PositionTicks` to the URL query string
-        if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
-        }
-
-        // add `Command` to the URL query string
-        if (getCommand() != null) {
-            joiner.add(String.format("%sCommand%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommand()))));
-        }
-
-        // add `EmittedAt` to the URL query string
-        if (getEmittedAt() != null) {
-            joiner.add(String.format("%sEmittedAt%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEmittedAt()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private SendCommand instance;
-
-        public Builder() {
-            this(new SendCommand());
-        }
-
-        protected Builder(SendCommand instance) {
-            this.instance = instance;
-        }
-
-        public SendCommand.Builder groupId(UUID groupId) {
-            this.instance.groupId = groupId;
-            return this;
-        }
-
-        public SendCommand.Builder playlistItemId(UUID playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        public SendCommand.Builder when(OffsetDateTime when) {
-            this.instance.when = when;
-            return this;
-        }
-
-        public SendCommand.Builder positionTicks(Long positionTicks) {
-            this.instance.positionTicks = positionTicks;
-            return this;
-        }
-
-        public SendCommand.Builder command(SendCommandType command) {
-            this.instance.command = command;
-            return this;
-        }
-
-        public SendCommand.Builder emittedAt(OffsetDateTime emittedAt) {
-            this.instance.emittedAt = emittedAt;
-            return this;
-        }
-
-        /**
-         * returns a built SendCommand instance.
-         *
-         * The builder is not reusable.
-         */
-        public SendCommand build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SendCommand.Builder builder() {
-        return new SendCommand.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SendCommand.Builder toBuilder() {
-        return new SendCommand.Builder().groupId(getGroupId()).playlistItemId(getPlaylistItemId()).when(getWhen())
-                .positionTicks(getPositionTicks()).command(getCommand()).emittedAt(getEmittedAt());
     }
 }

@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -81,6 +78,7 @@ public class LiveTvServiceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -104,6 +102,7 @@ public class LiveTvServiceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HOME_PAGE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getHomePageUrl() {
         return homePageUrl;
     }
@@ -127,6 +126,7 @@ public class LiveTvServiceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public LiveTvServiceStatus getStatus() {
         return status;
     }
@@ -150,6 +150,7 @@ public class LiveTvServiceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATUS_MESSAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getStatusMessage() {
         return statusMessage;
     }
@@ -173,6 +174,7 @@ public class LiveTvServiceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersion() {
         return version;
     }
@@ -196,6 +198,7 @@ public class LiveTvServiceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasUpdateAvailable() {
         return hasUpdateAvailable;
     }
@@ -219,6 +222,7 @@ public class LiveTvServiceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_VISIBLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsVisible() {
         return isVisible;
     }
@@ -250,6 +254,7 @@ public class LiveTvServiceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TUNERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getTuners() {
         return tuners;
     }
@@ -312,179 +317,5 @@ public class LiveTvServiceInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `HomePageUrl` to the URL query string
-        if (getHomePageUrl() != null) {
-            joiner.add(String.format("%sHomePageUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHomePageUrl()))));
-        }
-
-        // add `Status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        // add `StatusMessage` to the URL query string
-        if (getStatusMessage() != null) {
-            joiner.add(String.format("%sStatusMessage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatusMessage()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `HasUpdateAvailable` to the URL query string
-        if (getHasUpdateAvailable() != null) {
-            joiner.add(String.format("%sHasUpdateAvailable%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasUpdateAvailable()))));
-        }
-
-        // add `IsVisible` to the URL query string
-        if (getIsVisible() != null) {
-            joiner.add(String.format("%sIsVisible%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsVisible()))));
-        }
-
-        // add `Tuners` to the URL query string
-        if (getTuners() != null) {
-            for (int i = 0; i < getTuners().size(); i++) {
-                joiner.add(String.format("%sTuners%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTuners().get(i)))));
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private LiveTvServiceInfo instance;
-
-        public Builder() {
-            this(new LiveTvServiceInfo());
-        }
-
-        protected Builder(LiveTvServiceInfo instance) {
-            this.instance = instance;
-        }
-
-        public LiveTvServiceInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder homePageUrl(String homePageUrl) {
-            this.instance.homePageUrl = homePageUrl;
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder status(LiveTvServiceStatus status) {
-            this.instance.status = status;
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder statusMessage(String statusMessage) {
-            this.instance.statusMessage = statusMessage;
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder version(String version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder hasUpdateAvailable(Boolean hasUpdateAvailable) {
-            this.instance.hasUpdateAvailable = hasUpdateAvailable;
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder isVisible(Boolean isVisible) {
-            this.instance.isVisible = isVisible;
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder tuners(List<String> tuners) {
-            this.instance.tuners = tuners;
-            return this;
-        }
-
-        /**
-         * returns a built LiveTvServiceInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public LiveTvServiceInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LiveTvServiceInfo.Builder builder() {
-        return new LiveTvServiceInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LiveTvServiceInfo.Builder toBuilder() {
-        return new LiveTvServiceInfo.Builder().name(getName()).homePageUrl(getHomePageUrl()).status(getStatus())
-                .statusMessage(getStatusMessage()).version(getVersion()).hasUpdateAvailable(getHasUpdateAvailable())
-                .isVisible(getIsVisible()).tuners(getTuners());
     }
 }

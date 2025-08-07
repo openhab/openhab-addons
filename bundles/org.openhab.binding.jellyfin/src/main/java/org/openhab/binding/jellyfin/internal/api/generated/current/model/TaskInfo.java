@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -90,6 +87,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -113,6 +111,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TaskState getState() {
         return state;
     }
@@ -136,6 +135,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getCurrentProgressPercentage() {
         return currentProgressPercentage;
     }
@@ -159,6 +159,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -182,6 +183,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LAST_EXECUTION_RESULT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TaskResult getLastExecutionResult() {
         return lastExecutionResult;
     }
@@ -213,6 +215,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRIGGERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<TaskTriggerInfo> getTriggers() {
         return triggers;
     }
@@ -236,6 +239,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDescription() {
         return description;
     }
@@ -259,6 +263,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CATEGORY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCategory() {
         return category;
     }
@@ -282,6 +287,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsHidden() {
         return isHidden;
     }
@@ -305,6 +311,7 @@ public class TaskInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_KEY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getKey() {
         return key;
     }
@@ -370,202 +377,5 @@ public class TaskInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `State` to the URL query string
-        if (getState() != null) {
-            joiner.add(String.format("%sState%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getState()))));
-        }
-
-        // add `CurrentProgressPercentage` to the URL query string
-        if (getCurrentProgressPercentage() != null) {
-            joiner.add(String.format("%sCurrentProgressPercentage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCurrentProgressPercentage()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `LastExecutionResult` to the URL query string
-        if (getLastExecutionResult() != null) {
-            joiner.add(getLastExecutionResult().toUrlQueryString(prefix + "LastExecutionResult" + suffix));
-        }
-
-        // add `Triggers` to the URL query string
-        if (getTriggers() != null) {
-            for (int i = 0; i < getTriggers().size(); i++) {
-                if (getTriggers().get(i) != null) {
-                    joiner.add(getTriggers().get(i).toUrlQueryString(String.format("%sTriggers%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Description` to the URL query string
-        if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-        }
-
-        // add `Category` to the URL query string
-        if (getCategory() != null) {
-            joiner.add(String.format("%sCategory%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
-        }
-
-        // add `IsHidden` to the URL query string
-        if (getIsHidden() != null) {
-            joiner.add(String.format("%sIsHidden%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHidden()))));
-        }
-
-        // add `Key` to the URL query string
-        if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private TaskInfo instance;
-
-        public Builder() {
-            this(new TaskInfo());
-        }
-
-        protected Builder(TaskInfo instance) {
-            this.instance = instance;
-        }
-
-        public TaskInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public TaskInfo.Builder state(TaskState state) {
-            this.instance.state = state;
-            return this;
-        }
-
-        public TaskInfo.Builder currentProgressPercentage(Double currentProgressPercentage) {
-            this.instance.currentProgressPercentage = currentProgressPercentage;
-            return this;
-        }
-
-        public TaskInfo.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public TaskInfo.Builder lastExecutionResult(TaskResult lastExecutionResult) {
-            this.instance.lastExecutionResult = lastExecutionResult;
-            return this;
-        }
-
-        public TaskInfo.Builder triggers(List<TaskTriggerInfo> triggers) {
-            this.instance.triggers = triggers;
-            return this;
-        }
-
-        public TaskInfo.Builder description(String description) {
-            this.instance.description = description;
-            return this;
-        }
-
-        public TaskInfo.Builder category(String category) {
-            this.instance.category = category;
-            return this;
-        }
-
-        public TaskInfo.Builder isHidden(Boolean isHidden) {
-            this.instance.isHidden = isHidden;
-            return this;
-        }
-
-        public TaskInfo.Builder key(String key) {
-            this.instance.key = key;
-            return this;
-        }
-
-        /**
-         * returns a built TaskInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public TaskInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TaskInfo.Builder builder() {
-        return new TaskInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TaskInfo.Builder toBuilder() {
-        return new TaskInfo.Builder().name(getName()).state(getState())
-                .currentProgressPercentage(getCurrentProgressPercentage()).id(getId())
-                .lastExecutionResult(getLastExecutionResult()).triggers(getTriggers()).description(getDescription())
-                .category(getCategory()).isHidden(getIsHidden()).key(getKey());
     }
 }

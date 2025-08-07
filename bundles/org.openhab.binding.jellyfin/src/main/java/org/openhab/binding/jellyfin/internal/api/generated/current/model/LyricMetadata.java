@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -87,6 +84,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ARTIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getArtist() {
         return artist;
     }
@@ -110,6 +108,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAlbum() {
         return album;
     }
@@ -133,6 +132,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TITLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getTitle() {
         return title;
     }
@@ -156,6 +156,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUTHOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAuthor() {
         return author;
     }
@@ -179,6 +180,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LENGTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getLength() {
         return length;
     }
@@ -202,6 +204,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getBy() {
         return by;
     }
@@ -225,6 +228,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OFFSET)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getOffset() {
         return offset;
     }
@@ -248,6 +252,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CREATOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCreator() {
         return creator;
     }
@@ -271,6 +276,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersion() {
         return version;
     }
@@ -294,6 +300,7 @@ public class LyricMetadata {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_SYNCED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsSynced() {
         return isSynced;
     }
@@ -357,198 +364,5 @@ public class LyricMetadata {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Artist` to the URL query string
-        if (getArtist() != null) {
-            joiner.add(String.format("%sArtist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getArtist()))));
-        }
-
-        // add `Album` to the URL query string
-        if (getAlbum() != null) {
-            joiner.add(String.format("%sAlbum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbum()))));
-        }
-
-        // add `Title` to the URL query string
-        if (getTitle() != null) {
-            joiner.add(String.format("%sTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
-        }
-
-        // add `Author` to the URL query string
-        if (getAuthor() != null) {
-            joiner.add(String.format("%sAuthor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthor()))));
-        }
-
-        // add `Length` to the URL query string
-        if (getLength() != null) {
-            joiner.add(String.format("%sLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLength()))));
-        }
-
-        // add `By` to the URL query string
-        if (getBy() != null) {
-            joiner.add(
-                    String.format("%sBy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBy()))));
-        }
-
-        // add `Offset` to the URL query string
-        if (getOffset() != null) {
-            joiner.add(String.format("%sOffset%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOffset()))));
-        }
-
-        // add `Creator` to the URL query string
-        if (getCreator() != null) {
-            joiner.add(String.format("%sCreator%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCreator()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `IsSynced` to the URL query string
-        if (getIsSynced() != null) {
-            joiner.add(String.format("%sIsSynced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSynced()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private LyricMetadata instance;
-
-        public Builder() {
-            this(new LyricMetadata());
-        }
-
-        protected Builder(LyricMetadata instance) {
-            this.instance = instance;
-        }
-
-        public LyricMetadata.Builder artist(String artist) {
-            this.instance.artist = artist;
-            return this;
-        }
-
-        public LyricMetadata.Builder album(String album) {
-            this.instance.album = album;
-            return this;
-        }
-
-        public LyricMetadata.Builder title(String title) {
-            this.instance.title = title;
-            return this;
-        }
-
-        public LyricMetadata.Builder author(String author) {
-            this.instance.author = author;
-            return this;
-        }
-
-        public LyricMetadata.Builder length(Long length) {
-            this.instance.length = length;
-            return this;
-        }
-
-        public LyricMetadata.Builder by(String by) {
-            this.instance.by = by;
-            return this;
-        }
-
-        public LyricMetadata.Builder offset(Long offset) {
-            this.instance.offset = offset;
-            return this;
-        }
-
-        public LyricMetadata.Builder creator(String creator) {
-            this.instance.creator = creator;
-            return this;
-        }
-
-        public LyricMetadata.Builder version(String version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public LyricMetadata.Builder isSynced(Boolean isSynced) {
-            this.instance.isSynced = isSynced;
-            return this;
-        }
-
-        /**
-         * returns a built LyricMetadata instance.
-         *
-         * The builder is not reusable.
-         */
-        public LyricMetadata build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LyricMetadata.Builder builder() {
-        return new LyricMetadata.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LyricMetadata.Builder toBuilder() {
-        return new LyricMetadata.Builder().artist(getArtist()).album(getAlbum()).title(getTitle()).author(getAuthor())
-                .length(getLength()).by(getBy()).offset(getOffset()).creator(getCreator()).version(getVersion())
-                .isSynced(getIsSynced());
     }
 }

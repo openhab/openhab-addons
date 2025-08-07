@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -126,6 +123,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -149,6 +147,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getType() {
         return type;
     }
@@ -172,6 +171,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USERNAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUsername() {
         return username;
     }
@@ -195,6 +195,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPassword() {
         return password;
     }
@@ -218,6 +219,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LISTINGS_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getListingsId() {
         return listingsId;
     }
@@ -241,6 +243,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ZIP_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getZipCode() {
         return zipCode;
     }
@@ -264,6 +267,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COUNTRY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCountry() {
         return country;
     }
@@ -287,6 +291,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPath() {
         return path;
     }
@@ -318,6 +323,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLED_TUNERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getEnabledTuners() {
         return enabledTuners;
     }
@@ -341,6 +347,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_ALL_TUNERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAllTuners() {
         return enableAllTuners;
     }
@@ -372,6 +379,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NEWS_CATEGORIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getNewsCategories() {
         return newsCategories;
     }
@@ -403,6 +411,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SPORTS_CATEGORIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getSportsCategories() {
         return sportsCategories;
     }
@@ -434,6 +443,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_KIDS_CATEGORIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getKidsCategories() {
         return kidsCategories;
     }
@@ -465,6 +475,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MOVIE_CATEGORIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getMovieCategories() {
         return movieCategories;
     }
@@ -497,6 +508,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANNEL_MAPPINGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameValuePair> getChannelMappings() {
         return channelMappings;
     }
@@ -520,6 +532,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MOVIE_PREFIX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMoviePrefix() {
         return moviePrefix;
     }
@@ -543,6 +556,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PREFERRED_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPreferredLanguage() {
         return preferredLanguage;
     }
@@ -566,6 +580,7 @@ public class ListingsProviderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_AGENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUserAgent() {
         return userAgent;
     }
@@ -649,310 +664,5 @@ public class ListingsProviderInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Username` to the URL query string
-        if (getUsername() != null) {
-            joiner.add(String.format("%sUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUsername()))));
-        }
-
-        // add `Password` to the URL query string
-        if (getPassword() != null) {
-            joiner.add(String.format("%sPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
-        }
-
-        // add `ListingsId` to the URL query string
-        if (getListingsId() != null) {
-            joiner.add(String.format("%sListingsId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getListingsId()))));
-        }
-
-        // add `ZipCode` to the URL query string
-        if (getZipCode() != null) {
-            joiner.add(String.format("%sZipCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getZipCode()))));
-        }
-
-        // add `Country` to the URL query string
-        if (getCountry() != null) {
-            joiner.add(String.format("%sCountry%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCountry()))));
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `EnabledTuners` to the URL query string
-        if (getEnabledTuners() != null) {
-            for (int i = 0; i < getEnabledTuners().size(); i++) {
-                joiner.add(String.format("%sEnabledTuners%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnabledTuners().get(i)))));
-            }
-        }
-
-        // add `EnableAllTuners` to the URL query string
-        if (getEnableAllTuners() != null) {
-            joiner.add(String.format("%sEnableAllTuners%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllTuners()))));
-        }
-
-        // add `NewsCategories` to the URL query string
-        if (getNewsCategories() != null) {
-            for (int i = 0; i < getNewsCategories().size(); i++) {
-                joiner.add(String.format("%sNewsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getNewsCategories().get(i)))));
-            }
-        }
-
-        // add `SportsCategories` to the URL query string
-        if (getSportsCategories() != null) {
-            for (int i = 0; i < getSportsCategories().size(); i++) {
-                joiner.add(String.format("%sSportsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSportsCategories().get(i)))));
-            }
-        }
-
-        // add `KidsCategories` to the URL query string
-        if (getKidsCategories() != null) {
-            for (int i = 0; i < getKidsCategories().size(); i++) {
-                joiner.add(String.format("%sKidsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getKidsCategories().get(i)))));
-            }
-        }
-
-        // add `MovieCategories` to the URL query string
-        if (getMovieCategories() != null) {
-            for (int i = 0; i < getMovieCategories().size(); i++) {
-                joiner.add(String.format("%sMovieCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMovieCategories().get(i)))));
-            }
-        }
-
-        // add `ChannelMappings` to the URL query string
-        if (getChannelMappings() != null) {
-            for (int i = 0; i < getChannelMappings().size(); i++) {
-                if (getChannelMappings().get(i) != null) {
-                    joiner.add(getChannelMappings().get(i).toUrlQueryString(String.format("%sChannelMappings%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `MoviePrefix` to the URL query string
-        if (getMoviePrefix() != null) {
-            joiner.add(String.format("%sMoviePrefix%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMoviePrefix()))));
-        }
-
-        // add `PreferredLanguage` to the URL query string
-        if (getPreferredLanguage() != null) {
-            joiner.add(String.format("%sPreferredLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredLanguage()))));
-        }
-
-        // add `UserAgent` to the URL query string
-        if (getUserAgent() != null) {
-            joiner.add(String.format("%sUserAgent%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserAgent()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ListingsProviderInfo instance;
-
-        public Builder() {
-            this(new ListingsProviderInfo());
-        }
-
-        protected Builder(ListingsProviderInfo instance) {
-            this.instance = instance;
-        }
-
-        public ListingsProviderInfo.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder type(String type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder username(String username) {
-            this.instance.username = username;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder password(String password) {
-            this.instance.password = password;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder listingsId(String listingsId) {
-            this.instance.listingsId = listingsId;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder zipCode(String zipCode) {
-            this.instance.zipCode = zipCode;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder country(String country) {
-            this.instance.country = country;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder path(String path) {
-            this.instance.path = path;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder enabledTuners(List<String> enabledTuners) {
-            this.instance.enabledTuners = enabledTuners;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder enableAllTuners(Boolean enableAllTuners) {
-            this.instance.enableAllTuners = enableAllTuners;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder newsCategories(List<String> newsCategories) {
-            this.instance.newsCategories = newsCategories;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder sportsCategories(List<String> sportsCategories) {
-            this.instance.sportsCategories = sportsCategories;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder kidsCategories(List<String> kidsCategories) {
-            this.instance.kidsCategories = kidsCategories;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder movieCategories(List<String> movieCategories) {
-            this.instance.movieCategories = movieCategories;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder channelMappings(List<NameValuePair> channelMappings) {
-            this.instance.channelMappings = channelMappings;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder moviePrefix(String moviePrefix) {
-            this.instance.moviePrefix = moviePrefix;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder preferredLanguage(String preferredLanguage) {
-            this.instance.preferredLanguage = preferredLanguage;
-            return this;
-        }
-
-        public ListingsProviderInfo.Builder userAgent(String userAgent) {
-            this.instance.userAgent = userAgent;
-            return this;
-        }
-
-        /**
-         * returns a built ListingsProviderInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public ListingsProviderInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ListingsProviderInfo.Builder builder() {
-        return new ListingsProviderInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ListingsProviderInfo.Builder toBuilder() {
-        return new ListingsProviderInfo.Builder().id(getId()).type(getType()).username(getUsername())
-                .password(getPassword()).listingsId(getListingsId()).zipCode(getZipCode()).country(getCountry())
-                .path(getPath()).enabledTuners(getEnabledTuners()).enableAllTuners(getEnableAllTuners())
-                .newsCategories(getNewsCategories()).sportsCategories(getSportsCategories())
-                .kidsCategories(getKidsCategories()).movieCategories(getMovieCategories())
-                .channelMappings(getChannelMappings()).moviePrefix(getMoviePrefix())
-                .preferredLanguage(getPreferredLanguage()).userAgent(getUserAgent());
     }
 }

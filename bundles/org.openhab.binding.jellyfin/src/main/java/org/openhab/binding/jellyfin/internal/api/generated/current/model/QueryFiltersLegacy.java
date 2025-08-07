@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -71,6 +68,7 @@ public class QueryFiltersLegacy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GENRES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getGenres() {
         return genres;
     }
@@ -102,6 +100,7 @@ public class QueryFiltersLegacy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getTags() {
         return tags;
     }
@@ -133,6 +132,7 @@ public class QueryFiltersLegacy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OFFICIAL_RATINGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getOfficialRatings() {
         return officialRatings;
     }
@@ -164,6 +164,7 @@ public class QueryFiltersLegacy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_YEARS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<Integer> getYears() {
         return years;
     }
@@ -218,143 +219,5 @@ public class QueryFiltersLegacy {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Genres` to the URL query string
-        if (getGenres() != null) {
-            for (int i = 0; i < getGenres().size(); i++) {
-                joiner.add(String.format("%sGenres%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getGenres().get(i)))));
-            }
-        }
-
-        // add `Tags` to the URL query string
-        if (getTags() != null) {
-            for (int i = 0; i < getTags().size(); i++) {
-                joiner.add(String.format("%sTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTags().get(i)))));
-            }
-        }
-
-        // add `OfficialRatings` to the URL query string
-        if (getOfficialRatings() != null) {
-            for (int i = 0; i < getOfficialRatings().size(); i++) {
-                joiner.add(String.format("%sOfficialRatings%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getOfficialRatings().get(i)))));
-            }
-        }
-
-        // add `Years` to the URL query string
-        if (getYears() != null) {
-            for (int i = 0; i < getYears().size(); i++) {
-                joiner.add(String.format("%sYears%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getYears().get(i)))));
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private QueryFiltersLegacy instance;
-
-        public Builder() {
-            this(new QueryFiltersLegacy());
-        }
-
-        protected Builder(QueryFiltersLegacy instance) {
-            this.instance = instance;
-        }
-
-        public QueryFiltersLegacy.Builder genres(List<String> genres) {
-            this.instance.genres = genres;
-            return this;
-        }
-
-        public QueryFiltersLegacy.Builder tags(List<String> tags) {
-            this.instance.tags = tags;
-            return this;
-        }
-
-        public QueryFiltersLegacy.Builder officialRatings(List<String> officialRatings) {
-            this.instance.officialRatings = officialRatings;
-            return this;
-        }
-
-        public QueryFiltersLegacy.Builder years(List<Integer> years) {
-            this.instance.years = years;
-            return this;
-        }
-
-        /**
-         * returns a built QueryFiltersLegacy instance.
-         *
-         * The builder is not reusable.
-         */
-        public QueryFiltersLegacy build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static QueryFiltersLegacy.Builder builder() {
-        return new QueryFiltersLegacy.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public QueryFiltersLegacy.Builder toBuilder() {
-        return new QueryFiltersLegacy.Builder().genres(getGenres()).tags(getTags())
-                .officialRatings(getOfficialRatings()).years(getYears());
     }
 }

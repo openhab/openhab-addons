@@ -1,30 +1,12 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -35,50 +17,64 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.ImageFo
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.ImageInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.ImageType;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ImageApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public ImageApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public ImageApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
      * Delete a custom splashscreen.
      * 
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Successfully deleted the custom splashscreen.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>User does not have permission to delete splashscreen..</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void deleteCustomSplashscreen() throws ApiException {
         deleteCustomSplashscreenWithHttpInfo();
@@ -89,53 +85,38 @@ public class ImageApi {
      * 
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Successfully deleted the custom splashscreen.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>User does not have permission to delete splashscreen..</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> deleteCustomSplashscreenWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteCustomSplashscreenRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("deleteCustomSplashscreen", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder deleteCustomSplashscreenRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Branding/Splashscreen";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("ImageApi.deleteCustomSplashscreen", "/Branding/Splashscreen", "DELETE",
+                new ArrayList<>(), null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -145,6 +126,35 @@ public class ImageApi {
      * @param imageType Image type. (required)
      * @param imageIndex The image index. (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image deleted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void deleteItemImage(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -160,83 +170,62 @@ public class ImageApi {
      * @param imageIndex The image index. (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image deleted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> deleteItemImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteItemImageRequestBuilder(itemId, imageType, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("deleteItemImage", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder deleteItemImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteItemImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling deleteItemImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("ImageApi.deleteItemImage", localVarPath, "DELETE", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -246,6 +235,35 @@ public class ImageApi {
      * @param imageType Image type. (required)
      * @param imageIndex The image index. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image deleted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void deleteItemImageByIndex(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -261,76 +279,65 @@ public class ImageApi {
      * @param imageIndex The image index. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image deleted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> deleteItemImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
             @org.eclipse.jdt.annotation.Nullable Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteItemImageByIndexRequestBuilder(itemId, imageType,
-                imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("deleteItemImageByIndex", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder deleteItemImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteItemImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageType' when calling deleteItemImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling deleteItemImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("ImageApi.deleteItemImageByIndex", localVarPath, "DELETE", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -338,6 +345,30 @@ public class ImageApi {
      * 
      * @param userId User Id. (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image deleted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>User does not have permission to delete the image.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void deleteUserImage(@org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
         deleteUserImageWithHttpInfo(userId);
@@ -349,71 +380,43 @@ public class ImageApi {
      * @param userId User Id. (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image deleted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>User does not have permission to delete the image.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> deleteUserImageWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteUserImageRequestBuilder(userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("deleteUserImage", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-    private HttpRequest.Builder deleteUserImageRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId)
-            throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/UserImage";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("ImageApi.deleteUserImage", "/UserImage", "DELETE", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -438,6 +441,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getArtistImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -451,10 +473,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = getArtistImageWithHttpInfo(name, imageType, imageIndex, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return getArtistImageWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer)
+                .getData();
     }
 
     /**
@@ -479,6 +500,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getArtistImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -492,126 +532,47 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getArtistImageRequestBuilder(name, imageType, imageIndex, tag,
-                format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getArtistImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getArtistImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getArtistImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling getArtistImage");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getArtistImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Artists/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getArtistImage", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -636,6 +597,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getGenreImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -649,10 +629,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = getGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return getGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -677,6 +656,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getGenreImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -690,123 +688,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getGenreImageRequestBuilder(name, imageType, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getGenreImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getGenreImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getGenreImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling getGenreImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Genres/{name}/Images/{imageType}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getGenreImage", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -831,6 +750,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getGenreImageByIndex(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -844,10 +782,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = getGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return getGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight,
+                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -872,6 +809,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getGenreImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -885,127 +841,48 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getGenreImageByIndexRequestBuilder(name, imageType, imageIndex,
-                tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getGenreImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getGenreImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getGenreImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling getGenreImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling getGenreImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Genres/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getGenreImageByIndex", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -1030,6 +907,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getItemImage(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -1043,10 +939,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = getItemImageWithHttpInfo(itemId, imageType, maxWidth, maxHeight, width,
-                height, quality, fillWidth, fillHeight, tag, format, percentPlayed, unplayedCount, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return getItemImageWithHttpInfo(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth,
+                fillHeight, tag, format, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -1071,6 +966,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getItemImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -1084,123 +998,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getItemImageRequestBuilder(itemId, imageType, maxWidth, maxHeight,
-                width, height, quality, fillWidth, fillHeight, tag, format, percentPlayed, unplayedCount, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getItemImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getItemImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItemImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling getItemImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getItemImage", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -1225,6 +1060,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getItemImage2(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -1239,10 +1093,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = getItemImage2WithHttpInfo(itemId, imageType, maxWidth, maxHeight, tag,
-                format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return getItemImage2WithHttpInfo(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed,
+                unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -1267,6 +1120,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getItemImage2WithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -1281,145 +1153,65 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getItemImage2RequestBuilder(itemId, imageType, maxWidth, maxHeight,
-                tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight,
-                blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getItemImage2", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getItemImage2RequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer maxWidth,
-            @org.eclipse.jdt.annotation.Nullable Integer maxHeight, @org.eclipse.jdt.annotation.Nullable String tag,
-            @org.eclipse.jdt.annotation.Nullable ImageFormat format,
-            @org.eclipse.jdt.annotation.Nullable Double percentPlayed,
-            @org.eclipse.jdt.annotation.Nullable Integer unplayedCount,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull Integer width,
-            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer quality,
-            @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItemImage2");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling getItemImage2");
         }
-        // verify the required parameter 'maxWidth' is set
         if (maxWidth == null) {
             throw new ApiException(400, "Missing the required parameter 'maxWidth' when calling getItemImage2");
         }
-        // verify the required parameter 'maxHeight' is set
         if (maxHeight == null) {
             throw new ApiException(400, "Missing the required parameter 'maxHeight' when calling getItemImage2");
         }
-        // verify the required parameter 'tag' is set
         if (tag == null) {
             throw new ApiException(400, "Missing the required parameter 'tag' when calling getItemImage2");
         }
-        // verify the required parameter 'format' is set
         if (format == null) {
             throw new ApiException(400, "Missing the required parameter 'format' when calling getItemImage2");
         }
-        // verify the required parameter 'percentPlayed' is set
         if (percentPlayed == null) {
             throw new ApiException(400, "Missing the required parameter 'percentPlayed' when calling getItemImage2");
         }
-        // verify the required parameter 'unplayedCount' is set
         if (unplayedCount == null) {
             throw new ApiException(400, "Missing the required parameter 'unplayedCount' when calling getItemImage2");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getItemImage2");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}/{tag}/{format}/{maxWidth}/{maxHeight}/{percentPlayed}/{unplayedCount}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{maxWidth}", ApiClient.urlEncode(maxWidth.toString()))
-                .replace("{maxHeight}", ApiClient.urlEncode(maxHeight.toString()))
-                .replace("{tag}", ApiClient.urlEncode(tag.toString()))
-                .replace("{format}", ApiClient.urlEncode(format.toString()))
-                .replace("{percentPlayed}", ApiClient.urlEncode(percentPlayed.toString()))
-                .replace("{unplayedCount}", ApiClient.urlEncode(unplayedCount.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{maxWidth}", apiClient.escapeString(maxWidth.toString()))
+                .replaceAll("\\{maxHeight}", apiClient.escapeString(maxHeight.toString()))
+                .replaceAll("\\{tag}", apiClient.escapeString(tag.toString()))
+                .replaceAll("\\{format}", apiClient.escapeString(format.toString()))
+                .replaceAll("\\{percentPlayed}", apiClient.escapeString(percentPlayed.toString()))
+                .replaceAll("\\{unplayedCount}", apiClient.escapeString(unplayedCount.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getItemImage2", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -1444,6 +1236,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getItemImageByIndex(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -1457,10 +1268,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer unplayedCount, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = getItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, maxWidth,
-                maxHeight, width, height, quality, fillWidth, fillHeight, tag, format, percentPlayed, unplayedCount,
-                blur, backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return getItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height,
+                quality, fillWidth, fillHeight, tag, format, percentPlayed, unplayedCount, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -1485,6 +1295,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getItemImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -1498,126 +1327,47 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer unplayedCount, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getItemImageByIndexRequestBuilder(itemId, imageType, imageIndex,
-                maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, format, percentPlayed,
-                unplayedCount, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getItemImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getItemImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItemImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling getItemImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getItemImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getItemImageByIndex", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -1626,10 +1376,38 @@ public class ImageApi {
      * @param itemId Item id. (required)
      * @return List&lt;ImageInfo&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item images returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<ImageInfo> getItemImageInfos(@org.eclipse.jdt.annotation.Nullable UUID itemId) throws ApiException {
-        ApiResponse<List<ImageInfo>> localVarResponse = getItemImageInfosWithHttpInfo(itemId);
-        return localVarResponse.getData();
+        return getItemImageInfosWithHttpInfo(itemId).getData();
     }
 
     /**
@@ -1638,66 +1416,56 @@ public class ImageApi {
      * @param itemId Item id. (required)
      * @return ApiResponse&lt;List&lt;ImageInfo&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item images returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<ImageInfo>> getItemImageInfosWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getItemImageInfosRequestBuilder(itemId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getItemImageInfos", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<ImageInfo>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<ImageInfo>>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ImageInfo>>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getItemImageInfosRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId)
-            throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItemImageInfos");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Items/{itemId}/Images".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/Items/{itemId}/Images".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<ImageInfo>> localVarReturnType = new GenericType<List<ImageInfo>>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getItemImageInfos", localVarPath, "GET", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -1722,6 +1490,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getMusicGenreImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -1735,10 +1522,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = getMusicGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return getMusicGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -1763,6 +1549,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getMusicGenreImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -1776,123 +1581,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getMusicGenreImageRequestBuilder(name, imageType, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getMusicGenreImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getMusicGenreImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getMusicGenreImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling getMusicGenreImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/MusicGenres/{name}/Images/{imageType}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getMusicGenreImage", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -1917,6 +1643,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getMusicGenreImageByIndex(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -1930,10 +1675,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = getMusicGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag,
-                format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return getMusicGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight,
+                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -1958,6 +1702,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getMusicGenreImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -1971,128 +1734,49 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getMusicGenreImageByIndexRequestBuilder(name, imageType,
-                imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality,
-                fillWidth, fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getMusicGenreImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getMusicGenreImageByIndexRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable String name, @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getMusicGenreImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageType' when calling getMusicGenreImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling getMusicGenreImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/MusicGenres/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getMusicGenreImageByIndex", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -2117,6 +1801,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getPersonImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -2130,10 +1833,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = getPersonImageWithHttpInfo(name, imageType, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return getPersonImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -2158,6 +1860,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getPersonImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -2171,123 +1892,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPersonImageRequestBuilder(name, imageType, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getPersonImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getPersonImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getPersonImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling getPersonImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Persons/{name}/Images/{imageType}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getPersonImage", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -2312,6 +1954,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getPersonImageByIndex(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -2325,10 +1986,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = getPersonImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return getPersonImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight,
+                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -2353,6 +2013,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getPersonImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -2366,128 +2045,49 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPersonImageByIndexRequestBuilder(name, imageType, imageIndex,
-                tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getPersonImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getPersonImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getPersonImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageType' when calling getPersonImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling getPersonImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Persons/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getPersonImageByIndex", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -2507,6 +2107,20 @@ public class ImageApi {
      * @param quality Quality setting, from 0-100. (optional, default to 90)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Splashscreen returned successfully.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getSplashscreen(@org.eclipse.jdt.annotation.NonNull String tag,
             @org.eclipse.jdt.annotation.NonNull ImageFormat format,
@@ -2517,9 +2131,8 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer quality) throws ApiException {
-        ApiResponse<File> localVarResponse = getSplashscreenWithHttpInfo(tag, format, maxWidth, maxHeight, width,
-                height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality);
-        return localVarResponse.getData();
+        return getSplashscreenWithHttpInfo(tag, format, maxWidth, maxHeight, width, height, fillWidth, fillHeight, blur,
+                backgroundColor, foregroundLayer, quality).getData();
     }
 
     /**
@@ -2539,6 +2152,20 @@ public class ImageApi {
      * @param quality Quality setting, from 0-100. (optional, default to 90)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Splashscreen returned successfully.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getSplashscreenWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tag,
             @org.eclipse.jdt.annotation.NonNull ImageFormat format,
@@ -2549,102 +2176,27 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer quality) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSplashscreenRequestBuilder(tag, format, maxWidth, maxHeight,
-                width, height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getSplashscreen", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getSplashscreenRequestBuilder(@org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer quality) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Branding/Splashscreen";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "image/*");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getSplashscreen", "/Branding/Splashscreen", "GET", localVarQueryParams,
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -2669,6 +2221,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getStudioImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -2682,10 +2253,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = getStudioImageWithHttpInfo(name, imageType, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return getStudioImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -2710,6 +2280,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getStudioImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -2723,123 +2312,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getStudioImageRequestBuilder(name, imageType, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getStudioImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getStudioImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getStudioImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling getStudioImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Studios/{name}/Images/{imageType}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getStudioImage", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -2864,6 +2374,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getStudioImageByIndex(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -2877,10 +2406,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = getStudioImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return getStudioImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight,
+                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -2905,6 +2433,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getStudioImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -2918,128 +2465,49 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getStudioImageByIndexRequestBuilder(name, imageType, imageIndex,
-                tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getStudioImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getStudioImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getStudioImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageType' when calling getStudioImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling getStudioImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Studios/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getStudioImageByIndex", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -3063,6 +2531,30 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>User id not provided.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getUserImage(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
@@ -3075,10 +2567,8 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = getUserImageWithHttpInfo(userId, tag, format, maxWidth, maxHeight,
-                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
-                foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return getUserImageWithHttpInfo(userId, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width,
+                height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, imageIndex).getData();
     }
 
     /**
@@ -3102,6 +2592,30 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>User id not provided.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getUserImageWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
@@ -3114,114 +2628,32 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getUserImageRequestBuilder(userId, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getUserImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getUserImageRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/UserImage";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.getUserImage", "/UserImage", "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -3246,6 +2678,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headArtistImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -3259,10 +2710,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = headArtistImageWithHttpInfo(name, imageType, imageIndex, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return headArtistImageWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer)
+                .getData();
     }
 
     /**
@@ -3287,6 +2737,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headArtistImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -3300,126 +2769,47 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headArtistImageRequestBuilder(name, imageType, imageIndex, tag,
-                format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headArtistImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headArtistImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling headArtistImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling headArtistImage");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headArtistImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Artists/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headArtistImage", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -3444,6 +2834,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headGenreImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -3457,10 +2866,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = headGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return headGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -3485,6 +2893,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headGenreImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -3498,123 +2925,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headGenreImageRequestBuilder(name, imageType, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headGenreImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headGenreImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling headGenreImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling headGenreImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Genres/{name}/Images/{imageType}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headGenreImage", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -3639,6 +2987,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headGenreImageByIndex(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -3652,10 +3019,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = headGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return headGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight,
+                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -3680,6 +3046,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headGenreImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -3693,128 +3078,49 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headGenreImageByIndexRequestBuilder(name, imageType, imageIndex,
-                tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headGenreImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headGenreImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling headGenreImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageType' when calling headGenreImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling headGenreImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Genres/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headGenreImageByIndex", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -3839,6 +3145,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headItemImage(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -3852,10 +3177,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = headItemImageWithHttpInfo(itemId, imageType, maxWidth, maxHeight, width,
-                height, quality, fillWidth, fillHeight, tag, format, percentPlayed, unplayedCount, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return headItemImageWithHttpInfo(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth,
+                fillHeight, tag, format, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -3880,6 +3204,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headItemImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -3893,123 +3236,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headItemImageRequestBuilder(itemId, imageType, maxWidth, maxHeight,
-                width, height, quality, fillWidth, fillHeight, tag, format, percentPlayed, unplayedCount, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headItemImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headItemImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling headItemImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling headItemImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headItemImage", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -4034,6 +3298,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headItemImage2(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -4048,10 +3331,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = headItemImage2WithHttpInfo(itemId, imageType, maxWidth, maxHeight, tag,
-                format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return headItemImage2WithHttpInfo(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed,
+                unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -4076,6 +3358,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headItemImage2WithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -4090,145 +3391,65 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headItemImage2RequestBuilder(itemId, imageType, maxWidth,
-                maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headItemImage2", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headItemImage2RequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer maxWidth,
-            @org.eclipse.jdt.annotation.Nullable Integer maxHeight, @org.eclipse.jdt.annotation.Nullable String tag,
-            @org.eclipse.jdt.annotation.Nullable ImageFormat format,
-            @org.eclipse.jdt.annotation.Nullable Double percentPlayed,
-            @org.eclipse.jdt.annotation.Nullable Integer unplayedCount,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull Integer width,
-            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer quality,
-            @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling headItemImage2");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling headItemImage2");
         }
-        // verify the required parameter 'maxWidth' is set
         if (maxWidth == null) {
             throw new ApiException(400, "Missing the required parameter 'maxWidth' when calling headItemImage2");
         }
-        // verify the required parameter 'maxHeight' is set
         if (maxHeight == null) {
             throw new ApiException(400, "Missing the required parameter 'maxHeight' when calling headItemImage2");
         }
-        // verify the required parameter 'tag' is set
         if (tag == null) {
             throw new ApiException(400, "Missing the required parameter 'tag' when calling headItemImage2");
         }
-        // verify the required parameter 'format' is set
         if (format == null) {
             throw new ApiException(400, "Missing the required parameter 'format' when calling headItemImage2");
         }
-        // verify the required parameter 'percentPlayed' is set
         if (percentPlayed == null) {
             throw new ApiException(400, "Missing the required parameter 'percentPlayed' when calling headItemImage2");
         }
-        // verify the required parameter 'unplayedCount' is set
         if (unplayedCount == null) {
             throw new ApiException(400, "Missing the required parameter 'unplayedCount' when calling headItemImage2");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headItemImage2");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}/{tag}/{format}/{maxWidth}/{maxHeight}/{percentPlayed}/{unplayedCount}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{maxWidth}", ApiClient.urlEncode(maxWidth.toString()))
-                .replace("{maxHeight}", ApiClient.urlEncode(maxHeight.toString()))
-                .replace("{tag}", ApiClient.urlEncode(tag.toString()))
-                .replace("{format}", ApiClient.urlEncode(format.toString()))
-                .replace("{percentPlayed}", ApiClient.urlEncode(percentPlayed.toString()))
-                .replace("{unplayedCount}", ApiClient.urlEncode(unplayedCount.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{maxWidth}", apiClient.escapeString(maxWidth.toString()))
+                .replaceAll("\\{maxHeight}", apiClient.escapeString(maxHeight.toString()))
+                .replaceAll("\\{tag}", apiClient.escapeString(tag.toString()))
+                .replaceAll("\\{format}", apiClient.escapeString(format.toString()))
+                .replaceAll("\\{percentPlayed}", apiClient.escapeString(percentPlayed.toString()))
+                .replaceAll("\\{unplayedCount}", apiClient.escapeString(unplayedCount.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headItemImage2", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -4253,6 +3474,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headItemImageByIndex(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -4266,10 +3506,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer unplayedCount, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = headItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, maxWidth,
-                maxHeight, width, height, quality, fillWidth, fillHeight, tag, format, percentPlayed, unplayedCount,
-                blur, backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return headItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height,
+                quality, fillWidth, fillHeight, tag, format, percentPlayed, unplayedCount, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -4294,6 +3533,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headItemImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -4307,127 +3565,48 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer unplayedCount, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headItemImageByIndexRequestBuilder(itemId, imageType, imageIndex,
-                maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, format, percentPlayed,
-                unplayedCount, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headItemImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headItemImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling headItemImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling headItemImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling headItemImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headItemImageByIndex", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -4452,6 +3631,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headMusicGenreImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -4465,10 +3663,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = headMusicGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return headMusicGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -4493,6 +3690,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headMusicGenreImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -4506,123 +3722,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headMusicGenreImageRequestBuilder(name, imageType, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headMusicGenreImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headMusicGenreImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling headMusicGenreImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling headMusicGenreImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/MusicGenres/{name}/Images/{imageType}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headMusicGenreImage", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -4647,6 +3784,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headMusicGenreImageByIndex(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -4660,10 +3816,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = headMusicGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag,
-                format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return headMusicGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight,
+                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -4688,6 +3843,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headMusicGenreImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -4701,129 +3875,50 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headMusicGenreImageByIndexRequestBuilder(name, imageType,
-                imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality,
-                fillWidth, fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headMusicGenreImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headMusicGenreImageByIndexRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable String name, @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'name' when calling headMusicGenreImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageType' when calling headMusicGenreImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling headMusicGenreImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/MusicGenres/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headMusicGenreImageByIndex", localVarPath, "HEAD", localVarQueryParams,
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -4848,6 +3943,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headPersonImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -4861,10 +3975,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = headPersonImageWithHttpInfo(name, imageType, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return headPersonImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -4889,6 +4002,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headPersonImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -4902,123 +4034,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headPersonImageRequestBuilder(name, imageType, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headPersonImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headPersonImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling headPersonImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling headPersonImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Persons/{name}/Images/{imageType}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headPersonImage", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -5043,6 +4096,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headPersonImageByIndex(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -5056,10 +4128,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = headPersonImageByIndexWithHttpInfo(name, imageType, imageIndex, tag,
-                format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return headPersonImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight,
+                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -5084,6 +4155,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headPersonImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -5097,128 +4187,49 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headPersonImageByIndexRequestBuilder(name, imageType, imageIndex,
-                tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headPersonImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headPersonImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling headPersonImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageType' when calling headPersonImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling headPersonImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Persons/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headPersonImageByIndex", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -5243,6 +4254,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headStudioImage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -5256,10 +4286,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = headStudioImageWithHttpInfo(name, imageType, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return headStudioImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed,
+                unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer,
+                imageIndex).getData();
     }
 
     /**
@@ -5284,6 +4313,25 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headStudioImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
@@ -5297,123 +4345,44 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headStudioImageRequestBuilder(name, imageType, tag, format,
-                maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headStudioImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headStudioImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling headStudioImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling headStudioImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Studios/{name}/Images/{imageType}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headStudioImage", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -5438,6 +4407,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headStudioImageByIndex(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -5451,10 +4439,9 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResponse = headStudioImageByIndexWithHttpInfo(name, imageType, imageIndex, tag,
-                format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        return localVarResponse.getData();
+        return headStudioImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight,
+                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
+                foregroundLayer).getData();
     }
 
     /**
@@ -5479,6 +4466,25 @@ public class ImageApi {
      * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headStudioImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -5492,128 +4498,49 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headStudioImageByIndexRequestBuilder(name, imageType, imageIndex,
-                tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth,
-                fillHeight, blur, backgroundColor, foregroundLayer);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headStudioImageByIndex", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headStudioImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer) throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling headStudioImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageType' when calling headStudioImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling headStudioImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Studios/{name}/Images/{imageType}/{imageIndex}"
-                .replace("{name}", ApiClient.urlEncode(name.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{name}", apiClient.escapeString(name.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headStudioImageByIndex", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -5637,6 +4564,30 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>User id not provided.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headUserImage(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
@@ -5649,10 +4600,8 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResponse = headUserImageWithHttpInfo(userId, tag, format, maxWidth, maxHeight,
-                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
-                foregroundLayer, imageIndex);
-        return localVarResponse.getData();
+        return headUserImageWithHttpInfo(userId, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width,
+                height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, imageIndex).getData();
     }
 
     /**
@@ -5676,6 +4625,30 @@ public class ImageApi {
      * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Image stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>User id not provided.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headUserImageWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
@@ -5688,114 +4661,32 @@ public class ImageApi {
             @org.eclipse.jdt.annotation.NonNull String backgroundColor,
             @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
             @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headUserImageRequestBuilder(userId, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headUserImage", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "percentPlayed", percentPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "unplayedCount", unplayedCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "quality", quality));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillWidth", fillWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "fillHeight", fillHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "blur", blur));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "backgroundColor", backgroundColor));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "foregroundLayer", foregroundLayer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageIndex", imageIndex));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headUserImageRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/UserImage";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("image/*", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("ImageApi.headUserImage", "/UserImage", "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -5804,6 +4695,40 @@ public class ImageApi {
      * @param userId User Id. (optional)
      * @param body (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>Bad Request</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>User does not have permission to delete the image.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void postUserImage(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull File body) throws ApiException {
@@ -5817,77 +4742,53 @@ public class ImageApi {
      * @param body (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>Bad Request</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>User does not have permission to delete the image.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> postUserImageWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull File body) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = postUserImageRequestBuilder(userId, body);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("postUserImage", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-    private HttpRequest.Builder postUserImageRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull File body) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/UserImage";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Content-Type", "image/*");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("image/*");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("ImageApi.postUserImage", "/UserImage", "POST", localVarQueryParams, body,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -5897,6 +4798,40 @@ public class ImageApi {
      * @param imageType Image type. (required)
      * @param body (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image saved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>Bad Request</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void setItemImage(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull File body)
@@ -5912,74 +4847,64 @@ public class ImageApi {
      * @param body (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image saved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>Bad Request</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> setItemImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull File body)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = setItemImageRequestBuilder(itemId, imageType, body);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("setItemImage", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder setItemImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType, @org.eclipse.jdt.annotation.NonNull File body)
-            throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling setItemImage");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling setItemImage");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "image/*");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("image/*");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("ImageApi.setItemImage", localVarPath, "POST", new ArrayList<>(), body,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -5990,6 +4915,40 @@ public class ImageApi {
      * @param imageIndex (Unused) Image index. (required)
      * @param body (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image saved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>Bad Request</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void setItemImageByIndex(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -6007,82 +4966,69 @@ public class ImageApi {
      * @param body (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image saved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>Bad Request</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> setItemImageByIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
             @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull File body)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = setItemImageByIndexRequestBuilder(itemId, imageType, imageIndex,
-                body);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("setItemImageByIndex", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder setItemImageByIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex, @org.eclipse.jdt.annotation.NonNull File body)
-            throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling setItemImageByIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling setItemImageByIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling setItemImageByIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "image/*");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("image/*");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("ImageApi.setItemImageByIndex", localVarPath, "POST", new ArrayList<>(), body,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -6093,6 +5039,35 @@ public class ImageApi {
      * @param imageIndex Old image index. (required)
      * @param newIndex New image index. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image index updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void updateItemImageIndex(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
@@ -6110,96 +5085,71 @@ public class ImageApi {
      * @param newIndex New image index. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Image index updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> updateItemImageIndexWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable ImageType imageType,
             @org.eclipse.jdt.annotation.Nullable Integer imageIndex,
             @org.eclipse.jdt.annotation.Nullable Integer newIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateItemImageIndexRequestBuilder(itemId, imageType, imageIndex,
-                newIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("updateItemImageIndex", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder updateItemImageIndexRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable ImageType imageType,
-            @org.eclipse.jdt.annotation.Nullable Integer imageIndex,
-            @org.eclipse.jdt.annotation.Nullable Integer newIndex) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling updateItemImageIndex");
         }
-        // verify the required parameter 'imageType' is set
         if (imageType == null) {
             throw new ApiException(400, "Missing the required parameter 'imageType' when calling updateItemImageIndex");
         }
-        // verify the required parameter 'imageIndex' is set
         if (imageIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'imageIndex' when calling updateItemImageIndex");
         }
-        // verify the required parameter 'newIndex' is set
         if (newIndex == null) {
             throw new ApiException(400, "Missing the required parameter 'newIndex' when calling updateItemImageIndex");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}/Index"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
-                .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{imageType}", apiClient.escapeString(imageType.toString()))
+                .replaceAll("\\{imageIndex}", apiClient.escapeString(imageIndex.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "newIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("newIndex", newIndex));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "newIndex", newIndex));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("ImageApi.updateItemImageIndex", localVarPath, "POST", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -6207,6 +5157,35 @@ public class ImageApi {
      * 
      * @param body (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Successfully uploaded new splashscreen.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>Error reading MimeType from uploaded image.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>User does not have permission to upload splashscreen..</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void uploadCustomSplashscreen(@org.eclipse.jdt.annotation.NonNull File body) throws ApiException {
         uploadCustomSplashscreenWithHttpInfo(body);
@@ -6218,61 +5197,44 @@ public class ImageApi {
      * @param body (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Successfully uploaded new splashscreen.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>400</td>
+     *                        <td>Error reading MimeType from uploaded image.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>User does not have permission to upload splashscreen..</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> uploadCustomSplashscreenWithHttpInfo(@org.eclipse.jdt.annotation.NonNull File body)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = uploadCustomSplashscreenRequestBuilder(body);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("uploadCustomSplashscreen", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder uploadCustomSplashscreenRequestBuilder(@org.eclipse.jdt.annotation.NonNull File body)
-            throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Branding/Splashscreen";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "image/*");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("image/*");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("ImageApi.uploadCustomSplashscreen", "/Branding/Splashscreen", "POST",
+                new ArrayList<>(), body, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 }

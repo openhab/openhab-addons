@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -63,6 +60,7 @@ public class QueueRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getItemIds() {
         return itemIds;
     }
@@ -86,6 +84,7 @@ public class QueueRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GroupQueueMode getMode() {
         return mode;
     }
@@ -135,113 +134,5 @@ public class QueueRequestDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ItemIds` to the URL query string
-        if (getItemIds() != null) {
-            for (int i = 0; i < getItemIds().size(); i++) {
-                if (getItemIds().get(i) != null) {
-                    joiner.add(String.format("%sItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
-                }
-            }
-        }
-
-        // add `Mode` to the URL query string
-        if (getMode() != null) {
-            joiner.add(String.format("%sMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMode()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private QueueRequestDto instance;
-
-        public Builder() {
-            this(new QueueRequestDto());
-        }
-
-        protected Builder(QueueRequestDto instance) {
-            this.instance = instance;
-        }
-
-        public QueueRequestDto.Builder itemIds(List<UUID> itemIds) {
-            this.instance.itemIds = itemIds;
-            return this;
-        }
-
-        public QueueRequestDto.Builder mode(GroupQueueMode mode) {
-            this.instance.mode = mode;
-            return this;
-        }
-
-        /**
-         * returns a built QueueRequestDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public QueueRequestDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static QueueRequestDto.Builder builder() {
-        return new QueueRequestDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public QueueRequestDto.Builder toBuilder() {
-        return new QueueRequestDto.Builder().itemIds(getItemIds()).mode(getMode());
     }
 }

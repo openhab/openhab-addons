@@ -1,26 +1,10 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -44,44 +28,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.SetPlay
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SetRepeatModeRequestDto;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SetShuffleModeRequestDto;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SyncPlayApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public SyncPlayApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public SyncPlayApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -89,6 +63,30 @@ public class SyncPlayApi {
      * 
      * @param bufferRequestDto The player status. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Group state update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayBuffering(@org.eclipse.jdt.annotation.Nullable BufferRequestDto bufferRequestDto)
             throws ApiException {
@@ -101,66 +99,46 @@ public class SyncPlayApi {
      * @param bufferRequestDto The player status. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Group state update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayBufferingWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable BufferRequestDto bufferRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayBufferingRequestBuilder(bufferRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayBuffering", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayBufferingRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable BufferRequestDto bufferRequestDto) throws ApiException {
-        // verify the required parameter 'bufferRequestDto' is set
+        // Check required parameters
         if (bufferRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'bufferRequestDto' when calling syncPlayBuffering");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Buffering";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(bufferRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayBuffering", "/SyncPlay/Buffering", "POST", new ArrayList<>(),
+                bufferRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -168,6 +146,30 @@ public class SyncPlayApi {
      * 
      * @param newGroupRequestDto The settings of the new group. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>New group created.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayCreateGroup(@org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto)
             throws ApiException {
@@ -180,66 +182,46 @@ public class SyncPlayApi {
      * @param newGroupRequestDto The settings of the new group. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>New group created.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayCreateGroupWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayCreateGroupRequestBuilder(newGroupRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayCreateGroup", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayCreateGroupRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto) throws ApiException {
-        // verify the required parameter 'newGroupRequestDto' is set
+        // Check required parameters
         if (newGroupRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'newGroupRequestDto' when calling syncPlayCreateGroup");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/New";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(newGroupRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayCreateGroup", "/SyncPlay/New", "POST", new ArrayList<>(),
+                newGroupRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -247,10 +229,33 @@ public class SyncPlayApi {
      * 
      * @return List&lt;GroupInfoDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Groups returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<GroupInfoDto> syncPlayGetGroups() throws ApiException {
-        ApiResponse<List<GroupInfoDto>> localVarResponse = syncPlayGetGroupsWithHttpInfo();
-        return localVarResponse.getData();
+        return syncPlayGetGroupsWithHttpInfo().getData();
     }
 
     /**
@@ -258,62 +263,41 @@ public class SyncPlayApi {
      * 
      * @return ApiResponse&lt;List&lt;GroupInfoDto&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Groups returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<GroupInfoDto>> syncPlayGetGroupsWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayGetGroupsRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayGetGroups", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<GroupInfoDto>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<GroupInfoDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<GroupInfoDto>>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayGetGroupsRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/List";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<GroupInfoDto>> localVarReturnType = new GenericType<List<GroupInfoDto>>() {
+        };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayGetGroups", "/SyncPlay/List", "GET", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -321,6 +305,30 @@ public class SyncPlayApi {
      * 
      * @param joinGroupRequestDto The group to join. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Group join successful.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayJoinGroup(@org.eclipse.jdt.annotation.Nullable JoinGroupRequestDto joinGroupRequestDto)
             throws ApiException {
@@ -333,72 +341,76 @@ public class SyncPlayApi {
      * @param joinGroupRequestDto The group to join. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Group join successful.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayJoinGroupWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable JoinGroupRequestDto joinGroupRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayJoinGroupRequestBuilder(joinGroupRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayJoinGroup", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayJoinGroupRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable JoinGroupRequestDto joinGroupRequestDto) throws ApiException {
-        // verify the required parameter 'joinGroupRequestDto' is set
+        // Check required parameters
         if (joinGroupRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'joinGroupRequestDto' when calling syncPlayJoinGroup");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Join";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(joinGroupRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayJoinGroup", "/SyncPlay/Join", "POST", new ArrayList<>(),
+                joinGroupRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
      * Leave the joined SyncPlay group.
      * 
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Group leave successful.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayLeaveGroup() throws ApiException {
         syncPlayLeaveGroupWithHttpInfo();
@@ -409,53 +421,38 @@ public class SyncPlayApi {
      * 
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Group leave successful.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayLeaveGroupWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayLeaveGroupRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayLeaveGroup", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayLeaveGroupRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Leave";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayLeaveGroup", "/SyncPlay/Leave", "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -463,6 +460,30 @@ public class SyncPlayApi {
      * 
      * @param movePlaylistItemRequestDto The new position for the item. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayMovePlaylistItem(
             @org.eclipse.jdt.annotation.Nullable MovePlaylistItemRequestDto movePlaylistItemRequestDto)
@@ -476,68 +497,47 @@ public class SyncPlayApi {
      * @param movePlaylistItemRequestDto The new position for the item. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayMovePlaylistItemWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable MovePlaylistItemRequestDto movePlaylistItemRequestDto)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayMovePlaylistItemRequestBuilder(movePlaylistItemRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayMovePlaylistItem", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayMovePlaylistItemRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable MovePlaylistItemRequestDto movePlaylistItemRequestDto)
-            throws ApiException {
-        // verify the required parameter 'movePlaylistItemRequestDto' is set
+        // Check required parameters
         if (movePlaylistItemRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'movePlaylistItemRequestDto' when calling syncPlayMovePlaylistItem");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/MovePlaylistItem";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(movePlaylistItemRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayMovePlaylistItem", "/SyncPlay/MovePlaylistItem", "POST",
+                new ArrayList<>(), movePlaylistItemRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(),
+                new LinkedHashMap<>(), localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -545,6 +545,30 @@ public class SyncPlayApi {
      * 
      * @param nextItemRequestDto The current item information. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Next item update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayNextItem(@org.eclipse.jdt.annotation.Nullable NextItemRequestDto nextItemRequestDto)
             throws ApiException {
@@ -557,72 +581,76 @@ public class SyncPlayApi {
      * @param nextItemRequestDto The current item information. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Next item update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayNextItemWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable NextItemRequestDto nextItemRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayNextItemRequestBuilder(nextItemRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayNextItem", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayNextItemRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable NextItemRequestDto nextItemRequestDto) throws ApiException {
-        // verify the required parameter 'nextItemRequestDto' is set
+        // Check required parameters
         if (nextItemRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'nextItemRequestDto' when calling syncPlayNextItem");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/NextItem";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(nextItemRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayNextItem", "/SyncPlay/NextItem", "POST", new ArrayList<>(),
+                nextItemRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
      * Request pause in SyncPlay group.
      * 
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Pause update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayPause() throws ApiException {
         syncPlayPauseWithHttpInfo();
@@ -633,53 +661,38 @@ public class SyncPlayApi {
      * 
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Pause update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayPauseWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayPauseRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayPause", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayPauseRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Pause";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayPause", "/SyncPlay/Pause", "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -687,6 +700,30 @@ public class SyncPlayApi {
      * 
      * @param pingRequestDto The new ping. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Ping updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayPing(@org.eclipse.jdt.annotation.Nullable PingRequestDto pingRequestDto) throws ApiException {
         syncPlayPingWithHttpInfo(pingRequestDto);
@@ -698,65 +735,45 @@ public class SyncPlayApi {
      * @param pingRequestDto The new ping. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Ping updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayPingWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable PingRequestDto pingRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayPingRequestBuilder(pingRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayPing", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayPingRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable PingRequestDto pingRequestDto) throws ApiException {
-        // verify the required parameter 'pingRequestDto' is set
+        // Check required parameters
         if (pingRequestDto == null) {
             throw new ApiException(400, "Missing the required parameter 'pingRequestDto' when calling syncPlayPing");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Ping";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(pingRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayPing", "/SyncPlay/Ping", "POST", new ArrayList<>(),
+                pingRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -764,6 +781,30 @@ public class SyncPlayApi {
      * 
      * @param previousItemRequestDto The current item information. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Previous item update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayPreviousItem(@org.eclipse.jdt.annotation.Nullable PreviousItemRequestDto previousItemRequestDto)
             throws ApiException {
@@ -776,66 +817,46 @@ public class SyncPlayApi {
      * @param previousItemRequestDto The current item information. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Previous item update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayPreviousItemWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable PreviousItemRequestDto previousItemRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayPreviousItemRequestBuilder(previousItemRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayPreviousItem", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayPreviousItemRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable PreviousItemRequestDto previousItemRequestDto) throws ApiException {
-        // verify the required parameter 'previousItemRequestDto' is set
+        // Check required parameters
         if (previousItemRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'previousItemRequestDto' when calling syncPlayPreviousItem");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/PreviousItem";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(previousItemRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayPreviousItem", "/SyncPlay/PreviousItem", "POST",
+                new ArrayList<>(), previousItemRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(),
+                new LinkedHashMap<>(), localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -843,6 +864,30 @@ public class SyncPlayApi {
      * 
      * @param queueRequestDto The items to add. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayQueue(@org.eclipse.jdt.annotation.Nullable QueueRequestDto queueRequestDto)
             throws ApiException {
@@ -855,65 +900,45 @@ public class SyncPlayApi {
      * @param queueRequestDto The items to add. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayQueueWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable QueueRequestDto queueRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayQueueRequestBuilder(queueRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayQueue", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayQueueRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable QueueRequestDto queueRequestDto) throws ApiException {
-        // verify the required parameter 'queueRequestDto' is set
+        // Check required parameters
         if (queueRequestDto == null) {
             throw new ApiException(400, "Missing the required parameter 'queueRequestDto' when calling syncPlayQueue");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Queue";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(queueRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayQueue", "/SyncPlay/Queue", "POST", new ArrayList<>(),
+                queueRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -921,6 +946,30 @@ public class SyncPlayApi {
      * 
      * @param readyRequestDto The player status. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Group state update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayReady(@org.eclipse.jdt.annotation.Nullable ReadyRequestDto readyRequestDto)
             throws ApiException {
@@ -933,65 +982,45 @@ public class SyncPlayApi {
      * @param readyRequestDto The player status. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Group state update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayReadyWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable ReadyRequestDto readyRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayReadyRequestBuilder(readyRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayReady", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayReadyRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable ReadyRequestDto readyRequestDto) throws ApiException {
-        // verify the required parameter 'readyRequestDto' is set
+        // Check required parameters
         if (readyRequestDto == null) {
             throw new ApiException(400, "Missing the required parameter 'readyRequestDto' when calling syncPlayReady");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Ready";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(readyRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayReady", "/SyncPlay/Ready", "POST", new ArrayList<>(),
+                readyRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -999,6 +1028,30 @@ public class SyncPlayApi {
      * 
      * @param removeFromPlaylistRequestDto The items to remove. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayRemoveFromPlaylist(
             @org.eclipse.jdt.annotation.Nullable RemoveFromPlaylistRequestDto removeFromPlaylistRequestDto)
@@ -1012,69 +1065,47 @@ public class SyncPlayApi {
      * @param removeFromPlaylistRequestDto The items to remove. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayRemoveFromPlaylistWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable RemoveFromPlaylistRequestDto removeFromPlaylistRequestDto)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayRemoveFromPlaylistRequestBuilder(
-                removeFromPlaylistRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayRemoveFromPlaylist", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayRemoveFromPlaylistRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable RemoveFromPlaylistRequestDto removeFromPlaylistRequestDto)
-            throws ApiException {
-        // verify the required parameter 'removeFromPlaylistRequestDto' is set
+        // Check required parameters
         if (removeFromPlaylistRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'removeFromPlaylistRequestDto' when calling syncPlayRemoveFromPlaylist");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/RemoveFromPlaylist";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(removeFromPlaylistRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayRemoveFromPlaylist", "/SyncPlay/RemoveFromPlaylist", "POST",
+                new ArrayList<>(), removeFromPlaylistRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(),
+                new LinkedHashMap<>(), localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1082,6 +1113,30 @@ public class SyncPlayApi {
      * 
      * @param seekRequestDto The new playback position. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Seek update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlaySeek(@org.eclipse.jdt.annotation.Nullable SeekRequestDto seekRequestDto) throws ApiException {
         syncPlaySeekWithHttpInfo(seekRequestDto);
@@ -1093,65 +1148,45 @@ public class SyncPlayApi {
      * @param seekRequestDto The new playback position. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Seek update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlaySeekWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SeekRequestDto seekRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySeekRequestBuilder(seekRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlaySeek", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlaySeekRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SeekRequestDto seekRequestDto) throws ApiException {
-        // verify the required parameter 'seekRequestDto' is set
+        // Check required parameters
         if (seekRequestDto == null) {
             throw new ApiException(400, "Missing the required parameter 'seekRequestDto' when calling syncPlaySeek");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Seek";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(seekRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlaySeek", "/SyncPlay/Seek", "POST", new ArrayList<>(),
+                seekRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1159,6 +1194,30 @@ public class SyncPlayApi {
      * 
      * @param ignoreWaitRequestDto The settings to set. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Member state updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlaySetIgnoreWait(@org.eclipse.jdt.annotation.Nullable IgnoreWaitRequestDto ignoreWaitRequestDto)
             throws ApiException {
@@ -1171,66 +1230,46 @@ public class SyncPlayApi {
      * @param ignoreWaitRequestDto The settings to set. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Member state updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlaySetIgnoreWaitWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable IgnoreWaitRequestDto ignoreWaitRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetIgnoreWaitRequestBuilder(ignoreWaitRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlaySetIgnoreWait", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlaySetIgnoreWaitRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable IgnoreWaitRequestDto ignoreWaitRequestDto) throws ApiException {
-        // verify the required parameter 'ignoreWaitRequestDto' is set
+        // Check required parameters
         if (ignoreWaitRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'ignoreWaitRequestDto' when calling syncPlaySetIgnoreWait");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/SetIgnoreWait";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(ignoreWaitRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlaySetIgnoreWait", "/SyncPlay/SetIgnoreWait", "POST",
+                new ArrayList<>(), ignoreWaitRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(),
+                new LinkedHashMap<>(), localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1238,6 +1277,30 @@ public class SyncPlayApi {
      * 
      * @param playRequestDto The new playlist to play in the group. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlaySetNewQueue(@org.eclipse.jdt.annotation.Nullable PlayRequestDto playRequestDto)
             throws ApiException {
@@ -1250,66 +1313,46 @@ public class SyncPlayApi {
      * @param playRequestDto The new playlist to play in the group. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlaySetNewQueueWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable PlayRequestDto playRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetNewQueueRequestBuilder(playRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlaySetNewQueue", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlaySetNewQueueRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable PlayRequestDto playRequestDto) throws ApiException {
-        // verify the required parameter 'playRequestDto' is set
+        // Check required parameters
         if (playRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'playRequestDto' when calling syncPlaySetNewQueue");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/SetNewQueue";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(playRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlaySetNewQueue", "/SyncPlay/SetNewQueue", "POST",
+                new ArrayList<>(), playRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1317,6 +1360,30 @@ public class SyncPlayApi {
      * 
      * @param setPlaylistItemRequestDto The new item to play. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlaySetPlaylistItem(
             @org.eclipse.jdt.annotation.Nullable SetPlaylistItemRequestDto setPlaylistItemRequestDto)
@@ -1330,68 +1397,47 @@ public class SyncPlayApi {
      * @param setPlaylistItemRequestDto The new item to play. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlaySetPlaylistItemWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SetPlaylistItemRequestDto setPlaylistItemRequestDto)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetPlaylistItemRequestBuilder(setPlaylistItemRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlaySetPlaylistItem", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlaySetPlaylistItemRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SetPlaylistItemRequestDto setPlaylistItemRequestDto)
-            throws ApiException {
-        // verify the required parameter 'setPlaylistItemRequestDto' is set
+        // Check required parameters
         if (setPlaylistItemRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'setPlaylistItemRequestDto' when calling syncPlaySetPlaylistItem");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/SetPlaylistItem";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(setPlaylistItemRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlaySetPlaylistItem", "/SyncPlay/SetPlaylistItem", "POST",
+                new ArrayList<>(), setPlaylistItemRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(),
+                new LinkedHashMap<>(), localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1399,6 +1445,30 @@ public class SyncPlayApi {
      * 
      * @param setRepeatModeRequestDto The new repeat mode. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Play queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlaySetRepeatMode(
             @org.eclipse.jdt.annotation.Nullable SetRepeatModeRequestDto setRepeatModeRequestDto) throws ApiException {
@@ -1411,66 +1481,46 @@ public class SyncPlayApi {
      * @param setRepeatModeRequestDto The new repeat mode. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Play queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlaySetRepeatModeWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SetRepeatModeRequestDto setRepeatModeRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetRepeatModeRequestBuilder(setRepeatModeRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlaySetRepeatMode", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlaySetRepeatModeRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SetRepeatModeRequestDto setRepeatModeRequestDto) throws ApiException {
-        // verify the required parameter 'setRepeatModeRequestDto' is set
+        // Check required parameters
         if (setRepeatModeRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'setRepeatModeRequestDto' when calling syncPlaySetRepeatMode");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/SetRepeatMode";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(setRepeatModeRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlaySetRepeatMode", "/SyncPlay/SetRepeatMode", "POST",
+                new ArrayList<>(), setRepeatModeRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(),
+                new LinkedHashMap<>(), localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1478,6 +1528,30 @@ public class SyncPlayApi {
      * 
      * @param setShuffleModeRequestDto The new shuffle mode. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Play queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlaySetShuffleMode(
             @org.eclipse.jdt.annotation.Nullable SetShuffleModeRequestDto setShuffleModeRequestDto)
@@ -1491,74 +1565,77 @@ public class SyncPlayApi {
      * @param setShuffleModeRequestDto The new shuffle mode. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Play queue update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlaySetShuffleModeWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SetShuffleModeRequestDto setShuffleModeRequestDto)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetShuffleModeRequestBuilder(setShuffleModeRequestDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlaySetShuffleMode", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlaySetShuffleModeRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SetShuffleModeRequestDto setShuffleModeRequestDto)
-            throws ApiException {
-        // verify the required parameter 'setShuffleModeRequestDto' is set
+        // Check required parameters
         if (setShuffleModeRequestDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'setShuffleModeRequestDto' when calling syncPlaySetShuffleMode");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/SetShuffleMode";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(setShuffleModeRequestDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlaySetShuffleMode", "/SyncPlay/SetShuffleMode", "POST",
+                new ArrayList<>(), setShuffleModeRequestDto, new LinkedHashMap<>(), new LinkedHashMap<>(),
+                new LinkedHashMap<>(), localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
      * Request stop in SyncPlay group.
      * 
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Stop update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayStop() throws ApiException {
         syncPlayStopWithHttpInfo();
@@ -1569,59 +1646,68 @@ public class SyncPlayApi {
      * 
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Stop update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayStopWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayStopRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayStop", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayStopRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Stop";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayStop", "/SyncPlay/Stop", "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
      * Request unpause in SyncPlay group.
      * 
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Unpause update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void syncPlayUnpause() throws ApiException {
         syncPlayUnpauseWithHttpInfo();
@@ -1632,52 +1718,37 @@ public class SyncPlayApi {
      * 
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Unpause update sent to all group members.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> syncPlayUnpauseWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayUnpauseRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("syncPlayUnpause", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder syncPlayUnpauseRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/SyncPlay/Unpause";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SyncPlayApi.syncPlayUnpause", "/SyncPlay/Unpause", "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 }

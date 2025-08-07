@@ -17,10 +17,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -70,6 +67,7 @@ public class GroupInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GROUP_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGroupId() {
         return groupId;
     }
@@ -93,6 +91,7 @@ public class GroupInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GROUP_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getGroupName() {
         return groupName;
     }
@@ -116,6 +115,7 @@ public class GroupInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GroupStateType getState() {
         return state;
     }
@@ -147,6 +147,7 @@ public class GroupInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARTICIPANTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getParticipants() {
         return participants;
     }
@@ -170,6 +171,7 @@ public class GroupInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LAST_UPDATED_AT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getLastUpdatedAt() {
         return lastUpdatedAt;
     }
@@ -226,145 +228,5 @@ public class GroupInfoDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `GroupId` to the URL query string
-        if (getGroupId() != null) {
-            joiner.add(String.format("%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-        }
-
-        // add `GroupName` to the URL query string
-        if (getGroupName() != null) {
-            joiner.add(String.format("%sGroupName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupName()))));
-        }
-
-        // add `State` to the URL query string
-        if (getState() != null) {
-            joiner.add(String.format("%sState%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getState()))));
-        }
-
-        // add `Participants` to the URL query string
-        if (getParticipants() != null) {
-            for (int i = 0; i < getParticipants().size(); i++) {
-                joiner.add(String.format("%sParticipants%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getParticipants().get(i)))));
-            }
-        }
-
-        // add `LastUpdatedAt` to the URL query string
-        if (getLastUpdatedAt() != null) {
-            joiner.add(String.format("%sLastUpdatedAt%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUpdatedAt()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private GroupInfoDto instance;
-
-        public Builder() {
-            this(new GroupInfoDto());
-        }
-
-        protected Builder(GroupInfoDto instance) {
-            this.instance = instance;
-        }
-
-        public GroupInfoDto.Builder groupId(UUID groupId) {
-            this.instance.groupId = groupId;
-            return this;
-        }
-
-        public GroupInfoDto.Builder groupName(String groupName) {
-            this.instance.groupName = groupName;
-            return this;
-        }
-
-        public GroupInfoDto.Builder state(GroupStateType state) {
-            this.instance.state = state;
-            return this;
-        }
-
-        public GroupInfoDto.Builder participants(List<String> participants) {
-            this.instance.participants = participants;
-            return this;
-        }
-
-        public GroupInfoDto.Builder lastUpdatedAt(OffsetDateTime lastUpdatedAt) {
-            this.instance.lastUpdatedAt = lastUpdatedAt;
-            return this;
-        }
-
-        /**
-         * returns a built GroupInfoDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public GroupInfoDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static GroupInfoDto.Builder builder() {
-        return new GroupInfoDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public GroupInfoDto.Builder toBuilder() {
-        return new GroupInfoDto.Builder().groupId(getGroupId()).groupName(getGroupName()).state(getState())
-                .participants(getParticipants()).lastUpdatedAt(getLastUpdatedAt());
     }
 }

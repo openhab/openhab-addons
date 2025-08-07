@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -69,6 +66,7 @@ public class AccessSchedule {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getId() {
         return id;
     }
@@ -86,6 +84,7 @@ public class AccessSchedule {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -109,6 +108,7 @@ public class AccessSchedule {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DynamicDayOfWeek getDayOfWeek() {
         return dayOfWeek;
     }
@@ -132,6 +132,7 @@ public class AccessSchedule {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_HOUR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getStartHour() {
         return startHour;
     }
@@ -155,6 +156,7 @@ public class AccessSchedule {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_END_HOUR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getEndHour() {
         return endHour;
     }
@@ -210,142 +212,5 @@ public class AccessSchedule {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `DayOfWeek` to the URL query string
-        if (getDayOfWeek() != null) {
-            joiner.add(String.format("%sDayOfWeek%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDayOfWeek()))));
-        }
-
-        // add `StartHour` to the URL query string
-        if (getStartHour() != null) {
-            joiner.add(String.format("%sStartHour%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartHour()))));
-        }
-
-        // add `EndHour` to the URL query string
-        if (getEndHour() != null) {
-            joiner.add(String.format("%sEndHour%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndHour()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private AccessSchedule instance;
-
-        public Builder() {
-            this(new AccessSchedule());
-        }
-
-        protected Builder(AccessSchedule instance) {
-            this.instance = instance;
-        }
-
-        public AccessSchedule.Builder id(Integer id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public AccessSchedule.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public AccessSchedule.Builder dayOfWeek(DynamicDayOfWeek dayOfWeek) {
-            this.instance.dayOfWeek = dayOfWeek;
-            return this;
-        }
-
-        public AccessSchedule.Builder startHour(Double startHour) {
-            this.instance.startHour = startHour;
-            return this;
-        }
-
-        public AccessSchedule.Builder endHour(Double endHour) {
-            this.instance.endHour = endHour;
-            return this;
-        }
-
-        /**
-         * returns a built AccessSchedule instance.
-         *
-         * The builder is not reusable.
-         */
-        public AccessSchedule build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static AccessSchedule.Builder builder() {
-        return new AccessSchedule.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public AccessSchedule.Builder toBuilder() {
-        return new AccessSchedule.Builder().id(getId()).userId(getUserId()).dayOfWeek(getDayOfWeek())
-                .startHour(getStartHour()).endHour(getEndHour());
     }
 }

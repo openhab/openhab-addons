@@ -15,9 +15,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,6 +64,7 @@ public class ChapterInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getStartPositionTicks() {
         return startPositionTicks;
     }
@@ -90,6 +88,7 @@ public class ChapterInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -113,6 +112,7 @@ public class ChapterInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getImagePath() {
         return imagePath;
     }
@@ -136,6 +136,7 @@ public class ChapterInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_DATE_MODIFIED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getImageDateModified() {
         return imageDateModified;
     }
@@ -159,6 +160,7 @@ public class ChapterInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getImageTag() {
         return imageTag;
     }
@@ -214,142 +216,5 @@ public class ChapterInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `StartPositionTicks` to the URL query string
-        if (getStartPositionTicks() != null) {
-            joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `ImagePath` to the URL query string
-        if (getImagePath() != null) {
-            joiner.add(String.format("%sImagePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImagePath()))));
-        }
-
-        // add `ImageDateModified` to the URL query string
-        if (getImageDateModified() != null) {
-            joiner.add(String.format("%sImageDateModified%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageDateModified()))));
-        }
-
-        // add `ImageTag` to the URL query string
-        if (getImageTag() != null) {
-            joiner.add(String.format("%sImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageTag()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ChapterInfo instance;
-
-        public Builder() {
-            this(new ChapterInfo());
-        }
-
-        protected Builder(ChapterInfo instance) {
-            this.instance = instance;
-        }
-
-        public ChapterInfo.Builder startPositionTicks(Long startPositionTicks) {
-            this.instance.startPositionTicks = startPositionTicks;
-            return this;
-        }
-
-        public ChapterInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public ChapterInfo.Builder imagePath(String imagePath) {
-            this.instance.imagePath = imagePath;
-            return this;
-        }
-
-        public ChapterInfo.Builder imageDateModified(OffsetDateTime imageDateModified) {
-            this.instance.imageDateModified = imageDateModified;
-            return this;
-        }
-
-        public ChapterInfo.Builder imageTag(String imageTag) {
-            this.instance.imageTag = imageTag;
-            return this;
-        }
-
-        /**
-         * returns a built ChapterInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public ChapterInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ChapterInfo.Builder builder() {
-        return new ChapterInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ChapterInfo.Builder toBuilder() {
-        return new ChapterInfo.Builder().startPositionTicks(getStartPositionTicks()).name(getName())
-                .imagePath(getImagePath()).imageDateModified(getImageDateModified()).imageTag(getImageTag());
     }
 }

@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -241,6 +238,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_ADMINISTRATOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsAdministrator() {
         return isAdministrator;
     }
@@ -264,6 +262,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsHidden() {
         return isHidden;
     }
@@ -288,6 +287,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_COLLECTION_MANAGEMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableCollectionManagement() {
         return enableCollectionManagement;
     }
@@ -311,6 +311,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLE_MANAGEMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSubtitleManagement() {
         return enableSubtitleManagement;
     }
@@ -334,6 +335,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_LYRIC_MANAGEMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableLyricManagement() {
         return enableLyricManagement;
     }
@@ -357,6 +359,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_DISABLED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsDisabled() {
         return isDisabled;
     }
@@ -380,6 +383,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_PARENTAL_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxParentalRating() {
         return maxParentalRating;
     }
@@ -411,6 +415,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BLOCKED_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getBlockedTags() {
         return blockedTags;
     }
@@ -442,6 +447,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALLOWED_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getAllowedTags() {
         return allowedTags;
     }
@@ -466,6 +472,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_USER_PREFERENCE_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableUserPreferenceAccess() {
         return enableUserPreferenceAccess;
     }
@@ -497,6 +504,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ACCESS_SCHEDULES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<AccessSchedule> getAccessSchedules() {
         return accessSchedules;
     }
@@ -528,6 +536,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BLOCK_UNRATED_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UnratedItem> getBlockUnratedItems() {
         return blockUnratedItems;
     }
@@ -552,6 +561,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_CONTROL_OF_OTHER_USERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableRemoteControlOfOtherUsers() {
         return enableRemoteControlOfOtherUsers;
     }
@@ -576,6 +586,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_SHARED_DEVICE_CONTROL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSharedDeviceControl() {
         return enableSharedDeviceControl;
     }
@@ -599,6 +610,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
@@ -622,6 +634,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_LIVE_TV_MANAGEMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableLiveTvManagement() {
         return enableLiveTvManagement;
     }
@@ -645,6 +658,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_LIVE_TV_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableLiveTvAccess() {
         return enableLiveTvAccess;
     }
@@ -668,6 +682,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_MEDIA_PLAYBACK)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableMediaPlayback() {
         return enableMediaPlayback;
     }
@@ -692,6 +707,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_AUDIO_PLAYBACK_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAudioPlaybackTranscoding() {
         return enableAudioPlaybackTranscoding;
     }
@@ -717,6 +733,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_VIDEO_PLAYBACK_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableVideoPlaybackTranscoding() {
         return enableVideoPlaybackTranscoding;
     }
@@ -741,6 +758,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_PLAYBACK_REMUXING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePlaybackRemuxing() {
         return enablePlaybackRemuxing;
     }
@@ -765,6 +783,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FORCE_REMOTE_SOURCE_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getForceRemoteSourceTranscoding() {
         return forceRemoteSourceTranscoding;
     }
@@ -789,6 +808,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_CONTENT_DELETION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableContentDeletion() {
         return enableContentDeletion;
     }
@@ -821,6 +841,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getEnableContentDeletionFromFolders() {
         return enableContentDeletionFromFolders;
     }
@@ -845,6 +866,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_CONTENT_DOWNLOADING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableContentDownloading() {
         return enableContentDownloading;
     }
@@ -868,6 +890,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_SYNC_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSyncTranscoding() {
         return enableSyncTranscoding;
     }
@@ -891,6 +914,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_MEDIA_CONVERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableMediaConversion() {
         return enableMediaConversion;
     }
@@ -922,6 +946,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLED_DEVICES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getEnabledDevices() {
         return enabledDevices;
     }
@@ -945,6 +970,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_ALL_DEVICES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAllDevices() {
         return enableAllDevices;
     }
@@ -976,6 +1002,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLED_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getEnabledChannels() {
         return enabledChannels;
     }
@@ -999,6 +1026,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_ALL_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAllChannels() {
         return enableAllChannels;
     }
@@ -1030,6 +1058,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLED_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getEnabledFolders() {
         return enabledFolders;
     }
@@ -1053,6 +1082,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_ALL_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAllFolders() {
         return enableAllFolders;
     }
@@ -1076,6 +1106,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INVALID_LOGIN_ATTEMPT_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getInvalidLoginAttemptCount() {
         return invalidLoginAttemptCount;
     }
@@ -1100,6 +1131,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOGIN_ATTEMPTS_BEFORE_LOCKOUT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLoginAttemptsBeforeLockout() {
         return loginAttemptsBeforeLockout;
     }
@@ -1123,6 +1155,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_ACTIVE_SESSIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxActiveSessions() {
         return maxActiveSessions;
     }
@@ -1146,6 +1179,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_PUBLIC_SHARING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePublicSharing() {
         return enablePublicSharing;
     }
@@ -1177,6 +1211,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getBlockedMediaFolders() {
         return blockedMediaFolders;
     }
@@ -1208,6 +1243,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BLOCKED_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getBlockedChannels() {
         return blockedChannels;
     }
@@ -1231,6 +1267,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getRemoteClientBitrateLimit() {
         return remoteClientBitrateLimit;
     }
@@ -1254,6 +1291,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_AUTHENTICATION_PROVIDER_ID)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getAuthenticationProviderId() {
         return authenticationProviderId;
     }
@@ -1277,6 +1315,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PASSWORD_RESET_PROVIDER_ID)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getPasswordResetProviderId() {
         return passwordResetProviderId;
     }
@@ -1300,6 +1339,7 @@ public class UserPolicy {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SYNC_PLAY_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SyncPlayUserAccessType getSyncPlayAccess() {
         return syncPlayAccess;
     }
@@ -1447,628 +1487,5 @@ public class UserPolicy {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `IsAdministrator` to the URL query string
-        if (getIsAdministrator() != null) {
-            joiner.add(String.format("%sIsAdministrator%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAdministrator()))));
-        }
-
-        // add `IsHidden` to the URL query string
-        if (getIsHidden() != null) {
-            joiner.add(String.format("%sIsHidden%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHidden()))));
-        }
-
-        // add `EnableCollectionManagement` to the URL query string
-        if (getEnableCollectionManagement() != null) {
-            joiner.add(String.format("%sEnableCollectionManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableCollectionManagement()))));
-        }
-
-        // add `EnableSubtitleManagement` to the URL query string
-        if (getEnableSubtitleManagement() != null) {
-            joiner.add(String.format("%sEnableSubtitleManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitleManagement()))));
-        }
-
-        // add `EnableLyricManagement` to the URL query string
-        if (getEnableLyricManagement() != null) {
-            joiner.add(String.format("%sEnableLyricManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLyricManagement()))));
-        }
-
-        // add `IsDisabled` to the URL query string
-        if (getIsDisabled() != null) {
-            joiner.add(String.format("%sIsDisabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsDisabled()))));
-        }
-
-        // add `MaxParentalRating` to the URL query string
-        if (getMaxParentalRating() != null) {
-            joiner.add(String.format("%sMaxParentalRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxParentalRating()))));
-        }
-
-        // add `BlockedTags` to the URL query string
-        if (getBlockedTags() != null) {
-            for (int i = 0; i < getBlockedTags().size(); i++) {
-                joiner.add(String.format("%sBlockedTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getBlockedTags().get(i)))));
-            }
-        }
-
-        // add `AllowedTags` to the URL query string
-        if (getAllowedTags() != null) {
-            for (int i = 0; i < getAllowedTags().size(); i++) {
-                joiner.add(String.format("%sAllowedTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getAllowedTags().get(i)))));
-            }
-        }
-
-        // add `EnableUserPreferenceAccess` to the URL query string
-        if (getEnableUserPreferenceAccess() != null) {
-            joiner.add(String.format("%sEnableUserPreferenceAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableUserPreferenceAccess()))));
-        }
-
-        // add `AccessSchedules` to the URL query string
-        if (getAccessSchedules() != null) {
-            for (int i = 0; i < getAccessSchedules().size(); i++) {
-                if (getAccessSchedules().get(i) != null) {
-                    joiner.add(getAccessSchedules().get(i).toUrlQueryString(String.format("%sAccessSchedules%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `BlockUnratedItems` to the URL query string
-        if (getBlockUnratedItems() != null) {
-            for (int i = 0; i < getBlockUnratedItems().size(); i++) {
-                if (getBlockUnratedItems().get(i) != null) {
-                    joiner.add(String.format("%sBlockUnratedItems%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getBlockUnratedItems().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableRemoteControlOfOtherUsers` to the URL query string
-        if (getEnableRemoteControlOfOtherUsers() != null) {
-            joiner.add(String.format("%sEnableRemoteControlOfOtherUsers%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteControlOfOtherUsers()))));
-        }
-
-        // add `EnableSharedDeviceControl` to the URL query string
-        if (getEnableSharedDeviceControl() != null) {
-            joiner.add(String.format("%sEnableSharedDeviceControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSharedDeviceControl()))));
-        }
-
-        // add `EnableRemoteAccess` to the URL query string
-        if (getEnableRemoteAccess() != null) {
-            joiner.add(String.format("%sEnableRemoteAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
-        }
-
-        // add `EnableLiveTvManagement` to the URL query string
-        if (getEnableLiveTvManagement() != null) {
-            joiner.add(String.format("%sEnableLiveTvManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLiveTvManagement()))));
-        }
-
-        // add `EnableLiveTvAccess` to the URL query string
-        if (getEnableLiveTvAccess() != null) {
-            joiner.add(String.format("%sEnableLiveTvAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLiveTvAccess()))));
-        }
-
-        // add `EnableMediaPlayback` to the URL query string
-        if (getEnableMediaPlayback() != null) {
-            joiner.add(String.format("%sEnableMediaPlayback%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMediaPlayback()))));
-        }
-
-        // add `EnableAudioPlaybackTranscoding` to the URL query string
-        if (getEnableAudioPlaybackTranscoding() != null) {
-            joiner.add(String.format("%sEnableAudioPlaybackTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAudioPlaybackTranscoding()))));
-        }
-
-        // add `EnableVideoPlaybackTranscoding` to the URL query string
-        if (getEnableVideoPlaybackTranscoding() != null) {
-            joiner.add(String.format("%sEnableVideoPlaybackTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableVideoPlaybackTranscoding()))));
-        }
-
-        // add `EnablePlaybackRemuxing` to the URL query string
-        if (getEnablePlaybackRemuxing() != null) {
-            joiner.add(String.format("%sEnablePlaybackRemuxing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePlaybackRemuxing()))));
-        }
-
-        // add `ForceRemoteSourceTranscoding` to the URL query string
-        if (getForceRemoteSourceTranscoding() != null) {
-            joiner.add(String.format("%sForceRemoteSourceTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getForceRemoteSourceTranscoding()))));
-        }
-
-        // add `EnableContentDeletion` to the URL query string
-        if (getEnableContentDeletion() != null) {
-            joiner.add(String.format("%sEnableContentDeletion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableContentDeletion()))));
-        }
-
-        // add `EnableContentDeletionFromFolders` to the URL query string
-        if (getEnableContentDeletionFromFolders() != null) {
-            for (int i = 0; i < getEnableContentDeletionFromFolders().size(); i++) {
-                joiner.add(String.format("%sEnableContentDeletionFromFolders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnableContentDeletionFromFolders().get(i)))));
-            }
-        }
-
-        // add `EnableContentDownloading` to the URL query string
-        if (getEnableContentDownloading() != null) {
-            joiner.add(String.format("%sEnableContentDownloading%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableContentDownloading()))));
-        }
-
-        // add `EnableSyncTranscoding` to the URL query string
-        if (getEnableSyncTranscoding() != null) {
-            joiner.add(String.format("%sEnableSyncTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSyncTranscoding()))));
-        }
-
-        // add `EnableMediaConversion` to the URL query string
-        if (getEnableMediaConversion() != null) {
-            joiner.add(String.format("%sEnableMediaConversion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMediaConversion()))));
-        }
-
-        // add `EnabledDevices` to the URL query string
-        if (getEnabledDevices() != null) {
-            for (int i = 0; i < getEnabledDevices().size(); i++) {
-                joiner.add(String.format("%sEnabledDevices%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnabledDevices().get(i)))));
-            }
-        }
-
-        // add `EnableAllDevices` to the URL query string
-        if (getEnableAllDevices() != null) {
-            joiner.add(String.format("%sEnableAllDevices%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllDevices()))));
-        }
-
-        // add `EnabledChannels` to the URL query string
-        if (getEnabledChannels() != null) {
-            for (int i = 0; i < getEnabledChannels().size(); i++) {
-                if (getEnabledChannels().get(i) != null) {
-                    joiner.add(String.format("%sEnabledChannels%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getEnabledChannels().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableAllChannels` to the URL query string
-        if (getEnableAllChannels() != null) {
-            joiner.add(String.format("%sEnableAllChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllChannels()))));
-        }
-
-        // add `EnabledFolders` to the URL query string
-        if (getEnabledFolders() != null) {
-            for (int i = 0; i < getEnabledFolders().size(); i++) {
-                if (getEnabledFolders().get(i) != null) {
-                    joiner.add(String.format("%sEnabledFolders%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getEnabledFolders().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableAllFolders` to the URL query string
-        if (getEnableAllFolders() != null) {
-            joiner.add(String.format("%sEnableAllFolders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllFolders()))));
-        }
-
-        // add `InvalidLoginAttemptCount` to the URL query string
-        if (getInvalidLoginAttemptCount() != null) {
-            joiner.add(String.format("%sInvalidLoginAttemptCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInvalidLoginAttemptCount()))));
-        }
-
-        // add `LoginAttemptsBeforeLockout` to the URL query string
-        if (getLoginAttemptsBeforeLockout() != null) {
-            joiner.add(String.format("%sLoginAttemptsBeforeLockout%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLoginAttemptsBeforeLockout()))));
-        }
-
-        // add `MaxActiveSessions` to the URL query string
-        if (getMaxActiveSessions() != null) {
-            joiner.add(String.format("%sMaxActiveSessions%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxActiveSessions()))));
-        }
-
-        // add `EnablePublicSharing` to the URL query string
-        if (getEnablePublicSharing() != null) {
-            joiner.add(String.format("%sEnablePublicSharing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePublicSharing()))));
-        }
-
-        // add `BlockedMediaFolders` to the URL query string
-        if (getBlockedMediaFolders() != null) {
-            for (int i = 0; i < getBlockedMediaFolders().size(); i++) {
-                if (getBlockedMediaFolders().get(i) != null) {
-                    joiner.add(String.format("%sBlockedMediaFolders%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getBlockedMediaFolders().get(i)))));
-                }
-            }
-        }
-
-        // add `BlockedChannels` to the URL query string
-        if (getBlockedChannels() != null) {
-            for (int i = 0; i < getBlockedChannels().size(); i++) {
-                if (getBlockedChannels().get(i) != null) {
-                    joiner.add(String.format("%sBlockedChannels%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getBlockedChannels().get(i)))));
-                }
-            }
-        }
-
-        // add `RemoteClientBitrateLimit` to the URL query string
-        if (getRemoteClientBitrateLimit() != null) {
-            joiner.add(String.format("%sRemoteClientBitrateLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRemoteClientBitrateLimit()))));
-        }
-
-        // add `AuthenticationProviderId` to the URL query string
-        if (getAuthenticationProviderId() != null) {
-            joiner.add(String.format("%sAuthenticationProviderId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthenticationProviderId()))));
-        }
-
-        // add `PasswordResetProviderId` to the URL query string
-        if (getPasswordResetProviderId() != null) {
-            joiner.add(String.format("%sPasswordResetProviderId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPasswordResetProviderId()))));
-        }
-
-        // add `SyncPlayAccess` to the URL query string
-        if (getSyncPlayAccess() != null) {
-            joiner.add(String.format("%sSyncPlayAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSyncPlayAccess()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private UserPolicy instance;
-
-        public Builder() {
-            this(new UserPolicy());
-        }
-
-        protected Builder(UserPolicy instance) {
-            this.instance = instance;
-        }
-
-        public UserPolicy.Builder isAdministrator(Boolean isAdministrator) {
-            this.instance.isAdministrator = isAdministrator;
-            return this;
-        }
-
-        public UserPolicy.Builder isHidden(Boolean isHidden) {
-            this.instance.isHidden = isHidden;
-            return this;
-        }
-
-        public UserPolicy.Builder enableCollectionManagement(Boolean enableCollectionManagement) {
-            this.instance.enableCollectionManagement = enableCollectionManagement;
-            return this;
-        }
-
-        public UserPolicy.Builder enableSubtitleManagement(Boolean enableSubtitleManagement) {
-            this.instance.enableSubtitleManagement = enableSubtitleManagement;
-            return this;
-        }
-
-        public UserPolicy.Builder enableLyricManagement(Boolean enableLyricManagement) {
-            this.instance.enableLyricManagement = enableLyricManagement;
-            return this;
-        }
-
-        public UserPolicy.Builder isDisabled(Boolean isDisabled) {
-            this.instance.isDisabled = isDisabled;
-            return this;
-        }
-
-        public UserPolicy.Builder maxParentalRating(Integer maxParentalRating) {
-            this.instance.maxParentalRating = maxParentalRating;
-            return this;
-        }
-
-        public UserPolicy.Builder blockedTags(List<String> blockedTags) {
-            this.instance.blockedTags = blockedTags;
-            return this;
-        }
-
-        public UserPolicy.Builder allowedTags(List<String> allowedTags) {
-            this.instance.allowedTags = allowedTags;
-            return this;
-        }
-
-        public UserPolicy.Builder enableUserPreferenceAccess(Boolean enableUserPreferenceAccess) {
-            this.instance.enableUserPreferenceAccess = enableUserPreferenceAccess;
-            return this;
-        }
-
-        public UserPolicy.Builder accessSchedules(List<AccessSchedule> accessSchedules) {
-            this.instance.accessSchedules = accessSchedules;
-            return this;
-        }
-
-        public UserPolicy.Builder blockUnratedItems(List<UnratedItem> blockUnratedItems) {
-            this.instance.blockUnratedItems = blockUnratedItems;
-            return this;
-        }
-
-        public UserPolicy.Builder enableRemoteControlOfOtherUsers(Boolean enableRemoteControlOfOtherUsers) {
-            this.instance.enableRemoteControlOfOtherUsers = enableRemoteControlOfOtherUsers;
-            return this;
-        }
-
-        public UserPolicy.Builder enableSharedDeviceControl(Boolean enableSharedDeviceControl) {
-            this.instance.enableSharedDeviceControl = enableSharedDeviceControl;
-            return this;
-        }
-
-        public UserPolicy.Builder enableRemoteAccess(Boolean enableRemoteAccess) {
-            this.instance.enableRemoteAccess = enableRemoteAccess;
-            return this;
-        }
-
-        public UserPolicy.Builder enableLiveTvManagement(Boolean enableLiveTvManagement) {
-            this.instance.enableLiveTvManagement = enableLiveTvManagement;
-            return this;
-        }
-
-        public UserPolicy.Builder enableLiveTvAccess(Boolean enableLiveTvAccess) {
-            this.instance.enableLiveTvAccess = enableLiveTvAccess;
-            return this;
-        }
-
-        public UserPolicy.Builder enableMediaPlayback(Boolean enableMediaPlayback) {
-            this.instance.enableMediaPlayback = enableMediaPlayback;
-            return this;
-        }
-
-        public UserPolicy.Builder enableAudioPlaybackTranscoding(Boolean enableAudioPlaybackTranscoding) {
-            this.instance.enableAudioPlaybackTranscoding = enableAudioPlaybackTranscoding;
-            return this;
-        }
-
-        public UserPolicy.Builder enableVideoPlaybackTranscoding(Boolean enableVideoPlaybackTranscoding) {
-            this.instance.enableVideoPlaybackTranscoding = enableVideoPlaybackTranscoding;
-            return this;
-        }
-
-        public UserPolicy.Builder enablePlaybackRemuxing(Boolean enablePlaybackRemuxing) {
-            this.instance.enablePlaybackRemuxing = enablePlaybackRemuxing;
-            return this;
-        }
-
-        public UserPolicy.Builder forceRemoteSourceTranscoding(Boolean forceRemoteSourceTranscoding) {
-            this.instance.forceRemoteSourceTranscoding = forceRemoteSourceTranscoding;
-            return this;
-        }
-
-        public UserPolicy.Builder enableContentDeletion(Boolean enableContentDeletion) {
-            this.instance.enableContentDeletion = enableContentDeletion;
-            return this;
-        }
-
-        public UserPolicy.Builder enableContentDeletionFromFolders(List<String> enableContentDeletionFromFolders) {
-            this.instance.enableContentDeletionFromFolders = enableContentDeletionFromFolders;
-            return this;
-        }
-
-        public UserPolicy.Builder enableContentDownloading(Boolean enableContentDownloading) {
-            this.instance.enableContentDownloading = enableContentDownloading;
-            return this;
-        }
-
-        public UserPolicy.Builder enableSyncTranscoding(Boolean enableSyncTranscoding) {
-            this.instance.enableSyncTranscoding = enableSyncTranscoding;
-            return this;
-        }
-
-        public UserPolicy.Builder enableMediaConversion(Boolean enableMediaConversion) {
-            this.instance.enableMediaConversion = enableMediaConversion;
-            return this;
-        }
-
-        public UserPolicy.Builder enabledDevices(List<String> enabledDevices) {
-            this.instance.enabledDevices = enabledDevices;
-            return this;
-        }
-
-        public UserPolicy.Builder enableAllDevices(Boolean enableAllDevices) {
-            this.instance.enableAllDevices = enableAllDevices;
-            return this;
-        }
-
-        public UserPolicy.Builder enabledChannels(List<UUID> enabledChannels) {
-            this.instance.enabledChannels = enabledChannels;
-            return this;
-        }
-
-        public UserPolicy.Builder enableAllChannels(Boolean enableAllChannels) {
-            this.instance.enableAllChannels = enableAllChannels;
-            return this;
-        }
-
-        public UserPolicy.Builder enabledFolders(List<UUID> enabledFolders) {
-            this.instance.enabledFolders = enabledFolders;
-            return this;
-        }
-
-        public UserPolicy.Builder enableAllFolders(Boolean enableAllFolders) {
-            this.instance.enableAllFolders = enableAllFolders;
-            return this;
-        }
-
-        public UserPolicy.Builder invalidLoginAttemptCount(Integer invalidLoginAttemptCount) {
-            this.instance.invalidLoginAttemptCount = invalidLoginAttemptCount;
-            return this;
-        }
-
-        public UserPolicy.Builder loginAttemptsBeforeLockout(Integer loginAttemptsBeforeLockout) {
-            this.instance.loginAttemptsBeforeLockout = loginAttemptsBeforeLockout;
-            return this;
-        }
-
-        public UserPolicy.Builder maxActiveSessions(Integer maxActiveSessions) {
-            this.instance.maxActiveSessions = maxActiveSessions;
-            return this;
-        }
-
-        public UserPolicy.Builder enablePublicSharing(Boolean enablePublicSharing) {
-            this.instance.enablePublicSharing = enablePublicSharing;
-            return this;
-        }
-
-        public UserPolicy.Builder blockedMediaFolders(List<UUID> blockedMediaFolders) {
-            this.instance.blockedMediaFolders = blockedMediaFolders;
-            return this;
-        }
-
-        public UserPolicy.Builder blockedChannels(List<UUID> blockedChannels) {
-            this.instance.blockedChannels = blockedChannels;
-            return this;
-        }
-
-        public UserPolicy.Builder remoteClientBitrateLimit(Integer remoteClientBitrateLimit) {
-            this.instance.remoteClientBitrateLimit = remoteClientBitrateLimit;
-            return this;
-        }
-
-        public UserPolicy.Builder authenticationProviderId(String authenticationProviderId) {
-            this.instance.authenticationProviderId = authenticationProviderId;
-            return this;
-        }
-
-        public UserPolicy.Builder passwordResetProviderId(String passwordResetProviderId) {
-            this.instance.passwordResetProviderId = passwordResetProviderId;
-            return this;
-        }
-
-        public UserPolicy.Builder syncPlayAccess(SyncPlayUserAccessType syncPlayAccess) {
-            this.instance.syncPlayAccess = syncPlayAccess;
-            return this;
-        }
-
-        /**
-         * returns a built UserPolicy instance.
-         *
-         * The builder is not reusable.
-         */
-        public UserPolicy build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UserPolicy.Builder builder() {
-        return new UserPolicy.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UserPolicy.Builder toBuilder() {
-        return new UserPolicy.Builder().isAdministrator(getIsAdministrator()).isHidden(getIsHidden())
-                .enableCollectionManagement(getEnableCollectionManagement())
-                .enableSubtitleManagement(getEnableSubtitleManagement())
-                .enableLyricManagement(getEnableLyricManagement()).isDisabled(getIsDisabled())
-                .maxParentalRating(getMaxParentalRating()).blockedTags(getBlockedTags()).allowedTags(getAllowedTags())
-                .enableUserPreferenceAccess(getEnableUserPreferenceAccess()).accessSchedules(getAccessSchedules())
-                .blockUnratedItems(getBlockUnratedItems())
-                .enableRemoteControlOfOtherUsers(getEnableRemoteControlOfOtherUsers())
-                .enableSharedDeviceControl(getEnableSharedDeviceControl()).enableRemoteAccess(getEnableRemoteAccess())
-                .enableLiveTvManagement(getEnableLiveTvManagement()).enableLiveTvAccess(getEnableLiveTvAccess())
-                .enableMediaPlayback(getEnableMediaPlayback())
-                .enableAudioPlaybackTranscoding(getEnableAudioPlaybackTranscoding())
-                .enableVideoPlaybackTranscoding(getEnableVideoPlaybackTranscoding())
-                .enablePlaybackRemuxing(getEnablePlaybackRemuxing())
-                .forceRemoteSourceTranscoding(getForceRemoteSourceTranscoding())
-                .enableContentDeletion(getEnableContentDeletion())
-                .enableContentDeletionFromFolders(getEnableContentDeletionFromFolders())
-                .enableContentDownloading(getEnableContentDownloading())
-                .enableSyncTranscoding(getEnableSyncTranscoding()).enableMediaConversion(getEnableMediaConversion())
-                .enabledDevices(getEnabledDevices()).enableAllDevices(getEnableAllDevices())
-                .enabledChannels(getEnabledChannels()).enableAllChannels(getEnableAllChannels())
-                .enabledFolders(getEnabledFolders()).enableAllFolders(getEnableAllFolders())
-                .invalidLoginAttemptCount(getInvalidLoginAttemptCount())
-                .loginAttemptsBeforeLockout(getLoginAttemptsBeforeLockout()).maxActiveSessions(getMaxActiveSessions())
-                .enablePublicSharing(getEnablePublicSharing()).blockedMediaFolders(getBlockedMediaFolders())
-                .blockedChannels(getBlockedChannels()).remoteClientBitrateLimit(getRemoteClientBitrateLimit())
-                .authenticationProviderId(getAuthenticationProviderId())
-                .passwordResetProviderId(getPasswordResetProviderId()).syncPlayAccess(getSyncPlayAccess());
     }
 }

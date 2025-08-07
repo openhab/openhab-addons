@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -68,6 +65,7 @@ public class LibraryTypeOptionsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getType() {
         return type;
     }
@@ -100,6 +98,7 @@ public class LibraryTypeOptionsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LibraryOptionInfoDto> getMetadataFetchers() {
         return metadataFetchers;
     }
@@ -132,6 +131,7 @@ public class LibraryTypeOptionsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LibraryOptionInfoDto> getImageFetchers() {
         return imageFetchers;
     }
@@ -164,6 +164,7 @@ public class LibraryTypeOptionsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ImageType> getSupportedImageTypes() {
         return supportedImageTypes;
     }
@@ -196,6 +197,7 @@ public class LibraryTypeOptionsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ImageOption> getDefaultImageOptions() {
         return defaultImageOptions;
     }
@@ -252,163 +254,5 @@ public class LibraryTypeOptionsDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `MetadataFetchers` to the URL query string
-        if (getMetadataFetchers() != null) {
-            for (int i = 0; i < getMetadataFetchers().size(); i++) {
-                if (getMetadataFetchers().get(i) != null) {
-                    joiner.add(getMetadataFetchers().get(i).toUrlQueryString(String.format("%sMetadataFetchers%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ImageFetchers` to the URL query string
-        if (getImageFetchers() != null) {
-            for (int i = 0; i < getImageFetchers().size(); i++) {
-                if (getImageFetchers().get(i) != null) {
-                    joiner.add(getImageFetchers().get(i).toUrlQueryString(String.format("%sImageFetchers%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `SupportedImageTypes` to the URL query string
-        if (getSupportedImageTypes() != null) {
-            for (int i = 0; i < getSupportedImageTypes().size(); i++) {
-                if (getSupportedImageTypes().get(i) != null) {
-                    joiner.add(String.format("%sSupportedImageTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSupportedImageTypes().get(i)))));
-                }
-            }
-        }
-
-        // add `DefaultImageOptions` to the URL query string
-        if (getDefaultImageOptions() != null) {
-            for (int i = 0; i < getDefaultImageOptions().size(); i++) {
-                if (getDefaultImageOptions().get(i) != null) {
-                    joiner.add(getDefaultImageOptions().get(i).toUrlQueryString(String.format(
-                            "%sDefaultImageOptions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private LibraryTypeOptionsDto instance;
-
-        public Builder() {
-            this(new LibraryTypeOptionsDto());
-        }
-
-        protected Builder(LibraryTypeOptionsDto instance) {
-            this.instance = instance;
-        }
-
-        public LibraryTypeOptionsDto.Builder type(String type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public LibraryTypeOptionsDto.Builder metadataFetchers(List<LibraryOptionInfoDto> metadataFetchers) {
-            this.instance.metadataFetchers = metadataFetchers;
-            return this;
-        }
-
-        public LibraryTypeOptionsDto.Builder imageFetchers(List<LibraryOptionInfoDto> imageFetchers) {
-            this.instance.imageFetchers = imageFetchers;
-            return this;
-        }
-
-        public LibraryTypeOptionsDto.Builder supportedImageTypes(List<ImageType> supportedImageTypes) {
-            this.instance.supportedImageTypes = supportedImageTypes;
-            return this;
-        }
-
-        public LibraryTypeOptionsDto.Builder defaultImageOptions(List<ImageOption> defaultImageOptions) {
-            this.instance.defaultImageOptions = defaultImageOptions;
-            return this;
-        }
-
-        /**
-         * returns a built LibraryTypeOptionsDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public LibraryTypeOptionsDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LibraryTypeOptionsDto.Builder builder() {
-        return new LibraryTypeOptionsDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LibraryTypeOptionsDto.Builder toBuilder() {
-        return new LibraryTypeOptionsDto.Builder().type(getType()).metadataFetchers(getMetadataFetchers())
-                .imageFetchers(getImageFetchers()).supportedImageTypes(getSupportedImageTypes())
-                .defaultImageOptions(getDefaultImageOptions());
     }
 }

@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -90,6 +87,7 @@ public class VersionInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersion() {
         return version;
     }
@@ -108,6 +106,7 @@ public class VersionInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VERSION_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersionNumber() {
         return versionNumber;
     }
@@ -125,6 +124,7 @@ public class VersionInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANGELOG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getChangelog() {
         return changelog;
     }
@@ -148,6 +148,7 @@ public class VersionInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TARGET_ABI)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getTargetAbi() {
         return targetAbi;
     }
@@ -171,6 +172,7 @@ public class VersionInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SOURCE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSourceUrl() {
         return sourceUrl;
     }
@@ -194,6 +196,7 @@ public class VersionInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHECKSUM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getChecksum() {
         return checksum;
     }
@@ -217,6 +220,7 @@ public class VersionInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TIMESTAMP)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getTimestamp() {
         return timestamp;
     }
@@ -240,6 +244,7 @@ public class VersionInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getRepositoryName() {
         return repositoryName;
     }
@@ -263,6 +268,7 @@ public class VersionInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getRepositoryUrl() {
         return repositoryUrl;
     }
@@ -328,187 +334,5 @@ public class VersionInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sversion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `VersionNumber` to the URL query string
-        if (getVersionNumber() != null) {
-            joiner.add(String.format("%sVersionNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersionNumber()))));
-        }
-
-        // add `changelog` to the URL query string
-        if (getChangelog() != null) {
-            joiner.add(String.format("%schangelog%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChangelog()))));
-        }
-
-        // add `targetAbi` to the URL query string
-        if (getTargetAbi() != null) {
-            joiner.add(String.format("%stargetAbi%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTargetAbi()))));
-        }
-
-        // add `sourceUrl` to the URL query string
-        if (getSourceUrl() != null) {
-            joiner.add(String.format("%ssourceUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSourceUrl()))));
-        }
-
-        // add `checksum` to the URL query string
-        if (getChecksum() != null) {
-            joiner.add(String.format("%schecksum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChecksum()))));
-        }
-
-        // add `timestamp` to the URL query string
-        if (getTimestamp() != null) {
-            joiner.add(String.format("%stimestamp%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
-        }
-
-        // add `repositoryName` to the URL query string
-        if (getRepositoryName() != null) {
-            joiner.add(String.format("%srepositoryName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepositoryName()))));
-        }
-
-        // add `repositoryUrl` to the URL query string
-        if (getRepositoryUrl() != null) {
-            joiner.add(String.format("%srepositoryUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepositoryUrl()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private VersionInfo instance;
-
-        public Builder() {
-            this(new VersionInfo());
-        }
-
-        protected Builder(VersionInfo instance) {
-            this.instance = instance;
-        }
-
-        public VersionInfo.Builder version(String version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public VersionInfo.Builder versionNumber(String versionNumber) {
-            this.instance.versionNumber = versionNumber;
-            return this;
-        }
-
-        public VersionInfo.Builder changelog(String changelog) {
-            this.instance.changelog = changelog;
-            return this;
-        }
-
-        public VersionInfo.Builder targetAbi(String targetAbi) {
-            this.instance.targetAbi = targetAbi;
-            return this;
-        }
-
-        public VersionInfo.Builder sourceUrl(String sourceUrl) {
-            this.instance.sourceUrl = sourceUrl;
-            return this;
-        }
-
-        public VersionInfo.Builder checksum(String checksum) {
-            this.instance.checksum = checksum;
-            return this;
-        }
-
-        public VersionInfo.Builder timestamp(String timestamp) {
-            this.instance.timestamp = timestamp;
-            return this;
-        }
-
-        public VersionInfo.Builder repositoryName(String repositoryName) {
-            this.instance.repositoryName = repositoryName;
-            return this;
-        }
-
-        public VersionInfo.Builder repositoryUrl(String repositoryUrl) {
-            this.instance.repositoryUrl = repositoryUrl;
-            return this;
-        }
-
-        /**
-         * returns a built VersionInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public VersionInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static VersionInfo.Builder builder() {
-        return new VersionInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public VersionInfo.Builder toBuilder() {
-        return new VersionInfo.Builder().version(getVersion()).versionNumber(getVersionNumber())
-                .changelog(getChangelog()).targetAbi(getTargetAbi()).sourceUrl(getSourceUrl()).checksum(getChecksum())
-                .timestamp(getTimestamp()).repositoryName(getRepositoryName()).repositoryUrl(getRepositoryUrl());
     }
 }

@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -60,6 +57,7 @@ public class GeneralCommand {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GeneralCommandType getName() {
         return name;
     }
@@ -83,6 +81,7 @@ public class GeneralCommand {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getControllingUserId() {
         return controllingUserId;
     }
@@ -114,6 +113,7 @@ public class GeneralCommand {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ARGUMENTS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getArguments() {
         return arguments;
     }
@@ -166,124 +166,5 @@ public class GeneralCommand {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `ControllingUserId` to the URL query string
-        if (getControllingUserId() != null) {
-            joiner.add(String.format("%sControllingUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
-        }
-
-        // add `Arguments` to the URL query string
-        if (getArguments() != null) {
-            for (String _key : getArguments().keySet()) {
-                joiner.add(String.format("%sArguments%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getArguments().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getArguments().get(_key)))));
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private GeneralCommand instance;
-
-        public Builder() {
-            this(new GeneralCommand());
-        }
-
-        protected Builder(GeneralCommand instance) {
-            this.instance = instance;
-        }
-
-        public GeneralCommand.Builder name(GeneralCommandType name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public GeneralCommand.Builder controllingUserId(UUID controllingUserId) {
-            this.instance.controllingUserId = controllingUserId;
-            return this;
-        }
-
-        public GeneralCommand.Builder arguments(Map<String, String> arguments) {
-            this.instance.arguments = arguments;
-            return this;
-        }
-
-        /**
-         * returns a built GeneralCommand instance.
-         *
-         * The builder is not reusable.
-         */
-        public GeneralCommand build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static GeneralCommand.Builder builder() {
-        return new GeneralCommand.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public GeneralCommand.Builder toBuilder() {
-        return new GeneralCommand.Builder().name(getName()).controllingUserId(getControllingUserId())
-                .arguments(getArguments());
     }
 }

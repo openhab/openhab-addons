@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -96,6 +93,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public BaseItemDto getItem() {
         return item;
     }
@@ -119,6 +117,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
@@ -142,6 +141,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SESSION_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSessionId() {
         return sessionId;
     }
@@ -165,6 +165,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMediaSourceId() {
         return mediaSourceId;
     }
@@ -188,6 +189,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getPositionTicks() {
         return positionTicks;
     }
@@ -211,6 +213,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getLiveStreamId() {
         return liveStreamId;
     }
@@ -234,6 +237,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPlaySessionId() {
         return playSessionId;
     }
@@ -257,6 +261,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FAILED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getFailed() {
         return failed;
     }
@@ -280,6 +285,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NEXT_MEDIA_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getNextMediaType() {
         return nextMediaType;
     }
@@ -303,6 +309,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPlaylistItemId() {
         return playlistItemId;
     }
@@ -334,6 +341,7 @@ public class PlaybackStopInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue;
     }
@@ -402,214 +410,5 @@ public class PlaybackStopInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Item` to the URL query string
-        if (getItem() != null) {
-            joiner.add(getItem().toUrlQueryString(prefix + "Item" + suffix));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `SessionId` to the URL query string
-        if (getSessionId() != null) {
-            joiner.add(String.format("%sSessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSessionId()))));
-        }
-
-        // add `MediaSourceId` to the URL query string
-        if (getMediaSourceId() != null) {
-            joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
-        }
-
-        // add `PositionTicks` to the URL query string
-        if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
-        }
-
-        // add `LiveStreamId` to the URL query string
-        if (getLiveStreamId() != null) {
-            joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
-        }
-
-        // add `PlaySessionId` to the URL query string
-        if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
-        }
-
-        // add `Failed` to the URL query string
-        if (getFailed() != null) {
-            joiner.add(String.format("%sFailed%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFailed()))));
-        }
-
-        // add `NextMediaType` to the URL query string
-        if (getNextMediaType() != null) {
-            joiner.add(String.format("%sNextMediaType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNextMediaType()))));
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        // add `NowPlayingQueue` to the URL query string
-        if (getNowPlayingQueue() != null) {
-            for (int i = 0; i < getNowPlayingQueue().size(); i++) {
-                if (getNowPlayingQueue().get(i) != null) {
-                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(String.format("%sNowPlayingQueue%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private PlaybackStopInfo instance;
-
-        public Builder() {
-            this(new PlaybackStopInfo());
-        }
-
-        protected Builder(PlaybackStopInfo instance) {
-            this.instance = instance;
-        }
-
-        public PlaybackStopInfo.Builder item(BaseItemDto item) {
-            this.instance.item = item;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder itemId(UUID itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder sessionId(String sessionId) {
-            this.instance.sessionId = sessionId;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder mediaSourceId(String mediaSourceId) {
-            this.instance.mediaSourceId = mediaSourceId;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder positionTicks(Long positionTicks) {
-            this.instance.positionTicks = positionTicks;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder liveStreamId(String liveStreamId) {
-            this.instance.liveStreamId = liveStreamId;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder playSessionId(String playSessionId) {
-            this.instance.playSessionId = playSessionId;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder failed(Boolean failed) {
-            this.instance.failed = failed;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder nextMediaType(String nextMediaType) {
-            this.instance.nextMediaType = nextMediaType;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder playlistItemId(String playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        public PlaybackStopInfo.Builder nowPlayingQueue(List<QueueItem> nowPlayingQueue) {
-            this.instance.nowPlayingQueue = nowPlayingQueue;
-            return this;
-        }
-
-        /**
-         * returns a built PlaybackStopInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public PlaybackStopInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PlaybackStopInfo.Builder builder() {
-        return new PlaybackStopInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PlaybackStopInfo.Builder toBuilder() {
-        return new PlaybackStopInfo.Builder().item(getItem()).itemId(getItemId()).sessionId(getSessionId())
-                .mediaSourceId(getMediaSourceId()).positionTicks(getPositionTicks()).liveStreamId(getLiveStreamId())
-                .playSessionId(getPlaySessionId()).failed(getFailed()).nextMediaType(getNextMediaType())
-                .playlistItemId(getPlaylistItemId()).nowPlayingQueue(getNowPlayingQueue());
     }
 }

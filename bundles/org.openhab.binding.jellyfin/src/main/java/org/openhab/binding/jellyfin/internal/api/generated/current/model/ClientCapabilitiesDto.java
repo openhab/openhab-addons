@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -88,6 +85,7 @@ public class ClientCapabilitiesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaType> getPlayableMediaTypes() {
         return playableMediaTypes;
     }
@@ -120,6 +118,7 @@ public class ClientCapabilitiesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<GeneralCommandType> getSupportedCommands() {
         return supportedCommands;
     }
@@ -144,6 +143,7 @@ public class ClientCapabilitiesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsMediaControl() {
         return supportsMediaControl;
     }
@@ -168,6 +168,7 @@ public class ClientCapabilitiesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsPersistentIdentifier() {
         return supportsPersistentIdentifier;
     }
@@ -192,6 +193,7 @@ public class ClientCapabilitiesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DeviceProfile getDeviceProfile() {
         return deviceProfile;
     }
@@ -215,6 +217,7 @@ public class ClientCapabilitiesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAppStoreUrl() {
         return appStoreUrl;
     }
@@ -238,6 +241,7 @@ public class ClientCapabilitiesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ICON_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getIconUrl() {
         return iconUrl;
     }
@@ -300,175 +304,5 @@ public class ClientCapabilitiesDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `PlayableMediaTypes` to the URL query string
-        if (getPlayableMediaTypes() != null) {
-            for (int i = 0; i < getPlayableMediaTypes().size(); i++) {
-                if (getPlayableMediaTypes().get(i) != null) {
-                    joiner.add(String.format("%sPlayableMediaTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getPlayableMediaTypes().get(i)))));
-                }
-            }
-        }
-
-        // add `SupportedCommands` to the URL query string
-        if (getSupportedCommands() != null) {
-            for (int i = 0; i < getSupportedCommands().size(); i++) {
-                if (getSupportedCommands().get(i) != null) {
-                    joiner.add(String.format("%sSupportedCommands%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSupportedCommands().get(i)))));
-                }
-            }
-        }
-
-        // add `SupportsMediaControl` to the URL query string
-        if (getSupportsMediaControl() != null) {
-            joiner.add(String.format("%sSupportsMediaControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsMediaControl()))));
-        }
-
-        // add `SupportsPersistentIdentifier` to the URL query string
-        if (getSupportsPersistentIdentifier() != null) {
-            joiner.add(String.format("%sSupportsPersistentIdentifier%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsPersistentIdentifier()))));
-        }
-
-        // add `DeviceProfile` to the URL query string
-        if (getDeviceProfile() != null) {
-            joiner.add(getDeviceProfile().toUrlQueryString(prefix + "DeviceProfile" + suffix));
-        }
-
-        // add `AppStoreUrl` to the URL query string
-        if (getAppStoreUrl() != null) {
-            joiner.add(String.format("%sAppStoreUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppStoreUrl()))));
-        }
-
-        // add `IconUrl` to the URL query string
-        if (getIconUrl() != null) {
-            joiner.add(String.format("%sIconUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ClientCapabilitiesDto instance;
-
-        public Builder() {
-            this(new ClientCapabilitiesDto());
-        }
-
-        protected Builder(ClientCapabilitiesDto instance) {
-            this.instance = instance;
-        }
-
-        public ClientCapabilitiesDto.Builder playableMediaTypes(List<MediaType> playableMediaTypes) {
-            this.instance.playableMediaTypes = playableMediaTypes;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder supportedCommands(List<GeneralCommandType> supportedCommands) {
-            this.instance.supportedCommands = supportedCommands;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder supportsMediaControl(Boolean supportsMediaControl) {
-            this.instance.supportsMediaControl = supportsMediaControl;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder supportsPersistentIdentifier(Boolean supportsPersistentIdentifier) {
-            this.instance.supportsPersistentIdentifier = supportsPersistentIdentifier;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder deviceProfile(DeviceProfile deviceProfile) {
-            this.instance.deviceProfile = deviceProfile;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder appStoreUrl(String appStoreUrl) {
-            this.instance.appStoreUrl = appStoreUrl;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder iconUrl(String iconUrl) {
-            this.instance.iconUrl = iconUrl;
-            return this;
-        }
-
-        /**
-         * returns a built ClientCapabilitiesDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public ClientCapabilitiesDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ClientCapabilitiesDto.Builder builder() {
-        return new ClientCapabilitiesDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ClientCapabilitiesDto.Builder toBuilder() {
-        return new ClientCapabilitiesDto.Builder().playableMediaTypes(getPlayableMediaTypes())
-                .supportedCommands(getSupportedCommands()).supportsMediaControl(getSupportsMediaControl())
-                .supportsPersistentIdentifier(getSupportsPersistentIdentifier()).deviceProfile(getDeviceProfile())
-                .appStoreUrl(getAppStoreUrl()).iconUrl(getIconUrl());
     }
 }

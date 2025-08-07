@@ -1,30 +1,12 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -36,44 +18,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.ImageTy
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.ItemFields;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.ItemSortBy;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TvShowsApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public TvShowsApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public TvShowsApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -102,6 +74,35 @@ public class TvShowsApi {
      *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
      * @return BaseItemDtoQueryResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Not Found</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDtoQueryResult getEpisodes(@org.eclipse.jdt.annotation.Nullable UUID seriesId,
             @org.eclipse.jdt.annotation.NonNull UUID userId,
@@ -115,10 +116,8 @@ public class TvShowsApi {
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull ItemSortBy sortBy) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getEpisodesWithHttpInfo(seriesId, userId, fields, season,
-                seasonId, isMissing, adjacentTo, startItemId, startIndex, limit, enableImages, imageTypeLimit,
-                enableImageTypes, enableUserData, sortBy);
-        return localVarResponse.getData();
+        return getEpisodesWithHttpInfo(seriesId, userId, fields, season, seasonId, isMissing, adjacentTo, startItemId,
+                startIndex, limit, enableImages, imageTypeLimit, enableImageTypes, enableUserData, sortBy).getData();
     }
 
     /**
@@ -147,6 +146,35 @@ public class TvShowsApi {
      *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
      * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Not Found</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDtoQueryResult> getEpisodesWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID seriesId, @org.eclipse.jdt.annotation.NonNull UUID userId,
@@ -160,119 +188,40 @@ public class TvShowsApi {
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull ItemSortBy sortBy) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getEpisodesRequestBuilder(seriesId, userId, fields, season,
-                seasonId, isMissing, adjacentTo, startItemId, startIndex, limit, enableImages, imageTypeLimit,
-                enableImageTypes, enableUserData, sortBy);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getEpisodes", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getEpisodesRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID seriesId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull Integer season, @org.eclipse.jdt.annotation.NonNull UUID seasonId,
-            @org.eclipse.jdt.annotation.NonNull Boolean isMissing, @org.eclipse.jdt.annotation.NonNull UUID adjacentTo,
-            @org.eclipse.jdt.annotation.NonNull UUID startItemId,
-            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull ItemSortBy sortBy) throws ApiException {
-        // verify the required parameter 'seriesId' is set
+        // Check required parameters
         if (seriesId == null) {
             throw new ApiException(400, "Missing the required parameter 'seriesId' when calling getEpisodes");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Shows/{seriesId}/Episodes".replaceAll("\\{seriesId}",
+                apiClient.escapeString(seriesId.toString()));
 
-        String localVarPath = "/Shows/{seriesId}/Episodes".replace("{seriesId}",
-                ApiClient.urlEncode(seriesId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "fields", fields));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "season", season));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "seasonId", seasonId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isMissing", isMissing));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "adjacentTo", adjacentTo));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startItemId", startItemId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startIndex", startIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableImages", enableImages));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageTypeLimit", imageTypeLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableUserData", enableUserData));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortBy", sortBy));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "fields";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
-        localVarQueryParameterBaseName = "season";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("season", season));
-        localVarQueryParameterBaseName = "seasonId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("seasonId", seasonId));
-        localVarQueryParameterBaseName = "isMissing";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isMissing", isMissing));
-        localVarQueryParameterBaseName = "adjacentTo";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("adjacentTo", adjacentTo));
-        localVarQueryParameterBaseName = "startItemId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startItemId", startItemId));
-        localVarQueryParameterBaseName = "startIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
-        localVarQueryParameterBaseName = "limit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
-        localVarQueryParameterBaseName = "enableImages";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
-        localVarQueryParameterBaseName = "imageTypeLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
-        localVarQueryParameterBaseName = "enableImageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        localVarQueryParameterBaseName = "enableUserData";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
-        localVarQueryParameterBaseName = "sortBy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("sortBy", sortBy));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDtoQueryResult> localVarReturnType = new GenericType<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("TvShowsApi.getEpisodes", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -299,6 +248,30 @@ public class TvShowsApi {
      * @param enableRewatching Whether to include watched episodes in next up results. (optional, default to false)
      * @return BaseItemDtoQueryResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDtoQueryResult getNextUp(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
@@ -313,10 +286,9 @@ public class TvShowsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean disableFirstEpisode,
             @org.eclipse.jdt.annotation.NonNull Boolean enableResumable,
             @org.eclipse.jdt.annotation.NonNull Boolean enableRewatching) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getNextUpWithHttpInfo(userId, startIndex, limit, fields,
-                seriesId, parentId, enableImages, imageTypeLimit, enableImageTypes, enableUserData, nextUpDateCutoff,
-                enableTotalRecordCount, disableFirstEpisode, enableResumable, enableRewatching);
-        return localVarResponse.getData();
+        return getNextUpWithHttpInfo(userId, startIndex, limit, fields, seriesId, parentId, enableImages,
+                imageTypeLimit, enableImageTypes, enableUserData, nextUpDateCutoff, enableTotalRecordCount,
+                disableFirstEpisode, enableResumable, enableRewatching).getData();
     }
 
     /**
@@ -343,6 +315,30 @@ public class TvShowsApi {
      * @param enableRewatching Whether to include watched episodes in next up results. (optional, default to false)
      * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDtoQueryResult> getNextUpWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
@@ -357,117 +353,32 @@ public class TvShowsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean disableFirstEpisode,
             @org.eclipse.jdt.annotation.NonNull Boolean enableResumable,
             @org.eclipse.jdt.annotation.NonNull Boolean enableRewatching) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getNextUpRequestBuilder(userId, startIndex, limit, fields,
-                seriesId, parentId, enableImages, imageTypeLimit, enableImageTypes, enableUserData, nextUpDateCutoff,
-                enableTotalRecordCount, disableFirstEpisode, enableResumable, enableRewatching);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getNextUp", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startIndex", startIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "fields", fields));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "seriesId", seriesId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "parentId", parentId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableImages", enableImages));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageTypeLimit", imageTypeLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableUserData", enableUserData));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "nextUpDateCutoff", nextUpDateCutoff));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableTotalRecordCount", enableTotalRecordCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "disableFirstEpisode", disableFirstEpisode));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableResumable", enableResumable));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableRewatching", enableRewatching));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getNextUpRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull UUID seriesId, @org.eclipse.jdt.annotation.NonNull UUID parentId,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull OffsetDateTime nextUpDateCutoff,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
-            @org.eclipse.jdt.annotation.NonNull Boolean disableFirstEpisode,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableResumable,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableRewatching) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Shows/NextUp";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "startIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
-        localVarQueryParameterBaseName = "limit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
-        localVarQueryParameterBaseName = "fields";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
-        localVarQueryParameterBaseName = "seriesId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("seriesId", seriesId));
-        localVarQueryParameterBaseName = "parentId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
-        localVarQueryParameterBaseName = "enableImages";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
-        localVarQueryParameterBaseName = "imageTypeLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
-        localVarQueryParameterBaseName = "enableImageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        localVarQueryParameterBaseName = "enableUserData";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
-        localVarQueryParameterBaseName = "nextUpDateCutoff";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("nextUpDateCutoff", nextUpDateCutoff));
-        localVarQueryParameterBaseName = "enableTotalRecordCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableTotalRecordCount", enableTotalRecordCount));
-        localVarQueryParameterBaseName = "disableFirstEpisode";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("disableFirstEpisode", disableFirstEpisode));
-        localVarQueryParameterBaseName = "enableResumable";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableResumable", enableResumable));
-        localVarQueryParameterBaseName = "enableRewatching";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableRewatching", enableRewatching));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDtoQueryResult> localVarReturnType = new GenericType<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("TvShowsApi.getNextUp", "/Shows/NextUp", "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -488,6 +399,35 @@ public class TvShowsApi {
      * @param enableUserData Optional. Include user data. (optional)
      * @return BaseItemDtoQueryResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Not Found</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDtoQueryResult getSeasons(@org.eclipse.jdt.annotation.Nullable UUID seriesId,
             @org.eclipse.jdt.annotation.NonNull UUID userId,
@@ -498,9 +438,8 @@ public class TvShowsApi {
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSeasonsWithHttpInfo(seriesId, userId, fields,
-                isSpecialSeason, isMissing, adjacentTo, enableImages, imageTypeLimit, enableImageTypes, enableUserData);
-        return localVarResponse.getData();
+        return getSeasonsWithHttpInfo(seriesId, userId, fields, isSpecialSeason, isMissing, adjacentTo, enableImages,
+                imageTypeLimit, enableImageTypes, enableUserData).getData();
     }
 
     /**
@@ -521,6 +460,35 @@ public class TvShowsApi {
      * @param enableUserData Optional. Include user data. (optional)
      * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Not Found</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDtoQueryResult> getSeasonsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID seriesId, @org.eclipse.jdt.annotation.NonNull UUID userId,
@@ -531,105 +499,35 @@ public class TvShowsApi {
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSeasonsRequestBuilder(seriesId, userId, fields, isSpecialSeason,
-                isMissing, adjacentTo, enableImages, imageTypeLimit, enableImageTypes, enableUserData);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getSeasons", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getSeasonsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID seriesId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull Boolean isSpecialSeason,
-            @org.eclipse.jdt.annotation.NonNull Boolean isMissing, @org.eclipse.jdt.annotation.NonNull UUID adjacentTo,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData) throws ApiException {
-        // verify the required parameter 'seriesId' is set
+        // Check required parameters
         if (seriesId == null) {
             throw new ApiException(400, "Missing the required parameter 'seriesId' when calling getSeasons");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Shows/{seriesId}/Seasons".replaceAll("\\{seriesId}",
+                apiClient.escapeString(seriesId.toString()));
 
-        String localVarPath = "/Shows/{seriesId}/Seasons".replace("{seriesId}",
-                ApiClient.urlEncode(seriesId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "fields", fields));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isSpecialSeason", isSpecialSeason));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isMissing", isMissing));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "adjacentTo", adjacentTo));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableImages", enableImages));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageTypeLimit", imageTypeLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableUserData", enableUserData));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "fields";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
-        localVarQueryParameterBaseName = "isSpecialSeason";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isSpecialSeason", isSpecialSeason));
-        localVarQueryParameterBaseName = "isMissing";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isMissing", isMissing));
-        localVarQueryParameterBaseName = "adjacentTo";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("adjacentTo", adjacentTo));
-        localVarQueryParameterBaseName = "enableImages";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
-        localVarQueryParameterBaseName = "imageTypeLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
-        localVarQueryParameterBaseName = "enableImageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        localVarQueryParameterBaseName = "enableUserData";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDtoQueryResult> localVarReturnType = new GenericType<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("TvShowsApi.getSeasons", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -648,6 +546,30 @@ public class TvShowsApi {
      * @param enableUserData Optional. Include user data. (optional)
      * @return BaseItemDtoQueryResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDtoQueryResult getUpcomingEpisodes(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
@@ -656,9 +578,8 @@ public class TvShowsApi {
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getUpcomingEpisodesWithHttpInfo(userId, startIndex,
-                limit, fields, parentId, enableImages, imageTypeLimit, enableImageTypes, enableUserData);
-        return localVarResponse.getData();
+        return getUpcomingEpisodesWithHttpInfo(userId, startIndex, limit, fields, parentId, enableImages,
+                imageTypeLimit, enableImageTypes, enableUserData).getData();
     }
 
     /**
@@ -677,6 +598,30 @@ public class TvShowsApi {
      * @param enableUserData Optional. Include user data. (optional)
      * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDtoQueryResult> getUpcomingEpisodesWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
@@ -686,97 +631,25 @@ public class TvShowsApi {
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getUpcomingEpisodesRequestBuilder(userId, startIndex, limit,
-                fields, parentId, enableImages, imageTypeLimit, enableImageTypes, enableUserData);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getUpcomingEpisodes", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startIndex", startIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "fields", fields));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "parentId", parentId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableImages", enableImages));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageTypeLimit", imageTypeLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableUserData", enableUserData));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getUpcomingEpisodesRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull UUID parentId, @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Shows/Upcoming";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "startIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
-        localVarQueryParameterBaseName = "limit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
-        localVarQueryParameterBaseName = "fields";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
-        localVarQueryParameterBaseName = "parentId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
-        localVarQueryParameterBaseName = "enableImages";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
-        localVarQueryParameterBaseName = "imageTypeLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
-        localVarQueryParameterBaseName = "enableImageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        localVarQueryParameterBaseName = "enableUserData";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDtoQueryResult> localVarReturnType = new GenericType<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("TvShowsApi.getUpcomingEpisodes", "/Shows/Upcoming", "GET", localVarQueryParams,
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 }

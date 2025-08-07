@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,6 +58,7 @@ public class UpdateUserPassword {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCurrentPassword() {
         return currentPassword;
     }
@@ -84,6 +82,7 @@ public class UpdateUserPassword {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CURRENT_PW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCurrentPw() {
         return currentPw;
     }
@@ -107,6 +106,7 @@ public class UpdateUserPassword {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NEW_PW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getNewPw() {
         return newPw;
     }
@@ -130,6 +130,7 @@ public class UpdateUserPassword {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getResetPassword() {
         return resetPassword;
     }
@@ -184,131 +185,5 @@ public class UpdateUserPassword {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `CurrentPassword` to the URL query string
-        if (getCurrentPassword() != null) {
-            joiner.add(String.format("%sCurrentPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCurrentPassword()))));
-        }
-
-        // add `CurrentPw` to the URL query string
-        if (getCurrentPw() != null) {
-            joiner.add(String.format("%sCurrentPw%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCurrentPw()))));
-        }
-
-        // add `NewPw` to the URL query string
-        if (getNewPw() != null) {
-            joiner.add(String.format("%sNewPw%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNewPw()))));
-        }
-
-        // add `ResetPassword` to the URL query string
-        if (getResetPassword() != null) {
-            joiner.add(String.format("%sResetPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getResetPassword()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private UpdateUserPassword instance;
-
-        public Builder() {
-            this(new UpdateUserPassword());
-        }
-
-        protected Builder(UpdateUserPassword instance) {
-            this.instance = instance;
-        }
-
-        public UpdateUserPassword.Builder currentPassword(String currentPassword) {
-            this.instance.currentPassword = currentPassword;
-            return this;
-        }
-
-        public UpdateUserPassword.Builder currentPw(String currentPw) {
-            this.instance.currentPw = currentPw;
-            return this;
-        }
-
-        public UpdateUserPassword.Builder newPw(String newPw) {
-            this.instance.newPw = newPw;
-            return this;
-        }
-
-        public UpdateUserPassword.Builder resetPassword(Boolean resetPassword) {
-            this.instance.resetPassword = resetPassword;
-            return this;
-        }
-
-        /**
-         * returns a built UpdateUserPassword instance.
-         *
-         * The builder is not reusable.
-         */
-        public UpdateUserPassword build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UpdateUserPassword.Builder builder() {
-        return new UpdateUserPassword.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UpdateUserPassword.Builder toBuilder() {
-        return new UpdateUserPassword.Builder().currentPassword(getCurrentPassword()).currentPw(getCurrentPw())
-                .newPw(getNewPw()).resetPassword(getResetPassword());
     }
 }

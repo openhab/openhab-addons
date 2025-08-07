@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -60,6 +57,7 @@ public class StringGroupUpdate {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GROUP_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGroupId() {
         return groupId;
     }
@@ -77,6 +75,7 @@ public class StringGroupUpdate {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GroupUpdateType getType() {
         return type;
     }
@@ -100,6 +99,7 @@ public class StringGroupUpdate {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getData() {
         return data;
     }
@@ -152,119 +152,5 @@ public class StringGroupUpdate {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `GroupId` to the URL query string
-        if (getGroupId() != null) {
-            joiner.add(String.format("%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            joiner.add(String.format("%sData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getData()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private StringGroupUpdate instance;
-
-        public Builder() {
-            this(new StringGroupUpdate());
-        }
-
-        protected Builder(StringGroupUpdate instance) {
-            this.instance = instance;
-        }
-
-        public StringGroupUpdate.Builder groupId(UUID groupId) {
-            this.instance.groupId = groupId;
-            return this;
-        }
-
-        public StringGroupUpdate.Builder type(GroupUpdateType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public StringGroupUpdate.Builder data(String data) {
-            this.instance.data = data;
-            return this;
-        }
-
-        /**
-         * returns a built StringGroupUpdate instance.
-         *
-         * The builder is not reusable.
-         */
-        public StringGroupUpdate build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static StringGroupUpdate.Builder builder() {
-        return new StringGroupUpdate.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public StringGroupUpdate.Builder toBuilder() {
-        return new StringGroupUpdate.Builder().groupId(getGroupId()).type(getType()).data(getData());
     }
 }

@@ -15,9 +15,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -55,6 +52,7 @@ public class UtcTimeResponse {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getRequestReceptionTime() {
         return requestReceptionTime;
     }
@@ -79,6 +77,7 @@ public class UtcTimeResponse {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getResponseTransmissionTime() {
         return responseTransmissionTime;
     }
@@ -130,109 +129,5 @@ public class UtcTimeResponse {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `RequestReceptionTime` to the URL query string
-        if (getRequestReceptionTime() != null) {
-            joiner.add(String.format("%sRequestReceptionTime%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequestReceptionTime()))));
-        }
-
-        // add `ResponseTransmissionTime` to the URL query string
-        if (getResponseTransmissionTime() != null) {
-            joiner.add(String.format("%sResponseTransmissionTime%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getResponseTransmissionTime()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private UtcTimeResponse instance;
-
-        public Builder() {
-            this(new UtcTimeResponse());
-        }
-
-        protected Builder(UtcTimeResponse instance) {
-            this.instance = instance;
-        }
-
-        public UtcTimeResponse.Builder requestReceptionTime(OffsetDateTime requestReceptionTime) {
-            this.instance.requestReceptionTime = requestReceptionTime;
-            return this;
-        }
-
-        public UtcTimeResponse.Builder responseTransmissionTime(OffsetDateTime responseTransmissionTime) {
-            this.instance.responseTransmissionTime = responseTransmissionTime;
-            return this;
-        }
-
-        /**
-         * returns a built UtcTimeResponse instance.
-         *
-         * The builder is not reusable.
-         */
-        public UtcTimeResponse build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UtcTimeResponse.Builder builder() {
-        return new UtcTimeResponse.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UtcTimeResponse.Builder toBuilder() {
-        return new UtcTimeResponse.Builder().requestReceptionTime(getRequestReceptionTime())
-                .responseTransmissionTime(getResponseTransmissionTime());
     }
 }

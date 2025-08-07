@@ -1,28 +1,10 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -33,44 +15,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.Default
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.FileSystemEntryInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.ValidatePathDto;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class EnvironmentApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public EnvironmentApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public EnvironmentApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -78,10 +50,33 @@ public class EnvironmentApi {
      * 
      * @return DefaultDirectoryBrowserInfoDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Default directory browser returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public DefaultDirectoryBrowserInfoDto getDefaultDirectoryBrowser() throws ApiException {
-        ApiResponse<DefaultDirectoryBrowserInfoDto> localVarResponse = getDefaultDirectoryBrowserWithHttpInfo();
-        return localVarResponse.getData();
+        return getDefaultDirectoryBrowserWithHttpInfo().getData();
     }
 
     /**
@@ -89,62 +84,41 @@ public class EnvironmentApi {
      * 
      * @return ApiResponse&lt;DefaultDirectoryBrowserInfoDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Default directory browser returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<DefaultDirectoryBrowserInfoDto> getDefaultDirectoryBrowserWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDefaultDirectoryBrowserRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getDefaultDirectoryBrowser", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<DefaultDirectoryBrowserInfoDto>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<DefaultDirectoryBrowserInfoDto>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<DefaultDirectoryBrowserInfoDto>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getDefaultDirectoryBrowserRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Environment/DefaultDirectoryBrowser";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<DefaultDirectoryBrowserInfoDto> localVarReturnType = new GenericType<DefaultDirectoryBrowserInfoDto>() {
+        };
+        return apiClient.invokeAPI("EnvironmentApi.getDefaultDirectoryBrowser", "/Environment/DefaultDirectoryBrowser",
+                "GET", new ArrayList<>(), null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -157,13 +131,35 @@ public class EnvironmentApi {
      *            (optional, default to false)
      * @return List&lt;FileSystemEntryInfo&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Directory contents returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<FileSystemEntryInfo> getDirectoryContents(@org.eclipse.jdt.annotation.Nullable String path,
             @org.eclipse.jdt.annotation.NonNull Boolean includeFiles,
             @org.eclipse.jdt.annotation.NonNull Boolean includeDirectories) throws ApiException {
-        ApiResponse<List<FileSystemEntryInfo>> localVarResponse = getDirectoryContentsWithHttpInfo(path, includeFiles,
-                includeDirectories);
-        return localVarResponse.getData();
+        return getDirectoryContentsWithHttpInfo(path, includeFiles, includeDirectories).getData();
     }
 
     /**
@@ -176,90 +172,53 @@ public class EnvironmentApi {
      *            (optional, default to false)
      * @return ApiResponse&lt;List&lt;FileSystemEntryInfo&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Directory contents returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<FileSystemEntryInfo>> getDirectoryContentsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable String path, @org.eclipse.jdt.annotation.NonNull Boolean includeFiles,
             @org.eclipse.jdt.annotation.NonNull Boolean includeDirectories) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDirectoryContentsRequestBuilder(path, includeFiles,
-                includeDirectories);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getDirectoryContents", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<FileSystemEntryInfo>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<FileSystemEntryInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<FileSystemEntryInfo>>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getDirectoryContentsRequestBuilder(@org.eclipse.jdt.annotation.Nullable String path,
-            @org.eclipse.jdt.annotation.NonNull Boolean includeFiles,
-            @org.eclipse.jdt.annotation.NonNull Boolean includeDirectories) throws ApiException {
-        // verify the required parameter 'path' is set
+        // Check required parameters
         if (path == null) {
             throw new ApiException(400, "Missing the required parameter 'path' when calling getDirectoryContents");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "path", path));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeFiles", includeFiles));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeDirectories", includeDirectories));
 
-        String localVarPath = "/Environment/DirectoryContents";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "path";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("path", path));
-        localVarQueryParameterBaseName = "includeFiles";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("includeFiles", includeFiles));
-        localVarQueryParameterBaseName = "includeDirectories";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("includeDirectories", includeDirectories));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<FileSystemEntryInfo>> localVarReturnType = new GenericType<List<FileSystemEntryInfo>>() {
+        };
+        return apiClient.invokeAPI("EnvironmentApi.getDirectoryContents", "/Environment/DirectoryContents", "GET",
+                localVarQueryParams, null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -267,10 +226,33 @@ public class EnvironmentApi {
      * 
      * @return List&lt;FileSystemEntryInfo&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>List of entries returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<FileSystemEntryInfo> getDrives() throws ApiException {
-        ApiResponse<List<FileSystemEntryInfo>> localVarResponse = getDrivesWithHttpInfo();
-        return localVarResponse.getData();
+        return getDrivesWithHttpInfo().getData();
     }
 
     /**
@@ -278,62 +260,41 @@ public class EnvironmentApi {
      * 
      * @return ApiResponse&lt;List&lt;FileSystemEntryInfo&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>List of entries returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<FileSystemEntryInfo>> getDrivesWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDrivesRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getDrives", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<FileSystemEntryInfo>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<FileSystemEntryInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<FileSystemEntryInfo>>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getDrivesRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Environment/Drives";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<FileSystemEntryInfo>> localVarReturnType = new GenericType<List<FileSystemEntryInfo>>() {
+        };
+        return apiClient.invokeAPI("EnvironmentApi.getDrives", "/Environment/Drives", "GET", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -341,12 +302,35 @@ public class EnvironmentApi {
      * 
      * @return List&lt;FileSystemEntryInfo&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Empty array returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      * @deprecated
      */
     @Deprecated
     public List<FileSystemEntryInfo> getNetworkShares() throws ApiException {
-        ApiResponse<List<FileSystemEntryInfo>> localVarResponse = getNetworkSharesWithHttpInfo();
-        return localVarResponse.getData();
+        return getNetworkSharesWithHttpInfo().getData();
     }
 
     /**
@@ -354,64 +338,43 @@ public class EnvironmentApi {
      * 
      * @return ApiResponse&lt;List&lt;FileSystemEntryInfo&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Empty array returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      * @deprecated
      */
     @Deprecated
     public ApiResponse<List<FileSystemEntryInfo>> getNetworkSharesWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getNetworkSharesRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getNetworkShares", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<FileSystemEntryInfo>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<FileSystemEntryInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<FileSystemEntryInfo>>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getNetworkSharesRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Environment/NetworkShares";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<FileSystemEntryInfo>> localVarReturnType = new GenericType<List<FileSystemEntryInfo>>() {
+        };
+        return apiClient.invokeAPI("EnvironmentApi.getNetworkShares", "/Environment/NetworkShares", "GET",
+                new ArrayList<>(), null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -420,10 +383,33 @@ public class EnvironmentApi {
      * @param path The path. (required)
      * @return String
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public String getParentPath(@org.eclipse.jdt.annotation.Nullable String path) throws ApiException {
-        ApiResponse<String> localVarResponse = getParentPathWithHttpInfo(path);
-        return localVarResponse.getData();
+        return getParentPathWithHttpInfo(path).getData();
     }
 
     /**
@@ -432,81 +418,50 @@ public class EnvironmentApi {
      * @param path The path. (required)
      * @return ApiResponse&lt;String&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<String> getParentPathWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String path)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getParentPathRequestBuilder(path);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getParentPath", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<String>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                            null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<String>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<String>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getParentPathRequestBuilder(@org.eclipse.jdt.annotation.Nullable String path)
-            throws ApiException {
-        // verify the required parameter 'path' is set
+        // Check required parameters
         if (path == null) {
             throw new ApiException(400, "Missing the required parameter 'path' when calling getParentPath");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "path", path));
 
-        String localVarPath = "/Environment/ParentPath";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "path";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("path", path));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<String> localVarReturnType = new GenericType<String>() {
+        };
+        return apiClient.invokeAPI("EnvironmentApi.getParentPath", "/Environment/ParentPath", "GET",
+                localVarQueryParams, null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -514,6 +469,35 @@ public class EnvironmentApi {
      * 
      * @param validatePathDto Validate request object. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Path validated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Path not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void validatePath(@org.eclipse.jdt.annotation.Nullable ValidatePathDto validatePathDto) throws ApiException {
         validatePathWithHttpInfo(validatePathDto);
@@ -525,65 +509,50 @@ public class EnvironmentApi {
      * @param validatePathDto Validate request object. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Path validated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Path not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> validatePathWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable ValidatePathDto validatePathDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = validatePathRequestBuilder(validatePathDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("validatePath", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder validatePathRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable ValidatePathDto validatePathDto) throws ApiException {
-        // verify the required parameter 'validatePathDto' is set
+        // Check required parameters
         if (validatePathDto == null) {
             throw new ApiException(400, "Missing the required parameter 'validatePathDto' when calling validatePath");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Environment/ValidatePath";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(validatePathDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("EnvironmentApi.validatePath", "/Environment/ValidatePath", "POST",
+                new ArrayList<>(), validatePathDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 }

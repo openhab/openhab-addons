@@ -19,9 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -102,6 +99,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -133,6 +131,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getProviderIds() {
         return providerIds;
     }
@@ -156,6 +155,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getProductionYear() {
         return productionYear;
     }
@@ -179,6 +179,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getIndexNumber() {
         return indexNumber;
     }
@@ -202,6 +203,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getIndexNumberEnd() {
         return indexNumberEnd;
     }
@@ -225,6 +227,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
@@ -248,6 +251,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getPremiereDate() {
         return premiereDate;
     }
@@ -271,6 +275,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -294,6 +299,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSearchProviderName() {
         return searchProviderName;
     }
@@ -317,6 +323,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OVERVIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOverview() {
         return overview;
     }
@@ -340,6 +347,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public RemoteSearchResult getAlbumArtist() {
         return albumArtist;
     }
@@ -371,6 +379,7 @@ public class RemoteSearchResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ARTISTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<RemoteSearchResult> getArtists() {
         return artists;
     }
@@ -442,229 +451,5 @@ public class RemoteSearchResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `ProviderIds` to the URL query string
-        if (getProviderIds() != null) {
-            for (String _key : getProviderIds().keySet()) {
-                joiner.add(String.format("%sProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getProviderIds().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
-            }
-        }
-
-        // add `ProductionYear` to the URL query string
-        if (getProductionYear() != null) {
-            joiner.add(String.format("%sProductionYear%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductionYear()))));
-        }
-
-        // add `IndexNumber` to the URL query string
-        if (getIndexNumber() != null) {
-            joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
-        }
-
-        // add `IndexNumberEnd` to the URL query string
-        if (getIndexNumberEnd() != null) {
-            joiner.add(String.format("%sIndexNumberEnd%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumberEnd()))));
-        }
-
-        // add `ParentIndexNumber` to the URL query string
-        if (getParentIndexNumber() != null) {
-            joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
-        }
-
-        // add `PremiereDate` to the URL query string
-        if (getPremiereDate() != null) {
-            joiner.add(String.format("%sPremiereDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
-        }
-
-        // add `ImageUrl` to the URL query string
-        if (getImageUrl() != null) {
-            joiner.add(String.format("%sImageUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
-        }
-
-        // add `SearchProviderName` to the URL query string
-        if (getSearchProviderName() != null) {
-            joiner.add(String.format("%sSearchProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
-        }
-
-        // add `Overview` to the URL query string
-        if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
-        }
-
-        // add `AlbumArtist` to the URL query string
-        if (getAlbumArtist() != null) {
-            joiner.add(getAlbumArtist().toUrlQueryString(prefix + "AlbumArtist" + suffix));
-        }
-
-        // add `Artists` to the URL query string
-        if (getArtists() != null) {
-            for (int i = 0; i < getArtists().size(); i++) {
-                if (getArtists().get(i) != null) {
-                    joiner.add(getArtists().get(i).toUrlQueryString(String.format("%sArtists%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private RemoteSearchResult instance;
-
-        public Builder() {
-            this(new RemoteSearchResult());
-        }
-
-        protected Builder(RemoteSearchResult instance) {
-            this.instance = instance;
-        }
-
-        public RemoteSearchResult.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder providerIds(Map<String, String> providerIds) {
-            this.instance.providerIds = providerIds;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder productionYear(Integer productionYear) {
-            this.instance.productionYear = productionYear;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder indexNumber(Integer indexNumber) {
-            this.instance.indexNumber = indexNumber;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder indexNumberEnd(Integer indexNumberEnd) {
-            this.instance.indexNumberEnd = indexNumberEnd;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder parentIndexNumber(Integer parentIndexNumber) {
-            this.instance.parentIndexNumber = parentIndexNumber;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder premiereDate(OffsetDateTime premiereDate) {
-            this.instance.premiereDate = premiereDate;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder imageUrl(String imageUrl) {
-            this.instance.imageUrl = imageUrl;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder searchProviderName(String searchProviderName) {
-            this.instance.searchProviderName = searchProviderName;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder overview(String overview) {
-            this.instance.overview = overview;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder albumArtist(RemoteSearchResult albumArtist) {
-            this.instance.albumArtist = albumArtist;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder artists(List<RemoteSearchResult> artists) {
-            this.instance.artists = artists;
-            return this;
-        }
-
-        /**
-         * returns a built RemoteSearchResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public RemoteSearchResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RemoteSearchResult.Builder builder() {
-        return new RemoteSearchResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RemoteSearchResult.Builder toBuilder() {
-        return new RemoteSearchResult.Builder().name(getName()).providerIds(getProviderIds())
-                .productionYear(getProductionYear()).indexNumber(getIndexNumber()).indexNumberEnd(getIndexNumberEnd())
-                .parentIndexNumber(getParentIndexNumber()).premiereDate(getPremiereDate()).imageUrl(getImageUrl())
-                .searchProviderName(getSearchProviderName()).overview(getOverview()).albumArtist(getAlbumArtist())
-                .artists(getArtists());
     }
 }

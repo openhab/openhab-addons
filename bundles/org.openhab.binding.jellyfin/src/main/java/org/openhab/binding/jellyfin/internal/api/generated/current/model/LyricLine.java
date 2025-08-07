@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,6 +49,7 @@ public class LyricLine {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TEXT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getText() {
         return text;
     }
@@ -75,6 +73,7 @@ public class LyricLine {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getStart() {
         return start;
     }
@@ -124,108 +123,5 @@ public class LyricLine {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Text` to the URL query string
-        if (getText() != null) {
-            joiner.add(String.format("%sText%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getText()))));
-        }
-
-        // add `Start` to the URL query string
-        if (getStart() != null) {
-            joiner.add(String.format("%sStart%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStart()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private LyricLine instance;
-
-        public Builder() {
-            this(new LyricLine());
-        }
-
-        protected Builder(LyricLine instance) {
-            this.instance = instance;
-        }
-
-        public LyricLine.Builder text(String text) {
-            this.instance.text = text;
-            return this;
-        }
-
-        public LyricLine.Builder start(Long start) {
-            this.instance.start = start;
-            return this;
-        }
-
-        /**
-         * returns a built LyricLine instance.
-         *
-         * The builder is not reusable.
-         */
-        public LyricLine build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LyricLine.Builder builder() {
-        return new LyricLine.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LyricLine.Builder toBuilder() {
-        return new LyricLine.Builder().text(getText()).start(getStart());
     }
 }

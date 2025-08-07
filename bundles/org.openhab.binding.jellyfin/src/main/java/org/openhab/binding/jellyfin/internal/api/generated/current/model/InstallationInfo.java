@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -76,6 +73,7 @@ public class InstallationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GUID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGuid() {
         return guid;
     }
@@ -99,6 +97,7 @@ public class InstallationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -122,6 +121,7 @@ public class InstallationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersion() {
         return version;
     }
@@ -145,6 +145,7 @@ public class InstallationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANGELOG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getChangelog() {
         return changelog;
     }
@@ -168,6 +169,7 @@ public class InstallationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SOURCE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSourceUrl() {
         return sourceUrl;
     }
@@ -191,6 +193,7 @@ public class InstallationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHECKSUM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getChecksum() {
         return checksum;
     }
@@ -214,6 +217,7 @@ public class InstallationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PACKAGE_INFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PackageInfo getPackageInfo() {
         return packageInfo;
     }
@@ -273,164 +277,5 @@ public class InstallationInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Guid` to the URL query string
-        if (getGuid() != null) {
-            joiner.add(String.format("%sGuid%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGuid()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `Changelog` to the URL query string
-        if (getChangelog() != null) {
-            joiner.add(String.format("%sChangelog%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChangelog()))));
-        }
-
-        // add `SourceUrl` to the URL query string
-        if (getSourceUrl() != null) {
-            joiner.add(String.format("%sSourceUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSourceUrl()))));
-        }
-
-        // add `Checksum` to the URL query string
-        if (getChecksum() != null) {
-            joiner.add(String.format("%sChecksum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChecksum()))));
-        }
-
-        // add `PackageInfo` to the URL query string
-        if (getPackageInfo() != null) {
-            joiner.add(getPackageInfo().toUrlQueryString(prefix + "PackageInfo" + suffix));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private InstallationInfo instance;
-
-        public Builder() {
-            this(new InstallationInfo());
-        }
-
-        protected Builder(InstallationInfo instance) {
-            this.instance = instance;
-        }
-
-        public InstallationInfo.Builder guid(UUID guid) {
-            this.instance.guid = guid;
-            return this;
-        }
-
-        public InstallationInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public InstallationInfo.Builder version(String version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public InstallationInfo.Builder changelog(String changelog) {
-            this.instance.changelog = changelog;
-            return this;
-        }
-
-        public InstallationInfo.Builder sourceUrl(String sourceUrl) {
-            this.instance.sourceUrl = sourceUrl;
-            return this;
-        }
-
-        public InstallationInfo.Builder checksum(String checksum) {
-            this.instance.checksum = checksum;
-            return this;
-        }
-
-        public InstallationInfo.Builder packageInfo(PackageInfo packageInfo) {
-            this.instance.packageInfo = packageInfo;
-            return this;
-        }
-
-        /**
-         * returns a built InstallationInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public InstallationInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static InstallationInfo.Builder builder() {
-        return new InstallationInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public InstallationInfo.Builder toBuilder() {
-        return new InstallationInfo.Builder().guid(getGuid()).name(getName()).version(getVersion())
-                .changelog(getChangelog()).sourceUrl(getSourceUrl()).checksum(getChecksum())
-                .packageInfo(getPackageInfo());
     }
 }

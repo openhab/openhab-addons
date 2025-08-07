@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -88,6 +85,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getProviderName() {
         return providerName;
     }
@@ -111,6 +109,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUrl() {
         return url;
     }
@@ -134,6 +133,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_THUMBNAIL_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
@@ -157,6 +157,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getHeight() {
         return height;
     }
@@ -180,6 +181,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getWidth() {
         return width;
     }
@@ -203,6 +205,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getCommunityRating() {
         return communityRating;
     }
@@ -226,6 +229,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VOTE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getVoteCount() {
         return voteCount;
     }
@@ -249,6 +253,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getLanguage() {
         return language;
     }
@@ -272,6 +277,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ImageType getType() {
         return type;
     }
@@ -295,6 +301,7 @@ public class RemoteImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RATING_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public RatingType getRatingType() {
         return ratingType;
     }
@@ -362,199 +369,5 @@ public class RemoteImageInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ProviderName` to the URL query string
-        if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
-        }
-
-        // add `Url` to the URL query string
-        if (getUrl() != null) {
-            joiner.add(String.format("%sUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-        }
-
-        // add `ThumbnailUrl` to the URL query string
-        if (getThumbnailUrl() != null) {
-            joiner.add(String.format("%sThumbnailUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThumbnailUrl()))));
-        }
-
-        // add `Height` to the URL query string
-        if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
-        }
-
-        // add `Width` to the URL query string
-        if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
-        }
-
-        // add `CommunityRating` to the URL query string
-        if (getCommunityRating() != null) {
-            joiner.add(String.format("%sCommunityRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
-        }
-
-        // add `VoteCount` to the URL query string
-        if (getVoteCount() != null) {
-            joiner.add(String.format("%sVoteCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVoteCount()))));
-        }
-
-        // add `Language` to the URL query string
-        if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `RatingType` to the URL query string
-        if (getRatingType() != null) {
-            joiner.add(String.format("%sRatingType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRatingType()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private RemoteImageInfo instance;
-
-        public Builder() {
-            this(new RemoteImageInfo());
-        }
-
-        protected Builder(RemoteImageInfo instance) {
-            this.instance = instance;
-        }
-
-        public RemoteImageInfo.Builder providerName(String providerName) {
-            this.instance.providerName = providerName;
-            return this;
-        }
-
-        public RemoteImageInfo.Builder url(String url) {
-            this.instance.url = url;
-            return this;
-        }
-
-        public RemoteImageInfo.Builder thumbnailUrl(String thumbnailUrl) {
-            this.instance.thumbnailUrl = thumbnailUrl;
-            return this;
-        }
-
-        public RemoteImageInfo.Builder height(Integer height) {
-            this.instance.height = height;
-            return this;
-        }
-
-        public RemoteImageInfo.Builder width(Integer width) {
-            this.instance.width = width;
-            return this;
-        }
-
-        public RemoteImageInfo.Builder communityRating(Double communityRating) {
-            this.instance.communityRating = communityRating;
-            return this;
-        }
-
-        public RemoteImageInfo.Builder voteCount(Integer voteCount) {
-            this.instance.voteCount = voteCount;
-            return this;
-        }
-
-        public RemoteImageInfo.Builder language(String language) {
-            this.instance.language = language;
-            return this;
-        }
-
-        public RemoteImageInfo.Builder type(ImageType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public RemoteImageInfo.Builder ratingType(RatingType ratingType) {
-            this.instance.ratingType = ratingType;
-            return this;
-        }
-
-        /**
-         * returns a built RemoteImageInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public RemoteImageInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RemoteImageInfo.Builder builder() {
-        return new RemoteImageInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RemoteImageInfo.Builder toBuilder() {
-        return new RemoteImageInfo.Builder().providerName(getProviderName()).url(getUrl())
-                .thumbnailUrl(getThumbnailUrl()).height(getHeight()).width(getWidth())
-                .communityRating(getCommunityRating()).voteCount(getVoteCount()).language(getLanguage()).type(getType())
-                .ratingType(getRatingType());
     }
 }

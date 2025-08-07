@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,6 +49,7 @@ public class GroupStateUpdate {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GroupStateType getState() {
         return state;
     }
@@ -75,6 +73,7 @@ public class GroupStateUpdate {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REASON)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PlaybackRequestType getReason() {
         return reason;
     }
@@ -125,108 +124,5 @@ public class GroupStateUpdate {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `State` to the URL query string
-        if (getState() != null) {
-            joiner.add(String.format("%sState%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getState()))));
-        }
-
-        // add `Reason` to the URL query string
-        if (getReason() != null) {
-            joiner.add(String.format("%sReason%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getReason()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private GroupStateUpdate instance;
-
-        public Builder() {
-            this(new GroupStateUpdate());
-        }
-
-        protected Builder(GroupStateUpdate instance) {
-            this.instance = instance;
-        }
-
-        public GroupStateUpdate.Builder state(GroupStateType state) {
-            this.instance.state = state;
-            return this;
-        }
-
-        public GroupStateUpdate.Builder reason(PlaybackRequestType reason) {
-            this.instance.reason = reason;
-            return this;
-        }
-
-        /**
-         * returns a built GroupStateUpdate instance.
-         *
-         * The builder is not reusable.
-         */
-        public GroupStateUpdate build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static GroupStateUpdate.Builder builder() {
-        return new GroupStateUpdate.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public GroupStateUpdate.Builder toBuilder() {
-        return new GroupStateUpdate.Builder().state(getState()).reason(getReason());
     }
 }

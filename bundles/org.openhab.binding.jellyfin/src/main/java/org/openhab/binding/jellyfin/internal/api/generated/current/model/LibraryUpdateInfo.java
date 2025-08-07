@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -92,6 +89,7 @@ public class LibraryUpdateInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FOLDERS_ADDED_TO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getFoldersAddedTo() {
         return foldersAddedTo;
     }
@@ -123,6 +121,7 @@ public class LibraryUpdateInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FOLDERS_REMOVED_FROM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getFoldersRemovedFrom() {
         return foldersRemovedFrom;
     }
@@ -154,6 +153,7 @@ public class LibraryUpdateInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEMS_ADDED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getItemsAdded() {
         return itemsAdded;
     }
@@ -185,6 +185,7 @@ public class LibraryUpdateInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEMS_REMOVED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getItemsRemoved() {
         return itemsRemoved;
     }
@@ -216,6 +217,7 @@ public class LibraryUpdateInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEMS_UPDATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getItemsUpdated() {
         return itemsUpdated;
     }
@@ -247,6 +249,7 @@ public class LibraryUpdateInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COLLECTION_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getCollectionFolders() {
         return collectionFolders;
     }
@@ -265,6 +268,7 @@ public class LibraryUpdateInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_EMPTY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsEmpty() {
         return isEmpty;
     }
@@ -320,183 +324,5 @@ public class LibraryUpdateInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `FoldersAddedTo` to the URL query string
-        if (getFoldersAddedTo() != null) {
-            for (int i = 0; i < getFoldersAddedTo().size(); i++) {
-                joiner.add(String.format("%sFoldersAddedTo%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getFoldersAddedTo().get(i)))));
-            }
-        }
-
-        // add `FoldersRemovedFrom` to the URL query string
-        if (getFoldersRemovedFrom() != null) {
-            for (int i = 0; i < getFoldersRemovedFrom().size(); i++) {
-                joiner.add(String.format("%sFoldersRemovedFrom%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getFoldersRemovedFrom().get(i)))));
-            }
-        }
-
-        // add `ItemsAdded` to the URL query string
-        if (getItemsAdded() != null) {
-            for (int i = 0; i < getItemsAdded().size(); i++) {
-                joiner.add(String.format("%sItemsAdded%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getItemsAdded().get(i)))));
-            }
-        }
-
-        // add `ItemsRemoved` to the URL query string
-        if (getItemsRemoved() != null) {
-            for (int i = 0; i < getItemsRemoved().size(); i++) {
-                joiner.add(String.format("%sItemsRemoved%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getItemsRemoved().get(i)))));
-            }
-        }
-
-        // add `ItemsUpdated` to the URL query string
-        if (getItemsUpdated() != null) {
-            for (int i = 0; i < getItemsUpdated().size(); i++) {
-                joiner.add(String.format("%sItemsUpdated%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getItemsUpdated().get(i)))));
-            }
-        }
-
-        // add `CollectionFolders` to the URL query string
-        if (getCollectionFolders() != null) {
-            for (int i = 0; i < getCollectionFolders().size(); i++) {
-                joiner.add(String.format("%sCollectionFolders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getCollectionFolders().get(i)))));
-            }
-        }
-
-        // add `IsEmpty` to the URL query string
-        if (getIsEmpty() != null) {
-            joiner.add(String.format("%sIsEmpty%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsEmpty()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private LibraryUpdateInfo instance;
-
-        public Builder() {
-            this(new LibraryUpdateInfo());
-        }
-
-        protected Builder(LibraryUpdateInfo instance) {
-            this.instance = instance;
-        }
-
-        public LibraryUpdateInfo.Builder foldersAddedTo(List<String> foldersAddedTo) {
-            this.instance.foldersAddedTo = foldersAddedTo;
-            return this;
-        }
-
-        public LibraryUpdateInfo.Builder foldersRemovedFrom(List<String> foldersRemovedFrom) {
-            this.instance.foldersRemovedFrom = foldersRemovedFrom;
-            return this;
-        }
-
-        public LibraryUpdateInfo.Builder itemsAdded(List<String> itemsAdded) {
-            this.instance.itemsAdded = itemsAdded;
-            return this;
-        }
-
-        public LibraryUpdateInfo.Builder itemsRemoved(List<String> itemsRemoved) {
-            this.instance.itemsRemoved = itemsRemoved;
-            return this;
-        }
-
-        public LibraryUpdateInfo.Builder itemsUpdated(List<String> itemsUpdated) {
-            this.instance.itemsUpdated = itemsUpdated;
-            return this;
-        }
-
-        public LibraryUpdateInfo.Builder collectionFolders(List<String> collectionFolders) {
-            this.instance.collectionFolders = collectionFolders;
-            return this;
-        }
-
-        public LibraryUpdateInfo.Builder isEmpty(Boolean isEmpty) {
-            this.instance.isEmpty = isEmpty;
-            return this;
-        }
-
-        /**
-         * returns a built LibraryUpdateInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public LibraryUpdateInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LibraryUpdateInfo.Builder builder() {
-        return new LibraryUpdateInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LibraryUpdateInfo.Builder toBuilder() {
-        return new LibraryUpdateInfo.Builder().foldersAddedTo(getFoldersAddedTo())
-                .foldersRemovedFrom(getFoldersRemovedFrom()).itemsAdded(getItemsAdded()).itemsRemoved(getItemsRemoved())
-                .itemsUpdated(getItemsUpdated()).collectionFolders(getCollectionFolders()).isEmpty(getIsEmpty());
     }
 }

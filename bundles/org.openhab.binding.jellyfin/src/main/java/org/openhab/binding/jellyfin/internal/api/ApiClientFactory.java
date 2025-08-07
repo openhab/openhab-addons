@@ -12,38 +12,51 @@
  */
 package org.openhab.binding.jellyfin.internal.api;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
- * JellyfinApiClient is a API client for interacting with the Jellyfin server.
+ * Factory for creating Jellyfin API clients that integrate with the OpenHAB HTTP client framework.
+ * This factory provides ApiClient instances that leverage OpenHAB's common HTTP client infrastructure
+ * for consistent configuration, SSL handling, and connection management.
  * 
  * @author Patrik Gfeller - Initial Contribution
  */
 @NonNullByDefault
 @Component(scope = ServiceScope.SINGLETON, configurationPid = "api.jellyfin", service = ApiClientFactory.class)
 public class ApiClientFactory {
-    private final HttpClientFactory httpClientFactory;
+    private final ClientBuilder clientBuilder;
 
     @Activate
-    public ApiClientFactory(@Reference final HttpClientFactory httpClientFactory) {
-        this.httpClientFactory = httpClientFactory;
+    public ApiClientFactory(@Reference final ClientBuilder clientBuilder) {
+        this.clientBuilder = clientBuilder;
     }
 
     /**
-     * Creates a new ApiClient instance configured with the HTTP client factory.
+     * Creates a new ApiClient instance configured with OpenHAB's HTTP client framework.
+     * The created client integrates with OpenHAB's common HTTP client infrastructure,
+     * providing consistent SSL handling, connection pooling, and configuration management.
+     * 
+     * @return A configured ApiClient instance ready for use with the Jellyfin API
+     */
+    public ApiClient createApiClient() {
+        return new ApiClient(clientBuilder);
+    }
+
+    /**
+     * Creates a new ApiClient instance with a specific base URL.
      * 
      * @param baseUrl The base URL for the Jellyfin server
      * @return A configured ApiClient instance
      */
-    public ApiClient createApiClient() {
-        ApiClient client = new ApiClient();
-        // Configure the client with HTTP client factory and base URL
-        // Add any additional configuration here
+    public ApiClient createApiClient(String baseUrl) {
+        ApiClient client = new ApiClient(clientBuilder);
+        client.setBasePath(baseUrl);
         return client;
     }
 }

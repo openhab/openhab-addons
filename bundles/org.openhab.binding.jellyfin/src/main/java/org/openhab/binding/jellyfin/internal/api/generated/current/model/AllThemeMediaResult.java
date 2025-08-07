@@ -14,7 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -57,6 +56,7 @@ public class AllThemeMediaResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_THEME_VIDEOS_RESULT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ThemeMediaResult getThemeVideosResult() {
         return themeVideosResult;
     }
@@ -80,6 +80,7 @@ public class AllThemeMediaResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_THEME_SONGS_RESULT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ThemeMediaResult getThemeSongsResult() {
         return themeSongsResult;
     }
@@ -104,6 +105,7 @@ public class AllThemeMediaResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ThemeMediaResult getSoundtrackSongsResult() {
         return soundtrackSongsResult;
     }
@@ -156,117 +158,5 @@ public class AllThemeMediaResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ThemeVideosResult` to the URL query string
-        if (getThemeVideosResult() != null) {
-            joiner.add(getThemeVideosResult().toUrlQueryString(prefix + "ThemeVideosResult" + suffix));
-        }
-
-        // add `ThemeSongsResult` to the URL query string
-        if (getThemeSongsResult() != null) {
-            joiner.add(getThemeSongsResult().toUrlQueryString(prefix + "ThemeSongsResult" + suffix));
-        }
-
-        // add `SoundtrackSongsResult` to the URL query string
-        if (getSoundtrackSongsResult() != null) {
-            joiner.add(getSoundtrackSongsResult().toUrlQueryString(prefix + "SoundtrackSongsResult" + suffix));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private AllThemeMediaResult instance;
-
-        public Builder() {
-            this(new AllThemeMediaResult());
-        }
-
-        protected Builder(AllThemeMediaResult instance) {
-            this.instance = instance;
-        }
-
-        public AllThemeMediaResult.Builder themeVideosResult(ThemeMediaResult themeVideosResult) {
-            this.instance.themeVideosResult = themeVideosResult;
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder themeSongsResult(ThemeMediaResult themeSongsResult) {
-            this.instance.themeSongsResult = themeSongsResult;
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder soundtrackSongsResult(ThemeMediaResult soundtrackSongsResult) {
-            this.instance.soundtrackSongsResult = soundtrackSongsResult;
-            return this;
-        }
-
-        /**
-         * returns a built AllThemeMediaResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public AllThemeMediaResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static AllThemeMediaResult.Builder builder() {
-        return new AllThemeMediaResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public AllThemeMediaResult.Builder toBuilder() {
-        return new AllThemeMediaResult.Builder().themeVideosResult(getThemeVideosResult())
-                .themeSongsResult(getThemeSongsResult()).soundtrackSongsResult(getSoundtrackSongsResult());
     }
 }

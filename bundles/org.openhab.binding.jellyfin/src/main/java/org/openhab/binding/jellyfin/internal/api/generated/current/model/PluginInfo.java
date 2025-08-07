@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -80,6 +77,7 @@ public class PluginInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -103,6 +101,7 @@ public class PluginInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersion() {
         return version;
     }
@@ -126,6 +125,7 @@ public class PluginInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getConfigurationFileName() {
         return configurationFileName;
     }
@@ -149,6 +149,7 @@ public class PluginInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDescription() {
         return description;
     }
@@ -172,6 +173,7 @@ public class PluginInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -195,6 +197,7 @@ public class PluginInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanUninstall() {
         return canUninstall;
     }
@@ -218,6 +221,7 @@ public class PluginInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasImage() {
         return hasImage;
     }
@@ -241,6 +245,7 @@ public class PluginInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PluginStatus getStatus() {
         return status;
     }
@@ -300,176 +305,5 @@ public class PluginInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `ConfigurationFileName` to the URL query string
-        if (getConfigurationFileName() != null) {
-            joiner.add(String.format("%sConfigurationFileName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getConfigurationFileName()))));
-        }
-
-        // add `Description` to the URL query string
-        if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `CanUninstall` to the URL query string
-        if (getCanUninstall() != null) {
-            joiner.add(String.format("%sCanUninstall%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
-        }
-
-        // add `HasImage` to the URL query string
-        if (getHasImage() != null) {
-            joiner.add(String.format("%sHasImage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasImage()))));
-        }
-
-        // add `Status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private PluginInfo instance;
-
-        public Builder() {
-            this(new PluginInfo());
-        }
-
-        protected Builder(PluginInfo instance) {
-            this.instance = instance;
-        }
-
-        public PluginInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public PluginInfo.Builder version(String version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public PluginInfo.Builder configurationFileName(String configurationFileName) {
-            this.instance.configurationFileName = configurationFileName;
-            return this;
-        }
-
-        public PluginInfo.Builder description(String description) {
-            this.instance.description = description;
-            return this;
-        }
-
-        public PluginInfo.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public PluginInfo.Builder canUninstall(Boolean canUninstall) {
-            this.instance.canUninstall = canUninstall;
-            return this;
-        }
-
-        public PluginInfo.Builder hasImage(Boolean hasImage) {
-            this.instance.hasImage = hasImage;
-            return this;
-        }
-
-        public PluginInfo.Builder status(PluginStatus status) {
-            this.instance.status = status;
-            return this;
-        }
-
-        /**
-         * returns a built PluginInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public PluginInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PluginInfo.Builder builder() {
-        return new PluginInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PluginInfo.Builder toBuilder() {
-        return new PluginInfo.Builder().name(getName()).version(getVersion())
-                .configurationFileName(getConfigurationFileName()).description(getDescription()).id(getId())
-                .canUninstall(getCanUninstall()).hasImage(getHasImage()).status(getStatus());
     }
 }

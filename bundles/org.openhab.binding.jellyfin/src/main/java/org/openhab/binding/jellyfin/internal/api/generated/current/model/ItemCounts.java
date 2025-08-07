@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -97,6 +94,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMovieCount() {
         return movieCount;
     }
@@ -120,6 +118,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSeriesCount() {
         return seriesCount;
     }
@@ -143,6 +142,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getEpisodeCount() {
         return episodeCount;
     }
@@ -166,6 +166,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getArtistCount() {
         return artistCount;
     }
@@ -189,6 +190,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getProgramCount() {
         return programCount;
     }
@@ -212,6 +214,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTrailerCount() {
         return trailerCount;
     }
@@ -235,6 +238,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SONG_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSongCount() {
         return songCount;
     }
@@ -258,6 +262,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAlbumCount() {
         return albumCount;
     }
@@ -281,6 +286,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMusicVideoCount() {
         return musicVideoCount;
     }
@@ -304,6 +310,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBoxSetCount() {
         return boxSetCount;
     }
@@ -327,6 +334,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBookCount() {
         return bookCount;
     }
@@ -350,6 +358,7 @@ public class ItemCounts {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getItemCount() {
         return itemCount;
     }
@@ -421,222 +430,5 @@ public class ItemCounts {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `MovieCount` to the URL query string
-        if (getMovieCount() != null) {
-            joiner.add(String.format("%sMovieCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMovieCount()))));
-        }
-
-        // add `SeriesCount` to the URL query string
-        if (getSeriesCount() != null) {
-            joiner.add(String.format("%sSeriesCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesCount()))));
-        }
-
-        // add `EpisodeCount` to the URL query string
-        if (getEpisodeCount() != null) {
-            joiner.add(String.format("%sEpisodeCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEpisodeCount()))));
-        }
-
-        // add `ArtistCount` to the URL query string
-        if (getArtistCount() != null) {
-            joiner.add(String.format("%sArtistCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getArtistCount()))));
-        }
-
-        // add `ProgramCount` to the URL query string
-        if (getProgramCount() != null) {
-            joiner.add(String.format("%sProgramCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramCount()))));
-        }
-
-        // add `TrailerCount` to the URL query string
-        if (getTrailerCount() != null) {
-            joiner.add(String.format("%sTrailerCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTrailerCount()))));
-        }
-
-        // add `SongCount` to the URL query string
-        if (getSongCount() != null) {
-            joiner.add(String.format("%sSongCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSongCount()))));
-        }
-
-        // add `AlbumCount` to the URL query string
-        if (getAlbumCount() != null) {
-            joiner.add(String.format("%sAlbumCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumCount()))));
-        }
-
-        // add `MusicVideoCount` to the URL query string
-        if (getMusicVideoCount() != null) {
-            joiner.add(String.format("%sMusicVideoCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMusicVideoCount()))));
-        }
-
-        // add `BoxSetCount` to the URL query string
-        if (getBoxSetCount() != null) {
-            joiner.add(String.format("%sBoxSetCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBoxSetCount()))));
-        }
-
-        // add `BookCount` to the URL query string
-        if (getBookCount() != null) {
-            joiner.add(String.format("%sBookCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBookCount()))));
-        }
-
-        // add `ItemCount` to the URL query string
-        if (getItemCount() != null) {
-            joiner.add(String.format("%sItemCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemCount()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ItemCounts instance;
-
-        public Builder() {
-            this(new ItemCounts());
-        }
-
-        protected Builder(ItemCounts instance) {
-            this.instance = instance;
-        }
-
-        public ItemCounts.Builder movieCount(Integer movieCount) {
-            this.instance.movieCount = movieCount;
-            return this;
-        }
-
-        public ItemCounts.Builder seriesCount(Integer seriesCount) {
-            this.instance.seriesCount = seriesCount;
-            return this;
-        }
-
-        public ItemCounts.Builder episodeCount(Integer episodeCount) {
-            this.instance.episodeCount = episodeCount;
-            return this;
-        }
-
-        public ItemCounts.Builder artistCount(Integer artistCount) {
-            this.instance.artistCount = artistCount;
-            return this;
-        }
-
-        public ItemCounts.Builder programCount(Integer programCount) {
-            this.instance.programCount = programCount;
-            return this;
-        }
-
-        public ItemCounts.Builder trailerCount(Integer trailerCount) {
-            this.instance.trailerCount = trailerCount;
-            return this;
-        }
-
-        public ItemCounts.Builder songCount(Integer songCount) {
-            this.instance.songCount = songCount;
-            return this;
-        }
-
-        public ItemCounts.Builder albumCount(Integer albumCount) {
-            this.instance.albumCount = albumCount;
-            return this;
-        }
-
-        public ItemCounts.Builder musicVideoCount(Integer musicVideoCount) {
-            this.instance.musicVideoCount = musicVideoCount;
-            return this;
-        }
-
-        public ItemCounts.Builder boxSetCount(Integer boxSetCount) {
-            this.instance.boxSetCount = boxSetCount;
-            return this;
-        }
-
-        public ItemCounts.Builder bookCount(Integer bookCount) {
-            this.instance.bookCount = bookCount;
-            return this;
-        }
-
-        public ItemCounts.Builder itemCount(Integer itemCount) {
-            this.instance.itemCount = itemCount;
-            return this;
-        }
-
-        /**
-         * returns a built ItemCounts instance.
-         *
-         * The builder is not reusable.
-         */
-        public ItemCounts build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ItemCounts.Builder builder() {
-        return new ItemCounts.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ItemCounts.Builder toBuilder() {
-        return new ItemCounts.Builder().movieCount(getMovieCount()).seriesCount(getSeriesCount())
-                .episodeCount(getEpisodeCount()).artistCount(getArtistCount()).programCount(getProgramCount())
-                .trailerCount(getTrailerCount()).songCount(getSongCount()).albumCount(getAlbumCount())
-                .musicVideoCount(getMusicVideoCount()).boxSetCount(getBoxSetCount()).bookCount(getBookCount())
-                .itemCount(getItemCount());
     }
 }

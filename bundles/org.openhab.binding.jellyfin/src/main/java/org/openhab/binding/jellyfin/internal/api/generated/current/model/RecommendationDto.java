@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,6 +69,7 @@ public class RecommendationDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<BaseItemDto> getItems() {
         return items;
     }
@@ -96,6 +94,7 @@ public class RecommendationDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public RecommendationType getRecommendationType() {
         return recommendationType;
     }
@@ -119,6 +118,7 @@ public class RecommendationDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BASELINE_ITEM_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getBaselineItemName() {
         return baselineItemName;
     }
@@ -142,6 +142,7 @@ public class RecommendationDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getCategoryId() {
         return categoryId;
     }
@@ -196,135 +197,5 @@ public class RecommendationDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Items` to the URL query string
-        if (getItems() != null) {
-            for (int i = 0; i < getItems().size(); i++) {
-                if (getItems().get(i) != null) {
-                    joiner.add(getItems().get(i).toUrlQueryString(String.format("%sItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `RecommendationType` to the URL query string
-        if (getRecommendationType() != null) {
-            joiner.add(String.format("%sRecommendationType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecommendationType()))));
-        }
-
-        // add `BaselineItemName` to the URL query string
-        if (getBaselineItemName() != null) {
-            joiner.add(String.format("%sBaselineItemName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBaselineItemName()))));
-        }
-
-        // add `CategoryId` to the URL query string
-        if (getCategoryId() != null) {
-            joiner.add(String.format("%sCategoryId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategoryId()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private RecommendationDto instance;
-
-        public Builder() {
-            this(new RecommendationDto());
-        }
-
-        protected Builder(RecommendationDto instance) {
-            this.instance = instance;
-        }
-
-        public RecommendationDto.Builder items(List<BaseItemDto> items) {
-            this.instance.items = items;
-            return this;
-        }
-
-        public RecommendationDto.Builder recommendationType(RecommendationType recommendationType) {
-            this.instance.recommendationType = recommendationType;
-            return this;
-        }
-
-        public RecommendationDto.Builder baselineItemName(String baselineItemName) {
-            this.instance.baselineItemName = baselineItemName;
-            return this;
-        }
-
-        public RecommendationDto.Builder categoryId(UUID categoryId) {
-            this.instance.categoryId = categoryId;
-            return this;
-        }
-
-        /**
-         * returns a built RecommendationDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public RecommendationDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RecommendationDto.Builder builder() {
-        return new RecommendationDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RecommendationDto.Builder toBuilder() {
-        return new RecommendationDto.Builder().items(getItems()).recommendationType(getRecommendationType())
-                .baselineItemName(getBaselineItemName()).categoryId(getCategoryId());
     }
 }

@@ -15,9 +15,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -94,6 +91,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getRating() {
         return rating;
     }
@@ -117,6 +115,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYED_PERCENTAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getPlayedPercentage() {
         return playedPercentage;
     }
@@ -140,6 +139,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getUnplayedItemCount() {
         return unplayedItemCount;
     }
@@ -163,6 +163,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getPlaybackPositionTicks() {
         return playbackPositionTicks;
     }
@@ -186,6 +187,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAY_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPlayCount() {
         return playCount;
     }
@@ -209,6 +211,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_FAVORITE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsFavorite() {
         return isFavorite;
     }
@@ -232,6 +235,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIKES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getLikes() {
         return likes;
     }
@@ -255,6 +259,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LAST_PLAYED_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getLastPlayedDate() {
         return lastPlayedDate;
     }
@@ -278,6 +283,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getPlayed() {
         return played;
     }
@@ -301,6 +307,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_KEY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getKey() {
         return key;
     }
@@ -324,6 +331,7 @@ public class UpdateUserItemDataDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getItemId() {
         return itemId;
     }
@@ -393,210 +401,5 @@ public class UpdateUserItemDataDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Rating` to the URL query string
-        if (getRating() != null) {
-            joiner.add(String.format("%sRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRating()))));
-        }
-
-        // add `PlayedPercentage` to the URL query string
-        if (getPlayedPercentage() != null) {
-            joiner.add(String.format("%sPlayedPercentage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayedPercentage()))));
-        }
-
-        // add `UnplayedItemCount` to the URL query string
-        if (getUnplayedItemCount() != null) {
-            joiner.add(String.format("%sUnplayedItemCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUnplayedItemCount()))));
-        }
-
-        // add `PlaybackPositionTicks` to the URL query string
-        if (getPlaybackPositionTicks() != null) {
-            joiner.add(String.format("%sPlaybackPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaybackPositionTicks()))));
-        }
-
-        // add `PlayCount` to the URL query string
-        if (getPlayCount() != null) {
-            joiner.add(String.format("%sPlayCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayCount()))));
-        }
-
-        // add `IsFavorite` to the URL query string
-        if (getIsFavorite() != null) {
-            joiner.add(String.format("%sIsFavorite%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsFavorite()))));
-        }
-
-        // add `Likes` to the URL query string
-        if (getLikes() != null) {
-            joiner.add(String.format("%sLikes%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLikes()))));
-        }
-
-        // add `LastPlayedDate` to the URL query string
-        if (getLastPlayedDate() != null) {
-            joiner.add(String.format("%sLastPlayedDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastPlayedDate()))));
-        }
-
-        // add `Played` to the URL query string
-        if (getPlayed() != null) {
-            joiner.add(String.format("%sPlayed%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayed()))));
-        }
-
-        // add `Key` to the URL query string
-        if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private UpdateUserItemDataDto instance;
-
-        public Builder() {
-            this(new UpdateUserItemDataDto());
-        }
-
-        protected Builder(UpdateUserItemDataDto instance) {
-            this.instance = instance;
-        }
-
-        public UpdateUserItemDataDto.Builder rating(Double rating) {
-            this.instance.rating = rating;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder playedPercentage(Double playedPercentage) {
-            this.instance.playedPercentage = playedPercentage;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder unplayedItemCount(Integer unplayedItemCount) {
-            this.instance.unplayedItemCount = unplayedItemCount;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder playbackPositionTicks(Long playbackPositionTicks) {
-            this.instance.playbackPositionTicks = playbackPositionTicks;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder playCount(Integer playCount) {
-            this.instance.playCount = playCount;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder isFavorite(Boolean isFavorite) {
-            this.instance.isFavorite = isFavorite;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder likes(Boolean likes) {
-            this.instance.likes = likes;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder lastPlayedDate(OffsetDateTime lastPlayedDate) {
-            this.instance.lastPlayedDate = lastPlayedDate;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder played(Boolean played) {
-            this.instance.played = played;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder key(String key) {
-            this.instance.key = key;
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder itemId(String itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        /**
-         * returns a built UpdateUserItemDataDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public UpdateUserItemDataDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UpdateUserItemDataDto.Builder builder() {
-        return new UpdateUserItemDataDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UpdateUserItemDataDto.Builder toBuilder() {
-        return new UpdateUserItemDataDto.Builder().rating(getRating()).playedPercentage(getPlayedPercentage())
-                .unplayedItemCount(getUnplayedItemCount()).playbackPositionTicks(getPlaybackPositionTicks())
-                .playCount(getPlayCount()).isFavorite(getIsFavorite()).likes(getLikes())
-                .lastPlayedDate(getLastPlayedDate()).played(getPlayed()).key(getKey()).itemId(getItemId());
     }
 }

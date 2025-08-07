@@ -18,9 +18,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.JSON;
 
@@ -80,27 +81,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ActivityLogEntryMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ActivityLogEntryMessage.class.equals(Integer.class)
-                        || ActivityLogEntryMessage.class.equals(Long.class)
-                        || ActivityLogEntryMessage.class.equals(Float.class)
-                        || ActivityLogEntryMessage.class.equals(Double.class)
-                        || ActivityLogEntryMessage.class.equals(Boolean.class)
-                        || ActivityLogEntryMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ActivityLogEntryMessage.class.equals(Integer.class)
-                                || ActivityLogEntryMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ActivityLogEntryMessage.class.equals(Float.class)
-                                || ActivityLogEntryMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ActivityLogEntryMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ActivityLogEntryMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ActivityLogEntryMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -117,26 +97,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ForceKeepAliveMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ForceKeepAliveMessage.class.equals(Integer.class) || ForceKeepAliveMessage.class.equals(Long.class)
-                        || ForceKeepAliveMessage.class.equals(Float.class)
-                        || ForceKeepAliveMessage.class.equals(Double.class)
-                        || ForceKeepAliveMessage.class.equals(Boolean.class)
-                        || ForceKeepAliveMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ForceKeepAliveMessage.class.equals(Integer.class)
-                                || ForceKeepAliveMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ForceKeepAliveMessage.class.equals(Float.class)
-                                || ForceKeepAliveMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ForceKeepAliveMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ForceKeepAliveMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ForceKeepAliveMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -153,26 +113,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize GeneralCommandMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (GeneralCommandMessage.class.equals(Integer.class) || GeneralCommandMessage.class.equals(Long.class)
-                        || GeneralCommandMessage.class.equals(Float.class)
-                        || GeneralCommandMessage.class.equals(Double.class)
-                        || GeneralCommandMessage.class.equals(Boolean.class)
-                        || GeneralCommandMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((GeneralCommandMessage.class.equals(Integer.class)
-                                || GeneralCommandMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((GeneralCommandMessage.class.equals(Float.class)
-                                || GeneralCommandMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (GeneralCommandMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (GeneralCommandMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(GeneralCommandMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -189,26 +129,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize LibraryChangedMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (LibraryChangedMessage.class.equals(Integer.class) || LibraryChangedMessage.class.equals(Long.class)
-                        || LibraryChangedMessage.class.equals(Float.class)
-                        || LibraryChangedMessage.class.equals(Double.class)
-                        || LibraryChangedMessage.class.equals(Boolean.class)
-                        || LibraryChangedMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((LibraryChangedMessage.class.equals(Integer.class)
-                                || LibraryChangedMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((LibraryChangedMessage.class.equals(Float.class)
-                                || LibraryChangedMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (LibraryChangedMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (LibraryChangedMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(LibraryChangedMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -225,27 +145,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize OutboundKeepAliveMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (OutboundKeepAliveMessage.class.equals(Integer.class)
-                        || OutboundKeepAliveMessage.class.equals(Long.class)
-                        || OutboundKeepAliveMessage.class.equals(Float.class)
-                        || OutboundKeepAliveMessage.class.equals(Double.class)
-                        || OutboundKeepAliveMessage.class.equals(Boolean.class)
-                        || OutboundKeepAliveMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((OutboundKeepAliveMessage.class.equals(Integer.class)
-                                || OutboundKeepAliveMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((OutboundKeepAliveMessage.class.equals(Float.class)
-                                || OutboundKeepAliveMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (OutboundKeepAliveMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (OutboundKeepAliveMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(OutboundKeepAliveMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -262,21 +161,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize PlayMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (PlayMessage.class.equals(Integer.class) || PlayMessage.class.equals(Long.class)
-                        || PlayMessage.class.equals(Float.class) || PlayMessage.class.equals(Double.class)
-                        || PlayMessage.class.equals(Boolean.class) || PlayMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((PlayMessage.class.equals(Integer.class)
-                                || PlayMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((PlayMessage.class.equals(Float.class)
-                                || PlayMessage.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (PlayMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (PlayMessage.class.equals(String.class) && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(PlayMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -293,24 +177,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize PlaystateMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (PlaystateMessage.class.equals(Integer.class) || PlaystateMessage.class.equals(Long.class)
-                        || PlaystateMessage.class.equals(Float.class) || PlaystateMessage.class.equals(Double.class)
-                        || PlaystateMessage.class.equals(Boolean.class)
-                        || PlaystateMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((PlaystateMessage.class.equals(Integer.class)
-                                || PlaystateMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((PlaystateMessage.class.equals(Float.class)
-                                || PlaystateMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (PlaystateMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (PlaystateMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(PlaystateMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -327,27 +193,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize PluginInstallationCancelledMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (PluginInstallationCancelledMessage.class.equals(Integer.class)
-                        || PluginInstallationCancelledMessage.class.equals(Long.class)
-                        || PluginInstallationCancelledMessage.class.equals(Float.class)
-                        || PluginInstallationCancelledMessage.class.equals(Double.class)
-                        || PluginInstallationCancelledMessage.class.equals(Boolean.class)
-                        || PluginInstallationCancelledMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((PluginInstallationCancelledMessage.class.equals(Integer.class)
-                                || PluginInstallationCancelledMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((PluginInstallationCancelledMessage.class.equals(Float.class)
-                                || PluginInstallationCancelledMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (PluginInstallationCancelledMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (PluginInstallationCancelledMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(PluginInstallationCancelledMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -364,27 +209,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize PluginInstallationCompletedMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (PluginInstallationCompletedMessage.class.equals(Integer.class)
-                        || PluginInstallationCompletedMessage.class.equals(Long.class)
-                        || PluginInstallationCompletedMessage.class.equals(Float.class)
-                        || PluginInstallationCompletedMessage.class.equals(Double.class)
-                        || PluginInstallationCompletedMessage.class.equals(Boolean.class)
-                        || PluginInstallationCompletedMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((PluginInstallationCompletedMessage.class.equals(Integer.class)
-                                || PluginInstallationCompletedMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((PluginInstallationCompletedMessage.class.equals(Float.class)
-                                || PluginInstallationCompletedMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (PluginInstallationCompletedMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (PluginInstallationCompletedMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(PluginInstallationCompletedMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -401,27 +225,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize PluginInstallationFailedMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (PluginInstallationFailedMessage.class.equals(Integer.class)
-                        || PluginInstallationFailedMessage.class.equals(Long.class)
-                        || PluginInstallationFailedMessage.class.equals(Float.class)
-                        || PluginInstallationFailedMessage.class.equals(Double.class)
-                        || PluginInstallationFailedMessage.class.equals(Boolean.class)
-                        || PluginInstallationFailedMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((PluginInstallationFailedMessage.class.equals(Integer.class)
-                                || PluginInstallationFailedMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((PluginInstallationFailedMessage.class.equals(Float.class)
-                                || PluginInstallationFailedMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (PluginInstallationFailedMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (PluginInstallationFailedMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(PluginInstallationFailedMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -438,27 +241,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize PluginInstallingMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (PluginInstallingMessage.class.equals(Integer.class)
-                        || PluginInstallingMessage.class.equals(Long.class)
-                        || PluginInstallingMessage.class.equals(Float.class)
-                        || PluginInstallingMessage.class.equals(Double.class)
-                        || PluginInstallingMessage.class.equals(Boolean.class)
-                        || PluginInstallingMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((PluginInstallingMessage.class.equals(Integer.class)
-                                || PluginInstallingMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((PluginInstallingMessage.class.equals(Float.class)
-                                || PluginInstallingMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (PluginInstallingMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (PluginInstallingMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(PluginInstallingMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -475,27 +257,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize PluginUninstalledMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (PluginUninstalledMessage.class.equals(Integer.class)
-                        || PluginUninstalledMessage.class.equals(Long.class)
-                        || PluginUninstalledMessage.class.equals(Float.class)
-                        || PluginUninstalledMessage.class.equals(Double.class)
-                        || PluginUninstalledMessage.class.equals(Boolean.class)
-                        || PluginUninstalledMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((PluginUninstalledMessage.class.equals(Integer.class)
-                                || PluginUninstalledMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((PluginUninstalledMessage.class.equals(Float.class)
-                                || PluginUninstalledMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (PluginUninstalledMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (PluginUninstalledMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(PluginUninstalledMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -512,27 +273,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize RefreshProgressMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (RefreshProgressMessage.class.equals(Integer.class)
-                        || RefreshProgressMessage.class.equals(Long.class)
-                        || RefreshProgressMessage.class.equals(Float.class)
-                        || RefreshProgressMessage.class.equals(Double.class)
-                        || RefreshProgressMessage.class.equals(Boolean.class)
-                        || RefreshProgressMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((RefreshProgressMessage.class.equals(Integer.class)
-                                || RefreshProgressMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((RefreshProgressMessage.class.equals(Float.class)
-                                || RefreshProgressMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (RefreshProgressMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (RefreshProgressMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(RefreshProgressMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -549,27 +289,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize RestartRequiredMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (RestartRequiredMessage.class.equals(Integer.class)
-                        || RestartRequiredMessage.class.equals(Long.class)
-                        || RestartRequiredMessage.class.equals(Float.class)
-                        || RestartRequiredMessage.class.equals(Double.class)
-                        || RestartRequiredMessage.class.equals(Boolean.class)
-                        || RestartRequiredMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((RestartRequiredMessage.class.equals(Integer.class)
-                                || RestartRequiredMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((RestartRequiredMessage.class.equals(Float.class)
-                                || RestartRequiredMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (RestartRequiredMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (RestartRequiredMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(RestartRequiredMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -586,27 +305,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ScheduledTaskEndedMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ScheduledTaskEndedMessage.class.equals(Integer.class)
-                        || ScheduledTaskEndedMessage.class.equals(Long.class)
-                        || ScheduledTaskEndedMessage.class.equals(Float.class)
-                        || ScheduledTaskEndedMessage.class.equals(Double.class)
-                        || ScheduledTaskEndedMessage.class.equals(Boolean.class)
-                        || ScheduledTaskEndedMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ScheduledTaskEndedMessage.class.equals(Integer.class)
-                                || ScheduledTaskEndedMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ScheduledTaskEndedMessage.class.equals(Float.class)
-                                || ScheduledTaskEndedMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ScheduledTaskEndedMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ScheduledTaskEndedMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ScheduledTaskEndedMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -623,27 +321,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ScheduledTasksInfoMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ScheduledTasksInfoMessage.class.equals(Integer.class)
-                        || ScheduledTasksInfoMessage.class.equals(Long.class)
-                        || ScheduledTasksInfoMessage.class.equals(Float.class)
-                        || ScheduledTasksInfoMessage.class.equals(Double.class)
-                        || ScheduledTasksInfoMessage.class.equals(Boolean.class)
-                        || ScheduledTasksInfoMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ScheduledTasksInfoMessage.class.equals(Integer.class)
-                                || ScheduledTasksInfoMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ScheduledTasksInfoMessage.class.equals(Float.class)
-                                || ScheduledTasksInfoMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ScheduledTasksInfoMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ScheduledTasksInfoMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ScheduledTasksInfoMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -660,27 +337,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize SeriesTimerCancelledMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (SeriesTimerCancelledMessage.class.equals(Integer.class)
-                        || SeriesTimerCancelledMessage.class.equals(Long.class)
-                        || SeriesTimerCancelledMessage.class.equals(Float.class)
-                        || SeriesTimerCancelledMessage.class.equals(Double.class)
-                        || SeriesTimerCancelledMessage.class.equals(Boolean.class)
-                        || SeriesTimerCancelledMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((SeriesTimerCancelledMessage.class.equals(Integer.class)
-                                || SeriesTimerCancelledMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((SeriesTimerCancelledMessage.class.equals(Float.class)
-                                || SeriesTimerCancelledMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (SeriesTimerCancelledMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (SeriesTimerCancelledMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(SeriesTimerCancelledMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -697,27 +353,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize SeriesTimerCreatedMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (SeriesTimerCreatedMessage.class.equals(Integer.class)
-                        || SeriesTimerCreatedMessage.class.equals(Long.class)
-                        || SeriesTimerCreatedMessage.class.equals(Float.class)
-                        || SeriesTimerCreatedMessage.class.equals(Double.class)
-                        || SeriesTimerCreatedMessage.class.equals(Boolean.class)
-                        || SeriesTimerCreatedMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((SeriesTimerCreatedMessage.class.equals(Integer.class)
-                                || SeriesTimerCreatedMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((SeriesTimerCreatedMessage.class.equals(Float.class)
-                                || SeriesTimerCreatedMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (SeriesTimerCreatedMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (SeriesTimerCreatedMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(SeriesTimerCreatedMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -734,27 +369,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ServerRestartingMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ServerRestartingMessage.class.equals(Integer.class)
-                        || ServerRestartingMessage.class.equals(Long.class)
-                        || ServerRestartingMessage.class.equals(Float.class)
-                        || ServerRestartingMessage.class.equals(Double.class)
-                        || ServerRestartingMessage.class.equals(Boolean.class)
-                        || ServerRestartingMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ServerRestartingMessage.class.equals(Integer.class)
-                                || ServerRestartingMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ServerRestartingMessage.class.equals(Float.class)
-                                || ServerRestartingMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ServerRestartingMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ServerRestartingMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ServerRestartingMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -771,27 +385,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ServerShuttingDownMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ServerShuttingDownMessage.class.equals(Integer.class)
-                        || ServerShuttingDownMessage.class.equals(Long.class)
-                        || ServerShuttingDownMessage.class.equals(Float.class)
-                        || ServerShuttingDownMessage.class.equals(Double.class)
-                        || ServerShuttingDownMessage.class.equals(Boolean.class)
-                        || ServerShuttingDownMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ServerShuttingDownMessage.class.equals(Integer.class)
-                                || ServerShuttingDownMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ServerShuttingDownMessage.class.equals(Float.class)
-                                || ServerShuttingDownMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ServerShuttingDownMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ServerShuttingDownMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ServerShuttingDownMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -808,23 +401,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize SessionsMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (SessionsMessage.class.equals(Integer.class) || SessionsMessage.class.equals(Long.class)
-                        || SessionsMessage.class.equals(Float.class) || SessionsMessage.class.equals(Double.class)
-                        || SessionsMessage.class.equals(Boolean.class) || SessionsMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((SessionsMessage.class.equals(Integer.class)
-                                || SessionsMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((SessionsMessage.class.equals(Float.class)
-                                || SessionsMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (SessionsMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (SessionsMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(SessionsMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -841,27 +417,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize SyncPlayCommandMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (SyncPlayCommandMessage.class.equals(Integer.class)
-                        || SyncPlayCommandMessage.class.equals(Long.class)
-                        || SyncPlayCommandMessage.class.equals(Float.class)
-                        || SyncPlayCommandMessage.class.equals(Double.class)
-                        || SyncPlayCommandMessage.class.equals(Boolean.class)
-                        || SyncPlayCommandMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((SyncPlayCommandMessage.class.equals(Integer.class)
-                                || SyncPlayCommandMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((SyncPlayCommandMessage.class.equals(Float.class)
-                                || SyncPlayCommandMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (SyncPlayCommandMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (SyncPlayCommandMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayCommandMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -878,27 +433,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize SyncPlayGroupUpdateCommandMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (SyncPlayGroupUpdateCommandMessage.class.equals(Integer.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(Long.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(Float.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(Double.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(Boolean.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((SyncPlayGroupUpdateCommandMessage.class.equals(Integer.class)
-                                || SyncPlayGroupUpdateCommandMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((SyncPlayGroupUpdateCommandMessage.class.equals(Float.class)
-                                || SyncPlayGroupUpdateCommandMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (SyncPlayGroupUpdateCommandMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (SyncPlayGroupUpdateCommandMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayGroupUpdateCommandMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -915,26 +449,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize TimerCancelledMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (TimerCancelledMessage.class.equals(Integer.class) || TimerCancelledMessage.class.equals(Long.class)
-                        || TimerCancelledMessage.class.equals(Float.class)
-                        || TimerCancelledMessage.class.equals(Double.class)
-                        || TimerCancelledMessage.class.equals(Boolean.class)
-                        || TimerCancelledMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((TimerCancelledMessage.class.equals(Integer.class)
-                                || TimerCancelledMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((TimerCancelledMessage.class.equals(Float.class)
-                                || TimerCancelledMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (TimerCancelledMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (TimerCancelledMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(TimerCancelledMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -951,26 +465,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize TimerCreatedMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (TimerCreatedMessage.class.equals(Integer.class) || TimerCreatedMessage.class.equals(Long.class)
-                        || TimerCreatedMessage.class.equals(Float.class)
-                        || TimerCreatedMessage.class.equals(Double.class)
-                        || TimerCreatedMessage.class.equals(Boolean.class)
-                        || TimerCreatedMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((TimerCreatedMessage.class.equals(Integer.class)
-                                || TimerCreatedMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((TimerCreatedMessage.class.equals(Float.class)
-                                || TimerCreatedMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (TimerCreatedMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (TimerCreatedMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(TimerCreatedMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -987,27 +481,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize UserDataChangedMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (UserDataChangedMessage.class.equals(Integer.class)
-                        || UserDataChangedMessage.class.equals(Long.class)
-                        || UserDataChangedMessage.class.equals(Float.class)
-                        || UserDataChangedMessage.class.equals(Double.class)
-                        || UserDataChangedMessage.class.equals(Boolean.class)
-                        || UserDataChangedMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((UserDataChangedMessage.class.equals(Integer.class)
-                                || UserDataChangedMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((UserDataChangedMessage.class.equals(Float.class)
-                                || UserDataChangedMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (UserDataChangedMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (UserDataChangedMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(UserDataChangedMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -1024,24 +497,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize UserDeletedMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (UserDeletedMessage.class.equals(Integer.class) || UserDeletedMessage.class.equals(Long.class)
-                        || UserDeletedMessage.class.equals(Float.class) || UserDeletedMessage.class.equals(Double.class)
-                        || UserDeletedMessage.class.equals(Boolean.class)
-                        || UserDeletedMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((UserDeletedMessage.class.equals(Integer.class)
-                                || UserDeletedMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((UserDeletedMessage.class.equals(Float.class)
-                                || UserDeletedMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (UserDeletedMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (UserDeletedMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(UserDeletedMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -1058,24 +513,6 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize UserUpdatedMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (UserUpdatedMessage.class.equals(Integer.class) || UserUpdatedMessage.class.equals(Long.class)
-                        || UserUpdatedMessage.class.equals(Float.class) || UserUpdatedMessage.class.equals(Double.class)
-                        || UserUpdatedMessage.class.equals(Boolean.class)
-                        || UserUpdatedMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((UserUpdatedMessage.class.equals(Integer.class)
-                                || UserUpdatedMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((UserUpdatedMessage.class.equals(Float.class)
-                                || UserUpdatedMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (UserUpdatedMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (UserUpdatedMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(UserUpdatedMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -1108,7 +545,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
     }
 
     // store a list of schema names defined in oneOf
-    public static final Map<String, Class<?>> schemas = new HashMap<>();
+    public static final Map<String, GenericType<?>> schemas = new HashMap<>();
 
     public OutboundWebSocketMessage() {
         super("oneOf", Boolean.FALSE);
@@ -1255,37 +692,65 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
     }
 
     static {
-        schemas.put("ActivityLogEntryMessage", ActivityLogEntryMessage.class);
-        schemas.put("ForceKeepAliveMessage", ForceKeepAliveMessage.class);
-        schemas.put("GeneralCommandMessage", GeneralCommandMessage.class);
-        schemas.put("LibraryChangedMessage", LibraryChangedMessage.class);
-        schemas.put("OutboundKeepAliveMessage", OutboundKeepAliveMessage.class);
-        schemas.put("PlayMessage", PlayMessage.class);
-        schemas.put("PlaystateMessage", PlaystateMessage.class);
-        schemas.put("PluginInstallationCancelledMessage", PluginInstallationCancelledMessage.class);
-        schemas.put("PluginInstallationCompletedMessage", PluginInstallationCompletedMessage.class);
-        schemas.put("PluginInstallationFailedMessage", PluginInstallationFailedMessage.class);
-        schemas.put("PluginInstallingMessage", PluginInstallingMessage.class);
-        schemas.put("PluginUninstalledMessage", PluginUninstalledMessage.class);
-        schemas.put("RefreshProgressMessage", RefreshProgressMessage.class);
-        schemas.put("RestartRequiredMessage", RestartRequiredMessage.class);
-        schemas.put("ScheduledTaskEndedMessage", ScheduledTaskEndedMessage.class);
-        schemas.put("ScheduledTasksInfoMessage", ScheduledTasksInfoMessage.class);
-        schemas.put("SeriesTimerCancelledMessage", SeriesTimerCancelledMessage.class);
-        schemas.put("SeriesTimerCreatedMessage", SeriesTimerCreatedMessage.class);
-        schemas.put("ServerRestartingMessage", ServerRestartingMessage.class);
-        schemas.put("ServerShuttingDownMessage", ServerShuttingDownMessage.class);
-        schemas.put("SessionsMessage", SessionsMessage.class);
-        schemas.put("SyncPlayCommandMessage", SyncPlayCommandMessage.class);
-        schemas.put("SyncPlayGroupUpdateCommandMessage", SyncPlayGroupUpdateCommandMessage.class);
-        schemas.put("TimerCancelledMessage", TimerCancelledMessage.class);
-        schemas.put("TimerCreatedMessage", TimerCreatedMessage.class);
-        schemas.put("UserDataChangedMessage", UserDataChangedMessage.class);
-        schemas.put("UserDeletedMessage", UserDeletedMessage.class);
-        schemas.put("UserUpdatedMessage", UserUpdatedMessage.class);
+        schemas.put("ActivityLogEntryMessage", new GenericType<ActivityLogEntryMessage>() {
+        });
+        schemas.put("ForceKeepAliveMessage", new GenericType<ForceKeepAliveMessage>() {
+        });
+        schemas.put("GeneralCommandMessage", new GenericType<GeneralCommandMessage>() {
+        });
+        schemas.put("LibraryChangedMessage", new GenericType<LibraryChangedMessage>() {
+        });
+        schemas.put("OutboundKeepAliveMessage", new GenericType<OutboundKeepAliveMessage>() {
+        });
+        schemas.put("PlayMessage", new GenericType<PlayMessage>() {
+        });
+        schemas.put("PlaystateMessage", new GenericType<PlaystateMessage>() {
+        });
+        schemas.put("PluginInstallationCancelledMessage", new GenericType<PluginInstallationCancelledMessage>() {
+        });
+        schemas.put("PluginInstallationCompletedMessage", new GenericType<PluginInstallationCompletedMessage>() {
+        });
+        schemas.put("PluginInstallationFailedMessage", new GenericType<PluginInstallationFailedMessage>() {
+        });
+        schemas.put("PluginInstallingMessage", new GenericType<PluginInstallingMessage>() {
+        });
+        schemas.put("PluginUninstalledMessage", new GenericType<PluginUninstalledMessage>() {
+        });
+        schemas.put("RefreshProgressMessage", new GenericType<RefreshProgressMessage>() {
+        });
+        schemas.put("RestartRequiredMessage", new GenericType<RestartRequiredMessage>() {
+        });
+        schemas.put("ScheduledTaskEndedMessage", new GenericType<ScheduledTaskEndedMessage>() {
+        });
+        schemas.put("ScheduledTasksInfoMessage", new GenericType<ScheduledTasksInfoMessage>() {
+        });
+        schemas.put("SeriesTimerCancelledMessage", new GenericType<SeriesTimerCancelledMessage>() {
+        });
+        schemas.put("SeriesTimerCreatedMessage", new GenericType<SeriesTimerCreatedMessage>() {
+        });
+        schemas.put("ServerRestartingMessage", new GenericType<ServerRestartingMessage>() {
+        });
+        schemas.put("ServerShuttingDownMessage", new GenericType<ServerShuttingDownMessage>() {
+        });
+        schemas.put("SessionsMessage", new GenericType<SessionsMessage>() {
+        });
+        schemas.put("SyncPlayCommandMessage", new GenericType<SyncPlayCommandMessage>() {
+        });
+        schemas.put("SyncPlayGroupUpdateCommandMessage", new GenericType<SyncPlayGroupUpdateCommandMessage>() {
+        });
+        schemas.put("TimerCancelledMessage", new GenericType<TimerCancelledMessage>() {
+        });
+        schemas.put("TimerCreatedMessage", new GenericType<TimerCreatedMessage>() {
+        });
+        schemas.put("UserDataChangedMessage", new GenericType<UserDataChangedMessage>() {
+        });
+        schemas.put("UserDeletedMessage", new GenericType<UserDeletedMessage>() {
+        });
+        schemas.put("UserUpdatedMessage", new GenericType<UserUpdatedMessage>() {
+        });
         JSON.registerDescendants(OutboundWebSocketMessage.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
-        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
+        Map<String, Class<?>> mappings = new HashMap<>();
         mappings.put("ActivityLogEntry", ActivityLogEntryMessage.class);
         mappings.put("ForceKeepAlive", ForceKeepAliveMessage.class);
         mappings.put("GeneralCommand", GeneralCommandMessage.class);
@@ -1347,7 +812,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
     }
 
     @Override
-    public Map<String, Class<?>> getSchemas() {
+    public Map<String, GenericType<?>> getSchemas() {
         return OutboundWebSocketMessage.schemas;
     }
 
@@ -1367,142 +832,142 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(ActivityLogEntryMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ActivityLogEntryMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(ForceKeepAliveMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ForceKeepAliveMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(GeneralCommandMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(GeneralCommandMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(LibraryChangedMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(LibraryChangedMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(OutboundKeepAliveMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(OutboundKeepAliveMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(PlayMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(PlayMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(PlaystateMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(PlaystateMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(PluginInstallationCancelledMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(PluginInstallationCancelledMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(PluginInstallationCompletedMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(PluginInstallationCompletedMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(PluginInstallationFailedMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(PluginInstallationFailedMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(PluginInstallingMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(PluginInstallingMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(PluginUninstalledMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(PluginUninstalledMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(RefreshProgressMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(RefreshProgressMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(RestartRequiredMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(RestartRequiredMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(ScheduledTaskEndedMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ScheduledTaskEndedMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(ScheduledTasksInfoMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ScheduledTasksInfoMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(SeriesTimerCancelledMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SeriesTimerCancelledMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(SeriesTimerCreatedMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SeriesTimerCreatedMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(ServerRestartingMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ServerRestartingMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(ServerShuttingDownMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ServerShuttingDownMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(SessionsMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SessionsMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(SyncPlayCommandMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SyncPlayCommandMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(SyncPlayGroupUpdateCommandMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SyncPlayGroupUpdateCommandMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(TimerCancelledMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(TimerCancelledMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(TimerCreatedMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(TimerCreatedMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(UserDataChangedMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(UserDataChangedMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(UserDeletedMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(UserDeletedMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(UserUpdatedMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(UserUpdatedMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
@@ -1850,230 +1315,5 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
      */
     public UserUpdatedMessage getUserUpdatedMessage() throws ClassCastException {
         return (UserUpdatedMessage) super.getActualInstance();
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        if (getActualInstance() instanceof ActivityLogEntryMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((ActivityLogEntryMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof ForceKeepAliveMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((ForceKeepAliveMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof GeneralCommandMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((GeneralCommandMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof LibraryChangedMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((LibraryChangedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_3" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof OutboundKeepAliveMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((OutboundKeepAliveMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_4" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof PlayMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((PlayMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_5" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof PlaystateMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((PlaystateMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_6" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof PluginInstallationCancelledMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((PluginInstallationCancelledMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_7" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof PluginInstallationCompletedMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((PluginInstallationCompletedMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_8" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof PluginInstallationFailedMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((PluginInstallationFailedMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_9" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof PluginInstallingMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((PluginInstallingMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_10" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof PluginUninstalledMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((PluginUninstalledMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_11" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof RefreshProgressMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((RefreshProgressMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_12" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof RestartRequiredMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((RestartRequiredMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_13" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof ScheduledTaskEndedMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((ScheduledTaskEndedMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_14" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof ScheduledTasksInfoMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((ScheduledTasksInfoMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_15" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof SeriesTimerCancelledMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((SeriesTimerCancelledMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_16" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof SeriesTimerCreatedMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((SeriesTimerCreatedMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_17" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof ServerRestartingMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((ServerRestartingMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_18" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof ServerShuttingDownMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((ServerShuttingDownMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_19" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof SessionsMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((SessionsMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_20" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof SyncPlayCommandMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((SyncPlayCommandMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_21" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof SyncPlayGroupUpdateCommandMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((SyncPlayGroupUpdateCommandMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_22" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof TimerCancelledMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((TimerCancelledMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_23" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof TimerCreatedMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((TimerCreatedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_24" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof UserDataChangedMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((UserDataChangedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_25" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof UserDeletedMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((UserDeletedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_26" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof UserUpdatedMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((UserUpdatedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_27" + suffix));
-            }
-            return joiner.toString();
-        }
-        return null;
     }
 }

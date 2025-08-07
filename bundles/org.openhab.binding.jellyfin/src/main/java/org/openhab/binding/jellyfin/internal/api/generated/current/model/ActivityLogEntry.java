@@ -15,10 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,6 +64,7 @@ public class ActivityLogEntry {
     private UUID userId;
 
     public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
     private String userPrimaryImageTag;
 
@@ -90,6 +88,7 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getId() {
         return id;
     }
@@ -113,6 +112,7 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -136,6 +136,7 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OVERVIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOverview() {
         return overview;
     }
@@ -159,6 +160,7 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SHORT_OVERVIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getShortOverview() {
         return shortOverview;
     }
@@ -182,6 +184,7 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getType() {
         return type;
     }
@@ -205,6 +208,7 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getItemId() {
         return itemId;
     }
@@ -228,6 +232,7 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDate() {
         return date;
     }
@@ -251,6 +256,7 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -261,6 +267,7 @@ public class ActivityLogEntry {
         this.userId = userId;
     }
 
+    @Deprecated
     public ActivityLogEntry userPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String userPrimaryImageTag) {
         this.userPrimaryImageTag = userPrimaryImageTag;
         return this;
@@ -276,10 +283,12 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUserPrimaryImageTag() {
         return userPrimaryImageTag;
     }
 
+    @Deprecated
     @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String userPrimaryImageTag) {
@@ -299,6 +308,7 @@ public class ActivityLogEntry {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SEVERITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public LogLevel getSeverity() {
         return severity;
     }
@@ -365,198 +375,5 @@ public class ActivityLogEntry {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Overview` to the URL query string
-        if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
-        }
-
-        // add `ShortOverview` to the URL query string
-        if (getShortOverview() != null) {
-            joiner.add(String.format("%sShortOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShortOverview()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `Date` to the URL query string
-        if (getDate() != null) {
-            joiner.add(String.format("%sDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDate()))));
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `UserPrimaryImageTag` to the URL query string
-        if (getUserPrimaryImageTag() != null) {
-            joiner.add(String.format("%sUserPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserPrimaryImageTag()))));
-        }
-
-        // add `Severity` to the URL query string
-        if (getSeverity() != null) {
-            joiner.add(String.format("%sSeverity%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeverity()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ActivityLogEntry instance;
-
-        public Builder() {
-            this(new ActivityLogEntry());
-        }
-
-        protected Builder(ActivityLogEntry instance) {
-            this.instance = instance;
-        }
-
-        public ActivityLogEntry.Builder id(Long id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public ActivityLogEntry.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public ActivityLogEntry.Builder overview(String overview) {
-            this.instance.overview = overview;
-            return this;
-        }
-
-        public ActivityLogEntry.Builder shortOverview(String shortOverview) {
-            this.instance.shortOverview = shortOverview;
-            return this;
-        }
-
-        public ActivityLogEntry.Builder type(String type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public ActivityLogEntry.Builder itemId(String itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public ActivityLogEntry.Builder date(OffsetDateTime date) {
-            this.instance.date = date;
-            return this;
-        }
-
-        public ActivityLogEntry.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public ActivityLogEntry.Builder userPrimaryImageTag(String userPrimaryImageTag) {
-            this.instance.userPrimaryImageTag = userPrimaryImageTag;
-            return this;
-        }
-
-        public ActivityLogEntry.Builder severity(LogLevel severity) {
-            this.instance.severity = severity;
-            return this;
-        }
-
-        /**
-         * returns a built ActivityLogEntry instance.
-         *
-         * The builder is not reusable.
-         */
-        public ActivityLogEntry build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ActivityLogEntry.Builder builder() {
-        return new ActivityLogEntry.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ActivityLogEntry.Builder toBuilder() {
-        return new ActivityLogEntry.Builder().id(getId()).name(getName()).overview(getOverview())
-                .shortOverview(getShortOverview()).type(getType()).itemId(getItemId()).date(getDate())
-                .userId(getUserId()).userPrimaryImageTag(getUserPrimaryImageTag()).severity(getSeverity());
     }
 }

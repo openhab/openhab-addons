@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -78,6 +75,7 @@ public class ImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ImageType getImageType() {
         return imageType;
     }
@@ -101,6 +99,7 @@ public class ImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getImageIndex() {
         return imageIndex;
     }
@@ -124,6 +123,7 @@ public class ImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getImageTag() {
         return imageTag;
     }
@@ -147,6 +147,7 @@ public class ImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPath() {
         return path;
     }
@@ -170,6 +171,7 @@ public class ImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BLUR_HASH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getBlurHash() {
         return blurHash;
     }
@@ -193,6 +195,7 @@ public class ImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getHeight() {
         return height;
     }
@@ -216,6 +219,7 @@ public class ImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getWidth() {
         return width;
     }
@@ -239,6 +243,7 @@ public class ImageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SIZE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getSize() {
         return size;
     }
@@ -298,175 +303,5 @@ public class ImageInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ImageType` to the URL query string
-        if (getImageType() != null) {
-            joiner.add(String.format("%sImageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageType()))));
-        }
-
-        // add `ImageIndex` to the URL query string
-        if (getImageIndex() != null) {
-            joiner.add(String.format("%sImageIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageIndex()))));
-        }
-
-        // add `ImageTag` to the URL query string
-        if (getImageTag() != null) {
-            joiner.add(String.format("%sImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageTag()))));
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `BlurHash` to the URL query string
-        if (getBlurHash() != null) {
-            joiner.add(String.format("%sBlurHash%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBlurHash()))));
-        }
-
-        // add `Height` to the URL query string
-        if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
-        }
-
-        // add `Width` to the URL query string
-        if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
-        }
-
-        // add `Size` to the URL query string
-        if (getSize() != null) {
-            joiner.add(String.format("%sSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ImageInfo instance;
-
-        public Builder() {
-            this(new ImageInfo());
-        }
-
-        protected Builder(ImageInfo instance) {
-            this.instance = instance;
-        }
-
-        public ImageInfo.Builder imageType(ImageType imageType) {
-            this.instance.imageType = imageType;
-            return this;
-        }
-
-        public ImageInfo.Builder imageIndex(Integer imageIndex) {
-            this.instance.imageIndex = imageIndex;
-            return this;
-        }
-
-        public ImageInfo.Builder imageTag(String imageTag) {
-            this.instance.imageTag = imageTag;
-            return this;
-        }
-
-        public ImageInfo.Builder path(String path) {
-            this.instance.path = path;
-            return this;
-        }
-
-        public ImageInfo.Builder blurHash(String blurHash) {
-            this.instance.blurHash = blurHash;
-            return this;
-        }
-
-        public ImageInfo.Builder height(Integer height) {
-            this.instance.height = height;
-            return this;
-        }
-
-        public ImageInfo.Builder width(Integer width) {
-            this.instance.width = width;
-            return this;
-        }
-
-        public ImageInfo.Builder size(Long size) {
-            this.instance.size = size;
-            return this;
-        }
-
-        /**
-         * returns a built ImageInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public ImageInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ImageInfo.Builder builder() {
-        return new ImageInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ImageInfo.Builder toBuilder() {
-        return new ImageInfo.Builder().imageType(getImageType()).imageIndex(getImageIndex()).imageTag(getImageTag())
-                .path(getPath()).blurHash(getBlurHash()).height(getHeight()).width(getWidth()).size(getSize());
     }
 }

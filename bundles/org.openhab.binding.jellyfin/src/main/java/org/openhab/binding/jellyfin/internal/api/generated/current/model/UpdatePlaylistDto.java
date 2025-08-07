@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -64,6 +61,7 @@ public class UpdatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -95,6 +93,7 @@ public class UpdatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getIds() {
         return ids;
     }
@@ -126,6 +125,7 @@ public class UpdatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<PlaylistUserPermissions> getUsers() {
         return users;
     }
@@ -149,6 +149,7 @@ public class UpdatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPublic() {
         return isPublic;
     }
@@ -202,139 +203,5 @@ public class UpdatePlaylistDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Ids` to the URL query string
-        if (getIds() != null) {
-            for (int i = 0; i < getIds().size(); i++) {
-                if (getIds().get(i) != null) {
-                    joiner.add(String.format("%sIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getIds().get(i)))));
-                }
-            }
-        }
-
-        // add `Users` to the URL query string
-        if (getUsers() != null) {
-            for (int i = 0; i < getUsers().size(); i++) {
-                if (getUsers().get(i) != null) {
-                    joiner.add(getUsers().get(i).toUrlQueryString(String.format("%sUsers%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `IsPublic` to the URL query string
-        if (getIsPublic() != null) {
-            joiner.add(String.format("%sIsPublic%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPublic()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private UpdatePlaylistDto instance;
-
-        public Builder() {
-            this(new UpdatePlaylistDto());
-        }
-
-        protected Builder(UpdatePlaylistDto instance) {
-            this.instance = instance;
-        }
-
-        public UpdatePlaylistDto.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public UpdatePlaylistDto.Builder ids(List<UUID> ids) {
-            this.instance.ids = ids;
-            return this;
-        }
-
-        public UpdatePlaylistDto.Builder users(List<PlaylistUserPermissions> users) {
-            this.instance.users = users;
-            return this;
-        }
-
-        public UpdatePlaylistDto.Builder isPublic(Boolean isPublic) {
-            this.instance.isPublic = isPublic;
-            return this;
-        }
-
-        /**
-         * returns a built UpdatePlaylistDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public UpdatePlaylistDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UpdatePlaylistDto.Builder builder() {
-        return new UpdatePlaylistDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UpdatePlaylistDto.Builder toBuilder() {
-        return new UpdatePlaylistDto.Builder().name(getName()).ids(getIds()).users(getUsers()).isPublic(getIsPublic());
     }
 }

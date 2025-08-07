@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -108,6 +105,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -131,6 +129,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VIEW_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getViewType() {
         return viewType;
     }
@@ -154,6 +153,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SORT_BY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSortBy() {
         return sortBy;
     }
@@ -177,6 +177,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INDEX_BY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getIndexBy() {
         return indexBy;
     }
@@ -200,6 +201,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REMEMBER_INDEXING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRememberIndexing() {
         return rememberIndexing;
     }
@@ -223,6 +225,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPrimaryImageHeight() {
         return primaryImageHeight;
     }
@@ -246,6 +249,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPrimaryImageWidth() {
         return primaryImageWidth;
     }
@@ -277,6 +281,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CUSTOM_PREFS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getCustomPrefs() {
         return customPrefs;
     }
@@ -300,6 +305,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SCROLL_DIRECTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ScrollDirection getScrollDirection() {
         return scrollDirection;
     }
@@ -323,6 +329,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SHOW_BACKDROP)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getShowBackdrop() {
         return showBackdrop;
     }
@@ -346,6 +353,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REMEMBER_SORTING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRememberSorting() {
         return rememberSorting;
     }
@@ -369,6 +377,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SORT_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SortOrder getSortOrder() {
         return sortOrder;
     }
@@ -392,6 +401,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SHOW_SIDEBAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getShowSidebar() {
         return showSidebar;
     }
@@ -415,6 +425,7 @@ public class DisplayPreferencesDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CLIENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getClient() {
         return client;
     }
@@ -490,249 +501,5 @@ public class DisplayPreferencesDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `ViewType` to the URL query string
-        if (getViewType() != null) {
-            joiner.add(String.format("%sViewType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getViewType()))));
-        }
-
-        // add `SortBy` to the URL query string
-        if (getSortBy() != null) {
-            joiner.add(String.format("%sSortBy%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSortBy()))));
-        }
-
-        // add `IndexBy` to the URL query string
-        if (getIndexBy() != null) {
-            joiner.add(String.format("%sIndexBy%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexBy()))));
-        }
-
-        // add `RememberIndexing` to the URL query string
-        if (getRememberIndexing() != null) {
-            joiner.add(String.format("%sRememberIndexing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRememberIndexing()))));
-        }
-
-        // add `PrimaryImageHeight` to the URL query string
-        if (getPrimaryImageHeight() != null) {
-            joiner.add(String.format("%sPrimaryImageHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageHeight()))));
-        }
-
-        // add `PrimaryImageWidth` to the URL query string
-        if (getPrimaryImageWidth() != null) {
-            joiner.add(String.format("%sPrimaryImageWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageWidth()))));
-        }
-
-        // add `CustomPrefs` to the URL query string
-        if (getCustomPrefs() != null) {
-            for (String _key : getCustomPrefs().keySet()) {
-                joiner.add(String.format("%sCustomPrefs%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getCustomPrefs().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getCustomPrefs().get(_key)))));
-            }
-        }
-
-        // add `ScrollDirection` to the URL query string
-        if (getScrollDirection() != null) {
-            joiner.add(String.format("%sScrollDirection%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getScrollDirection()))));
-        }
-
-        // add `ShowBackdrop` to the URL query string
-        if (getShowBackdrop() != null) {
-            joiner.add(String.format("%sShowBackdrop%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShowBackdrop()))));
-        }
-
-        // add `RememberSorting` to the URL query string
-        if (getRememberSorting() != null) {
-            joiner.add(String.format("%sRememberSorting%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRememberSorting()))));
-        }
-
-        // add `SortOrder` to the URL query string
-        if (getSortOrder() != null) {
-            joiner.add(String.format("%sSortOrder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSortOrder()))));
-        }
-
-        // add `ShowSidebar` to the URL query string
-        if (getShowSidebar() != null) {
-            joiner.add(String.format("%sShowSidebar%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShowSidebar()))));
-        }
-
-        // add `Client` to the URL query string
-        if (getClient() != null) {
-            joiner.add(String.format("%sClient%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClient()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private DisplayPreferencesDto instance;
-
-        public Builder() {
-            this(new DisplayPreferencesDto());
-        }
-
-        protected Builder(DisplayPreferencesDto instance) {
-            this.instance = instance;
-        }
-
-        public DisplayPreferencesDto.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder viewType(String viewType) {
-            this.instance.viewType = viewType;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder sortBy(String sortBy) {
-            this.instance.sortBy = sortBy;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder indexBy(String indexBy) {
-            this.instance.indexBy = indexBy;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder rememberIndexing(Boolean rememberIndexing) {
-            this.instance.rememberIndexing = rememberIndexing;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder primaryImageHeight(Integer primaryImageHeight) {
-            this.instance.primaryImageHeight = primaryImageHeight;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder primaryImageWidth(Integer primaryImageWidth) {
-            this.instance.primaryImageWidth = primaryImageWidth;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder customPrefs(Map<String, String> customPrefs) {
-            this.instance.customPrefs = customPrefs;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder scrollDirection(ScrollDirection scrollDirection) {
-            this.instance.scrollDirection = scrollDirection;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder showBackdrop(Boolean showBackdrop) {
-            this.instance.showBackdrop = showBackdrop;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder rememberSorting(Boolean rememberSorting) {
-            this.instance.rememberSorting = rememberSorting;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder sortOrder(SortOrder sortOrder) {
-            this.instance.sortOrder = sortOrder;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder showSidebar(Boolean showSidebar) {
-            this.instance.showSidebar = showSidebar;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder client(String client) {
-            this.instance.client = client;
-            return this;
-        }
-
-        /**
-         * returns a built DisplayPreferencesDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public DisplayPreferencesDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DisplayPreferencesDto.Builder builder() {
-        return new DisplayPreferencesDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DisplayPreferencesDto.Builder toBuilder() {
-        return new DisplayPreferencesDto.Builder().id(getId()).viewType(getViewType()).sortBy(getSortBy())
-                .indexBy(getIndexBy()).rememberIndexing(getRememberIndexing())
-                .primaryImageHeight(getPrimaryImageHeight()).primaryImageWidth(getPrimaryImageWidth())
-                .customPrefs(getCustomPrefs()).scrollDirection(getScrollDirection()).showBackdrop(getShowBackdrop())
-                .rememberSorting(getRememberSorting()).sortOrder(getSortOrder()).showSidebar(getShowSidebar())
-                .client(getClient());
     }
 }

@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,6 +45,7 @@ public class ClientLogDocumentResponseDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FILE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getFileName() {
         return fileName;
     }
@@ -96,97 +94,5 @@ public class ClientLogDocumentResponseDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `FileName` to the URL query string
-        if (getFileName() != null) {
-            joiner.add(String.format("%sFileName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFileName()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ClientLogDocumentResponseDto instance;
-
-        public Builder() {
-            this(new ClientLogDocumentResponseDto());
-        }
-
-        protected Builder(ClientLogDocumentResponseDto instance) {
-            this.instance = instance;
-        }
-
-        public ClientLogDocumentResponseDto.Builder fileName(String fileName) {
-            this.instance.fileName = fileName;
-            return this;
-        }
-
-        /**
-         * returns a built ClientLogDocumentResponseDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public ClientLogDocumentResponseDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ClientLogDocumentResponseDto.Builder builder() {
-        return new ClientLogDocumentResponseDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ClientLogDocumentResponseDto.Builder toBuilder() {
-        return new ClientLogDocumentResponseDto.Builder().fileName(getFileName());
     }
 }

@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -54,6 +51,7 @@ public class PinRedeemResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUCCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSuccess() {
         return success;
     }
@@ -85,6 +83,7 @@ public class PinRedeemResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USERS_RESET)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getUsersReset() {
         return usersReset;
     }
@@ -135,111 +134,5 @@ public class PinRedeemResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Success` to the URL query string
-        if (getSuccess() != null) {
-            joiner.add(String.format("%sSuccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSuccess()))));
-        }
-
-        // add `UsersReset` to the URL query string
-        if (getUsersReset() != null) {
-            for (int i = 0; i < getUsersReset().size(); i++) {
-                joiner.add(String.format("%sUsersReset%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getUsersReset().get(i)))));
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private PinRedeemResult instance;
-
-        public Builder() {
-            this(new PinRedeemResult());
-        }
-
-        protected Builder(PinRedeemResult instance) {
-            this.instance = instance;
-        }
-
-        public PinRedeemResult.Builder success(Boolean success) {
-            this.instance.success = success;
-            return this;
-        }
-
-        public PinRedeemResult.Builder usersReset(List<String> usersReset) {
-            this.instance.usersReset = usersReset;
-            return this;
-        }
-
-        /**
-         * returns a built PinRedeemResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public PinRedeemResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PinRedeemResult.Builder builder() {
-        return new PinRedeemResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PinRedeemResult.Builder toBuilder() {
-        return new PinRedeemResult.Builder().success(getSuccess()).usersReset(getUsersReset());
     }
 }

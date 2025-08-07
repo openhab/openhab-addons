@@ -1,6 +1,6 @@
 {
   "annotationLibrary": "none",
-  "library": "native",
+  "library": "jersey2",
   "dateLibrary": "java8",
   "serializationLibrary": "jackson",
   "developerEmail": "patrik.gfeller@gmail.com",
@@ -15,5 +15,7 @@
   "ignoreAnyOfInEnum": true,
   "openApiNullable": false,
   "templateDir": "tools/generate-sources/scripts/templates",
-  "outputEncoding": "UTF-8"
+  "outputEncoding": "UTF-8",
+  "useRuntimeException": true,
+  "useSingleRequestParameter": false
 }

@@ -1,30 +1,12 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -45,44 +27,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.UpdateU
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserItemDataDto;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.VideoType;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ItemsApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public ItemsApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public ItemsApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -92,11 +64,39 @@ public class ItemsApi {
      * @param userId The user id. (optional)
      * @return UserItemDataDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>return item user data.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item is not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public UserItemDataDto getItemUserData(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = getItemUserDataWithHttpInfo(itemId, userId);
-        return localVarResponse.getData();
+        return getItemUserDataWithHttpInfo(itemId, userId).getData();
     }
 
     /**
@@ -106,82 +106,59 @@ public class ItemsApi {
      * @param userId The user id. (optional)
      * @return ApiResponse&lt;UserItemDataDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>return item user data.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item is not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<UserItemDataDto> getItemUserDataWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getItemUserDataRequestBuilder(itemId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getItemUserData", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getItemUserDataRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItemUserData");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/UserItems/{itemId}/UserData".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/UserItems/{itemId}/UserData".replace("{itemId}",
-                ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<UserItemDataDto> localVarReturnType = new GenericType<UserItemDataDto>() {
+        };
+        return apiClient.invokeAPI("ItemsApi.getItemUserData", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -312,6 +289,30 @@ public class ItemsApi {
      * @param enableImages Optional, include image information in output. (optional, default to true)
      * @return BaseItemDtoQueryResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDtoQueryResult getItems(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String maxOfficialRating,
@@ -389,20 +390,18 @@ public class ItemsApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getItemsWithHttpInfo(userId, maxOfficialRating,
-                hasThemeSong, hasThemeVideo, hasSubtitles, hasSpecialFeature, hasTrailer, adjacentTo, indexNumber,
-                parentIndexNumber, hasParentalRating, isHd, is4K, locationTypes, excludeLocationTypes, isMissing,
-                isUnaired, minCommunityRating, minCriticRating, minPremiereDate, minDateLastSaved,
-                minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId, hasTmdbId, hasTvdbId, isMovie,
-                isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit, recursive, searchTerm, sortOrder,
-                parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, imageTypes,
-                sortBy, isPlayed, genres, officialRatings, tags, years, enableUserData, imageTypeLimit,
-                enableImageTypes, person, personIds, personTypes, studios, artists, excludeArtistIds, artistIds,
-                albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes, minOfficialRating, isLocked,
-                isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight, maxWidth, maxHeight, is3D,
-                seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan, studioIds, genreIds,
-                enableTotalRecordCount, enableImages);
-        return localVarResponse.getData();
+        return getItemsWithHttpInfo(userId, maxOfficialRating, hasThemeSong, hasThemeVideo, hasSubtitles,
+                hasSpecialFeature, hasTrailer, adjacentTo, indexNumber, parentIndexNumber, hasParentalRating, isHd,
+                is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired, minCommunityRating, minCriticRating,
+                minPremiereDate, minDateLastSaved, minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId,
+                hasTmdbId, hasTvdbId, isMovie, isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit,
+                recursive, searchTerm, sortOrder, parentId, fields, excludeItemTypes, includeItemTypes, filters,
+                isFavorite, mediaTypes, imageTypes, sortBy, isPlayed, genres, officialRatings, tags, years,
+                enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, artists,
+                excludeArtistIds, artistIds, albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes,
+                minOfficialRating, isLocked, isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight,
+                maxWidth, maxHeight, is3D, seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan,
+                studioIds, genreIds, enableTotalRecordCount, enableImages).getData();
     }
 
     /**
@@ -533,6 +532,30 @@ public class ItemsApi {
      * @param enableImages Optional, include image information in output. (optional, default to true)
      * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Success</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDtoQueryResult> getItemsWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String maxOfficialRating,
@@ -610,332 +633,103 @@ public class ItemsApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getItemsRequestBuilder(userId, maxOfficialRating, hasThemeSong,
-                hasThemeVideo, hasSubtitles, hasSpecialFeature, hasTrailer, adjacentTo, indexNumber, parentIndexNumber,
-                hasParentalRating, isHd, is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired,
-                minCommunityRating, minCriticRating, minPremiereDate, minDateLastSaved, minDateLastSavedForUser,
-                maxPremiereDate, hasOverview, hasImdbId, hasTmdbId, hasTvdbId, isMovie, isSeries, isNews, isKids,
-                isSports, excludeItemIds, startIndex, limit, recursive, searchTerm, sortOrder, parentId, fields,
-                excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, imageTypes, sortBy, isPlayed,
-                genres, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person,
-                personIds, personTypes, studios, artists, excludeArtistIds, artistIds, albumArtistIds,
-                contributingArtistIds, albums, albumIds, ids, videoTypes, minOfficialRating, isLocked, isPlaceHolder,
-                hasOfficialRating, collapseBoxSetItems, minWidth, minHeight, maxWidth, maxHeight, is3D, seriesStatus,
-                nameStartsWithOrGreater, nameStartsWith, nameLessThan, studioIds, genreIds, enableTotalRecordCount,
-                enableImages);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getItems", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxOfficialRating", maxOfficialRating));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasThemeSong", hasThemeSong));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasThemeVideo", hasThemeVideo));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasSubtitles", hasSubtitles));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasSpecialFeature", hasSpecialFeature));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasTrailer", hasTrailer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "adjacentTo", adjacentTo));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "indexNumber", indexNumber));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "parentIndexNumber", parentIndexNumber));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasParentalRating", hasParentalRating));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isHd", isHd));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "is4K", is4K));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "locationTypes", locationTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "excludeLocationTypes", excludeLocationTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isMissing", isMissing));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isUnaired", isUnaired));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minCommunityRating", minCommunityRating));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minCriticRating", minCriticRating));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minPremiereDate", minPremiereDate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minDateLastSaved", minDateLastSaved));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minDateLastSavedForUser", minDateLastSavedForUser));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxPremiereDate", maxPremiereDate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasOverview", hasOverview));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasImdbId", hasImdbId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasTmdbId", hasTmdbId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasTvdbId", hasTvdbId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isMovie", isMovie));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isSeries", isSeries));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isNews", isNews));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isKids", isKids));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isSports", isSports));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "excludeItemIds", excludeItemIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startIndex", startIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "recursive", recursive));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "searchTerm", searchTerm));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "sortOrder", sortOrder));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "parentId", parentId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "fields", fields));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "filters", filters));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isFavorite", isFavorite));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "imageTypes", imageTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "sortBy", sortBy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isPlayed", isPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "genres", genres));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "officialRatings", officialRatings));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "tags", tags));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "years", years));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableUserData", enableUserData));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageTypeLimit", imageTypeLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "person", person));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "personIds", personIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "personTypes", personTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "studios", studios));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "artists", artists));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "artistIds", artistIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "albumArtistIds", albumArtistIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "contributingArtistIds", contributingArtistIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "albums", albums));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "albumIds", albumIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "ids", ids));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "videoTypes", videoTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minOfficialRating", minOfficialRating));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isLocked", isLocked));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isPlaceHolder", isPlaceHolder));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "hasOfficialRating", hasOfficialRating));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "collapseBoxSetItems", collapseBoxSetItems));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minWidth", minWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minHeight", minHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxWidth", maxWidth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxHeight", maxHeight));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "is3D", is3D));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "seriesStatus", seriesStatus));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "nameStartsWithOrGreater", nameStartsWithOrGreater));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "nameStartsWith", nameStartsWith));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "nameLessThan", nameLessThan));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "studioIds", studioIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "genreIds", genreIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableTotalRecordCount", enableTotalRecordCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableImages", enableImages));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getItemsRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull String maxOfficialRating,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasThemeSong,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasThemeVideo,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasSubtitles,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasSpecialFeature,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasTrailer, @org.eclipse.jdt.annotation.NonNull UUID adjacentTo,
-            @org.eclipse.jdt.annotation.NonNull Integer indexNumber,
-            @org.eclipse.jdt.annotation.NonNull Integer parentIndexNumber,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasParentalRating,
-            @org.eclipse.jdt.annotation.NonNull Boolean isHd, @org.eclipse.jdt.annotation.NonNull Boolean is4K,
-            @org.eclipse.jdt.annotation.NonNull List<LocationType> locationTypes,
-            @org.eclipse.jdt.annotation.NonNull List<LocationType> excludeLocationTypes,
-            @org.eclipse.jdt.annotation.NonNull Boolean isMissing,
-            @org.eclipse.jdt.annotation.NonNull Boolean isUnaired,
-            @org.eclipse.jdt.annotation.NonNull Double minCommunityRating,
-            @org.eclipse.jdt.annotation.NonNull Double minCriticRating,
-            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minPremiereDate,
-            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDateLastSaved,
-            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDateLastSavedForUser,
-            @org.eclipse.jdt.annotation.NonNull OffsetDateTime maxPremiereDate,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasOverview,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasImdbId,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasTmdbId,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasTvdbId, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
-            @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
-            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeItemIds,
-            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull Boolean recursive,
-            @org.eclipse.jdt.annotation.NonNull String searchTerm,
-            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
-            @org.eclipse.jdt.annotation.NonNull UUID parentId,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> excludeItemTypes,
-            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFilter> filters,
-            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite,
-            @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> imageTypes,
-            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
-            @org.eclipse.jdt.annotation.NonNull Boolean isPlayed,
-            @org.eclipse.jdt.annotation.NonNull List<String> genres,
-            @org.eclipse.jdt.annotation.NonNull List<String> officialRatings,
-            @org.eclipse.jdt.annotation.NonNull List<String> tags,
-            @org.eclipse.jdt.annotation.NonNull List<Integer> years,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull String person, @org.eclipse.jdt.annotation.NonNull List<UUID> personIds,
-            @org.eclipse.jdt.annotation.NonNull List<String> personTypes,
-            @org.eclipse.jdt.annotation.NonNull List<String> studios,
-            @org.eclipse.jdt.annotation.NonNull List<String> artists,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> artistIds,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> albumArtistIds,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> contributingArtistIds,
-            @org.eclipse.jdt.annotation.NonNull List<String> albums,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> albumIds, @org.eclipse.jdt.annotation.NonNull List<UUID> ids,
-            @org.eclipse.jdt.annotation.NonNull List<VideoType> videoTypes,
-            @org.eclipse.jdt.annotation.NonNull String minOfficialRating,
-            @org.eclipse.jdt.annotation.NonNull Boolean isLocked,
-            @org.eclipse.jdt.annotation.NonNull Boolean isPlaceHolder,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasOfficialRating,
-            @org.eclipse.jdt.annotation.NonNull Boolean collapseBoxSetItems,
-            @org.eclipse.jdt.annotation.NonNull Integer minWidth, @org.eclipse.jdt.annotation.NonNull Integer minHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Boolean is3D,
-            @org.eclipse.jdt.annotation.NonNull List<SeriesStatus> seriesStatus,
-            @org.eclipse.jdt.annotation.NonNull String nameStartsWithOrGreater,
-            @org.eclipse.jdt.annotation.NonNull String nameStartsWith,
-            @org.eclipse.jdt.annotation.NonNull String nameLessThan,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> studioIds,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Items";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "maxOfficialRating";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxOfficialRating", maxOfficialRating));
-        localVarQueryParameterBaseName = "hasThemeSong";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasThemeSong", hasThemeSong));
-        localVarQueryParameterBaseName = "hasThemeVideo";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasThemeVideo", hasThemeVideo));
-        localVarQueryParameterBaseName = "hasSubtitles";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasSubtitles", hasSubtitles));
-        localVarQueryParameterBaseName = "hasSpecialFeature";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasSpecialFeature", hasSpecialFeature));
-        localVarQueryParameterBaseName = "hasTrailer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasTrailer", hasTrailer));
-        localVarQueryParameterBaseName = "adjacentTo";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("adjacentTo", adjacentTo));
-        localVarQueryParameterBaseName = "indexNumber";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("indexNumber", indexNumber));
-        localVarQueryParameterBaseName = "parentIndexNumber";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("parentIndexNumber", parentIndexNumber));
-        localVarQueryParameterBaseName = "hasParentalRating";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasParentalRating", hasParentalRating));
-        localVarQueryParameterBaseName = "isHd";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isHd", isHd));
-        localVarQueryParameterBaseName = "is4K";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("is4K", is4K));
-        localVarQueryParameterBaseName = "locationTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "locationTypes", locationTypes));
-        localVarQueryParameterBaseName = "excludeLocationTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeLocationTypes", excludeLocationTypes));
-        localVarQueryParameterBaseName = "isMissing";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isMissing", isMissing));
-        localVarQueryParameterBaseName = "isUnaired";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isUnaired", isUnaired));
-        localVarQueryParameterBaseName = "minCommunityRating";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minCommunityRating", minCommunityRating));
-        localVarQueryParameterBaseName = "minCriticRating";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minCriticRating", minCriticRating));
-        localVarQueryParameterBaseName = "minPremiereDate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minPremiereDate", minPremiereDate));
-        localVarQueryParameterBaseName = "minDateLastSaved";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minDateLastSaved", minDateLastSaved));
-        localVarQueryParameterBaseName = "minDateLastSavedForUser";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minDateLastSavedForUser", minDateLastSavedForUser));
-        localVarQueryParameterBaseName = "maxPremiereDate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxPremiereDate", maxPremiereDate));
-        localVarQueryParameterBaseName = "hasOverview";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasOverview", hasOverview));
-        localVarQueryParameterBaseName = "hasImdbId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasImdbId", hasImdbId));
-        localVarQueryParameterBaseName = "hasTmdbId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasTmdbId", hasTmdbId));
-        localVarQueryParameterBaseName = "hasTvdbId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasTvdbId", hasTvdbId));
-        localVarQueryParameterBaseName = "isMovie";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isMovie", isMovie));
-        localVarQueryParameterBaseName = "isSeries";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isSeries", isSeries));
-        localVarQueryParameterBaseName = "isNews";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isNews", isNews));
-        localVarQueryParameterBaseName = "isKids";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isKids", isKids));
-        localVarQueryParameterBaseName = "isSports";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isSports", isSports));
-        localVarQueryParameterBaseName = "excludeItemIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeItemIds", excludeItemIds));
-        localVarQueryParameterBaseName = "startIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
-        localVarQueryParameterBaseName = "limit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
-        localVarQueryParameterBaseName = "recursive";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("recursive", recursive));
-        localVarQueryParameterBaseName = "searchTerm";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("searchTerm", searchTerm));
-        localVarQueryParameterBaseName = "sortOrder";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
-        localVarQueryParameterBaseName = "parentId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
-        localVarQueryParameterBaseName = "fields";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
-        localVarQueryParameterBaseName = "excludeItemTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
-        localVarQueryParameterBaseName = "includeItemTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        localVarQueryParameterBaseName = "filters";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "filters", filters));
-        localVarQueryParameterBaseName = "isFavorite";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isFavorite", isFavorite));
-        localVarQueryParameterBaseName = "mediaTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
-        localVarQueryParameterBaseName = "imageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "imageTypes", imageTypes));
-        localVarQueryParameterBaseName = "sortBy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortBy", sortBy));
-        localVarQueryParameterBaseName = "isPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isPlayed", isPlayed));
-        localVarQueryParameterBaseName = "genres";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "genres", genres));
-        localVarQueryParameterBaseName = "officialRatings";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "officialRatings", officialRatings));
-        localVarQueryParameterBaseName = "tags";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "tags", tags));
-        localVarQueryParameterBaseName = "years";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "years", years));
-        localVarQueryParameterBaseName = "enableUserData";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
-        localVarQueryParameterBaseName = "imageTypeLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
-        localVarQueryParameterBaseName = "enableImageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        localVarQueryParameterBaseName = "person";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("person", person));
-        localVarQueryParameterBaseName = "personIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "personIds", personIds));
-        localVarQueryParameterBaseName = "personTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "personTypes", personTypes));
-        localVarQueryParameterBaseName = "studios";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "studios", studios));
-        localVarQueryParameterBaseName = "artists";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "artists", artists));
-        localVarQueryParameterBaseName = "excludeArtistIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
-        localVarQueryParameterBaseName = "artistIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "artistIds", artistIds));
-        localVarQueryParameterBaseName = "albumArtistIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "albumArtistIds", albumArtistIds));
-        localVarQueryParameterBaseName = "contributingArtistIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "contributingArtistIds", contributingArtistIds));
-        localVarQueryParameterBaseName = "albums";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "albums", albums));
-        localVarQueryParameterBaseName = "albumIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "albumIds", albumIds));
-        localVarQueryParameterBaseName = "ids";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "ids", ids));
-        localVarQueryParameterBaseName = "videoTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "videoTypes", videoTypes));
-        localVarQueryParameterBaseName = "minOfficialRating";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minOfficialRating", minOfficialRating));
-        localVarQueryParameterBaseName = "isLocked";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isLocked", isLocked));
-        localVarQueryParameterBaseName = "isPlaceHolder";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isPlaceHolder", isPlaceHolder));
-        localVarQueryParameterBaseName = "hasOfficialRating";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("hasOfficialRating", hasOfficialRating));
-        localVarQueryParameterBaseName = "collapseBoxSetItems";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("collapseBoxSetItems", collapseBoxSetItems));
-        localVarQueryParameterBaseName = "minWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minWidth", minWidth));
-        localVarQueryParameterBaseName = "minHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minHeight", minHeight));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "is3D";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("is3D", is3D));
-        localVarQueryParameterBaseName = "seriesStatus";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "seriesStatus", seriesStatus));
-        localVarQueryParameterBaseName = "nameStartsWithOrGreater";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("nameStartsWithOrGreater", nameStartsWithOrGreater));
-        localVarQueryParameterBaseName = "nameStartsWith";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("nameStartsWith", nameStartsWith));
-        localVarQueryParameterBaseName = "nameLessThan";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("nameLessThan", nameLessThan));
-        localVarQueryParameterBaseName = "studioIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "studioIds", studioIds));
-        localVarQueryParameterBaseName = "genreIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "genreIds", genreIds));
-        localVarQueryParameterBaseName = "enableTotalRecordCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableTotalRecordCount", enableTotalRecordCount));
-        localVarQueryParameterBaseName = "enableImages";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDtoQueryResult> localVarReturnType = new GenericType<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("ItemsApi.getItems", "/Items", "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -965,6 +759,30 @@ public class ItemsApi {
      *            false)
      * @return BaseItemDtoQueryResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Items returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDtoQueryResult getResumeItems(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
@@ -979,10 +797,9 @@ public class ItemsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
             @org.eclipse.jdt.annotation.NonNull Boolean excludeActiveSessions) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getResumeItemsWithHttpInfo(userId, startIndex, limit,
-                searchTerm, parentId, fields, mediaTypes, enableUserData, imageTypeLimit, enableImageTypes,
-                excludeItemTypes, includeItemTypes, enableTotalRecordCount, enableImages, excludeActiveSessions);
-        return localVarResponse.getData();
+        return getResumeItemsWithHttpInfo(userId, startIndex, limit, searchTerm, parentId, fields, mediaTypes,
+                enableUserData, imageTypeLimit, enableImageTypes, excludeItemTypes, includeItemTypes,
+                enableTotalRecordCount, enableImages, excludeActiveSessions).getData();
     }
 
     /**
@@ -1012,6 +829,30 @@ public class ItemsApi {
      *            false)
      * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Items returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDtoQueryResult> getResumeItemsWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
@@ -1027,117 +868,32 @@ public class ItemsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
             @org.eclipse.jdt.annotation.NonNull Boolean excludeActiveSessions) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getResumeItemsRequestBuilder(userId, startIndex, limit, searchTerm,
-                parentId, fields, mediaTypes, enableUserData, imageTypeLimit, enableImageTypes, excludeItemTypes,
-                includeItemTypes, enableTotalRecordCount, enableImages, excludeActiveSessions);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getResumeItems", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startIndex", startIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "searchTerm", searchTerm));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "parentId", parentId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "fields", fields));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableUserData", enableUserData));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageTypeLimit", imageTypeLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableTotalRecordCount", enableTotalRecordCount));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableImages", enableImages));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "excludeActiveSessions", excludeActiveSessions));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getResumeItemsRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull String searchTerm, @org.eclipse.jdt.annotation.NonNull UUID parentId,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> excludeItemTypes,
-            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Boolean excludeActiveSessions) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/UserItems/Resume";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "startIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
-        localVarQueryParameterBaseName = "limit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
-        localVarQueryParameterBaseName = "searchTerm";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("searchTerm", searchTerm));
-        localVarQueryParameterBaseName = "parentId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
-        localVarQueryParameterBaseName = "fields";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
-        localVarQueryParameterBaseName = "mediaTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
-        localVarQueryParameterBaseName = "enableUserData";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
-        localVarQueryParameterBaseName = "imageTypeLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
-        localVarQueryParameterBaseName = "enableImageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        localVarQueryParameterBaseName = "excludeItemTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
-        localVarQueryParameterBaseName = "includeItemTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        localVarQueryParameterBaseName = "enableTotalRecordCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableTotalRecordCount", enableTotalRecordCount));
-        localVarQueryParameterBaseName = "enableImages";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
-        localVarQueryParameterBaseName = "excludeActiveSessions";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("excludeActiveSessions", excludeActiveSessions));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDtoQueryResult> localVarReturnType = new GenericType<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("ItemsApi.getResumeItems", "/UserItems/Resume", "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -1148,13 +904,40 @@ public class ItemsApi {
      * @param userId The user id. (optional)
      * @return UserItemDataDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>return updated user item data.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item is not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public UserItemDataDto updateItemUserData(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable UpdateUserItemDataDto updateUserItemDataDto,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = updateItemUserDataWithHttpInfo(itemId, updateUserItemDataDto,
-                userId);
-        return localVarResponse.getData();
+        return updateItemUserDataWithHttpInfo(itemId, updateUserItemDataDto, userId).getData();
     }
 
     /**
@@ -1165,95 +948,64 @@ public class ItemsApi {
      * @param userId The user id. (optional)
      * @return ApiResponse&lt;UserItemDataDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>return updated user item data.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item is not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<UserItemDataDto> updateItemUserDataWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable UpdateUserItemDataDto updateUserItemDataDto,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateItemUserDataRequestBuilder(itemId, updateUserItemDataDto,
-                userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("updateItemUserData", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder updateItemUserDataRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable UpdateUserItemDataDto updateUserItemDataDto,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling updateItemUserData");
         }
-        // verify the required parameter 'updateUserItemDataDto' is set
         if (updateUserItemDataDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'updateUserItemDataDto' when calling updateItemUserData");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/UserItems/{itemId}/UserData".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/UserItems/{itemId}/UserData".replace("{itemId}",
-                ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateUserItemDataDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<UserItemDataDto> localVarReturnType = new GenericType<UserItemDataDto>() {
+        };
+        return apiClient.invokeAPI("ItemsApi.updateItemUserData", localVarPath, "POST", localVarQueryParams,
+                updateUserItemDataDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 }

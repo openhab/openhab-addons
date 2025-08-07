@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,6 +39,7 @@ public class ExternalIdInfo {
     private ExternalIdMediaType type;
 
     public static final String JSON_PROPERTY_URL_FORMAT_STRING = "UrlFormatString";
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
     private String urlFormatString;
 
@@ -61,6 +59,7 @@ public class ExternalIdInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -84,6 +83,7 @@ public class ExternalIdInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_KEY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getKey() {
         return key;
     }
@@ -109,6 +109,7 @@ public class ExternalIdInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ExternalIdMediaType getType() {
         return type;
     }
@@ -119,6 +120,7 @@ public class ExternalIdInfo {
         this.type = type;
     }
 
+    @Deprecated
     public ExternalIdInfo urlFormatString(@org.eclipse.jdt.annotation.NonNull String urlFormatString) {
         this.urlFormatString = urlFormatString;
         return this;
@@ -134,10 +136,12 @@ public class ExternalIdInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_URL_FORMAT_STRING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUrlFormatString() {
         return urlFormatString;
     }
 
+    @Deprecated
     @JsonProperty(JSON_PROPERTY_URL_FORMAT_STRING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUrlFormatString(@org.eclipse.jdt.annotation.NonNull String urlFormatString) {
@@ -187,131 +191,5 @@ public class ExternalIdInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Key` to the URL query string
-        if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `UrlFormatString` to the URL query string
-        if (getUrlFormatString() != null) {
-            joiner.add(String.format("%sUrlFormatString%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrlFormatString()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ExternalIdInfo instance;
-
-        public Builder() {
-            this(new ExternalIdInfo());
-        }
-
-        protected Builder(ExternalIdInfo instance) {
-            this.instance = instance;
-        }
-
-        public ExternalIdInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public ExternalIdInfo.Builder key(String key) {
-            this.instance.key = key;
-            return this;
-        }
-
-        public ExternalIdInfo.Builder type(ExternalIdMediaType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public ExternalIdInfo.Builder urlFormatString(String urlFormatString) {
-            this.instance.urlFormatString = urlFormatString;
-            return this;
-        }
-
-        /**
-         * returns a built ExternalIdInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public ExternalIdInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ExternalIdInfo.Builder builder() {
-        return new ExternalIdInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ExternalIdInfo.Builder toBuilder() {
-        return new ExternalIdInfo.Builder().name(getName()).key(getKey()).type(getType())
-                .urlFormatString(getUrlFormatString());
     }
 }

@@ -15,9 +15,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -58,6 +55,7 @@ public class ForgotPasswordResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ACTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ForgotPasswordAction getAction() {
         return action;
     }
@@ -81,6 +79,7 @@ public class ForgotPasswordResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PIN_FILE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPinFile() {
         return pinFile;
     }
@@ -105,6 +104,7 @@ public class ForgotPasswordResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PIN_EXPIRATION_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getPinExpirationDate() {
         return pinExpirationDate;
     }
@@ -157,120 +157,5 @@ public class ForgotPasswordResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Action` to the URL query string
-        if (getAction() != null) {
-            joiner.add(String.format("%sAction%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAction()))));
-        }
-
-        // add `PinFile` to the URL query string
-        if (getPinFile() != null) {
-            joiner.add(String.format("%sPinFile%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPinFile()))));
-        }
-
-        // add `PinExpirationDate` to the URL query string
-        if (getPinExpirationDate() != null) {
-            joiner.add(String.format("%sPinExpirationDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPinExpirationDate()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ForgotPasswordResult instance;
-
-        public Builder() {
-            this(new ForgotPasswordResult());
-        }
-
-        protected Builder(ForgotPasswordResult instance) {
-            this.instance = instance;
-        }
-
-        public ForgotPasswordResult.Builder action(ForgotPasswordAction action) {
-            this.instance.action = action;
-            return this;
-        }
-
-        public ForgotPasswordResult.Builder pinFile(String pinFile) {
-            this.instance.pinFile = pinFile;
-            return this;
-        }
-
-        public ForgotPasswordResult.Builder pinExpirationDate(OffsetDateTime pinExpirationDate) {
-            this.instance.pinExpirationDate = pinExpirationDate;
-            return this;
-        }
-
-        /**
-         * returns a built ForgotPasswordResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public ForgotPasswordResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ForgotPasswordResult.Builder builder() {
-        return new ForgotPasswordResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ForgotPasswordResult.Builder toBuilder() {
-        return new ForgotPasswordResult.Builder().action(getAction()).pinFile(getPinFile())
-                .pinExpirationDate(getPinExpirationDate());
     }
 }

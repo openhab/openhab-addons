@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,6 +69,7 @@ public class CodecProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public CodecType getType() {
         return type;
     }
@@ -103,6 +101,7 @@ public class CodecProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ProfileCondition> getConditions() {
         return conditions;
     }
@@ -134,6 +133,7 @@ public class CodecProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ProfileCondition> getApplyConditions() {
         return applyConditions;
     }
@@ -157,6 +157,7 @@ public class CodecProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCodec() {
         return codec;
     }
@@ -180,6 +181,7 @@ public class CodecProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getContainer() {
         return container;
     }
@@ -203,6 +205,7 @@ public class CodecProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSubContainer() {
         return subContainer;
     }
@@ -260,163 +263,5 @@ public class CodecProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Conditions` to the URL query string
-        if (getConditions() != null) {
-            for (int i = 0; i < getConditions().size(); i++) {
-                if (getConditions().get(i) != null) {
-                    joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ApplyConditions` to the URL query string
-        if (getApplyConditions() != null) {
-            for (int i = 0; i < getApplyConditions().size(); i++) {
-                if (getApplyConditions().get(i) != null) {
-                    joiner.add(getApplyConditions().get(i).toUrlQueryString(String.format("%sApplyConditions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Codec` to the URL query string
-        if (getCodec() != null) {
-            joiner.add(String.format("%sCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `SubContainer` to the URL query string
-        if (getSubContainer() != null) {
-            joiner.add(String.format("%sSubContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubContainer()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private CodecProfile instance;
-
-        public Builder() {
-            this(new CodecProfile());
-        }
-
-        protected Builder(CodecProfile instance) {
-            this.instance = instance;
-        }
-
-        public CodecProfile.Builder type(CodecType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public CodecProfile.Builder conditions(List<ProfileCondition> conditions) {
-            this.instance.conditions = conditions;
-            return this;
-        }
-
-        public CodecProfile.Builder applyConditions(List<ProfileCondition> applyConditions) {
-            this.instance.applyConditions = applyConditions;
-            return this;
-        }
-
-        public CodecProfile.Builder codec(String codec) {
-            this.instance.codec = codec;
-            return this;
-        }
-
-        public CodecProfile.Builder container(String container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        public CodecProfile.Builder subContainer(String subContainer) {
-            this.instance.subContainer = subContainer;
-            return this;
-        }
-
-        /**
-         * returns a built CodecProfile instance.
-         *
-         * The builder is not reusable.
-         */
-        public CodecProfile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static CodecProfile.Builder builder() {
-        return new CodecProfile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public CodecProfile.Builder toBuilder() {
-        return new CodecProfile.Builder().type(getType()).conditions(getConditions())
-                .applyConditions(getApplyConditions()).codec(getCodec()).container(getContainer())
-                .subContainer(getSubContainer());
     }
 }

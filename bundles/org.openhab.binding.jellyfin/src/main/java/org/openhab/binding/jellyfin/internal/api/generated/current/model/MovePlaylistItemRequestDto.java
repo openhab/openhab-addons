@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -54,6 +51,7 @@ public class MovePlaylistItemRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getPlaylistItemId() {
         return playlistItemId;
     }
@@ -77,6 +75,7 @@ public class MovePlaylistItemRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NEW_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getNewIndex() {
         return newIndex;
     }
@@ -127,108 +126,5 @@ public class MovePlaylistItemRequestDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        // add `NewIndex` to the URL query string
-        if (getNewIndex() != null) {
-            joiner.add(String.format("%sNewIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNewIndex()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private MovePlaylistItemRequestDto instance;
-
-        public Builder() {
-            this(new MovePlaylistItemRequestDto());
-        }
-
-        protected Builder(MovePlaylistItemRequestDto instance) {
-            this.instance = instance;
-        }
-
-        public MovePlaylistItemRequestDto.Builder playlistItemId(UUID playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        public MovePlaylistItemRequestDto.Builder newIndex(Integer newIndex) {
-            this.instance.newIndex = newIndex;
-            return this;
-        }
-
-        /**
-         * returns a built MovePlaylistItemRequestDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public MovePlaylistItemRequestDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static MovePlaylistItemRequestDto.Builder builder() {
-        return new MovePlaylistItemRequestDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public MovePlaylistItemRequestDto.Builder toBuilder() {
-        return new MovePlaylistItemRequestDto.Builder().playlistItemId(getPlaylistItemId()).newIndex(getNewIndex());
     }
 }

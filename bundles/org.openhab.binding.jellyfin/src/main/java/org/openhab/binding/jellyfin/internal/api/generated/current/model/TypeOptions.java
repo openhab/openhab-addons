@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,6 +69,7 @@ public class TypeOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getType() {
         return type;
     }
@@ -103,6 +101,7 @@ public class TypeOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getMetadataFetchers() {
         return metadataFetchers;
     }
@@ -134,6 +133,7 @@ public class TypeOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_FETCHER_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getMetadataFetcherOrder() {
         return metadataFetcherOrder;
     }
@@ -165,6 +165,7 @@ public class TypeOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getImageFetchers() {
         return imageFetchers;
     }
@@ -196,6 +197,7 @@ public class TypeOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_FETCHER_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getImageFetcherOrder() {
         return imageFetcherOrder;
     }
@@ -227,6 +229,7 @@ public class TypeOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ImageOption> getImageOptions() {
         return imageOptions;
     }
@@ -286,171 +289,5 @@ public class TypeOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `MetadataFetchers` to the URL query string
-        if (getMetadataFetchers() != null) {
-            for (int i = 0; i < getMetadataFetchers().size(); i++) {
-                joiner.add(String.format("%sMetadataFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMetadataFetchers().get(i)))));
-            }
-        }
-
-        // add `MetadataFetcherOrder` to the URL query string
-        if (getMetadataFetcherOrder() != null) {
-            for (int i = 0; i < getMetadataFetcherOrder().size(); i++) {
-                joiner.add(String.format("%sMetadataFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMetadataFetcherOrder().get(i)))));
-            }
-        }
-
-        // add `ImageFetchers` to the URL query string
-        if (getImageFetchers() != null) {
-            for (int i = 0; i < getImageFetchers().size(); i++) {
-                joiner.add(String.format("%sImageFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getImageFetchers().get(i)))));
-            }
-        }
-
-        // add `ImageFetcherOrder` to the URL query string
-        if (getImageFetcherOrder() != null) {
-            for (int i = 0; i < getImageFetcherOrder().size(); i++) {
-                joiner.add(String.format("%sImageFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getImageFetcherOrder().get(i)))));
-            }
-        }
-
-        // add `ImageOptions` to the URL query string
-        if (getImageOptions() != null) {
-            for (int i = 0; i < getImageOptions().size(); i++) {
-                if (getImageOptions().get(i) != null) {
-                    joiner.add(getImageOptions().get(i).toUrlQueryString(String.format("%sImageOptions%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private TypeOptions instance;
-
-        public Builder() {
-            this(new TypeOptions());
-        }
-
-        protected Builder(TypeOptions instance) {
-            this.instance = instance;
-        }
-
-        public TypeOptions.Builder type(String type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public TypeOptions.Builder metadataFetchers(List<String> metadataFetchers) {
-            this.instance.metadataFetchers = metadataFetchers;
-            return this;
-        }
-
-        public TypeOptions.Builder metadataFetcherOrder(List<String> metadataFetcherOrder) {
-            this.instance.metadataFetcherOrder = metadataFetcherOrder;
-            return this;
-        }
-
-        public TypeOptions.Builder imageFetchers(List<String> imageFetchers) {
-            this.instance.imageFetchers = imageFetchers;
-            return this;
-        }
-
-        public TypeOptions.Builder imageFetcherOrder(List<String> imageFetcherOrder) {
-            this.instance.imageFetcherOrder = imageFetcherOrder;
-            return this;
-        }
-
-        public TypeOptions.Builder imageOptions(List<ImageOption> imageOptions) {
-            this.instance.imageOptions = imageOptions;
-            return this;
-        }
-
-        /**
-         * returns a built TypeOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public TypeOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TypeOptions.Builder builder() {
-        return new TypeOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TypeOptions.Builder toBuilder() {
-        return new TypeOptions.Builder().type(getType()).metadataFetchers(getMetadataFetchers())
-                .metadataFetcherOrder(getMetadataFetcherOrder()).imageFetchers(getImageFetchers())
-                .imageFetcherOrder(getImageFetcherOrder()).imageOptions(getImageOptions());
     }
 }

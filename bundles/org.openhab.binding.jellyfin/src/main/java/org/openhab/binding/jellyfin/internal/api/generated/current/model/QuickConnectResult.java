@@ -15,9 +15,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -80,6 +77,7 @@ public class QuickConnectResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUTHENTICATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAuthenticated() {
         return authenticated;
     }
@@ -103,6 +101,7 @@ public class QuickConnectResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SECRET)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSecret() {
         return secret;
     }
@@ -126,6 +125,7 @@ public class QuickConnectResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCode() {
         return code;
     }
@@ -149,6 +149,7 @@ public class QuickConnectResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDeviceId() {
         return deviceId;
     }
@@ -172,6 +173,7 @@ public class QuickConnectResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDeviceName() {
         return deviceName;
     }
@@ -195,6 +197,7 @@ public class QuickConnectResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_APP_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAppName() {
         return appName;
     }
@@ -218,6 +221,7 @@ public class QuickConnectResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_APP_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAppVersion() {
         return appVersion;
     }
@@ -241,6 +245,7 @@ public class QuickConnectResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATE_ADDED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateAdded() {
         return dateAdded;
     }
@@ -303,176 +308,5 @@ public class QuickConnectResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Authenticated` to the URL query string
-        if (getAuthenticated() != null) {
-            joiner.add(String.format("%sAuthenticated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthenticated()))));
-        }
-
-        // add `Secret` to the URL query string
-        if (getSecret() != null) {
-            joiner.add(String.format("%sSecret%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSecret()))));
-        }
-
-        // add `Code` to the URL query string
-        if (getCode() != null) {
-            joiner.add(String.format("%sCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
-        }
-
-        // add `DeviceId` to the URL query string
-        if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
-        }
-
-        // add `DeviceName` to the URL query string
-        if (getDeviceName() != null) {
-            joiner.add(String.format("%sDeviceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceName()))));
-        }
-
-        // add `AppName` to the URL query string
-        if (getAppName() != null) {
-            joiner.add(String.format("%sAppName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
-        }
-
-        // add `AppVersion` to the URL query string
-        if (getAppVersion() != null) {
-            joiner.add(String.format("%sAppVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
-        }
-
-        // add `DateAdded` to the URL query string
-        if (getDateAdded() != null) {
-            joiner.add(String.format("%sDateAdded%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateAdded()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private QuickConnectResult instance;
-
-        public Builder() {
-            this(new QuickConnectResult());
-        }
-
-        protected Builder(QuickConnectResult instance) {
-            this.instance = instance;
-        }
-
-        public QuickConnectResult.Builder authenticated(Boolean authenticated) {
-            this.instance.authenticated = authenticated;
-            return this;
-        }
-
-        public QuickConnectResult.Builder secret(String secret) {
-            this.instance.secret = secret;
-            return this;
-        }
-
-        public QuickConnectResult.Builder code(String code) {
-            this.instance.code = code;
-            return this;
-        }
-
-        public QuickConnectResult.Builder deviceId(String deviceId) {
-            this.instance.deviceId = deviceId;
-            return this;
-        }
-
-        public QuickConnectResult.Builder deviceName(String deviceName) {
-            this.instance.deviceName = deviceName;
-            return this;
-        }
-
-        public QuickConnectResult.Builder appName(String appName) {
-            this.instance.appName = appName;
-            return this;
-        }
-
-        public QuickConnectResult.Builder appVersion(String appVersion) {
-            this.instance.appVersion = appVersion;
-            return this;
-        }
-
-        public QuickConnectResult.Builder dateAdded(OffsetDateTime dateAdded) {
-            this.instance.dateAdded = dateAdded;
-            return this;
-        }
-
-        /**
-         * returns a built QuickConnectResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public QuickConnectResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static QuickConnectResult.Builder builder() {
-        return new QuickConnectResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public QuickConnectResult.Builder toBuilder() {
-        return new QuickConnectResult.Builder().authenticated(getAuthenticated()).secret(getSecret()).code(getCode())
-                .deviceId(getDeviceId()).deviceName(getDeviceName()).appName(getAppName()).appVersion(getAppVersion())
-                .dateAdded(getDateAdded());
     }
 }

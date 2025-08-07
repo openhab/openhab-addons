@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -66,6 +63,7 @@ public class UploadSubtitleDto {
     @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getLanguage() {
         return language;
     }
@@ -89,6 +87,7 @@ public class UploadSubtitleDto {
     @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_FORMAT)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getFormat() {
         return format;
     }
@@ -112,6 +111,7 @@ public class UploadSubtitleDto {
     @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_FORCED)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public Boolean getIsForced() {
         return isForced;
     }
@@ -135,6 +135,7 @@ public class UploadSubtitleDto {
     @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_HEARING_IMPAIRED)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public Boolean getIsHearingImpaired() {
         return isHearingImpaired;
     }
@@ -158,6 +159,7 @@ public class UploadSubtitleDto {
     @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getData() {
         return data;
     }
@@ -214,142 +216,5 @@ public class UploadSubtitleDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Language` to the URL query string
-        if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
-        }
-
-        // add `Format` to the URL query string
-        if (getFormat() != null) {
-            joiner.add(String.format("%sFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
-        }
-
-        // add `IsForced` to the URL query string
-        if (getIsForced() != null) {
-            joiner.add(String.format("%sIsForced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsForced()))));
-        }
-
-        // add `IsHearingImpaired` to the URL query string
-        if (getIsHearingImpaired() != null) {
-            joiner.add(String.format("%sIsHearingImpaired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHearingImpaired()))));
-        }
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            joiner.add(String.format("%sData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getData()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private UploadSubtitleDto instance;
-
-        public Builder() {
-            this(new UploadSubtitleDto());
-        }
-
-        protected Builder(UploadSubtitleDto instance) {
-            this.instance = instance;
-        }
-
-        public UploadSubtitleDto.Builder language(String language) {
-            this.instance.language = language;
-            return this;
-        }
-
-        public UploadSubtitleDto.Builder format(String format) {
-            this.instance.format = format;
-            return this;
-        }
-
-        public UploadSubtitleDto.Builder isForced(Boolean isForced) {
-            this.instance.isForced = isForced;
-            return this;
-        }
-
-        public UploadSubtitleDto.Builder isHearingImpaired(Boolean isHearingImpaired) {
-            this.instance.isHearingImpaired = isHearingImpaired;
-            return this;
-        }
-
-        public UploadSubtitleDto.Builder data(String data) {
-            this.instance.data = data;
-            return this;
-        }
-
-        /**
-         * returns a built UploadSubtitleDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public UploadSubtitleDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UploadSubtitleDto.Builder builder() {
-        return new UploadSubtitleDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UploadSubtitleDto.Builder toBuilder() {
-        return new UploadSubtitleDto.Builder().language(getLanguage()).format(getFormat()).isForced(getIsForced())
-                .isHearingImpaired(getIsHearingImpaired()).data(getData());
     }
 }

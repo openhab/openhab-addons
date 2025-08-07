@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -302,6 +299,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOG_FILE_RETENTION_DAYS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLogFileRetentionDays() {
         return logFileRetentionDays;
     }
@@ -326,6 +324,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsStartupWizardCompleted() {
         return isStartupWizardCompleted;
     }
@@ -349,6 +348,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CACHE_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCachePath() {
         return cachePath;
     }
@@ -372,6 +372,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPreviousVersion() {
         return previousVersion;
     }
@@ -396,6 +397,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION_STR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPreviousVersionStr() {
         return previousVersionStr;
     }
@@ -419,6 +421,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_METRICS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableMetrics() {
         return enableMetrics;
     }
@@ -443,6 +446,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableNormalizedItemByNameIds() {
         return enableNormalizedItemByNameIds;
     }
@@ -467,6 +471,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_PORT_AUTHORIZED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPortAuthorized() {
         return isPortAuthorized;
     }
@@ -491,6 +496,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_QUICK_CONNECT_AVAILABLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getQuickConnectAvailable() {
         return quickConnectAvailable;
     }
@@ -515,6 +521,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableCaseSensitiveItemIds() {
         return enableCaseSensitiveItemIds;
     }
@@ -539,6 +546,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getDisableLiveTvChannelUserDataName() {
         return disableLiveTvChannelUserDataName;
     }
@@ -563,6 +571,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMetadataPath() {
         return metadataPath;
     }
@@ -587,6 +596,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage;
     }
@@ -610,6 +620,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
@@ -642,6 +653,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SORT_REPLACE_CHARACTERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getSortReplaceCharacters() {
         return sortReplaceCharacters;
     }
@@ -674,6 +686,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SORT_REMOVE_CHARACTERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getSortRemoveCharacters() {
         return sortRemoveCharacters;
     }
@@ -705,6 +718,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SORT_REMOVE_WORDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getSortRemoveWords() {
         return sortRemoveWords;
     }
@@ -728,6 +742,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MIN_RESUME_PCT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMinResumePct() {
         return minResumePct;
     }
@@ -752,6 +767,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_RESUME_PCT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxResumePct() {
         return maxResumePct;
     }
@@ -776,6 +792,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMinResumeDurationSeconds() {
         return minResumeDurationSeconds;
     }
@@ -799,6 +816,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MIN_AUDIOBOOK_RESUME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMinAudiobookResume() {
         return minAudiobookResume;
     }
@@ -823,6 +841,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_AUDIOBOOK_RESUME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxAudiobookResume() {
         return maxAudiobookResume;
     }
@@ -848,6 +867,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INACTIVE_SESSION_THRESHOLD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getInactiveSessionThreshold() {
         return inactiveSessionThreshold;
     }
@@ -873,6 +893,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIBRARY_MONITOR_DELAY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLibraryMonitorDelay() {
         return libraryMonitorDelay;
     }
@@ -898,6 +919,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIBRARY_UPDATE_DURATION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLibraryUpdateDuration() {
         return libraryUpdateDuration;
     }
@@ -922,6 +944,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_SAVING_CONVENTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ImageSavingConvention getImageSavingConvention() {
         return imageSavingConvention;
     }
@@ -955,6 +978,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MetadataOptions> getMetadataOptions() {
         return metadataOptions;
     }
@@ -979,6 +1003,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSkipDeserializationForBasicTypes() {
         return skipDeserializationForBasicTypes;
     }
@@ -1003,6 +1028,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERVER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getServerName() {
         return serverName;
     }
@@ -1026,6 +1052,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_UI_CULTURE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUiCulture() {
         return uiCulture;
     }
@@ -1049,6 +1076,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SAVE_METADATA_HIDDEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSaveMetadataHidden() {
         return saveMetadataHidden;
     }
@@ -1080,6 +1108,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameValuePair> getContentTypes() {
         return contentTypes;
     }
@@ -1104,6 +1133,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getRemoteClientBitrateLimit() {
         return remoteClientBitrateLimit;
     }
@@ -1127,6 +1157,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_FOLDER_VIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableFolderView() {
         return enableFolderView;
     }
@@ -1151,6 +1182,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_GROUPING_INTO_COLLECTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableGroupingIntoCollections() {
         return enableGroupingIntoCollections;
     }
@@ -1176,6 +1208,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getDisplaySpecialsWithinSeasons() {
         return displaySpecialsWithinSeasons;
     }
@@ -1208,6 +1241,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CODECS_USED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getCodecsUsed() {
         return codecsUsed;
     }
@@ -1240,6 +1274,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLUGIN_REPOSITORIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<RepositoryInfo> getPluginRepositories() {
         return pluginRepositories;
     }
@@ -1264,6 +1299,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableExternalContentInSuggestions() {
         return enableExternalContentInSuggestions;
     }
@@ -1289,6 +1325,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getImageExtractionTimeoutMs() {
         return imageExtractionTimeoutMs;
     }
@@ -1321,6 +1358,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PATH_SUBSTITUTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<PathSubstitution> getPathSubstitutions() {
         return pathSubstitutions;
     }
@@ -1345,6 +1383,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSlowResponseWarning() {
         return enableSlowResponseWarning;
     }
@@ -1369,6 +1408,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getSlowResponseThresholdMs() {
         return slowResponseThresholdMs;
     }
@@ -1400,6 +1440,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CORS_HOSTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getCorsHosts() {
         return corsHosts;
     }
@@ -1424,6 +1465,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getActivityLogRetentionDays() {
         return activityLogRetentionDays;
     }
@@ -1448,6 +1490,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLibraryScanFanoutConcurrency() {
         return libraryScanFanoutConcurrency;
     }
@@ -1473,6 +1516,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLibraryMetadataRefreshConcurrency() {
         return libraryMetadataRefreshConcurrency;
     }
@@ -1497,6 +1541,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REMOVE_OLD_PLUGINS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRemoveOldPlugins() {
         return removeOldPlugins;
     }
@@ -1520,6 +1565,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAllowClientLogUpload() {
         return allowClientLogUpload;
     }
@@ -1543,6 +1589,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DUMMY_CHAPTER_DURATION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getDummyChapterDuration() {
         return dummyChapterDuration;
     }
@@ -1567,6 +1614,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHAPTER_IMAGE_RESOLUTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ImageResolution getChapterImageResolution() {
         return chapterImageResolution;
     }
@@ -1591,6 +1639,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARALLEL_IMAGE_ENCODING_LIMIT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getParallelImageEncodingLimit() {
         return parallelImageEncodingLimit;
     }
@@ -1623,6 +1672,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<CastReceiverApplication> getCastReceiverApplications() {
         return castReceiverApplications;
     }
@@ -1647,6 +1697,7 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRICKPLAY_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TrickplayOptions getTrickplayOptions() {
         return trickplayOptions;
     }
@@ -1826,752 +1877,5 @@ public class ServerConfiguration {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `LogFileRetentionDays` to the URL query string
-        if (getLogFileRetentionDays() != null) {
-            joiner.add(String.format("%sLogFileRetentionDays%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLogFileRetentionDays()))));
-        }
-
-        // add `IsStartupWizardCompleted` to the URL query string
-        if (getIsStartupWizardCompleted() != null) {
-            joiner.add(String.format("%sIsStartupWizardCompleted%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsStartupWizardCompleted()))));
-        }
-
-        // add `CachePath` to the URL query string
-        if (getCachePath() != null) {
-            joiner.add(String.format("%sCachePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCachePath()))));
-        }
-
-        // add `PreviousVersion` to the URL query string
-        if (getPreviousVersion() != null) {
-            joiner.add(String.format("%sPreviousVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreviousVersion()))));
-        }
-
-        // add `PreviousVersionStr` to the URL query string
-        if (getPreviousVersionStr() != null) {
-            joiner.add(String.format("%sPreviousVersionStr%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreviousVersionStr()))));
-        }
-
-        // add `EnableMetrics` to the URL query string
-        if (getEnableMetrics() != null) {
-            joiner.add(String.format("%sEnableMetrics%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMetrics()))));
-        }
-
-        // add `EnableNormalizedItemByNameIds` to the URL query string
-        if (getEnableNormalizedItemByNameIds() != null) {
-            joiner.add(String.format("%sEnableNormalizedItemByNameIds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableNormalizedItemByNameIds()))));
-        }
-
-        // add `IsPortAuthorized` to the URL query string
-        if (getIsPortAuthorized() != null) {
-            joiner.add(String.format("%sIsPortAuthorized%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPortAuthorized()))));
-        }
-
-        // add `QuickConnectAvailable` to the URL query string
-        if (getQuickConnectAvailable() != null) {
-            joiner.add(String.format("%sQuickConnectAvailable%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getQuickConnectAvailable()))));
-        }
-
-        // add `EnableCaseSensitiveItemIds` to the URL query string
-        if (getEnableCaseSensitiveItemIds() != null) {
-            joiner.add(String.format("%sEnableCaseSensitiveItemIds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableCaseSensitiveItemIds()))));
-        }
-
-        // add `DisableLiveTvChannelUserDataName` to the URL query string
-        if (getDisableLiveTvChannelUserDataName() != null) {
-            joiner.add(String.format("%sDisableLiveTvChannelUserDataName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisableLiveTvChannelUserDataName()))));
-        }
-
-        // add `MetadataPath` to the URL query string
-        if (getMetadataPath() != null) {
-            joiner.add(String.format("%sMetadataPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataPath()))));
-        }
-
-        // add `PreferredMetadataLanguage` to the URL query string
-        if (getPreferredMetadataLanguage() != null) {
-            joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
-        }
-
-        // add `MetadataCountryCode` to the URL query string
-        if (getMetadataCountryCode() != null) {
-            joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
-        }
-
-        // add `SortReplaceCharacters` to the URL query string
-        if (getSortReplaceCharacters() != null) {
-            for (int i = 0; i < getSortReplaceCharacters().size(); i++) {
-                joiner.add(String.format("%sSortReplaceCharacters%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSortReplaceCharacters().get(i)))));
-            }
-        }
-
-        // add `SortRemoveCharacters` to the URL query string
-        if (getSortRemoveCharacters() != null) {
-            for (int i = 0; i < getSortRemoveCharacters().size(); i++) {
-                joiner.add(String.format("%sSortRemoveCharacters%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSortRemoveCharacters().get(i)))));
-            }
-        }
-
-        // add `SortRemoveWords` to the URL query string
-        if (getSortRemoveWords() != null) {
-            for (int i = 0; i < getSortRemoveWords().size(); i++) {
-                joiner.add(String.format("%sSortRemoveWords%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSortRemoveWords().get(i)))));
-            }
-        }
-
-        // add `MinResumePct` to the URL query string
-        if (getMinResumePct() != null) {
-            joiner.add(String.format("%sMinResumePct%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinResumePct()))));
-        }
-
-        // add `MaxResumePct` to the URL query string
-        if (getMaxResumePct() != null) {
-            joiner.add(String.format("%sMaxResumePct%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxResumePct()))));
-        }
-
-        // add `MinResumeDurationSeconds` to the URL query string
-        if (getMinResumeDurationSeconds() != null) {
-            joiner.add(String.format("%sMinResumeDurationSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinResumeDurationSeconds()))));
-        }
-
-        // add `MinAudiobookResume` to the URL query string
-        if (getMinAudiobookResume() != null) {
-            joiner.add(String.format("%sMinAudiobookResume%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinAudiobookResume()))));
-        }
-
-        // add `MaxAudiobookResume` to the URL query string
-        if (getMaxAudiobookResume() != null) {
-            joiner.add(String.format("%sMaxAudiobookResume%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxAudiobookResume()))));
-        }
-
-        // add `InactiveSessionThreshold` to the URL query string
-        if (getInactiveSessionThreshold() != null) {
-            joiner.add(String.format("%sInactiveSessionThreshold%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInactiveSessionThreshold()))));
-        }
-
-        // add `LibraryMonitorDelay` to the URL query string
-        if (getLibraryMonitorDelay() != null) {
-            joiner.add(String.format("%sLibraryMonitorDelay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLibraryMonitorDelay()))));
-        }
-
-        // add `LibraryUpdateDuration` to the URL query string
-        if (getLibraryUpdateDuration() != null) {
-            joiner.add(String.format("%sLibraryUpdateDuration%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLibraryUpdateDuration()))));
-        }
-
-        // add `ImageSavingConvention` to the URL query string
-        if (getImageSavingConvention() != null) {
-            joiner.add(String.format("%sImageSavingConvention%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageSavingConvention()))));
-        }
-
-        // add `MetadataOptions` to the URL query string
-        if (getMetadataOptions() != null) {
-            for (int i = 0; i < getMetadataOptions().size(); i++) {
-                if (getMetadataOptions().get(i) != null) {
-                    joiner.add(getMetadataOptions().get(i).toUrlQueryString(String.format("%sMetadataOptions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `SkipDeserializationForBasicTypes` to the URL query string
-        if (getSkipDeserializationForBasicTypes() != null) {
-            joiner.add(String.format("%sSkipDeserializationForBasicTypes%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSkipDeserializationForBasicTypes()))));
-        }
-
-        // add `ServerName` to the URL query string
-        if (getServerName() != null) {
-            joiner.add(String.format("%sServerName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
-        }
-
-        // add `UICulture` to the URL query string
-        if (getUiCulture() != null) {
-            joiner.add(String.format("%sUICulture%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUiCulture()))));
-        }
-
-        // add `SaveMetadataHidden` to the URL query string
-        if (getSaveMetadataHidden() != null) {
-            joiner.add(String.format("%sSaveMetadataHidden%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveMetadataHidden()))));
-        }
-
-        // add `ContentTypes` to the URL query string
-        if (getContentTypes() != null) {
-            for (int i = 0; i < getContentTypes().size(); i++) {
-                if (getContentTypes().get(i) != null) {
-                    joiner.add(getContentTypes().get(i).toUrlQueryString(String.format("%sContentTypes%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `RemoteClientBitrateLimit` to the URL query string
-        if (getRemoteClientBitrateLimit() != null) {
-            joiner.add(String.format("%sRemoteClientBitrateLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRemoteClientBitrateLimit()))));
-        }
-
-        // add `EnableFolderView` to the URL query string
-        if (getEnableFolderView() != null) {
-            joiner.add(String.format("%sEnableFolderView%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableFolderView()))));
-        }
-
-        // add `EnableGroupingIntoCollections` to the URL query string
-        if (getEnableGroupingIntoCollections() != null) {
-            joiner.add(String.format("%sEnableGroupingIntoCollections%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableGroupingIntoCollections()))));
-        }
-
-        // add `DisplaySpecialsWithinSeasons` to the URL query string
-        if (getDisplaySpecialsWithinSeasons() != null) {
-            joiner.add(String.format("%sDisplaySpecialsWithinSeasons%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplaySpecialsWithinSeasons()))));
-        }
-
-        // add `CodecsUsed` to the URL query string
-        if (getCodecsUsed() != null) {
-            for (int i = 0; i < getCodecsUsed().size(); i++) {
-                joiner.add(String.format("%sCodecsUsed%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getCodecsUsed().get(i)))));
-            }
-        }
-
-        // add `PluginRepositories` to the URL query string
-        if (getPluginRepositories() != null) {
-            for (int i = 0; i < getPluginRepositories().size(); i++) {
-                if (getPluginRepositories().get(i) != null) {
-                    joiner.add(getPluginRepositories().get(i).toUrlQueryString(String.format("%sPluginRepositories%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `EnableExternalContentInSuggestions` to the URL query string
-        if (getEnableExternalContentInSuggestions() != null) {
-            joiner.add(String.format("%sEnableExternalContentInSuggestions%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableExternalContentInSuggestions()))));
-        }
-
-        // add `ImageExtractionTimeoutMs` to the URL query string
-        if (getImageExtractionTimeoutMs() != null) {
-            joiner.add(String.format("%sImageExtractionTimeoutMs%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageExtractionTimeoutMs()))));
-        }
-
-        // add `PathSubstitutions` to the URL query string
-        if (getPathSubstitutions() != null) {
-            for (int i = 0; i < getPathSubstitutions().size(); i++) {
-                if (getPathSubstitutions().get(i) != null) {
-                    joiner.add(getPathSubstitutions().get(i).toUrlQueryString(String.format("%sPathSubstitutions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `EnableSlowResponseWarning` to the URL query string
-        if (getEnableSlowResponseWarning() != null) {
-            joiner.add(String.format("%sEnableSlowResponseWarning%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSlowResponseWarning()))));
-        }
-
-        // add `SlowResponseThresholdMs` to the URL query string
-        if (getSlowResponseThresholdMs() != null) {
-            joiner.add(String.format("%sSlowResponseThresholdMs%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSlowResponseThresholdMs()))));
-        }
-
-        // add `CorsHosts` to the URL query string
-        if (getCorsHosts() != null) {
-            for (int i = 0; i < getCorsHosts().size(); i++) {
-                joiner.add(String.format("%sCorsHosts%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getCorsHosts().get(i)))));
-            }
-        }
-
-        // add `ActivityLogRetentionDays` to the URL query string
-        if (getActivityLogRetentionDays() != null) {
-            joiner.add(String.format("%sActivityLogRetentionDays%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getActivityLogRetentionDays()))));
-        }
-
-        // add `LibraryScanFanoutConcurrency` to the URL query string
-        if (getLibraryScanFanoutConcurrency() != null) {
-            joiner.add(String.format("%sLibraryScanFanoutConcurrency%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLibraryScanFanoutConcurrency()))));
-        }
-
-        // add `LibraryMetadataRefreshConcurrency` to the URL query string
-        if (getLibraryMetadataRefreshConcurrency() != null) {
-            joiner.add(String.format("%sLibraryMetadataRefreshConcurrency%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLibraryMetadataRefreshConcurrency()))));
-        }
-
-        // add `RemoveOldPlugins` to the URL query string
-        if (getRemoveOldPlugins() != null) {
-            joiner.add(String.format("%sRemoveOldPlugins%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRemoveOldPlugins()))));
-        }
-
-        // add `AllowClientLogUpload` to the URL query string
-        if (getAllowClientLogUpload() != null) {
-            joiner.add(String.format("%sAllowClientLogUpload%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowClientLogUpload()))));
-        }
-
-        // add `DummyChapterDuration` to the URL query string
-        if (getDummyChapterDuration() != null) {
-            joiner.add(String.format("%sDummyChapterDuration%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDummyChapterDuration()))));
-        }
-
-        // add `ChapterImageResolution` to the URL query string
-        if (getChapterImageResolution() != null) {
-            joiner.add(String.format("%sChapterImageResolution%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChapterImageResolution()))));
-        }
-
-        // add `ParallelImageEncodingLimit` to the URL query string
-        if (getParallelImageEncodingLimit() != null) {
-            joiner.add(String.format("%sParallelImageEncodingLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParallelImageEncodingLimit()))));
-        }
-
-        // add `CastReceiverApplications` to the URL query string
-        if (getCastReceiverApplications() != null) {
-            for (int i = 0; i < getCastReceiverApplications().size(); i++) {
-                if (getCastReceiverApplications().get(i) != null) {
-                    joiner.add(getCastReceiverApplications().get(i).toUrlQueryString(String.format(
-                            "%sCastReceiverApplications%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TrickplayOptions` to the URL query string
-        if (getTrickplayOptions() != null) {
-            joiner.add(getTrickplayOptions().toUrlQueryString(prefix + "TrickplayOptions" + suffix));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ServerConfiguration instance;
-
-        public Builder() {
-            this(new ServerConfiguration());
-        }
-
-        protected Builder(ServerConfiguration instance) {
-            this.instance = instance;
-        }
-
-        public ServerConfiguration.Builder logFileRetentionDays(Integer logFileRetentionDays) {
-            this.instance.logFileRetentionDays = logFileRetentionDays;
-            return this;
-        }
-
-        public ServerConfiguration.Builder isStartupWizardCompleted(Boolean isStartupWizardCompleted) {
-            this.instance.isStartupWizardCompleted = isStartupWizardCompleted;
-            return this;
-        }
-
-        public ServerConfiguration.Builder cachePath(String cachePath) {
-            this.instance.cachePath = cachePath;
-            return this;
-        }
-
-        public ServerConfiguration.Builder previousVersion(String previousVersion) {
-            this.instance.previousVersion = previousVersion;
-            return this;
-        }
-
-        public ServerConfiguration.Builder previousVersionStr(String previousVersionStr) {
-            this.instance.previousVersionStr = previousVersionStr;
-            return this;
-        }
-
-        public ServerConfiguration.Builder enableMetrics(Boolean enableMetrics) {
-            this.instance.enableMetrics = enableMetrics;
-            return this;
-        }
-
-        public ServerConfiguration.Builder enableNormalizedItemByNameIds(Boolean enableNormalizedItemByNameIds) {
-            this.instance.enableNormalizedItemByNameIds = enableNormalizedItemByNameIds;
-            return this;
-        }
-
-        public ServerConfiguration.Builder isPortAuthorized(Boolean isPortAuthorized) {
-            this.instance.isPortAuthorized = isPortAuthorized;
-            return this;
-        }
-
-        public ServerConfiguration.Builder quickConnectAvailable(Boolean quickConnectAvailable) {
-            this.instance.quickConnectAvailable = quickConnectAvailable;
-            return this;
-        }
-
-        public ServerConfiguration.Builder enableCaseSensitiveItemIds(Boolean enableCaseSensitiveItemIds) {
-            this.instance.enableCaseSensitiveItemIds = enableCaseSensitiveItemIds;
-            return this;
-        }
-
-        public ServerConfiguration.Builder disableLiveTvChannelUserDataName(Boolean disableLiveTvChannelUserDataName) {
-            this.instance.disableLiveTvChannelUserDataName = disableLiveTvChannelUserDataName;
-            return this;
-        }
-
-        public ServerConfiguration.Builder metadataPath(String metadataPath) {
-            this.instance.metadataPath = metadataPath;
-            return this;
-        }
-
-        public ServerConfiguration.Builder preferredMetadataLanguage(String preferredMetadataLanguage) {
-            this.instance.preferredMetadataLanguage = preferredMetadataLanguage;
-            return this;
-        }
-
-        public ServerConfiguration.Builder metadataCountryCode(String metadataCountryCode) {
-            this.instance.metadataCountryCode = metadataCountryCode;
-            return this;
-        }
-
-        public ServerConfiguration.Builder sortReplaceCharacters(List<String> sortReplaceCharacters) {
-            this.instance.sortReplaceCharacters = sortReplaceCharacters;
-            return this;
-        }
-
-        public ServerConfiguration.Builder sortRemoveCharacters(List<String> sortRemoveCharacters) {
-            this.instance.sortRemoveCharacters = sortRemoveCharacters;
-            return this;
-        }
-
-        public ServerConfiguration.Builder sortRemoveWords(List<String> sortRemoveWords) {
-            this.instance.sortRemoveWords = sortRemoveWords;
-            return this;
-        }
-
-        public ServerConfiguration.Builder minResumePct(Integer minResumePct) {
-            this.instance.minResumePct = minResumePct;
-            return this;
-        }
-
-        public ServerConfiguration.Builder maxResumePct(Integer maxResumePct) {
-            this.instance.maxResumePct = maxResumePct;
-            return this;
-        }
-
-        public ServerConfiguration.Builder minResumeDurationSeconds(Integer minResumeDurationSeconds) {
-            this.instance.minResumeDurationSeconds = minResumeDurationSeconds;
-            return this;
-        }
-
-        public ServerConfiguration.Builder minAudiobookResume(Integer minAudiobookResume) {
-            this.instance.minAudiobookResume = minAudiobookResume;
-            return this;
-        }
-
-        public ServerConfiguration.Builder maxAudiobookResume(Integer maxAudiobookResume) {
-            this.instance.maxAudiobookResume = maxAudiobookResume;
-            return this;
-        }
-
-        public ServerConfiguration.Builder inactiveSessionThreshold(Integer inactiveSessionThreshold) {
-            this.instance.inactiveSessionThreshold = inactiveSessionThreshold;
-            return this;
-        }
-
-        public ServerConfiguration.Builder libraryMonitorDelay(Integer libraryMonitorDelay) {
-            this.instance.libraryMonitorDelay = libraryMonitorDelay;
-            return this;
-        }
-
-        public ServerConfiguration.Builder libraryUpdateDuration(Integer libraryUpdateDuration) {
-            this.instance.libraryUpdateDuration = libraryUpdateDuration;
-            return this;
-        }
-
-        public ServerConfiguration.Builder imageSavingConvention(ImageSavingConvention imageSavingConvention) {
-            this.instance.imageSavingConvention = imageSavingConvention;
-            return this;
-        }
-
-        public ServerConfiguration.Builder metadataOptions(List<MetadataOptions> metadataOptions) {
-            this.instance.metadataOptions = metadataOptions;
-            return this;
-        }
-
-        public ServerConfiguration.Builder skipDeserializationForBasicTypes(Boolean skipDeserializationForBasicTypes) {
-            this.instance.skipDeserializationForBasicTypes = skipDeserializationForBasicTypes;
-            return this;
-        }
-
-        public ServerConfiguration.Builder serverName(String serverName) {
-            this.instance.serverName = serverName;
-            return this;
-        }
-
-        public ServerConfiguration.Builder uiCulture(String uiCulture) {
-            this.instance.uiCulture = uiCulture;
-            return this;
-        }
-
-        public ServerConfiguration.Builder saveMetadataHidden(Boolean saveMetadataHidden) {
-            this.instance.saveMetadataHidden = saveMetadataHidden;
-            return this;
-        }
-
-        public ServerConfiguration.Builder contentTypes(List<NameValuePair> contentTypes) {
-            this.instance.contentTypes = contentTypes;
-            return this;
-        }
-
-        public ServerConfiguration.Builder remoteClientBitrateLimit(Integer remoteClientBitrateLimit) {
-            this.instance.remoteClientBitrateLimit = remoteClientBitrateLimit;
-            return this;
-        }
-
-        public ServerConfiguration.Builder enableFolderView(Boolean enableFolderView) {
-            this.instance.enableFolderView = enableFolderView;
-            return this;
-        }
-
-        public ServerConfiguration.Builder enableGroupingIntoCollections(Boolean enableGroupingIntoCollections) {
-            this.instance.enableGroupingIntoCollections = enableGroupingIntoCollections;
-            return this;
-        }
-
-        public ServerConfiguration.Builder displaySpecialsWithinSeasons(Boolean displaySpecialsWithinSeasons) {
-            this.instance.displaySpecialsWithinSeasons = displaySpecialsWithinSeasons;
-            return this;
-        }
-
-        public ServerConfiguration.Builder codecsUsed(List<String> codecsUsed) {
-            this.instance.codecsUsed = codecsUsed;
-            return this;
-        }
-
-        public ServerConfiguration.Builder pluginRepositories(List<RepositoryInfo> pluginRepositories) {
-            this.instance.pluginRepositories = pluginRepositories;
-            return this;
-        }
-
-        public ServerConfiguration.Builder enableExternalContentInSuggestions(
-                Boolean enableExternalContentInSuggestions) {
-            this.instance.enableExternalContentInSuggestions = enableExternalContentInSuggestions;
-            return this;
-        }
-
-        public ServerConfiguration.Builder imageExtractionTimeoutMs(Integer imageExtractionTimeoutMs) {
-            this.instance.imageExtractionTimeoutMs = imageExtractionTimeoutMs;
-            return this;
-        }
-
-        public ServerConfiguration.Builder pathSubstitutions(List<PathSubstitution> pathSubstitutions) {
-            this.instance.pathSubstitutions = pathSubstitutions;
-            return this;
-        }
-
-        public ServerConfiguration.Builder enableSlowResponseWarning(Boolean enableSlowResponseWarning) {
-            this.instance.enableSlowResponseWarning = enableSlowResponseWarning;
-            return this;
-        }
-
-        public ServerConfiguration.Builder slowResponseThresholdMs(Long slowResponseThresholdMs) {
-            this.instance.slowResponseThresholdMs = slowResponseThresholdMs;
-            return this;
-        }
-
-        public ServerConfiguration.Builder corsHosts(List<String> corsHosts) {
-            this.instance.corsHosts = corsHosts;
-            return this;
-        }
-
-        public ServerConfiguration.Builder activityLogRetentionDays(Integer activityLogRetentionDays) {
-            this.instance.activityLogRetentionDays = activityLogRetentionDays;
-            return this;
-        }
-
-        public ServerConfiguration.Builder libraryScanFanoutConcurrency(Integer libraryScanFanoutConcurrency) {
-            this.instance.libraryScanFanoutConcurrency = libraryScanFanoutConcurrency;
-            return this;
-        }
-
-        public ServerConfiguration.Builder libraryMetadataRefreshConcurrency(
-                Integer libraryMetadataRefreshConcurrency) {
-            this.instance.libraryMetadataRefreshConcurrency = libraryMetadataRefreshConcurrency;
-            return this;
-        }
-
-        public ServerConfiguration.Builder removeOldPlugins(Boolean removeOldPlugins) {
-            this.instance.removeOldPlugins = removeOldPlugins;
-            return this;
-        }
-
-        public ServerConfiguration.Builder allowClientLogUpload(Boolean allowClientLogUpload) {
-            this.instance.allowClientLogUpload = allowClientLogUpload;
-            return this;
-        }
-
-        public ServerConfiguration.Builder dummyChapterDuration(Integer dummyChapterDuration) {
-            this.instance.dummyChapterDuration = dummyChapterDuration;
-            return this;
-        }
-
-        public ServerConfiguration.Builder chapterImageResolution(ImageResolution chapterImageResolution) {
-            this.instance.chapterImageResolution = chapterImageResolution;
-            return this;
-        }
-
-        public ServerConfiguration.Builder parallelImageEncodingLimit(Integer parallelImageEncodingLimit) {
-            this.instance.parallelImageEncodingLimit = parallelImageEncodingLimit;
-            return this;
-        }
-
-        public ServerConfiguration.Builder castReceiverApplications(
-                List<CastReceiverApplication> castReceiverApplications) {
-            this.instance.castReceiverApplications = castReceiverApplications;
-            return this;
-        }
-
-        public ServerConfiguration.Builder trickplayOptions(TrickplayOptions trickplayOptions) {
-            this.instance.trickplayOptions = trickplayOptions;
-            return this;
-        }
-
-        /**
-         * returns a built ServerConfiguration instance.
-         *
-         * The builder is not reusable.
-         */
-        public ServerConfiguration build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ServerConfiguration.Builder builder() {
-        return new ServerConfiguration.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ServerConfiguration.Builder toBuilder() {
-        return new ServerConfiguration.Builder().logFileRetentionDays(getLogFileRetentionDays())
-                .isStartupWizardCompleted(getIsStartupWizardCompleted()).cachePath(getCachePath())
-                .previousVersion(getPreviousVersion()).previousVersionStr(getPreviousVersionStr())
-                .enableMetrics(getEnableMetrics()).enableNormalizedItemByNameIds(getEnableNormalizedItemByNameIds())
-                .isPortAuthorized(getIsPortAuthorized()).quickConnectAvailable(getQuickConnectAvailable())
-                .enableCaseSensitiveItemIds(getEnableCaseSensitiveItemIds())
-                .disableLiveTvChannelUserDataName(getDisableLiveTvChannelUserDataName()).metadataPath(getMetadataPath())
-                .preferredMetadataLanguage(getPreferredMetadataLanguage()).metadataCountryCode(getMetadataCountryCode())
-                .sortReplaceCharacters(getSortReplaceCharacters()).sortRemoveCharacters(getSortRemoveCharacters())
-                .sortRemoveWords(getSortRemoveWords()).minResumePct(getMinResumePct()).maxResumePct(getMaxResumePct())
-                .minResumeDurationSeconds(getMinResumeDurationSeconds()).minAudiobookResume(getMinAudiobookResume())
-                .maxAudiobookResume(getMaxAudiobookResume()).inactiveSessionThreshold(getInactiveSessionThreshold())
-                .libraryMonitorDelay(getLibraryMonitorDelay()).libraryUpdateDuration(getLibraryUpdateDuration())
-                .imageSavingConvention(getImageSavingConvention()).metadataOptions(getMetadataOptions())
-                .skipDeserializationForBasicTypes(getSkipDeserializationForBasicTypes()).serverName(getServerName())
-                .uiCulture(getUiCulture()).saveMetadataHidden(getSaveMetadataHidden()).contentTypes(getContentTypes())
-                .remoteClientBitrateLimit(getRemoteClientBitrateLimit()).enableFolderView(getEnableFolderView())
-                .enableGroupingIntoCollections(getEnableGroupingIntoCollections())
-                .displaySpecialsWithinSeasons(getDisplaySpecialsWithinSeasons()).codecsUsed(getCodecsUsed())
-                .pluginRepositories(getPluginRepositories())
-                .enableExternalContentInSuggestions(getEnableExternalContentInSuggestions())
-                .imageExtractionTimeoutMs(getImageExtractionTimeoutMs()).pathSubstitutions(getPathSubstitutions())
-                .enableSlowResponseWarning(getEnableSlowResponseWarning())
-                .slowResponseThresholdMs(getSlowResponseThresholdMs()).corsHosts(getCorsHosts())
-                .activityLogRetentionDays(getActivityLogRetentionDays())
-                .libraryScanFanoutConcurrency(getLibraryScanFanoutConcurrency())
-                .libraryMetadataRefreshConcurrency(getLibraryMetadataRefreshConcurrency())
-                .removeOldPlugins(getRemoveOldPlugins()).allowClientLogUpload(getAllowClientLogUpload())
-                .dummyChapterDuration(getDummyChapterDuration()).chapterImageResolution(getChapterImageResolution())
-                .parallelImageEncodingLimit(getParallelImageEncodingLimit())
-                .castReceiverApplications(getCastReceiverApplications()).trickplayOptions(getTrickplayOptions());
     }
 }

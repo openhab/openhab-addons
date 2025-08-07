@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -55,6 +52,7 @@ public class UserDataChangeInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -86,6 +84,7 @@ public class UserDataChangeInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_DATA_LIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UserItemDataDto> getUserDataList() {
         return userDataList;
     }
@@ -136,113 +135,5 @@ public class UserDataChangeInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `UserDataList` to the URL query string
-        if (getUserDataList() != null) {
-            for (int i = 0; i < getUserDataList().size(); i++) {
-                if (getUserDataList().get(i) != null) {
-                    joiner.add(getUserDataList().get(i).toUrlQueryString(String.format("%sUserDataList%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private UserDataChangeInfo instance;
-
-        public Builder() {
-            this(new UserDataChangeInfo());
-        }
-
-        protected Builder(UserDataChangeInfo instance) {
-            this.instance = instance;
-        }
-
-        public UserDataChangeInfo.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public UserDataChangeInfo.Builder userDataList(List<UserItemDataDto> userDataList) {
-            this.instance.userDataList = userDataList;
-            return this;
-        }
-
-        /**
-         * returns a built UserDataChangeInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public UserDataChangeInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UserDataChangeInfo.Builder builder() {
-        return new UserDataChangeInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UserDataChangeInfo.Builder toBuilder() {
-        return new UserDataChangeInfo.Builder().userId(getUserId()).userDataList(getUserDataList());
     }
 }

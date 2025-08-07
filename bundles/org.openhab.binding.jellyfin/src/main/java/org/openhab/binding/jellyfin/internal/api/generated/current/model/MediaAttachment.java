@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -75,6 +72,7 @@ public class MediaAttachment {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCodec() {
         return codec;
     }
@@ -98,6 +96,7 @@ public class MediaAttachment {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CODEC_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCodecTag() {
         return codecTag;
     }
@@ -121,6 +120,7 @@ public class MediaAttachment {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COMMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getComment() {
         return comment;
     }
@@ -144,6 +144,7 @@ public class MediaAttachment {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getIndex() {
         return index;
     }
@@ -167,6 +168,7 @@ public class MediaAttachment {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FILE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getFileName() {
         return fileName;
     }
@@ -190,6 +192,7 @@ public class MediaAttachment {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MIME_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMimeType() {
         return mimeType;
     }
@@ -213,6 +216,7 @@ public class MediaAttachment {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDeliveryUrl() {
         return deliveryUrl;
     }
@@ -273,164 +277,5 @@ public class MediaAttachment {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Codec` to the URL query string
-        if (getCodec() != null) {
-            joiner.add(String.format("%sCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
-        }
-
-        // add `CodecTag` to the URL query string
-        if (getCodecTag() != null) {
-            joiner.add(String.format("%sCodecTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCodecTag()))));
-        }
-
-        // add `Comment` to the URL query string
-        if (getComment() != null) {
-            joiner.add(String.format("%sComment%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
-        }
-
-        // add `Index` to the URL query string
-        if (getIndex() != null) {
-            joiner.add(String.format("%sIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndex()))));
-        }
-
-        // add `FileName` to the URL query string
-        if (getFileName() != null) {
-            joiner.add(String.format("%sFileName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFileName()))));
-        }
-
-        // add `MimeType` to the URL query string
-        if (getMimeType() != null) {
-            joiner.add(String.format("%sMimeType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMimeType()))));
-        }
-
-        // add `DeliveryUrl` to the URL query string
-        if (getDeliveryUrl() != null) {
-            joiner.add(String.format("%sDeliveryUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeliveryUrl()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private MediaAttachment instance;
-
-        public Builder() {
-            this(new MediaAttachment());
-        }
-
-        protected Builder(MediaAttachment instance) {
-            this.instance = instance;
-        }
-
-        public MediaAttachment.Builder codec(String codec) {
-            this.instance.codec = codec;
-            return this;
-        }
-
-        public MediaAttachment.Builder codecTag(String codecTag) {
-            this.instance.codecTag = codecTag;
-            return this;
-        }
-
-        public MediaAttachment.Builder comment(String comment) {
-            this.instance.comment = comment;
-            return this;
-        }
-
-        public MediaAttachment.Builder index(Integer index) {
-            this.instance.index = index;
-            return this;
-        }
-
-        public MediaAttachment.Builder fileName(String fileName) {
-            this.instance.fileName = fileName;
-            return this;
-        }
-
-        public MediaAttachment.Builder mimeType(String mimeType) {
-            this.instance.mimeType = mimeType;
-            return this;
-        }
-
-        public MediaAttachment.Builder deliveryUrl(String deliveryUrl) {
-            this.instance.deliveryUrl = deliveryUrl;
-            return this;
-        }
-
-        /**
-         * returns a built MediaAttachment instance.
-         *
-         * The builder is not reusable.
-         */
-        public MediaAttachment build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static MediaAttachment.Builder builder() {
-        return new MediaAttachment.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public MediaAttachment.Builder toBuilder() {
-        return new MediaAttachment.Builder().codec(getCodec()).codecTag(getCodecTag()).comment(getComment())
-                .index(getIndex()).fileName(getFileName()).mimeType(getMimeType()).deliveryUrl(getDeliveryUrl());
     }
 }

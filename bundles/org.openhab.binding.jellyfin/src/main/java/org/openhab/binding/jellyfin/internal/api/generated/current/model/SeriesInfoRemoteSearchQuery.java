@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -64,6 +61,7 @@ public class SeriesInfoRemoteSearchQuery {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SeriesInfo getSearchInfo() {
         return searchInfo;
     }
@@ -87,6 +85,7 @@ public class SeriesInfoRemoteSearchQuery {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
@@ -111,6 +110,7 @@ public class SeriesInfoRemoteSearchQuery {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSearchProviderName() {
         return searchProviderName;
     }
@@ -135,6 +135,7 @@ public class SeriesInfoRemoteSearchQuery {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIncludeDisabledProviders() {
         return includeDisabledProviders;
     }
@@ -189,130 +190,5 @@ public class SeriesInfoRemoteSearchQuery {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `SearchInfo` to the URL query string
-        if (getSearchInfo() != null) {
-            joiner.add(getSearchInfo().toUrlQueryString(prefix + "SearchInfo" + suffix));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `SearchProviderName` to the URL query string
-        if (getSearchProviderName() != null) {
-            joiner.add(String.format("%sSearchProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
-        }
-
-        // add `IncludeDisabledProviders` to the URL query string
-        if (getIncludeDisabledProviders() != null) {
-            joiner.add(String.format("%sIncludeDisabledProviders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIncludeDisabledProviders()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private SeriesInfoRemoteSearchQuery instance;
-
-        public Builder() {
-            this(new SeriesInfoRemoteSearchQuery());
-        }
-
-        protected Builder(SeriesInfoRemoteSearchQuery instance) {
-            this.instance = instance;
-        }
-
-        public SeriesInfoRemoteSearchQuery.Builder searchInfo(SeriesInfo searchInfo) {
-            this.instance.searchInfo = searchInfo;
-            return this;
-        }
-
-        public SeriesInfoRemoteSearchQuery.Builder itemId(UUID itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public SeriesInfoRemoteSearchQuery.Builder searchProviderName(String searchProviderName) {
-            this.instance.searchProviderName = searchProviderName;
-            return this;
-        }
-
-        public SeriesInfoRemoteSearchQuery.Builder includeDisabledProviders(Boolean includeDisabledProviders) {
-            this.instance.includeDisabledProviders = includeDisabledProviders;
-            return this;
-        }
-
-        /**
-         * returns a built SeriesInfoRemoteSearchQuery instance.
-         *
-         * The builder is not reusable.
-         */
-        public SeriesInfoRemoteSearchQuery build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SeriesInfoRemoteSearchQuery.Builder builder() {
-        return new SeriesInfoRemoteSearchQuery.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SeriesInfoRemoteSearchQuery.Builder toBuilder() {
-        return new SeriesInfoRemoteSearchQuery.Builder().searchInfo(getSearchInfo()).itemId(getItemId())
-                .searchProviderName(getSearchProviderName()).includeDisabledProviders(getIncludeDisabledProviders());
     }
 }

@@ -15,9 +15,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -118,6 +115,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getThreeLetterISOLanguageName() {
         return threeLetterISOLanguageName;
     }
@@ -141,6 +139,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -164,6 +163,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getProviderName() {
         return providerName;
     }
@@ -187,6 +187,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -210,6 +211,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FORMAT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getFormat() {
         return format;
     }
@@ -233,6 +235,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUTHOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAuthor() {
         return author;
     }
@@ -256,6 +259,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COMMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getComment() {
         return comment;
     }
@@ -279,6 +283,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATE_CREATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateCreated() {
         return dateCreated;
     }
@@ -302,6 +307,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Float getCommunityRating() {
         return communityRating;
     }
@@ -325,6 +331,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FRAME_RATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Float getFrameRate() {
         return frameRate;
     }
@@ -348,6 +355,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DOWNLOAD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getDownloadCount() {
         return downloadCount;
     }
@@ -371,6 +379,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_HASH_MATCH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsHashMatch() {
         return isHashMatch;
     }
@@ -394,6 +403,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AI_TRANSLATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAiTranslated() {
         return aiTranslated;
     }
@@ -417,6 +427,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MACHINE_TRANSLATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getMachineTranslated() {
         return machineTranslated;
     }
@@ -440,6 +451,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FORCED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getForced() {
         return forced;
     }
@@ -463,6 +475,7 @@ public class RemoteSubtitleInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HEARING_IMPAIRED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHearingImpaired() {
         return hearingImpaired;
     }
@@ -543,267 +556,5 @@ public class RemoteSubtitleInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ThreeLetterISOLanguageName` to the URL query string
-        if (getThreeLetterISOLanguageName() != null) {
-            joiner.add(String.format("%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageName()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `ProviderName` to the URL query string
-        if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Format` to the URL query string
-        if (getFormat() != null) {
-            joiner.add(String.format("%sFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
-        }
-
-        // add `Author` to the URL query string
-        if (getAuthor() != null) {
-            joiner.add(String.format("%sAuthor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthor()))));
-        }
-
-        // add `Comment` to the URL query string
-        if (getComment() != null) {
-            joiner.add(String.format("%sComment%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
-        }
-
-        // add `DateCreated` to the URL query string
-        if (getDateCreated() != null) {
-            joiner.add(String.format("%sDateCreated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
-        }
-
-        // add `CommunityRating` to the URL query string
-        if (getCommunityRating() != null) {
-            joiner.add(String.format("%sCommunityRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
-        }
-
-        // add `FrameRate` to the URL query string
-        if (getFrameRate() != null) {
-            joiner.add(String.format("%sFrameRate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFrameRate()))));
-        }
-
-        // add `DownloadCount` to the URL query string
-        if (getDownloadCount() != null) {
-            joiner.add(String.format("%sDownloadCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDownloadCount()))));
-        }
-
-        // add `IsHashMatch` to the URL query string
-        if (getIsHashMatch() != null) {
-            joiner.add(String.format("%sIsHashMatch%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHashMatch()))));
-        }
-
-        // add `AiTranslated` to the URL query string
-        if (getAiTranslated() != null) {
-            joiner.add(String.format("%sAiTranslated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAiTranslated()))));
-        }
-
-        // add `MachineTranslated` to the URL query string
-        if (getMachineTranslated() != null) {
-            joiner.add(String.format("%sMachineTranslated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMachineTranslated()))));
-        }
-
-        // add `Forced` to the URL query string
-        if (getForced() != null) {
-            joiner.add(String.format("%sForced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getForced()))));
-        }
-
-        // add `HearingImpaired` to the URL query string
-        if (getHearingImpaired() != null) {
-            joiner.add(String.format("%sHearingImpaired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHearingImpaired()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private RemoteSubtitleInfo instance;
-
-        public Builder() {
-            this(new RemoteSubtitleInfo());
-        }
-
-        protected Builder(RemoteSubtitleInfo instance) {
-            this.instance = instance;
-        }
-
-        public RemoteSubtitleInfo.Builder threeLetterISOLanguageName(String threeLetterISOLanguageName) {
-            this.instance.threeLetterISOLanguageName = threeLetterISOLanguageName;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder providerName(String providerName) {
-            this.instance.providerName = providerName;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder format(String format) {
-            this.instance.format = format;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder author(String author) {
-            this.instance.author = author;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder comment(String comment) {
-            this.instance.comment = comment;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder dateCreated(OffsetDateTime dateCreated) {
-            this.instance.dateCreated = dateCreated;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder communityRating(Float communityRating) {
-            this.instance.communityRating = communityRating;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder frameRate(Float frameRate) {
-            this.instance.frameRate = frameRate;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder downloadCount(Integer downloadCount) {
-            this.instance.downloadCount = downloadCount;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder isHashMatch(Boolean isHashMatch) {
-            this.instance.isHashMatch = isHashMatch;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder aiTranslated(Boolean aiTranslated) {
-            this.instance.aiTranslated = aiTranslated;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder machineTranslated(Boolean machineTranslated) {
-            this.instance.machineTranslated = machineTranslated;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder forced(Boolean forced) {
-            this.instance.forced = forced;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder hearingImpaired(Boolean hearingImpaired) {
-            this.instance.hearingImpaired = hearingImpaired;
-            return this;
-        }
-
-        /**
-         * returns a built RemoteSubtitleInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public RemoteSubtitleInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RemoteSubtitleInfo.Builder builder() {
-        return new RemoteSubtitleInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RemoteSubtitleInfo.Builder toBuilder() {
-        return new RemoteSubtitleInfo.Builder().threeLetterISOLanguageName(getThreeLetterISOLanguageName()).id(getId())
-                .providerName(getProviderName()).name(getName()).format(getFormat()).author(getAuthor())
-                .comment(getComment()).dateCreated(getDateCreated()).communityRating(getCommunityRating())
-                .frameRate(getFrameRate()).downloadCount(getDownloadCount()).isHashMatch(getIsHashMatch())
-                .aiTranslated(getAiTranslated()).machineTranslated(getMachineTranslated()).forced(getForced())
-                .hearingImpaired(getHearingImpaired());
     }
 }

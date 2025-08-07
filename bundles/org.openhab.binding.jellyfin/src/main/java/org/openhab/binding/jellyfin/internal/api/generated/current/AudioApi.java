@@ -1,31 +1,13 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -35,44 +17,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.Pair;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.EncodingContext;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SubtitleDeliveryMethod;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class AudioApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public AudioApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public AudioApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -143,6 +115,20 @@ public class AudioApi {
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Audio stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getAudioStream(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
@@ -188,16 +174,14 @@ public class AudioApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        ApiResponse<File> localVarResponse = getAudioStreamWithHttpInfo(itemId, container, _static, params, tag,
-                deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId,
-                audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames,
-                audioSampleRate, maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels, profile, level,
-                framerate, maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate,
-                subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
-                requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
-                videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
-        return localVarResponse.getData();
+        return getAudioStreamWithHttpInfo(itemId, container, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, videoBitRate, subtitleStreamIndex, subtitleMethod, maxRefFrames,
+                maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels,
+                cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons,
+                audioStreamIndex, videoStreamIndex, context, streamOptions, enableAudioVbrEncoding).getData();
     }
 
     /**
@@ -268,6 +252,20 @@ public class AudioApi {
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Audio stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getAudioStreamWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
@@ -313,223 +311,74 @@ public class AudioApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getAudioStreamRequestBuilder(itemId, container, _static, params,
-                tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId,
-                deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
-                breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels,
-                profile, level, framerate, maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate,
-                subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
-                requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
-                videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getAudioStream", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getAudioStreamRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
-            @org.eclipse.jdt.annotation.NonNull String params, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
-            @org.eclipse.jdt.annotation.NonNull String playSessionId,
-            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
-            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
-            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
-            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
-            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
-            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
-            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
-            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
-            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
-            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
-            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
-            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
-            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
-            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
-            @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
-            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
-            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
-            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
-            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
-            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
-            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
-            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
-            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
-            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
-            @org.eclipse.jdt.annotation.NonNull String videoCodec,
-            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
-            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
-            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
-            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getAudioStream");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Audio/{itemId}/stream".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/Audio/{itemId}/stream".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "container";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("container", container));
-        localVarQueryParameterBaseName = "static";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("static", _static));
-        localVarQueryParameterBaseName = "params";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("params", params));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "deviceProfileId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceProfileId", deviceProfileId));
-        localVarQueryParameterBaseName = "playSessionId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
-        localVarQueryParameterBaseName = "segmentContainer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentContainer", segmentContainer));
-        localVarQueryParameterBaseName = "segmentLength";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentLength", segmentLength));
-        localVarQueryParameterBaseName = "minSegments";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minSegments", minSegments));
-        localVarQueryParameterBaseName = "mediaSourceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
-        localVarQueryParameterBaseName = "deviceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceId", deviceId));
-        localVarQueryParameterBaseName = "audioCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioCodec", audioCodec));
-        localVarQueryParameterBaseName = "enableAutoStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableAutoStreamCopy", enableAutoStreamCopy));
-        localVarQueryParameterBaseName = "allowVideoStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("allowVideoStreamCopy", allowVideoStreamCopy));
-        localVarQueryParameterBaseName = "allowAudioStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("allowAudioStreamCopy", allowAudioStreamCopy));
-        localVarQueryParameterBaseName = "breakOnNonKeyFrames";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("breakOnNonKeyFrames", breakOnNonKeyFrames));
-        localVarQueryParameterBaseName = "audioSampleRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioSampleRate", audioSampleRate));
-        localVarQueryParameterBaseName = "maxAudioBitDepth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioBitDepth", maxAudioBitDepth));
-        localVarQueryParameterBaseName = "audioBitRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioBitRate", audioBitRate));
-        localVarQueryParameterBaseName = "audioChannels";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioChannels", audioChannels));
-        localVarQueryParameterBaseName = "maxAudioChannels";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioChannels", maxAudioChannels));
-        localVarQueryParameterBaseName = "profile";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("profile", profile));
-        localVarQueryParameterBaseName = "level";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("level", level));
-        localVarQueryParameterBaseName = "framerate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("framerate", framerate));
-        localVarQueryParameterBaseName = "maxFramerate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxFramerate", maxFramerate));
-        localVarQueryParameterBaseName = "copyTimestamps";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("copyTimestamps", copyTimestamps));
-        localVarQueryParameterBaseName = "startTimeTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startTimeTicks", startTimeTicks));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "videoBitRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoBitRate", videoBitRate));
-        localVarQueryParameterBaseName = "subtitleStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
-        localVarQueryParameterBaseName = "subtitleMethod";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleMethod", subtitleMethod));
-        localVarQueryParameterBaseName = "maxRefFrames";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxRefFrames", maxRefFrames));
-        localVarQueryParameterBaseName = "maxVideoBitDepth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxVideoBitDepth", maxVideoBitDepth));
-        localVarQueryParameterBaseName = "requireAvc";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("requireAvc", requireAvc));
-        localVarQueryParameterBaseName = "deInterlace";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deInterlace", deInterlace));
-        localVarQueryParameterBaseName = "requireNonAnamorphic";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("requireNonAnamorphic", requireNonAnamorphic));
-        localVarQueryParameterBaseName = "transcodingMaxAudioChannels";
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "container", container));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "static", _static));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "params", params));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deviceProfileId", deviceProfileId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "playSessionId", playSessionId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "segmentContainer", segmentContainer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "segmentLength", segmentLength));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minSegments", minSegments));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "mediaSourceId", mediaSourceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deviceId", deviceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioCodec", audioCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableAutoStreamCopy", enableAutoStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "allowVideoStreamCopy", allowVideoStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "allowAudioStreamCopy", allowAudioStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "breakOnNonKeyFrames", breakOnNonKeyFrames));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioSampleRate", audioSampleRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxAudioBitDepth", maxAudioBitDepth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioBitRate", audioBitRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioChannels", audioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxAudioChannels", maxAudioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "profile", profile));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "level", level));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "framerate", framerate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxFramerate", maxFramerate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "copyTimestamps", copyTimestamps));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startTimeTicks", startTimeTicks));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoBitRate", videoBitRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleStreamIndex", subtitleStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleMethod", subtitleMethod));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxRefFrames", maxRefFrames));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxVideoBitDepth", maxVideoBitDepth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "requireAvc", requireAvc));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deInterlace", deInterlace));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "requireNonAnamorphic", requireNonAnamorphic));
         localVarQueryParams
-                .addAll(ApiClient.parameterToPairs("transcodingMaxAudioChannels", transcodingMaxAudioChannels));
-        localVarQueryParameterBaseName = "cpuCoreLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("cpuCoreLimit", cpuCoreLimit));
-        localVarQueryParameterBaseName = "liveStreamId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("liveStreamId", liveStreamId));
-        localVarQueryParameterBaseName = "enableMpegtsM2TsMode";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableMpegtsM2TsMode", enableMpegtsM2TsMode));
-        localVarQueryParameterBaseName = "videoCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoCodec", videoCodec));
-        localVarQueryParameterBaseName = "subtitleCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleCodec", subtitleCodec));
-        localVarQueryParameterBaseName = "transcodeReasons";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("transcodeReasons", transcodeReasons));
-        localVarQueryParameterBaseName = "audioStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
-        localVarQueryParameterBaseName = "videoStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoStreamIndex", videoStreamIndex));
-        localVarQueryParameterBaseName = "context";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("context", context));
-        localVarQueryParameterBaseName = "streamOptions";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("streamOptions", streamOptions));
-        localVarQueryParameterBaseName = "enableAudioVbrEncoding";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableAudioVbrEncoding", enableAudioVbrEncoding));
+                .addAll(apiClient.parameterToPairs("", "transcodingMaxAudioChannels", transcodingMaxAudioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "cpuCoreLimit", cpuCoreLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "liveStreamId", liveStreamId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableMpegtsM2TsMode", enableMpegtsM2TsMode));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoCodec", videoCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleCodec", subtitleCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "transcodeReasons", transcodeReasons));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioStreamIndex", audioStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoStreamIndex", videoStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "context", context));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "streamOptions", streamOptions));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableAudioVbrEncoding", enableAudioVbrEncoding));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "audio/*");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("audio/*");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("AudioApi.getAudioStream", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -600,6 +449,20 @@ public class AudioApi {
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Audio stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getAudioStreamByContainer(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
@@ -645,16 +508,15 @@ public class AudioApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        ApiResponse<File> localVarResponse = getAudioStreamByContainerWithHttpInfo(itemId, container, _static, params,
-                tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId,
-                deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
-                breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels,
-                profile, level, framerate, maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate,
-                subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
-                requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
-                videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
-        return localVarResponse.getData();
+        return getAudioStreamByContainerWithHttpInfo(itemId, container, _static, params, tag, deviceProfileId,
+                playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec,
+                enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate,
+                maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate,
+                maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate, subtitleStreamIndex,
+                subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAudioVbrEncoding).getData();
     }
 
     /**
@@ -725,6 +587,20 @@ public class AudioApi {
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Audio stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getAudioStreamByContainerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
@@ -770,229 +646,79 @@ public class AudioApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getAudioStreamByContainerRequestBuilder(itemId, container, _static,
-                params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments,
-                mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
-                breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels,
-                profile, level, framerate, maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate,
-                subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
-                requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
-                videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getAudioStreamByContainer", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getAudioStreamByContainerRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.Nullable String container,
-            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
-            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
-            @org.eclipse.jdt.annotation.NonNull String playSessionId,
-            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
-            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
-            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
-            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
-            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
-            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
-            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
-            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
-            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
-            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
-            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
-            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
-            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
-            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
-            @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
-            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
-            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
-            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
-            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
-            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
-            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
-            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
-            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
-            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
-            @org.eclipse.jdt.annotation.NonNull String videoCodec,
-            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
-            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
-            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
-            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'itemId' when calling getAudioStreamByContainer");
         }
-        // verify the required parameter 'container' is set
         if (container == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'container' when calling getAudioStreamByContainer");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Audio/{itemId}/stream.{container}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{container}", ApiClient.urlEncode(container.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{container}", apiClient.escapeString(container.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "static";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("static", _static));
-        localVarQueryParameterBaseName = "params";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("params", params));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "deviceProfileId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceProfileId", deviceProfileId));
-        localVarQueryParameterBaseName = "playSessionId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
-        localVarQueryParameterBaseName = "segmentContainer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentContainer", segmentContainer));
-        localVarQueryParameterBaseName = "segmentLength";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentLength", segmentLength));
-        localVarQueryParameterBaseName = "minSegments";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minSegments", minSegments));
-        localVarQueryParameterBaseName = "mediaSourceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
-        localVarQueryParameterBaseName = "deviceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceId", deviceId));
-        localVarQueryParameterBaseName = "audioCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioCodec", audioCodec));
-        localVarQueryParameterBaseName = "enableAutoStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableAutoStreamCopy", enableAutoStreamCopy));
-        localVarQueryParameterBaseName = "allowVideoStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("allowVideoStreamCopy", allowVideoStreamCopy));
-        localVarQueryParameterBaseName = "allowAudioStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("allowAudioStreamCopy", allowAudioStreamCopy));
-        localVarQueryParameterBaseName = "breakOnNonKeyFrames";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("breakOnNonKeyFrames", breakOnNonKeyFrames));
-        localVarQueryParameterBaseName = "audioSampleRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioSampleRate", audioSampleRate));
-        localVarQueryParameterBaseName = "maxAudioBitDepth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioBitDepth", maxAudioBitDepth));
-        localVarQueryParameterBaseName = "audioBitRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioBitRate", audioBitRate));
-        localVarQueryParameterBaseName = "audioChannels";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioChannels", audioChannels));
-        localVarQueryParameterBaseName = "maxAudioChannels";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioChannels", maxAudioChannels));
-        localVarQueryParameterBaseName = "profile";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("profile", profile));
-        localVarQueryParameterBaseName = "level";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("level", level));
-        localVarQueryParameterBaseName = "framerate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("framerate", framerate));
-        localVarQueryParameterBaseName = "maxFramerate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxFramerate", maxFramerate));
-        localVarQueryParameterBaseName = "copyTimestamps";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("copyTimestamps", copyTimestamps));
-        localVarQueryParameterBaseName = "startTimeTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startTimeTicks", startTimeTicks));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "videoBitRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoBitRate", videoBitRate));
-        localVarQueryParameterBaseName = "subtitleStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
-        localVarQueryParameterBaseName = "subtitleMethod";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleMethod", subtitleMethod));
-        localVarQueryParameterBaseName = "maxRefFrames";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxRefFrames", maxRefFrames));
-        localVarQueryParameterBaseName = "maxVideoBitDepth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxVideoBitDepth", maxVideoBitDepth));
-        localVarQueryParameterBaseName = "requireAvc";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("requireAvc", requireAvc));
-        localVarQueryParameterBaseName = "deInterlace";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deInterlace", deInterlace));
-        localVarQueryParameterBaseName = "requireNonAnamorphic";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("requireNonAnamorphic", requireNonAnamorphic));
-        localVarQueryParameterBaseName = "transcodingMaxAudioChannels";
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "static", _static));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "params", params));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deviceProfileId", deviceProfileId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "playSessionId", playSessionId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "segmentContainer", segmentContainer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "segmentLength", segmentLength));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minSegments", minSegments));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "mediaSourceId", mediaSourceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deviceId", deviceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioCodec", audioCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableAutoStreamCopy", enableAutoStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "allowVideoStreamCopy", allowVideoStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "allowAudioStreamCopy", allowAudioStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "breakOnNonKeyFrames", breakOnNonKeyFrames));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioSampleRate", audioSampleRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxAudioBitDepth", maxAudioBitDepth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioBitRate", audioBitRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioChannels", audioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxAudioChannels", maxAudioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "profile", profile));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "level", level));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "framerate", framerate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxFramerate", maxFramerate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "copyTimestamps", copyTimestamps));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startTimeTicks", startTimeTicks));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoBitRate", videoBitRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleStreamIndex", subtitleStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleMethod", subtitleMethod));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxRefFrames", maxRefFrames));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxVideoBitDepth", maxVideoBitDepth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "requireAvc", requireAvc));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deInterlace", deInterlace));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "requireNonAnamorphic", requireNonAnamorphic));
         localVarQueryParams
-                .addAll(ApiClient.parameterToPairs("transcodingMaxAudioChannels", transcodingMaxAudioChannels));
-        localVarQueryParameterBaseName = "cpuCoreLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("cpuCoreLimit", cpuCoreLimit));
-        localVarQueryParameterBaseName = "liveStreamId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("liveStreamId", liveStreamId));
-        localVarQueryParameterBaseName = "enableMpegtsM2TsMode";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableMpegtsM2TsMode", enableMpegtsM2TsMode));
-        localVarQueryParameterBaseName = "videoCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoCodec", videoCodec));
-        localVarQueryParameterBaseName = "subtitleCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleCodec", subtitleCodec));
-        localVarQueryParameterBaseName = "transcodeReasons";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("transcodeReasons", transcodeReasons));
-        localVarQueryParameterBaseName = "audioStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
-        localVarQueryParameterBaseName = "videoStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoStreamIndex", videoStreamIndex));
-        localVarQueryParameterBaseName = "context";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("context", context));
-        localVarQueryParameterBaseName = "streamOptions";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("streamOptions", streamOptions));
-        localVarQueryParameterBaseName = "enableAudioVbrEncoding";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableAudioVbrEncoding", enableAudioVbrEncoding));
+                .addAll(apiClient.parameterToPairs("", "transcodingMaxAudioChannels", transcodingMaxAudioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "cpuCoreLimit", cpuCoreLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "liveStreamId", liveStreamId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableMpegtsM2TsMode", enableMpegtsM2TsMode));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoCodec", videoCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleCodec", subtitleCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "transcodeReasons", transcodeReasons));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioStreamIndex", audioStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoStreamIndex", videoStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "context", context));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "streamOptions", streamOptions));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableAudioVbrEncoding", enableAudioVbrEncoding));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "audio/*");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("audio/*");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("AudioApi.getAudioStreamByContainer", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -1063,6 +789,20 @@ public class AudioApi {
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Audio stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headAudioStream(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
@@ -1108,16 +848,14 @@ public class AudioApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        ApiResponse<File> localVarResponse = headAudioStreamWithHttpInfo(itemId, container, _static, params, tag,
-                deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId,
-                audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames,
-                audioSampleRate, maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels, profile, level,
-                framerate, maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate,
-                subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
-                requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
-                videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
-        return localVarResponse.getData();
+        return headAudioStreamWithHttpInfo(itemId, container, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, videoBitRate, subtitleStreamIndex, subtitleMethod, maxRefFrames,
+                maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels,
+                cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons,
+                audioStreamIndex, videoStreamIndex, context, streamOptions, enableAudioVbrEncoding).getData();
     }
 
     /**
@@ -1188,6 +926,20 @@ public class AudioApi {
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Audio stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headAudioStreamWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
@@ -1233,223 +985,74 @@ public class AudioApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headAudioStreamRequestBuilder(itemId, container, _static, params,
-                tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId,
-                deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
-                breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels,
-                profile, level, framerate, maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate,
-                subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
-                requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
-                videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headAudioStream", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headAudioStreamRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
-            @org.eclipse.jdt.annotation.NonNull String params, @org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
-            @org.eclipse.jdt.annotation.NonNull String playSessionId,
-            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
-            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
-            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
-            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
-            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
-            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
-            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
-            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
-            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
-            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
-            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
-            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
-            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
-            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
-            @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
-            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
-            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
-            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
-            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
-            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
-            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
-            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
-            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
-            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
-            @org.eclipse.jdt.annotation.NonNull String videoCodec,
-            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
-            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
-            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
-            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling headAudioStream");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Audio/{itemId}/stream".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/Audio/{itemId}/stream".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "container";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("container", container));
-        localVarQueryParameterBaseName = "static";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("static", _static));
-        localVarQueryParameterBaseName = "params";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("params", params));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "deviceProfileId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceProfileId", deviceProfileId));
-        localVarQueryParameterBaseName = "playSessionId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
-        localVarQueryParameterBaseName = "segmentContainer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentContainer", segmentContainer));
-        localVarQueryParameterBaseName = "segmentLength";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentLength", segmentLength));
-        localVarQueryParameterBaseName = "minSegments";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minSegments", minSegments));
-        localVarQueryParameterBaseName = "mediaSourceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
-        localVarQueryParameterBaseName = "deviceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceId", deviceId));
-        localVarQueryParameterBaseName = "audioCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioCodec", audioCodec));
-        localVarQueryParameterBaseName = "enableAutoStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableAutoStreamCopy", enableAutoStreamCopy));
-        localVarQueryParameterBaseName = "allowVideoStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("allowVideoStreamCopy", allowVideoStreamCopy));
-        localVarQueryParameterBaseName = "allowAudioStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("allowAudioStreamCopy", allowAudioStreamCopy));
-        localVarQueryParameterBaseName = "breakOnNonKeyFrames";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("breakOnNonKeyFrames", breakOnNonKeyFrames));
-        localVarQueryParameterBaseName = "audioSampleRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioSampleRate", audioSampleRate));
-        localVarQueryParameterBaseName = "maxAudioBitDepth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioBitDepth", maxAudioBitDepth));
-        localVarQueryParameterBaseName = "audioBitRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioBitRate", audioBitRate));
-        localVarQueryParameterBaseName = "audioChannels";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioChannels", audioChannels));
-        localVarQueryParameterBaseName = "maxAudioChannels";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioChannels", maxAudioChannels));
-        localVarQueryParameterBaseName = "profile";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("profile", profile));
-        localVarQueryParameterBaseName = "level";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("level", level));
-        localVarQueryParameterBaseName = "framerate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("framerate", framerate));
-        localVarQueryParameterBaseName = "maxFramerate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxFramerate", maxFramerate));
-        localVarQueryParameterBaseName = "copyTimestamps";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("copyTimestamps", copyTimestamps));
-        localVarQueryParameterBaseName = "startTimeTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startTimeTicks", startTimeTicks));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "videoBitRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoBitRate", videoBitRate));
-        localVarQueryParameterBaseName = "subtitleStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
-        localVarQueryParameterBaseName = "subtitleMethod";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleMethod", subtitleMethod));
-        localVarQueryParameterBaseName = "maxRefFrames";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxRefFrames", maxRefFrames));
-        localVarQueryParameterBaseName = "maxVideoBitDepth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxVideoBitDepth", maxVideoBitDepth));
-        localVarQueryParameterBaseName = "requireAvc";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("requireAvc", requireAvc));
-        localVarQueryParameterBaseName = "deInterlace";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deInterlace", deInterlace));
-        localVarQueryParameterBaseName = "requireNonAnamorphic";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("requireNonAnamorphic", requireNonAnamorphic));
-        localVarQueryParameterBaseName = "transcodingMaxAudioChannels";
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "container", container));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "static", _static));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "params", params));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deviceProfileId", deviceProfileId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "playSessionId", playSessionId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "segmentContainer", segmentContainer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "segmentLength", segmentLength));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minSegments", minSegments));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "mediaSourceId", mediaSourceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deviceId", deviceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioCodec", audioCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableAutoStreamCopy", enableAutoStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "allowVideoStreamCopy", allowVideoStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "allowAudioStreamCopy", allowAudioStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "breakOnNonKeyFrames", breakOnNonKeyFrames));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioSampleRate", audioSampleRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxAudioBitDepth", maxAudioBitDepth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioBitRate", audioBitRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioChannels", audioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxAudioChannels", maxAudioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "profile", profile));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "level", level));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "framerate", framerate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxFramerate", maxFramerate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "copyTimestamps", copyTimestamps));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startTimeTicks", startTimeTicks));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoBitRate", videoBitRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleStreamIndex", subtitleStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleMethod", subtitleMethod));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxRefFrames", maxRefFrames));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxVideoBitDepth", maxVideoBitDepth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "requireAvc", requireAvc));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deInterlace", deInterlace));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "requireNonAnamorphic", requireNonAnamorphic));
         localVarQueryParams
-                .addAll(ApiClient.parameterToPairs("transcodingMaxAudioChannels", transcodingMaxAudioChannels));
-        localVarQueryParameterBaseName = "cpuCoreLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("cpuCoreLimit", cpuCoreLimit));
-        localVarQueryParameterBaseName = "liveStreamId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("liveStreamId", liveStreamId));
-        localVarQueryParameterBaseName = "enableMpegtsM2TsMode";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableMpegtsM2TsMode", enableMpegtsM2TsMode));
-        localVarQueryParameterBaseName = "videoCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoCodec", videoCodec));
-        localVarQueryParameterBaseName = "subtitleCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleCodec", subtitleCodec));
-        localVarQueryParameterBaseName = "transcodeReasons";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("transcodeReasons", transcodeReasons));
-        localVarQueryParameterBaseName = "audioStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
-        localVarQueryParameterBaseName = "videoStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoStreamIndex", videoStreamIndex));
-        localVarQueryParameterBaseName = "context";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("context", context));
-        localVarQueryParameterBaseName = "streamOptions";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("streamOptions", streamOptions));
-        localVarQueryParameterBaseName = "enableAudioVbrEncoding";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableAudioVbrEncoding", enableAudioVbrEncoding));
+                .addAll(apiClient.parameterToPairs("", "transcodingMaxAudioChannels", transcodingMaxAudioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "cpuCoreLimit", cpuCoreLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "liveStreamId", liveStreamId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableMpegtsM2TsMode", enableMpegtsM2TsMode));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoCodec", videoCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleCodec", subtitleCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "transcodeReasons", transcodeReasons));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioStreamIndex", audioStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoStreamIndex", videoStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "context", context));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "streamOptions", streamOptions));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableAudioVbrEncoding", enableAudioVbrEncoding));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "audio/*");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("audio/*");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("AudioApi.headAudioStream", localVarPath, "HEAD", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -1520,6 +1123,20 @@ public class AudioApi {
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Audio stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File headAudioStreamByContainer(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
@@ -1565,16 +1182,15 @@ public class AudioApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        ApiResponse<File> localVarResponse = headAudioStreamByContainerWithHttpInfo(itemId, container, _static, params,
-                tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId,
-                deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
-                breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels,
-                profile, level, framerate, maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate,
-                subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
-                requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
-                videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
-        return localVarResponse.getData();
+        return headAudioStreamByContainerWithHttpInfo(itemId, container, _static, params, tag, deviceProfileId,
+                playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec,
+                enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate,
+                maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate,
+                maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate, subtitleStreamIndex,
+                subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAudioVbrEncoding).getData();
     }
 
     /**
@@ -1645,6 +1261,20 @@ public class AudioApi {
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Audio stream returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> headAudioStreamByContainerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
@@ -1690,228 +1320,78 @@ public class AudioApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headAudioStreamByContainerRequestBuilder(itemId, container,
-                _static, params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments,
-                mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
-                breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels,
-                profile, level, framerate, maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate,
-                subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
-                requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
-                videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("headAudioStreamByContainer", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder headAudioStreamByContainerRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.Nullable String container,
-            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
-            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
-            @org.eclipse.jdt.annotation.NonNull String playSessionId,
-            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
-            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
-            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
-            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
-            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
-            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
-            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
-            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
-            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
-            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
-            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
-            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
-            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
-            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
-            @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
-            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
-            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
-            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
-            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
-            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
-            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
-            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
-            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
-            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
-            @org.eclipse.jdt.annotation.NonNull String videoCodec,
-            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
-            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
-            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
-            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'itemId' when calling headAudioStreamByContainer");
         }
-        // verify the required parameter 'container' is set
         if (container == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'container' when calling headAudioStreamByContainer");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Audio/{itemId}/stream.{container}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{container}", ApiClient.urlEncode(container.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{container}", apiClient.escapeString(container.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "static";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("static", _static));
-        localVarQueryParameterBaseName = "params";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("params", params));
-        localVarQueryParameterBaseName = "tag";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
-        localVarQueryParameterBaseName = "deviceProfileId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceProfileId", deviceProfileId));
-        localVarQueryParameterBaseName = "playSessionId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
-        localVarQueryParameterBaseName = "segmentContainer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentContainer", segmentContainer));
-        localVarQueryParameterBaseName = "segmentLength";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentLength", segmentLength));
-        localVarQueryParameterBaseName = "minSegments";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("minSegments", minSegments));
-        localVarQueryParameterBaseName = "mediaSourceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
-        localVarQueryParameterBaseName = "deviceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceId", deviceId));
-        localVarQueryParameterBaseName = "audioCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioCodec", audioCodec));
-        localVarQueryParameterBaseName = "enableAutoStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableAutoStreamCopy", enableAutoStreamCopy));
-        localVarQueryParameterBaseName = "allowVideoStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("allowVideoStreamCopy", allowVideoStreamCopy));
-        localVarQueryParameterBaseName = "allowAudioStreamCopy";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("allowAudioStreamCopy", allowAudioStreamCopy));
-        localVarQueryParameterBaseName = "breakOnNonKeyFrames";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("breakOnNonKeyFrames", breakOnNonKeyFrames));
-        localVarQueryParameterBaseName = "audioSampleRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioSampleRate", audioSampleRate));
-        localVarQueryParameterBaseName = "maxAudioBitDepth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioBitDepth", maxAudioBitDepth));
-        localVarQueryParameterBaseName = "audioBitRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioBitRate", audioBitRate));
-        localVarQueryParameterBaseName = "audioChannels";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioChannels", audioChannels));
-        localVarQueryParameterBaseName = "maxAudioChannels";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioChannels", maxAudioChannels));
-        localVarQueryParameterBaseName = "profile";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("profile", profile));
-        localVarQueryParameterBaseName = "level";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("level", level));
-        localVarQueryParameterBaseName = "framerate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("framerate", framerate));
-        localVarQueryParameterBaseName = "maxFramerate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxFramerate", maxFramerate));
-        localVarQueryParameterBaseName = "copyTimestamps";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("copyTimestamps", copyTimestamps));
-        localVarQueryParameterBaseName = "startTimeTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startTimeTicks", startTimeTicks));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "videoBitRate";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoBitRate", videoBitRate));
-        localVarQueryParameterBaseName = "subtitleStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
-        localVarQueryParameterBaseName = "subtitleMethod";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleMethod", subtitleMethod));
-        localVarQueryParameterBaseName = "maxRefFrames";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxRefFrames", maxRefFrames));
-        localVarQueryParameterBaseName = "maxVideoBitDepth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxVideoBitDepth", maxVideoBitDepth));
-        localVarQueryParameterBaseName = "requireAvc";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("requireAvc", requireAvc));
-        localVarQueryParameterBaseName = "deInterlace";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deInterlace", deInterlace));
-        localVarQueryParameterBaseName = "requireNonAnamorphic";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("requireNonAnamorphic", requireNonAnamorphic));
-        localVarQueryParameterBaseName = "transcodingMaxAudioChannels";
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "static", _static));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "params", params));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "tag", tag));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deviceProfileId", deviceProfileId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "playSessionId", playSessionId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "segmentContainer", segmentContainer));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "segmentLength", segmentLength));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "minSegments", minSegments));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "mediaSourceId", mediaSourceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deviceId", deviceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioCodec", audioCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableAutoStreamCopy", enableAutoStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "allowVideoStreamCopy", allowVideoStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "allowAudioStreamCopy", allowAudioStreamCopy));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "breakOnNonKeyFrames", breakOnNonKeyFrames));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioSampleRate", audioSampleRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxAudioBitDepth", maxAudioBitDepth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioBitRate", audioBitRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioChannels", audioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxAudioChannels", maxAudioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "profile", profile));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "level", level));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "framerate", framerate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxFramerate", maxFramerate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "copyTimestamps", copyTimestamps));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startTimeTicks", startTimeTicks));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoBitRate", videoBitRate));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleStreamIndex", subtitleStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleMethod", subtitleMethod));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxRefFrames", maxRefFrames));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "maxVideoBitDepth", maxVideoBitDepth));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "requireAvc", requireAvc));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deInterlace", deInterlace));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "requireNonAnamorphic", requireNonAnamorphic));
         localVarQueryParams
-                .addAll(ApiClient.parameterToPairs("transcodingMaxAudioChannels", transcodingMaxAudioChannels));
-        localVarQueryParameterBaseName = "cpuCoreLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("cpuCoreLimit", cpuCoreLimit));
-        localVarQueryParameterBaseName = "liveStreamId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("liveStreamId", liveStreamId));
-        localVarQueryParameterBaseName = "enableMpegtsM2TsMode";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableMpegtsM2TsMode", enableMpegtsM2TsMode));
-        localVarQueryParameterBaseName = "videoCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoCodec", videoCodec));
-        localVarQueryParameterBaseName = "subtitleCodec";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleCodec", subtitleCodec));
-        localVarQueryParameterBaseName = "transcodeReasons";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("transcodeReasons", transcodeReasons));
-        localVarQueryParameterBaseName = "audioStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
-        localVarQueryParameterBaseName = "videoStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("videoStreamIndex", videoStreamIndex));
-        localVarQueryParameterBaseName = "context";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("context", context));
-        localVarQueryParameterBaseName = "streamOptions";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("streamOptions", streamOptions));
-        localVarQueryParameterBaseName = "enableAudioVbrEncoding";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableAudioVbrEncoding", enableAudioVbrEncoding));
+                .addAll(apiClient.parameterToPairs("", "transcodingMaxAudioChannels", transcodingMaxAudioChannels));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "cpuCoreLimit", cpuCoreLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "liveStreamId", liveStreamId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableMpegtsM2TsMode", enableMpegtsM2TsMode));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoCodec", videoCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleCodec", subtitleCodec));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "transcodeReasons", transcodeReasons));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioStreamIndex", audioStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "videoStreamIndex", videoStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "context", context));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "streamOptions", streamOptions));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableAudioVbrEncoding", enableAudioVbrEncoding));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "audio/*");
-
-        localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("audio/*");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("AudioApi.headAudioStreamByContainer", localVarPath, "HEAD", localVarQueryParams,
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 }

@@ -16,7 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -75,6 +74,7 @@ public class LibraryOptionsResultDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LibraryOptionInfoDto> getMetadataSavers() {
         return metadataSavers;
     }
@@ -107,6 +107,7 @@ public class LibraryOptionsResultDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA_READERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LibraryOptionInfoDto> getMetadataReaders() {
         return metadataReaders;
     }
@@ -139,6 +140,7 @@ public class LibraryOptionsResultDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LibraryOptionInfoDto> getSubtitleFetchers() {
         return subtitleFetchers;
     }
@@ -171,6 +173,7 @@ public class LibraryOptionsResultDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LYRIC_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LibraryOptionInfoDto> getLyricFetchers() {
         return lyricFetchers;
     }
@@ -203,6 +206,7 @@ public class LibraryOptionsResultDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LibraryTypeOptionsDto> getTypeOptions() {
         return typeOptions;
     }
@@ -259,168 +263,5 @@ public class LibraryOptionsResultDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `MetadataSavers` to the URL query string
-        if (getMetadataSavers() != null) {
-            for (int i = 0; i < getMetadataSavers().size(); i++) {
-                if (getMetadataSavers().get(i) != null) {
-                    joiner.add(getMetadataSavers().get(i).toUrlQueryString(String.format("%sMetadataSavers%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `MetadataReaders` to the URL query string
-        if (getMetadataReaders() != null) {
-            for (int i = 0; i < getMetadataReaders().size(); i++) {
-                if (getMetadataReaders().get(i) != null) {
-                    joiner.add(getMetadataReaders().get(i).toUrlQueryString(String.format("%sMetadataReaders%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `SubtitleFetchers` to the URL query string
-        if (getSubtitleFetchers() != null) {
-            for (int i = 0; i < getSubtitleFetchers().size(); i++) {
-                if (getSubtitleFetchers().get(i) != null) {
-                    joiner.add(getSubtitleFetchers().get(i).toUrlQueryString(String.format("%sSubtitleFetchers%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `LyricFetchers` to the URL query string
-        if (getLyricFetchers() != null) {
-            for (int i = 0; i < getLyricFetchers().size(); i++) {
-                if (getLyricFetchers().get(i) != null) {
-                    joiner.add(getLyricFetchers().get(i).toUrlQueryString(String.format("%sLyricFetchers%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TypeOptions` to the URL query string
-        if (getTypeOptions() != null) {
-            for (int i = 0; i < getTypeOptions().size(); i++) {
-                if (getTypeOptions().get(i) != null) {
-                    joiner.add(getTypeOptions().get(i).toUrlQueryString(String.format("%sTypeOptions%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private LibraryOptionsResultDto instance;
-
-        public Builder() {
-            this(new LibraryOptionsResultDto());
-        }
-
-        protected Builder(LibraryOptionsResultDto instance) {
-            this.instance = instance;
-        }
-
-        public LibraryOptionsResultDto.Builder metadataSavers(List<LibraryOptionInfoDto> metadataSavers) {
-            this.instance.metadataSavers = metadataSavers;
-            return this;
-        }
-
-        public LibraryOptionsResultDto.Builder metadataReaders(List<LibraryOptionInfoDto> metadataReaders) {
-            this.instance.metadataReaders = metadataReaders;
-            return this;
-        }
-
-        public LibraryOptionsResultDto.Builder subtitleFetchers(List<LibraryOptionInfoDto> subtitleFetchers) {
-            this.instance.subtitleFetchers = subtitleFetchers;
-            return this;
-        }
-
-        public LibraryOptionsResultDto.Builder lyricFetchers(List<LibraryOptionInfoDto> lyricFetchers) {
-            this.instance.lyricFetchers = lyricFetchers;
-            return this;
-        }
-
-        public LibraryOptionsResultDto.Builder typeOptions(List<LibraryTypeOptionsDto> typeOptions) {
-            this.instance.typeOptions = typeOptions;
-            return this;
-        }
-
-        /**
-         * returns a built LibraryOptionsResultDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public LibraryOptionsResultDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LibraryOptionsResultDto.Builder builder() {
-        return new LibraryOptionsResultDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LibraryOptionsResultDto.Builder toBuilder() {
-        return new LibraryOptionsResultDto.Builder().metadataSavers(getMetadataSavers())
-                .metadataReaders(getMetadataReaders()).subtitleFetchers(getSubtitleFetchers())
-                .lyricFetchers(getLyricFetchers()).typeOptions(getTypeOptions());
     }
 }

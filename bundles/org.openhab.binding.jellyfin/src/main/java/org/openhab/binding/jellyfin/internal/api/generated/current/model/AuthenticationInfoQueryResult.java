@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -68,6 +65,7 @@ public class AuthenticationInfoQueryResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<AuthenticationInfo> getItems() {
         return items;
     }
@@ -92,6 +90,7 @@ public class AuthenticationInfoQueryResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
@@ -115,6 +114,7 @@ public class AuthenticationInfoQueryResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getStartIndex() {
         return startIndex;
     }
@@ -167,124 +167,5 @@ public class AuthenticationInfoQueryResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Items` to the URL query string
-        if (getItems() != null) {
-            for (int i = 0; i < getItems().size(); i++) {
-                if (getItems().get(i) != null) {
-                    joiner.add(getItems().get(i).toUrlQueryString(String.format("%sItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TotalRecordCount` to the URL query string
-        if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
-        }
-
-        // add `StartIndex` to the URL query string
-        if (getStartIndex() != null) {
-            joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private AuthenticationInfoQueryResult instance;
-
-        public Builder() {
-            this(new AuthenticationInfoQueryResult());
-        }
-
-        protected Builder(AuthenticationInfoQueryResult instance) {
-            this.instance = instance;
-        }
-
-        public AuthenticationInfoQueryResult.Builder items(List<AuthenticationInfo> items) {
-            this.instance.items = items;
-            return this;
-        }
-
-        public AuthenticationInfoQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
-            this.instance.totalRecordCount = totalRecordCount;
-            return this;
-        }
-
-        public AuthenticationInfoQueryResult.Builder startIndex(Integer startIndex) {
-            this.instance.startIndex = startIndex;
-            return this;
-        }
-
-        /**
-         * returns a built AuthenticationInfoQueryResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public AuthenticationInfoQueryResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static AuthenticationInfoQueryResult.Builder builder() {
-        return new AuthenticationInfoQueryResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public AuthenticationInfoQueryResult.Builder toBuilder() {
-        return new AuthenticationInfoQueryResult.Builder().items(getItems()).totalRecordCount(getTotalRecordCount())
-                .startIndex(getStartIndex());
     }
 }

@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -110,6 +107,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -133,6 +131,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUrl() {
         return url;
     }
@@ -156,6 +155,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getType() {
         return type;
     }
@@ -179,6 +179,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDeviceId() {
         return deviceId;
     }
@@ -202,6 +203,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getFriendlyName() {
         return friendlyName;
     }
@@ -225,6 +227,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMPORT_FAVORITES_ONLY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getImportFavoritesOnly() {
         return importFavoritesOnly;
     }
@@ -248,6 +251,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALLOW_H_W_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAllowHWTranscoding() {
         return allowHWTranscoding;
     }
@@ -272,6 +276,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAllowFmp4TranscodingContainer() {
         return allowFmp4TranscodingContainer;
     }
@@ -296,6 +301,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALLOW_STREAM_SHARING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAllowStreamSharing() {
         return allowStreamSharing;
     }
@@ -320,6 +326,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getFallbackMaxStreamingBitrate() {
         return fallbackMaxStreamingBitrate;
     }
@@ -344,6 +351,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_STREAM_LOOPING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableStreamLooping() {
         return enableStreamLooping;
     }
@@ -367,6 +375,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SOURCE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSource() {
         return source;
     }
@@ -390,6 +399,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TUNER_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTunerCount() {
         return tunerCount;
     }
@@ -413,6 +423,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_AGENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUserAgent() {
         return userAgent;
     }
@@ -436,6 +447,7 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IGNORE_DTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIgnoreDts() {
         return ignoreDts;
     }
@@ -515,258 +527,5 @@ public class TunerHostInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Url` to the URL query string
-        if (getUrl() != null) {
-            joiner.add(String.format("%sUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `DeviceId` to the URL query string
-        if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
-        }
-
-        // add `FriendlyName` to the URL query string
-        if (getFriendlyName() != null) {
-            joiner.add(String.format("%sFriendlyName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFriendlyName()))));
-        }
-
-        // add `ImportFavoritesOnly` to the URL query string
-        if (getImportFavoritesOnly() != null) {
-            joiner.add(String.format("%sImportFavoritesOnly%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImportFavoritesOnly()))));
-        }
-
-        // add `AllowHWTranscoding` to the URL query string
-        if (getAllowHWTranscoding() != null) {
-            joiner.add(String.format("%sAllowHWTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowHWTranscoding()))));
-        }
-
-        // add `AllowFmp4TranscodingContainer` to the URL query string
-        if (getAllowFmp4TranscodingContainer() != null) {
-            joiner.add(String.format("%sAllowFmp4TranscodingContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowFmp4TranscodingContainer()))));
-        }
-
-        // add `AllowStreamSharing` to the URL query string
-        if (getAllowStreamSharing() != null) {
-            joiner.add(String.format("%sAllowStreamSharing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowStreamSharing()))));
-        }
-
-        // add `FallbackMaxStreamingBitrate` to the URL query string
-        if (getFallbackMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sFallbackMaxStreamingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFallbackMaxStreamingBitrate()))));
-        }
-
-        // add `EnableStreamLooping` to the URL query string
-        if (getEnableStreamLooping() != null) {
-            joiner.add(String.format("%sEnableStreamLooping%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableStreamLooping()))));
-        }
-
-        // add `Source` to the URL query string
-        if (getSource() != null) {
-            joiner.add(String.format("%sSource%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSource()))));
-        }
-
-        // add `TunerCount` to the URL query string
-        if (getTunerCount() != null) {
-            joiner.add(String.format("%sTunerCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTunerCount()))));
-        }
-
-        // add `UserAgent` to the URL query string
-        if (getUserAgent() != null) {
-            joiner.add(String.format("%sUserAgent%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserAgent()))));
-        }
-
-        // add `IgnoreDts` to the URL query string
-        if (getIgnoreDts() != null) {
-            joiner.add(String.format("%sIgnoreDts%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIgnoreDts()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private TunerHostInfo instance;
-
-        public Builder() {
-            this(new TunerHostInfo());
-        }
-
-        protected Builder(TunerHostInfo instance) {
-            this.instance = instance;
-        }
-
-        public TunerHostInfo.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public TunerHostInfo.Builder url(String url) {
-            this.instance.url = url;
-            return this;
-        }
-
-        public TunerHostInfo.Builder type(String type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public TunerHostInfo.Builder deviceId(String deviceId) {
-            this.instance.deviceId = deviceId;
-            return this;
-        }
-
-        public TunerHostInfo.Builder friendlyName(String friendlyName) {
-            this.instance.friendlyName = friendlyName;
-            return this;
-        }
-
-        public TunerHostInfo.Builder importFavoritesOnly(Boolean importFavoritesOnly) {
-            this.instance.importFavoritesOnly = importFavoritesOnly;
-            return this;
-        }
-
-        public TunerHostInfo.Builder allowHWTranscoding(Boolean allowHWTranscoding) {
-            this.instance.allowHWTranscoding = allowHWTranscoding;
-            return this;
-        }
-
-        public TunerHostInfo.Builder allowFmp4TranscodingContainer(Boolean allowFmp4TranscodingContainer) {
-            this.instance.allowFmp4TranscodingContainer = allowFmp4TranscodingContainer;
-            return this;
-        }
-
-        public TunerHostInfo.Builder allowStreamSharing(Boolean allowStreamSharing) {
-            this.instance.allowStreamSharing = allowStreamSharing;
-            return this;
-        }
-
-        public TunerHostInfo.Builder fallbackMaxStreamingBitrate(Integer fallbackMaxStreamingBitrate) {
-            this.instance.fallbackMaxStreamingBitrate = fallbackMaxStreamingBitrate;
-            return this;
-        }
-
-        public TunerHostInfo.Builder enableStreamLooping(Boolean enableStreamLooping) {
-            this.instance.enableStreamLooping = enableStreamLooping;
-            return this;
-        }
-
-        public TunerHostInfo.Builder source(String source) {
-            this.instance.source = source;
-            return this;
-        }
-
-        public TunerHostInfo.Builder tunerCount(Integer tunerCount) {
-            this.instance.tunerCount = tunerCount;
-            return this;
-        }
-
-        public TunerHostInfo.Builder userAgent(String userAgent) {
-            this.instance.userAgent = userAgent;
-            return this;
-        }
-
-        public TunerHostInfo.Builder ignoreDts(Boolean ignoreDts) {
-            this.instance.ignoreDts = ignoreDts;
-            return this;
-        }
-
-        /**
-         * returns a built TunerHostInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public TunerHostInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TunerHostInfo.Builder builder() {
-        return new TunerHostInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TunerHostInfo.Builder toBuilder() {
-        return new TunerHostInfo.Builder().id(getId()).url(getUrl()).type(getType()).deviceId(getDeviceId())
-                .friendlyName(getFriendlyName()).importFavoritesOnly(getImportFavoritesOnly())
-                .allowHWTranscoding(getAllowHWTranscoding())
-                .allowFmp4TranscodingContainer(getAllowFmp4TranscodingContainer())
-                .allowStreamSharing(getAllowStreamSharing())
-                .fallbackMaxStreamingBitrate(getFallbackMaxStreamingBitrate())
-                .enableStreamLooping(getEnableStreamLooping()).source(getSource()).tunerCount(getTunerCount())
-                .userAgent(getUserAgent()).ignoreDts(getIgnoreDts());
     }
 }

@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -66,6 +63,7 @@ public class TaskTriggerInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getType() {
         return type;
     }
@@ -89,6 +87,7 @@ public class TaskTriggerInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TIME_OF_DAY_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getTimeOfDayTicks() {
         return timeOfDayTicks;
     }
@@ -112,6 +111,7 @@ public class TaskTriggerInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INTERVAL_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getIntervalTicks() {
         return intervalTicks;
     }
@@ -135,6 +135,7 @@ public class TaskTriggerInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DayOfWeek getDayOfWeek() {
         return dayOfWeek;
     }
@@ -158,6 +159,7 @@ public class TaskTriggerInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_RUNTIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getMaxRuntimeTicks() {
         return maxRuntimeTicks;
     }
@@ -214,142 +216,5 @@ public class TaskTriggerInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `TimeOfDayTicks` to the URL query string
-        if (getTimeOfDayTicks() != null) {
-            joiner.add(String.format("%sTimeOfDayTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimeOfDayTicks()))));
-        }
-
-        // add `IntervalTicks` to the URL query string
-        if (getIntervalTicks() != null) {
-            joiner.add(String.format("%sIntervalTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIntervalTicks()))));
-        }
-
-        // add `DayOfWeek` to the URL query string
-        if (getDayOfWeek() != null) {
-            joiner.add(String.format("%sDayOfWeek%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDayOfWeek()))));
-        }
-
-        // add `MaxRuntimeTicks` to the URL query string
-        if (getMaxRuntimeTicks() != null) {
-            joiner.add(String.format("%sMaxRuntimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxRuntimeTicks()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private TaskTriggerInfo instance;
-
-        public Builder() {
-            this(new TaskTriggerInfo());
-        }
-
-        protected Builder(TaskTriggerInfo instance) {
-            this.instance = instance;
-        }
-
-        public TaskTriggerInfo.Builder type(String type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder timeOfDayTicks(Long timeOfDayTicks) {
-            this.instance.timeOfDayTicks = timeOfDayTicks;
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder intervalTicks(Long intervalTicks) {
-            this.instance.intervalTicks = intervalTicks;
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder dayOfWeek(DayOfWeek dayOfWeek) {
-            this.instance.dayOfWeek = dayOfWeek;
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder maxRuntimeTicks(Long maxRuntimeTicks) {
-            this.instance.maxRuntimeTicks = maxRuntimeTicks;
-            return this;
-        }
-
-        /**
-         * returns a built TaskTriggerInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public TaskTriggerInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TaskTriggerInfo.Builder builder() {
-        return new TaskTriggerInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TaskTriggerInfo.Builder toBuilder() {
-        return new TaskTriggerInfo.Builder().type(getType()).timeOfDayTicks(getTimeOfDayTicks())
-                .intervalTicks(getIntervalTicks()).dayOfWeek(getDayOfWeek()).maxRuntimeTicks(getMaxRuntimeTicks());
     }
 }

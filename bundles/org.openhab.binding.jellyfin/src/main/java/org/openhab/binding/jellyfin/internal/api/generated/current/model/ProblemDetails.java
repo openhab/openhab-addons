@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -33,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ProblemDetails.JSON_PROPERTY_STATUS, ProblemDetails.JSON_PROPERTY_DETAIL,
         ProblemDetails.JSON_PROPERTY_INSTANCE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
-public class ProblemDetails extends HashMap<String, Object> {
+public class ProblemDetails {
     public static final String JSON_PROPERTY_TYPE = "type";
     @org.eclipse.jdt.annotation.NonNull
     private String type;
@@ -70,6 +67,7 @@ public class ProblemDetails extends HashMap<String, Object> {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getType() {
         return type;
     }
@@ -93,6 +91,7 @@ public class ProblemDetails extends HashMap<String, Object> {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TITLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getTitle() {
         return title;
     }
@@ -116,6 +115,7 @@ public class ProblemDetails extends HashMap<String, Object> {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getStatus() {
         return status;
     }
@@ -139,6 +139,7 @@ public class ProblemDetails extends HashMap<String, Object> {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DETAIL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDetail() {
         return detail;
     }
@@ -162,6 +163,7 @@ public class ProblemDetails extends HashMap<String, Object> {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INSTANCE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getInstance() {
         return instance;
     }
@@ -182,24 +184,18 @@ public class ProblemDetails extends HashMap<String, Object> {
     /**
      * Set the additional (undeclared) property with the specified name and value.
      * If the property does not already exist, create it otherwise replace it.
-     * 
-     * @param key the name of the property
-     * @param value the value of the property
-     * @return self reference
      */
     @JsonAnySetter
     public ProblemDetails putAdditionalProperty(String key, Object value) {
         if (this.additionalProperties == null) {
-            this.additionalProperties = new HashMap<String, Object>();
+            this.additionalProperties = new HashMap<>();
         }
         this.additionalProperties.put(key, value);
         return this;
     }
 
     /**
-     * Return the additional (undeclared) properties.
-     * 
-     * @return the additional (undeclared) properties
+     * Return the additional (undeclared) property.
      */
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
@@ -208,9 +204,6 @@ public class ProblemDetails extends HashMap<String, Object> {
 
     /**
      * Return the additional (undeclared) property with the specified name.
-     * 
-     * @param key the name of the property
-     * @return the additional (undeclared) property with the specified name
      */
     public Object getAdditionalProperty(String key) {
         if (this.additionalProperties == null) {
@@ -235,19 +228,18 @@ public class ProblemDetails extends HashMap<String, Object> {
                 && Objects.equals(this.status, problemDetails.status)
                 && Objects.equals(this.detail, problemDetails.detail)
                 && Objects.equals(this.instance, problemDetails.instance)
-                && Objects.equals(this.additionalProperties, problemDetails.additionalProperties) && super.equals(o);
+                && Objects.equals(this.additionalProperties, problemDetails.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, title, status, detail, instance, super.hashCode(), additionalProperties);
+        return Objects.hash(type, title, status, detail, instance, additionalProperties);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class ProblemDetails {\n");
-        sb.append("    ").append(toIndentedString(super.toString())).append("\n");
         sb.append("    type: ").append(toIndentedString(type)).append("\n");
         sb.append("    title: ").append(toIndentedString(title)).append("\n");
         sb.append("    status: ").append(toIndentedString(status)).append("\n");
@@ -267,142 +259,5 @@ public class ProblemDetails extends HashMap<String, Object> {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%stype%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `title` to the URL query string
-        if (getTitle() != null) {
-            joiner.add(String.format("%stitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
-        }
-
-        // add `status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sstatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        // add `detail` to the URL query string
-        if (getDetail() != null) {
-            joiner.add(String.format("%sdetail%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDetail()))));
-        }
-
-        // add `instance` to the URL query string
-        if (getInstance() != null) {
-            joiner.add(String.format("%sinstance%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInstance()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ProblemDetails instance;
-
-        public Builder() {
-            this(new ProblemDetails());
-        }
-
-        protected Builder(ProblemDetails instance) {
-            this.instance = instance;
-        }
-
-        public ProblemDetails.Builder type(String type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public ProblemDetails.Builder title(String title) {
-            this.instance.title = title;
-            return this;
-        }
-
-        public ProblemDetails.Builder status(Integer status) {
-            this.instance.status = status;
-            return this;
-        }
-
-        public ProblemDetails.Builder detail(String detail) {
-            this.instance.detail = detail;
-            return this;
-        }
-
-        public ProblemDetails.Builder instance(String instance) {
-            this.instance.instance = instance;
-            return this;
-        }
-
-        /**
-         * returns a built ProblemDetails instance.
-         *
-         * The builder is not reusable.
-         */
-        public ProblemDetails build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ProblemDetails.Builder builder() {
-        return new ProblemDetails.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ProblemDetails.Builder toBuilder() {
-        return new ProblemDetails.Builder().type(getType()).title(getTitle()).status(getStatus()).detail(getDetail())
-                .instance(getInstance());
     }
 }

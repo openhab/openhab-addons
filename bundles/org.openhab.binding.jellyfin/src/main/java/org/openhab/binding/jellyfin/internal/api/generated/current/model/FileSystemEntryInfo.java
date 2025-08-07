@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -57,6 +54,7 @@ public class FileSystemEntryInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -80,6 +78,7 @@ public class FileSystemEntryInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPath() {
         return path;
     }
@@ -103,6 +102,7 @@ public class FileSystemEntryInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public FileSystemEntryType getType() {
         return type;
     }
@@ -155,119 +155,5 @@ public class FileSystemEntryInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private FileSystemEntryInfo instance;
-
-        public Builder() {
-            this(new FileSystemEntryInfo());
-        }
-
-        protected Builder(FileSystemEntryInfo instance) {
-            this.instance = instance;
-        }
-
-        public FileSystemEntryInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public FileSystemEntryInfo.Builder path(String path) {
-            this.instance.path = path;
-            return this;
-        }
-
-        public FileSystemEntryInfo.Builder type(FileSystemEntryType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        /**
-         * returns a built FileSystemEntryInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public FileSystemEntryInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static FileSystemEntryInfo.Builder builder() {
-        return new FileSystemEntryInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public FileSystemEntryInfo.Builder toBuilder() {
-        return new FileSystemEntryInfo.Builder().name(getName()).path(getPath()).type(getType());
     }
 }

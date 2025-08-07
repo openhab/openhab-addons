@@ -1,29 +1,11 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -37,44 +19,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.ImageTy
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.ItemFields;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserItemDataDto;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UserLibraryApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public UserLibraryApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public UserLibraryApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -84,11 +56,34 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return UserItemDataDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Personal rating removed.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public UserItemDataDto deleteUserItemRating(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = deleteUserItemRatingWithHttpInfo(itemId, userId);
-        return localVarResponse.getData();
+        return deleteUserItemRatingWithHttpInfo(itemId, userId).getData();
     }
 
     /**
@@ -98,82 +93,55 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return ApiResponse&lt;UserItemDataDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Personal rating removed.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<UserItemDataDto> deleteUserItemRatingWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteUserItemRatingRequestBuilder(itemId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("deleteUserItemRating", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder deleteUserItemRatingRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteUserItemRating");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/UserItems/{itemId}/Rating".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/UserItems/{itemId}/Rating".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<UserItemDataDto> localVarReturnType = new GenericType<UserItemDataDto>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.deleteUserItemRating", localVarPath, "DELETE", localVarQueryParams,
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -183,11 +151,34 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return BaseItemDtoQueryResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Intros returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDtoQueryResult getIntros(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getIntrosWithHttpInfo(itemId, userId);
-        return localVarResponse.getData();
+        return getIntrosWithHttpInfo(itemId, userId).getData();
     }
 
     /**
@@ -197,83 +188,54 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Intros returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDtoQueryResult> getIntrosWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getIntrosRequestBuilder(itemId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getIntros", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getIntrosRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getIntros");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Items/{itemId}/Intros".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/Items/{itemId}/Intros".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDtoQueryResult> localVarReturnType = new GenericType<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.getIntros", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -283,11 +245,34 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return BaseItemDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDto getItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResponse = getItemWithHttpInfo(itemId, userId);
-        return localVarResponse.getData();
+        return getItemWithHttpInfo(itemId, userId).getData();
     }
 
     /**
@@ -297,81 +282,53 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return ApiResponse&lt;BaseItemDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDto> getItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getItemRequestBuilder(itemId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getItem", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                            null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItem");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Items/{itemId}".replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/Items/{itemId}".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDto> localVarReturnType = new GenericType<BaseItemDto>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.getItem", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -392,6 +349,30 @@ public class UserLibraryApi {
      * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
      * @return List&lt;BaseItemDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Latest media returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<BaseItemDto> getLatestMedia(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull UUID parentId,
@@ -404,10 +385,8 @@ public class UserLibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean groupItems)
             throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResponse = getLatestMediaWithHttpInfo(userId, parentId, fields,
-                includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit,
-                groupItems);
-        return localVarResponse.getData();
+        return getLatestMediaWithHttpInfo(userId, parentId, fields, includeItemTypes, isPlayed, enableImages,
+                imageTypeLimit, enableImageTypes, enableUserData, limit, groupItems).getData();
     }
 
     /**
@@ -428,6 +407,30 @@ public class UserLibraryApi {
      * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
      * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Latest media returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<BaseItemDto>> getLatestMediaWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull UUID parentId,
@@ -440,105 +443,28 @@ public class UserLibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean groupItems)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLatestMediaRequestBuilder(userId, parentId, fields,
-                includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit,
-                groupItems);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getLatestMedia", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "parentId", parentId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "fields", fields));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isPlayed", isPlayed));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableImages", enableImages));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageTypeLimit", imageTypeLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableUserData", enableUserData));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "groupItems", groupItems));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getLatestMediaRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull UUID parentId,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
-            @org.eclipse.jdt.annotation.NonNull Boolean isPlayed,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean groupItems)
-            throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Items/Latest";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "parentId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
-        localVarQueryParameterBaseName = "fields";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
-        localVarQueryParameterBaseName = "includeItemTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        localVarQueryParameterBaseName = "isPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isPlayed", isPlayed));
-        localVarQueryParameterBaseName = "enableImages";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
-        localVarQueryParameterBaseName = "imageTypeLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
-        localVarQueryParameterBaseName = "enableImageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        localVarQueryParameterBaseName = "enableUserData";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
-        localVarQueryParameterBaseName = "limit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
-        localVarQueryParameterBaseName = "groupItems";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("groupItems", groupItems));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<BaseItemDto>> localVarReturnType = new GenericType<List<BaseItemDto>>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.getLatestMedia", "/Items/Latest", "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -548,11 +474,34 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return List&lt;BaseItemDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>An Microsoft.AspNetCore.Mvc.OkResult containing the item&#39;s local trailers.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<BaseItemDto> getLocalTrailers(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResponse = getLocalTrailersWithHttpInfo(itemId, userId);
-        return localVarResponse.getData();
+        return getLocalTrailersWithHttpInfo(itemId, userId).getData();
     }
 
     /**
@@ -562,82 +511,54 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>An Microsoft.AspNetCore.Mvc.OkResult containing the item&#39;s local trailers.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<BaseItemDto>> getLocalTrailersWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLocalTrailersRequestBuilder(itemId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getLocalTrailers", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getLocalTrailersRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getLocalTrailers");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Items/{itemId}/LocalTrailers".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/Items/{itemId}/LocalTrailers".replace("{itemId}",
-                ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<BaseItemDto>> localVarReturnType = new GenericType<List<BaseItemDto>>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.getLocalTrailers", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -646,10 +567,33 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return BaseItemDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Root folder returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDto getRootFolder(@org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResponse = getRootFolderWithHttpInfo(userId);
-        return localVarResponse.getData();
+        return getRootFolderWithHttpInfo(userId).getData();
     }
 
     /**
@@ -658,77 +602,45 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return ApiResponse&lt;BaseItemDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Root folder returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDto> getRootFolderWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRootFolderRequestBuilder(userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getRootFolder", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                            null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getRootFolderRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId)
-            throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Items/Root";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDto> localVarReturnType = new GenericType<BaseItemDto>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.getRootFolder", "/Items/Root", "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -738,11 +650,34 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return List&lt;BaseItemDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Special features returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<BaseItemDto> getSpecialFeatures(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResponse = getSpecialFeaturesWithHttpInfo(itemId, userId);
-        return localVarResponse.getData();
+        return getSpecialFeaturesWithHttpInfo(itemId, userId).getData();
     }
 
     /**
@@ -752,83 +687,55 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Special features returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<BaseItemDto>> getSpecialFeaturesWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSpecialFeaturesRequestBuilder(itemId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getSpecialFeatures", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getSpecialFeaturesRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSpecialFeatures");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Items/{itemId}/SpecialFeatures".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/Items/{itemId}/SpecialFeatures".replace("{itemId}",
-                ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<BaseItemDto>> localVarReturnType = new GenericType<List<BaseItemDto>>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.getSpecialFeatures", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -838,11 +745,34 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return UserItemDataDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item marked as favorite.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public UserItemDataDto markFavoriteItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = markFavoriteItemWithHttpInfo(itemId, userId);
-        return localVarResponse.getData();
+        return markFavoriteItemWithHttpInfo(itemId, userId).getData();
     }
 
     /**
@@ -852,81 +782,54 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return ApiResponse&lt;UserItemDataDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item marked as favorite.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<UserItemDataDto> markFavoriteItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = markFavoriteItemRequestBuilder(itemId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("markFavoriteItem", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder markFavoriteItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling markFavoriteItem");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/UserFavoriteItems/{itemId}".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/UserFavoriteItems/{itemId}".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<UserItemDataDto> localVarReturnType = new GenericType<UserItemDataDto>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.markFavoriteItem", localVarPath, "POST", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -936,11 +839,34 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return UserItemDataDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item unmarked as favorite.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public UserItemDataDto unmarkFavoriteItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = unmarkFavoriteItemWithHttpInfo(itemId, userId);
-        return localVarResponse.getData();
+        return unmarkFavoriteItemWithHttpInfo(itemId, userId).getData();
     }
 
     /**
@@ -950,81 +876,54 @@ public class UserLibraryApi {
      * @param userId User id. (optional)
      * @return ApiResponse&lt;UserItemDataDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item unmarked as favorite.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<UserItemDataDto> unmarkFavoriteItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = unmarkFavoriteItemRequestBuilder(itemId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("unmarkFavoriteItem", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder unmarkFavoriteItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling unmarkFavoriteItem");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/UserFavoriteItems/{itemId}".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/UserFavoriteItems/{itemId}".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<UserItemDataDto> localVarReturnType = new GenericType<UserItemDataDto>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.unmarkFavoriteItem", localVarPath, "DELETE", localVarQueryParams,
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -1037,12 +936,35 @@ public class UserLibraryApi {
      *            is likes. (optional)
      * @return UserItemDataDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item rating updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public UserItemDataDto updateUserItemRating(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Boolean likes)
             throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = updateUserItemRatingWithHttpInfo(itemId, userId, likes);
-        return localVarResponse.getData();
+        return updateUserItemRatingWithHttpInfo(itemId, userId, likes).getData();
     }
 
     /**
@@ -1055,84 +977,55 @@ public class UserLibraryApi {
      *            is likes. (optional)
      * @return ApiResponse&lt;UserItemDataDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Item rating updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<UserItemDataDto> updateUserItemRatingWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Boolean likes) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateUserItemRatingRequestBuilder(itemId, userId, likes);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("updateUserItemRating", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder updateUserItemRatingRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Boolean likes)
-            throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling updateUserItemRating");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/UserItems/{itemId}/Rating".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/UserItems/{itemId}/Rating".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "likes", likes));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "likes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("likes", likes));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<UserItemDataDto> localVarReturnType = new GenericType<UserItemDataDto>() {
+        };
+        return apiClient.invokeAPI("UserLibraryApi.updateUserItemRating", localVarPath, "POST", localVarQueryParams,
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 }

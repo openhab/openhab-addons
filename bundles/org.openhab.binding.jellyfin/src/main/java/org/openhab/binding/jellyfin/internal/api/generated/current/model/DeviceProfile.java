@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -103,6 +100,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -126,6 +124,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -149,6 +148,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate;
     }
@@ -172,6 +172,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxStaticBitrate() {
         return maxStaticBitrate;
     }
@@ -196,6 +197,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMusicStreamingTranscodingBitrate() {
         return musicStreamingTranscodingBitrate;
     }
@@ -220,6 +222,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxStaticMusicBitrate() {
         return maxStaticMusicBitrate;
     }
@@ -252,6 +255,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<DirectPlayProfile> getDirectPlayProfiles() {
         return directPlayProfiles;
     }
@@ -284,6 +288,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<TranscodingProfile> getTranscodingProfiles() {
         return transcodingProfiles;
     }
@@ -317,6 +322,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ContainerProfile> getContainerProfiles() {
         return containerProfiles;
     }
@@ -348,6 +354,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<CodecProfile> getCodecProfiles() {
         return codecProfiles;
     }
@@ -379,6 +386,7 @@ public class DeviceProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<SubtitleProfile> getSubtitleProfiles() {
         return subtitleProfiles;
     }
@@ -449,237 +457,5 @@ public class DeviceProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `MaxStreamingBitrate` to the URL query string
-        if (getMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sMaxStreamingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
-        }
-
-        // add `MaxStaticBitrate` to the URL query string
-        if (getMaxStaticBitrate() != null) {
-            joiner.add(String.format("%sMaxStaticBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticBitrate()))));
-        }
-
-        // add `MusicStreamingTranscodingBitrate` to the URL query string
-        if (getMusicStreamingTranscodingBitrate() != null) {
-            joiner.add(String.format("%sMusicStreamingTranscodingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMusicStreamingTranscodingBitrate()))));
-        }
-
-        // add `MaxStaticMusicBitrate` to the URL query string
-        if (getMaxStaticMusicBitrate() != null) {
-            joiner.add(String.format("%sMaxStaticMusicBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticMusicBitrate()))));
-        }
-
-        // add `DirectPlayProfiles` to the URL query string
-        if (getDirectPlayProfiles() != null) {
-            for (int i = 0; i < getDirectPlayProfiles().size(); i++) {
-                if (getDirectPlayProfiles().get(i) != null) {
-                    joiner.add(getDirectPlayProfiles().get(i).toUrlQueryString(String.format("%sDirectPlayProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TranscodingProfiles` to the URL query string
-        if (getTranscodingProfiles() != null) {
-            for (int i = 0; i < getTranscodingProfiles().size(); i++) {
-                if (getTranscodingProfiles().get(i) != null) {
-                    joiner.add(getTranscodingProfiles().get(i).toUrlQueryString(String.format(
-                            "%sTranscodingProfiles%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ContainerProfiles` to the URL query string
-        if (getContainerProfiles() != null) {
-            for (int i = 0; i < getContainerProfiles().size(); i++) {
-                if (getContainerProfiles().get(i) != null) {
-                    joiner.add(getContainerProfiles().get(i).toUrlQueryString(String.format("%sContainerProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `CodecProfiles` to the URL query string
-        if (getCodecProfiles() != null) {
-            for (int i = 0; i < getCodecProfiles().size(); i++) {
-                if (getCodecProfiles().get(i) != null) {
-                    joiner.add(getCodecProfiles().get(i).toUrlQueryString(String.format("%sCodecProfiles%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `SubtitleProfiles` to the URL query string
-        if (getSubtitleProfiles() != null) {
-            for (int i = 0; i < getSubtitleProfiles().size(); i++) {
-                if (getSubtitleProfiles().get(i) != null) {
-                    joiner.add(getSubtitleProfiles().get(i).toUrlQueryString(String.format("%sSubtitleProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private DeviceProfile instance;
-
-        public Builder() {
-            this(new DeviceProfile());
-        }
-
-        protected Builder(DeviceProfile instance) {
-            this.instance = instance;
-        }
-
-        public DeviceProfile.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public DeviceProfile.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStreamingBitrate(Integer maxStreamingBitrate) {
-            this.instance.maxStreamingBitrate = maxStreamingBitrate;
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticBitrate(Integer maxStaticBitrate) {
-            this.instance.maxStaticBitrate = maxStaticBitrate;
-            return this;
-        }
-
-        public DeviceProfile.Builder musicStreamingTranscodingBitrate(Integer musicStreamingTranscodingBitrate) {
-            this.instance.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticMusicBitrate(Integer maxStaticMusicBitrate) {
-            this.instance.maxStaticMusicBitrate = maxStaticMusicBitrate;
-            return this;
-        }
-
-        public DeviceProfile.Builder directPlayProfiles(List<DirectPlayProfile> directPlayProfiles) {
-            this.instance.directPlayProfiles = directPlayProfiles;
-            return this;
-        }
-
-        public DeviceProfile.Builder transcodingProfiles(List<TranscodingProfile> transcodingProfiles) {
-            this.instance.transcodingProfiles = transcodingProfiles;
-            return this;
-        }
-
-        public DeviceProfile.Builder containerProfiles(List<ContainerProfile> containerProfiles) {
-            this.instance.containerProfiles = containerProfiles;
-            return this;
-        }
-
-        public DeviceProfile.Builder codecProfiles(List<CodecProfile> codecProfiles) {
-            this.instance.codecProfiles = codecProfiles;
-            return this;
-        }
-
-        public DeviceProfile.Builder subtitleProfiles(List<SubtitleProfile> subtitleProfiles) {
-            this.instance.subtitleProfiles = subtitleProfiles;
-            return this;
-        }
-
-        /**
-         * returns a built DeviceProfile instance.
-         *
-         * The builder is not reusable.
-         */
-        public DeviceProfile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DeviceProfile.Builder builder() {
-        return new DeviceProfile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DeviceProfile.Builder toBuilder() {
-        return new DeviceProfile.Builder().name(getName()).id(getId()).maxStreamingBitrate(getMaxStreamingBitrate())
-                .maxStaticBitrate(getMaxStaticBitrate())
-                .musicStreamingTranscodingBitrate(getMusicStreamingTranscodingBitrate())
-                .maxStaticMusicBitrate(getMaxStaticMusicBitrate()).directPlayProfiles(getDirectPlayProfiles())
-                .transcodingProfiles(getTranscodingProfiles()).containerProfiles(getContainerProfiles())
-                .codecProfiles(getCodecProfiles()).subtitleProfiles(getSubtitleProfiles());
     }
 }

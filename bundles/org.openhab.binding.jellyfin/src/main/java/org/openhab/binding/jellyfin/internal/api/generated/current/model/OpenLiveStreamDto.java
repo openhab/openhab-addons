@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -110,6 +107,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OPEN_TOKEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOpenToken() {
         return openToken;
     }
@@ -133,6 +131,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -156,6 +155,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPlaySessionId() {
         return playSessionId;
     }
@@ -179,6 +179,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate;
     }
@@ -202,6 +203,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getStartTimeTicks() {
         return startTimeTicks;
     }
@@ -225,6 +227,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
@@ -248,6 +251,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
@@ -271,6 +275,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxAudioChannels() {
         return maxAudioChannels;
     }
@@ -294,6 +299,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
@@ -317,6 +323,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_PLAY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableDirectPlay() {
         return enableDirectPlay;
     }
@@ -340,6 +347,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_STREAM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableDirectStream() {
         return enableDirectStream;
     }
@@ -364,6 +372,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAlwaysBurnInSubtitleWhenTranscoding() {
         return alwaysBurnInSubtitleWhenTranscoding;
     }
@@ -395,6 +404,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DeviceProfile getDeviceProfile() {
         return deviceProfile;
     }
@@ -427,6 +437,7 @@ public class OpenLiveStreamDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROTOCOLS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaProtocol> getDirectPlayProtocols() {
         return directPlayProtocols;
     }
@@ -505,251 +516,5 @@ public class OpenLiveStreamDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `OpenToken` to the URL query string
-        if (getOpenToken() != null) {
-            joiner.add(String.format("%sOpenToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenToken()))));
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `PlaySessionId` to the URL query string
-        if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
-        }
-
-        // add `MaxStreamingBitrate` to the URL query string
-        if (getMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sMaxStreamingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
-        }
-
-        // add `StartTimeTicks` to the URL query string
-        if (getStartTimeTicks() != null) {
-            joiner.add(String.format("%sStartTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartTimeTicks()))));
-        }
-
-        // add `AudioStreamIndex` to the URL query string
-        if (getAudioStreamIndex() != null) {
-            joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
-        }
-
-        // add `SubtitleStreamIndex` to the URL query string
-        if (getSubtitleStreamIndex() != null) {
-            joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
-        }
-
-        // add `MaxAudioChannels` to the URL query string
-        if (getMaxAudioChannels() != null) {
-            joiner.add(String.format("%sMaxAudioChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxAudioChannels()))));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `EnableDirectPlay` to the URL query string
-        if (getEnableDirectPlay() != null) {
-            joiner.add(String.format("%sEnableDirectPlay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDirectPlay()))));
-        }
-
-        // add `EnableDirectStream` to the URL query string
-        if (getEnableDirectStream() != null) {
-            joiner.add(String.format("%sEnableDirectStream%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDirectStream()))));
-        }
-
-        // add `AlwaysBurnInSubtitleWhenTranscoding` to the URL query string
-        if (getAlwaysBurnInSubtitleWhenTranscoding() != null) {
-            joiner.add(String.format("%sAlwaysBurnInSubtitleWhenTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlwaysBurnInSubtitleWhenTranscoding()))));
-        }
-
-        // add `DeviceProfile` to the URL query string
-        if (getDeviceProfile() != null) {
-            joiner.add(getDeviceProfile().toUrlQueryString(prefix + "DeviceProfile" + suffix));
-        }
-
-        // add `DirectPlayProtocols` to the URL query string
-        if (getDirectPlayProtocols() != null) {
-            for (int i = 0; i < getDirectPlayProtocols().size(); i++) {
-                if (getDirectPlayProtocols().get(i) != null) {
-                    joiner.add(String.format("%sDirectPlayProtocols%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getDirectPlayProtocols().get(i)))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private OpenLiveStreamDto instance;
-
-        public Builder() {
-            this(new OpenLiveStreamDto());
-        }
-
-        protected Builder(OpenLiveStreamDto instance) {
-            this.instance = instance;
-        }
-
-        public OpenLiveStreamDto.Builder openToken(String openToken) {
-            this.instance.openToken = openToken;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder playSessionId(String playSessionId) {
-            this.instance.playSessionId = playSessionId;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder maxStreamingBitrate(Integer maxStreamingBitrate) {
-            this.instance.maxStreamingBitrate = maxStreamingBitrate;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder startTimeTicks(Long startTimeTicks) {
-            this.instance.startTimeTicks = startTimeTicks;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder audioStreamIndex(Integer audioStreamIndex) {
-            this.instance.audioStreamIndex = audioStreamIndex;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder subtitleStreamIndex(Integer subtitleStreamIndex) {
-            this.instance.subtitleStreamIndex = subtitleStreamIndex;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder maxAudioChannels(Integer maxAudioChannels) {
-            this.instance.maxAudioChannels = maxAudioChannels;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder itemId(UUID itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder enableDirectPlay(Boolean enableDirectPlay) {
-            this.instance.enableDirectPlay = enableDirectPlay;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder enableDirectStream(Boolean enableDirectStream) {
-            this.instance.enableDirectStream = enableDirectStream;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder alwaysBurnInSubtitleWhenTranscoding(
-                Boolean alwaysBurnInSubtitleWhenTranscoding) {
-            this.instance.alwaysBurnInSubtitleWhenTranscoding = alwaysBurnInSubtitleWhenTranscoding;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder deviceProfile(DeviceProfile deviceProfile) {
-            this.instance.deviceProfile = deviceProfile;
-            return this;
-        }
-
-        public OpenLiveStreamDto.Builder directPlayProtocols(List<MediaProtocol> directPlayProtocols) {
-            this.instance.directPlayProtocols = directPlayProtocols;
-            return this;
-        }
-
-        /**
-         * returns a built OpenLiveStreamDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public OpenLiveStreamDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static OpenLiveStreamDto.Builder builder() {
-        return new OpenLiveStreamDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public OpenLiveStreamDto.Builder toBuilder() {
-        return new OpenLiveStreamDto.Builder().openToken(getOpenToken()).userId(getUserId())
-                .playSessionId(getPlaySessionId()).maxStreamingBitrate(getMaxStreamingBitrate())
-                .startTimeTicks(getStartTimeTicks()).audioStreamIndex(getAudioStreamIndex())
-                .subtitleStreamIndex(getSubtitleStreamIndex()).maxAudioChannels(getMaxAudioChannels())
-                .itemId(getItemId()).enableDirectPlay(getEnableDirectPlay()).enableDirectStream(getEnableDirectStream())
-                .alwaysBurnInSubtitleWhenTranscoding(getAlwaysBurnInSubtitleWhenTranscoding())
-                .deviceProfile(getDeviceProfile()).directPlayProtocols(getDirectPlayProtocols());
     }
 }

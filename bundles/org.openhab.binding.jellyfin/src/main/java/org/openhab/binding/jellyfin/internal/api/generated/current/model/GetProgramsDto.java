@@ -17,10 +17,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -177,6 +174,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANNEL_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getChannelIds() {
         return channelIds;
     }
@@ -200,6 +198,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -223,6 +222,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MIN_START_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getMinStartDate() {
         return minStartDate;
     }
@@ -246,6 +246,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HAS_AIRED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasAired() {
         return hasAired;
     }
@@ -269,6 +270,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_AIRING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsAiring() {
         return isAiring;
     }
@@ -292,6 +294,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_START_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getMaxStartDate() {
         return maxStartDate;
     }
@@ -315,6 +318,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MIN_END_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getMinEndDate() {
         return minEndDate;
     }
@@ -338,6 +342,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAX_END_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getMaxEndDate() {
         return maxEndDate;
     }
@@ -361,6 +366,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_MOVIE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsMovie() {
         return isMovie;
     }
@@ -384,6 +390,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_SERIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsSeries() {
         return isSeries;
     }
@@ -407,6 +414,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_NEWS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsNews() {
         return isNews;
     }
@@ -430,6 +438,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_KIDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsKids() {
         return isKids;
     }
@@ -453,6 +462,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_SPORTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsSports() {
         return isSports;
     }
@@ -476,6 +486,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getStartIndex() {
         return startIndex;
     }
@@ -499,6 +510,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIMIT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLimit() {
         return limit;
     }
@@ -530,6 +542,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SORT_BY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ItemSortBy> getSortBy() {
         return sortBy;
     }
@@ -561,6 +574,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SORT_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<SortOrder> getSortOrder() {
         return sortOrder;
     }
@@ -592,6 +606,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GENRES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getGenres() {
         return genres;
     }
@@ -623,6 +638,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GENRE_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getGenreIds() {
         return genreIds;
     }
@@ -646,6 +662,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_IMAGES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableImages() {
         return enableImages;
     }
@@ -669,6 +686,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableTotalRecordCount() {
         return enableTotalRecordCount;
     }
@@ -692,6 +710,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_TYPE_LIMIT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getImageTypeLimit() {
         return imageTypeLimit;
     }
@@ -723,6 +742,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_IMAGE_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ImageType> getEnableImageTypes() {
         return enableImageTypes;
     }
@@ -746,6 +766,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_USER_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableUserData() {
         return enableUserData;
     }
@@ -769,6 +790,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeriesTimerId() {
         return seriesTimerId;
     }
@@ -792,6 +814,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIBRARY_SERIES_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getLibrarySeriesId() {
         return librarySeriesId;
     }
@@ -823,6 +846,7 @@ public class GetProgramsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FIELDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ItemFields> getFields() {
         return fields;
     }
@@ -926,424 +950,5 @@ public class GetProgramsDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ChannelIds` to the URL query string
-        if (getChannelIds() != null) {
-            for (int i = 0; i < getChannelIds().size(); i++) {
-                if (getChannelIds().get(i) != null) {
-                    joiner.add(String.format("%sChannelIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getChannelIds().get(i)))));
-                }
-            }
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `MinStartDate` to the URL query string
-        if (getMinStartDate() != null) {
-            joiner.add(String.format("%sMinStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinStartDate()))));
-        }
-
-        // add `HasAired` to the URL query string
-        if (getHasAired() != null) {
-            joiner.add(String.format("%sHasAired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasAired()))));
-        }
-
-        // add `IsAiring` to the URL query string
-        if (getIsAiring() != null) {
-            joiner.add(String.format("%sIsAiring%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAiring()))));
-        }
-
-        // add `MaxStartDate` to the URL query string
-        if (getMaxStartDate() != null) {
-            joiner.add(String.format("%sMaxStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStartDate()))));
-        }
-
-        // add `MinEndDate` to the URL query string
-        if (getMinEndDate() != null) {
-            joiner.add(String.format("%sMinEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinEndDate()))));
-        }
-
-        // add `MaxEndDate` to the URL query string
-        if (getMaxEndDate() != null) {
-            joiner.add(String.format("%sMaxEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxEndDate()))));
-        }
-
-        // add `IsMovie` to the URL query string
-        if (getIsMovie() != null) {
-            joiner.add(String.format("%sIsMovie%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsMovie()))));
-        }
-
-        // add `IsSeries` to the URL query string
-        if (getIsSeries() != null) {
-            joiner.add(String.format("%sIsSeries%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSeries()))));
-        }
-
-        // add `IsNews` to the URL query string
-        if (getIsNews() != null) {
-            joiner.add(String.format("%sIsNews%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsNews()))));
-        }
-
-        // add `IsKids` to the URL query string
-        if (getIsKids() != null) {
-            joiner.add(String.format("%sIsKids%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsKids()))));
-        }
-
-        // add `IsSports` to the URL query string
-        if (getIsSports() != null) {
-            joiner.add(String.format("%sIsSports%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSports()))));
-        }
-
-        // add `StartIndex` to the URL query string
-        if (getStartIndex() != null) {
-            joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
-        }
-
-        // add `Limit` to the URL query string
-        if (getLimit() != null) {
-            joiner.add(String.format("%sLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLimit()))));
-        }
-
-        // add `SortBy` to the URL query string
-        if (getSortBy() != null) {
-            for (int i = 0; i < getSortBy().size(); i++) {
-                if (getSortBy().get(i) != null) {
-                    joiner.add(String.format("%sSortBy%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSortBy().get(i)))));
-                }
-            }
-        }
-
-        // add `SortOrder` to the URL query string
-        if (getSortOrder() != null) {
-            for (int i = 0; i < getSortOrder().size(); i++) {
-                if (getSortOrder().get(i) != null) {
-                    joiner.add(String.format("%sSortOrder%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSortOrder().get(i)))));
-                }
-            }
-        }
-
-        // add `Genres` to the URL query string
-        if (getGenres() != null) {
-            for (int i = 0; i < getGenres().size(); i++) {
-                joiner.add(String.format("%sGenres%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getGenres().get(i)))));
-            }
-        }
-
-        // add `GenreIds` to the URL query string
-        if (getGenreIds() != null) {
-            for (int i = 0; i < getGenreIds().size(); i++) {
-                if (getGenreIds().get(i) != null) {
-                    joiner.add(String.format("%sGenreIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getGenreIds().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableImages` to the URL query string
-        if (getEnableImages() != null) {
-            joiner.add(String.format("%sEnableImages%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableImages()))));
-        }
-
-        // add `EnableTotalRecordCount` to the URL query string
-        if (getEnableTotalRecordCount() != null) {
-            joiner.add(String.format("%sEnableTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableTotalRecordCount()))));
-        }
-
-        // add `ImageTypeLimit` to the URL query string
-        if (getImageTypeLimit() != null) {
-            joiner.add(String.format("%sImageTypeLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageTypeLimit()))));
-        }
-
-        // add `EnableImageTypes` to the URL query string
-        if (getEnableImageTypes() != null) {
-            for (int i = 0; i < getEnableImageTypes().size(); i++) {
-                if (getEnableImageTypes().get(i) != null) {
-                    joiner.add(String.format("%sEnableImageTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getEnableImageTypes().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableUserData` to the URL query string
-        if (getEnableUserData() != null) {
-            joiner.add(String.format("%sEnableUserData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableUserData()))));
-        }
-
-        // add `SeriesTimerId` to the URL query string
-        if (getSeriesTimerId() != null) {
-            joiner.add(String.format("%sSeriesTimerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesTimerId()))));
-        }
-
-        // add `LibrarySeriesId` to the URL query string
-        if (getLibrarySeriesId() != null) {
-            joiner.add(String.format("%sLibrarySeriesId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLibrarySeriesId()))));
-        }
-
-        // add `Fields` to the URL query string
-        if (getFields() != null) {
-            for (int i = 0; i < getFields().size(); i++) {
-                if (getFields().get(i) != null) {
-                    joiner.add(String.format("%sFields%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getFields().get(i)))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private GetProgramsDto instance;
-
-        public Builder() {
-            this(new GetProgramsDto());
-        }
-
-        protected Builder(GetProgramsDto instance) {
-            this.instance = instance;
-        }
-
-        public GetProgramsDto.Builder channelIds(List<UUID> channelIds) {
-            this.instance.channelIds = channelIds;
-            return this;
-        }
-
-        public GetProgramsDto.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public GetProgramsDto.Builder minStartDate(OffsetDateTime minStartDate) {
-            this.instance.minStartDate = minStartDate;
-            return this;
-        }
-
-        public GetProgramsDto.Builder hasAired(Boolean hasAired) {
-            this.instance.hasAired = hasAired;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isAiring(Boolean isAiring) {
-            this.instance.isAiring = isAiring;
-            return this;
-        }
-
-        public GetProgramsDto.Builder maxStartDate(OffsetDateTime maxStartDate) {
-            this.instance.maxStartDate = maxStartDate;
-            return this;
-        }
-
-        public GetProgramsDto.Builder minEndDate(OffsetDateTime minEndDate) {
-            this.instance.minEndDate = minEndDate;
-            return this;
-        }
-
-        public GetProgramsDto.Builder maxEndDate(OffsetDateTime maxEndDate) {
-            this.instance.maxEndDate = maxEndDate;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isMovie(Boolean isMovie) {
-            this.instance.isMovie = isMovie;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isSeries(Boolean isSeries) {
-            this.instance.isSeries = isSeries;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isNews(Boolean isNews) {
-            this.instance.isNews = isNews;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isKids(Boolean isKids) {
-            this.instance.isKids = isKids;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isSports(Boolean isSports) {
-            this.instance.isSports = isSports;
-            return this;
-        }
-
-        public GetProgramsDto.Builder startIndex(Integer startIndex) {
-            this.instance.startIndex = startIndex;
-            return this;
-        }
-
-        public GetProgramsDto.Builder limit(Integer limit) {
-            this.instance.limit = limit;
-            return this;
-        }
-
-        public GetProgramsDto.Builder sortBy(List<ItemSortBy> sortBy) {
-            this.instance.sortBy = sortBy;
-            return this;
-        }
-
-        public GetProgramsDto.Builder sortOrder(List<SortOrder> sortOrder) {
-            this.instance.sortOrder = sortOrder;
-            return this;
-        }
-
-        public GetProgramsDto.Builder genres(List<String> genres) {
-            this.instance.genres = genres;
-            return this;
-        }
-
-        public GetProgramsDto.Builder genreIds(List<UUID> genreIds) {
-            this.instance.genreIds = genreIds;
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableImages(Boolean enableImages) {
-            this.instance.enableImages = enableImages;
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableTotalRecordCount(Boolean enableTotalRecordCount) {
-            this.instance.enableTotalRecordCount = enableTotalRecordCount;
-            return this;
-        }
-
-        public GetProgramsDto.Builder imageTypeLimit(Integer imageTypeLimit) {
-            this.instance.imageTypeLimit = imageTypeLimit;
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableImageTypes(List<ImageType> enableImageTypes) {
-            this.instance.enableImageTypes = enableImageTypes;
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableUserData(Boolean enableUserData) {
-            this.instance.enableUserData = enableUserData;
-            return this;
-        }
-
-        public GetProgramsDto.Builder seriesTimerId(String seriesTimerId) {
-            this.instance.seriesTimerId = seriesTimerId;
-            return this;
-        }
-
-        public GetProgramsDto.Builder librarySeriesId(UUID librarySeriesId) {
-            this.instance.librarySeriesId = librarySeriesId;
-            return this;
-        }
-
-        public GetProgramsDto.Builder fields(List<ItemFields> fields) {
-            this.instance.fields = fields;
-            return this;
-        }
-
-        /**
-         * returns a built GetProgramsDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public GetProgramsDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static GetProgramsDto.Builder builder() {
-        return new GetProgramsDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public GetProgramsDto.Builder toBuilder() {
-        return new GetProgramsDto.Builder().channelIds(getChannelIds()).userId(getUserId())
-                .minStartDate(getMinStartDate()).hasAired(getHasAired()).isAiring(getIsAiring())
-                .maxStartDate(getMaxStartDate()).minEndDate(getMinEndDate()).maxEndDate(getMaxEndDate())
-                .isMovie(getIsMovie()).isSeries(getIsSeries()).isNews(getIsNews()).isKids(getIsKids())
-                .isSports(getIsSports()).startIndex(getStartIndex()).limit(getLimit()).sortBy(getSortBy())
-                .sortOrder(getSortOrder()).genres(getGenres()).genreIds(getGenreIds()).enableImages(getEnableImages())
-                .enableTotalRecordCount(getEnableTotalRecordCount()).imageTypeLimit(getImageTypeLimit())
-                .enableImageTypes(getEnableImageTypes()).enableUserData(getEnableUserData())
-                .seriesTimerId(getSeriesTimerId()).librarySeriesId(getLibrarySeriesId()).fields(getFields());
     }
 }

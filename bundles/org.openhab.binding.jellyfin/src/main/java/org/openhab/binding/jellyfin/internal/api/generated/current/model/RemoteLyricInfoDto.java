@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -57,6 +54,7 @@ public class RemoteLyricInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -80,6 +78,7 @@ public class RemoteLyricInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getProviderName() {
         return providerName;
     }
@@ -103,6 +102,7 @@ public class RemoteLyricInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LYRICS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public LyricDto getLyrics() {
         return lyrics;
     }
@@ -155,118 +155,5 @@ public class RemoteLyricInfoDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `ProviderName` to the URL query string
-        if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
-        }
-
-        // add `Lyrics` to the URL query string
-        if (getLyrics() != null) {
-            joiner.add(getLyrics().toUrlQueryString(prefix + "Lyrics" + suffix));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private RemoteLyricInfoDto instance;
-
-        public Builder() {
-            this(new RemoteLyricInfoDto());
-        }
-
-        protected Builder(RemoteLyricInfoDto instance) {
-            this.instance = instance;
-        }
-
-        public RemoteLyricInfoDto.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public RemoteLyricInfoDto.Builder providerName(String providerName) {
-            this.instance.providerName = providerName;
-            return this;
-        }
-
-        public RemoteLyricInfoDto.Builder lyrics(LyricDto lyrics) {
-            this.instance.lyrics = lyrics;
-            return this;
-        }
-
-        /**
-         * returns a built RemoteLyricInfoDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public RemoteLyricInfoDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RemoteLyricInfoDto.Builder builder() {
-        return new RemoteLyricInfoDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RemoteLyricInfoDto.Builder toBuilder() {
-        return new RemoteLyricInfoDto.Builder().id(getId()).providerName(getProviderName()).lyrics(getLyrics());
     }
 }

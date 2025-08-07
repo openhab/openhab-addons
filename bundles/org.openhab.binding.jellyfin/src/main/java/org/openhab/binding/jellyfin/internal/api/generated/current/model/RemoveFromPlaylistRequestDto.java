@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -70,6 +67,7 @@ public class RemoveFromPlaylistRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getPlaylistItemIds() {
         return playlistItemIds;
     }
@@ -93,6 +91,7 @@ public class RemoveFromPlaylistRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CLEAR_PLAYLIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getClearPlaylist() {
         return clearPlaylist;
     }
@@ -117,6 +116,7 @@ public class RemoveFromPlaylistRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CLEAR_PLAYING_ITEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getClearPlayingItem() {
         return clearPlayingItem;
     }
@@ -169,125 +169,5 @@ public class RemoveFromPlaylistRequestDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `PlaylistItemIds` to the URL query string
-        if (getPlaylistItemIds() != null) {
-            for (int i = 0; i < getPlaylistItemIds().size(); i++) {
-                if (getPlaylistItemIds().get(i) != null) {
-                    joiner.add(String.format("%sPlaylistItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemIds().get(i)))));
-                }
-            }
-        }
-
-        // add `ClearPlaylist` to the URL query string
-        if (getClearPlaylist() != null) {
-            joiner.add(String.format("%sClearPlaylist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClearPlaylist()))));
-        }
-
-        // add `ClearPlayingItem` to the URL query string
-        if (getClearPlayingItem() != null) {
-            joiner.add(String.format("%sClearPlayingItem%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClearPlayingItem()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private RemoveFromPlaylistRequestDto instance;
-
-        public Builder() {
-            this(new RemoveFromPlaylistRequestDto());
-        }
-
-        protected Builder(RemoveFromPlaylistRequestDto instance) {
-            this.instance = instance;
-        }
-
-        public RemoveFromPlaylistRequestDto.Builder playlistItemIds(List<UUID> playlistItemIds) {
-            this.instance.playlistItemIds = playlistItemIds;
-            return this;
-        }
-
-        public RemoveFromPlaylistRequestDto.Builder clearPlaylist(Boolean clearPlaylist) {
-            this.instance.clearPlaylist = clearPlaylist;
-            return this;
-        }
-
-        public RemoveFromPlaylistRequestDto.Builder clearPlayingItem(Boolean clearPlayingItem) {
-            this.instance.clearPlayingItem = clearPlayingItem;
-            return this;
-        }
-
-        /**
-         * returns a built RemoveFromPlaylistRequestDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public RemoveFromPlaylistRequestDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RemoveFromPlaylistRequestDto.Builder builder() {
-        return new RemoveFromPlaylistRequestDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RemoveFromPlaylistRequestDto.Builder toBuilder() {
-        return new RemoveFromPlaylistRequestDto.Builder().playlistItemIds(getPlaylistItemIds())
-                .clearPlaylist(getClearPlaylist()).clearPlayingItem(getClearPlayingItem());
     }
 }

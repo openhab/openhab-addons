@@ -14,15 +14,13 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Class holding information on a runnning transcode.
@@ -84,9 +82,92 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     private HardwareAccelerationType hardwareAccelerationType;
 
+    /**
+     * Gets or Sets transcodeReasons
+     */
+    public enum TranscodeReason {
+        CONTAINER_NOT_SUPPORTED(TranscodeReason.valueOf("ContainerNotSupported")),
+
+        VIDEO_CODEC_NOT_SUPPORTED(TranscodeReason.valueOf("VideoCodecNotSupported")),
+
+        AUDIO_CODEC_NOT_SUPPORTED(TranscodeReason.valueOf("AudioCodecNotSupported")),
+
+        SUBTITLE_CODEC_NOT_SUPPORTED(TranscodeReason.valueOf("SubtitleCodecNotSupported")),
+
+        AUDIO_IS_EXTERNAL(TranscodeReason.valueOf("AudioIsExternal")),
+
+        SECONDARY_AUDIO_NOT_SUPPORTED(TranscodeReason.valueOf("SecondaryAudioNotSupported")),
+
+        VIDEO_PROFILE_NOT_SUPPORTED(TranscodeReason.valueOf("VideoProfileNotSupported")),
+
+        VIDEO_LEVEL_NOT_SUPPORTED(TranscodeReason.valueOf("VideoLevelNotSupported")),
+
+        VIDEO_RESOLUTION_NOT_SUPPORTED(TranscodeReason.valueOf("VideoResolutionNotSupported")),
+
+        VIDEO_BIT_DEPTH_NOT_SUPPORTED(TranscodeReason.valueOf("VideoBitDepthNotSupported")),
+
+        VIDEO_FRAMERATE_NOT_SUPPORTED(TranscodeReason.valueOf("VideoFramerateNotSupported")),
+
+        REF_FRAMES_NOT_SUPPORTED(TranscodeReason.valueOf("RefFramesNotSupported")),
+
+        ANAMORPHIC_VIDEO_NOT_SUPPORTED(TranscodeReason.valueOf("AnamorphicVideoNotSupported")),
+
+        INTERLACED_VIDEO_NOT_SUPPORTED(TranscodeReason.valueOf("InterlacedVideoNotSupported")),
+
+        AUDIO_CHANNELS_NOT_SUPPORTED(TranscodeReason.valueOf("AudioChannelsNotSupported")),
+
+        AUDIO_PROFILE_NOT_SUPPORTED(TranscodeReason.valueOf("AudioProfileNotSupported")),
+
+        AUDIO_SAMPLE_RATE_NOT_SUPPORTED(TranscodeReason.valueOf("AudioSampleRateNotSupported")),
+
+        AUDIO_BIT_DEPTH_NOT_SUPPORTED(TranscodeReason.valueOf("AudioBitDepthNotSupported")),
+
+        CONTAINER_BITRATE_EXCEEDS_LIMIT(TranscodeReason.valueOf("ContainerBitrateExceedsLimit")),
+
+        VIDEO_BITRATE_NOT_SUPPORTED(TranscodeReason.valueOf("VideoBitrateNotSupported")),
+
+        AUDIO_BITRATE_NOT_SUPPORTED(TranscodeReason.valueOf("AudioBitrateNotSupported")),
+
+        UNKNOWN_VIDEO_STREAM_INFO(TranscodeReason.valueOf("UnknownVideoStreamInfo")),
+
+        UNKNOWN_AUDIO_STREAM_INFO(TranscodeReason.valueOf("UnknownAudioStreamInfo")),
+
+        DIRECT_PLAY_ERROR(TranscodeReason.valueOf("DirectPlayError")),
+
+        VIDEO_RANGE_TYPE_NOT_SUPPORTED(TranscodeReason.valueOf("VideoRangeTypeNotSupported")),
+
+        VIDEO_CODEC_TAG_NOT_SUPPORTED(TranscodeReason.valueOf("VideoCodecTagNotSupported"));
+
+        private TranscodeReason value;
+
+        TranscodeReason(TranscodeReason value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public TranscodeReason getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        @JsonCreator
+        public static TranscodeReason fromValue(TranscodeReason value) {
+            for (TranscodeReason b : TranscodeReason.values()) {
+                if (b.value.equals(value)) {
+                    return b;
+                }
+            }
+            throw new IllegalArgumentException("Unexpected value '" + value + "'");
+        }
+    }
+
     public static final String JSON_PROPERTY_TRANSCODE_REASONS = "TranscodeReasons";
     @org.eclipse.jdt.annotation.NonNull
-    private List<TranscodeReason> transcodeReasons = new ArrayList<>();
+    private TranscodeReasonsEnum transcodeReasons = new ArrayList<>();
 
     public TranscodingInfo() {
     }
@@ -104,6 +185,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAudioCodec() {
         return audioCodec;
     }
@@ -127,6 +209,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVideoCodec() {
         return videoCodec;
     }
@@ -150,6 +233,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getContainer() {
         return container;
     }
@@ -173,6 +257,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_VIDEO_DIRECT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsVideoDirect() {
         return isVideoDirect;
     }
@@ -196,6 +281,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_AUDIO_DIRECT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsAudioDirect() {
         return isAudioDirect;
     }
@@ -219,6 +305,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBitrate() {
         return bitrate;
     }
@@ -242,6 +329,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FRAMERATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Float getFramerate() {
         return framerate;
     }
@@ -265,6 +353,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getCompletionPercentage() {
         return completionPercentage;
     }
@@ -288,6 +377,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getWidth() {
         return width;
     }
@@ -311,6 +401,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getHeight() {
         return height;
     }
@@ -334,6 +425,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUDIO_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAudioChannels() {
         return audioChannels;
     }
@@ -358,6 +450,7 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public HardwareAccelerationType getHardwareAccelerationType() {
         return hardwareAccelerationType;
     }
@@ -369,8 +462,7 @@ public class TranscodingInfo {
         this.hardwareAccelerationType = hardwareAccelerationType;
     }
 
-    public TranscodingInfo transcodeReasons(
-            @org.eclipse.jdt.annotation.NonNull List<TranscodeReason> transcodeReasons) {
+    public TranscodingInfo transcodeReasons(@org.eclipse.jdt.annotation.NonNull TranscodeReasonsEnum transcodeReasons) {
         this.transcodeReasons = transcodeReasons;
         return this;
     }
@@ -391,13 +483,14 @@ public class TranscodingInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRANSCODE_REASONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public List<TranscodeReason> getTranscodeReasons() {
+
+    public TranscodeReasonsEnum getTranscodeReasons() {
         return transcodeReasons;
     }
 
     @JsonProperty(JSON_PROPERTY_TRANSCODE_REASONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTranscodeReasons(@org.eclipse.jdt.annotation.NonNull List<TranscodeReason> transcodeReasons) {
+    public void setTranscodeReasons(@org.eclipse.jdt.annotation.NonNull TranscodeReasonsEnum transcodeReasons) {
         this.transcodeReasons = transcodeReasons;
     }
 
@@ -464,238 +557,5 @@ public class TranscodingInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `AudioCodec` to the URL query string
-        if (getAudioCodec() != null) {
-            joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
-        }
-
-        // add `VideoCodec` to the URL query string
-        if (getVideoCodec() != null) {
-            joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `IsVideoDirect` to the URL query string
-        if (getIsVideoDirect() != null) {
-            joiner.add(String.format("%sIsVideoDirect%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsVideoDirect()))));
-        }
-
-        // add `IsAudioDirect` to the URL query string
-        if (getIsAudioDirect() != null) {
-            joiner.add(String.format("%sIsAudioDirect%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAudioDirect()))));
-        }
-
-        // add `Bitrate` to the URL query string
-        if (getBitrate() != null) {
-            joiner.add(String.format("%sBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBitrate()))));
-        }
-
-        // add `Framerate` to the URL query string
-        if (getFramerate() != null) {
-            joiner.add(String.format("%sFramerate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFramerate()))));
-        }
-
-        // add `CompletionPercentage` to the URL query string
-        if (getCompletionPercentage() != null) {
-            joiner.add(String.format("%sCompletionPercentage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCompletionPercentage()))));
-        }
-
-        // add `Width` to the URL query string
-        if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
-        }
-
-        // add `Height` to the URL query string
-        if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
-        }
-
-        // add `AudioChannels` to the URL query string
-        if (getAudioChannels() != null) {
-            joiner.add(String.format("%sAudioChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioChannels()))));
-        }
-
-        // add `HardwareAccelerationType` to the URL query string
-        if (getHardwareAccelerationType() != null) {
-            joiner.add(String.format("%sHardwareAccelerationType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHardwareAccelerationType()))));
-        }
-
-        // add `TranscodeReasons` to the URL query string
-        if (getTranscodeReasons() != null) {
-            for (int i = 0; i < getTranscodeReasons().size(); i++) {
-                if (getTranscodeReasons().get(i) != null) {
-                    joiner.add(String.format("%sTranscodeReasons%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getTranscodeReasons().get(i)))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private TranscodingInfo instance;
-
-        public Builder() {
-            this(new TranscodingInfo());
-        }
-
-        protected Builder(TranscodingInfo instance) {
-            this.instance = instance;
-        }
-
-        public TranscodingInfo.Builder audioCodec(String audioCodec) {
-            this.instance.audioCodec = audioCodec;
-            return this;
-        }
-
-        public TranscodingInfo.Builder videoCodec(String videoCodec) {
-            this.instance.videoCodec = videoCodec;
-            return this;
-        }
-
-        public TranscodingInfo.Builder container(String container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        public TranscodingInfo.Builder isVideoDirect(Boolean isVideoDirect) {
-            this.instance.isVideoDirect = isVideoDirect;
-            return this;
-        }
-
-        public TranscodingInfo.Builder isAudioDirect(Boolean isAudioDirect) {
-            this.instance.isAudioDirect = isAudioDirect;
-            return this;
-        }
-
-        public TranscodingInfo.Builder bitrate(Integer bitrate) {
-            this.instance.bitrate = bitrate;
-            return this;
-        }
-
-        public TranscodingInfo.Builder framerate(Float framerate) {
-            this.instance.framerate = framerate;
-            return this;
-        }
-
-        public TranscodingInfo.Builder completionPercentage(Double completionPercentage) {
-            this.instance.completionPercentage = completionPercentage;
-            return this;
-        }
-
-        public TranscodingInfo.Builder width(Integer width) {
-            this.instance.width = width;
-            return this;
-        }
-
-        public TranscodingInfo.Builder height(Integer height) {
-            this.instance.height = height;
-            return this;
-        }
-
-        public TranscodingInfo.Builder audioChannels(Integer audioChannels) {
-            this.instance.audioChannels = audioChannels;
-            return this;
-        }
-
-        public TranscodingInfo.Builder hardwareAccelerationType(HardwareAccelerationType hardwareAccelerationType) {
-            this.instance.hardwareAccelerationType = hardwareAccelerationType;
-            return this;
-        }
-
-        public TranscodingInfo.Builder transcodeReasons(List<TranscodeReason> transcodeReasons) {
-            this.instance.transcodeReasons = transcodeReasons;
-            return this;
-        }
-
-        /**
-         * returns a built TranscodingInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public TranscodingInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TranscodingInfo.Builder builder() {
-        return new TranscodingInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TranscodingInfo.Builder toBuilder() {
-        return new TranscodingInfo.Builder().audioCodec(getAudioCodec()).videoCodec(getVideoCodec())
-                .container(getContainer()).isVideoDirect(getIsVideoDirect()).isAudioDirect(getIsAudioDirect())
-                .bitrate(getBitrate()).framerate(getFramerate()).completionPercentage(getCompletionPercentage())
-                .width(getWidth()).height(getHeight()).audioChannels(getAudioChannels())
-                .hardwareAccelerationType(getHardwareAccelerationType()).transcodeReasons(getTranscodeReasons());
     }
 }

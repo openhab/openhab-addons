@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,6 +59,7 @@ public class SearchHintResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SEARCH_HINTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<SearchHint> getSearchHints() {
         return searchHints;
     }
@@ -85,6 +83,7 @@ public class SearchHintResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
@@ -135,113 +134,5 @@ public class SearchHintResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `SearchHints` to the URL query string
-        if (getSearchHints() != null) {
-            for (int i = 0; i < getSearchHints().size(); i++) {
-                if (getSearchHints().get(i) != null) {
-                    joiner.add(getSearchHints().get(i).toUrlQueryString(String.format("%sSearchHints%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TotalRecordCount` to the URL query string
-        if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private SearchHintResult instance;
-
-        public Builder() {
-            this(new SearchHintResult());
-        }
-
-        protected Builder(SearchHintResult instance) {
-            this.instance = instance;
-        }
-
-        public SearchHintResult.Builder searchHints(List<SearchHint> searchHints) {
-            this.instance.searchHints = searchHints;
-            return this;
-        }
-
-        public SearchHintResult.Builder totalRecordCount(Integer totalRecordCount) {
-            this.instance.totalRecordCount = totalRecordCount;
-            return this;
-        }
-
-        /**
-         * returns a built SearchHintResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public SearchHintResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SearchHintResult.Builder builder() {
-        return new SearchHintResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SearchHintResult.Builder toBuilder() {
-        return new SearchHintResult.Builder().searchHints(getSearchHints()).totalRecordCount(getTotalRecordCount());
     }
 }

@@ -15,10 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -95,6 +92,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -118,6 +116,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCustomName() {
         return customName;
     }
@@ -141,6 +140,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAccessToken() {
         return accessToken;
     }
@@ -164,6 +164,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -187,6 +188,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LAST_USER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getLastUserName() {
         return lastUserName;
     }
@@ -210,6 +212,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_APP_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAppName() {
         return appName;
     }
@@ -233,6 +236,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_APP_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAppVersion() {
         return appVersion;
     }
@@ -256,6 +260,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LAST_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getLastUserId() {
         return lastUserId;
     }
@@ -279,6 +284,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateLastActivity() {
         return dateLastActivity;
     }
@@ -302,6 +308,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAPABILITIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ClientCapabilitiesDto getCapabilities() {
         return capabilities;
     }
@@ -325,6 +332,7 @@ public class DeviceInfoDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ICON_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getIconUrl() {
         return iconUrl;
     }
@@ -394,209 +402,5 @@ public class DeviceInfoDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `CustomName` to the URL query string
-        if (getCustomName() != null) {
-            joiner.add(String.format("%sCustomName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCustomName()))));
-        }
-
-        // add `AccessToken` to the URL query string
-        if (getAccessToken() != null) {
-            joiner.add(String.format("%sAccessToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `LastUserName` to the URL query string
-        if (getLastUserName() != null) {
-            joiner.add(String.format("%sLastUserName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUserName()))));
-        }
-
-        // add `AppName` to the URL query string
-        if (getAppName() != null) {
-            joiner.add(String.format("%sAppName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
-        }
-
-        // add `AppVersion` to the URL query string
-        if (getAppVersion() != null) {
-            joiner.add(String.format("%sAppVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
-        }
-
-        // add `LastUserId` to the URL query string
-        if (getLastUserId() != null) {
-            joiner.add(String.format("%sLastUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUserId()))));
-        }
-
-        // add `DateLastActivity` to the URL query string
-        if (getDateLastActivity() != null) {
-            joiner.add(String.format("%sDateLastActivity%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateLastActivity()))));
-        }
-
-        // add `Capabilities` to the URL query string
-        if (getCapabilities() != null) {
-            joiner.add(getCapabilities().toUrlQueryString(prefix + "Capabilities" + suffix));
-        }
-
-        // add `IconUrl` to the URL query string
-        if (getIconUrl() != null) {
-            joiner.add(String.format("%sIconUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private DeviceInfoDto instance;
-
-        public Builder() {
-            this(new DeviceInfoDto());
-        }
-
-        protected Builder(DeviceInfoDto instance) {
-            this.instance = instance;
-        }
-
-        public DeviceInfoDto.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder customName(String customName) {
-            this.instance.customName = customName;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder accessToken(String accessToken) {
-            this.instance.accessToken = accessToken;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder lastUserName(String lastUserName) {
-            this.instance.lastUserName = lastUserName;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder appName(String appName) {
-            this.instance.appName = appName;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder appVersion(String appVersion) {
-            this.instance.appVersion = appVersion;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder lastUserId(UUID lastUserId) {
-            this.instance.lastUserId = lastUserId;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder dateLastActivity(OffsetDateTime dateLastActivity) {
-            this.instance.dateLastActivity = dateLastActivity;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder capabilities(ClientCapabilitiesDto capabilities) {
-            this.instance.capabilities = capabilities;
-            return this;
-        }
-
-        public DeviceInfoDto.Builder iconUrl(String iconUrl) {
-            this.instance.iconUrl = iconUrl;
-            return this;
-        }
-
-        /**
-         * returns a built DeviceInfoDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public DeviceInfoDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DeviceInfoDto.Builder builder() {
-        return new DeviceInfoDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DeviceInfoDto.Builder toBuilder() {
-        return new DeviceInfoDto.Builder().name(getName()).customName(getCustomName()).accessToken(getAccessToken())
-                .id(getId()).lastUserName(getLastUserName()).appName(getAppName()).appVersion(getAppVersion())
-                .lastUserId(getLastUserId()).dateLastActivity(getDateLastActivity()).capabilities(getCapabilities())
-                .iconUrl(getIconUrl());
     }
 }

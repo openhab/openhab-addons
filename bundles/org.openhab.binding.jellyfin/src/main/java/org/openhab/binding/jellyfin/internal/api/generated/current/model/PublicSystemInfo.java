@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,6 +45,7 @@ public class PublicSystemInfo {
     private String productName;
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
     private String operatingSystem;
 
@@ -75,6 +73,7 @@ public class PublicSystemInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getLocalAddress() {
         return localAddress;
     }
@@ -98,6 +97,7 @@ public class PublicSystemInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERVER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getServerName() {
         return serverName;
     }
@@ -121,6 +121,7 @@ public class PublicSystemInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersion() {
         return version;
     }
@@ -144,6 +145,7 @@ public class PublicSystemInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getProductName() {
         return productName;
     }
@@ -154,6 +156,7 @@ public class PublicSystemInfo {
         this.productName = productName;
     }
 
+    @Deprecated
     public PublicSystemInfo operatingSystem(@org.eclipse.jdt.annotation.NonNull String operatingSystem) {
         this.operatingSystem = operatingSystem;
         return this;
@@ -169,10 +172,12 @@ public class PublicSystemInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOperatingSystem() {
         return operatingSystem;
     }
 
+    @Deprecated
     @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOperatingSystem(@org.eclipse.jdt.annotation.NonNull String operatingSystem) {
@@ -192,6 +197,7 @@ public class PublicSystemInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -215,6 +221,7 @@ public class PublicSystemInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getStartupWizardCompleted() {
         return startupWizardCompleted;
     }
@@ -276,165 +283,5 @@ public class PublicSystemInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `LocalAddress` to the URL query string
-        if (getLocalAddress() != null) {
-            joiner.add(String.format("%sLocalAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalAddress()))));
-        }
-
-        // add `ServerName` to the URL query string
-        if (getServerName() != null) {
-            joiner.add(String.format("%sServerName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `ProductName` to the URL query string
-        if (getProductName() != null) {
-            joiner.add(String.format("%sProductName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductName()))));
-        }
-
-        // add `OperatingSystem` to the URL query string
-        if (getOperatingSystem() != null) {
-            joiner.add(String.format("%sOperatingSystem%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystem()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `StartupWizardCompleted` to the URL query string
-        if (getStartupWizardCompleted() != null) {
-            joiner.add(String.format("%sStartupWizardCompleted%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartupWizardCompleted()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private PublicSystemInfo instance;
-
-        public Builder() {
-            this(new PublicSystemInfo());
-        }
-
-        protected Builder(PublicSystemInfo instance) {
-            this.instance = instance;
-        }
-
-        public PublicSystemInfo.Builder localAddress(String localAddress) {
-            this.instance.localAddress = localAddress;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder serverName(String serverName) {
-            this.instance.serverName = serverName;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder version(String version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder productName(String productName) {
-            this.instance.productName = productName;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder operatingSystem(String operatingSystem) {
-            this.instance.operatingSystem = operatingSystem;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder startupWizardCompleted(Boolean startupWizardCompleted) {
-            this.instance.startupWizardCompleted = startupWizardCompleted;
-            return this;
-        }
-
-        /**
-         * returns a built PublicSystemInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public PublicSystemInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PublicSystemInfo.Builder builder() {
-        return new PublicSystemInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PublicSystemInfo.Builder toBuilder() {
-        return new PublicSystemInfo.Builder().localAddress(getLocalAddress()).serverName(getServerName())
-                .version(getVersion()).productName(getProductName()).operatingSystem(getOperatingSystem()).id(getId())
-                .startupWizardCompleted(getStartupWizardCompleted());
     }
 }

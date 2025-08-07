@@ -15,10 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -99,6 +96,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getId() {
         return id;
     }
@@ -122,6 +120,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAccessToken() {
         return accessToken;
     }
@@ -145,6 +144,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDeviceId() {
         return deviceId;
     }
@@ -168,6 +168,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_APP_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAppName() {
         return appName;
     }
@@ -191,6 +192,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_APP_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAppVersion() {
         return appVersion;
     }
@@ -214,6 +216,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDeviceName() {
         return deviceName;
     }
@@ -237,6 +240,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -260,6 +264,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_ACTIVE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsActive() {
         return isActive;
     }
@@ -283,6 +288,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATE_CREATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateCreated() {
         return dateCreated;
     }
@@ -306,6 +312,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATE_REVOKED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateRevoked() {
         return dateRevoked;
     }
@@ -329,6 +336,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateLastActivity() {
         return dateLastActivity;
     }
@@ -352,6 +360,7 @@ public class AuthenticationInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUserName() {
         return userName;
     }
@@ -423,221 +432,5 @@ public class AuthenticationInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `AccessToken` to the URL query string
-        if (getAccessToken() != null) {
-            joiner.add(String.format("%sAccessToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
-        }
-
-        // add `DeviceId` to the URL query string
-        if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
-        }
-
-        // add `AppName` to the URL query string
-        if (getAppName() != null) {
-            joiner.add(String.format("%sAppName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
-        }
-
-        // add `AppVersion` to the URL query string
-        if (getAppVersion() != null) {
-            joiner.add(String.format("%sAppVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
-        }
-
-        // add `DeviceName` to the URL query string
-        if (getDeviceName() != null) {
-            joiner.add(String.format("%sDeviceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceName()))));
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `IsActive` to the URL query string
-        if (getIsActive() != null) {
-            joiner.add(String.format("%sIsActive%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsActive()))));
-        }
-
-        // add `DateCreated` to the URL query string
-        if (getDateCreated() != null) {
-            joiner.add(String.format("%sDateCreated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
-        }
-
-        // add `DateRevoked` to the URL query string
-        if (getDateRevoked() != null) {
-            joiner.add(String.format("%sDateRevoked%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateRevoked()))));
-        }
-
-        // add `DateLastActivity` to the URL query string
-        if (getDateLastActivity() != null) {
-            joiner.add(String.format("%sDateLastActivity%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateLastActivity()))));
-        }
-
-        // add `UserName` to the URL query string
-        if (getUserName() != null) {
-            joiner.add(String.format("%sUserName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserName()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private AuthenticationInfo instance;
-
-        public Builder() {
-            this(new AuthenticationInfo());
-        }
-
-        protected Builder(AuthenticationInfo instance) {
-            this.instance = instance;
-        }
-
-        public AuthenticationInfo.Builder id(Long id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder accessToken(String accessToken) {
-            this.instance.accessToken = accessToken;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder deviceId(String deviceId) {
-            this.instance.deviceId = deviceId;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder appName(String appName) {
-            this.instance.appName = appName;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder appVersion(String appVersion) {
-            this.instance.appVersion = appVersion;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder deviceName(String deviceName) {
-            this.instance.deviceName = deviceName;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder isActive(Boolean isActive) {
-            this.instance.isActive = isActive;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder dateCreated(OffsetDateTime dateCreated) {
-            this.instance.dateCreated = dateCreated;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder dateRevoked(OffsetDateTime dateRevoked) {
-            this.instance.dateRevoked = dateRevoked;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder dateLastActivity(OffsetDateTime dateLastActivity) {
-            this.instance.dateLastActivity = dateLastActivity;
-            return this;
-        }
-
-        public AuthenticationInfo.Builder userName(String userName) {
-            this.instance.userName = userName;
-            return this;
-        }
-
-        /**
-         * returns a built AuthenticationInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public AuthenticationInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static AuthenticationInfo.Builder builder() {
-        return new AuthenticationInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public AuthenticationInfo.Builder toBuilder() {
-        return new AuthenticationInfo.Builder().id(getId()).accessToken(getAccessToken()).deviceId(getDeviceId())
-                .appName(getAppName()).appVersion(getAppVersion()).deviceName(getDeviceName()).userId(getUserId())
-                .isActive(getIsActive()).dateCreated(getDateCreated()).dateRevoked(getDateRevoked())
-                .dateLastActivity(getDateLastActivity()).userName(getUserName());
     }
 }

@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -100,6 +97,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_HW_ACCELERATION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableHwAcceleration() {
         return enableHwAcceleration;
     }
@@ -123,6 +121,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_HW_ENCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableHwEncoding() {
         return enableHwEncoding;
     }
@@ -148,6 +147,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableKeyFrameOnlyExtraction() {
         return enableKeyFrameOnlyExtraction;
     }
@@ -172,6 +172,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SCAN_BEHAVIOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TrickplayScanBehavior getScanBehavior() {
         return scanBehavior;
     }
@@ -195,6 +196,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROCESS_PRIORITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ProcessPriorityClass getProcessPriority() {
         return processPriority;
     }
@@ -218,6 +220,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INTERVAL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getInterval() {
         return interval;
     }
@@ -249,6 +252,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_WIDTH_RESOLUTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<Integer> getWidthResolutions() {
         return widthResolutions;
     }
@@ -272,6 +276,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTileWidth() {
         return tileWidth;
     }
@@ -295,6 +300,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTileHeight() {
         return tileHeight;
     }
@@ -318,6 +324,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_QSCALE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getQscale() {
         return qscale;
     }
@@ -341,6 +348,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_JPEG_QUALITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getJpegQuality() {
         return jpegQuality;
     }
@@ -364,6 +372,7 @@ public class TrickplayOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROCESS_THREADS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getProcessThreads() {
         return processThreads;
     }
@@ -437,225 +446,5 @@ public class TrickplayOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `EnableHwAcceleration` to the URL query string
-        if (getEnableHwAcceleration() != null) {
-            joiner.add(String.format("%sEnableHwAcceleration%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHwAcceleration()))));
-        }
-
-        // add `EnableHwEncoding` to the URL query string
-        if (getEnableHwEncoding() != null) {
-            joiner.add(String.format("%sEnableHwEncoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHwEncoding()))));
-        }
-
-        // add `EnableKeyFrameOnlyExtraction` to the URL query string
-        if (getEnableKeyFrameOnlyExtraction() != null) {
-            joiner.add(String.format("%sEnableKeyFrameOnlyExtraction%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableKeyFrameOnlyExtraction()))));
-        }
-
-        // add `ScanBehavior` to the URL query string
-        if (getScanBehavior() != null) {
-            joiner.add(String.format("%sScanBehavior%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getScanBehavior()))));
-        }
-
-        // add `ProcessPriority` to the URL query string
-        if (getProcessPriority() != null) {
-            joiner.add(String.format("%sProcessPriority%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProcessPriority()))));
-        }
-
-        // add `Interval` to the URL query string
-        if (getInterval() != null) {
-            joiner.add(String.format("%sInterval%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInterval()))));
-        }
-
-        // add `WidthResolutions` to the URL query string
-        if (getWidthResolutions() != null) {
-            for (int i = 0; i < getWidthResolutions().size(); i++) {
-                joiner.add(String.format("%sWidthResolutions%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getWidthResolutions().get(i)))));
-            }
-        }
-
-        // add `TileWidth` to the URL query string
-        if (getTileWidth() != null) {
-            joiner.add(String.format("%sTileWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileWidth()))));
-        }
-
-        // add `TileHeight` to the URL query string
-        if (getTileHeight() != null) {
-            joiner.add(String.format("%sTileHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileHeight()))));
-        }
-
-        // add `Qscale` to the URL query string
-        if (getQscale() != null) {
-            joiner.add(String.format("%sQscale%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getQscale()))));
-        }
-
-        // add `JpegQuality` to the URL query string
-        if (getJpegQuality() != null) {
-            joiner.add(String.format("%sJpegQuality%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getJpegQuality()))));
-        }
-
-        // add `ProcessThreads` to the URL query string
-        if (getProcessThreads() != null) {
-            joiner.add(String.format("%sProcessThreads%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProcessThreads()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private TrickplayOptions instance;
-
-        public Builder() {
-            this(new TrickplayOptions());
-        }
-
-        protected Builder(TrickplayOptions instance) {
-            this.instance = instance;
-        }
-
-        public TrickplayOptions.Builder enableHwAcceleration(Boolean enableHwAcceleration) {
-            this.instance.enableHwAcceleration = enableHwAcceleration;
-            return this;
-        }
-
-        public TrickplayOptions.Builder enableHwEncoding(Boolean enableHwEncoding) {
-            this.instance.enableHwEncoding = enableHwEncoding;
-            return this;
-        }
-
-        public TrickplayOptions.Builder enableKeyFrameOnlyExtraction(Boolean enableKeyFrameOnlyExtraction) {
-            this.instance.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
-            return this;
-        }
-
-        public TrickplayOptions.Builder scanBehavior(TrickplayScanBehavior scanBehavior) {
-            this.instance.scanBehavior = scanBehavior;
-            return this;
-        }
-
-        public TrickplayOptions.Builder processPriority(ProcessPriorityClass processPriority) {
-            this.instance.processPriority = processPriority;
-            return this;
-        }
-
-        public TrickplayOptions.Builder interval(Integer interval) {
-            this.instance.interval = interval;
-            return this;
-        }
-
-        public TrickplayOptions.Builder widthResolutions(List<Integer> widthResolutions) {
-            this.instance.widthResolutions = widthResolutions;
-            return this;
-        }
-
-        public TrickplayOptions.Builder tileWidth(Integer tileWidth) {
-            this.instance.tileWidth = tileWidth;
-            return this;
-        }
-
-        public TrickplayOptions.Builder tileHeight(Integer tileHeight) {
-            this.instance.tileHeight = tileHeight;
-            return this;
-        }
-
-        public TrickplayOptions.Builder qscale(Integer qscale) {
-            this.instance.qscale = qscale;
-            return this;
-        }
-
-        public TrickplayOptions.Builder jpegQuality(Integer jpegQuality) {
-            this.instance.jpegQuality = jpegQuality;
-            return this;
-        }
-
-        public TrickplayOptions.Builder processThreads(Integer processThreads) {
-            this.instance.processThreads = processThreads;
-            return this;
-        }
-
-        /**
-         * returns a built TrickplayOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public TrickplayOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TrickplayOptions.Builder builder() {
-        return new TrickplayOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TrickplayOptions.Builder toBuilder() {
-        return new TrickplayOptions.Builder().enableHwAcceleration(getEnableHwAcceleration())
-                .enableHwEncoding(getEnableHwEncoding()).enableKeyFrameOnlyExtraction(getEnableKeyFrameOnlyExtraction())
-                .scanBehavior(getScanBehavior()).processPriority(getProcessPriority()).interval(getInterval())
-                .widthResolutions(getWidthResolutions()).tileWidth(getTileWidth()).tileHeight(getTileHeight())
-                .qscale(getQscale()).jpegQuality(getJpegQuality()).processThreads(getProcessThreads());
     }
 }

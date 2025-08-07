@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -73,6 +70,7 @@ public class ChannelMappingOptionsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<TunerChannelMapping> getTunerChannels() {
         return tunerChannels;
     }
@@ -105,6 +103,7 @@ public class ChannelMappingOptionsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameIdPair> getProviderChannels() {
         return providerChannels;
     }
@@ -136,6 +135,7 @@ public class ChannelMappingOptionsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MAPPINGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameValuePair> getMappings() {
         return mappings;
     }
@@ -159,6 +159,7 @@ public class ChannelMappingOptionsDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getProviderName() {
         return providerName;
     }
@@ -213,145 +214,5 @@ public class ChannelMappingOptionsDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `TunerChannels` to the URL query string
-        if (getTunerChannels() != null) {
-            for (int i = 0; i < getTunerChannels().size(); i++) {
-                if (getTunerChannels().get(i) != null) {
-                    joiner.add(getTunerChannels().get(i).toUrlQueryString(String.format("%sTunerChannels%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ProviderChannels` to the URL query string
-        if (getProviderChannels() != null) {
-            for (int i = 0; i < getProviderChannels().size(); i++) {
-                if (getProviderChannels().get(i) != null) {
-                    joiner.add(getProviderChannels().get(i).toUrlQueryString(String.format("%sProviderChannels%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Mappings` to the URL query string
-        if (getMappings() != null) {
-            for (int i = 0; i < getMappings().size(); i++) {
-                if (getMappings().get(i) != null) {
-                    joiner.add(getMappings().get(i).toUrlQueryString(String.format("%sMappings%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ProviderName` to the URL query string
-        if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ChannelMappingOptionsDto instance;
-
-        public Builder() {
-            this(new ChannelMappingOptionsDto());
-        }
-
-        protected Builder(ChannelMappingOptionsDto instance) {
-            this.instance = instance;
-        }
-
-        public ChannelMappingOptionsDto.Builder tunerChannels(List<TunerChannelMapping> tunerChannels) {
-            this.instance.tunerChannels = tunerChannels;
-            return this;
-        }
-
-        public ChannelMappingOptionsDto.Builder providerChannels(List<NameIdPair> providerChannels) {
-            this.instance.providerChannels = providerChannels;
-            return this;
-        }
-
-        public ChannelMappingOptionsDto.Builder mappings(List<NameValuePair> mappings) {
-            this.instance.mappings = mappings;
-            return this;
-        }
-
-        public ChannelMappingOptionsDto.Builder providerName(String providerName) {
-            this.instance.providerName = providerName;
-            return this;
-        }
-
-        /**
-         * returns a built ChannelMappingOptionsDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public ChannelMappingOptionsDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ChannelMappingOptionsDto.Builder builder() {
-        return new ChannelMappingOptionsDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ChannelMappingOptionsDto.Builder toBuilder() {
-        return new ChannelMappingOptionsDto.Builder().tunerChannels(getTunerChannels())
-                .providerChannels(getProviderChannels()).mappings(getMappings()).providerName(getProviderName());
     }
 }

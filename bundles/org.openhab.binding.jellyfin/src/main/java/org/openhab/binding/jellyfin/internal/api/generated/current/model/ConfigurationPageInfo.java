@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -71,6 +68,7 @@ public class ConfigurationPageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -94,6 +92,7 @@ public class ConfigurationPageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableInMainMenu() {
         return enableInMainMenu;
     }
@@ -117,6 +116,7 @@ public class ConfigurationPageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MENU_SECTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMenuSection() {
         return menuSection;
     }
@@ -140,6 +140,7 @@ public class ConfigurationPageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MENU_ICON)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMenuIcon() {
         return menuIcon;
     }
@@ -163,6 +164,7 @@ public class ConfigurationPageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDisplayName() {
         return displayName;
     }
@@ -186,6 +188,7 @@ public class ConfigurationPageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getPluginId() {
         return pluginId;
     }
@@ -244,154 +247,5 @@ public class ConfigurationPageInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `EnableInMainMenu` to the URL query string
-        if (getEnableInMainMenu() != null) {
-            joiner.add(String.format("%sEnableInMainMenu%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableInMainMenu()))));
-        }
-
-        // add `MenuSection` to the URL query string
-        if (getMenuSection() != null) {
-            joiner.add(String.format("%sMenuSection%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMenuSection()))));
-        }
-
-        // add `MenuIcon` to the URL query string
-        if (getMenuIcon() != null) {
-            joiner.add(String.format("%sMenuIcon%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMenuIcon()))));
-        }
-
-        // add `DisplayName` to the URL query string
-        if (getDisplayName() != null) {
-            joiner.add(String.format("%sDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-        }
-
-        // add `PluginId` to the URL query string
-        if (getPluginId() != null) {
-            joiner.add(String.format("%sPluginId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPluginId()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ConfigurationPageInfo instance;
-
-        public Builder() {
-            this(new ConfigurationPageInfo());
-        }
-
-        protected Builder(ConfigurationPageInfo instance) {
-            this.instance = instance;
-        }
-
-        public ConfigurationPageInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder enableInMainMenu(Boolean enableInMainMenu) {
-            this.instance.enableInMainMenu = enableInMainMenu;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder menuSection(String menuSection) {
-            this.instance.menuSection = menuSection;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder menuIcon(String menuIcon) {
-            this.instance.menuIcon = menuIcon;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder displayName(String displayName) {
-            this.instance.displayName = displayName;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder pluginId(UUID pluginId) {
-            this.instance.pluginId = pluginId;
-            return this;
-        }
-
-        /**
-         * returns a built ConfigurationPageInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public ConfigurationPageInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ConfigurationPageInfo.Builder builder() {
-        return new ConfigurationPageInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ConfigurationPageInfo.Builder toBuilder() {
-        return new ConfigurationPageInfo.Builder().name(getName()).enableInMainMenu(getEnableInMainMenu())
-                .menuSection(getMenuSection()).menuIcon(getMenuIcon()).displayName(getDisplayName())
-                .pluginId(getPluginId());
     }
 }

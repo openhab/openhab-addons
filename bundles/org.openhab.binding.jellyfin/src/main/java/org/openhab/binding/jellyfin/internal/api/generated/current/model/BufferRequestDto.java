@@ -15,10 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -63,6 +60,7 @@ public class BufferRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_WHEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getWhen() {
         return when;
     }
@@ -86,6 +84,7 @@ public class BufferRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getPositionTicks() {
         return positionTicks;
     }
@@ -109,6 +108,7 @@ public class BufferRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_PLAYING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPlaying() {
         return isPlaying;
     }
@@ -132,6 +132,7 @@ public class BufferRequestDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getPlaylistItemId() {
         return playlistItemId;
     }
@@ -186,131 +187,5 @@ public class BufferRequestDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `When` to the URL query string
-        if (getWhen() != null) {
-            joiner.add(String.format("%sWhen%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
-        }
-
-        // add `PositionTicks` to the URL query string
-        if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
-        }
-
-        // add `IsPlaying` to the URL query string
-        if (getIsPlaying() != null) {
-            joiner.add(String.format("%sIsPlaying%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPlaying()))));
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private BufferRequestDto instance;
-
-        public Builder() {
-            this(new BufferRequestDto());
-        }
-
-        protected Builder(BufferRequestDto instance) {
-            this.instance = instance;
-        }
-
-        public BufferRequestDto.Builder when(OffsetDateTime when) {
-            this.instance.when = when;
-            return this;
-        }
-
-        public BufferRequestDto.Builder positionTicks(Long positionTicks) {
-            this.instance.positionTicks = positionTicks;
-            return this;
-        }
-
-        public BufferRequestDto.Builder isPlaying(Boolean isPlaying) {
-            this.instance.isPlaying = isPlaying;
-            return this;
-        }
-
-        public BufferRequestDto.Builder playlistItemId(UUID playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        /**
-         * returns a built BufferRequestDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public BufferRequestDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static BufferRequestDto.Builder builder() {
-        return new BufferRequestDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public BufferRequestDto.Builder toBuilder() {
-        return new BufferRequestDto.Builder().when(getWhen()).positionTicks(getPositionTicks())
-                .isPlaying(getIsPlaying()).playlistItemId(getPlaylistItemId());
     }
 }

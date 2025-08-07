@@ -18,9 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -250,6 +247,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROTOCOL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public MediaProtocol getProtocol() {
         return protocol;
     }
@@ -273,6 +271,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -296,6 +295,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPath() {
         return path;
     }
@@ -319,6 +319,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENCODER_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getEncoderPath() {
         return encoderPath;
     }
@@ -342,6 +343,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENCODER_PROTOCOL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public MediaProtocol getEncoderProtocol() {
         return encoderProtocol;
     }
@@ -365,6 +367,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public MediaSourceType getType() {
         return type;
     }
@@ -388,6 +391,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getContainer() {
         return container;
     }
@@ -411,6 +415,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SIZE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getSize() {
         return size;
     }
@@ -434,6 +439,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -457,6 +463,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_REMOTE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsRemote() {
         return isRemote;
     }
@@ -480,6 +487,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ETAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getEtag() {
         return etag;
     }
@@ -503,6 +511,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getRunTimeTicks() {
         return runTimeTicks;
     }
@@ -526,6 +535,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getReadAtNativeFramerate() {
         return readAtNativeFramerate;
     }
@@ -549,6 +559,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IGNORE_DTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIgnoreDts() {
         return ignoreDts;
     }
@@ -572,6 +583,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IGNORE_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIgnoreIndex() {
         return ignoreIndex;
     }
@@ -595,6 +607,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GEN_PTS_INPUT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getGenPtsInput() {
         return genPtsInput;
     }
@@ -618,6 +631,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUPPORTS_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsTranscoding() {
         return supportsTranscoding;
     }
@@ -641,6 +655,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_STREAM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsDirectStream() {
         return supportsDirectStream;
     }
@@ -664,6 +679,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_PLAY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsDirectPlay() {
         return supportsDirectPlay;
     }
@@ -687,6 +703,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_INFINITE_STREAM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsInfiniteStream() {
         return isInfiniteStream;
     }
@@ -711,6 +728,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USE_MOST_COMPATIBLE_TRANSCODING_PROFILE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getUseMostCompatibleTranscodingProfile() {
         return useMostCompatibleTranscodingProfile;
     }
@@ -735,6 +753,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REQUIRES_OPENING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRequiresOpening() {
         return requiresOpening;
     }
@@ -758,6 +777,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OPEN_TOKEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOpenToken() {
         return openToken;
     }
@@ -781,6 +801,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REQUIRES_CLOSING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRequiresClosing() {
         return requiresClosing;
     }
@@ -804,6 +825,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getLiveStreamId() {
         return liveStreamId;
     }
@@ -827,6 +849,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BUFFER_MS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBufferMs() {
         return bufferMs;
     }
@@ -850,6 +873,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REQUIRES_LOOPING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRequiresLooping() {
         return requiresLooping;
     }
@@ -873,6 +897,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUPPORTS_PROBING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsProbing() {
         return supportsProbing;
     }
@@ -896,6 +921,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public VideoType getVideoType() {
         return videoType;
     }
@@ -919,6 +945,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ISO_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public IsoType getIsoType() {
         return isoType;
     }
@@ -942,6 +969,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Video3DFormat getVideo3DFormat() {
         return video3DFormat;
     }
@@ -973,6 +1001,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaStream> getMediaStreams() {
         return mediaStreams;
     }
@@ -1005,6 +1034,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_ATTACHMENTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaAttachment> getMediaAttachments() {
         return mediaAttachments;
     }
@@ -1036,6 +1066,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FORMATS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getFormats() {
         return formats;
     }
@@ -1059,6 +1090,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBitrate() {
         return bitrate;
     }
@@ -1083,6 +1115,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getFallbackMaxStreamingBitrate() {
         return fallbackMaxStreamingBitrate;
     }
@@ -1107,6 +1140,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TIMESTAMP)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TransportStreamTimestamp getTimestamp() {
         return timestamp;
     }
@@ -1139,6 +1173,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REQUIRED_HTTP_HEADERS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getRequiredHttpHeaders() {
         return requiredHttpHeaders;
     }
@@ -1162,6 +1197,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRANSCODING_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getTranscodingUrl() {
         return transcodingUrl;
     }
@@ -1186,6 +1222,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public MediaStreamProtocol getTranscodingSubProtocol() {
         return transcodingSubProtocol;
     }
@@ -1210,6 +1247,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRANSCODING_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getTranscodingContainer() {
         return transcodingContainer;
     }
@@ -1233,6 +1271,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ANALYZE_DURATION_MS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAnalyzeDurationMs() {
         return analyzeDurationMs;
     }
@@ -1257,6 +1296,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getDefaultAudioStreamIndex() {
         return defaultAudioStreamIndex;
     }
@@ -1281,6 +1321,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getDefaultSubtitleStreamIndex() {
         return defaultSubtitleStreamIndex;
     }
@@ -1304,6 +1345,7 @@ public class MediaSourceInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HAS_SEGMENTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasSegments() {
         return hasSegments;
     }
@@ -1448,616 +1490,5 @@ public class MediaSourceInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Protocol` to the URL query string
-        if (getProtocol() != null) {
-            joiner.add(String.format("%sProtocol%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProtocol()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `EncoderPath` to the URL query string
-        if (getEncoderPath() != null) {
-            joiner.add(String.format("%sEncoderPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEncoderPath()))));
-        }
-
-        // add `EncoderProtocol` to the URL query string
-        if (getEncoderProtocol() != null) {
-            joiner.add(String.format("%sEncoderProtocol%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEncoderProtocol()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `Size` to the URL query string
-        if (getSize() != null) {
-            joiner.add(String.format("%sSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `IsRemote` to the URL query string
-        if (getIsRemote() != null) {
-            joiner.add(String.format("%sIsRemote%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsRemote()))));
-        }
-
-        // add `ETag` to the URL query string
-        if (getEtag() != null) {
-            joiner.add(String.format("%sETag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEtag()))));
-        }
-
-        // add `RunTimeTicks` to the URL query string
-        if (getRunTimeTicks() != null) {
-            joiner.add(String.format("%sRunTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRunTimeTicks()))));
-        }
-
-        // add `ReadAtNativeFramerate` to the URL query string
-        if (getReadAtNativeFramerate() != null) {
-            joiner.add(String.format("%sReadAtNativeFramerate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getReadAtNativeFramerate()))));
-        }
-
-        // add `IgnoreDts` to the URL query string
-        if (getIgnoreDts() != null) {
-            joiner.add(String.format("%sIgnoreDts%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIgnoreDts()))));
-        }
-
-        // add `IgnoreIndex` to the URL query string
-        if (getIgnoreIndex() != null) {
-            joiner.add(String.format("%sIgnoreIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIgnoreIndex()))));
-        }
-
-        // add `GenPtsInput` to the URL query string
-        if (getGenPtsInput() != null) {
-            joiner.add(String.format("%sGenPtsInput%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGenPtsInput()))));
-        }
-
-        // add `SupportsTranscoding` to the URL query string
-        if (getSupportsTranscoding() != null) {
-            joiner.add(String.format("%sSupportsTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsTranscoding()))));
-        }
-
-        // add `SupportsDirectStream` to the URL query string
-        if (getSupportsDirectStream() != null) {
-            joiner.add(String.format("%sSupportsDirectStream%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsDirectStream()))));
-        }
-
-        // add `SupportsDirectPlay` to the URL query string
-        if (getSupportsDirectPlay() != null) {
-            joiner.add(String.format("%sSupportsDirectPlay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsDirectPlay()))));
-        }
-
-        // add `IsInfiniteStream` to the URL query string
-        if (getIsInfiniteStream() != null) {
-            joiner.add(String.format("%sIsInfiniteStream%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsInfiniteStream()))));
-        }
-
-        // add `UseMostCompatibleTranscodingProfile` to the URL query string
-        if (getUseMostCompatibleTranscodingProfile() != null) {
-            joiner.add(String.format("%sUseMostCompatibleTranscodingProfile%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUseMostCompatibleTranscodingProfile()))));
-        }
-
-        // add `RequiresOpening` to the URL query string
-        if (getRequiresOpening() != null) {
-            joiner.add(String.format("%sRequiresOpening%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequiresOpening()))));
-        }
-
-        // add `OpenToken` to the URL query string
-        if (getOpenToken() != null) {
-            joiner.add(String.format("%sOpenToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenToken()))));
-        }
-
-        // add `RequiresClosing` to the URL query string
-        if (getRequiresClosing() != null) {
-            joiner.add(String.format("%sRequiresClosing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequiresClosing()))));
-        }
-
-        // add `LiveStreamId` to the URL query string
-        if (getLiveStreamId() != null) {
-            joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
-        }
-
-        // add `BufferMs` to the URL query string
-        if (getBufferMs() != null) {
-            joiner.add(String.format("%sBufferMs%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBufferMs()))));
-        }
-
-        // add `RequiresLooping` to the URL query string
-        if (getRequiresLooping() != null) {
-            joiner.add(String.format("%sRequiresLooping%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequiresLooping()))));
-        }
-
-        // add `SupportsProbing` to the URL query string
-        if (getSupportsProbing() != null) {
-            joiner.add(String.format("%sSupportsProbing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsProbing()))));
-        }
-
-        // add `VideoType` to the URL query string
-        if (getVideoType() != null) {
-            joiner.add(String.format("%sVideoType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoType()))));
-        }
-
-        // add `IsoType` to the URL query string
-        if (getIsoType() != null) {
-            joiner.add(String.format("%sIsoType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsoType()))));
-        }
-
-        // add `Video3DFormat` to the URL query string
-        if (getVideo3DFormat() != null) {
-            joiner.add(String.format("%sVideo3DFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideo3DFormat()))));
-        }
-
-        // add `MediaStreams` to the URL query string
-        if (getMediaStreams() != null) {
-            for (int i = 0; i < getMediaStreams().size(); i++) {
-                if (getMediaStreams().get(i) != null) {
-                    joiner.add(getMediaStreams().get(i).toUrlQueryString(String.format("%sMediaStreams%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `MediaAttachments` to the URL query string
-        if (getMediaAttachments() != null) {
-            for (int i = 0; i < getMediaAttachments().size(); i++) {
-                if (getMediaAttachments().get(i) != null) {
-                    joiner.add(getMediaAttachments().get(i).toUrlQueryString(String.format("%sMediaAttachments%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Formats` to the URL query string
-        if (getFormats() != null) {
-            for (int i = 0; i < getFormats().size(); i++) {
-                joiner.add(String.format("%sFormats%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getFormats().get(i)))));
-            }
-        }
-
-        // add `Bitrate` to the URL query string
-        if (getBitrate() != null) {
-            joiner.add(String.format("%sBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBitrate()))));
-        }
-
-        // add `FallbackMaxStreamingBitrate` to the URL query string
-        if (getFallbackMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sFallbackMaxStreamingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFallbackMaxStreamingBitrate()))));
-        }
-
-        // add `Timestamp` to the URL query string
-        if (getTimestamp() != null) {
-            joiner.add(String.format("%sTimestamp%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
-        }
-
-        // add `RequiredHttpHeaders` to the URL query string
-        if (getRequiredHttpHeaders() != null) {
-            for (String _key : getRequiredHttpHeaders().keySet()) {
-                joiner.add(String.format("%sRequiredHttpHeaders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getRequiredHttpHeaders().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getRequiredHttpHeaders().get(_key)))));
-            }
-        }
-
-        // add `TranscodingUrl` to the URL query string
-        if (getTranscodingUrl() != null) {
-            joiner.add(String.format("%sTranscodingUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTranscodingUrl()))));
-        }
-
-        // add `TranscodingSubProtocol` to the URL query string
-        if (getTranscodingSubProtocol() != null) {
-            joiner.add(String.format("%sTranscodingSubProtocol%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTranscodingSubProtocol()))));
-        }
-
-        // add `TranscodingContainer` to the URL query string
-        if (getTranscodingContainer() != null) {
-            joiner.add(String.format("%sTranscodingContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTranscodingContainer()))));
-        }
-
-        // add `AnalyzeDurationMs` to the URL query string
-        if (getAnalyzeDurationMs() != null) {
-            joiner.add(String.format("%sAnalyzeDurationMs%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAnalyzeDurationMs()))));
-        }
-
-        // add `DefaultAudioStreamIndex` to the URL query string
-        if (getDefaultAudioStreamIndex() != null) {
-            joiner.add(String.format("%sDefaultAudioStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDefaultAudioStreamIndex()))));
-        }
-
-        // add `DefaultSubtitleStreamIndex` to the URL query string
-        if (getDefaultSubtitleStreamIndex() != null) {
-            joiner.add(String.format("%sDefaultSubtitleStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDefaultSubtitleStreamIndex()))));
-        }
-
-        // add `HasSegments` to the URL query string
-        if (getHasSegments() != null) {
-            joiner.add(String.format("%sHasSegments%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasSegments()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private MediaSourceInfo instance;
-
-        public Builder() {
-            this(new MediaSourceInfo());
-        }
-
-        protected Builder(MediaSourceInfo instance) {
-            this.instance = instance;
-        }
-
-        public MediaSourceInfo.Builder protocol(MediaProtocol protocol) {
-            this.instance.protocol = protocol;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder path(String path) {
-            this.instance.path = path;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder encoderPath(String encoderPath) {
-            this.instance.encoderPath = encoderPath;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder encoderProtocol(MediaProtocol encoderProtocol) {
-            this.instance.encoderProtocol = encoderProtocol;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder type(MediaSourceType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder container(String container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder size(Long size) {
-            this.instance.size = size;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder isRemote(Boolean isRemote) {
-            this.instance.isRemote = isRemote;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder etag(String etag) {
-            this.instance.etag = etag;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder runTimeTicks(Long runTimeTicks) {
-            this.instance.runTimeTicks = runTimeTicks;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder readAtNativeFramerate(Boolean readAtNativeFramerate) {
-            this.instance.readAtNativeFramerate = readAtNativeFramerate;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder ignoreDts(Boolean ignoreDts) {
-            this.instance.ignoreDts = ignoreDts;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder ignoreIndex(Boolean ignoreIndex) {
-            this.instance.ignoreIndex = ignoreIndex;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder genPtsInput(Boolean genPtsInput) {
-            this.instance.genPtsInput = genPtsInput;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder supportsTranscoding(Boolean supportsTranscoding) {
-            this.instance.supportsTranscoding = supportsTranscoding;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder supportsDirectStream(Boolean supportsDirectStream) {
-            this.instance.supportsDirectStream = supportsDirectStream;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder supportsDirectPlay(Boolean supportsDirectPlay) {
-            this.instance.supportsDirectPlay = supportsDirectPlay;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder isInfiniteStream(Boolean isInfiniteStream) {
-            this.instance.isInfiniteStream = isInfiniteStream;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder useMostCompatibleTranscodingProfile(
-                Boolean useMostCompatibleTranscodingProfile) {
-            this.instance.useMostCompatibleTranscodingProfile = useMostCompatibleTranscodingProfile;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder requiresOpening(Boolean requiresOpening) {
-            this.instance.requiresOpening = requiresOpening;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder openToken(String openToken) {
-            this.instance.openToken = openToken;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder requiresClosing(Boolean requiresClosing) {
-            this.instance.requiresClosing = requiresClosing;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder liveStreamId(String liveStreamId) {
-            this.instance.liveStreamId = liveStreamId;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder bufferMs(Integer bufferMs) {
-            this.instance.bufferMs = bufferMs;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder requiresLooping(Boolean requiresLooping) {
-            this.instance.requiresLooping = requiresLooping;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder supportsProbing(Boolean supportsProbing) {
-            this.instance.supportsProbing = supportsProbing;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder videoType(VideoType videoType) {
-            this.instance.videoType = videoType;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder isoType(IsoType isoType) {
-            this.instance.isoType = isoType;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder video3DFormat(Video3DFormat video3DFormat) {
-            this.instance.video3DFormat = video3DFormat;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder mediaStreams(List<MediaStream> mediaStreams) {
-            this.instance.mediaStreams = mediaStreams;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder mediaAttachments(List<MediaAttachment> mediaAttachments) {
-            this.instance.mediaAttachments = mediaAttachments;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder formats(List<String> formats) {
-            this.instance.formats = formats;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder bitrate(Integer bitrate) {
-            this.instance.bitrate = bitrate;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder fallbackMaxStreamingBitrate(Integer fallbackMaxStreamingBitrate) {
-            this.instance.fallbackMaxStreamingBitrate = fallbackMaxStreamingBitrate;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder timestamp(TransportStreamTimestamp timestamp) {
-            this.instance.timestamp = timestamp;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder requiredHttpHeaders(Map<String, String> requiredHttpHeaders) {
-            this.instance.requiredHttpHeaders = requiredHttpHeaders;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder transcodingUrl(String transcodingUrl) {
-            this.instance.transcodingUrl = transcodingUrl;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder transcodingSubProtocol(MediaStreamProtocol transcodingSubProtocol) {
-            this.instance.transcodingSubProtocol = transcodingSubProtocol;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder transcodingContainer(String transcodingContainer) {
-            this.instance.transcodingContainer = transcodingContainer;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder analyzeDurationMs(Integer analyzeDurationMs) {
-            this.instance.analyzeDurationMs = analyzeDurationMs;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder defaultAudioStreamIndex(Integer defaultAudioStreamIndex) {
-            this.instance.defaultAudioStreamIndex = defaultAudioStreamIndex;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder defaultSubtitleStreamIndex(Integer defaultSubtitleStreamIndex) {
-            this.instance.defaultSubtitleStreamIndex = defaultSubtitleStreamIndex;
-            return this;
-        }
-
-        public MediaSourceInfo.Builder hasSegments(Boolean hasSegments) {
-            this.instance.hasSegments = hasSegments;
-            return this;
-        }
-
-        /**
-         * returns a built MediaSourceInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public MediaSourceInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static MediaSourceInfo.Builder builder() {
-        return new MediaSourceInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public MediaSourceInfo.Builder toBuilder() {
-        return new MediaSourceInfo.Builder().protocol(getProtocol()).id(getId()).path(getPath())
-                .encoderPath(getEncoderPath()).encoderProtocol(getEncoderProtocol()).type(getType())
-                .container(getContainer()).size(getSize()).name(getName()).isRemote(getIsRemote()).etag(getEtag())
-                .runTimeTicks(getRunTimeTicks()).readAtNativeFramerate(getReadAtNativeFramerate())
-                .ignoreDts(getIgnoreDts()).ignoreIndex(getIgnoreIndex()).genPtsInput(getGenPtsInput())
-                .supportsTranscoding(getSupportsTranscoding()).supportsDirectStream(getSupportsDirectStream())
-                .supportsDirectPlay(getSupportsDirectPlay()).isInfiniteStream(getIsInfiniteStream())
-                .useMostCompatibleTranscodingProfile(getUseMostCompatibleTranscodingProfile())
-                .requiresOpening(getRequiresOpening()).openToken(getOpenToken()).requiresClosing(getRequiresClosing())
-                .liveStreamId(getLiveStreamId()).bufferMs(getBufferMs()).requiresLooping(getRequiresLooping())
-                .supportsProbing(getSupportsProbing()).videoType(getVideoType()).isoType(getIsoType())
-                .video3DFormat(getVideo3DFormat()).mediaStreams(getMediaStreams())
-                .mediaAttachments(getMediaAttachments()).formats(getFormats()).bitrate(getBitrate())
-                .fallbackMaxStreamingBitrate(getFallbackMaxStreamingBitrate()).timestamp(getTimestamp())
-                .requiredHttpHeaders(getRequiredHttpHeaders()).transcodingUrl(getTranscodingUrl())
-                .transcodingSubProtocol(getTranscodingSubProtocol()).transcodingContainer(getTranscodingContainer())
-                .analyzeDurationMs(getAnalyzeDurationMs()).defaultAudioStreamIndex(getDefaultAudioStreamIndex())
-                .defaultSubtitleStreamIndex(getDefaultSubtitleStreamIndex()).hasSegments(getHasSegments());
     }
 }

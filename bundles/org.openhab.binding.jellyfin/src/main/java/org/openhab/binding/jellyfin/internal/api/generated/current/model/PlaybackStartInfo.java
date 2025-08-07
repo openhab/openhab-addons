@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -141,6 +138,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAN_SEEK)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanSeek() {
         return canSeek;
     }
@@ -164,6 +162,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public BaseItemDto getItem() {
         return item;
     }
@@ -187,6 +186,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
@@ -210,6 +210,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SESSION_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSessionId() {
         return sessionId;
     }
@@ -233,6 +234,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMediaSourceId() {
         return mediaSourceId;
     }
@@ -256,6 +258,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
@@ -279,6 +282,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
@@ -302,6 +306,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_PAUSED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPaused() {
         return isPaused;
     }
@@ -325,6 +330,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_MUTED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsMuted() {
         return isMuted;
     }
@@ -348,6 +354,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getPositionTicks() {
         return positionTicks;
     }
@@ -371,6 +378,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYBACK_START_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getPlaybackStartTimeTicks() {
         return playbackStartTimeTicks;
     }
@@ -394,6 +402,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getVolumeLevel() {
         return volumeLevel;
     }
@@ -417,6 +426,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BRIGHTNESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBrightness() {
         return brightness;
     }
@@ -440,6 +450,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAspectRatio() {
         return aspectRatio;
     }
@@ -463,6 +474,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PlayMethod getPlayMethod() {
         return playMethod;
     }
@@ -486,6 +498,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getLiveStreamId() {
         return liveStreamId;
     }
@@ -509,6 +522,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPlaySessionId() {
         return playSessionId;
     }
@@ -532,6 +546,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public RepeatMode getRepeatMode() {
         return repeatMode;
     }
@@ -555,6 +570,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYBACK_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PlaybackOrder getPlaybackOrder() {
         return playbackOrder;
     }
@@ -586,6 +602,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue;
     }
@@ -609,6 +626,7 @@ public class PlaybackStartInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPlaylistItemId() {
         return playlistItemId;
     }
@@ -699,328 +717,5 @@ public class PlaybackStartInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `CanSeek` to the URL query string
-        if (getCanSeek() != null) {
-            joiner.add(String.format("%sCanSeek%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanSeek()))));
-        }
-
-        // add `Item` to the URL query string
-        if (getItem() != null) {
-            joiner.add(getItem().toUrlQueryString(prefix + "Item" + suffix));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `SessionId` to the URL query string
-        if (getSessionId() != null) {
-            joiner.add(String.format("%sSessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSessionId()))));
-        }
-
-        // add `MediaSourceId` to the URL query string
-        if (getMediaSourceId() != null) {
-            joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
-        }
-
-        // add `AudioStreamIndex` to the URL query string
-        if (getAudioStreamIndex() != null) {
-            joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
-        }
-
-        // add `SubtitleStreamIndex` to the URL query string
-        if (getSubtitleStreamIndex() != null) {
-            joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
-        }
-
-        // add `IsPaused` to the URL query string
-        if (getIsPaused() != null) {
-            joiner.add(String.format("%sIsPaused%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPaused()))));
-        }
-
-        // add `IsMuted` to the URL query string
-        if (getIsMuted() != null) {
-            joiner.add(String.format("%sIsMuted%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsMuted()))));
-        }
-
-        // add `PositionTicks` to the URL query string
-        if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
-        }
-
-        // add `PlaybackStartTimeTicks` to the URL query string
-        if (getPlaybackStartTimeTicks() != null) {
-            joiner.add(String.format("%sPlaybackStartTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaybackStartTimeTicks()))));
-        }
-
-        // add `VolumeLevel` to the URL query string
-        if (getVolumeLevel() != null) {
-            joiner.add(String.format("%sVolumeLevel%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVolumeLevel()))));
-        }
-
-        // add `Brightness` to the URL query string
-        if (getBrightness() != null) {
-            joiner.add(String.format("%sBrightness%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBrightness()))));
-        }
-
-        // add `AspectRatio` to the URL query string
-        if (getAspectRatio() != null) {
-            joiner.add(String.format("%sAspectRatio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAspectRatio()))));
-        }
-
-        // add `PlayMethod` to the URL query string
-        if (getPlayMethod() != null) {
-            joiner.add(String.format("%sPlayMethod%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayMethod()))));
-        }
-
-        // add `LiveStreamId` to the URL query string
-        if (getLiveStreamId() != null) {
-            joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
-        }
-
-        // add `PlaySessionId` to the URL query string
-        if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
-        }
-
-        // add `RepeatMode` to the URL query string
-        if (getRepeatMode() != null) {
-            joiner.add(String.format("%sRepeatMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepeatMode()))));
-        }
-
-        // add `PlaybackOrder` to the URL query string
-        if (getPlaybackOrder() != null) {
-            joiner.add(String.format("%sPlaybackOrder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaybackOrder()))));
-        }
-
-        // add `NowPlayingQueue` to the URL query string
-        if (getNowPlayingQueue() != null) {
-            for (int i = 0; i < getNowPlayingQueue().size(); i++) {
-                if (getNowPlayingQueue().get(i) != null) {
-                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(String.format("%sNowPlayingQueue%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private PlaybackStartInfo instance;
-
-        public Builder() {
-            this(new PlaybackStartInfo());
-        }
-
-        protected Builder(PlaybackStartInfo instance) {
-            this.instance = instance;
-        }
-
-        public PlaybackStartInfo.Builder canSeek(Boolean canSeek) {
-            this.instance.canSeek = canSeek;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder item(BaseItemDto item) {
-            this.instance.item = item;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder itemId(UUID itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder sessionId(String sessionId) {
-            this.instance.sessionId = sessionId;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder mediaSourceId(String mediaSourceId) {
-            this.instance.mediaSourceId = mediaSourceId;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder audioStreamIndex(Integer audioStreamIndex) {
-            this.instance.audioStreamIndex = audioStreamIndex;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder subtitleStreamIndex(Integer subtitleStreamIndex) {
-            this.instance.subtitleStreamIndex = subtitleStreamIndex;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder isPaused(Boolean isPaused) {
-            this.instance.isPaused = isPaused;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder isMuted(Boolean isMuted) {
-            this.instance.isMuted = isMuted;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder positionTicks(Long positionTicks) {
-            this.instance.positionTicks = positionTicks;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder playbackStartTimeTicks(Long playbackStartTimeTicks) {
-            this.instance.playbackStartTimeTicks = playbackStartTimeTicks;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder volumeLevel(Integer volumeLevel) {
-            this.instance.volumeLevel = volumeLevel;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder brightness(Integer brightness) {
-            this.instance.brightness = brightness;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder aspectRatio(String aspectRatio) {
-            this.instance.aspectRatio = aspectRatio;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder playMethod(PlayMethod playMethod) {
-            this.instance.playMethod = playMethod;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder liveStreamId(String liveStreamId) {
-            this.instance.liveStreamId = liveStreamId;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder playSessionId(String playSessionId) {
-            this.instance.playSessionId = playSessionId;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder repeatMode(RepeatMode repeatMode) {
-            this.instance.repeatMode = repeatMode;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder playbackOrder(PlaybackOrder playbackOrder) {
-            this.instance.playbackOrder = playbackOrder;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder nowPlayingQueue(List<QueueItem> nowPlayingQueue) {
-            this.instance.nowPlayingQueue = nowPlayingQueue;
-            return this;
-        }
-
-        public PlaybackStartInfo.Builder playlistItemId(String playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        /**
-         * returns a built PlaybackStartInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public PlaybackStartInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PlaybackStartInfo.Builder builder() {
-        return new PlaybackStartInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PlaybackStartInfo.Builder toBuilder() {
-        return new PlaybackStartInfo.Builder().canSeek(getCanSeek()).item(getItem()).itemId(getItemId())
-                .sessionId(getSessionId()).mediaSourceId(getMediaSourceId()).audioStreamIndex(getAudioStreamIndex())
-                .subtitleStreamIndex(getSubtitleStreamIndex()).isPaused(getIsPaused()).isMuted(getIsMuted())
-                .positionTicks(getPositionTicks()).playbackStartTimeTicks(getPlaybackStartTimeTicks())
-                .volumeLevel(getVolumeLevel()).brightness(getBrightness()).aspectRatio(getAspectRatio())
-                .playMethod(getPlayMethod()).liveStreamId(getLiveStreamId()).playSessionId(getPlaySessionId())
-                .repeatMode(getRepeatMode()).playbackOrder(getPlaybackOrder()).nowPlayingQueue(getNowPlayingQueue())
-                .playlistItemId(getPlaylistItemId());
     }
 }

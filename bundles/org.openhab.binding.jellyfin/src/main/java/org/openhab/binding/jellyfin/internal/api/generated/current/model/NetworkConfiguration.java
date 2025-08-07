@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -152,6 +149,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BASE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -175,6 +173,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_HTTPS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableHttps() {
         return enableHttps;
     }
@@ -198,6 +197,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REQUIRE_HTTPS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRequireHttps() {
         return requireHttps;
     }
@@ -221,6 +221,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CERTIFICATE_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCertificatePath() {
         return certificatePath;
     }
@@ -245,6 +246,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CERTIFICATE_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCertificatePassword() {
         return certificatePassword;
     }
@@ -268,6 +270,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INTERNAL_HTTP_PORT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getInternalHttpPort() {
         return internalHttpPort;
     }
@@ -291,6 +294,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INTERNAL_HTTPS_PORT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getInternalHttpsPort() {
         return internalHttpsPort;
     }
@@ -314,6 +318,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PUBLIC_HTTP_PORT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPublicHttpPort() {
         return publicHttpPort;
     }
@@ -337,6 +342,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PUBLIC_HTTPS_PORT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPublicHttpsPort() {
         return publicHttpsPort;
     }
@@ -360,6 +366,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUTO_DISCOVERY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAutoDiscovery() {
         return autoDiscovery;
     }
@@ -383,6 +390,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_U_PN_P)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableUPnP() {
         return enableUPnP;
     }
@@ -406,6 +414,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_I_PV4)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableIPv4() {
         return enableIPv4;
     }
@@ -429,6 +438,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_I_PV6)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableIPv6() {
         return enableIPv6;
     }
@@ -452,6 +462,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
@@ -484,6 +495,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_SUBNETS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getLocalNetworkSubnets() {
         return localNetworkSubnets;
     }
@@ -516,6 +528,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getLocalNetworkAddresses() {
         return localNetworkAddresses;
     }
@@ -547,6 +560,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_KNOWN_PROXIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getKnownProxies() {
         return knownProxies;
     }
@@ -572,6 +586,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIgnoreVirtualInterfaces() {
         return ignoreVirtualInterfaces;
     }
@@ -606,6 +621,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getVirtualInterfaceNames() {
         return virtualInterfaceNames;
     }
@@ -630,6 +646,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePublishedServerUriByRequest() {
         return enablePublishedServerUriByRequest;
     }
@@ -663,6 +680,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getPublishedServerUriBySubnet() {
         return publishedServerUriBySubnet;
     }
@@ -696,6 +714,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REMOTE_I_P_FILTER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getRemoteIPFilter() {
         return remoteIPFilter;
     }
@@ -722,6 +741,7 @@ public class NetworkConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsRemoteIPFilterBlacklist() {
         return isRemoteIPFilterBlacklist;
     }
@@ -820,369 +840,5 @@ public class NetworkConfiguration {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `BaseUrl` to the URL query string
-        if (getBaseUrl() != null) {
-            joiner.add(String.format("%sBaseUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
-        }
-
-        // add `EnableHttps` to the URL query string
-        if (getEnableHttps() != null) {
-            joiner.add(String.format("%sEnableHttps%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHttps()))));
-        }
-
-        // add `RequireHttps` to the URL query string
-        if (getRequireHttps() != null) {
-            joiner.add(String.format("%sRequireHttps%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequireHttps()))));
-        }
-
-        // add `CertificatePath` to the URL query string
-        if (getCertificatePath() != null) {
-            joiner.add(String.format("%sCertificatePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCertificatePath()))));
-        }
-
-        // add `CertificatePassword` to the URL query string
-        if (getCertificatePassword() != null) {
-            joiner.add(String.format("%sCertificatePassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCertificatePassword()))));
-        }
-
-        // add `InternalHttpPort` to the URL query string
-        if (getInternalHttpPort() != null) {
-            joiner.add(String.format("%sInternalHttpPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInternalHttpPort()))));
-        }
-
-        // add `InternalHttpsPort` to the URL query string
-        if (getInternalHttpsPort() != null) {
-            joiner.add(String.format("%sInternalHttpsPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInternalHttpsPort()))));
-        }
-
-        // add `PublicHttpPort` to the URL query string
-        if (getPublicHttpPort() != null) {
-            joiner.add(String.format("%sPublicHttpPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPublicHttpPort()))));
-        }
-
-        // add `PublicHttpsPort` to the URL query string
-        if (getPublicHttpsPort() != null) {
-            joiner.add(String.format("%sPublicHttpsPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPublicHttpsPort()))));
-        }
-
-        // add `AutoDiscovery` to the URL query string
-        if (getAutoDiscovery() != null) {
-            joiner.add(String.format("%sAutoDiscovery%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutoDiscovery()))));
-        }
-
-        // add `EnableUPnP` to the URL query string
-        if (getEnableUPnP() != null) {
-            joiner.add(String.format("%sEnableUPnP%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableUPnP()))));
-        }
-
-        // add `EnableIPv4` to the URL query string
-        if (getEnableIPv4() != null) {
-            joiner.add(String.format("%sEnableIPv4%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableIPv4()))));
-        }
-
-        // add `EnableIPv6` to the URL query string
-        if (getEnableIPv6() != null) {
-            joiner.add(String.format("%sEnableIPv6%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableIPv6()))));
-        }
-
-        // add `EnableRemoteAccess` to the URL query string
-        if (getEnableRemoteAccess() != null) {
-            joiner.add(String.format("%sEnableRemoteAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
-        }
-
-        // add `LocalNetworkSubnets` to the URL query string
-        if (getLocalNetworkSubnets() != null) {
-            for (int i = 0; i < getLocalNetworkSubnets().size(); i++) {
-                joiner.add(String.format("%sLocalNetworkSubnets%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkSubnets().get(i)))));
-            }
-        }
-
-        // add `LocalNetworkAddresses` to the URL query string
-        if (getLocalNetworkAddresses() != null) {
-            for (int i = 0; i < getLocalNetworkAddresses().size(); i++) {
-                joiner.add(String.format("%sLocalNetworkAddresses%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkAddresses().get(i)))));
-            }
-        }
-
-        // add `KnownProxies` to the URL query string
-        if (getKnownProxies() != null) {
-            for (int i = 0; i < getKnownProxies().size(); i++) {
-                joiner.add(String.format("%sKnownProxies%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getKnownProxies().get(i)))));
-            }
-        }
-
-        // add `IgnoreVirtualInterfaces` to the URL query string
-        if (getIgnoreVirtualInterfaces() != null) {
-            joiner.add(String.format("%sIgnoreVirtualInterfaces%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIgnoreVirtualInterfaces()))));
-        }
-
-        // add `VirtualInterfaceNames` to the URL query string
-        if (getVirtualInterfaceNames() != null) {
-            for (int i = 0; i < getVirtualInterfaceNames().size(); i++) {
-                joiner.add(String.format("%sVirtualInterfaceNames%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getVirtualInterfaceNames().get(i)))));
-            }
-        }
-
-        // add `EnablePublishedServerUriByRequest` to the URL query string
-        if (getEnablePublishedServerUriByRequest() != null) {
-            joiner.add(String.format("%sEnablePublishedServerUriByRequest%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePublishedServerUriByRequest()))));
-        }
-
-        // add `PublishedServerUriBySubnet` to the URL query string
-        if (getPublishedServerUriBySubnet() != null) {
-            for (int i = 0; i < getPublishedServerUriBySubnet().size(); i++) {
-                joiner.add(String.format("%sPublishedServerUriBySubnet%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getPublishedServerUriBySubnet().get(i)))));
-            }
-        }
-
-        // add `RemoteIPFilter` to the URL query string
-        if (getRemoteIPFilter() != null) {
-            for (int i = 0; i < getRemoteIPFilter().size(); i++) {
-                joiner.add(String.format("%sRemoteIPFilter%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getRemoteIPFilter().get(i)))));
-            }
-        }
-
-        // add `IsRemoteIPFilterBlacklist` to the URL query string
-        if (getIsRemoteIPFilterBlacklist() != null) {
-            joiner.add(String.format("%sIsRemoteIPFilterBlacklist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsRemoteIPFilterBlacklist()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private NetworkConfiguration instance;
-
-        public Builder() {
-            this(new NetworkConfiguration());
-        }
-
-        protected Builder(NetworkConfiguration instance) {
-            this.instance = instance;
-        }
-
-        public NetworkConfiguration.Builder baseUrl(String baseUrl) {
-            this.instance.baseUrl = baseUrl;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder enableHttps(Boolean enableHttps) {
-            this.instance.enableHttps = enableHttps;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder requireHttps(Boolean requireHttps) {
-            this.instance.requireHttps = requireHttps;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder certificatePath(String certificatePath) {
-            this.instance.certificatePath = certificatePath;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder certificatePassword(String certificatePassword) {
-            this.instance.certificatePassword = certificatePassword;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder internalHttpPort(Integer internalHttpPort) {
-            this.instance.internalHttpPort = internalHttpPort;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder internalHttpsPort(Integer internalHttpsPort) {
-            this.instance.internalHttpsPort = internalHttpsPort;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder publicHttpPort(Integer publicHttpPort) {
-            this.instance.publicHttpPort = publicHttpPort;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder publicHttpsPort(Integer publicHttpsPort) {
-            this.instance.publicHttpsPort = publicHttpsPort;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder autoDiscovery(Boolean autoDiscovery) {
-            this.instance.autoDiscovery = autoDiscovery;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder enableUPnP(Boolean enableUPnP) {
-            this.instance.enableUPnP = enableUPnP;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder enableIPv4(Boolean enableIPv4) {
-            this.instance.enableIPv4 = enableIPv4;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder enableIPv6(Boolean enableIPv6) {
-            this.instance.enableIPv6 = enableIPv6;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder enableRemoteAccess(Boolean enableRemoteAccess) {
-            this.instance.enableRemoteAccess = enableRemoteAccess;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder localNetworkSubnets(List<String> localNetworkSubnets) {
-            this.instance.localNetworkSubnets = localNetworkSubnets;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder localNetworkAddresses(List<String> localNetworkAddresses) {
-            this.instance.localNetworkAddresses = localNetworkAddresses;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder knownProxies(List<String> knownProxies) {
-            this.instance.knownProxies = knownProxies;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder ignoreVirtualInterfaces(Boolean ignoreVirtualInterfaces) {
-            this.instance.ignoreVirtualInterfaces = ignoreVirtualInterfaces;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder virtualInterfaceNames(List<String> virtualInterfaceNames) {
-            this.instance.virtualInterfaceNames = virtualInterfaceNames;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder enablePublishedServerUriByRequest(
-                Boolean enablePublishedServerUriByRequest) {
-            this.instance.enablePublishedServerUriByRequest = enablePublishedServerUriByRequest;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder publishedServerUriBySubnet(List<String> publishedServerUriBySubnet) {
-            this.instance.publishedServerUriBySubnet = publishedServerUriBySubnet;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder remoteIPFilter(List<String> remoteIPFilter) {
-            this.instance.remoteIPFilter = remoteIPFilter;
-            return this;
-        }
-
-        public NetworkConfiguration.Builder isRemoteIPFilterBlacklist(Boolean isRemoteIPFilterBlacklist) {
-            this.instance.isRemoteIPFilterBlacklist = isRemoteIPFilterBlacklist;
-            return this;
-        }
-
-        /**
-         * returns a built NetworkConfiguration instance.
-         *
-         * The builder is not reusable.
-         */
-        public NetworkConfiguration build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static NetworkConfiguration.Builder builder() {
-        return new NetworkConfiguration.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public NetworkConfiguration.Builder toBuilder() {
-        return new NetworkConfiguration.Builder().baseUrl(getBaseUrl()).enableHttps(getEnableHttps())
-                .requireHttps(getRequireHttps()).certificatePath(getCertificatePath())
-                .certificatePassword(getCertificatePassword()).internalHttpPort(getInternalHttpPort())
-                .internalHttpsPort(getInternalHttpsPort()).publicHttpPort(getPublicHttpPort())
-                .publicHttpsPort(getPublicHttpsPort()).autoDiscovery(getAutoDiscovery()).enableUPnP(getEnableUPnP())
-                .enableIPv4(getEnableIPv4()).enableIPv6(getEnableIPv6()).enableRemoteAccess(getEnableRemoteAccess())
-                .localNetworkSubnets(getLocalNetworkSubnets()).localNetworkAddresses(getLocalNetworkAddresses())
-                .knownProxies(getKnownProxies()).ignoreVirtualInterfaces(getIgnoreVirtualInterfaces())
-                .virtualInterfaceNames(getVirtualInterfaceNames())
-                .enablePublishedServerUriByRequest(getEnablePublishedServerUriByRequest())
-                .publishedServerUriBySubnet(getPublishedServerUriBySubnet()).remoteIPFilter(getRemoteIPFilter())
-                .isRemoteIPFilterBlacklist(getIsRemoteIPFilterBlacklist());
     }
 }

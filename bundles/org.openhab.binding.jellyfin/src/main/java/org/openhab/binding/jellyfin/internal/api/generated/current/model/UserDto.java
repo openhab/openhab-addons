@@ -15,10 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -64,6 +61,7 @@ public class UserDto {
     private Boolean hasConfiguredPassword;
 
     public static final String JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD = "HasConfiguredEasyPassword";
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
     private Boolean hasConfiguredEasyPassword;
 
@@ -107,6 +105,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -130,6 +129,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERVER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getServerId() {
         return serverId;
     }
@@ -153,6 +153,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERVER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getServerName() {
         return serverName;
     }
@@ -176,6 +177,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -199,6 +201,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPrimaryImageTag() {
         return primaryImageTag;
     }
@@ -222,6 +225,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HAS_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasPassword() {
         return hasPassword;
     }
@@ -245,6 +249,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasConfiguredPassword() {
         return hasConfiguredPassword;
     }
@@ -255,6 +260,7 @@ public class UserDto {
         this.hasConfiguredPassword = hasConfiguredPassword;
     }
 
+    @Deprecated
     public UserDto hasConfiguredEasyPassword(@org.eclipse.jdt.annotation.NonNull Boolean hasConfiguredEasyPassword) {
         this.hasConfiguredEasyPassword = hasConfiguredEasyPassword;
         return this;
@@ -270,10 +276,12 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasConfiguredEasyPassword() {
         return hasConfiguredEasyPassword;
     }
 
+    @Deprecated
     @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasConfiguredEasyPassword(@org.eclipse.jdt.annotation.NonNull Boolean hasConfiguredEasyPassword) {
@@ -293,6 +301,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_AUTO_LOGIN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAutoLogin() {
         return enableAutoLogin;
     }
@@ -316,6 +325,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LAST_LOGIN_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getLastLoginDate() {
         return lastLoginDate;
     }
@@ -339,6 +349,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getLastActivityDate() {
         return lastActivityDate;
     }
@@ -362,6 +373,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONFIGURATION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UserConfiguration getConfiguration() {
         return _configuration;
     }
@@ -385,6 +397,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_POLICY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UserPolicy getPolicy() {
         return policy;
     }
@@ -408,6 +421,7 @@ public class UserDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getPrimaryImageAspectRatio() {
         return primaryImageAspectRatio;
     }
@@ -482,244 +496,5 @@ public class UserDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `ServerId` to the URL query string
-        if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
-        }
-
-        // add `ServerName` to the URL query string
-        if (getServerName() != null) {
-            joiner.add(String.format("%sServerName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `PrimaryImageTag` to the URL query string
-        if (getPrimaryImageTag() != null) {
-            joiner.add(String.format("%sPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
-        }
-
-        // add `HasPassword` to the URL query string
-        if (getHasPassword() != null) {
-            joiner.add(String.format("%sHasPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasPassword()))));
-        }
-
-        // add `HasConfiguredPassword` to the URL query string
-        if (getHasConfiguredPassword() != null) {
-            joiner.add(String.format("%sHasConfiguredPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasConfiguredPassword()))));
-        }
-
-        // add `HasConfiguredEasyPassword` to the URL query string
-        if (getHasConfiguredEasyPassword() != null) {
-            joiner.add(String.format("%sHasConfiguredEasyPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasConfiguredEasyPassword()))));
-        }
-
-        // add `EnableAutoLogin` to the URL query string
-        if (getEnableAutoLogin() != null) {
-            joiner.add(String.format("%sEnableAutoLogin%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAutoLogin()))));
-        }
-
-        // add `LastLoginDate` to the URL query string
-        if (getLastLoginDate() != null) {
-            joiner.add(String.format("%sLastLoginDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastLoginDate()))));
-        }
-
-        // add `LastActivityDate` to the URL query string
-        if (getLastActivityDate() != null) {
-            joiner.add(String.format("%sLastActivityDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastActivityDate()))));
-        }
-
-        // add `Configuration` to the URL query string
-        if (getConfiguration() != null) {
-            joiner.add(getConfiguration().toUrlQueryString(prefix + "Configuration" + suffix));
-        }
-
-        // add `Policy` to the URL query string
-        if (getPolicy() != null) {
-            joiner.add(getPolicy().toUrlQueryString(prefix + "Policy" + suffix));
-        }
-
-        // add `PrimaryImageAspectRatio` to the URL query string
-        if (getPrimaryImageAspectRatio() != null) {
-            joiner.add(String.format("%sPrimaryImageAspectRatio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageAspectRatio()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private UserDto instance;
-
-        public Builder() {
-            this(new UserDto());
-        }
-
-        protected Builder(UserDto instance) {
-            this.instance = instance;
-        }
-
-        public UserDto.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public UserDto.Builder serverId(String serverId) {
-            this.instance.serverId = serverId;
-            return this;
-        }
-
-        public UserDto.Builder serverName(String serverName) {
-            this.instance.serverName = serverName;
-            return this;
-        }
-
-        public UserDto.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public UserDto.Builder primaryImageTag(String primaryImageTag) {
-            this.instance.primaryImageTag = primaryImageTag;
-            return this;
-        }
-
-        public UserDto.Builder hasPassword(Boolean hasPassword) {
-            this.instance.hasPassword = hasPassword;
-            return this;
-        }
-
-        public UserDto.Builder hasConfiguredPassword(Boolean hasConfiguredPassword) {
-            this.instance.hasConfiguredPassword = hasConfiguredPassword;
-            return this;
-        }
-
-        public UserDto.Builder hasConfiguredEasyPassword(Boolean hasConfiguredEasyPassword) {
-            this.instance.hasConfiguredEasyPassword = hasConfiguredEasyPassword;
-            return this;
-        }
-
-        public UserDto.Builder enableAutoLogin(Boolean enableAutoLogin) {
-            this.instance.enableAutoLogin = enableAutoLogin;
-            return this;
-        }
-
-        public UserDto.Builder lastLoginDate(OffsetDateTime lastLoginDate) {
-            this.instance.lastLoginDate = lastLoginDate;
-            return this;
-        }
-
-        public UserDto.Builder lastActivityDate(OffsetDateTime lastActivityDate) {
-            this.instance.lastActivityDate = lastActivityDate;
-            return this;
-        }
-
-        public UserDto.Builder _configuration(UserConfiguration _configuration) {
-            this.instance._configuration = _configuration;
-            return this;
-        }
-
-        public UserDto.Builder policy(UserPolicy policy) {
-            this.instance.policy = policy;
-            return this;
-        }
-
-        public UserDto.Builder primaryImageAspectRatio(Double primaryImageAspectRatio) {
-            this.instance.primaryImageAspectRatio = primaryImageAspectRatio;
-            return this;
-        }
-
-        /**
-         * returns a built UserDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public UserDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UserDto.Builder builder() {
-        return new UserDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UserDto.Builder toBuilder() {
-        return new UserDto.Builder().name(getName()).serverId(getServerId()).serverName(getServerName()).id(getId())
-                .primaryImageTag(getPrimaryImageTag()).hasPassword(getHasPassword())
-                .hasConfiguredPassword(getHasConfiguredPassword())
-                .hasConfiguredEasyPassword(getHasConfiguredEasyPassword()).enableAutoLogin(getEnableAutoLogin())
-                .lastLoginDate(getLastLoginDate()).lastActivityDate(getLastActivityDate())
-                ._configuration(getConfiguration()).policy(getPolicy())
-                .primaryImageAspectRatio(getPrimaryImageAspectRatio());
     }
 }

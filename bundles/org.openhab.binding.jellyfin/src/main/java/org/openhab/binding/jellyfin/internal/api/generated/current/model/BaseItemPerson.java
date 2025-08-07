@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -71,6 +68,7 @@ public class BaseItemPerson {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -94,6 +92,7 @@ public class BaseItemPerson {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -117,6 +116,7 @@ public class BaseItemPerson {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ROLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getRole() {
         return role;
     }
@@ -140,6 +140,7 @@ public class BaseItemPerson {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PersonKind getType() {
         return type;
     }
@@ -163,6 +164,7 @@ public class BaseItemPerson {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPrimaryImageTag() {
         return primaryImageTag;
     }
@@ -187,6 +189,7 @@ public class BaseItemPerson {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public BaseItemPersonImageBlurHashes getImageBlurHashes() {
         return imageBlurHashes;
     }
@@ -243,152 +246,5 @@ public class BaseItemPerson {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Role` to the URL query string
-        if (getRole() != null) {
-            joiner.add(String.format("%sRole%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRole()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `PrimaryImageTag` to the URL query string
-        if (getPrimaryImageTag() != null) {
-            joiner.add(String.format("%sPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
-        }
-
-        // add `ImageBlurHashes` to the URL query string
-        if (getImageBlurHashes() != null) {
-            joiner.add(getImageBlurHashes().toUrlQueryString(prefix + "ImageBlurHashes" + suffix));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private BaseItemPerson instance;
-
-        public Builder() {
-            this(new BaseItemPerson());
-        }
-
-        protected Builder(BaseItemPerson instance) {
-            this.instance = instance;
-        }
-
-        public BaseItemPerson.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public BaseItemPerson.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public BaseItemPerson.Builder role(String role) {
-            this.instance.role = role;
-            return this;
-        }
-
-        public BaseItemPerson.Builder type(PersonKind type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public BaseItemPerson.Builder primaryImageTag(String primaryImageTag) {
-            this.instance.primaryImageTag = primaryImageTag;
-            return this;
-        }
-
-        public BaseItemPerson.Builder imageBlurHashes(BaseItemPersonImageBlurHashes imageBlurHashes) {
-            this.instance.imageBlurHashes = imageBlurHashes;
-            return this;
-        }
-
-        /**
-         * returns a built BaseItemPerson instance.
-         *
-         * The builder is not reusable.
-         */
-        public BaseItemPerson build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static BaseItemPerson.Builder builder() {
-        return new BaseItemPerson.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public BaseItemPerson.Builder toBuilder() {
-        return new BaseItemPerson.Builder().name(getName()).id(getId()).role(getRole()).type(getType())
-                .primaryImageTag(getPrimaryImageTag()).imageBlurHashes(getImageBlurHashes());
     }
 }

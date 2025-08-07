@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,6 +64,7 @@ public class XbmcMetadataOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUserId() {
         return userId;
     }
@@ -90,6 +88,7 @@ public class XbmcMetadataOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RELEASE_DATE_FORMAT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getReleaseDateFormat() {
         return releaseDateFormat;
     }
@@ -113,6 +112,7 @@ public class XbmcMetadataOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSaveImagePathsInNfo() {
         return saveImagePathsInNfo;
     }
@@ -137,6 +137,7 @@ public class XbmcMetadataOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePathSubstitution() {
         return enablePathSubstitution;
     }
@@ -161,6 +162,7 @@ public class XbmcMetadataOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableExtraThumbsDuplication() {
         return enableExtraThumbsDuplication;
     }
@@ -220,143 +222,5 @@ public class XbmcMetadataOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `ReleaseDateFormat` to the URL query string
-        if (getReleaseDateFormat() != null) {
-            joiner.add(String.format("%sReleaseDateFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getReleaseDateFormat()))));
-        }
-
-        // add `SaveImagePathsInNfo` to the URL query string
-        if (getSaveImagePathsInNfo() != null) {
-            joiner.add(String.format("%sSaveImagePathsInNfo%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveImagePathsInNfo()))));
-        }
-
-        // add `EnablePathSubstitution` to the URL query string
-        if (getEnablePathSubstitution() != null) {
-            joiner.add(String.format("%sEnablePathSubstitution%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePathSubstitution()))));
-        }
-
-        // add `EnableExtraThumbsDuplication` to the URL query string
-        if (getEnableExtraThumbsDuplication() != null) {
-            joiner.add(String.format("%sEnableExtraThumbsDuplication%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableExtraThumbsDuplication()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private XbmcMetadataOptions instance;
-
-        public Builder() {
-            this(new XbmcMetadataOptions());
-        }
-
-        protected Builder(XbmcMetadataOptions instance) {
-            this.instance = instance;
-        }
-
-        public XbmcMetadataOptions.Builder userId(String userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public XbmcMetadataOptions.Builder releaseDateFormat(String releaseDateFormat) {
-            this.instance.releaseDateFormat = releaseDateFormat;
-            return this;
-        }
-
-        public XbmcMetadataOptions.Builder saveImagePathsInNfo(Boolean saveImagePathsInNfo) {
-            this.instance.saveImagePathsInNfo = saveImagePathsInNfo;
-            return this;
-        }
-
-        public XbmcMetadataOptions.Builder enablePathSubstitution(Boolean enablePathSubstitution) {
-            this.instance.enablePathSubstitution = enablePathSubstitution;
-            return this;
-        }
-
-        public XbmcMetadataOptions.Builder enableExtraThumbsDuplication(Boolean enableExtraThumbsDuplication) {
-            this.instance.enableExtraThumbsDuplication = enableExtraThumbsDuplication;
-            return this;
-        }
-
-        /**
-         * returns a built XbmcMetadataOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public XbmcMetadataOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static XbmcMetadataOptions.Builder builder() {
-        return new XbmcMetadataOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public XbmcMetadataOptions.Builder toBuilder() {
-        return new XbmcMetadataOptions.Builder().userId(getUserId()).releaseDateFormat(getReleaseDateFormat())
-                .saveImagePathsInNfo(getSaveImagePathsInNfo()).enablePathSubstitution(getEnablePathSubstitution())
-                .enableExtraThumbsDuplication(getEnableExtraThumbsDuplication());
     }
 }

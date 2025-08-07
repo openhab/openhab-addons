@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -81,6 +78,7 @@ public class VirtualFolderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -112,6 +110,7 @@ public class VirtualFolderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOCATIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getLocations() {
         return locations;
     }
@@ -135,6 +134,7 @@ public class VirtualFolderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public CollectionTypeOptions getCollectionType() {
         return collectionType;
     }
@@ -158,6 +158,7 @@ public class VirtualFolderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public LibraryOptions getLibraryOptions() {
         return libraryOptions;
     }
@@ -181,6 +182,7 @@ public class VirtualFolderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getItemId() {
         return itemId;
     }
@@ -204,6 +206,7 @@ public class VirtualFolderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPrimaryImageItemId() {
         return primaryImageItemId;
     }
@@ -227,6 +230,7 @@ public class VirtualFolderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REFRESH_PROGRESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getRefreshProgress() {
         return refreshProgress;
     }
@@ -250,6 +254,7 @@ public class VirtualFolderInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REFRESH_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getRefreshStatus() {
         return refreshStatus;
     }
@@ -313,179 +318,5 @@ public class VirtualFolderInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Locations` to the URL query string
-        if (getLocations() != null) {
-            for (int i = 0; i < getLocations().size(); i++) {
-                joiner.add(String.format("%sLocations%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocations().get(i)))));
-            }
-        }
-
-        // add `CollectionType` to the URL query string
-        if (getCollectionType() != null) {
-            joiner.add(String.format("%sCollectionType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCollectionType()))));
-        }
-
-        // add `LibraryOptions` to the URL query string
-        if (getLibraryOptions() != null) {
-            joiner.add(getLibraryOptions().toUrlQueryString(prefix + "LibraryOptions" + suffix));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `PrimaryImageItemId` to the URL query string
-        if (getPrimaryImageItemId() != null) {
-            joiner.add(String.format("%sPrimaryImageItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageItemId()))));
-        }
-
-        // add `RefreshProgress` to the URL query string
-        if (getRefreshProgress() != null) {
-            joiner.add(String.format("%sRefreshProgress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRefreshProgress()))));
-        }
-
-        // add `RefreshStatus` to the URL query string
-        if (getRefreshStatus() != null) {
-            joiner.add(String.format("%sRefreshStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRefreshStatus()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private VirtualFolderInfo instance;
-
-        public Builder() {
-            this(new VirtualFolderInfo());
-        }
-
-        protected Builder(VirtualFolderInfo instance) {
-            this.instance = instance;
-        }
-
-        public VirtualFolderInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder locations(List<String> locations) {
-            this.instance.locations = locations;
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder collectionType(CollectionTypeOptions collectionType) {
-            this.instance.collectionType = collectionType;
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder libraryOptions(LibraryOptions libraryOptions) {
-            this.instance.libraryOptions = libraryOptions;
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder itemId(String itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder primaryImageItemId(String primaryImageItemId) {
-            this.instance.primaryImageItemId = primaryImageItemId;
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder refreshProgress(Double refreshProgress) {
-            this.instance.refreshProgress = refreshProgress;
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder refreshStatus(String refreshStatus) {
-            this.instance.refreshStatus = refreshStatus;
-            return this;
-        }
-
-        /**
-         * returns a built VirtualFolderInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public VirtualFolderInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static VirtualFolderInfo.Builder builder() {
-        return new VirtualFolderInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public VirtualFolderInfo.Builder toBuilder() {
-        return new VirtualFolderInfo.Builder().name(getName()).locations(getLocations())
-                .collectionType(getCollectionType()).libraryOptions(getLibraryOptions()).itemId(getItemId())
-                .primaryImageItemId(getPrimaryImageItemId()).refreshProgress(getRefreshProgress())
-                .refreshStatus(getRefreshStatus());
     }
 }

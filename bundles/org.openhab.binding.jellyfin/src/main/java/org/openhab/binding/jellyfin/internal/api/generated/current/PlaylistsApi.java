@@ -1,29 +1,11 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -41,44 +23,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.Playlis
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UpdatePlaylistDto;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UpdatePlaylistUserDto;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PlaylistsApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public PlaylistsApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public PlaylistsApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -88,6 +60,35 @@ public class PlaylistsApi {
      * @param ids Item id, comma delimited. (optional)
      * @param userId The userId. (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Items added to playlist.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void addItemToPlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId)
@@ -103,80 +104,59 @@ public class PlaylistsApi {
      * @param userId The userId. (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Items added to playlist.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> addItemToPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = addItemToPlaylistRequestBuilder(playlistId, ids, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("addItemToPlaylist", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder addItemToPlaylistRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId)
-            throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling addItemToPlaylist");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Playlists/{playlistId}/Items".replaceAll("\\{playlistId}",
+                apiClient.escapeString(playlistId.toString()));
 
-        String localVarPath = "/Playlists/{playlistId}/Items".replace("{playlistId}",
-                ApiClient.urlEncode(playlistId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("multi", "ids", ids));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "userId", userId));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "ids";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "ids", ids));
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("PlaylistsApi.addItemToPlaylist", localVarPath, "POST", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -191,14 +171,36 @@ public class PlaylistsApi {
      * @param createPlaylistDto The create playlist payload. (optional)
      * @return PlaylistCreationResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Playlist created.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public PlaylistCreationResult createPlaylist(@org.eclipse.jdt.annotation.NonNull String name,
             @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull MediaType mediaType,
             @org.eclipse.jdt.annotation.NonNull CreatePlaylistDto createPlaylistDto) throws ApiException {
-        ApiResponse<PlaylistCreationResult> localVarResponse = createPlaylistWithHttpInfo(name, ids, userId, mediaType,
-                createPlaylistDto);
-        return localVarResponse.getData();
+        return createPlaylistWithHttpInfo(name, ids, userId, mediaType, createPlaylistDto).getData();
     }
 
     /**
@@ -213,96 +215,51 @@ public class PlaylistsApi {
      * @param createPlaylistDto The create playlist payload. (optional)
      * @return ApiResponse&lt;PlaylistCreationResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Playlist created.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<PlaylistCreationResult> createPlaylistWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull String name, @org.eclipse.jdt.annotation.NonNull List<UUID> ids,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull MediaType mediaType,
             @org.eclipse.jdt.annotation.NonNull CreatePlaylistDto createPlaylistDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = createPlaylistRequestBuilder(name, ids, userId, mediaType,
-                createPlaylistDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("createPlaylist", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<PlaylistCreationResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "name", name));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "ids", ids));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "mediaType", mediaType));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<PlaylistCreationResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<PlaylistCreationResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder createPlaylistRequestBuilder(@org.eclipse.jdt.annotation.NonNull String name,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull MediaType mediaType,
-            @org.eclipse.jdt.annotation.NonNull CreatePlaylistDto createPlaylistDto) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Playlists";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "name";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("name", name));
-        localVarQueryParameterBaseName = "ids";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "ids", ids));
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "mediaType";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaType", mediaType));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createPlaylistDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<PlaylistCreationResult> localVarReturnType = new GenericType<PlaylistCreationResult>() {
+        };
+        return apiClient.invokeAPI("PlaylistsApi.createPlaylist", "/Playlists", "POST", localVarQueryParams,
+                createPlaylistDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -311,10 +268,38 @@ public class PlaylistsApi {
      * @param playlistId The playlist id. (required)
      * @return PlaylistDto
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>The playlist.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public PlaylistDto getPlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId) throws ApiException {
-        ApiResponse<PlaylistDto> localVarResponse = getPlaylistWithHttpInfo(playlistId);
-        return localVarResponse.getData();
+        return getPlaylistWithHttpInfo(playlistId).getData();
     }
 
     /**
@@ -323,67 +308,56 @@ public class PlaylistsApi {
      * @param playlistId The playlist id. (required)
      * @return ApiResponse&lt;PlaylistDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>The playlist.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<PlaylistDto> getPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPlaylistRequestBuilder(playlistId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getPlaylist", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<PlaylistDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                            null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<PlaylistDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaylistDto>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getPlaylistRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId)
-            throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getPlaylist");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Playlists/{playlistId}".replaceAll("\\{playlistId}",
+                apiClient.escapeString(playlistId.toString()));
 
-        String localVarPath = "/Playlists/{playlistId}".replace("{playlistId}",
-                ApiClient.urlEncode(playlistId.toString()));
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<PlaylistDto> localVarReturnType = new GenericType<PlaylistDto>() {
+        };
+        return apiClient.invokeAPI("PlaylistsApi.getPlaylist", localVarPath, "GET", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -401,6 +375,35 @@ public class PlaylistsApi {
      * @param enableImageTypes Optional. The image types to include in the output. (optional)
      * @return BaseItemDtoQueryResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Original playlist returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public BaseItemDtoQueryResult getPlaylistItems(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
@@ -410,9 +413,8 @@ public class PlaylistsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getPlaylistItemsWithHttpInfo(playlistId, userId,
-                startIndex, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResponse.getData();
+        return getPlaylistItemsWithHttpInfo(playlistId, userId, startIndex, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).getData();
     }
 
     /**
@@ -430,6 +432,35 @@ public class PlaylistsApi {
      * @param enableImageTypes Optional. The image types to include in the output. (optional)
      * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Original playlist returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<BaseItemDtoQueryResult> getPlaylistItemsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID playlistId, @org.eclipse.jdt.annotation.NonNull UUID userId,
@@ -439,102 +470,34 @@ public class PlaylistsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPlaylistItemsRequestBuilder(playlistId, userId, startIndex,
-                limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getPlaylistItems", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getPlaylistItemsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes) throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getPlaylistItems");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Playlists/{playlistId}/Items".replaceAll("\\{playlistId}",
+                apiClient.escapeString(playlistId.toString()));
 
-        String localVarPath = "/Playlists/{playlistId}/Items".replace("{playlistId}",
-                ApiClient.urlEncode(playlistId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startIndex", startIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "fields", fields));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableImages", enableImages));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "enableUserData", enableUserData));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "imageTypeLimit", imageTypeLimit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "startIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
-        localVarQueryParameterBaseName = "limit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
-        localVarQueryParameterBaseName = "fields";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
-        localVarQueryParameterBaseName = "enableImages";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
-        localVarQueryParameterBaseName = "enableUserData";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
-        localVarQueryParameterBaseName = "imageTypeLimit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
-        localVarQueryParameterBaseName = "enableImageTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<BaseItemDtoQueryResult> localVarReturnType = new GenericType<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("PlaylistsApi.getPlaylistItems", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -544,11 +507,39 @@ public class PlaylistsApi {
      * @param userId The user id. (required)
      * @return PlaylistUserPermissions
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>User permission found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public PlaylistUserPermissions getPlaylistUser(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        ApiResponse<PlaylistUserPermissions> localVarResponse = getPlaylistUserWithHttpInfo(playlistId, userId);
-        return localVarResponse.getData();
+        return getPlaylistUserWithHttpInfo(playlistId, userId).getData();
     }
 
     /**
@@ -558,75 +549,61 @@ public class PlaylistsApi {
      * @param userId The user id. (required)
      * @return ApiResponse&lt;PlaylistUserPermissions&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>User permission found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<PlaylistUserPermissions> getPlaylistUserWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID playlistId, @org.eclipse.jdt.annotation.Nullable UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPlaylistUserRequestBuilder(playlistId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getPlaylistUser", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<PlaylistUserPermissions>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<PlaylistUserPermissions>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<PlaylistUserPermissions>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getPlaylistUserRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
-            @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getPlaylistUser");
         }
-        // verify the required parameter 'userId' is set
         if (userId == null) {
             throw new ApiException(400, "Missing the required parameter 'userId' when calling getPlaylistUser");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Playlists/{playlistId}/Users/{userId}"
-                .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()))
-                .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+                .replaceAll("\\{playlistId}", apiClient.escapeString(playlistId.toString()))
+                .replaceAll("\\{userId}", apiClient.escapeString(userId.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<PlaylistUserPermissions> localVarReturnType = new GenericType<PlaylistUserPermissions>() {
+        };
+        return apiClient.invokeAPI("PlaylistsApi.getPlaylistUser", localVarPath, "GET", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -635,11 +612,39 @@ public class PlaylistsApi {
      * @param playlistId The playlist id. (required)
      * @return List&lt;PlaylistUserPermissions&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Found shares.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<PlaylistUserPermissions> getPlaylistUsers(@org.eclipse.jdt.annotation.Nullable UUID playlistId)
             throws ApiException {
-        ApiResponse<List<PlaylistUserPermissions>> localVarResponse = getPlaylistUsersWithHttpInfo(playlistId);
-        return localVarResponse.getData();
+        return getPlaylistUsersWithHttpInfo(playlistId).getData();
     }
 
     /**
@@ -648,69 +653,56 @@ public class PlaylistsApi {
      * @param playlistId The playlist id. (required)
      * @return ApiResponse&lt;List&lt;PlaylistUserPermissions&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Found shares.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<PlaylistUserPermissions>> getPlaylistUsersWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID playlistId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPlaylistUsersRequestBuilder(playlistId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getPlaylistUsers", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<PlaylistUserPermissions>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<PlaylistUserPermissions>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<PlaylistUserPermissions>>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getPlaylistUsersRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId)
-            throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getPlaylistUsers");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Playlists/{playlistId}/Users".replaceAll("\\{playlistId}",
+                apiClient.escapeString(playlistId.toString()));
 
-        String localVarPath = "/Playlists/{playlistId}/Users".replace("{playlistId}",
-                ApiClient.urlEncode(playlistId.toString()));
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<PlaylistUserPermissions>> localVarReturnType = new GenericType<List<PlaylistUserPermissions>>() {
+        };
+        return apiClient.invokeAPI("PlaylistsApi.getPlaylistUsers", localVarPath, "GET", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -720,6 +712,35 @@ public class PlaylistsApi {
      * @param itemId The item id. (required)
      * @param newIndex The new index. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Item moved to new index.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void moveItem(@org.eclipse.jdt.annotation.Nullable String playlistId,
             @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable Integer newIndex)
@@ -735,73 +756,63 @@ public class PlaylistsApi {
      * @param newIndex The new index. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Item moved to new index.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> moveItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String playlistId,
             @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable Integer newIndex)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = moveItemRequestBuilder(playlistId, itemId, newIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("moveItem", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder moveItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable String playlistId,
-            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable Integer newIndex)
-            throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling moveItem");
         }
-        // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling moveItem");
         }
-        // verify the required parameter 'newIndex' is set
         if (newIndex == null) {
             throw new ApiException(400, "Missing the required parameter 'newIndex' when calling moveItem");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Playlists/{playlistId}/Items/{itemId}/Move/{newIndex}"
-                .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()))
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{newIndex}", ApiClient.urlEncode(newIndex.toString()));
+                .replaceAll("\\{playlistId}", apiClient.escapeString(playlistId.toString()))
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{newIndex}", apiClient.escapeString(newIndex.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("PlaylistsApi.moveItem", localVarPath, "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -810,6 +821,35 @@ public class PlaylistsApi {
      * @param playlistId The playlist id. (required)
      * @param entryIds The item ids, comma delimited. (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Items removed.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void removeItemFromPlaylist(@org.eclipse.jdt.annotation.Nullable String playlistId,
             @org.eclipse.jdt.annotation.NonNull List<String> entryIds) throws ApiException {
@@ -823,78 +863,58 @@ public class PlaylistsApi {
      * @param entryIds The item ids, comma delimited. (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Items removed.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> removeItemFromPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String playlistId,
             @org.eclipse.jdt.annotation.NonNull List<String> entryIds) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = removeItemFromPlaylistRequestBuilder(playlistId, entryIds);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("removeItemFromPlaylist", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder removeItemFromPlaylistRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable String playlistId,
-            @org.eclipse.jdt.annotation.NonNull List<String> entryIds) throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'playlistId' when calling removeItemFromPlaylist");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Playlists/{playlistId}/Items".replaceAll("\\{playlistId}",
+                apiClient.escapeString(playlistId.toString()));
 
-        String localVarPath = "/Playlists/{playlistId}/Items".replace("{playlistId}",
-                ApiClient.urlEncode(playlistId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("multi", "entryIds", entryIds));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "entryIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "entryIds", entryIds));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("PlaylistsApi.removeItemFromPlaylist", localVarPath, "DELETE", localVarQueryParams,
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -903,6 +923,35 @@ public class PlaylistsApi {
      * @param playlistId The playlist id. (required)
      * @param userId The user id. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>User permissions removed from playlist.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>No playlist or user permissions found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized access.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void removeUserFromPlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
@@ -916,68 +965,59 @@ public class PlaylistsApi {
      * @param userId The user id. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>User permissions removed from playlist.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>No playlist or user permissions found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized access.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> removeUserFromPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = removeUserFromPlaylistRequestBuilder(playlistId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("removeUserFromPlaylist", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder removeUserFromPlaylistRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable UUID playlistId, @org.eclipse.jdt.annotation.Nullable UUID userId)
-            throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'playlistId' when calling removeUserFromPlaylist");
         }
-        // verify the required parameter 'userId' is set
         if (userId == null) {
             throw new ApiException(400, "Missing the required parameter 'userId' when calling removeUserFromPlaylist");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Playlists/{playlistId}/Users/{userId}"
-                .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()))
-                .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+                .replaceAll("\\{playlistId}", apiClient.escapeString(playlistId.toString()))
+                .replaceAll("\\{userId}", apiClient.escapeString(userId.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("PlaylistsApi.removeUserFromPlaylist", localVarPath, "DELETE", new ArrayList<>(),
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -986,6 +1026,35 @@ public class PlaylistsApi {
      * @param playlistId The playlist id. (required)
      * @param updatePlaylistDto The Jellyfin.Api.Models.PlaylistDtos.UpdatePlaylistDto id. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Playlist updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void updatePlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UpdatePlaylistDto updatePlaylistDto) throws ApiException {
@@ -999,72 +1068,59 @@ public class PlaylistsApi {
      * @param updatePlaylistDto The Jellyfin.Api.Models.PlaylistDtos.UpdatePlaylistDto id. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Playlist updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> updatePlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UpdatePlaylistDto updatePlaylistDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updatePlaylistRequestBuilder(playlistId, updatePlaylistDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("updatePlaylist", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder updatePlaylistRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
-            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistDto updatePlaylistDto) throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling updatePlaylist");
         }
-        // verify the required parameter 'updatePlaylistDto' is set
         if (updatePlaylistDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'updatePlaylistDto' when calling updatePlaylist");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Playlists/{playlistId}".replaceAll("\\{playlistId}",
+                apiClient.escapeString(playlistId.toString()));
 
-        String localVarPath = "/Playlists/{playlistId}".replace("{playlistId}",
-                ApiClient.urlEncode(playlistId.toString()));
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updatePlaylistDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("PlaylistsApi.updatePlaylist", localVarPath, "POST", new ArrayList<>(),
+                updatePlaylistDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1074,6 +1130,35 @@ public class PlaylistsApi {
      * @param userId The user id. (required)
      * @param updatePlaylistUserDto The Jellyfin.Api.Models.PlaylistDtos.UpdatePlaylistUserDto. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>User&#39;s permissions modified.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void updatePlaylistUser(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId,
@@ -1089,79 +1174,63 @@ public class PlaylistsApi {
      * @param updatePlaylistUserDto The Jellyfin.Api.Models.PlaylistDtos.UpdatePlaylistUserDto. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>User&#39;s permissions modified.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Access forbidden.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Playlist not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> updatePlaylistUserWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId,
             @org.eclipse.jdt.annotation.Nullable UpdatePlaylistUserDto updatePlaylistUserDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updatePlaylistUserRequestBuilder(playlistId, userId,
-                updatePlaylistUserDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("updatePlaylistUser", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder updatePlaylistUserRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
-            @org.eclipse.jdt.annotation.Nullable UUID userId,
-            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistUserDto updatePlaylistUserDto) throws ApiException {
-        // verify the required parameter 'playlistId' is set
+        // Check required parameters
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling updatePlaylistUser");
         }
-        // verify the required parameter 'userId' is set
         if (userId == null) {
             throw new ApiException(400, "Missing the required parameter 'userId' when calling updatePlaylistUser");
         }
-        // verify the required parameter 'updatePlaylistUserDto' is set
         if (updatePlaylistUserDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'updatePlaylistUserDto' when calling updatePlaylistUser");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Playlists/{playlistId}/Users/{userId}"
-                .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()))
-                .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+                .replaceAll("\\{playlistId}", apiClient.escapeString(playlistId.toString()))
+                .replaceAll("\\{userId}", apiClient.escapeString(userId.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updatePlaylistUserDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("PlaylistsApi.updatePlaylistUser", localVarPath, "POST", new ArrayList<>(),
+                updatePlaylistUserDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 }

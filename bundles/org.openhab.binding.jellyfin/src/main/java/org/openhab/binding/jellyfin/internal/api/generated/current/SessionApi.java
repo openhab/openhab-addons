@@ -1,29 +1,11 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -41,44 +23,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayCom
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlaystateCommand;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SessionApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public SessionApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public SessionApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -87,6 +59,30 @@ public class SessionApi {
      * @param sessionId The session id. (required)
      * @param userId The user id. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>User added to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void addUserToSession(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
@@ -100,65 +96,52 @@ public class SessionApi {
      * @param userId The user id. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>User added to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> addUserToSessionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = addUserToSessionRequestBuilder(sessionId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("addUserToSession", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder addUserToSessionRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        // verify the required parameter 'sessionId' is set
+        // Check required parameters
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling addUserToSession");
         }
-        // verify the required parameter 'userId' is set
         if (userId == null) {
             throw new ApiException(400, "Missing the required parameter 'userId' when calling addUserToSession");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Sessions/{sessionId}/User/{userId}"
-                .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
-                .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+                .replaceAll("\\{sessionId}", apiClient.escapeString(sessionId.toString()))
+                .replaceAll("\\{userId}", apiClient.escapeString(userId.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.addUserToSession", localVarPath, "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -169,6 +152,30 @@ public class SessionApi {
      * @param itemId The Id of the item. (required)
      * @param itemName The name of the item. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Instruction sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void displayContent(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable BaseItemKind itemType,
@@ -186,96 +193,64 @@ public class SessionApi {
      * @param itemName The name of the item. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Instruction sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> displayContentWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable BaseItemKind itemType,
             @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable String itemName)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = displayContentRequestBuilder(sessionId, itemType, itemId,
-                itemName);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("displayContent", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder displayContentRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable BaseItemKind itemType,
-            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable String itemName)
-            throws ApiException {
-        // verify the required parameter 'sessionId' is set
+        // Check required parameters
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling displayContent");
         }
-        // verify the required parameter 'itemType' is set
         if (itemType == null) {
             throw new ApiException(400, "Missing the required parameter 'itemType' when calling displayContent");
         }
-        // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling displayContent");
         }
-        // verify the required parameter 'itemName' is set
         if (itemName == null) {
             throw new ApiException(400, "Missing the required parameter 'itemName' when calling displayContent");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Sessions/{sessionId}/Viewing".replaceAll("\\{sessionId}",
+                apiClient.escapeString(sessionId.toString()));
 
-        String localVarPath = "/Sessions/{sessionId}/Viewing".replace("{sessionId}",
-                ApiClient.urlEncode(sessionId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "itemType", itemType));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "itemId", itemId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "itemName", itemName));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "itemType";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("itemType", itemType));
-        localVarQueryParameterBaseName = "itemId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("itemId", itemId));
-        localVarQueryParameterBaseName = "itemName";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("itemName", itemName));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.displayContent", localVarPath, "POST", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -283,10 +258,33 @@ public class SessionApi {
      * 
      * @return List&lt;NameIdPair&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Auth providers retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<NameIdPair> getAuthProviders() throws ApiException {
-        ApiResponse<List<NameIdPair>> localVarResponse = getAuthProvidersWithHttpInfo();
-        return localVarResponse.getData();
+        return getAuthProvidersWithHttpInfo().getData();
     }
 
     /**
@@ -294,60 +292,41 @@ public class SessionApi {
      * 
      * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Auth providers retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<NameIdPair>> getAuthProvidersWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getAuthProvidersRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getAuthProviders", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<NameIdPair>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<NameIdPair>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getAuthProvidersRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Auth/Providers";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<NameIdPair>> localVarReturnType = new GenericType<List<NameIdPair>>() {
+        };
+        return apiClient.invokeAPI("SessionApi.getAuthProviders", "/Auth/Providers", "GET", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -355,10 +334,33 @@ public class SessionApi {
      * 
      * @return List&lt;NameIdPair&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Password reset providers retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<NameIdPair> getPasswordResetProviders() throws ApiException {
-        ApiResponse<List<NameIdPair>> localVarResponse = getPasswordResetProvidersWithHttpInfo();
-        return localVarResponse.getData();
+        return getPasswordResetProvidersWithHttpInfo().getData();
     }
 
     /**
@@ -366,60 +368,41 @@ public class SessionApi {
      * 
      * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Password reset providers retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<NameIdPair>> getPasswordResetProvidersWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPasswordResetProvidersRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getPasswordResetProviders", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<NameIdPair>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<NameIdPair>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getPasswordResetProvidersRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Auth/PasswordResetProviders";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<NameIdPair>> localVarReturnType = new GenericType<List<NameIdPair>>() {
+        };
+        return apiClient.invokeAPI("SessionApi.getPasswordResetProviders", "/Auth/PasswordResetProviders", "GET",
+                new ArrayList<>(), null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -430,13 +413,35 @@ public class SessionApi {
      * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
      * @return List&lt;SessionInfoDto&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>List of sessions returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<SessionInfoDto> getSessions(@org.eclipse.jdt.annotation.NonNull UUID controllableByUserId,
             @org.eclipse.jdt.annotation.NonNull String deviceId,
             @org.eclipse.jdt.annotation.NonNull Integer activeWithinSeconds) throws ApiException {
-        ApiResponse<List<SessionInfoDto>> localVarResponse = getSessionsWithHttpInfo(controllableByUserId, deviceId,
-                activeWithinSeconds);
-        return localVarResponse.getData();
+        return getSessionsWithHttpInfo(controllableByUserId, deviceId, activeWithinSeconds).getData();
     }
 
     /**
@@ -447,87 +452,50 @@ public class SessionApi {
      * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
      * @return ApiResponse&lt;List&lt;SessionInfoDto&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>List of sessions returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<SessionInfoDto>> getSessionsWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull UUID controllableByUserId,
             @org.eclipse.jdt.annotation.NonNull String deviceId,
             @org.eclipse.jdt.annotation.NonNull Integer activeWithinSeconds) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSessionsRequestBuilder(controllableByUserId, deviceId,
-                activeWithinSeconds);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getSessions", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<SessionInfoDto>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(
+                apiClient.parameterToPairs("", "controllableByUserId", controllableByUserId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "deviceId", deviceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "activeWithinSeconds", activeWithinSeconds));
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<SessionInfoDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<SessionInfoDto>>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getSessionsRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID controllableByUserId,
-            @org.eclipse.jdt.annotation.NonNull String deviceId,
-            @org.eclipse.jdt.annotation.NonNull Integer activeWithinSeconds) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Sessions";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "controllableByUserId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("controllableByUserId", controllableByUserId));
-        localVarQueryParameterBaseName = "deviceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceId", deviceId));
-        localVarQueryParameterBaseName = "activeWithinSeconds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("activeWithinSeconds", activeWithinSeconds));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<SessionInfoDto>> localVarReturnType = new GenericType<List<SessionInfoDto>>() {
+        };
+        return apiClient.invokeAPI("SessionApi.getSessions", "/Sessions", "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -543,6 +511,30 @@ public class SessionApi {
      * @param subtitleStreamIndex Optional. The index of the subtitle stream to play. (optional)
      * @param startIndex Optional. The start index. (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Instruction sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void play(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable PlayCommand playCommand,
@@ -570,6 +562,30 @@ public class SessionApi {
      * @param startIndex Optional. The start index. (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Instruction sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> playWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable PlayCommand playCommand,
@@ -579,99 +595,36 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
             @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
             @org.eclipse.jdt.annotation.NonNull Integer startIndex) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = playRequestBuilder(sessionId, playCommand, itemIds,
-                startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("play", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder playRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable PlayCommand playCommand,
-            @org.eclipse.jdt.annotation.Nullable List<UUID> itemIds,
-            @org.eclipse.jdt.annotation.NonNull Long startPositionTicks,
-            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
-            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer startIndex) throws ApiException {
-        // verify the required parameter 'sessionId' is set
+        // Check required parameters
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling play");
         }
-        // verify the required parameter 'playCommand' is set
         if (playCommand == null) {
             throw new ApiException(400, "Missing the required parameter 'playCommand' when calling play");
         }
-        // verify the required parameter 'itemIds' is set
         if (itemIds == null) {
             throw new ApiException(400, "Missing the required parameter 'itemIds' when calling play");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Sessions/{sessionId}/Playing".replaceAll("\\{sessionId}",
+                apiClient.escapeString(sessionId.toString()));
 
-        String localVarPath = "/Sessions/{sessionId}/Playing".replace("{sessionId}",
-                ApiClient.urlEncode(sessionId.toString()));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "playCommand", playCommand));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "itemIds", itemIds));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startPositionTicks", startPositionTicks));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "mediaSourceId", mediaSourceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "audioStreamIndex", audioStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "subtitleStreamIndex", subtitleStreamIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startIndex", startIndex));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "playCommand";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("playCommand", playCommand));
-        localVarQueryParameterBaseName = "itemIds";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "itemIds", itemIds));
-        localVarQueryParameterBaseName = "startPositionTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startPositionTicks", startPositionTicks));
-        localVarQueryParameterBaseName = "mediaSourceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
-        localVarQueryParameterBaseName = "audioStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
-        localVarQueryParameterBaseName = "subtitleStreamIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
-        localVarQueryParameterBaseName = "startIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.play", localVarPath, "POST", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -684,6 +637,30 @@ public class SessionApi {
      * @param supportsPersistentIdentifier Determines whether the device supports a unique identifier. (optional,
      *            default to true)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Capabilities posted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void postCapabilities(@org.eclipse.jdt.annotation.NonNull String id,
             @org.eclipse.jdt.annotation.NonNull List<MediaType> playableMediaTypes,
@@ -705,86 +682,50 @@ public class SessionApi {
      *            default to true)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Capabilities posted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> postCapabilitiesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String id,
             @org.eclipse.jdt.annotation.NonNull List<MediaType> playableMediaTypes,
             @org.eclipse.jdt.annotation.NonNull List<GeneralCommandType> supportedCommands,
             @org.eclipse.jdt.annotation.NonNull Boolean supportsMediaControl,
             @org.eclipse.jdt.annotation.NonNull Boolean supportsPersistentIdentifier) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = postCapabilitiesRequestBuilder(id, playableMediaTypes,
-                supportedCommands, supportsMediaControl, supportsPersistentIdentifier);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("postCapabilities", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder postCapabilitiesRequestBuilder(@org.eclipse.jdt.annotation.NonNull String id,
-            @org.eclipse.jdt.annotation.NonNull List<MediaType> playableMediaTypes,
-            @org.eclipse.jdt.annotation.NonNull List<GeneralCommandType> supportedCommands,
-            @org.eclipse.jdt.annotation.NonNull Boolean supportsMediaControl,
-            @org.eclipse.jdt.annotation.NonNull Boolean supportsPersistentIdentifier) throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Sessions/Capabilities";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "id";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("id", id));
-        localVarQueryParameterBaseName = "playableMediaTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "playableMediaTypes", playableMediaTypes));
-        localVarQueryParameterBaseName = "supportedCommands";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "supportedCommands", supportedCommands));
-        localVarQueryParameterBaseName = "supportsMediaControl";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("supportsMediaControl", supportsMediaControl));
-        localVarQueryParameterBaseName = "supportsPersistentIdentifier";
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "id", id));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "playableMediaTypes", playableMediaTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "supportedCommands", supportedCommands));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "supportsMediaControl", supportsMediaControl));
         localVarQueryParams
-                .addAll(ApiClient.parameterToPairs("supportsPersistentIdentifier", supportsPersistentIdentifier));
+                .addAll(apiClient.parameterToPairs("", "supportsPersistentIdentifier", supportsPersistentIdentifier));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.postCapabilities", "/Sessions/Capabilities", "POST", localVarQueryParams,
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -793,6 +734,30 @@ public class SessionApi {
      * @param clientCapabilitiesDto The MediaBrowser.Model.Session.ClientCapabilities. (required)
      * @param id The session id. (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Capabilities updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void postFullCapabilities(@org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto clientCapabilitiesDto,
             @org.eclipse.jdt.annotation.NonNull String id) throws ApiException {
@@ -806,83 +771,50 @@ public class SessionApi {
      * @param id The session id. (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Capabilities updated.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> postFullCapabilitiesWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto clientCapabilitiesDto,
             @org.eclipse.jdt.annotation.NonNull String id) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = postFullCapabilitiesRequestBuilder(clientCapabilitiesDto, id);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("postFullCapabilities", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder postFullCapabilitiesRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto clientCapabilitiesDto,
-            @org.eclipse.jdt.annotation.NonNull String id) throws ApiException {
-        // verify the required parameter 'clientCapabilitiesDto' is set
+        // Check required parameters
         if (clientCapabilitiesDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'clientCapabilitiesDto' when calling postFullCapabilities");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "id", id));
 
-        String localVarPath = "/Sessions/Capabilities/Full";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "id";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("id", id));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(clientCapabilitiesDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.postFullCapabilities", "/Sessions/Capabilities/Full", "POST",
+                localVarQueryParams, clientCapabilitiesDto, new LinkedHashMap<>(), new LinkedHashMap<>(),
+                new LinkedHashMap<>(), localVarAccept, localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -891,6 +823,30 @@ public class SessionApi {
      * @param sessionId The session id. (required)
      * @param userId The user id. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>User removed from session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void removeUserFromSession(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
@@ -904,73 +860,83 @@ public class SessionApi {
      * @param userId The user id. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>User removed from session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> removeUserFromSessionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = removeUserFromSessionRequestBuilder(sessionId, userId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("removeUserFromSession", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder removeUserFromSessionRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable String sessionId, @org.eclipse.jdt.annotation.Nullable UUID userId)
-            throws ApiException {
-        // verify the required parameter 'sessionId' is set
+        // Check required parameters
         if (sessionId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'sessionId' when calling removeUserFromSession");
         }
-        // verify the required parameter 'userId' is set
         if (userId == null) {
             throw new ApiException(400, "Missing the required parameter 'userId' when calling removeUserFromSession");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Sessions/{sessionId}/User/{userId}"
-                .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
-                .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+                .replaceAll("\\{sessionId}", apiClient.escapeString(sessionId.toString()))
+                .replaceAll("\\{userId}", apiClient.escapeString(userId.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.removeUserFromSession", localVarPath, "DELETE", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
      * Reports that a session has ended.
      * 
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Session end reported to server.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void reportSessionEnded() throws ApiException {
         reportSessionEndedWithHttpInfo();
@@ -981,53 +947,38 @@ public class SessionApi {
      * 
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Session end reported to server.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> reportSessionEndedWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = reportSessionEndedRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("reportSessionEnded", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder reportSessionEndedRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/Sessions/Logout";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.reportSessionEnded", "/Sessions/Logout", "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1036,6 +987,30 @@ public class SessionApi {
      * @param itemId The item id. (required)
      * @param sessionId The session id. (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Session reported to server.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void reportViewing(@org.eclipse.jdt.annotation.Nullable String itemId,
             @org.eclipse.jdt.annotation.NonNull String sessionId) throws ApiException {
@@ -1049,76 +1024,48 @@ public class SessionApi {
      * @param sessionId The session id. (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Session reported to server.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> reportViewingWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String itemId,
             @org.eclipse.jdt.annotation.NonNull String sessionId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = reportViewingRequestBuilder(itemId, sessionId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("reportViewing", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder reportViewingRequestBuilder(@org.eclipse.jdt.annotation.Nullable String itemId,
-            @org.eclipse.jdt.annotation.NonNull String sessionId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling reportViewing");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "sessionId", sessionId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "itemId", itemId));
 
-        String localVarPath = "/Sessions/Viewing";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "sessionId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("sessionId", sessionId));
-        localVarQueryParameterBaseName = "itemId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("itemId", itemId));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.reportViewing", "/Sessions/Viewing", "POST", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1127,6 +1074,30 @@ public class SessionApi {
      * @param sessionId The session id. (required)
      * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Full general command sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void sendFullGeneralCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommand generalCommand) throws ApiException {
@@ -1140,73 +1111,54 @@ public class SessionApi {
      * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Full general command sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> sendFullGeneralCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommand generalCommand) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = sendFullGeneralCommandRequestBuilder(sessionId, generalCommand);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("sendFullGeneralCommand", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder sendFullGeneralCommandRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable GeneralCommand generalCommand) throws ApiException {
-        // verify the required parameter 'sessionId' is set
+        // Check required parameters
         if (sessionId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'sessionId' when calling sendFullGeneralCommand");
         }
-        // verify the required parameter 'generalCommand' is set
         if (generalCommand == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'generalCommand' when calling sendFullGeneralCommand");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Sessions/{sessionId}/Command".replaceAll("\\{sessionId}",
+                apiClient.escapeString(sessionId.toString()));
 
-        String localVarPath = "/Sessions/{sessionId}/Command".replace("{sessionId}",
-                ApiClient.urlEncode(sessionId.toString()));
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(generalCommand);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.sendFullGeneralCommand", localVarPath, "POST", new ArrayList<>(),
+                generalCommand, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1215,6 +1167,30 @@ public class SessionApi {
      * @param sessionId The session id. (required)
      * @param command The command to send. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>General command sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void sendGeneralCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
@@ -1228,65 +1204,52 @@ public class SessionApi {
      * @param command The command to send. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>General command sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> sendGeneralCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = sendGeneralCommandRequestBuilder(sessionId, command);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("sendGeneralCommand", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder sendGeneralCommandRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
-        // verify the required parameter 'sessionId' is set
+        // Check required parameters
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendGeneralCommand");
         }
-        // verify the required parameter 'command' is set
         if (command == null) {
             throw new ApiException(400, "Missing the required parameter 'command' when calling sendGeneralCommand");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Sessions/{sessionId}/Command/{command}"
-                .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
-                .replace("{command}", ApiClient.urlEncode(command.toString()));
+                .replaceAll("\\{sessionId}", apiClient.escapeString(sessionId.toString()))
+                .replaceAll("\\{command}", apiClient.escapeString(command.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.sendGeneralCommand", localVarPath, "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1296,6 +1259,30 @@ public class SessionApi {
      * @param messageCommand The MediaBrowser.Model.Session.MessageCommand object containing Header, Message Text, and
      *            TimeoutMs. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Message sent.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void sendMessageCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable MessageCommand messageCommand) throws ApiException {
@@ -1310,71 +1297,53 @@ public class SessionApi {
      *            TimeoutMs. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Message sent.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> sendMessageCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable MessageCommand messageCommand) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = sendMessageCommandRequestBuilder(sessionId, messageCommand);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("sendMessageCommand", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder sendMessageCommandRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable MessageCommand messageCommand) throws ApiException {
-        // verify the required parameter 'sessionId' is set
+        // Check required parameters
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendMessageCommand");
         }
-        // verify the required parameter 'messageCommand' is set
         if (messageCommand == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'messageCommand' when calling sendMessageCommand");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Sessions/{sessionId}/Message".replaceAll("\\{sessionId}",
+                apiClient.escapeString(sessionId.toString()));
 
-        String localVarPath = "/Sessions/{sessionId}/Message".replace("{sessionId}",
-                ApiClient.urlEncode(sessionId.toString()));
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(messageCommand);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.sendMessageCommand", localVarPath, "POST", new ArrayList<>(),
+                messageCommand, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1385,6 +1354,30 @@ public class SessionApi {
      * @param seekPositionTicks The optional position ticks. (optional)
      * @param controllingUserId The optional controlling user id. (optional)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Playstate command sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void sendPlaystateCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable PlaystateCommand command,
@@ -1402,88 +1395,59 @@ public class SessionApi {
      * @param controllingUserId The optional controlling user id. (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Playstate command sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> sendPlaystateCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable PlaystateCommand command,
             @org.eclipse.jdt.annotation.NonNull Long seekPositionTicks,
             @org.eclipse.jdt.annotation.NonNull String controllingUserId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = sendPlaystateCommandRequestBuilder(sessionId, command,
-                seekPositionTicks, controllingUserId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("sendPlaystateCommand", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder sendPlaystateCommandRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable PlaystateCommand command,
-            @org.eclipse.jdt.annotation.NonNull Long seekPositionTicks,
-            @org.eclipse.jdt.annotation.NonNull String controllingUserId) throws ApiException {
-        // verify the required parameter 'sessionId' is set
+        // Check required parameters
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendPlaystateCommand");
         }
-        // verify the required parameter 'command' is set
         if (command == null) {
             throw new ApiException(400, "Missing the required parameter 'command' when calling sendPlaystateCommand");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Sessions/{sessionId}/Playing/{command}"
-                .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
-                .replace("{command}", ApiClient.urlEncode(command.toString()));
+                .replaceAll("\\{sessionId}", apiClient.escapeString(sessionId.toString()))
+                .replaceAll("\\{command}", apiClient.escapeString(command.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "seekPositionTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("seekPositionTicks", seekPositionTicks));
-        localVarQueryParameterBaseName = "controllingUserId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("controllingUserId", controllingUserId));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(
+                apiClient.parameterToPairs("", "seekPositionTicks", seekPositionTicks));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "controllingUserId", controllingUserId));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.sendPlaystateCommand", localVarPath, "POST", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -1492,6 +1456,30 @@ public class SessionApi {
      * @param sessionId The session id. (required)
      * @param command The command to send. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>System command sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void sendSystemCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
@@ -1505,64 +1493,51 @@ public class SessionApi {
      * @param command The command to send. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>System command sent to session.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> sendSystemCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = sendSystemCommandRequestBuilder(sessionId, command);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("sendSystemCommand", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder sendSystemCommandRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
-        // verify the required parameter 'sessionId' is set
+        // Check required parameters
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendSystemCommand");
         }
-        // verify the required parameter 'command' is set
         if (command == null) {
             throw new ApiException(400, "Missing the required parameter 'command' when calling sendSystemCommand");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Sessions/{sessionId}/System/{command}"
-                .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
-                .replace("{command}", ApiClient.urlEncode(command.toString()));
+                .replaceAll("\\{sessionId}", apiClient.escapeString(sessionId.toString()))
+                .replaceAll("\\{command}", apiClient.escapeString(command.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "application/json");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept();
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SessionApi.sendSystemCommand", localVarPath, "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 }

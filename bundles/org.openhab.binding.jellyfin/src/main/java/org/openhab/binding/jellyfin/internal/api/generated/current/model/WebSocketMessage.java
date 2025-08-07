@@ -18,9 +18,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.JSON;
 
@@ -80,27 +81,6 @@ public class WebSocketMessage extends AbstractOpenApiSchema {
             // deserialize InboundWebSocketMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (InboundWebSocketMessage.class.equals(Integer.class)
-                        || InboundWebSocketMessage.class.equals(Long.class)
-                        || InboundWebSocketMessage.class.equals(Float.class)
-                        || InboundWebSocketMessage.class.equals(Double.class)
-                        || InboundWebSocketMessage.class.equals(Boolean.class)
-                        || InboundWebSocketMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((InboundWebSocketMessage.class.equals(Integer.class)
-                                || InboundWebSocketMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((InboundWebSocketMessage.class.equals(Float.class)
-                                || InboundWebSocketMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (InboundWebSocketMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (InboundWebSocketMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(InboundWebSocketMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -117,27 +97,6 @@ public class WebSocketMessage extends AbstractOpenApiSchema {
             // deserialize OutboundWebSocketMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (OutboundWebSocketMessage.class.equals(Integer.class)
-                        || OutboundWebSocketMessage.class.equals(Long.class)
-                        || OutboundWebSocketMessage.class.equals(Float.class)
-                        || OutboundWebSocketMessage.class.equals(Double.class)
-                        || OutboundWebSocketMessage.class.equals(Boolean.class)
-                        || OutboundWebSocketMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((OutboundWebSocketMessage.class.equals(Integer.class)
-                                || OutboundWebSocketMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((OutboundWebSocketMessage.class.equals(Float.class)
-                                || OutboundWebSocketMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (OutboundWebSocketMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (OutboundWebSocketMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(OutboundWebSocketMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -170,7 +129,7 @@ public class WebSocketMessage extends AbstractOpenApiSchema {
     }
 
     // store a list of schema names defined in oneOf
-    public static final Map<String, Class<?>> schemas = new HashMap<>();
+    public static final Map<String, GenericType<?>> schemas = new HashMap<>();
 
     public WebSocketMessage() {
         super("oneOf", Boolean.FALSE);
@@ -187,11 +146,13 @@ public class WebSocketMessage extends AbstractOpenApiSchema {
     }
 
     static {
-        schemas.put("InboundWebSocketMessage", InboundWebSocketMessage.class);
-        schemas.put("OutboundWebSocketMessage", OutboundWebSocketMessage.class);
+        schemas.put("InboundWebSocketMessage", new GenericType<InboundWebSocketMessage>() {
+        });
+        schemas.put("OutboundWebSocketMessage", new GenericType<OutboundWebSocketMessage>() {
+        });
         JSON.registerDescendants(WebSocketMessage.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
-        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
+        Map<String, Class<?>> mappings = new HashMap<>();
         mappings.put("ActivityLogEntry", ActivityLogEntryMessage.class);
         mappings.put("ForceKeepAlive", ForceKeepAliveMessage.class);
         mappings.put("GeneralCommand", GeneralCommandMessage.class);
@@ -227,7 +188,7 @@ public class WebSocketMessage extends AbstractOpenApiSchema {
     }
 
     @Override
-    public Map<String, Class<?>> getSchemas() {
+    public Map<String, GenericType<?>> getSchemas() {
         return WebSocketMessage.schemas;
     }
 
@@ -241,12 +202,12 @@ public class WebSocketMessage extends AbstractOpenApiSchema {
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(InboundWebSocketMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(InboundWebSocketMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(OutboundWebSocketMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(OutboundWebSocketMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
@@ -285,54 +246,5 @@ public class WebSocketMessage extends AbstractOpenApiSchema {
      */
     public OutboundWebSocketMessage getOutboundWebSocketMessage() throws ClassCastException {
         return (OutboundWebSocketMessage) super.getActualInstance();
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        if (getActualInstance() instanceof InboundWebSocketMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((InboundWebSocketMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof OutboundWebSocketMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((OutboundWebSocketMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_1" + suffix));
-            }
-            return joiner.toString();
-        }
-        return null;
     }
 }

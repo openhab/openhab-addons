@@ -19,10 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -733,6 +730,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -756,6 +754,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOriginalTitle() {
         return originalTitle;
     }
@@ -779,6 +778,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERVER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getServerId() {
         return serverId;
     }
@@ -802,6 +802,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -825,6 +826,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ETAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getEtag() {
         return etag;
     }
@@ -848,6 +850,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SOURCE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSourceType() {
         return sourceType;
     }
@@ -871,6 +874,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPlaylistItemId() {
         return playlistItemId;
     }
@@ -894,6 +898,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATE_CREATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateCreated() {
         return dateCreated;
     }
@@ -917,6 +922,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATE_LAST_MEDIA_ADDED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateLastMediaAdded() {
         return dateLastMediaAdded;
     }
@@ -940,6 +946,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_EXTRA_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ExtraType getExtraType() {
         return extraType;
     }
@@ -963,6 +970,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAirsBeforeSeasonNumber() {
         return airsBeforeSeasonNumber;
     }
@@ -986,6 +994,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAirsAfterSeasonNumber() {
         return airsAfterSeasonNumber;
     }
@@ -1009,6 +1018,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAirsBeforeEpisodeNumber() {
         return airsBeforeEpisodeNumber;
     }
@@ -1032,6 +1042,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAN_DELETE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanDelete() {
         return canDelete;
     }
@@ -1055,6 +1066,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAN_DOWNLOAD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanDownload() {
         return canDownload;
     }
@@ -1078,6 +1090,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HAS_LYRICS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasLyrics() {
         return hasLyrics;
     }
@@ -1101,6 +1114,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HAS_SUBTITLES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasSubtitles() {
         return hasSubtitles;
     }
@@ -1124,6 +1138,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage;
     }
@@ -1148,6 +1163,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPreferredMetadataCountryCode() {
         return preferredMetadataCountryCode;
     }
@@ -1172,6 +1188,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getContainer() {
         return container;
     }
@@ -1195,6 +1212,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SORT_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSortName() {
         return sortName;
     }
@@ -1218,6 +1236,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FORCED_SORT_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getForcedSortName() {
         return forcedSortName;
     }
@@ -1241,6 +1260,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Video3DFormat getVideo3DFormat() {
         return video3DFormat;
     }
@@ -1264,6 +1284,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getPremiereDate() {
         return premiereDate;
     }
@@ -1295,6 +1316,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_EXTERNAL_URLS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ExternalUrl> getExternalUrls() {
         return externalUrls;
     }
@@ -1326,6 +1348,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaSourceInfo> getMediaSources() {
         return mediaSources;
     }
@@ -1349,6 +1372,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CRITIC_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Float getCriticRating() {
         return criticRating;
     }
@@ -1380,6 +1404,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRODUCTION_LOCATIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getProductionLocations() {
         return productionLocations;
     }
@@ -1403,6 +1428,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPath() {
         return path;
     }
@@ -1426,6 +1452,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableMediaSourceDisplay() {
         return enableMediaSourceDisplay;
     }
@@ -1449,6 +1476,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OFFICIAL_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOfficialRating() {
         return officialRating;
     }
@@ -1472,6 +1500,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CUSTOM_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCustomRating() {
         return customRating;
     }
@@ -1495,6 +1524,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getChannelId() {
         return channelId;
     }
@@ -1518,6 +1548,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getChannelName() {
         return channelName;
     }
@@ -1541,6 +1572,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OVERVIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOverview() {
         return overview;
     }
@@ -1572,6 +1604,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TAGLINES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getTaglines() {
         return taglines;
     }
@@ -1603,6 +1636,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GENRES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getGenres() {
         return genres;
     }
@@ -1626,6 +1660,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Float getCommunityRating() {
         return communityRating;
     }
@@ -1649,6 +1684,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getCumulativeRunTimeTicks() {
         return cumulativeRunTimeTicks;
     }
@@ -1672,6 +1708,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getRunTimeTicks() {
         return runTimeTicks;
     }
@@ -1695,6 +1732,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAY_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PlayAccess getPlayAccess() {
         return playAccess;
     }
@@ -1718,6 +1756,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAspectRatio() {
         return aspectRatio;
     }
@@ -1741,6 +1780,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getProductionYear() {
         return productionYear;
     }
@@ -1764,6 +1804,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_PLACE_HOLDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPlaceHolder() {
         return isPlaceHolder;
     }
@@ -1787,6 +1828,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getNumber() {
         return number;
     }
@@ -1810,6 +1852,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANNEL_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getChannelNumber() {
         return channelNumber;
     }
@@ -1833,6 +1876,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getIndexNumber() {
         return indexNumber;
     }
@@ -1856,6 +1900,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getIndexNumberEnd() {
         return indexNumberEnd;
     }
@@ -1879,6 +1924,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
@@ -1910,6 +1956,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REMOTE_TRAILERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaUrl> getRemoteTrailers() {
         return remoteTrailers;
     }
@@ -1941,6 +1988,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getProviderIds() {
         return providerIds;
     }
@@ -1964,6 +2012,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_H_D)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsHD() {
         return isHD;
     }
@@ -1987,6 +2036,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_FOLDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsFolder() {
         return isFolder;
     }
@@ -2010,6 +2060,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getParentId() {
         return parentId;
     }
@@ -2033,6 +2084,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public BaseItemKind getType() {
         return type;
     }
@@ -2064,6 +2116,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PEOPLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<BaseItemPerson> getPeople() {
         return people;
     }
@@ -2095,6 +2148,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STUDIOS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameGuidPair> getStudios() {
         return studios;
     }
@@ -2126,6 +2180,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GENRE_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameGuidPair> getGenreItems() {
         return genreItems;
     }
@@ -2149,6 +2204,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_LOGO_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getParentLogoItemId() {
         return parentLogoItemId;
     }
@@ -2172,6 +2228,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getParentBackdropItemId() {
         return parentBackdropItemId;
     }
@@ -2204,6 +2261,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getParentBackdropImageTags() {
         return parentBackdropImageTags;
     }
@@ -2227,6 +2285,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOCAL_TRAILER_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLocalTrailerCount() {
         return localTrailerCount;
     }
@@ -2250,6 +2309,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UserItemDataDto getUserData() {
         return userData;
     }
@@ -2273,6 +2333,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RECURSIVE_ITEM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getRecursiveItemCount() {
         return recursiveItemCount;
     }
@@ -2296,6 +2357,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHILD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getChildCount() {
         return childCount;
     }
@@ -2319,6 +2381,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeriesName() {
         return seriesName;
     }
@@ -2342,6 +2405,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getSeriesId() {
         return seriesId;
     }
@@ -2365,6 +2429,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SEASON_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getSeasonId() {
         return seasonId;
     }
@@ -2388,6 +2453,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SPECIAL_FEATURE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSpecialFeatureCount() {
         return specialFeatureCount;
     }
@@ -2411,6 +2477,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DISPLAY_PREFERENCES_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDisplayPreferencesId() {
         return displayPreferencesId;
     }
@@ -2434,6 +2501,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getStatus() {
         return status;
     }
@@ -2457,6 +2525,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AIR_TIME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAirTime() {
         return airTime;
     }
@@ -2488,6 +2557,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AIR_DAYS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<DayOfWeek> getAirDays() {
         return airDays;
     }
@@ -2519,6 +2589,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getTags() {
         return tags;
     }
@@ -2542,6 +2613,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getPrimaryImageAspectRatio() {
         return primaryImageAspectRatio;
     }
@@ -2573,6 +2645,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ARTISTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getArtists() {
         return artists;
     }
@@ -2604,6 +2677,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ARTIST_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameGuidPair> getArtistItems() {
         return artistItems;
     }
@@ -2627,6 +2701,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAlbum() {
         return album;
     }
@@ -2650,6 +2725,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public CollectionType getCollectionType() {
         return collectionType;
     }
@@ -2673,6 +2749,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DISPLAY_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDisplayOrder() {
         return displayOrder;
     }
@@ -2696,6 +2773,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getAlbumId() {
         return albumId;
     }
@@ -2719,6 +2797,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAlbumPrimaryImageTag() {
         return albumPrimaryImageTag;
     }
@@ -2742,6 +2821,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeriesPrimaryImageTag() {
         return seriesPrimaryImageTag;
     }
@@ -2765,6 +2845,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAlbumArtist() {
         return albumArtist;
     }
@@ -2796,6 +2877,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameGuidPair> getAlbumArtists() {
         return albumArtists;
     }
@@ -2819,6 +2901,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SEASON_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeasonName() {
         return seasonName;
     }
@@ -2850,6 +2933,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaStream> getMediaStreams() {
         return mediaStreams;
     }
@@ -2873,6 +2957,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public VideoType getVideoType() {
         return videoType;
     }
@@ -2896,6 +2981,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PART_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPartCount() {
         return partCount;
     }
@@ -2919,6 +3005,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMediaSourceCount() {
         return mediaSourceCount;
     }
@@ -2950,6 +3037,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getImageTags() {
         return imageTags;
     }
@@ -2981,6 +3069,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getBackdropImageTags() {
         return backdropImageTags;
     }
@@ -3012,6 +3101,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getScreenshotImageTags() {
         return screenshotImageTags;
     }
@@ -3035,6 +3125,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getParentLogoImageTag() {
         return parentLogoImageTag;
     }
@@ -3058,6 +3149,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_ART_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getParentArtItemId() {
         return parentArtItemId;
     }
@@ -3081,6 +3173,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_ART_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getParentArtImageTag() {
         return parentArtImageTag;
     }
@@ -3104,6 +3197,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeriesThumbImageTag() {
         return seriesThumbImageTag;
     }
@@ -3127,6 +3221,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public BaseItemDtoImageBlurHashes getImageBlurHashes() {
         return imageBlurHashes;
     }
@@ -3150,6 +3245,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_STUDIO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeriesStudio() {
         return seriesStudio;
     }
@@ -3173,6 +3269,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_THUMB_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getParentThumbItemId() {
         return parentThumbItemId;
     }
@@ -3196,6 +3293,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getParentThumbImageTag() {
         return parentThumbImageTag;
     }
@@ -3219,6 +3317,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getParentPrimaryImageItemId() {
         return parentPrimaryImageItemId;
     }
@@ -3242,6 +3341,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getParentPrimaryImageTag() {
         return parentPrimaryImageTag;
     }
@@ -3273,6 +3373,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHAPTERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ChapterInfo> getChapters() {
         return chapters;
     }
@@ -3305,6 +3406,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRICKPLAY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, Map<String, TrickplayInfo>> getTrickplay() {
         return trickplay;
     }
@@ -3328,6 +3430,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOCATION_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public LocationType getLocationType() {
         return locationType;
     }
@@ -3351,6 +3454,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ISO_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public IsoType getIsoType() {
         return isoType;
     }
@@ -3374,6 +3478,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public MediaType getMediaType() {
         return mediaType;
     }
@@ -3397,6 +3502,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_END_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getEndDate() {
         return endDate;
     }
@@ -3428,6 +3534,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOCKED_FIELDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MetadataField> getLockedFields() {
         return lockedFields;
     }
@@ -3451,6 +3558,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTrailerCount() {
         return trailerCount;
     }
@@ -3474,6 +3582,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMovieCount() {
         return movieCount;
     }
@@ -3497,6 +3606,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSeriesCount() {
         return seriesCount;
     }
@@ -3520,6 +3630,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getProgramCount() {
         return programCount;
     }
@@ -3543,6 +3654,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getEpisodeCount() {
         return episodeCount;
     }
@@ -3566,6 +3678,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SONG_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSongCount() {
         return songCount;
     }
@@ -3589,6 +3702,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAlbumCount() {
         return albumCount;
     }
@@ -3612,6 +3726,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getArtistCount() {
         return artistCount;
     }
@@ -3635,6 +3750,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMusicVideoCount() {
         return musicVideoCount;
     }
@@ -3658,6 +3774,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOCK_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getLockData() {
         return lockData;
     }
@@ -3681,6 +3798,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getWidth() {
         return width;
     }
@@ -3704,6 +3822,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getHeight() {
         return height;
     }
@@ -3727,6 +3846,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAMERA_MAKE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCameraMake() {
         return cameraMake;
     }
@@ -3750,6 +3870,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAMERA_MODEL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCameraModel() {
         return cameraModel;
     }
@@ -3773,6 +3894,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SOFTWARE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSoftware() {
         return software;
     }
@@ -3796,6 +3918,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_EXPOSURE_TIME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getExposureTime() {
         return exposureTime;
     }
@@ -3819,6 +3942,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FOCAL_LENGTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getFocalLength() {
         return focalLength;
     }
@@ -3842,6 +3966,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_ORIENTATION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ImageOrientation getImageOrientation() {
         return imageOrientation;
     }
@@ -3865,6 +3990,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_APERTURE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getAperture() {
         return aperture;
     }
@@ -3888,6 +4014,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SHUTTER_SPEED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getShutterSpeed() {
         return shutterSpeed;
     }
@@ -3911,6 +4038,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LATITUDE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getLatitude() {
         return latitude;
     }
@@ -3934,6 +4062,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LONGITUDE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getLongitude() {
         return longitude;
     }
@@ -3957,6 +4086,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALTITUDE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getAltitude() {
         return altitude;
     }
@@ -3980,6 +4110,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ISO_SPEED_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getIsoSpeedRating() {
         return isoSpeedRating;
     }
@@ -4003,6 +4134,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeriesTimerId() {
         return seriesTimerId;
     }
@@ -4026,6 +4158,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getProgramId() {
         return programId;
     }
@@ -4049,6 +4182,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getChannelPrimaryImageTag() {
         return channelPrimaryImageTag;
     }
@@ -4072,6 +4206,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getStartDate() {
         return startDate;
     }
@@ -4095,6 +4230,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getCompletionPercentage() {
         return completionPercentage;
     }
@@ -4118,6 +4254,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_REPEAT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsRepeat() {
         return isRepeat;
     }
@@ -4141,6 +4278,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_EPISODE_TITLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getEpisodeTitle() {
         return episodeTitle;
     }
@@ -4164,6 +4302,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANNEL_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ChannelType getChannelType() {
         return channelType;
     }
@@ -4187,6 +4326,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUDIO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ProgramAudio getAudio() {
         return audio;
     }
@@ -4210,6 +4350,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_MOVIE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsMovie() {
         return isMovie;
     }
@@ -4233,6 +4374,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_SPORTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsSports() {
         return isSports;
     }
@@ -4256,6 +4398,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_SERIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsSeries() {
         return isSeries;
     }
@@ -4279,6 +4422,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_LIVE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsLive() {
         return isLive;
     }
@@ -4302,6 +4446,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_NEWS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsNews() {
         return isNews;
     }
@@ -4325,6 +4470,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_KIDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsKids() {
         return isKids;
     }
@@ -4348,6 +4494,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_PREMIERE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPremiere() {
         return isPremiere;
     }
@@ -4371,6 +4518,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TIMER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getTimerId() {
         return timerId;
     }
@@ -4394,6 +4542,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NORMALIZATION_GAIN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Float getNormalizationGain() {
         return normalizationGain;
     }
@@ -4417,6 +4566,7 @@ public class BaseItemDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CURRENT_PROGRAM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public BaseItemDto getCurrentProgram() {
         return currentProgram;
     }
@@ -4783,1913 +4933,5 @@ public class BaseItemDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `OriginalTitle` to the URL query string
-        if (getOriginalTitle() != null) {
-            joiner.add(String.format("%sOriginalTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOriginalTitle()))));
-        }
-
-        // add `ServerId` to the URL query string
-        if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Etag` to the URL query string
-        if (getEtag() != null) {
-            joiner.add(String.format("%sEtag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEtag()))));
-        }
-
-        // add `SourceType` to the URL query string
-        if (getSourceType() != null) {
-            joiner.add(String.format("%sSourceType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSourceType()))));
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        // add `DateCreated` to the URL query string
-        if (getDateCreated() != null) {
-            joiner.add(String.format("%sDateCreated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
-        }
-
-        // add `DateLastMediaAdded` to the URL query string
-        if (getDateLastMediaAdded() != null) {
-            joiner.add(String.format("%sDateLastMediaAdded%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateLastMediaAdded()))));
-        }
-
-        // add `ExtraType` to the URL query string
-        if (getExtraType() != null) {
-            joiner.add(String.format("%sExtraType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExtraType()))));
-        }
-
-        // add `AirsBeforeSeasonNumber` to the URL query string
-        if (getAirsBeforeSeasonNumber() != null) {
-            joiner.add(String.format("%sAirsBeforeSeasonNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAirsBeforeSeasonNumber()))));
-        }
-
-        // add `AirsAfterSeasonNumber` to the URL query string
-        if (getAirsAfterSeasonNumber() != null) {
-            joiner.add(String.format("%sAirsAfterSeasonNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAirsAfterSeasonNumber()))));
-        }
-
-        // add `AirsBeforeEpisodeNumber` to the URL query string
-        if (getAirsBeforeEpisodeNumber() != null) {
-            joiner.add(String.format("%sAirsBeforeEpisodeNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAirsBeforeEpisodeNumber()))));
-        }
-
-        // add `CanDelete` to the URL query string
-        if (getCanDelete() != null) {
-            joiner.add(String.format("%sCanDelete%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanDelete()))));
-        }
-
-        // add `CanDownload` to the URL query string
-        if (getCanDownload() != null) {
-            joiner.add(String.format("%sCanDownload%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanDownload()))));
-        }
-
-        // add `HasLyrics` to the URL query string
-        if (getHasLyrics() != null) {
-            joiner.add(String.format("%sHasLyrics%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasLyrics()))));
-        }
-
-        // add `HasSubtitles` to the URL query string
-        if (getHasSubtitles() != null) {
-            joiner.add(String.format("%sHasSubtitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasSubtitles()))));
-        }
-
-        // add `PreferredMetadataLanguage` to the URL query string
-        if (getPreferredMetadataLanguage() != null) {
-            joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
-        }
-
-        // add `PreferredMetadataCountryCode` to the URL query string
-        if (getPreferredMetadataCountryCode() != null) {
-            joiner.add(String.format("%sPreferredMetadataCountryCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataCountryCode()))));
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `SortName` to the URL query string
-        if (getSortName() != null) {
-            joiner.add(String.format("%sSortName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSortName()))));
-        }
-
-        // add `ForcedSortName` to the URL query string
-        if (getForcedSortName() != null) {
-            joiner.add(String.format("%sForcedSortName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getForcedSortName()))));
-        }
-
-        // add `Video3DFormat` to the URL query string
-        if (getVideo3DFormat() != null) {
-            joiner.add(String.format("%sVideo3DFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideo3DFormat()))));
-        }
-
-        // add `PremiereDate` to the URL query string
-        if (getPremiereDate() != null) {
-            joiner.add(String.format("%sPremiereDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
-        }
-
-        // add `ExternalUrls` to the URL query string
-        if (getExternalUrls() != null) {
-            for (int i = 0; i < getExternalUrls().size(); i++) {
-                if (getExternalUrls().get(i) != null) {
-                    joiner.add(getExternalUrls().get(i).toUrlQueryString(String.format("%sExternalUrls%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `MediaSources` to the URL query string
-        if (getMediaSources() != null) {
-            for (int i = 0; i < getMediaSources().size(); i++) {
-                if (getMediaSources().get(i) != null) {
-                    joiner.add(getMediaSources().get(i).toUrlQueryString(String.format("%sMediaSources%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `CriticRating` to the URL query string
-        if (getCriticRating() != null) {
-            joiner.add(String.format("%sCriticRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCriticRating()))));
-        }
-
-        // add `ProductionLocations` to the URL query string
-        if (getProductionLocations() != null) {
-            for (int i = 0; i < getProductionLocations().size(); i++) {
-                joiner.add(String.format("%sProductionLocations%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProductionLocations().get(i)))));
-            }
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `EnableMediaSourceDisplay` to the URL query string
-        if (getEnableMediaSourceDisplay() != null) {
-            joiner.add(String.format("%sEnableMediaSourceDisplay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMediaSourceDisplay()))));
-        }
-
-        // add `OfficialRating` to the URL query string
-        if (getOfficialRating() != null) {
-            joiner.add(String.format("%sOfficialRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOfficialRating()))));
-        }
-
-        // add `CustomRating` to the URL query string
-        if (getCustomRating() != null) {
-            joiner.add(String.format("%sCustomRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCustomRating()))));
-        }
-
-        // add `ChannelId` to the URL query string
-        if (getChannelId() != null) {
-            joiner.add(String.format("%sChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelId()))));
-        }
-
-        // add `ChannelName` to the URL query string
-        if (getChannelName() != null) {
-            joiner.add(String.format("%sChannelName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelName()))));
-        }
-
-        // add `Overview` to the URL query string
-        if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
-        }
-
-        // add `Taglines` to the URL query string
-        if (getTaglines() != null) {
-            for (int i = 0; i < getTaglines().size(); i++) {
-                joiner.add(String.format("%sTaglines%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTaglines().get(i)))));
-            }
-        }
-
-        // add `Genres` to the URL query string
-        if (getGenres() != null) {
-            for (int i = 0; i < getGenres().size(); i++) {
-                joiner.add(String.format("%sGenres%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getGenres().get(i)))));
-            }
-        }
-
-        // add `CommunityRating` to the URL query string
-        if (getCommunityRating() != null) {
-            joiner.add(String.format("%sCommunityRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
-        }
-
-        // add `CumulativeRunTimeTicks` to the URL query string
-        if (getCumulativeRunTimeTicks() != null) {
-            joiner.add(String.format("%sCumulativeRunTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCumulativeRunTimeTicks()))));
-        }
-
-        // add `RunTimeTicks` to the URL query string
-        if (getRunTimeTicks() != null) {
-            joiner.add(String.format("%sRunTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRunTimeTicks()))));
-        }
-
-        // add `PlayAccess` to the URL query string
-        if (getPlayAccess() != null) {
-            joiner.add(String.format("%sPlayAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayAccess()))));
-        }
-
-        // add `AspectRatio` to the URL query string
-        if (getAspectRatio() != null) {
-            joiner.add(String.format("%sAspectRatio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAspectRatio()))));
-        }
-
-        // add `ProductionYear` to the URL query string
-        if (getProductionYear() != null) {
-            joiner.add(String.format("%sProductionYear%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductionYear()))));
-        }
-
-        // add `IsPlaceHolder` to the URL query string
-        if (getIsPlaceHolder() != null) {
-            joiner.add(String.format("%sIsPlaceHolder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPlaceHolder()))));
-        }
-
-        // add `Number` to the URL query string
-        if (getNumber() != null) {
-            joiner.add(String.format("%sNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNumber()))));
-        }
-
-        // add `ChannelNumber` to the URL query string
-        if (getChannelNumber() != null) {
-            joiner.add(String.format("%sChannelNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelNumber()))));
-        }
-
-        // add `IndexNumber` to the URL query string
-        if (getIndexNumber() != null) {
-            joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
-        }
-
-        // add `IndexNumberEnd` to the URL query string
-        if (getIndexNumberEnd() != null) {
-            joiner.add(String.format("%sIndexNumberEnd%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumberEnd()))));
-        }
-
-        // add `ParentIndexNumber` to the URL query string
-        if (getParentIndexNumber() != null) {
-            joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
-        }
-
-        // add `RemoteTrailers` to the URL query string
-        if (getRemoteTrailers() != null) {
-            for (int i = 0; i < getRemoteTrailers().size(); i++) {
-                if (getRemoteTrailers().get(i) != null) {
-                    joiner.add(getRemoteTrailers().get(i).toUrlQueryString(String.format("%sRemoteTrailers%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ProviderIds` to the URL query string
-        if (getProviderIds() != null) {
-            for (String _key : getProviderIds().keySet()) {
-                joiner.add(String.format("%sProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getProviderIds().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
-            }
-        }
-
-        // add `IsHD` to the URL query string
-        if (getIsHD() != null) {
-            joiner.add(String.format("%sIsHD%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHD()))));
-        }
-
-        // add `IsFolder` to the URL query string
-        if (getIsFolder() != null) {
-            joiner.add(String.format("%sIsFolder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsFolder()))));
-        }
-
-        // add `ParentId` to the URL query string
-        if (getParentId() != null) {
-            joiner.add(String.format("%sParentId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentId()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `People` to the URL query string
-        if (getPeople() != null) {
-            for (int i = 0; i < getPeople().size(); i++) {
-                if (getPeople().get(i) != null) {
-                    joiner.add(getPeople().get(i).toUrlQueryString(String.format("%sPeople%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Studios` to the URL query string
-        if (getStudios() != null) {
-            for (int i = 0; i < getStudios().size(); i++) {
-                if (getStudios().get(i) != null) {
-                    joiner.add(getStudios().get(i).toUrlQueryString(String.format("%sStudios%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `GenreItems` to the URL query string
-        if (getGenreItems() != null) {
-            for (int i = 0; i < getGenreItems().size(); i++) {
-                if (getGenreItems().get(i) != null) {
-                    joiner.add(getGenreItems().get(i).toUrlQueryString(String.format("%sGenreItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ParentLogoItemId` to the URL query string
-        if (getParentLogoItemId() != null) {
-            joiner.add(String.format("%sParentLogoItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentLogoItemId()))));
-        }
-
-        // add `ParentBackdropItemId` to the URL query string
-        if (getParentBackdropItemId() != null) {
-            joiner.add(String.format("%sParentBackdropItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropItemId()))));
-        }
-
-        // add `ParentBackdropImageTags` to the URL query string
-        if (getParentBackdropImageTags() != null) {
-            for (int i = 0; i < getParentBackdropImageTags().size(); i++) {
-                joiner.add(String.format("%sParentBackdropImageTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropImageTags().get(i)))));
-            }
-        }
-
-        // add `LocalTrailerCount` to the URL query string
-        if (getLocalTrailerCount() != null) {
-            joiner.add(String.format("%sLocalTrailerCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalTrailerCount()))));
-        }
-
-        // add `UserData` to the URL query string
-        if (getUserData() != null) {
-            joiner.add(getUserData().toUrlQueryString(prefix + "UserData" + suffix));
-        }
-
-        // add `RecursiveItemCount` to the URL query string
-        if (getRecursiveItemCount() != null) {
-            joiner.add(String.format("%sRecursiveItemCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecursiveItemCount()))));
-        }
-
-        // add `ChildCount` to the URL query string
-        if (getChildCount() != null) {
-            joiner.add(String.format("%sChildCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChildCount()))));
-        }
-
-        // add `SeriesName` to the URL query string
-        if (getSeriesName() != null) {
-            joiner.add(String.format("%sSeriesName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesName()))));
-        }
-
-        // add `SeriesId` to the URL query string
-        if (getSeriesId() != null) {
-            joiner.add(String.format("%sSeriesId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesId()))));
-        }
-
-        // add `SeasonId` to the URL query string
-        if (getSeasonId() != null) {
-            joiner.add(String.format("%sSeasonId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeasonId()))));
-        }
-
-        // add `SpecialFeatureCount` to the URL query string
-        if (getSpecialFeatureCount() != null) {
-            joiner.add(String.format("%sSpecialFeatureCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSpecialFeatureCount()))));
-        }
-
-        // add `DisplayPreferencesId` to the URL query string
-        if (getDisplayPreferencesId() != null) {
-            joiner.add(String.format("%sDisplayPreferencesId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayPreferencesId()))));
-        }
-
-        // add `Status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        // add `AirTime` to the URL query string
-        if (getAirTime() != null) {
-            joiner.add(String.format("%sAirTime%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAirTime()))));
-        }
-
-        // add `AirDays` to the URL query string
-        if (getAirDays() != null) {
-            for (int i = 0; i < getAirDays().size(); i++) {
-                if (getAirDays().get(i) != null) {
-                    joiner.add(String.format("%sAirDays%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getAirDays().get(i)))));
-                }
-            }
-        }
-
-        // add `Tags` to the URL query string
-        if (getTags() != null) {
-            for (int i = 0; i < getTags().size(); i++) {
-                joiner.add(String.format("%sTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTags().get(i)))));
-            }
-        }
-
-        // add `PrimaryImageAspectRatio` to the URL query string
-        if (getPrimaryImageAspectRatio() != null) {
-            joiner.add(String.format("%sPrimaryImageAspectRatio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageAspectRatio()))));
-        }
-
-        // add `Artists` to the URL query string
-        if (getArtists() != null) {
-            for (int i = 0; i < getArtists().size(); i++) {
-                joiner.add(String.format("%sArtists%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getArtists().get(i)))));
-            }
-        }
-
-        // add `ArtistItems` to the URL query string
-        if (getArtistItems() != null) {
-            for (int i = 0; i < getArtistItems().size(); i++) {
-                if (getArtistItems().get(i) != null) {
-                    joiner.add(getArtistItems().get(i).toUrlQueryString(String.format("%sArtistItems%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Album` to the URL query string
-        if (getAlbum() != null) {
-            joiner.add(String.format("%sAlbum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbum()))));
-        }
-
-        // add `CollectionType` to the URL query string
-        if (getCollectionType() != null) {
-            joiner.add(String.format("%sCollectionType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCollectionType()))));
-        }
-
-        // add `DisplayOrder` to the URL query string
-        if (getDisplayOrder() != null) {
-            joiner.add(String.format("%sDisplayOrder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayOrder()))));
-        }
-
-        // add `AlbumId` to the URL query string
-        if (getAlbumId() != null) {
-            joiner.add(String.format("%sAlbumId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumId()))));
-        }
-
-        // add `AlbumPrimaryImageTag` to the URL query string
-        if (getAlbumPrimaryImageTag() != null) {
-            joiner.add(String.format("%sAlbumPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumPrimaryImageTag()))));
-        }
-
-        // add `SeriesPrimaryImageTag` to the URL query string
-        if (getSeriesPrimaryImageTag() != null) {
-            joiner.add(String.format("%sSeriesPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesPrimaryImageTag()))));
-        }
-
-        // add `AlbumArtist` to the URL query string
-        if (getAlbumArtist() != null) {
-            joiner.add(String.format("%sAlbumArtist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumArtist()))));
-        }
-
-        // add `AlbumArtists` to the URL query string
-        if (getAlbumArtists() != null) {
-            for (int i = 0; i < getAlbumArtists().size(); i++) {
-                if (getAlbumArtists().get(i) != null) {
-                    joiner.add(getAlbumArtists().get(i).toUrlQueryString(String.format("%sAlbumArtists%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `SeasonName` to the URL query string
-        if (getSeasonName() != null) {
-            joiner.add(String.format("%sSeasonName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeasonName()))));
-        }
-
-        // add `MediaStreams` to the URL query string
-        if (getMediaStreams() != null) {
-            for (int i = 0; i < getMediaStreams().size(); i++) {
-                if (getMediaStreams().get(i) != null) {
-                    joiner.add(getMediaStreams().get(i).toUrlQueryString(String.format("%sMediaStreams%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `VideoType` to the URL query string
-        if (getVideoType() != null) {
-            joiner.add(String.format("%sVideoType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoType()))));
-        }
-
-        // add `PartCount` to the URL query string
-        if (getPartCount() != null) {
-            joiner.add(String.format("%sPartCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPartCount()))));
-        }
-
-        // add `MediaSourceCount` to the URL query string
-        if (getMediaSourceCount() != null) {
-            joiner.add(String.format("%sMediaSourceCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceCount()))));
-        }
-
-        // add `ImageTags` to the URL query string
-        if (getImageTags() != null) {
-            for (String _key : getImageTags().keySet()) {
-                joiner.add(String.format("%sImageTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getImageTags().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getImageTags().get(_key)))));
-            }
-        }
-
-        // add `BackdropImageTags` to the URL query string
-        if (getBackdropImageTags() != null) {
-            for (int i = 0; i < getBackdropImageTags().size(); i++) {
-                joiner.add(String.format("%sBackdropImageTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getBackdropImageTags().get(i)))));
-            }
-        }
-
-        // add `ScreenshotImageTags` to the URL query string
-        if (getScreenshotImageTags() != null) {
-            for (int i = 0; i < getScreenshotImageTags().size(); i++) {
-                joiner.add(String.format("%sScreenshotImageTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getScreenshotImageTags().get(i)))));
-            }
-        }
-
-        // add `ParentLogoImageTag` to the URL query string
-        if (getParentLogoImageTag() != null) {
-            joiner.add(String.format("%sParentLogoImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentLogoImageTag()))));
-        }
-
-        // add `ParentArtItemId` to the URL query string
-        if (getParentArtItemId() != null) {
-            joiner.add(String.format("%sParentArtItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentArtItemId()))));
-        }
-
-        // add `ParentArtImageTag` to the URL query string
-        if (getParentArtImageTag() != null) {
-            joiner.add(String.format("%sParentArtImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentArtImageTag()))));
-        }
-
-        // add `SeriesThumbImageTag` to the URL query string
-        if (getSeriesThumbImageTag() != null) {
-            joiner.add(String.format("%sSeriesThumbImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesThumbImageTag()))));
-        }
-
-        // add `ImageBlurHashes` to the URL query string
-        if (getImageBlurHashes() != null) {
-            joiner.add(getImageBlurHashes().toUrlQueryString(prefix + "ImageBlurHashes" + suffix));
-        }
-
-        // add `SeriesStudio` to the URL query string
-        if (getSeriesStudio() != null) {
-            joiner.add(String.format("%sSeriesStudio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesStudio()))));
-        }
-
-        // add `ParentThumbItemId` to the URL query string
-        if (getParentThumbItemId() != null) {
-            joiner.add(String.format("%sParentThumbItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentThumbItemId()))));
-        }
-
-        // add `ParentThumbImageTag` to the URL query string
-        if (getParentThumbImageTag() != null) {
-            joiner.add(String.format("%sParentThumbImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentThumbImageTag()))));
-        }
-
-        // add `ParentPrimaryImageItemId` to the URL query string
-        if (getParentPrimaryImageItemId() != null) {
-            joiner.add(String.format("%sParentPrimaryImageItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentPrimaryImageItemId()))));
-        }
-
-        // add `ParentPrimaryImageTag` to the URL query string
-        if (getParentPrimaryImageTag() != null) {
-            joiner.add(String.format("%sParentPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentPrimaryImageTag()))));
-        }
-
-        // add `Chapters` to the URL query string
-        if (getChapters() != null) {
-            for (int i = 0; i < getChapters().size(); i++) {
-                if (getChapters().get(i) != null) {
-                    joiner.add(getChapters().get(i).toUrlQueryString(String.format("%sChapters%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Trickplay` to the URL query string
-        if (getTrickplay() != null) {
-            for (String _key : getTrickplay().keySet()) {
-                joiner.add(String.format("%sTrickplay%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getTrickplay().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTrickplay().get(_key)))));
-            }
-        }
-
-        // add `LocationType` to the URL query string
-        if (getLocationType() != null) {
-            joiner.add(String.format("%sLocationType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocationType()))));
-        }
-
-        // add `IsoType` to the URL query string
-        if (getIsoType() != null) {
-            joiner.add(String.format("%sIsoType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsoType()))));
-        }
-
-        // add `MediaType` to the URL query string
-        if (getMediaType() != null) {
-            joiner.add(String.format("%sMediaType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaType()))));
-        }
-
-        // add `EndDate` to the URL query string
-        if (getEndDate() != null) {
-            joiner.add(String.format("%sEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndDate()))));
-        }
-
-        // add `LockedFields` to the URL query string
-        if (getLockedFields() != null) {
-            for (int i = 0; i < getLockedFields().size(); i++) {
-                if (getLockedFields().get(i) != null) {
-                    joiner.add(String.format("%sLockedFields%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getLockedFields().get(i)))));
-                }
-            }
-        }
-
-        // add `TrailerCount` to the URL query string
-        if (getTrailerCount() != null) {
-            joiner.add(String.format("%sTrailerCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTrailerCount()))));
-        }
-
-        // add `MovieCount` to the URL query string
-        if (getMovieCount() != null) {
-            joiner.add(String.format("%sMovieCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMovieCount()))));
-        }
-
-        // add `SeriesCount` to the URL query string
-        if (getSeriesCount() != null) {
-            joiner.add(String.format("%sSeriesCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesCount()))));
-        }
-
-        // add `ProgramCount` to the URL query string
-        if (getProgramCount() != null) {
-            joiner.add(String.format("%sProgramCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramCount()))));
-        }
-
-        // add `EpisodeCount` to the URL query string
-        if (getEpisodeCount() != null) {
-            joiner.add(String.format("%sEpisodeCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEpisodeCount()))));
-        }
-
-        // add `SongCount` to the URL query string
-        if (getSongCount() != null) {
-            joiner.add(String.format("%sSongCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSongCount()))));
-        }
-
-        // add `AlbumCount` to the URL query string
-        if (getAlbumCount() != null) {
-            joiner.add(String.format("%sAlbumCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumCount()))));
-        }
-
-        // add `ArtistCount` to the URL query string
-        if (getArtistCount() != null) {
-            joiner.add(String.format("%sArtistCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getArtistCount()))));
-        }
-
-        // add `MusicVideoCount` to the URL query string
-        if (getMusicVideoCount() != null) {
-            joiner.add(String.format("%sMusicVideoCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMusicVideoCount()))));
-        }
-
-        // add `LockData` to the URL query string
-        if (getLockData() != null) {
-            joiner.add(String.format("%sLockData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLockData()))));
-        }
-
-        // add `Width` to the URL query string
-        if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
-        }
-
-        // add `Height` to the URL query string
-        if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
-        }
-
-        // add `CameraMake` to the URL query string
-        if (getCameraMake() != null) {
-            joiner.add(String.format("%sCameraMake%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCameraMake()))));
-        }
-
-        // add `CameraModel` to the URL query string
-        if (getCameraModel() != null) {
-            joiner.add(String.format("%sCameraModel%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCameraModel()))));
-        }
-
-        // add `Software` to the URL query string
-        if (getSoftware() != null) {
-            joiner.add(String.format("%sSoftware%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSoftware()))));
-        }
-
-        // add `ExposureTime` to the URL query string
-        if (getExposureTime() != null) {
-            joiner.add(String.format("%sExposureTime%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExposureTime()))));
-        }
-
-        // add `FocalLength` to the URL query string
-        if (getFocalLength() != null) {
-            joiner.add(String.format("%sFocalLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFocalLength()))));
-        }
-
-        // add `ImageOrientation` to the URL query string
-        if (getImageOrientation() != null) {
-            joiner.add(String.format("%sImageOrientation%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageOrientation()))));
-        }
-
-        // add `Aperture` to the URL query string
-        if (getAperture() != null) {
-            joiner.add(String.format("%sAperture%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAperture()))));
-        }
-
-        // add `ShutterSpeed` to the URL query string
-        if (getShutterSpeed() != null) {
-            joiner.add(String.format("%sShutterSpeed%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShutterSpeed()))));
-        }
-
-        // add `Latitude` to the URL query string
-        if (getLatitude() != null) {
-            joiner.add(String.format("%sLatitude%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLatitude()))));
-        }
-
-        // add `Longitude` to the URL query string
-        if (getLongitude() != null) {
-            joiner.add(String.format("%sLongitude%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLongitude()))));
-        }
-
-        // add `Altitude` to the URL query string
-        if (getAltitude() != null) {
-            joiner.add(String.format("%sAltitude%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAltitude()))));
-        }
-
-        // add `IsoSpeedRating` to the URL query string
-        if (getIsoSpeedRating() != null) {
-            joiner.add(String.format("%sIsoSpeedRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsoSpeedRating()))));
-        }
-
-        // add `SeriesTimerId` to the URL query string
-        if (getSeriesTimerId() != null) {
-            joiner.add(String.format("%sSeriesTimerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesTimerId()))));
-        }
-
-        // add `ProgramId` to the URL query string
-        if (getProgramId() != null) {
-            joiner.add(String.format("%sProgramId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramId()))));
-        }
-
-        // add `ChannelPrimaryImageTag` to the URL query string
-        if (getChannelPrimaryImageTag() != null) {
-            joiner.add(String.format("%sChannelPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelPrimaryImageTag()))));
-        }
-
-        // add `StartDate` to the URL query string
-        if (getStartDate() != null) {
-            joiner.add(String.format("%sStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
-        }
-
-        // add `CompletionPercentage` to the URL query string
-        if (getCompletionPercentage() != null) {
-            joiner.add(String.format("%sCompletionPercentage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCompletionPercentage()))));
-        }
-
-        // add `IsRepeat` to the URL query string
-        if (getIsRepeat() != null) {
-            joiner.add(String.format("%sIsRepeat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsRepeat()))));
-        }
-
-        // add `EpisodeTitle` to the URL query string
-        if (getEpisodeTitle() != null) {
-            joiner.add(String.format("%sEpisodeTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEpisodeTitle()))));
-        }
-
-        // add `ChannelType` to the URL query string
-        if (getChannelType() != null) {
-            joiner.add(String.format("%sChannelType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelType()))));
-        }
-
-        // add `Audio` to the URL query string
-        if (getAudio() != null) {
-            joiner.add(String.format("%sAudio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudio()))));
-        }
-
-        // add `IsMovie` to the URL query string
-        if (getIsMovie() != null) {
-            joiner.add(String.format("%sIsMovie%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsMovie()))));
-        }
-
-        // add `IsSports` to the URL query string
-        if (getIsSports() != null) {
-            joiner.add(String.format("%sIsSports%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSports()))));
-        }
-
-        // add `IsSeries` to the URL query string
-        if (getIsSeries() != null) {
-            joiner.add(String.format("%sIsSeries%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSeries()))));
-        }
-
-        // add `IsLive` to the URL query string
-        if (getIsLive() != null) {
-            joiner.add(String.format("%sIsLive%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsLive()))));
-        }
-
-        // add `IsNews` to the URL query string
-        if (getIsNews() != null) {
-            joiner.add(String.format("%sIsNews%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsNews()))));
-        }
-
-        // add `IsKids` to the URL query string
-        if (getIsKids() != null) {
-            joiner.add(String.format("%sIsKids%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsKids()))));
-        }
-
-        // add `IsPremiere` to the URL query string
-        if (getIsPremiere() != null) {
-            joiner.add(String.format("%sIsPremiere%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPremiere()))));
-        }
-
-        // add `TimerId` to the URL query string
-        if (getTimerId() != null) {
-            joiner.add(String.format("%sTimerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimerId()))));
-        }
-
-        // add `NormalizationGain` to the URL query string
-        if (getNormalizationGain() != null) {
-            joiner.add(String.format("%sNormalizationGain%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNormalizationGain()))));
-        }
-
-        // add `CurrentProgram` to the URL query string
-        if (getCurrentProgram() != null) {
-            joiner.add(getCurrentProgram().toUrlQueryString(prefix + "CurrentProgram" + suffix));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private BaseItemDto instance;
-
-        public Builder() {
-            this(new BaseItemDto());
-        }
-
-        protected Builder(BaseItemDto instance) {
-            this.instance = instance;
-        }
-
-        public BaseItemDto.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public BaseItemDto.Builder originalTitle(String originalTitle) {
-            this.instance.originalTitle = originalTitle;
-            return this;
-        }
-
-        public BaseItemDto.Builder serverId(String serverId) {
-            this.instance.serverId = serverId;
-            return this;
-        }
-
-        public BaseItemDto.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public BaseItemDto.Builder etag(String etag) {
-            this.instance.etag = etag;
-            return this;
-        }
-
-        public BaseItemDto.Builder sourceType(String sourceType) {
-            this.instance.sourceType = sourceType;
-            return this;
-        }
-
-        public BaseItemDto.Builder playlistItemId(String playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder dateCreated(OffsetDateTime dateCreated) {
-            this.instance.dateCreated = dateCreated;
-            return this;
-        }
-
-        public BaseItemDto.Builder dateLastMediaAdded(OffsetDateTime dateLastMediaAdded) {
-            this.instance.dateLastMediaAdded = dateLastMediaAdded;
-            return this;
-        }
-
-        public BaseItemDto.Builder extraType(ExtraType extraType) {
-            this.instance.extraType = extraType;
-            return this;
-        }
-
-        public BaseItemDto.Builder airsBeforeSeasonNumber(Integer airsBeforeSeasonNumber) {
-            this.instance.airsBeforeSeasonNumber = airsBeforeSeasonNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder airsAfterSeasonNumber(Integer airsAfterSeasonNumber) {
-            this.instance.airsAfterSeasonNumber = airsAfterSeasonNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder airsBeforeEpisodeNumber(Integer airsBeforeEpisodeNumber) {
-            this.instance.airsBeforeEpisodeNumber = airsBeforeEpisodeNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder canDelete(Boolean canDelete) {
-            this.instance.canDelete = canDelete;
-            return this;
-        }
-
-        public BaseItemDto.Builder canDownload(Boolean canDownload) {
-            this.instance.canDownload = canDownload;
-            return this;
-        }
-
-        public BaseItemDto.Builder hasLyrics(Boolean hasLyrics) {
-            this.instance.hasLyrics = hasLyrics;
-            return this;
-        }
-
-        public BaseItemDto.Builder hasSubtitles(Boolean hasSubtitles) {
-            this.instance.hasSubtitles = hasSubtitles;
-            return this;
-        }
-
-        public BaseItemDto.Builder preferredMetadataLanguage(String preferredMetadataLanguage) {
-            this.instance.preferredMetadataLanguage = preferredMetadataLanguage;
-            return this;
-        }
-
-        public BaseItemDto.Builder preferredMetadataCountryCode(String preferredMetadataCountryCode) {
-            this.instance.preferredMetadataCountryCode = preferredMetadataCountryCode;
-            return this;
-        }
-
-        public BaseItemDto.Builder container(String container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        public BaseItemDto.Builder sortName(String sortName) {
-            this.instance.sortName = sortName;
-            return this;
-        }
-
-        public BaseItemDto.Builder forcedSortName(String forcedSortName) {
-            this.instance.forcedSortName = forcedSortName;
-            return this;
-        }
-
-        public BaseItemDto.Builder video3DFormat(Video3DFormat video3DFormat) {
-            this.instance.video3DFormat = video3DFormat;
-            return this;
-        }
-
-        public BaseItemDto.Builder premiereDate(OffsetDateTime premiereDate) {
-            this.instance.premiereDate = premiereDate;
-            return this;
-        }
-
-        public BaseItemDto.Builder externalUrls(List<ExternalUrl> externalUrls) {
-            this.instance.externalUrls = externalUrls;
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaSources(List<MediaSourceInfo> mediaSources) {
-            this.instance.mediaSources = mediaSources;
-            return this;
-        }
-
-        public BaseItemDto.Builder criticRating(Float criticRating) {
-            this.instance.criticRating = criticRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder productionLocations(List<String> productionLocations) {
-            this.instance.productionLocations = productionLocations;
-            return this;
-        }
-
-        public BaseItemDto.Builder path(String path) {
-            this.instance.path = path;
-            return this;
-        }
-
-        public BaseItemDto.Builder enableMediaSourceDisplay(Boolean enableMediaSourceDisplay) {
-            this.instance.enableMediaSourceDisplay = enableMediaSourceDisplay;
-            return this;
-        }
-
-        public BaseItemDto.Builder officialRating(String officialRating) {
-            this.instance.officialRating = officialRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder customRating(String customRating) {
-            this.instance.customRating = customRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelId(UUID channelId) {
-            this.instance.channelId = channelId;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelName(String channelName) {
-            this.instance.channelName = channelName;
-            return this;
-        }
-
-        public BaseItemDto.Builder overview(String overview) {
-            this.instance.overview = overview;
-            return this;
-        }
-
-        public BaseItemDto.Builder taglines(List<String> taglines) {
-            this.instance.taglines = taglines;
-            return this;
-        }
-
-        public BaseItemDto.Builder genres(List<String> genres) {
-            this.instance.genres = genres;
-            return this;
-        }
-
-        public BaseItemDto.Builder communityRating(Float communityRating) {
-            this.instance.communityRating = communityRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder cumulativeRunTimeTicks(Long cumulativeRunTimeTicks) {
-            this.instance.cumulativeRunTimeTicks = cumulativeRunTimeTicks;
-            return this;
-        }
-
-        public BaseItemDto.Builder runTimeTicks(Long runTimeTicks) {
-            this.instance.runTimeTicks = runTimeTicks;
-            return this;
-        }
-
-        public BaseItemDto.Builder playAccess(PlayAccess playAccess) {
-            this.instance.playAccess = playAccess;
-            return this;
-        }
-
-        public BaseItemDto.Builder aspectRatio(String aspectRatio) {
-            this.instance.aspectRatio = aspectRatio;
-            return this;
-        }
-
-        public BaseItemDto.Builder productionYear(Integer productionYear) {
-            this.instance.productionYear = productionYear;
-            return this;
-        }
-
-        public BaseItemDto.Builder isPlaceHolder(Boolean isPlaceHolder) {
-            this.instance.isPlaceHolder = isPlaceHolder;
-            return this;
-        }
-
-        public BaseItemDto.Builder number(String number) {
-            this.instance.number = number;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelNumber(String channelNumber) {
-            this.instance.channelNumber = channelNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder indexNumber(Integer indexNumber) {
-            this.instance.indexNumber = indexNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder indexNumberEnd(Integer indexNumberEnd) {
-            this.instance.indexNumberEnd = indexNumberEnd;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentIndexNumber(Integer parentIndexNumber) {
-            this.instance.parentIndexNumber = parentIndexNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder remoteTrailers(List<MediaUrl> remoteTrailers) {
-            this.instance.remoteTrailers = remoteTrailers;
-            return this;
-        }
-
-        public BaseItemDto.Builder providerIds(Map<String, String> providerIds) {
-            this.instance.providerIds = providerIds;
-            return this;
-        }
-
-        public BaseItemDto.Builder isHD(Boolean isHD) {
-            this.instance.isHD = isHD;
-            return this;
-        }
-
-        public BaseItemDto.Builder isFolder(Boolean isFolder) {
-            this.instance.isFolder = isFolder;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentId(UUID parentId) {
-            this.instance.parentId = parentId;
-            return this;
-        }
-
-        public BaseItemDto.Builder type(BaseItemKind type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public BaseItemDto.Builder people(List<BaseItemPerson> people) {
-            this.instance.people = people;
-            return this;
-        }
-
-        public BaseItemDto.Builder studios(List<NameGuidPair> studios) {
-            this.instance.studios = studios;
-            return this;
-        }
-
-        public BaseItemDto.Builder genreItems(List<NameGuidPair> genreItems) {
-            this.instance.genreItems = genreItems;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentLogoItemId(UUID parentLogoItemId) {
-            this.instance.parentLogoItemId = parentLogoItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentBackdropItemId(UUID parentBackdropItemId) {
-            this.instance.parentBackdropItemId = parentBackdropItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentBackdropImageTags(List<String> parentBackdropImageTags) {
-            this.instance.parentBackdropImageTags = parentBackdropImageTags;
-            return this;
-        }
-
-        public BaseItemDto.Builder localTrailerCount(Integer localTrailerCount) {
-            this.instance.localTrailerCount = localTrailerCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder userData(UserItemDataDto userData) {
-            this.instance.userData = userData;
-            return this;
-        }
-
-        public BaseItemDto.Builder recursiveItemCount(Integer recursiveItemCount) {
-            this.instance.recursiveItemCount = recursiveItemCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder childCount(Integer childCount) {
-            this.instance.childCount = childCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesName(String seriesName) {
-            this.instance.seriesName = seriesName;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesId(UUID seriesId) {
-            this.instance.seriesId = seriesId;
-            return this;
-        }
-
-        public BaseItemDto.Builder seasonId(UUID seasonId) {
-            this.instance.seasonId = seasonId;
-            return this;
-        }
-
-        public BaseItemDto.Builder specialFeatureCount(Integer specialFeatureCount) {
-            this.instance.specialFeatureCount = specialFeatureCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder displayPreferencesId(String displayPreferencesId) {
-            this.instance.displayPreferencesId = displayPreferencesId;
-            return this;
-        }
-
-        public BaseItemDto.Builder status(String status) {
-            this.instance.status = status;
-            return this;
-        }
-
-        public BaseItemDto.Builder airTime(String airTime) {
-            this.instance.airTime = airTime;
-            return this;
-        }
-
-        public BaseItemDto.Builder airDays(List<DayOfWeek> airDays) {
-            this.instance.airDays = airDays;
-            return this;
-        }
-
-        public BaseItemDto.Builder tags(List<String> tags) {
-            this.instance.tags = tags;
-            return this;
-        }
-
-        public BaseItemDto.Builder primaryImageAspectRatio(Double primaryImageAspectRatio) {
-            this.instance.primaryImageAspectRatio = primaryImageAspectRatio;
-            return this;
-        }
-
-        public BaseItemDto.Builder artists(List<String> artists) {
-            this.instance.artists = artists;
-            return this;
-        }
-
-        public BaseItemDto.Builder artistItems(List<NameGuidPair> artistItems) {
-            this.instance.artistItems = artistItems;
-            return this;
-        }
-
-        public BaseItemDto.Builder album(String album) {
-            this.instance.album = album;
-            return this;
-        }
-
-        public BaseItemDto.Builder collectionType(CollectionType collectionType) {
-            this.instance.collectionType = collectionType;
-            return this;
-        }
-
-        public BaseItemDto.Builder displayOrder(String displayOrder) {
-            this.instance.displayOrder = displayOrder;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumId(UUID albumId) {
-            this.instance.albumId = albumId;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumPrimaryImageTag(String albumPrimaryImageTag) {
-            this.instance.albumPrimaryImageTag = albumPrimaryImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesPrimaryImageTag(String seriesPrimaryImageTag) {
-            this.instance.seriesPrimaryImageTag = seriesPrimaryImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumArtist(String albumArtist) {
-            this.instance.albumArtist = albumArtist;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumArtists(List<NameGuidPair> albumArtists) {
-            this.instance.albumArtists = albumArtists;
-            return this;
-        }
-
-        public BaseItemDto.Builder seasonName(String seasonName) {
-            this.instance.seasonName = seasonName;
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaStreams(List<MediaStream> mediaStreams) {
-            this.instance.mediaStreams = mediaStreams;
-            return this;
-        }
-
-        public BaseItemDto.Builder videoType(VideoType videoType) {
-            this.instance.videoType = videoType;
-            return this;
-        }
-
-        public BaseItemDto.Builder partCount(Integer partCount) {
-            this.instance.partCount = partCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaSourceCount(Integer mediaSourceCount) {
-            this.instance.mediaSourceCount = mediaSourceCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder imageTags(Map<String, String> imageTags) {
-            this.instance.imageTags = imageTags;
-            return this;
-        }
-
-        public BaseItemDto.Builder backdropImageTags(List<String> backdropImageTags) {
-            this.instance.backdropImageTags = backdropImageTags;
-            return this;
-        }
-
-        public BaseItemDto.Builder screenshotImageTags(List<String> screenshotImageTags) {
-            this.instance.screenshotImageTags = screenshotImageTags;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentLogoImageTag(String parentLogoImageTag) {
-            this.instance.parentLogoImageTag = parentLogoImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentArtItemId(UUID parentArtItemId) {
-            this.instance.parentArtItemId = parentArtItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentArtImageTag(String parentArtImageTag) {
-            this.instance.parentArtImageTag = parentArtImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesThumbImageTag(String seriesThumbImageTag) {
-            this.instance.seriesThumbImageTag = seriesThumbImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder imageBlurHashes(BaseItemDtoImageBlurHashes imageBlurHashes) {
-            this.instance.imageBlurHashes = imageBlurHashes;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesStudio(String seriesStudio) {
-            this.instance.seriesStudio = seriesStudio;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentThumbItemId(UUID parentThumbItemId) {
-            this.instance.parentThumbItemId = parentThumbItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentThumbImageTag(String parentThumbImageTag) {
-            this.instance.parentThumbImageTag = parentThumbImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentPrimaryImageItemId(String parentPrimaryImageItemId) {
-            this.instance.parentPrimaryImageItemId = parentPrimaryImageItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentPrimaryImageTag(String parentPrimaryImageTag) {
-            this.instance.parentPrimaryImageTag = parentPrimaryImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder chapters(List<ChapterInfo> chapters) {
-            this.instance.chapters = chapters;
-            return this;
-        }
-
-        public BaseItemDto.Builder trickplay(Map<String, Map<String, TrickplayInfo>> trickplay) {
-            this.instance.trickplay = trickplay;
-            return this;
-        }
-
-        public BaseItemDto.Builder locationType(LocationType locationType) {
-            this.instance.locationType = locationType;
-            return this;
-        }
-
-        public BaseItemDto.Builder isoType(IsoType isoType) {
-            this.instance.isoType = isoType;
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaType(MediaType mediaType) {
-            this.instance.mediaType = mediaType;
-            return this;
-        }
-
-        public BaseItemDto.Builder endDate(OffsetDateTime endDate) {
-            this.instance.endDate = endDate;
-            return this;
-        }
-
-        public BaseItemDto.Builder lockedFields(List<MetadataField> lockedFields) {
-            this.instance.lockedFields = lockedFields;
-            return this;
-        }
-
-        public BaseItemDto.Builder trailerCount(Integer trailerCount) {
-            this.instance.trailerCount = trailerCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder movieCount(Integer movieCount) {
-            this.instance.movieCount = movieCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesCount(Integer seriesCount) {
-            this.instance.seriesCount = seriesCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder programCount(Integer programCount) {
-            this.instance.programCount = programCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder episodeCount(Integer episodeCount) {
-            this.instance.episodeCount = episodeCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder songCount(Integer songCount) {
-            this.instance.songCount = songCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumCount(Integer albumCount) {
-            this.instance.albumCount = albumCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder artistCount(Integer artistCount) {
-            this.instance.artistCount = artistCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder musicVideoCount(Integer musicVideoCount) {
-            this.instance.musicVideoCount = musicVideoCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder lockData(Boolean lockData) {
-            this.instance.lockData = lockData;
-            return this;
-        }
-
-        public BaseItemDto.Builder width(Integer width) {
-            this.instance.width = width;
-            return this;
-        }
-
-        public BaseItemDto.Builder height(Integer height) {
-            this.instance.height = height;
-            return this;
-        }
-
-        public BaseItemDto.Builder cameraMake(String cameraMake) {
-            this.instance.cameraMake = cameraMake;
-            return this;
-        }
-
-        public BaseItemDto.Builder cameraModel(String cameraModel) {
-            this.instance.cameraModel = cameraModel;
-            return this;
-        }
-
-        public BaseItemDto.Builder software(String software) {
-            this.instance.software = software;
-            return this;
-        }
-
-        public BaseItemDto.Builder exposureTime(Double exposureTime) {
-            this.instance.exposureTime = exposureTime;
-            return this;
-        }
-
-        public BaseItemDto.Builder focalLength(Double focalLength) {
-            this.instance.focalLength = focalLength;
-            return this;
-        }
-
-        public BaseItemDto.Builder imageOrientation(ImageOrientation imageOrientation) {
-            this.instance.imageOrientation = imageOrientation;
-            return this;
-        }
-
-        public BaseItemDto.Builder aperture(Double aperture) {
-            this.instance.aperture = aperture;
-            return this;
-        }
-
-        public BaseItemDto.Builder shutterSpeed(Double shutterSpeed) {
-            this.instance.shutterSpeed = shutterSpeed;
-            return this;
-        }
-
-        public BaseItemDto.Builder latitude(Double latitude) {
-            this.instance.latitude = latitude;
-            return this;
-        }
-
-        public BaseItemDto.Builder longitude(Double longitude) {
-            this.instance.longitude = longitude;
-            return this;
-        }
-
-        public BaseItemDto.Builder altitude(Double altitude) {
-            this.instance.altitude = altitude;
-            return this;
-        }
-
-        public BaseItemDto.Builder isoSpeedRating(Integer isoSpeedRating) {
-            this.instance.isoSpeedRating = isoSpeedRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesTimerId(String seriesTimerId) {
-            this.instance.seriesTimerId = seriesTimerId;
-            return this;
-        }
-
-        public BaseItemDto.Builder programId(String programId) {
-            this.instance.programId = programId;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelPrimaryImageTag(String channelPrimaryImageTag) {
-            this.instance.channelPrimaryImageTag = channelPrimaryImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder startDate(OffsetDateTime startDate) {
-            this.instance.startDate = startDate;
-            return this;
-        }
-
-        public BaseItemDto.Builder completionPercentage(Double completionPercentage) {
-            this.instance.completionPercentage = completionPercentage;
-            return this;
-        }
-
-        public BaseItemDto.Builder isRepeat(Boolean isRepeat) {
-            this.instance.isRepeat = isRepeat;
-            return this;
-        }
-
-        public BaseItemDto.Builder episodeTitle(String episodeTitle) {
-            this.instance.episodeTitle = episodeTitle;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelType(ChannelType channelType) {
-            this.instance.channelType = channelType;
-            return this;
-        }
-
-        public BaseItemDto.Builder audio(ProgramAudio audio) {
-            this.instance.audio = audio;
-            return this;
-        }
-
-        public BaseItemDto.Builder isMovie(Boolean isMovie) {
-            this.instance.isMovie = isMovie;
-            return this;
-        }
-
-        public BaseItemDto.Builder isSports(Boolean isSports) {
-            this.instance.isSports = isSports;
-            return this;
-        }
-
-        public BaseItemDto.Builder isSeries(Boolean isSeries) {
-            this.instance.isSeries = isSeries;
-            return this;
-        }
-
-        public BaseItemDto.Builder isLive(Boolean isLive) {
-            this.instance.isLive = isLive;
-            return this;
-        }
-
-        public BaseItemDto.Builder isNews(Boolean isNews) {
-            this.instance.isNews = isNews;
-            return this;
-        }
-
-        public BaseItemDto.Builder isKids(Boolean isKids) {
-            this.instance.isKids = isKids;
-            return this;
-        }
-
-        public BaseItemDto.Builder isPremiere(Boolean isPremiere) {
-            this.instance.isPremiere = isPremiere;
-            return this;
-        }
-
-        public BaseItemDto.Builder timerId(String timerId) {
-            this.instance.timerId = timerId;
-            return this;
-        }
-
-        public BaseItemDto.Builder normalizationGain(Float normalizationGain) {
-            this.instance.normalizationGain = normalizationGain;
-            return this;
-        }
-
-        public BaseItemDto.Builder currentProgram(BaseItemDto currentProgram) {
-            this.instance.currentProgram = currentProgram;
-            return this;
-        }
-
-        /**
-         * returns a built BaseItemDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public BaseItemDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static BaseItemDto.Builder builder() {
-        return new BaseItemDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public BaseItemDto.Builder toBuilder() {
-        return new BaseItemDto.Builder().name(getName()).originalTitle(getOriginalTitle()).serverId(getServerId())
-                .id(getId()).etag(getEtag()).sourceType(getSourceType()).playlistItemId(getPlaylistItemId())
-                .dateCreated(getDateCreated()).dateLastMediaAdded(getDateLastMediaAdded()).extraType(getExtraType())
-                .airsBeforeSeasonNumber(getAirsBeforeSeasonNumber()).airsAfterSeasonNumber(getAirsAfterSeasonNumber())
-                .airsBeforeEpisodeNumber(getAirsBeforeEpisodeNumber()).canDelete(getCanDelete())
-                .canDownload(getCanDownload()).hasLyrics(getHasLyrics()).hasSubtitles(getHasSubtitles())
-                .preferredMetadataLanguage(getPreferredMetadataLanguage())
-                .preferredMetadataCountryCode(getPreferredMetadataCountryCode()).container(getContainer())
-                .sortName(getSortName()).forcedSortName(getForcedSortName()).video3DFormat(getVideo3DFormat())
-                .premiereDate(getPremiereDate()).externalUrls(getExternalUrls()).mediaSources(getMediaSources())
-                .criticRating(getCriticRating()).productionLocations(getProductionLocations()).path(getPath())
-                .enableMediaSourceDisplay(getEnableMediaSourceDisplay()).officialRating(getOfficialRating())
-                .customRating(getCustomRating()).channelId(getChannelId()).channelName(getChannelName())
-                .overview(getOverview()).taglines(getTaglines()).genres(getGenres())
-                .communityRating(getCommunityRating()).cumulativeRunTimeTicks(getCumulativeRunTimeTicks())
-                .runTimeTicks(getRunTimeTicks()).playAccess(getPlayAccess()).aspectRatio(getAspectRatio())
-                .productionYear(getProductionYear()).isPlaceHolder(getIsPlaceHolder()).number(getNumber())
-                .channelNumber(getChannelNumber()).indexNumber(getIndexNumber()).indexNumberEnd(getIndexNumberEnd())
-                .parentIndexNumber(getParentIndexNumber()).remoteTrailers(getRemoteTrailers())
-                .providerIds(getProviderIds()).isHD(getIsHD()).isFolder(getIsFolder()).parentId(getParentId())
-                .type(getType()).people(getPeople()).studios(getStudios()).genreItems(getGenreItems())
-                .parentLogoItemId(getParentLogoItemId()).parentBackdropItemId(getParentBackdropItemId())
-                .parentBackdropImageTags(getParentBackdropImageTags()).localTrailerCount(getLocalTrailerCount())
-                .userData(getUserData()).recursiveItemCount(getRecursiveItemCount()).childCount(getChildCount())
-                .seriesName(getSeriesName()).seriesId(getSeriesId()).seasonId(getSeasonId())
-                .specialFeatureCount(getSpecialFeatureCount()).displayPreferencesId(getDisplayPreferencesId())
-                .status(getStatus()).airTime(getAirTime()).airDays(getAirDays()).tags(getTags())
-                .primaryImageAspectRatio(getPrimaryImageAspectRatio()).artists(getArtists())
-                .artistItems(getArtistItems()).album(getAlbum()).collectionType(getCollectionType())
-                .displayOrder(getDisplayOrder()).albumId(getAlbumId()).albumPrimaryImageTag(getAlbumPrimaryImageTag())
-                .seriesPrimaryImageTag(getSeriesPrimaryImageTag()).albumArtist(getAlbumArtist())
-                .albumArtists(getAlbumArtists()).seasonName(getSeasonName()).mediaStreams(getMediaStreams())
-                .videoType(getVideoType()).partCount(getPartCount()).mediaSourceCount(getMediaSourceCount())
-                .imageTags(getImageTags()).backdropImageTags(getBackdropImageTags())
-                .screenshotImageTags(getScreenshotImageTags()).parentLogoImageTag(getParentLogoImageTag())
-                .parentArtItemId(getParentArtItemId()).parentArtImageTag(getParentArtImageTag())
-                .seriesThumbImageTag(getSeriesThumbImageTag()).imageBlurHashes(getImageBlurHashes())
-                .seriesStudio(getSeriesStudio()).parentThumbItemId(getParentThumbItemId())
-                .parentThumbImageTag(getParentThumbImageTag()).parentPrimaryImageItemId(getParentPrimaryImageItemId())
-                .parentPrimaryImageTag(getParentPrimaryImageTag()).chapters(getChapters()).trickplay(getTrickplay())
-                .locationType(getLocationType()).isoType(getIsoType()).mediaType(getMediaType()).endDate(getEndDate())
-                .lockedFields(getLockedFields()).trailerCount(getTrailerCount()).movieCount(getMovieCount())
-                .seriesCount(getSeriesCount()).programCount(getProgramCount()).episodeCount(getEpisodeCount())
-                .songCount(getSongCount()).albumCount(getAlbumCount()).artistCount(getArtistCount())
-                .musicVideoCount(getMusicVideoCount()).lockData(getLockData()).width(getWidth()).height(getHeight())
-                .cameraMake(getCameraMake()).cameraModel(getCameraModel()).software(getSoftware())
-                .exposureTime(getExposureTime()).focalLength(getFocalLength()).imageOrientation(getImageOrientation())
-                .aperture(getAperture()).shutterSpeed(getShutterSpeed()).latitude(getLatitude())
-                .longitude(getLongitude()).altitude(getAltitude()).isoSpeedRating(getIsoSpeedRating())
-                .seriesTimerId(getSeriesTimerId()).programId(getProgramId())
-                .channelPrimaryImageTag(getChannelPrimaryImageTag()).startDate(getStartDate())
-                .completionPercentage(getCompletionPercentage()).isRepeat(getIsRepeat()).episodeTitle(getEpisodeTitle())
-                .channelType(getChannelType()).audio(getAudio()).isMovie(getIsMovie()).isSports(getIsSports())
-                .isSeries(getIsSeries()).isLive(getIsLive()).isNews(getIsNews()).isKids(getIsKids())
-                .isPremiere(getIsPremiere()).timerId(getTimerId()).normalizationGain(getNormalizationGain())
-                .currentProgram(getCurrentProgram());
     }
 }

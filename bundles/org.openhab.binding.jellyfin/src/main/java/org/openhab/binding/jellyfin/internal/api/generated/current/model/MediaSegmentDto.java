@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,6 +64,7 @@ public class MediaSegmentDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -90,6 +88,7 @@ public class MediaSegmentDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
@@ -113,6 +112,7 @@ public class MediaSegmentDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public MediaSegmentType getType() {
         return type;
     }
@@ -136,6 +136,7 @@ public class MediaSegmentDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getStartTicks() {
         return startTicks;
     }
@@ -159,6 +160,7 @@ public class MediaSegmentDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_END_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getEndTicks() {
         return endTicks;
     }
@@ -214,142 +216,5 @@ public class MediaSegmentDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `StartTicks` to the URL query string
-        if (getStartTicks() != null) {
-            joiner.add(String.format("%sStartTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartTicks()))));
-        }
-
-        // add `EndTicks` to the URL query string
-        if (getEndTicks() != null) {
-            joiner.add(String.format("%sEndTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndTicks()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private MediaSegmentDto instance;
-
-        public Builder() {
-            this(new MediaSegmentDto());
-        }
-
-        protected Builder(MediaSegmentDto instance) {
-            this.instance = instance;
-        }
-
-        public MediaSegmentDto.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public MediaSegmentDto.Builder itemId(UUID itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public MediaSegmentDto.Builder type(MediaSegmentType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public MediaSegmentDto.Builder startTicks(Long startTicks) {
-            this.instance.startTicks = startTicks;
-            return this;
-        }
-
-        public MediaSegmentDto.Builder endTicks(Long endTicks) {
-            this.instance.endTicks = endTicks;
-            return this;
-        }
-
-        /**
-         * returns a built MediaSegmentDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public MediaSegmentDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static MediaSegmentDto.Builder builder() {
-        return new MediaSegmentDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public MediaSegmentDto.Builder toBuilder() {
-        return new MediaSegmentDto.Builder().id(getId()).itemId(getItemId()).type(getType()).startTicks(getStartTicks())
-                .endTicks(getEndTicks());
     }
 }

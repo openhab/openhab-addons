@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -114,6 +111,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GUIDE_DAYS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getGuideDays() {
         return guideDays;
     }
@@ -137,6 +135,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RECORDING_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getRecordingPath() {
         return recordingPath;
     }
@@ -160,6 +159,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MOVIE_RECORDING_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMovieRecordingPath() {
         return movieRecordingPath;
     }
@@ -183,6 +183,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES_RECORDING_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeriesRecordingPath() {
         return seriesRecordingPath;
     }
@@ -207,6 +208,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableRecordingSubfolders() {
         return enableRecordingSubfolders;
     }
@@ -231,6 +233,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableOriginalAudioWithEncodedRecordings() {
         return enableOriginalAudioWithEncodedRecordings;
     }
@@ -263,6 +266,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TUNER_HOSTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<TunerHostInfo> getTunerHosts() {
         return tunerHosts;
     }
@@ -295,6 +299,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LISTING_PROVIDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ListingsProviderInfo> getListingProviders() {
         return listingProviders;
     }
@@ -318,6 +323,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPrePaddingSeconds() {
         return prePaddingSeconds;
     }
@@ -341,6 +347,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPostPaddingSeconds() {
         return postPaddingSeconds;
     }
@@ -372,6 +379,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_LOCATIONS_CREATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getMediaLocationsCreated() {
         return mediaLocationsCreated;
     }
@@ -395,6 +403,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getRecordingPostProcessor() {
         return recordingPostProcessor;
     }
@@ -419,6 +428,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getRecordingPostProcessorArguments() {
         return recordingPostProcessorArguments;
     }
@@ -443,6 +453,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_N_F_O)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSaveRecordingNFO() {
         return saveRecordingNFO;
     }
@@ -466,6 +477,7 @@ public class LiveTvOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_IMAGES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSaveRecordingImages() {
         return saveRecordingImages;
     }
@@ -548,272 +560,5 @@ public class LiveTvOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `GuideDays` to the URL query string
-        if (getGuideDays() != null) {
-            joiner.add(String.format("%sGuideDays%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGuideDays()))));
-        }
-
-        // add `RecordingPath` to the URL query string
-        if (getRecordingPath() != null) {
-            joiner.add(String.format("%sRecordingPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecordingPath()))));
-        }
-
-        // add `MovieRecordingPath` to the URL query string
-        if (getMovieRecordingPath() != null) {
-            joiner.add(String.format("%sMovieRecordingPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMovieRecordingPath()))));
-        }
-
-        // add `SeriesRecordingPath` to the URL query string
-        if (getSeriesRecordingPath() != null) {
-            joiner.add(String.format("%sSeriesRecordingPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesRecordingPath()))));
-        }
-
-        // add `EnableRecordingSubfolders` to the URL query string
-        if (getEnableRecordingSubfolders() != null) {
-            joiner.add(String.format("%sEnableRecordingSubfolders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRecordingSubfolders()))));
-        }
-
-        // add `EnableOriginalAudioWithEncodedRecordings` to the URL query string
-        if (getEnableOriginalAudioWithEncodedRecordings() != null) {
-            joiner.add(String.format("%sEnableOriginalAudioWithEncodedRecordings%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableOriginalAudioWithEncodedRecordings()))));
-        }
-
-        // add `TunerHosts` to the URL query string
-        if (getTunerHosts() != null) {
-            for (int i = 0; i < getTunerHosts().size(); i++) {
-                if (getTunerHosts().get(i) != null) {
-                    joiner.add(getTunerHosts().get(i).toUrlQueryString(String.format("%sTunerHosts%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ListingProviders` to the URL query string
-        if (getListingProviders() != null) {
-            for (int i = 0; i < getListingProviders().size(); i++) {
-                if (getListingProviders().get(i) != null) {
-                    joiner.add(getListingProviders().get(i).toUrlQueryString(String.format("%sListingProviders%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `PrePaddingSeconds` to the URL query string
-        if (getPrePaddingSeconds() != null) {
-            joiner.add(String.format("%sPrePaddingSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrePaddingSeconds()))));
-        }
-
-        // add `PostPaddingSeconds` to the URL query string
-        if (getPostPaddingSeconds() != null) {
-            joiner.add(String.format("%sPostPaddingSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPostPaddingSeconds()))));
-        }
-
-        // add `MediaLocationsCreated` to the URL query string
-        if (getMediaLocationsCreated() != null) {
-            for (int i = 0; i < getMediaLocationsCreated().size(); i++) {
-                joiner.add(String.format("%sMediaLocationsCreated%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMediaLocationsCreated().get(i)))));
-            }
-        }
-
-        // add `RecordingPostProcessor` to the URL query string
-        if (getRecordingPostProcessor() != null) {
-            joiner.add(String.format("%sRecordingPostProcessor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecordingPostProcessor()))));
-        }
-
-        // add `RecordingPostProcessorArguments` to the URL query string
-        if (getRecordingPostProcessorArguments() != null) {
-            joiner.add(String.format("%sRecordingPostProcessorArguments%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecordingPostProcessorArguments()))));
-        }
-
-        // add `SaveRecordingNFO` to the URL query string
-        if (getSaveRecordingNFO() != null) {
-            joiner.add(String.format("%sSaveRecordingNFO%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveRecordingNFO()))));
-        }
-
-        // add `SaveRecordingImages` to the URL query string
-        if (getSaveRecordingImages() != null) {
-            joiner.add(String.format("%sSaveRecordingImages%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveRecordingImages()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private LiveTvOptions instance;
-
-        public Builder() {
-            this(new LiveTvOptions());
-        }
-
-        protected Builder(LiveTvOptions instance) {
-            this.instance = instance;
-        }
-
-        public LiveTvOptions.Builder guideDays(Integer guideDays) {
-            this.instance.guideDays = guideDays;
-            return this;
-        }
-
-        public LiveTvOptions.Builder recordingPath(String recordingPath) {
-            this.instance.recordingPath = recordingPath;
-            return this;
-        }
-
-        public LiveTvOptions.Builder movieRecordingPath(String movieRecordingPath) {
-            this.instance.movieRecordingPath = movieRecordingPath;
-            return this;
-        }
-
-        public LiveTvOptions.Builder seriesRecordingPath(String seriesRecordingPath) {
-            this.instance.seriesRecordingPath = seriesRecordingPath;
-            return this;
-        }
-
-        public LiveTvOptions.Builder enableRecordingSubfolders(Boolean enableRecordingSubfolders) {
-            this.instance.enableRecordingSubfolders = enableRecordingSubfolders;
-            return this;
-        }
-
-        public LiveTvOptions.Builder enableOriginalAudioWithEncodedRecordings(
-                Boolean enableOriginalAudioWithEncodedRecordings) {
-            this.instance.enableOriginalAudioWithEncodedRecordings = enableOriginalAudioWithEncodedRecordings;
-            return this;
-        }
-
-        public LiveTvOptions.Builder tunerHosts(List<TunerHostInfo> tunerHosts) {
-            this.instance.tunerHosts = tunerHosts;
-            return this;
-        }
-
-        public LiveTvOptions.Builder listingProviders(List<ListingsProviderInfo> listingProviders) {
-            this.instance.listingProviders = listingProviders;
-            return this;
-        }
-
-        public LiveTvOptions.Builder prePaddingSeconds(Integer prePaddingSeconds) {
-            this.instance.prePaddingSeconds = prePaddingSeconds;
-            return this;
-        }
-
-        public LiveTvOptions.Builder postPaddingSeconds(Integer postPaddingSeconds) {
-            this.instance.postPaddingSeconds = postPaddingSeconds;
-            return this;
-        }
-
-        public LiveTvOptions.Builder mediaLocationsCreated(List<String> mediaLocationsCreated) {
-            this.instance.mediaLocationsCreated = mediaLocationsCreated;
-            return this;
-        }
-
-        public LiveTvOptions.Builder recordingPostProcessor(String recordingPostProcessor) {
-            this.instance.recordingPostProcessor = recordingPostProcessor;
-            return this;
-        }
-
-        public LiveTvOptions.Builder recordingPostProcessorArguments(String recordingPostProcessorArguments) {
-            this.instance.recordingPostProcessorArguments = recordingPostProcessorArguments;
-            return this;
-        }
-
-        public LiveTvOptions.Builder saveRecordingNFO(Boolean saveRecordingNFO) {
-            this.instance.saveRecordingNFO = saveRecordingNFO;
-            return this;
-        }
-
-        public LiveTvOptions.Builder saveRecordingImages(Boolean saveRecordingImages) {
-            this.instance.saveRecordingImages = saveRecordingImages;
-            return this;
-        }
-
-        /**
-         * returns a built LiveTvOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public LiveTvOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LiveTvOptions.Builder builder() {
-        return new LiveTvOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LiveTvOptions.Builder toBuilder() {
-        return new LiveTvOptions.Builder().guideDays(getGuideDays()).recordingPath(getRecordingPath())
-                .movieRecordingPath(getMovieRecordingPath()).seriesRecordingPath(getSeriesRecordingPath())
-                .enableRecordingSubfolders(getEnableRecordingSubfolders())
-                .enableOriginalAudioWithEncodedRecordings(getEnableOriginalAudioWithEncodedRecordings())
-                .tunerHosts(getTunerHosts()).listingProviders(getListingProviders())
-                .prePaddingSeconds(getPrePaddingSeconds()).postPaddingSeconds(getPostPaddingSeconds())
-                .mediaLocationsCreated(getMediaLocationsCreated()).recordingPostProcessor(getRecordingPostProcessor())
-                .recordingPostProcessorArguments(getRecordingPostProcessorArguments())
-                .saveRecordingNFO(getSaveRecordingNFO()).saveRecordingImages(getSaveRecordingImages());
     }
 }

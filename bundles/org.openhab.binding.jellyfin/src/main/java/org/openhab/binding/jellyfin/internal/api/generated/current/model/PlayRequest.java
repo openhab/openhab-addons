@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -90,6 +87,7 @@ public class PlayRequest {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getItemIds() {
         return itemIds;
     }
@@ -113,6 +111,7 @@ public class PlayRequest {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getStartPositionTicks() {
         return startPositionTicks;
     }
@@ -136,6 +135,7 @@ public class PlayRequest {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAY_COMMAND)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PlayCommand getPlayCommand() {
         return playCommand;
     }
@@ -159,6 +159,7 @@ public class PlayRequest {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getControllingUserId() {
         return controllingUserId;
     }
@@ -182,6 +183,7 @@ public class PlayRequest {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
@@ -205,6 +207,7 @@ public class PlayRequest {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
@@ -228,6 +231,7 @@ public class PlayRequest {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMediaSourceId() {
         return mediaSourceId;
     }
@@ -251,6 +255,7 @@ public class PlayRequest {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getStartIndex() {
         return startIndex;
     }
@@ -314,182 +319,5 @@ public class PlayRequest {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ItemIds` to the URL query string
-        if (getItemIds() != null) {
-            for (int i = 0; i < getItemIds().size(); i++) {
-                if (getItemIds().get(i) != null) {
-                    joiner.add(String.format("%sItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
-                }
-            }
-        }
-
-        // add `StartPositionTicks` to the URL query string
-        if (getStartPositionTicks() != null) {
-            joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
-        }
-
-        // add `PlayCommand` to the URL query string
-        if (getPlayCommand() != null) {
-            joiner.add(String.format("%sPlayCommand%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayCommand()))));
-        }
-
-        // add `ControllingUserId` to the URL query string
-        if (getControllingUserId() != null) {
-            joiner.add(String.format("%sControllingUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
-        }
-
-        // add `SubtitleStreamIndex` to the URL query string
-        if (getSubtitleStreamIndex() != null) {
-            joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
-        }
-
-        // add `AudioStreamIndex` to the URL query string
-        if (getAudioStreamIndex() != null) {
-            joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
-        }
-
-        // add `MediaSourceId` to the URL query string
-        if (getMediaSourceId() != null) {
-            joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
-        }
-
-        // add `StartIndex` to the URL query string
-        if (getStartIndex() != null) {
-            joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private PlayRequest instance;
-
-        public Builder() {
-            this(new PlayRequest());
-        }
-
-        protected Builder(PlayRequest instance) {
-            this.instance = instance;
-        }
-
-        public PlayRequest.Builder itemIds(List<UUID> itemIds) {
-            this.instance.itemIds = itemIds;
-            return this;
-        }
-
-        public PlayRequest.Builder startPositionTicks(Long startPositionTicks) {
-            this.instance.startPositionTicks = startPositionTicks;
-            return this;
-        }
-
-        public PlayRequest.Builder playCommand(PlayCommand playCommand) {
-            this.instance.playCommand = playCommand;
-            return this;
-        }
-
-        public PlayRequest.Builder controllingUserId(UUID controllingUserId) {
-            this.instance.controllingUserId = controllingUserId;
-            return this;
-        }
-
-        public PlayRequest.Builder subtitleStreamIndex(Integer subtitleStreamIndex) {
-            this.instance.subtitleStreamIndex = subtitleStreamIndex;
-            return this;
-        }
-
-        public PlayRequest.Builder audioStreamIndex(Integer audioStreamIndex) {
-            this.instance.audioStreamIndex = audioStreamIndex;
-            return this;
-        }
-
-        public PlayRequest.Builder mediaSourceId(String mediaSourceId) {
-            this.instance.mediaSourceId = mediaSourceId;
-            return this;
-        }
-
-        public PlayRequest.Builder startIndex(Integer startIndex) {
-            this.instance.startIndex = startIndex;
-            return this;
-        }
-
-        /**
-         * returns a built PlayRequest instance.
-         *
-         * The builder is not reusable.
-         */
-        public PlayRequest build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PlayRequest.Builder builder() {
-        return new PlayRequest.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PlayRequest.Builder toBuilder() {
-        return new PlayRequest.Builder().itemIds(getItemIds()).startPositionTicks(getStartPositionTicks())
-                .playCommand(getPlayCommand()).controllingUserId(getControllingUserId())
-                .subtitleStreamIndex(getSubtitleStreamIndex()).audioStreamIndex(getAudioStreamIndex())
-                .mediaSourceId(getMediaSourceId()).startIndex(getStartIndex());
     }
 }

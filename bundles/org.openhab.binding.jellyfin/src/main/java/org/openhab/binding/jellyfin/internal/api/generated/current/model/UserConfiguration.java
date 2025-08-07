@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -123,6 +120,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAudioLanguagePreference() {
         return audioLanguagePreference;
     }
@@ -146,6 +144,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getPlayDefaultAudioTrack() {
         return playDefaultAudioTrack;
     }
@@ -170,6 +169,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSubtitleLanguagePreference() {
         return subtitleLanguagePreference;
     }
@@ -194,6 +194,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DISPLAY_MISSING_EPISODES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getDisplayMissingEpisodes() {
         return displayMissingEpisodes;
     }
@@ -225,6 +226,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GROUPED_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getGroupedFolders() {
         return groupedFolders;
     }
@@ -248,6 +250,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUBTITLE_MODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SubtitlePlaybackMode getSubtitleMode() {
         return subtitleMode;
     }
@@ -272,6 +275,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getDisplayCollectionsView() {
         return displayCollectionsView;
     }
@@ -295,6 +299,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_LOCAL_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableLocalPassword() {
         return enableLocalPassword;
     }
@@ -326,6 +331,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ORDERED_VIEWS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getOrderedViews() {
         return orderedViews;
     }
@@ -357,6 +363,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LATEST_ITEMS_EXCLUDES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getLatestItemsExcludes() {
         return latestItemsExcludes;
     }
@@ -388,6 +395,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MY_MEDIA_EXCLUDES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getMyMediaExcludes() {
         return myMediaExcludes;
     }
@@ -411,6 +419,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_HIDE_PLAYED_IN_LATEST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHidePlayedInLatest() {
         return hidePlayedInLatest;
     }
@@ -435,6 +444,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRememberAudioSelections() {
         return rememberAudioSelections;
     }
@@ -459,6 +469,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRememberSubtitleSelections() {
         return rememberSubtitleSelections;
     }
@@ -483,6 +494,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableNextEpisodeAutoPlay() {
         return enableNextEpisodeAutoPlay;
     }
@@ -506,6 +518,7 @@ public class UserConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAST_RECEIVER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCastReceiverId() {
         return castReceiverId;
     }
@@ -587,291 +600,5 @@ public class UserConfiguration {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `AudioLanguagePreference` to the URL query string
-        if (getAudioLanguagePreference() != null) {
-            joiner.add(String.format("%sAudioLanguagePreference%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioLanguagePreference()))));
-        }
-
-        // add `PlayDefaultAudioTrack` to the URL query string
-        if (getPlayDefaultAudioTrack() != null) {
-            joiner.add(String.format("%sPlayDefaultAudioTrack%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayDefaultAudioTrack()))));
-        }
-
-        // add `SubtitleLanguagePreference` to the URL query string
-        if (getSubtitleLanguagePreference() != null) {
-            joiner.add(String.format("%sSubtitleLanguagePreference%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleLanguagePreference()))));
-        }
-
-        // add `DisplayMissingEpisodes` to the URL query string
-        if (getDisplayMissingEpisodes() != null) {
-            joiner.add(String.format("%sDisplayMissingEpisodes%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayMissingEpisodes()))));
-        }
-
-        // add `GroupedFolders` to the URL query string
-        if (getGroupedFolders() != null) {
-            for (int i = 0; i < getGroupedFolders().size(); i++) {
-                if (getGroupedFolders().get(i) != null) {
-                    joiner.add(String.format("%sGroupedFolders%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getGroupedFolders().get(i)))));
-                }
-            }
-        }
-
-        // add `SubtitleMode` to the URL query string
-        if (getSubtitleMode() != null) {
-            joiner.add(String.format("%sSubtitleMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleMode()))));
-        }
-
-        // add `DisplayCollectionsView` to the URL query string
-        if (getDisplayCollectionsView() != null) {
-            joiner.add(String.format("%sDisplayCollectionsView%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayCollectionsView()))));
-        }
-
-        // add `EnableLocalPassword` to the URL query string
-        if (getEnableLocalPassword() != null) {
-            joiner.add(String.format("%sEnableLocalPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLocalPassword()))));
-        }
-
-        // add `OrderedViews` to the URL query string
-        if (getOrderedViews() != null) {
-            for (int i = 0; i < getOrderedViews().size(); i++) {
-                if (getOrderedViews().get(i) != null) {
-                    joiner.add(String.format("%sOrderedViews%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getOrderedViews().get(i)))));
-                }
-            }
-        }
-
-        // add `LatestItemsExcludes` to the URL query string
-        if (getLatestItemsExcludes() != null) {
-            for (int i = 0; i < getLatestItemsExcludes().size(); i++) {
-                if (getLatestItemsExcludes().get(i) != null) {
-                    joiner.add(String.format("%sLatestItemsExcludes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getLatestItemsExcludes().get(i)))));
-                }
-            }
-        }
-
-        // add `MyMediaExcludes` to the URL query string
-        if (getMyMediaExcludes() != null) {
-            for (int i = 0; i < getMyMediaExcludes().size(); i++) {
-                if (getMyMediaExcludes().get(i) != null) {
-                    joiner.add(String.format("%sMyMediaExcludes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getMyMediaExcludes().get(i)))));
-                }
-            }
-        }
-
-        // add `HidePlayedInLatest` to the URL query string
-        if (getHidePlayedInLatest() != null) {
-            joiner.add(String.format("%sHidePlayedInLatest%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHidePlayedInLatest()))));
-        }
-
-        // add `RememberAudioSelections` to the URL query string
-        if (getRememberAudioSelections() != null) {
-            joiner.add(String.format("%sRememberAudioSelections%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRememberAudioSelections()))));
-        }
-
-        // add `RememberSubtitleSelections` to the URL query string
-        if (getRememberSubtitleSelections() != null) {
-            joiner.add(String.format("%sRememberSubtitleSelections%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRememberSubtitleSelections()))));
-        }
-
-        // add `EnableNextEpisodeAutoPlay` to the URL query string
-        if (getEnableNextEpisodeAutoPlay() != null) {
-            joiner.add(String.format("%sEnableNextEpisodeAutoPlay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableNextEpisodeAutoPlay()))));
-        }
-
-        // add `CastReceiverId` to the URL query string
-        if (getCastReceiverId() != null) {
-            joiner.add(String.format("%sCastReceiverId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCastReceiverId()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private UserConfiguration instance;
-
-        public Builder() {
-            this(new UserConfiguration());
-        }
-
-        protected Builder(UserConfiguration instance) {
-            this.instance = instance;
-        }
-
-        public UserConfiguration.Builder audioLanguagePreference(String audioLanguagePreference) {
-            this.instance.audioLanguagePreference = audioLanguagePreference;
-            return this;
-        }
-
-        public UserConfiguration.Builder playDefaultAudioTrack(Boolean playDefaultAudioTrack) {
-            this.instance.playDefaultAudioTrack = playDefaultAudioTrack;
-            return this;
-        }
-
-        public UserConfiguration.Builder subtitleLanguagePreference(String subtitleLanguagePreference) {
-            this.instance.subtitleLanguagePreference = subtitleLanguagePreference;
-            return this;
-        }
-
-        public UserConfiguration.Builder displayMissingEpisodes(Boolean displayMissingEpisodes) {
-            this.instance.displayMissingEpisodes = displayMissingEpisodes;
-            return this;
-        }
-
-        public UserConfiguration.Builder groupedFolders(List<UUID> groupedFolders) {
-            this.instance.groupedFolders = groupedFolders;
-            return this;
-        }
-
-        public UserConfiguration.Builder subtitleMode(SubtitlePlaybackMode subtitleMode) {
-            this.instance.subtitleMode = subtitleMode;
-            return this;
-        }
-
-        public UserConfiguration.Builder displayCollectionsView(Boolean displayCollectionsView) {
-            this.instance.displayCollectionsView = displayCollectionsView;
-            return this;
-        }
-
-        public UserConfiguration.Builder enableLocalPassword(Boolean enableLocalPassword) {
-            this.instance.enableLocalPassword = enableLocalPassword;
-            return this;
-        }
-
-        public UserConfiguration.Builder orderedViews(List<UUID> orderedViews) {
-            this.instance.orderedViews = orderedViews;
-            return this;
-        }
-
-        public UserConfiguration.Builder latestItemsExcludes(List<UUID> latestItemsExcludes) {
-            this.instance.latestItemsExcludes = latestItemsExcludes;
-            return this;
-        }
-
-        public UserConfiguration.Builder myMediaExcludes(List<UUID> myMediaExcludes) {
-            this.instance.myMediaExcludes = myMediaExcludes;
-            return this;
-        }
-
-        public UserConfiguration.Builder hidePlayedInLatest(Boolean hidePlayedInLatest) {
-            this.instance.hidePlayedInLatest = hidePlayedInLatest;
-            return this;
-        }
-
-        public UserConfiguration.Builder rememberAudioSelections(Boolean rememberAudioSelections) {
-            this.instance.rememberAudioSelections = rememberAudioSelections;
-            return this;
-        }
-
-        public UserConfiguration.Builder rememberSubtitleSelections(Boolean rememberSubtitleSelections) {
-            this.instance.rememberSubtitleSelections = rememberSubtitleSelections;
-            return this;
-        }
-
-        public UserConfiguration.Builder enableNextEpisodeAutoPlay(Boolean enableNextEpisodeAutoPlay) {
-            this.instance.enableNextEpisodeAutoPlay = enableNextEpisodeAutoPlay;
-            return this;
-        }
-
-        public UserConfiguration.Builder castReceiverId(String castReceiverId) {
-            this.instance.castReceiverId = castReceiverId;
-            return this;
-        }
-
-        /**
-         * returns a built UserConfiguration instance.
-         *
-         * The builder is not reusable.
-         */
-        public UserConfiguration build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UserConfiguration.Builder builder() {
-        return new UserConfiguration.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UserConfiguration.Builder toBuilder() {
-        return new UserConfiguration.Builder().audioLanguagePreference(getAudioLanguagePreference())
-                .playDefaultAudioTrack(getPlayDefaultAudioTrack())
-                .subtitleLanguagePreference(getSubtitleLanguagePreference())
-                .displayMissingEpisodes(getDisplayMissingEpisodes()).groupedFolders(getGroupedFolders())
-                .subtitleMode(getSubtitleMode()).displayCollectionsView(getDisplayCollectionsView())
-                .enableLocalPassword(getEnableLocalPassword()).orderedViews(getOrderedViews())
-                .latestItemsExcludes(getLatestItemsExcludes()).myMediaExcludes(getMyMediaExcludes())
-                .hidePlayedInLatest(getHidePlayedInLatest()).rememberAudioSelections(getRememberAudioSelections())
-                .rememberSubtitleSelections(getRememberSubtitleSelections())
-                .enableNextEpisodeAutoPlay(getEnableNextEpisodeAutoPlay()).castReceiverId(getCastReceiverId());
     }
 }

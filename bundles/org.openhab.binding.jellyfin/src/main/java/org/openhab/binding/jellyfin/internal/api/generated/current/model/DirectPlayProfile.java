@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,6 +58,7 @@ public class DirectPlayProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getContainer() {
         return container;
     }
@@ -84,6 +82,7 @@ public class DirectPlayProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAudioCodec() {
         return audioCodec;
     }
@@ -107,6 +106,7 @@ public class DirectPlayProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVideoCodec() {
         return videoCodec;
     }
@@ -130,6 +130,7 @@ public class DirectPlayProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DlnaProfileType getType() {
         return type;
     }
@@ -184,131 +185,5 @@ public class DirectPlayProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `AudioCodec` to the URL query string
-        if (getAudioCodec() != null) {
-            joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
-        }
-
-        // add `VideoCodec` to the URL query string
-        if (getVideoCodec() != null) {
-            joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private DirectPlayProfile instance;
-
-        public Builder() {
-            this(new DirectPlayProfile());
-        }
-
-        protected Builder(DirectPlayProfile instance) {
-            this.instance = instance;
-        }
-
-        public DirectPlayProfile.Builder container(String container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        public DirectPlayProfile.Builder audioCodec(String audioCodec) {
-            this.instance.audioCodec = audioCodec;
-            return this;
-        }
-
-        public DirectPlayProfile.Builder videoCodec(String videoCodec) {
-            this.instance.videoCodec = videoCodec;
-            return this;
-        }
-
-        public DirectPlayProfile.Builder type(DlnaProfileType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        /**
-         * returns a built DirectPlayProfile instance.
-         *
-         * The builder is not reusable.
-         */
-        public DirectPlayProfile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DirectPlayProfile.Builder builder() {
-        return new DirectPlayProfile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DirectPlayProfile.Builder toBuilder() {
-        return new DirectPlayProfile.Builder().container(getContainer()).audioCodec(getAudioCodec())
-                .videoCodec(getVideoCodec()).type(getType());
     }
 }

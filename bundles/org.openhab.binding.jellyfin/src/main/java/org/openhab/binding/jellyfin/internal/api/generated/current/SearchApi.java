@@ -1,29 +1,11 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -34,44 +16,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseIte
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.MediaType;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SearchHintResult;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SearchApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public SearchApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public SearchApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -101,6 +73,30 @@ public class SearchApi {
      * @param includeArtists Optional filter whether to include artists. (optional, default to true)
      * @return SearchHintResult
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Search hint returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public SearchHintResult getSearchHints(@org.eclipse.jdt.annotation.Nullable String searchTerm,
             @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
@@ -116,10 +112,9 @@ public class SearchApi {
             @org.eclipse.jdt.annotation.NonNull Boolean includeGenres,
             @org.eclipse.jdt.annotation.NonNull Boolean includeStudios,
             @org.eclipse.jdt.annotation.NonNull Boolean includeArtists) throws ApiException {
-        ApiResponse<SearchHintResult> localVarResponse = getSearchHintsWithHttpInfo(searchTerm, startIndex, limit,
-                userId, includeItemTypes, excludeItemTypes, mediaTypes, parentId, isMovie, isSeries, isNews, isKids,
-                isSports, includePeople, includeMedia, includeGenres, includeStudios, includeArtists);
-        return localVarResponse.getData();
+        return getSearchHintsWithHttpInfo(searchTerm, startIndex, limit, userId, includeItemTypes, excludeItemTypes,
+                mediaTypes, parentId, isMovie, isSeries, isNews, isKids, isSports, includePeople, includeMedia,
+                includeGenres, includeStudios, includeArtists).getData();
     }
 
     /**
@@ -149,6 +144,30 @@ public class SearchApi {
      * @param includeArtists Optional filter whether to include artists. (optional, default to true)
      * @return ApiResponse&lt;SearchHintResult&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Search hint returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<SearchHintResult> getSearchHintsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable String searchTerm,
@@ -165,125 +184,39 @@ public class SearchApi {
             @org.eclipse.jdt.annotation.NonNull Boolean includeGenres,
             @org.eclipse.jdt.annotation.NonNull Boolean includeStudios,
             @org.eclipse.jdt.annotation.NonNull Boolean includeArtists) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSearchHintsRequestBuilder(searchTerm, startIndex, limit, userId,
-                includeItemTypes, excludeItemTypes, mediaTypes, parentId, isMovie, isSeries, isNews, isKids, isSports,
-                includePeople, includeMedia, includeGenres, includeStudios, includeArtists);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getSearchHints", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<SearchHintResult>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<SearchHintResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<SearchHintResult>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getSearchHintsRequestBuilder(@org.eclipse.jdt.annotation.Nullable String searchTerm,
-            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
-            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> excludeItemTypes,
-            @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes,
-            @org.eclipse.jdt.annotation.NonNull UUID parentId, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
-            @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
-            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
-            @org.eclipse.jdt.annotation.NonNull Boolean includePeople,
-            @org.eclipse.jdt.annotation.NonNull Boolean includeMedia,
-            @org.eclipse.jdt.annotation.NonNull Boolean includeGenres,
-            @org.eclipse.jdt.annotation.NonNull Boolean includeStudios,
-            @org.eclipse.jdt.annotation.NonNull Boolean includeArtists) throws ApiException {
-        // verify the required parameter 'searchTerm' is set
+        // Check required parameters
         if (searchTerm == null) {
             throw new ApiException(400, "Missing the required parameter 'searchTerm' when calling getSearchHints");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "startIndex", startIndex));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "userId", userId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "searchTerm", searchTerm));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "parentId", parentId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isMovie", isMovie));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isSeries", isSeries));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isNews", isNews));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isKids", isKids));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "isSports", isSports));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "includePeople", includePeople));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeMedia", includeMedia));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeGenres", includeGenres));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeStudios", includeStudios));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "includeArtists", includeArtists));
 
-        String localVarPath = "/Search/Hints";
-
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "startIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
-        localVarQueryParameterBaseName = "limit";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
-        localVarQueryParameterBaseName = "userId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
-        localVarQueryParameterBaseName = "searchTerm";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("searchTerm", searchTerm));
-        localVarQueryParameterBaseName = "includeItemTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        localVarQueryParameterBaseName = "excludeItemTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
-        localVarQueryParameterBaseName = "mediaTypes";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
-        localVarQueryParameterBaseName = "parentId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
-        localVarQueryParameterBaseName = "isMovie";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isMovie", isMovie));
-        localVarQueryParameterBaseName = "isSeries";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isSeries", isSeries));
-        localVarQueryParameterBaseName = "isNews";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isNews", isNews));
-        localVarQueryParameterBaseName = "isKids";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isKids", isKids));
-        localVarQueryParameterBaseName = "isSports";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isSports", isSports));
-        localVarQueryParameterBaseName = "includePeople";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("includePeople", includePeople));
-        localVarQueryParameterBaseName = "includeMedia";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("includeMedia", includeMedia));
-        localVarQueryParameterBaseName = "includeGenres";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("includeGenres", includeGenres));
-        localVarQueryParameterBaseName = "includeStudios";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("includeStudios", includeStudios));
-        localVarQueryParameterBaseName = "includeArtists";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("includeArtists", includeArtists));
-
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<SearchHintResult> localVarReturnType = new GenericType<SearchHintResult>() {
+        };
+        return apiClient.invokeAPI("SearchApi.getSearchHints", "/Search/Hints", "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 }

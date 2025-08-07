@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -61,6 +58,7 @@ public class ServerShuttingDownMessage {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getMessageId() {
         return messageId;
     }
@@ -79,6 +77,7 @@ public class ServerShuttingDownMessage {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SessionMessageType getMessageType() {
         return messageType;
     }
@@ -123,108 +122,5 @@ public class ServerShuttingDownMessage {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `MessageId` to the URL query string
-        if (getMessageId() != null) {
-            joiner.add(String.format("%sMessageId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
-        }
-
-        // add `MessageType` to the URL query string
-        if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ServerShuttingDownMessage instance;
-
-        public Builder() {
-            this(new ServerShuttingDownMessage());
-        }
-
-        protected Builder(ServerShuttingDownMessage instance) {
-            this.instance = instance;
-        }
-
-        public ServerShuttingDownMessage.Builder messageId(UUID messageId) {
-            this.instance.messageId = messageId;
-            return this;
-        }
-
-        public ServerShuttingDownMessage.Builder messageType(SessionMessageType messageType) {
-            this.instance.messageType = messageType;
-            return this;
-        }
-
-        /**
-         * returns a built ServerShuttingDownMessage instance.
-         *
-         * The builder is not reusable.
-         */
-        public ServerShuttingDownMessage build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ServerShuttingDownMessage.Builder builder() {
-        return new ServerShuttingDownMessage.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ServerShuttingDownMessage.Builder toBuilder() {
-        return new ServerShuttingDownMessage.Builder().messageId(getMessageId()).messageType(getMessageType());
     }
 }

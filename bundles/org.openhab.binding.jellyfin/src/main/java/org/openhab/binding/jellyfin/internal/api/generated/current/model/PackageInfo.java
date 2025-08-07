@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -81,6 +78,7 @@ public class PackageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -104,6 +102,7 @@ public class PackageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDescription() {
         return description;
     }
@@ -127,6 +126,7 @@ public class PackageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OVERVIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOverview() {
         return overview;
     }
@@ -150,6 +150,7 @@ public class PackageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OWNER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOwner() {
         return owner;
     }
@@ -173,6 +174,7 @@ public class PackageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CATEGORY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCategory() {
         return category;
     }
@@ -197,6 +199,7 @@ public class PackageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_GUID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGuid() {
         return guid;
     }
@@ -228,6 +231,7 @@ public class PackageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VERSIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<VersionInfo> getVersions() {
         return versions;
     }
@@ -251,6 +255,7 @@ public class PackageInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IMAGE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -310,180 +315,5 @@ public class PackageInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sname%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `description` to the URL query string
-        if (getDescription() != null) {
-            joiner.add(String.format("%sdescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-        }
-
-        // add `overview` to the URL query string
-        if (getOverview() != null) {
-            joiner.add(String.format("%soverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
-        }
-
-        // add `owner` to the URL query string
-        if (getOwner() != null) {
-            joiner.add(String.format("%sowner%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOwner()))));
-        }
-
-        // add `category` to the URL query string
-        if (getCategory() != null) {
-            joiner.add(String.format("%scategory%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
-        }
-
-        // add `guid` to the URL query string
-        if (getGuid() != null) {
-            joiner.add(String.format("%sguid%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGuid()))));
-        }
-
-        // add `versions` to the URL query string
-        if (getVersions() != null) {
-            for (int i = 0; i < getVersions().size(); i++) {
-                if (getVersions().get(i) != null) {
-                    joiner.add(getVersions().get(i).toUrlQueryString(String.format("%sversions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `imageUrl` to the URL query string
-        if (getImageUrl() != null) {
-            joiner.add(String.format("%simageUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private PackageInfo instance;
-
-        public Builder() {
-            this(new PackageInfo());
-        }
-
-        protected Builder(PackageInfo instance) {
-            this.instance = instance;
-        }
-
-        public PackageInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public PackageInfo.Builder description(String description) {
-            this.instance.description = description;
-            return this;
-        }
-
-        public PackageInfo.Builder overview(String overview) {
-            this.instance.overview = overview;
-            return this;
-        }
-
-        public PackageInfo.Builder owner(String owner) {
-            this.instance.owner = owner;
-            return this;
-        }
-
-        public PackageInfo.Builder category(String category) {
-            this.instance.category = category;
-            return this;
-        }
-
-        public PackageInfo.Builder guid(UUID guid) {
-            this.instance.guid = guid;
-            return this;
-        }
-
-        public PackageInfo.Builder versions(List<VersionInfo> versions) {
-            this.instance.versions = versions;
-            return this;
-        }
-
-        public PackageInfo.Builder imageUrl(String imageUrl) {
-            this.instance.imageUrl = imageUrl;
-            return this;
-        }
-
-        /**
-         * returns a built PackageInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public PackageInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PackageInfo.Builder builder() {
-        return new PackageInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PackageInfo.Builder toBuilder() {
-        return new PackageInfo.Builder().name(getName()).description(getDescription()).overview(getOverview())
-                .owner(getOwner()).category(getCategory()).guid(getGuid()).versions(getVersions())
-                .imageUrl(getImageUrl());
     }
 }

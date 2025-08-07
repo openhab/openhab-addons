@@ -15,9 +15,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -80,6 +77,7 @@ public class TaskResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_TIME_UTC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getStartTimeUtc() {
         return startTimeUtc;
     }
@@ -103,6 +101,7 @@ public class TaskResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_END_TIME_UTC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getEndTimeUtc() {
         return endTimeUtc;
     }
@@ -126,6 +125,7 @@ public class TaskResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TaskCompletionStatus getStatus() {
         return status;
     }
@@ -149,6 +149,7 @@ public class TaskResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -172,6 +173,7 @@ public class TaskResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_KEY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getKey() {
         return key;
     }
@@ -195,6 +197,7 @@ public class TaskResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -218,6 +221,7 @@ public class TaskResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ERROR_MESSAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getErrorMessage() {
         return errorMessage;
     }
@@ -241,6 +245,7 @@ public class TaskResult {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LONG_ERROR_MESSAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getLongErrorMessage() {
         return longErrorMessage;
     }
@@ -301,176 +306,5 @@ public class TaskResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `StartTimeUtc` to the URL query string
-        if (getStartTimeUtc() != null) {
-            joiner.add(String.format("%sStartTimeUtc%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartTimeUtc()))));
-        }
-
-        // add `EndTimeUtc` to the URL query string
-        if (getEndTimeUtc() != null) {
-            joiner.add(String.format("%sEndTimeUtc%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndTimeUtc()))));
-        }
-
-        // add `Status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Key` to the URL query string
-        if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `ErrorMessage` to the URL query string
-        if (getErrorMessage() != null) {
-            joiner.add(String.format("%sErrorMessage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getErrorMessage()))));
-        }
-
-        // add `LongErrorMessage` to the URL query string
-        if (getLongErrorMessage() != null) {
-            joiner.add(String.format("%sLongErrorMessage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLongErrorMessage()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private TaskResult instance;
-
-        public Builder() {
-            this(new TaskResult());
-        }
-
-        protected Builder(TaskResult instance) {
-            this.instance = instance;
-        }
-
-        public TaskResult.Builder startTimeUtc(OffsetDateTime startTimeUtc) {
-            this.instance.startTimeUtc = startTimeUtc;
-            return this;
-        }
-
-        public TaskResult.Builder endTimeUtc(OffsetDateTime endTimeUtc) {
-            this.instance.endTimeUtc = endTimeUtc;
-            return this;
-        }
-
-        public TaskResult.Builder status(TaskCompletionStatus status) {
-            this.instance.status = status;
-            return this;
-        }
-
-        public TaskResult.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public TaskResult.Builder key(String key) {
-            this.instance.key = key;
-            return this;
-        }
-
-        public TaskResult.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public TaskResult.Builder errorMessage(String errorMessage) {
-            this.instance.errorMessage = errorMessage;
-            return this;
-        }
-
-        public TaskResult.Builder longErrorMessage(String longErrorMessage) {
-            this.instance.longErrorMessage = longErrorMessage;
-            return this;
-        }
-
-        /**
-         * returns a built TaskResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public TaskResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TaskResult.Builder builder() {
-        return new TaskResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TaskResult.Builder toBuilder() {
-        return new TaskResult.Builder().startTimeUtc(getStartTimeUtc()).endTimeUtc(getEndTimeUtc()).status(getStatus())
-                .name(getName()).key(getKey()).id(getId()).errorMessage(getErrorMessage())
-                .longErrorMessage(getLongErrorMessage());
     }
 }

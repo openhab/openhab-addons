@@ -16,7 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,6 +51,7 @@ public class LyricDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_METADATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public LyricMetadata getMetadata() {
         return metadata;
     }
@@ -83,6 +83,7 @@ public class LyricDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LYRICS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LyricLine> getLyrics() {
         return lyrics;
     }
@@ -132,111 +133,5 @@ public class LyricDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Metadata` to the URL query string
-        if (getMetadata() != null) {
-            joiner.add(getMetadata().toUrlQueryString(prefix + "Metadata" + suffix));
-        }
-
-        // add `Lyrics` to the URL query string
-        if (getLyrics() != null) {
-            for (int i = 0; i < getLyrics().size(); i++) {
-                if (getLyrics().get(i) != null) {
-                    joiner.add(getLyrics().get(i).toUrlQueryString(String.format("%sLyrics%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private LyricDto instance;
-
-        public Builder() {
-            this(new LyricDto());
-        }
-
-        protected Builder(LyricDto instance) {
-            this.instance = instance;
-        }
-
-        public LyricDto.Builder metadata(LyricMetadata metadata) {
-            this.instance.metadata = metadata;
-            return this;
-        }
-
-        public LyricDto.Builder lyrics(List<LyricLine> lyrics) {
-            this.instance.lyrics = lyrics;
-            return this;
-        }
-
-        /**
-         * returns a built LyricDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public LyricDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LyricDto.Builder builder() {
-        return new LyricDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LyricDto.Builder toBuilder() {
-        return new LyricDto.Builder().metadata(getMetadata()).lyrics(getLyrics());
     }
 }

@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -85,6 +82,7 @@ public class ConfigImageTypes {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BACKDROP_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getBackdropSizes() {
         return backdropSizes;
     }
@@ -108,6 +106,7 @@ public class ConfigImageTypes {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BASE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -139,6 +138,7 @@ public class ConfigImageTypes {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOGO_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getLogoSizes() {
         return logoSizes;
     }
@@ -170,6 +170,7 @@ public class ConfigImageTypes {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_POSTER_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getPosterSizes() {
         return posterSizes;
     }
@@ -201,6 +202,7 @@ public class ConfigImageTypes {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROFILE_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getProfileSizes() {
         return profileSizes;
     }
@@ -224,6 +226,7 @@ public class ConfigImageTypes {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SECURE_BASE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSecureBaseUrl() {
         return secureBaseUrl;
     }
@@ -255,6 +258,7 @@ public class ConfigImageTypes {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STILL_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getStillSizes() {
         return stillSizes;
     }
@@ -315,180 +319,5 @@ public class ConfigImageTypes {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `BackdropSizes` to the URL query string
-        if (getBackdropSizes() != null) {
-            for (int i = 0; i < getBackdropSizes().size(); i++) {
-                joiner.add(String.format("%sBackdropSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getBackdropSizes().get(i)))));
-            }
-        }
-
-        // add `BaseUrl` to the URL query string
-        if (getBaseUrl() != null) {
-            joiner.add(String.format("%sBaseUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
-        }
-
-        // add `LogoSizes` to the URL query string
-        if (getLogoSizes() != null) {
-            for (int i = 0; i < getLogoSizes().size(); i++) {
-                joiner.add(String.format("%sLogoSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLogoSizes().get(i)))));
-            }
-        }
-
-        // add `PosterSizes` to the URL query string
-        if (getPosterSizes() != null) {
-            for (int i = 0; i < getPosterSizes().size(); i++) {
-                joiner.add(String.format("%sPosterSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getPosterSizes().get(i)))));
-            }
-        }
-
-        // add `ProfileSizes` to the URL query string
-        if (getProfileSizes() != null) {
-            for (int i = 0; i < getProfileSizes().size(); i++) {
-                joiner.add(String.format("%sProfileSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProfileSizes().get(i)))));
-            }
-        }
-
-        // add `SecureBaseUrl` to the URL query string
-        if (getSecureBaseUrl() != null) {
-            joiner.add(String.format("%sSecureBaseUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSecureBaseUrl()))));
-        }
-
-        // add `StillSizes` to the URL query string
-        if (getStillSizes() != null) {
-            for (int i = 0; i < getStillSizes().size(); i++) {
-                joiner.add(String.format("%sStillSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getStillSizes().get(i)))));
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ConfigImageTypes instance;
-
-        public Builder() {
-            this(new ConfigImageTypes());
-        }
-
-        protected Builder(ConfigImageTypes instance) {
-            this.instance = instance;
-        }
-
-        public ConfigImageTypes.Builder backdropSizes(List<String> backdropSizes) {
-            this.instance.backdropSizes = backdropSizes;
-            return this;
-        }
-
-        public ConfigImageTypes.Builder baseUrl(String baseUrl) {
-            this.instance.baseUrl = baseUrl;
-            return this;
-        }
-
-        public ConfigImageTypes.Builder logoSizes(List<String> logoSizes) {
-            this.instance.logoSizes = logoSizes;
-            return this;
-        }
-
-        public ConfigImageTypes.Builder posterSizes(List<String> posterSizes) {
-            this.instance.posterSizes = posterSizes;
-            return this;
-        }
-
-        public ConfigImageTypes.Builder profileSizes(List<String> profileSizes) {
-            this.instance.profileSizes = profileSizes;
-            return this;
-        }
-
-        public ConfigImageTypes.Builder secureBaseUrl(String secureBaseUrl) {
-            this.instance.secureBaseUrl = secureBaseUrl;
-            return this;
-        }
-
-        public ConfigImageTypes.Builder stillSizes(List<String> stillSizes) {
-            this.instance.stillSizes = stillSizes;
-            return this;
-        }
-
-        /**
-         * returns a built ConfigImageTypes instance.
-         *
-         * The builder is not reusable.
-         */
-        public ConfigImageTypes build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ConfigImageTypes.Builder builder() {
-        return new ConfigImageTypes.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ConfigImageTypes.Builder toBuilder() {
-        return new ConfigImageTypes.Builder().backdropSizes(getBackdropSizes()).baseUrl(getBaseUrl())
-                .logoSizes(getLogoSizes()).posterSizes(getPosterSizes()).profileSizes(getProfileSizes())
-                .secureBaseUrl(getSecureBaseUrl()).stillSizes(getStillSizes());
     }
 }

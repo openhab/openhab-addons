@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,6 +49,7 @@ public class AuthenticateUserByName {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USERNAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUsername() {
         return username;
     }
@@ -75,6 +73,7 @@ public class AuthenticateUserByName {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPw() {
         return pw;
     }
@@ -125,108 +124,5 @@ public class AuthenticateUserByName {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Username` to the URL query string
-        if (getUsername() != null) {
-            joiner.add(String.format("%sUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUsername()))));
-        }
-
-        // add `Pw` to the URL query string
-        if (getPw() != null) {
-            joiner.add(
-                    String.format("%sPw%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPw()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private AuthenticateUserByName instance;
-
-        public Builder() {
-            this(new AuthenticateUserByName());
-        }
-
-        protected Builder(AuthenticateUserByName instance) {
-            this.instance = instance;
-        }
-
-        public AuthenticateUserByName.Builder username(String username) {
-            this.instance.username = username;
-            return this;
-        }
-
-        public AuthenticateUserByName.Builder pw(String pw) {
-            this.instance.pw = pw;
-            return this;
-        }
-
-        /**
-         * returns a built AuthenticateUserByName instance.
-         *
-         * The builder is not reusable.
-         */
-        public AuthenticateUserByName build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static AuthenticateUserByName.Builder builder() {
-        return new AuthenticateUserByName.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public AuthenticateUserByName.Builder toBuilder() {
-        return new AuthenticateUserByName.Builder().username(getUsername()).pw(getPw());
     }
 }

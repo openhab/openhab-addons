@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -82,6 +79,7 @@ public class MetadataEditorInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ParentalRating> getParentalRatingOptions() {
         return parentalRatingOptions;
     }
@@ -114,6 +112,7 @@ public class MetadataEditorInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_COUNTRIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<CountryInfo> getCountries() {
         return countries;
     }
@@ -145,6 +144,7 @@ public class MetadataEditorInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CULTURES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<CultureDto> getCultures() {
         return cultures;
     }
@@ -177,6 +177,7 @@ public class MetadataEditorInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_EXTERNAL_ID_INFOS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ExternalIdInfo> getExternalIdInfos() {
         return externalIdInfos;
     }
@@ -200,6 +201,7 @@ public class MetadataEditorInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTENT_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public CollectionType getContentType() {
         return contentType;
     }
@@ -232,6 +234,7 @@ public class MetadataEditorInfo {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameValuePair> getContentTypeOptions() {
         return contentTypeOptions;
     }
@@ -291,177 +294,5 @@ public class MetadataEditorInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ParentalRatingOptions` to the URL query string
-        if (getParentalRatingOptions() != null) {
-            for (int i = 0; i < getParentalRatingOptions().size(); i++) {
-                if (getParentalRatingOptions().get(i) != null) {
-                    joiner.add(getParentalRatingOptions().get(i).toUrlQueryString(String.format(
-                            "%sParentalRatingOptions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Countries` to the URL query string
-        if (getCountries() != null) {
-            for (int i = 0; i < getCountries().size(); i++) {
-                if (getCountries().get(i) != null) {
-                    joiner.add(getCountries().get(i).toUrlQueryString(String.format("%sCountries%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Cultures` to the URL query string
-        if (getCultures() != null) {
-            for (int i = 0; i < getCultures().size(); i++) {
-                if (getCultures().get(i) != null) {
-                    joiner.add(getCultures().get(i).toUrlQueryString(String.format("%sCultures%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ExternalIdInfos` to the URL query string
-        if (getExternalIdInfos() != null) {
-            for (int i = 0; i < getExternalIdInfos().size(); i++) {
-                if (getExternalIdInfos().get(i) != null) {
-                    joiner.add(getExternalIdInfos().get(i).toUrlQueryString(String.format("%sExternalIdInfos%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ContentType` to the URL query string
-        if (getContentType() != null) {
-            joiner.add(String.format("%sContentType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContentType()))));
-        }
-
-        // add `ContentTypeOptions` to the URL query string
-        if (getContentTypeOptions() != null) {
-            for (int i = 0; i < getContentTypeOptions().size(); i++) {
-                if (getContentTypeOptions().get(i) != null) {
-                    joiner.add(getContentTypeOptions().get(i).toUrlQueryString(String.format("%sContentTypeOptions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private MetadataEditorInfo instance;
-
-        public Builder() {
-            this(new MetadataEditorInfo());
-        }
-
-        protected Builder(MetadataEditorInfo instance) {
-            this.instance = instance;
-        }
-
-        public MetadataEditorInfo.Builder parentalRatingOptions(List<ParentalRating> parentalRatingOptions) {
-            this.instance.parentalRatingOptions = parentalRatingOptions;
-            return this;
-        }
-
-        public MetadataEditorInfo.Builder countries(List<CountryInfo> countries) {
-            this.instance.countries = countries;
-            return this;
-        }
-
-        public MetadataEditorInfo.Builder cultures(List<CultureDto> cultures) {
-            this.instance.cultures = cultures;
-            return this;
-        }
-
-        public MetadataEditorInfo.Builder externalIdInfos(List<ExternalIdInfo> externalIdInfos) {
-            this.instance.externalIdInfos = externalIdInfos;
-            return this;
-        }
-
-        public MetadataEditorInfo.Builder contentType(CollectionType contentType) {
-            this.instance.contentType = contentType;
-            return this;
-        }
-
-        public MetadataEditorInfo.Builder contentTypeOptions(List<NameValuePair> contentTypeOptions) {
-            this.instance.contentTypeOptions = contentTypeOptions;
-            return this;
-        }
-
-        /**
-         * returns a built MetadataEditorInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public MetadataEditorInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static MetadataEditorInfo.Builder builder() {
-        return new MetadataEditorInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public MetadataEditorInfo.Builder toBuilder() {
-        return new MetadataEditorInfo.Builder().parentalRatingOptions(getParentalRatingOptions())
-                .countries(getCountries()).cultures(getCultures()).externalIdInfos(getExternalIdInfos())
-                .contentType(getContentType()).contentTypeOptions(getContentTypeOptions());
     }
 }

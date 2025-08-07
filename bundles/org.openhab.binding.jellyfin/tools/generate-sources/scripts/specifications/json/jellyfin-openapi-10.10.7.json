@@ -3919,13 +3919,13 @@
           "description": "Configuration.",
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": { }
             },
             "text/json": {
-              "schema": {}
+              "schema": { }
             },
             "application/*+json": {
-              "schema": {}
+              "schema": { }
             }
           },
           "required": true
@@ -53526,7 +53526,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": {}
+        "additionalProperties": { }
       },
       "ProcessPriorityClass": {
         "enum": [
@@ -57751,6 +57751,34 @@
             "nullable": true
           },
           "TranscodeReasons": {
+            "enum": [
+              "ContainerNotSupported",
+              "VideoCodecNotSupported",
+              "AudioCodecNotSupported",
+              "SubtitleCodecNotSupported",
+              "AudioIsExternal",
+              "SecondaryAudioNotSupported",
+              "VideoProfileNotSupported",
+              "VideoLevelNotSupported",
+              "VideoResolutionNotSupported",
+              "VideoBitDepthNotSupported",
+              "VideoFramerateNotSupported",
+              "RefFramesNotSupported",
+              "AnamorphicVideoNotSupported",
+              "InterlacedVideoNotSupported",
+              "AudioChannelsNotSupported",
+              "AudioProfileNotSupported",
+              "AudioSampleRateNotSupported",
+              "AudioBitDepthNotSupported",
+              "ContainerBitrateExceedsLimit",
+              "VideoBitrateNotSupported",
+              "AudioBitrateNotSupported",
+              "UnknownVideoStreamInfo",
+              "UnknownAudioStreamInfo",
+              "DirectPlayError",
+              "VideoRangeTypeNotSupported",
+              "VideoCodecTagNotSupported"
+            ],
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TranscodeReason"

@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -89,6 +86,7 @@ public class SubtitleOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSkipIfEmbeddedSubtitlesPresent() {
         return skipIfEmbeddedSubtitlesPresent;
     }
@@ -114,6 +112,7 @@ public class SubtitleOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSkipIfAudioTrackMatches() {
         return skipIfAudioTrackMatches;
     }
@@ -145,6 +144,7 @@ public class SubtitleOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getDownloadLanguages() {
         return downloadLanguages;
     }
@@ -168,6 +168,7 @@ public class SubtitleOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getDownloadMovieSubtitles() {
         return downloadMovieSubtitles;
     }
@@ -192,6 +193,7 @@ public class SubtitleOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getDownloadEpisodeSubtitles() {
         return downloadEpisodeSubtitles;
     }
@@ -215,6 +217,7 @@ public class SubtitleOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOpenSubtitlesUsername() {
         return openSubtitlesUsername;
     }
@@ -239,6 +242,7 @@ public class SubtitleOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOpenSubtitlesPasswordHash() {
         return openSubtitlesPasswordHash;
     }
@@ -263,6 +267,7 @@ public class SubtitleOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsOpenSubtitleVipAccount() {
         return isOpenSubtitleVipAccount;
     }
@@ -286,6 +291,7 @@ public class SubtitleOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRequirePerfectMatch() {
         return requirePerfectMatch;
     }
@@ -353,194 +359,5 @@ public class SubtitleOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `SkipIfEmbeddedSubtitlesPresent` to the URL query string
-        if (getSkipIfEmbeddedSubtitlesPresent() != null) {
-            joiner.add(String.format("%sSkipIfEmbeddedSubtitlesPresent%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSkipIfEmbeddedSubtitlesPresent()))));
-        }
-
-        // add `SkipIfAudioTrackMatches` to the URL query string
-        if (getSkipIfAudioTrackMatches() != null) {
-            joiner.add(String.format("%sSkipIfAudioTrackMatches%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSkipIfAudioTrackMatches()))));
-        }
-
-        // add `DownloadLanguages` to the URL query string
-        if (getDownloadLanguages() != null) {
-            for (int i = 0; i < getDownloadLanguages().size(); i++) {
-                joiner.add(String.format("%sDownloadLanguages%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDownloadLanguages().get(i)))));
-            }
-        }
-
-        // add `DownloadMovieSubtitles` to the URL query string
-        if (getDownloadMovieSubtitles() != null) {
-            joiner.add(String.format("%sDownloadMovieSubtitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDownloadMovieSubtitles()))));
-        }
-
-        // add `DownloadEpisodeSubtitles` to the URL query string
-        if (getDownloadEpisodeSubtitles() != null) {
-            joiner.add(String.format("%sDownloadEpisodeSubtitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDownloadEpisodeSubtitles()))));
-        }
-
-        // add `OpenSubtitlesUsername` to the URL query string
-        if (getOpenSubtitlesUsername() != null) {
-            joiner.add(String.format("%sOpenSubtitlesUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenSubtitlesUsername()))));
-        }
-
-        // add `OpenSubtitlesPasswordHash` to the URL query string
-        if (getOpenSubtitlesPasswordHash() != null) {
-            joiner.add(String.format("%sOpenSubtitlesPasswordHash%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenSubtitlesPasswordHash()))));
-        }
-
-        // add `IsOpenSubtitleVipAccount` to the URL query string
-        if (getIsOpenSubtitleVipAccount() != null) {
-            joiner.add(String.format("%sIsOpenSubtitleVipAccount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsOpenSubtitleVipAccount()))));
-        }
-
-        // add `RequirePerfectMatch` to the URL query string
-        if (getRequirePerfectMatch() != null) {
-            joiner.add(String.format("%sRequirePerfectMatch%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequirePerfectMatch()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private SubtitleOptions instance;
-
-        public Builder() {
-            this(new SubtitleOptions());
-        }
-
-        protected Builder(SubtitleOptions instance) {
-            this.instance = instance;
-        }
-
-        public SubtitleOptions.Builder skipIfEmbeddedSubtitlesPresent(Boolean skipIfEmbeddedSubtitlesPresent) {
-            this.instance.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
-            return this;
-        }
-
-        public SubtitleOptions.Builder skipIfAudioTrackMatches(Boolean skipIfAudioTrackMatches) {
-            this.instance.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
-            return this;
-        }
-
-        public SubtitleOptions.Builder downloadLanguages(List<String> downloadLanguages) {
-            this.instance.downloadLanguages = downloadLanguages;
-            return this;
-        }
-
-        public SubtitleOptions.Builder downloadMovieSubtitles(Boolean downloadMovieSubtitles) {
-            this.instance.downloadMovieSubtitles = downloadMovieSubtitles;
-            return this;
-        }
-
-        public SubtitleOptions.Builder downloadEpisodeSubtitles(Boolean downloadEpisodeSubtitles) {
-            this.instance.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
-            return this;
-        }
-
-        public SubtitleOptions.Builder openSubtitlesUsername(String openSubtitlesUsername) {
-            this.instance.openSubtitlesUsername = openSubtitlesUsername;
-            return this;
-        }
-
-        public SubtitleOptions.Builder openSubtitlesPasswordHash(String openSubtitlesPasswordHash) {
-            this.instance.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
-            return this;
-        }
-
-        public SubtitleOptions.Builder isOpenSubtitleVipAccount(Boolean isOpenSubtitleVipAccount) {
-            this.instance.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
-            return this;
-        }
-
-        public SubtitleOptions.Builder requirePerfectMatch(Boolean requirePerfectMatch) {
-            this.instance.requirePerfectMatch = requirePerfectMatch;
-            return this;
-        }
-
-        /**
-         * returns a built SubtitleOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public SubtitleOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SubtitleOptions.Builder builder() {
-        return new SubtitleOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SubtitleOptions.Builder toBuilder() {
-        return new SubtitleOptions.Builder().skipIfEmbeddedSubtitlesPresent(getSkipIfEmbeddedSubtitlesPresent())
-                .skipIfAudioTrackMatches(getSkipIfAudioTrackMatches()).downloadLanguages(getDownloadLanguages())
-                .downloadMovieSubtitles(getDownloadMovieSubtitles())
-                .downloadEpisodeSubtitles(getDownloadEpisodeSubtitles())
-                .openSubtitlesUsername(getOpenSubtitlesUsername())
-                .openSubtitlesPasswordHash(getOpenSubtitlesPasswordHash())
-                .isOpenSubtitleVipAccount(getIsOpenSubtitleVipAccount()).requirePerfectMatch(getRequirePerfectMatch());
     }
 }

@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -57,6 +54,7 @@ public class BrandingOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_LOGIN_DISCLAIMER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getLoginDisclaimer() {
         return loginDisclaimer;
     }
@@ -80,6 +78,7 @@ public class BrandingOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CUSTOM_CSS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCustomCss() {
         return customCss;
     }
@@ -103,6 +102,7 @@ public class BrandingOptions {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SPLASHSCREEN_ENABLED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSplashscreenEnabled() {
         return splashscreenEnabled;
     }
@@ -155,120 +155,5 @@ public class BrandingOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `LoginDisclaimer` to the URL query string
-        if (getLoginDisclaimer() != null) {
-            joiner.add(String.format("%sLoginDisclaimer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLoginDisclaimer()))));
-        }
-
-        // add `CustomCss` to the URL query string
-        if (getCustomCss() != null) {
-            joiner.add(String.format("%sCustomCss%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCustomCss()))));
-        }
-
-        // add `SplashscreenEnabled` to the URL query string
-        if (getSplashscreenEnabled() != null) {
-            joiner.add(String.format("%sSplashscreenEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSplashscreenEnabled()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private BrandingOptions instance;
-
-        public Builder() {
-            this(new BrandingOptions());
-        }
-
-        protected Builder(BrandingOptions instance) {
-            this.instance = instance;
-        }
-
-        public BrandingOptions.Builder loginDisclaimer(String loginDisclaimer) {
-            this.instance.loginDisclaimer = loginDisclaimer;
-            return this;
-        }
-
-        public BrandingOptions.Builder customCss(String customCss) {
-            this.instance.customCss = customCss;
-            return this;
-        }
-
-        public BrandingOptions.Builder splashscreenEnabled(Boolean splashscreenEnabled) {
-            this.instance.splashscreenEnabled = splashscreenEnabled;
-            return this;
-        }
-
-        /**
-         * returns a built BrandingOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public BrandingOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static BrandingOptions.Builder builder() {
-        return new BrandingOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public BrandingOptions.Builder toBuilder() {
-        return new BrandingOptions.Builder().loginDisclaimer(getLoginDisclaimer()).customCss(getCustomCss())
-                .splashscreenEnabled(getSplashscreenEnabled());
     }
 }

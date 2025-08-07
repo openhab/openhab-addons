@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,6 +49,7 @@ public class PathSubstitution {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_FROM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getFrom() {
         return from;
     }
@@ -75,6 +73,7 @@ public class PathSubstitution {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getTo() {
         return to;
     }
@@ -124,108 +123,5 @@ public class PathSubstitution {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `From` to the URL query string
-        if (getFrom() != null) {
-            joiner.add(String.format("%sFrom%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFrom()))));
-        }
-
-        // add `To` to the URL query string
-        if (getTo() != null) {
-            joiner.add(
-                    String.format("%sTo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTo()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private PathSubstitution instance;
-
-        public Builder() {
-            this(new PathSubstitution());
-        }
-
-        protected Builder(PathSubstitution instance) {
-            this.instance = instance;
-        }
-
-        public PathSubstitution.Builder from(String from) {
-            this.instance.from = from;
-            return this;
-        }
-
-        public PathSubstitution.Builder to(String to) {
-            this.instance.to = to;
-            return this;
-        }
-
-        /**
-         * returns a built PathSubstitution instance.
-         *
-         * The builder is not reusable.
-         */
-        public PathSubstitution build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PathSubstitution.Builder builder() {
-        return new PathSubstitution.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PathSubstitution.Builder toBuilder() {
-        return new PathSubstitution.Builder().from(getFrom()).to(getTo());
     }
 }

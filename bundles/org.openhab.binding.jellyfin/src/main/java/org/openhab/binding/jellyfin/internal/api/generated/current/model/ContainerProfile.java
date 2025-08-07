@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -63,6 +60,7 @@ public class ContainerProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DlnaProfileType getType() {
         return type;
     }
@@ -94,6 +92,7 @@ public class ContainerProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ProfileCondition> getConditions() {
         return conditions;
     }
@@ -117,6 +116,7 @@ public class ContainerProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getContainer() {
         return container;
     }
@@ -140,6 +140,7 @@ public class ContainerProfile {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSubContainer() {
         return subContainer;
     }
@@ -194,135 +195,5 @@ public class ContainerProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Conditions` to the URL query string
-        if (getConditions() != null) {
-            for (int i = 0; i < getConditions().size(); i++) {
-                if (getConditions().get(i) != null) {
-                    joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `SubContainer` to the URL query string
-        if (getSubContainer() != null) {
-            joiner.add(String.format("%sSubContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubContainer()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ContainerProfile instance;
-
-        public Builder() {
-            this(new ContainerProfile());
-        }
-
-        protected Builder(ContainerProfile instance) {
-            this.instance = instance;
-        }
-
-        public ContainerProfile.Builder type(DlnaProfileType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public ContainerProfile.Builder conditions(List<ProfileCondition> conditions) {
-            this.instance.conditions = conditions;
-            return this;
-        }
-
-        public ContainerProfile.Builder container(String container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        public ContainerProfile.Builder subContainer(String subContainer) {
-            this.instance.subContainer = subContainer;
-            return this;
-        }
-
-        /**
-         * returns a built ContainerProfile instance.
-         *
-         * The builder is not reusable.
-         */
-        public ContainerProfile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ContainerProfile.Builder builder() {
-        return new ContainerProfile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ContainerProfile.Builder toBuilder() {
-        return new ContainerProfile.Builder().type(getType()).conditions(getConditions()).container(getContainer())
-                .subContainer(getSubContainer());
     }
 }

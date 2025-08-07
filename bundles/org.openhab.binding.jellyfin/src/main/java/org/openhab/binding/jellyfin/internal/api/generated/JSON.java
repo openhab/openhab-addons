@@ -19,7 +19,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.*;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.ext.ContextResolver;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
@@ -27,27 +28,32 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
-public class JSON {
+public class JSON implements ContextResolver<ObjectMapper> {
     private ObjectMapper mapper;
 
     public JSON() {
         mapper = JsonMapper.builder().serializationInclusion(JsonInclude.Include.NON_NULL)
-                .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .enable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
+                .configure(MapperFeature.ALLOW_COERCION_OF_SCALARS, false)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, true)
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
                 .enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING).defaultDateFormat(new RFC3339DateFormat())
-                .addModule(new JavaTimeModule()).build();
+                .addModule(new JavaTimeModule()).addModule(new RFC3339JavaTimeModule()).build();
     }
 
     /**
      * Set the date format for JSON (de)serialization with Date properties.
-     *
+     * 
      * @param dateFormat Date format
      */
     public void setDateFormat(DateFormat dateFormat) {
         mapper.setDateFormat(dateFormat);
+    }
+
+    @Override
+    public ObjectMapper getContext(Class<?> type) {
+        return mapper;
     }
 
     /**
@@ -65,13 +71,11 @@ public class JSON {
      *
      * @param node The input data.
      * @param modelClass The class that contains the discriminator mappings.
-     *
-     * @return the target model class.
      */
     public static Class<?> getClassForElement(JsonNode node, Class<?> modelClass) {
         ClassDiscriminatorMapping cdm = modelDiscriminators.get(modelClass);
         if (cdm != null) {
-            return cdm.getClassForElement(node, new HashSet<Class<?>>());
+            return cdm.getClassForElement(node, new HashSet<>());
         }
         return null;
     }
@@ -79,7 +83,6 @@ public class JSON {
     /**
      * Helper class to register the discriminator mappings.
      */
-    @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
     private static class ClassDiscriminatorMapping {
         // The model class name.
         Class<?> modelClass;
@@ -92,7 +95,7 @@ public class JSON {
         ClassDiscriminatorMapping(Class<?> cls, String propertyName, Map<String, Class<?>> mappings) {
             modelClass = cls;
             discriminatorName = propertyName;
-            discriminatorMappings = new HashMap<String, Class<?>>();
+            discriminatorMappings = new HashMap<>();
             if (mappings != null) {
                 discriminatorMappings.putAll(mappings);
             }
@@ -127,8 +130,6 @@ public class JSON {
          *
          * @param node The input data.
          * @param visitedClasses The set of classes that have already been visited.
-         *
-         * @return the target model class.
          */
         Class<?> getClassForElement(JsonNode node, Set<Class<?>> visitedClasses) {
             if (visitedClasses.contains(modelClass)) {
@@ -175,9 +176,6 @@ public class JSON {
      *
      * @param modelClass A OpenAPI model class.
      * @param inst The instance object.
-     * @param visitedClasses The set of classes that have already been visited.
-     *
-     * @return true if inst is an instance of modelClass in the OpenAPI model hierarchy.
      */
     public static boolean isInstanceOf(Class<?> modelClass, Object inst, Set<Class<?>> visitedClasses) {
         if (modelClass.isInstance(inst)) {
@@ -192,10 +190,10 @@ public class JSON {
         visitedClasses.add(modelClass);
 
         // Traverse the oneOf/anyOf composed schemas.
-        Map<String, Class<?>> descendants = modelDescendants.get(modelClass);
+        Map<String, GenericType<?>> descendants = modelDescendants.get(modelClass);
         if (descendants != null) {
-            for (Class<?> childType : descendants.values()) {
-                if (isInstanceOf(childType, inst, visitedClasses)) {
+            for (GenericType<?> childType : descendants.values()) {
+                if (isInstanceOf(childType.getRawType(), inst, visitedClasses)) {
                     return true;
                 }
             }
@@ -211,7 +209,7 @@ public class JSON {
     /**
      * A map of oneOf/anyOf descendants for each model class.
      */
-    private static Map<Class<?>, Map<String, Class<?>>> modelDescendants = new HashMap<>();
+    private static Map<Class<?>, Map<String, GenericType<?>>> modelDescendants = new HashMap<>();
 
     /**
      * Register a model class discriminator.
@@ -232,7 +230,7 @@ public class JSON {
      * @param modelClass the model class
      * @param descendants a map of oneOf/anyOf descendants.
      */
-    public static void registerDescendants(Class<?> modelClass, Map<String, Class<?>> descendants) {
+    public static void registerDescendants(Class<?> modelClass, Map<String, GenericType<?>> descendants) {
         modelDescendants.put(modelClass, descendants);
     }
 

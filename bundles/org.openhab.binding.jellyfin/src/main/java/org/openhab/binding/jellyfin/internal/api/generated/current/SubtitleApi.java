@@ -1,30 +1,12 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.function.Consumer;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
@@ -35,44 +17,34 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.FontFil
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.RemoteSubtitleInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UploadSubtitleDto;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SubtitleApi {
-    private final HttpClient memberVarHttpClient;
-    private final ObjectMapper memberVarObjectMapper;
-    private final String memberVarBaseUri;
-    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-    private final Duration memberVarReadTimeout;
-    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    private ApiClient apiClient;
 
     public SubtitleApi() {
         this(Configuration.getDefaultApiClient());
     }
 
     public SubtitleApi(ApiClient apiClient) {
-        memberVarHttpClient = apiClient.getHttpClient();
-        memberVarObjectMapper = apiClient.getObjectMapper();
-        memberVarBaseUri = apiClient.getBaseUri();
-        memberVarInterceptor = apiClient.getRequestInterceptor();
-        memberVarReadTimeout = apiClient.getReadTimeout();
-        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+        this.apiClient = apiClient;
     }
 
-    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-        String body = response.body() == null ? null : new String(response.body().readAllBytes());
-        String message = formatExceptionMessage(operationId, response.statusCode(), body);
-        return new ApiException(response.statusCode(), message, response.headers(), body);
+    /**
+     * Get the API client
+     *
+     * @return API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
     }
 
-    private String formatExceptionMessage(String operationId, int statusCode, String body) {
-        if (body == null || body.isEmpty()) {
-            body = "[no body]";
-        }
-        return operationId + " call failed with: " + statusCode + " - " + body;
+    /**
+     * Set the API client
+     *
+     * @param apiClient an instance of API client
+     */
+    public void setApiClient(ApiClient apiClient) {
+        this.apiClient = apiClient;
     }
 
     /**
@@ -81,6 +53,35 @@ public class SubtitleApi {
      * @param itemId The item id. (required)
      * @param index The index of the subtitle file. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Subtitle deleted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void deleteSubtitle(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable Integer index) throws ApiException {
@@ -94,66 +95,58 @@ public class SubtitleApi {
      * @param index The index of the subtitle file. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Subtitle deleted.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> deleteSubtitleWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable Integer index) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteSubtitleRequestBuilder(itemId, index);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("deleteSubtitle", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder deleteSubtitleRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable Integer index) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteSubtitle");
         }
-        // verify the required parameter 'index' is set
         if (index == null) {
             throw new ApiException(400, "Missing the required parameter 'index' when calling deleteSubtitle");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Videos/{itemId}/Subtitles/{index}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{index}", ApiClient.urlEncode(index.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{index}", apiClient.escapeString(index.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SubtitleApi.deleteSubtitle", localVarPath, "DELETE", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -162,6 +155,35 @@ public class SubtitleApi {
      * @param itemId The item id. (required)
      * @param subtitleId The subtitle id. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Subtitle downloaded.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void downloadRemoteSubtitles(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String subtitleId) throws ApiException {
@@ -175,67 +197,59 @@ public class SubtitleApi {
      * @param subtitleId The subtitle id. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Subtitle downloaded.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> downloadRemoteSubtitlesWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String subtitleId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = downloadRemoteSubtitlesRequestBuilder(itemId, subtitleId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("downloadRemoteSubtitles", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder downloadRemoteSubtitlesRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable String subtitleId) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling downloadRemoteSubtitles");
         }
-        // verify the required parameter 'subtitleId' is set
         if (subtitleId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'subtitleId' when calling downloadRemoteSubtitles");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/RemoteSearch/Subtitles/{subtitleId}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{subtitleId}", ApiClient.urlEncode(subtitleId.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{subtitleId}", apiClient.escapeString(subtitleId.toString()));
 
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SubtitleApi.downloadRemoteSubtitles", localVarPath, "POST", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 
     /**
@@ -244,10 +258,33 @@ public class SubtitleApi {
      * @param name The name of the fallback font file to get. (required)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Fallback font file retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getFallbackFont(@org.eclipse.jdt.annotation.Nullable String name) throws ApiException {
-        ApiResponse<File> localVarResponse = getFallbackFontWithHttpInfo(name);
-        return localVarResponse.getData();
+        return getFallbackFontWithHttpInfo(name).getData();
     }
 
     /**
@@ -256,64 +293,50 @@ public class SubtitleApi {
      * @param name The name of the fallback font file to get. (required)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Fallback font file retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getFallbackFontWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getFallbackFontRequestBuilder(name);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getFallbackFont", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getFallbackFontRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name)
-            throws ApiException {
-        // verify the required parameter 'name' is set
+        // Check required parameters
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getFallbackFont");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/FallbackFont/Fonts/{name}".replaceAll("\\{name}",
+                apiClient.escapeString(name.toString()));
 
-        String localVarPath = "/FallbackFont/Fonts/{name}".replace("{name}", ApiClient.urlEncode(name.toString()));
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "font/*");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("font/*");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("SubtitleApi.getFallbackFont", localVarPath, "GET", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -321,10 +344,33 @@ public class SubtitleApi {
      * 
      * @return List&lt;FontFile&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Information retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<FontFile> getFallbackFontList() throws ApiException {
-        ApiResponse<List<FontFile>> localVarResponse = getFallbackFontListWithHttpInfo();
-        return localVarResponse.getData();
+        return getFallbackFontListWithHttpInfo().getData();
     }
 
     /**
@@ -332,60 +378,41 @@ public class SubtitleApi {
      * 
      * @return ApiResponse&lt;List&lt;FontFile&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Information retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<FontFile>> getFallbackFontListWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getFallbackFontListRequestBuilder();
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getFallbackFontList", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<FontFile>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<FontFile>>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<FontFile>>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getFallbackFontListRequestBuilder() throws ApiException {
-
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-        String localVarPath = "/FallbackFont/Fonts";
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<FontFile>> localVarReturnType = new GenericType<List<FontFile>>() {
+        };
+        return apiClient.invokeAPI("SubtitleApi.getFallbackFontList", "/FallbackFont/Fonts", "GET", new ArrayList<>(),
+                null, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -394,10 +421,33 @@ public class SubtitleApi {
      * @param subtitleId The item id. (required)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>File returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getRemoteSubtitles(@org.eclipse.jdt.annotation.Nullable String subtitleId) throws ApiException {
-        ApiResponse<File> localVarResponse = getRemoteSubtitlesWithHttpInfo(subtitleId);
-        return localVarResponse.getData();
+        return getRemoteSubtitlesWithHttpInfo(subtitleId).getData();
     }
 
     /**
@@ -406,65 +456,50 @@ public class SubtitleApi {
      * @param subtitleId The item id. (required)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>File returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getRemoteSubtitlesWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String subtitleId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRemoteSubtitlesRequestBuilder(subtitleId);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getRemoteSubtitles", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getRemoteSubtitlesRequestBuilder(@org.eclipse.jdt.annotation.Nullable String subtitleId)
-            throws ApiException {
-        // verify the required parameter 'subtitleId' is set
+        // Check required parameters
         if (subtitleId == null) {
             throw new ApiException(400, "Missing the required parameter 'subtitleId' when calling getRemoteSubtitles");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Providers/Subtitles/Subtitles/{subtitleId}".replaceAll("\\{subtitleId}",
+                apiClient.escapeString(subtitleId.toString()));
 
-        String localVarPath = "/Providers/Subtitles/Subtitles/{subtitleId}".replace("{subtitleId}",
-                ApiClient.urlEncode(subtitleId.toString()));
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Accept", "text/*");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("text/*");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("SubtitleApi.getRemoteSubtitles", localVarPath, "GET", new ArrayList<>(), null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -484,6 +519,20 @@ public class SubtitleApi {
      * @param startPositionTicks The start position of the subtitle in ticks. (optional, default to 0)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>File returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getSubtitle(@org.eclipse.jdt.annotation.Nullable UUID routeItemId,
             @org.eclipse.jdt.annotation.Nullable String routeMediaSourceId,
@@ -495,10 +544,8 @@ public class SubtitleApi {
             @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
             @org.eclipse.jdt.annotation.NonNull Boolean addVttTimeMap,
             @org.eclipse.jdt.annotation.NonNull Long startPositionTicks) throws ApiException {
-        ApiResponse<File> localVarResponse = getSubtitleWithHttpInfo(routeItemId, routeMediaSourceId, routeIndex,
-                routeFormat, itemId, mediaSourceId, index, format, endPositionTicks, copyTimestamps, addVttTimeMap,
-                startPositionTicks);
-        return localVarResponse.getData();
+        return getSubtitleWithHttpInfo(routeItemId, routeMediaSourceId, routeIndex, routeFormat, itemId, mediaSourceId,
+                index, format, endPositionTicks, copyTimestamps, addVttTimeMap, startPositionTicks).getData();
     }
 
     /**
@@ -518,6 +565,20 @@ public class SubtitleApi {
      * @param startPositionTicks The start position of the subtitle in ticks. (optional, default to 0)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>File returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getSubtitleWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID routeItemId,
             @org.eclipse.jdt.annotation.Nullable String routeMediaSourceId,
@@ -529,116 +590,44 @@ public class SubtitleApi {
             @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
             @org.eclipse.jdt.annotation.NonNull Boolean addVttTimeMap,
             @org.eclipse.jdt.annotation.NonNull Long startPositionTicks) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSubtitleRequestBuilder(routeItemId, routeMediaSourceId,
-                routeIndex, routeFormat, itemId, mediaSourceId, index, format, endPositionTicks, copyTimestamps,
-                addVttTimeMap, startPositionTicks);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getSubtitle", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getSubtitleRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID routeItemId,
-            @org.eclipse.jdt.annotation.Nullable String routeMediaSourceId,
-            @org.eclipse.jdt.annotation.Nullable Integer routeIndex,
-            @org.eclipse.jdt.annotation.Nullable String routeFormat, @org.eclipse.jdt.annotation.NonNull UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull String mediaSourceId, @org.eclipse.jdt.annotation.NonNull Integer index,
-            @org.eclipse.jdt.annotation.NonNull String format,
-            @org.eclipse.jdt.annotation.NonNull Long endPositionTicks,
-            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
-            @org.eclipse.jdt.annotation.NonNull Boolean addVttTimeMap,
-            @org.eclipse.jdt.annotation.NonNull Long startPositionTicks) throws ApiException {
-        // verify the required parameter 'routeItemId' is set
+        // Check required parameters
         if (routeItemId == null) {
             throw new ApiException(400, "Missing the required parameter 'routeItemId' when calling getSubtitle");
         }
-        // verify the required parameter 'routeMediaSourceId' is set
         if (routeMediaSourceId == null) {
             throw new ApiException(400, "Missing the required parameter 'routeMediaSourceId' when calling getSubtitle");
         }
-        // verify the required parameter 'routeIndex' is set
         if (routeIndex == null) {
             throw new ApiException(400, "Missing the required parameter 'routeIndex' when calling getSubtitle");
         }
-        // verify the required parameter 'routeFormat' is set
         if (routeFormat == null) {
             throw new ApiException(400, "Missing the required parameter 'routeFormat' when calling getSubtitle");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Videos/{routeItemId}/{routeMediaSourceId}/Subtitles/{routeIndex}/Stream.{routeFormat}"
-                .replace("{routeItemId}", ApiClient.urlEncode(routeItemId.toString()))
-                .replace("{routeMediaSourceId}", ApiClient.urlEncode(routeMediaSourceId.toString()))
-                .replace("{routeIndex}", ApiClient.urlEncode(routeIndex.toString()))
-                .replace("{routeFormat}", ApiClient.urlEncode(routeFormat.toString()));
+                .replaceAll("\\{routeItemId}", apiClient.escapeString(routeItemId.toString()))
+                .replaceAll("\\{routeMediaSourceId}", apiClient.escapeString(routeMediaSourceId.toString()))
+                .replaceAll("\\{routeIndex}", apiClient.escapeString(routeIndex.toString()))
+                .replaceAll("\\{routeFormat}", apiClient.escapeString(routeFormat.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "itemId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("itemId", itemId));
-        localVarQueryParameterBaseName = "mediaSourceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
-        localVarQueryParameterBaseName = "index";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("index", index));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "endPositionTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("endPositionTicks", endPositionTicks));
-        localVarQueryParameterBaseName = "copyTimestamps";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("copyTimestamps", copyTimestamps));
-        localVarQueryParameterBaseName = "addVttTimeMap";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("addVttTimeMap", addVttTimeMap));
-        localVarQueryParameterBaseName = "startPositionTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startPositionTicks", startPositionTicks));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "itemId", itemId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "mediaSourceId", mediaSourceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "index", index));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "endPositionTicks", endPositionTicks));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "copyTimestamps", copyTimestamps));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "addVttTimeMap", addVttTimeMap));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startPositionTicks", startPositionTicks));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "text/*");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("text/*");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("SubtitleApi.getSubtitle", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -650,14 +639,41 @@ public class SubtitleApi {
      * @param segmentLength The subtitle segment length. (required)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Subtitle playlist retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getSubtitlePlaylist(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable Integer index,
             @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
             @org.eclipse.jdt.annotation.Nullable Integer segmentLength) throws ApiException {
-        ApiResponse<File> localVarResponse = getSubtitlePlaylistWithHttpInfo(itemId, index, mediaSourceId,
-                segmentLength);
-        return localVarResponse.getData();
+        return getSubtitlePlaylistWithHttpInfo(itemId, index, mediaSourceId, segmentLength).getData();
     }
 
     /**
@@ -669,102 +685,75 @@ public class SubtitleApi {
      * @param segmentLength The subtitle segment length. (required)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Subtitle playlist retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getSubtitlePlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable Integer index,
             @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
             @org.eclipse.jdt.annotation.Nullable Integer segmentLength) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSubtitlePlaylistRequestBuilder(itemId, index, mediaSourceId,
-                segmentLength);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getSubtitlePlaylist", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getSubtitlePlaylistRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable Integer index,
-            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
-            @org.eclipse.jdt.annotation.Nullable Integer segmentLength) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSubtitlePlaylist");
         }
-        // verify the required parameter 'index' is set
         if (index == null) {
             throw new ApiException(400, "Missing the required parameter 'index' when calling getSubtitlePlaylist");
         }
-        // verify the required parameter 'mediaSourceId' is set
         if (mediaSourceId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'mediaSourceId' when calling getSubtitlePlaylist");
         }
-        // verify the required parameter 'segmentLength' is set
         if (segmentLength == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'segmentLength' when calling getSubtitlePlaylist");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Videos/{itemId}/{mediaSourceId}/Subtitles/{index}/subtitles.m3u8"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{index}", ApiClient.urlEncode(index.toString()))
-                .replace("{mediaSourceId}", ApiClient.urlEncode(mediaSourceId.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{index}", apiClient.escapeString(index.toString()))
+                .replaceAll("\\{mediaSourceId}", apiClient.escapeString(mediaSourceId.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "segmentLength";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentLength", segmentLength));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(
+                apiClient.parameterToPairs("", "segmentLength", segmentLength));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/x-mpegURL, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/x-mpegURL", "application/json",
+                "application/json; profile=CamelCase", "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("SubtitleApi.getSubtitlePlaylist", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -785,6 +774,20 @@ public class SubtitleApi {
      * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
      * @return File
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>File returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public File getSubtitleWithTicks(@org.eclipse.jdt.annotation.Nullable UUID routeItemId,
             @org.eclipse.jdt.annotation.Nullable String routeMediaSourceId,
@@ -797,10 +800,9 @@ public class SubtitleApi {
             @org.eclipse.jdt.annotation.NonNull Long endPositionTicks,
             @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
             @org.eclipse.jdt.annotation.NonNull Boolean addVttTimeMap) throws ApiException {
-        ApiResponse<File> localVarResponse = getSubtitleWithTicksWithHttpInfo(routeItemId, routeMediaSourceId,
-                routeIndex, routeStartPositionTicks, routeFormat, itemId, mediaSourceId, index, startPositionTicks,
-                format, endPositionTicks, copyTimestamps, addVttTimeMap);
-        return localVarResponse.getData();
+        return getSubtitleWithTicksWithHttpInfo(routeItemId, routeMediaSourceId, routeIndex, routeStartPositionTicks,
+                routeFormat, itemId, mediaSourceId, index, startPositionTicks, format, endPositionTicks, copyTimestamps,
+                addVttTimeMap).getData();
     }
 
     /**
@@ -821,6 +823,20 @@ public class SubtitleApi {
      * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>File returned.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<File> getSubtitleWithTicksWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID routeItemId,
             @org.eclipse.jdt.annotation.Nullable String routeMediaSourceId,
@@ -833,128 +849,53 @@ public class SubtitleApi {
             @org.eclipse.jdt.annotation.NonNull Long endPositionTicks,
             @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
             @org.eclipse.jdt.annotation.NonNull Boolean addVttTimeMap) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSubtitleWithTicksRequestBuilder(routeItemId, routeMediaSourceId,
-                routeIndex, routeStartPositionTicks, routeFormat, itemId, mediaSourceId, index, startPositionTicks,
-                format, endPositionTicks, copyTimestamps, addVttTimeMap);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getSubtitleWithTicks", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder getSubtitleWithTicksRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable UUID routeItemId,
-            @org.eclipse.jdt.annotation.Nullable String routeMediaSourceId,
-            @org.eclipse.jdt.annotation.Nullable Integer routeIndex,
-            @org.eclipse.jdt.annotation.Nullable Long routeStartPositionTicks,
-            @org.eclipse.jdt.annotation.Nullable String routeFormat, @org.eclipse.jdt.annotation.NonNull UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull String mediaSourceId, @org.eclipse.jdt.annotation.NonNull Integer index,
-            @org.eclipse.jdt.annotation.NonNull Long startPositionTicks,
-            @org.eclipse.jdt.annotation.NonNull String format,
-            @org.eclipse.jdt.annotation.NonNull Long endPositionTicks,
-            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
-            @org.eclipse.jdt.annotation.NonNull Boolean addVttTimeMap) throws ApiException {
-        // verify the required parameter 'routeItemId' is set
+        // Check required parameters
         if (routeItemId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'routeItemId' when calling getSubtitleWithTicks");
         }
-        // verify the required parameter 'routeMediaSourceId' is set
         if (routeMediaSourceId == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'routeMediaSourceId' when calling getSubtitleWithTicks");
         }
-        // verify the required parameter 'routeIndex' is set
         if (routeIndex == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'routeIndex' when calling getSubtitleWithTicks");
         }
-        // verify the required parameter 'routeStartPositionTicks' is set
         if (routeStartPositionTicks == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'routeStartPositionTicks' when calling getSubtitleWithTicks");
         }
-        // verify the required parameter 'routeFormat' is set
         if (routeFormat == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'routeFormat' when calling getSubtitleWithTicks");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Videos/{routeItemId}/{routeMediaSourceId}/Subtitles/{routeIndex}/{routeStartPositionTicks}/Stream.{routeFormat}"
-                .replace("{routeItemId}", ApiClient.urlEncode(routeItemId.toString()))
-                .replace("{routeMediaSourceId}", ApiClient.urlEncode(routeMediaSourceId.toString()))
-                .replace("{routeIndex}", ApiClient.urlEncode(routeIndex.toString()))
-                .replace("{routeStartPositionTicks}", ApiClient.urlEncode(routeStartPositionTicks.toString()))
-                .replace("{routeFormat}", ApiClient.urlEncode(routeFormat.toString()));
+                .replaceAll("\\{routeItemId}", apiClient.escapeString(routeItemId.toString()))
+                .replaceAll("\\{routeMediaSourceId}", apiClient.escapeString(routeMediaSourceId.toString()))
+                .replaceAll("\\{routeIndex}", apiClient.escapeString(routeIndex.toString()))
+                .replaceAll("\\{routeStartPositionTicks}", apiClient.escapeString(routeStartPositionTicks.toString()))
+                .replaceAll("\\{routeFormat}", apiClient.escapeString(routeFormat.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "itemId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("itemId", itemId));
-        localVarQueryParameterBaseName = "mediaSourceId";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
-        localVarQueryParameterBaseName = "index";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("index", index));
-        localVarQueryParameterBaseName = "startPositionTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("startPositionTicks", startPositionTicks));
-        localVarQueryParameterBaseName = "format";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "endPositionTicks";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("endPositionTicks", endPositionTicks));
-        localVarQueryParameterBaseName = "copyTimestamps";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("copyTimestamps", copyTimestamps));
-        localVarQueryParameterBaseName = "addVttTimeMap";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("addVttTimeMap", addVttTimeMap));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(apiClient.parameterToPairs("", "itemId", itemId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "mediaSourceId", mediaSourceId));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "index", index));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "startPositionTicks", startPositionTicks));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "format", format));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "endPositionTicks", endPositionTicks));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "copyTimestamps", copyTimestamps));
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "addVttTimeMap", addVttTimeMap));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept", "text/*");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("text/*");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        GenericType<File> localVarReturnType = new GenericType<File>() {
+        };
+        return apiClient.invokeAPI("SubtitleApi.getSubtitleWithTicks", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, null, localVarReturnType, false);
     }
 
     /**
@@ -965,13 +906,40 @@ public class SubtitleApi {
      * @param isPerfectMatch Optional. Only show subtitles which are a perfect match. (optional)
      * @return List&lt;RemoteSubtitleInfo&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Subtitles retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public List<RemoteSubtitleInfo> searchRemoteSubtitles(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String language,
             @org.eclipse.jdt.annotation.NonNull Boolean isPerfectMatch) throws ApiException {
-        ApiResponse<List<RemoteSubtitleInfo>> localVarResponse = searchRemoteSubtitlesWithHttpInfo(itemId, language,
-                isPerfectMatch);
-        return localVarResponse.getData();
+        return searchRemoteSubtitlesWithHttpInfo(itemId, language, isPerfectMatch).getData();
     }
 
     /**
@@ -982,92 +950,65 @@ public class SubtitleApi {
      * @param isPerfectMatch Optional. Only show subtitles which are a perfect match. (optional)
      * @return ApiResponse&lt;List&lt;RemoteSubtitleInfo&gt;&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>200</td>
+     *                        <td>Subtitles retrieved.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<List<RemoteSubtitleInfo>> searchRemoteSubtitlesWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.Nullable String language,
             @org.eclipse.jdt.annotation.NonNull Boolean isPerfectMatch) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = searchRemoteSubtitlesRequestBuilder(itemId, language,
-                isPerfectMatch);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("searchRemoteSubtitles", localVarResponse);
-                }
-                if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<RemoteSubtitleInfo>>(localVarResponse.statusCode(),
-                            localVarResponse.headers().map(), null);
-                }
-
-                String responseBody = new String(localVarResponse.body().readAllBytes());
-                localVarResponse.body().close();
-
-                return new ApiResponse<List<RemoteSubtitleInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSubtitleInfo>>() {
-                                        }));
-            } finally {
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder searchRemoteSubtitlesRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable String language,
-            @org.eclipse.jdt.annotation.NonNull Boolean isPerfectMatch) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling searchRemoteSubtitles");
         }
-        // verify the required parameter 'language' is set
         if (language == null) {
             throw new ApiException(400, "Missing the required parameter 'language' when calling searchRemoteSubtitles");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
+        // Path parameters
         String localVarPath = "/Items/{itemId}/RemoteSearch/Subtitles/{language}"
-                .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
-                .replace("{language}", ApiClient.urlEncode(language.toString()));
+                .replaceAll("\\{itemId}", apiClient.escapeString(itemId.toString()))
+                .replaceAll("\\{language}", apiClient.escapeString(language.toString()));
 
-        List<Pair> localVarQueryParams = new ArrayList<>();
-        StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-        String localVarQueryParameterBaseName;
-        localVarQueryParameterBaseName = "isPerfectMatch";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("isPerfectMatch", isPerfectMatch));
+        // Query parameters
+        List<Pair> localVarQueryParams = new ArrayList<>(
+                apiClient.parameterToPairs("", "isPerfectMatch", isPerfectMatch));
 
-        if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-            StringJoiner queryJoiner = new StringJoiner("&");
-            localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-            if (localVarQueryStringJoiner.length() != 0) {
-                queryJoiner.add(localVarQueryStringJoiner.toString());
-            }
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-        } else {
-            localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-        }
-
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType();
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        GenericType<List<RemoteSubtitleInfo>> localVarReturnType = new GenericType<List<RemoteSubtitleInfo>>() {
+        };
+        return apiClient.invokeAPI("SubtitleApi.searchRemoteSubtitles", localVarPath, "GET", localVarQueryParams, null,
+                new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, localVarReturnType, false);
     }
 
     /**
@@ -1076,6 +1017,35 @@ public class SubtitleApi {
      * @param itemId The item the subtitle belongs to. (required)
      * @param uploadSubtitleDto The request body. (required)
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Subtitle uploaded.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public void uploadSubtitle(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable UploadSubtitleDto uploadSubtitleDto) throws ApiException {
@@ -1089,70 +1059,58 @@ public class SubtitleApi {
      * @param uploadSubtitleDto The request body. (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @http.response.details
+     *                        <table border="1">
+     *                        <caption>Response Details</caption>
+     *                        <tr>
+     *                        <td>Status Code</td>
+     *                        <td>Description</td>
+     *                        <td>Response Headers</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>204</td>
+     *                        <td>Subtitle uploaded.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>404</td>
+     *                        <td>Item not found.</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>401</td>
+     *                        <td>Unauthorized</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        <tr>
+     *                        <td>403</td>
+     *                        <td>Forbidden</td>
+     *                        <td>-</td>
+     *                        </tr>
+     *                        </table>
      */
     public ApiResponse<Void> uploadSubtitleWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable UploadSubtitleDto uploadSubtitleDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = uploadSubtitleRequestBuilder(itemId, uploadSubtitleDto);
-        try {
-            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofInputStream());
-            if (memberVarResponseInterceptor != null) {
-                memberVarResponseInterceptor.accept(localVarResponse);
-            }
-            try {
-                if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("uploadSubtitle", localVarResponse);
-                }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
-                }
-                localVarResponse.body().close();
-            }
-        } catch (IOException e) {
-            throw new ApiException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApiException(e);
-        }
-    }
-
-    private HttpRequest.Builder uploadSubtitleRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable UploadSubtitleDto uploadSubtitleDto) throws ApiException {
-        // verify the required parameter 'itemId' is set
+        // Check required parameters
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling uploadSubtitle");
         }
-        // verify the required parameter 'uploadSubtitleDto' is set
         if (uploadSubtitleDto == null) {
             throw new ApiException(400,
                     "Missing the required parameter 'uploadSubtitleDto' when calling uploadSubtitle");
         }
 
-        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        // Path parameters
+        String localVarPath = "/Videos/{itemId}/Subtitles".replaceAll("\\{itemId}",
+                apiClient.escapeString(itemId.toString()));
 
-        String localVarPath = "/Videos/{itemId}/Subtitles".replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
-
-        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-        localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
-
-        try {
-            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(uploadSubtitleDto);
-            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-        } catch (IOException e) {
-            throw new ApiException(e);
-        }
-        if (memberVarReadTimeout != null) {
-            localVarRequestBuilder.timeout(memberVarReadTimeout);
-        }
-        if (memberVarInterceptor != null) {
-            memberVarInterceptor.accept(localVarRequestBuilder);
-        }
-        return localVarRequestBuilder;
+        String localVarAccept = apiClient.selectHeaderAccept("application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase");
+        String localVarContentType = apiClient.selectHeaderContentType("application/json", "text/json",
+                "application/*+json");
+        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
+        return apiClient.invokeAPI("SubtitleApi.uploadSubtitle", localVarPath, "POST", new ArrayList<>(),
+                uploadSubtitleDto, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(), localVarAccept,
+                localVarContentType, localVarAuthNames, null, false);
     }
 }

@@ -16,10 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -73,6 +70,7 @@ public class CreatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -104,6 +102,7 @@ public class CreatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getIds() {
         return ids;
     }
@@ -127,6 +126,7 @@ public class CreatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -150,6 +150,7 @@ public class CreatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public MediaType getMediaType() {
         return mediaType;
     }
@@ -181,6 +182,7 @@ public class CreatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_USERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<PlaylistUserPermissions> getUsers() {
         return users;
     }
@@ -204,6 +206,7 @@ public class CreatePlaylistDto {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPublic() {
         return isPublic;
     }
@@ -261,162 +264,5 @@ public class CreatePlaylistDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Ids` to the URL query string
-        if (getIds() != null) {
-            for (int i = 0; i < getIds().size(); i++) {
-                if (getIds().get(i) != null) {
-                    joiner.add(String.format("%sIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getIds().get(i)))));
-                }
-            }
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `MediaType` to the URL query string
-        if (getMediaType() != null) {
-            joiner.add(String.format("%sMediaType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaType()))));
-        }
-
-        // add `Users` to the URL query string
-        if (getUsers() != null) {
-            for (int i = 0; i < getUsers().size(); i++) {
-                if (getUsers().get(i) != null) {
-                    joiner.add(getUsers().get(i).toUrlQueryString(String.format("%sUsers%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `IsPublic` to the URL query string
-        if (getIsPublic() != null) {
-            joiner.add(String.format("%sIsPublic%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPublic()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private CreatePlaylistDto instance;
-
-        public Builder() {
-            this(new CreatePlaylistDto());
-        }
-
-        protected Builder(CreatePlaylistDto instance) {
-            this.instance = instance;
-        }
-
-        public CreatePlaylistDto.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder ids(List<UUID> ids) {
-            this.instance.ids = ids;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder mediaType(MediaType mediaType) {
-            this.instance.mediaType = mediaType;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder users(List<PlaylistUserPermissions> users) {
-            this.instance.users = users;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder isPublic(Boolean isPublic) {
-            this.instance.isPublic = isPublic;
-            return this;
-        }
-
-        /**
-         * returns a built CreatePlaylistDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public CreatePlaylistDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static CreatePlaylistDto.Builder builder() {
-        return new CreatePlaylistDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public CreatePlaylistDto.Builder toBuilder() {
-        return new CreatePlaylistDto.Builder().name(getName()).ids(getIds()).userId(getUserId())
-                .mediaType(getMediaType()).users(getUsers()).isPublic(getIsPublic());
     }
 }

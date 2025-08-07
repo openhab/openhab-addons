@@ -14,10 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -88,6 +85,7 @@ public class IPlugin {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -100,6 +98,7 @@ public class IPlugin {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDescription() {
         return description;
     }
@@ -112,6 +111,7 @@ public class IPlugin {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -124,6 +124,7 @@ public class IPlugin {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersion() {
         return version;
     }
@@ -136,6 +137,7 @@ public class IPlugin {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ASSEMBLY_FILE_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAssemblyFilePath() {
         return assemblyFilePath;
     }
@@ -148,6 +150,7 @@ public class IPlugin {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanUninstall() {
         return canUninstall;
     }
@@ -160,6 +163,7 @@ public class IPlugin {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATA_FOLDER_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDataFolderPath() {
         return dataFolderPath;
     }
@@ -212,165 +216,5 @@ public class IPlugin {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Description` to the URL query string
-        if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `AssemblyFilePath` to the URL query string
-        if (getAssemblyFilePath() != null) {
-            joiner.add(String.format("%sAssemblyFilePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAssemblyFilePath()))));
-        }
-
-        // add `CanUninstall` to the URL query string
-        if (getCanUninstall() != null) {
-            joiner.add(String.format("%sCanUninstall%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
-        }
-
-        // add `DataFolderPath` to the URL query string
-        if (getDataFolderPath() != null) {
-            joiner.add(String.format("%sDataFolderPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDataFolderPath()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private IPlugin instance;
-
-        public Builder() {
-            this(new IPlugin());
-        }
-
-        protected Builder(IPlugin instance) {
-            this.instance = instance;
-        }
-
-        public IPlugin.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public IPlugin.Builder description(String description) {
-            this.instance.description = description;
-            return this;
-        }
-
-        public IPlugin.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public IPlugin.Builder version(String version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public IPlugin.Builder assemblyFilePath(String assemblyFilePath) {
-            this.instance.assemblyFilePath = assemblyFilePath;
-            return this;
-        }
-
-        public IPlugin.Builder canUninstall(Boolean canUninstall) {
-            this.instance.canUninstall = canUninstall;
-            return this;
-        }
-
-        public IPlugin.Builder dataFolderPath(String dataFolderPath) {
-            this.instance.dataFolderPath = dataFolderPath;
-            return this;
-        }
-
-        /**
-         * returns a built IPlugin instance.
-         *
-         * The builder is not reusable.
-         */
-        public IPlugin build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static IPlugin.Builder builder() {
-        return new IPlugin.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public IPlugin.Builder toBuilder() {
-        return new IPlugin.Builder().name(getName()).description(getDescription()).id(getId()).version(getVersion())
-                .assemblyFilePath(getAssemblyFilePath()).canUninstall(getCanUninstall())
-                .dataFolderPath(getDataFolderPath());
     }
 }

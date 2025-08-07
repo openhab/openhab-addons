@@ -17,10 +17,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -45,6 +42,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SearchHint {
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
     private UUID itemId;
 
@@ -163,6 +161,7 @@ public class SearchHint {
     public SearchHint() {
     }
 
+    @Deprecated
     public SearchHint itemId(@org.eclipse.jdt.annotation.NonNull UUID itemId) {
         this.itemId = itemId;
         return this;
@@ -178,10 +177,12 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
 
+    @Deprecated
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@org.eclipse.jdt.annotation.NonNull UUID itemId) {
@@ -201,6 +202,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -224,6 +226,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -247,6 +250,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MATCHED_TERM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getMatchedTerm() {
         return matchedTerm;
     }
@@ -270,6 +274,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getIndexNumber() {
         return indexNumber;
     }
@@ -293,6 +298,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getProductionYear() {
         return productionYear;
     }
@@ -316,6 +322,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
@@ -339,6 +346,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPrimaryImageTag() {
         return primaryImageTag;
     }
@@ -362,6 +370,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getThumbImageTag() {
         return thumbImageTag;
     }
@@ -385,6 +394,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getThumbImageItemId() {
         return thumbImageItemId;
     }
@@ -408,6 +418,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getBackdropImageTag() {
         return backdropImageTag;
     }
@@ -431,6 +442,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getBackdropImageItemId() {
         return backdropImageItemId;
     }
@@ -454,6 +466,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public BaseItemKind getType() {
         return type;
     }
@@ -477,6 +490,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_FOLDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsFolder() {
         return isFolder;
     }
@@ -500,6 +514,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getRunTimeTicks() {
         return runTimeTicks;
     }
@@ -523,6 +538,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public MediaType getMediaType() {
         return mediaType;
     }
@@ -546,6 +562,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_START_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getStartDate() {
         return startDate;
     }
@@ -569,6 +586,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_END_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getEndDate() {
         return endDate;
     }
@@ -592,6 +610,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SERIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeries() {
         return series;
     }
@@ -615,6 +634,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getStatus() {
         return status;
     }
@@ -638,6 +658,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAlbum() {
         return album;
     }
@@ -661,6 +682,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getAlbumId() {
         return albumId;
     }
@@ -684,6 +706,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAlbumArtist() {
         return albumArtist;
     }
@@ -715,6 +738,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ARTISTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getArtists() {
         return artists;
     }
@@ -738,6 +762,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_SONG_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSongCount() {
         return songCount;
     }
@@ -761,6 +786,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getEpisodeCount() {
         return episodeCount;
     }
@@ -784,6 +810,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getChannelId() {
         return channelId;
     }
@@ -807,6 +834,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getChannelName() {
         return channelName;
     }
@@ -830,6 +858,7 @@ public class SearchHint {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Double getPrimaryImageAspectRatio() {
         return primaryImageAspectRatio;
     }
@@ -933,417 +962,5 @@ public class SearchHint {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `MatchedTerm` to the URL query string
-        if (getMatchedTerm() != null) {
-            joiner.add(String.format("%sMatchedTerm%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMatchedTerm()))));
-        }
-
-        // add `IndexNumber` to the URL query string
-        if (getIndexNumber() != null) {
-            joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
-        }
-
-        // add `ProductionYear` to the URL query string
-        if (getProductionYear() != null) {
-            joiner.add(String.format("%sProductionYear%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductionYear()))));
-        }
-
-        // add `ParentIndexNumber` to the URL query string
-        if (getParentIndexNumber() != null) {
-            joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
-        }
-
-        // add `PrimaryImageTag` to the URL query string
-        if (getPrimaryImageTag() != null) {
-            joiner.add(String.format("%sPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
-        }
-
-        // add `ThumbImageTag` to the URL query string
-        if (getThumbImageTag() != null) {
-            joiner.add(String.format("%sThumbImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThumbImageTag()))));
-        }
-
-        // add `ThumbImageItemId` to the URL query string
-        if (getThumbImageItemId() != null) {
-            joiner.add(String.format("%sThumbImageItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThumbImageItemId()))));
-        }
-
-        // add `BackdropImageTag` to the URL query string
-        if (getBackdropImageTag() != null) {
-            joiner.add(String.format("%sBackdropImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBackdropImageTag()))));
-        }
-
-        // add `BackdropImageItemId` to the URL query string
-        if (getBackdropImageItemId() != null) {
-            joiner.add(String.format("%sBackdropImageItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBackdropImageItemId()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `IsFolder` to the URL query string
-        if (getIsFolder() != null) {
-            joiner.add(String.format("%sIsFolder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsFolder()))));
-        }
-
-        // add `RunTimeTicks` to the URL query string
-        if (getRunTimeTicks() != null) {
-            joiner.add(String.format("%sRunTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRunTimeTicks()))));
-        }
-
-        // add `MediaType` to the URL query string
-        if (getMediaType() != null) {
-            joiner.add(String.format("%sMediaType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaType()))));
-        }
-
-        // add `StartDate` to the URL query string
-        if (getStartDate() != null) {
-            joiner.add(String.format("%sStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
-        }
-
-        // add `EndDate` to the URL query string
-        if (getEndDate() != null) {
-            joiner.add(String.format("%sEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndDate()))));
-        }
-
-        // add `Series` to the URL query string
-        if (getSeries() != null) {
-            joiner.add(String.format("%sSeries%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeries()))));
-        }
-
-        // add `Status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        // add `Album` to the URL query string
-        if (getAlbum() != null) {
-            joiner.add(String.format("%sAlbum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbum()))));
-        }
-
-        // add `AlbumId` to the URL query string
-        if (getAlbumId() != null) {
-            joiner.add(String.format("%sAlbumId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumId()))));
-        }
-
-        // add `AlbumArtist` to the URL query string
-        if (getAlbumArtist() != null) {
-            joiner.add(String.format("%sAlbumArtist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumArtist()))));
-        }
-
-        // add `Artists` to the URL query string
-        if (getArtists() != null) {
-            for (int i = 0; i < getArtists().size(); i++) {
-                joiner.add(String.format("%sArtists%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getArtists().get(i)))));
-            }
-        }
-
-        // add `SongCount` to the URL query string
-        if (getSongCount() != null) {
-            joiner.add(String.format("%sSongCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSongCount()))));
-        }
-
-        // add `EpisodeCount` to the URL query string
-        if (getEpisodeCount() != null) {
-            joiner.add(String.format("%sEpisodeCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEpisodeCount()))));
-        }
-
-        // add `ChannelId` to the URL query string
-        if (getChannelId() != null) {
-            joiner.add(String.format("%sChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelId()))));
-        }
-
-        // add `ChannelName` to the URL query string
-        if (getChannelName() != null) {
-            joiner.add(String.format("%sChannelName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelName()))));
-        }
-
-        // add `PrimaryImageAspectRatio` to the URL query string
-        if (getPrimaryImageAspectRatio() != null) {
-            joiner.add(String.format("%sPrimaryImageAspectRatio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageAspectRatio()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private SearchHint instance;
-
-        public Builder() {
-            this(new SearchHint());
-        }
-
-        protected Builder(SearchHint instance) {
-            this.instance = instance;
-        }
-
-        public SearchHint.Builder itemId(UUID itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public SearchHint.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public SearchHint.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public SearchHint.Builder matchedTerm(String matchedTerm) {
-            this.instance.matchedTerm = matchedTerm;
-            return this;
-        }
-
-        public SearchHint.Builder indexNumber(Integer indexNumber) {
-            this.instance.indexNumber = indexNumber;
-            return this;
-        }
-
-        public SearchHint.Builder productionYear(Integer productionYear) {
-            this.instance.productionYear = productionYear;
-            return this;
-        }
-
-        public SearchHint.Builder parentIndexNumber(Integer parentIndexNumber) {
-            this.instance.parentIndexNumber = parentIndexNumber;
-            return this;
-        }
-
-        public SearchHint.Builder primaryImageTag(String primaryImageTag) {
-            this.instance.primaryImageTag = primaryImageTag;
-            return this;
-        }
-
-        public SearchHint.Builder thumbImageTag(String thumbImageTag) {
-            this.instance.thumbImageTag = thumbImageTag;
-            return this;
-        }
-
-        public SearchHint.Builder thumbImageItemId(String thumbImageItemId) {
-            this.instance.thumbImageItemId = thumbImageItemId;
-            return this;
-        }
-
-        public SearchHint.Builder backdropImageTag(String backdropImageTag) {
-            this.instance.backdropImageTag = backdropImageTag;
-            return this;
-        }
-
-        public SearchHint.Builder backdropImageItemId(String backdropImageItemId) {
-            this.instance.backdropImageItemId = backdropImageItemId;
-            return this;
-        }
-
-        public SearchHint.Builder type(BaseItemKind type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public SearchHint.Builder isFolder(Boolean isFolder) {
-            this.instance.isFolder = isFolder;
-            return this;
-        }
-
-        public SearchHint.Builder runTimeTicks(Long runTimeTicks) {
-            this.instance.runTimeTicks = runTimeTicks;
-            return this;
-        }
-
-        public SearchHint.Builder mediaType(MediaType mediaType) {
-            this.instance.mediaType = mediaType;
-            return this;
-        }
-
-        public SearchHint.Builder startDate(OffsetDateTime startDate) {
-            this.instance.startDate = startDate;
-            return this;
-        }
-
-        public SearchHint.Builder endDate(OffsetDateTime endDate) {
-            this.instance.endDate = endDate;
-            return this;
-        }
-
-        public SearchHint.Builder series(String series) {
-            this.instance.series = series;
-            return this;
-        }
-
-        public SearchHint.Builder status(String status) {
-            this.instance.status = status;
-            return this;
-        }
-
-        public SearchHint.Builder album(String album) {
-            this.instance.album = album;
-            return this;
-        }
-
-        public SearchHint.Builder albumId(UUID albumId) {
-            this.instance.albumId = albumId;
-            return this;
-        }
-
-        public SearchHint.Builder albumArtist(String albumArtist) {
-            this.instance.albumArtist = albumArtist;
-            return this;
-        }
-
-        public SearchHint.Builder artists(List<String> artists) {
-            this.instance.artists = artists;
-            return this;
-        }
-
-        public SearchHint.Builder songCount(Integer songCount) {
-            this.instance.songCount = songCount;
-            return this;
-        }
-
-        public SearchHint.Builder episodeCount(Integer episodeCount) {
-            this.instance.episodeCount = episodeCount;
-            return this;
-        }
-
-        public SearchHint.Builder channelId(UUID channelId) {
-            this.instance.channelId = channelId;
-            return this;
-        }
-
-        public SearchHint.Builder channelName(String channelName) {
-            this.instance.channelName = channelName;
-            return this;
-        }
-
-        public SearchHint.Builder primaryImageAspectRatio(Double primaryImageAspectRatio) {
-            this.instance.primaryImageAspectRatio = primaryImageAspectRatio;
-            return this;
-        }
-
-        /**
-         * returns a built SearchHint instance.
-         *
-         * The builder is not reusable.
-         */
-        public SearchHint build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SearchHint.Builder builder() {
-        return new SearchHint.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SearchHint.Builder toBuilder() {
-        return new SearchHint.Builder().itemId(getItemId()).id(getId()).name(getName()).matchedTerm(getMatchedTerm())
-                .indexNumber(getIndexNumber()).productionYear(getProductionYear())
-                .parentIndexNumber(getParentIndexNumber()).primaryImageTag(getPrimaryImageTag())
-                .thumbImageTag(getThumbImageTag()).thumbImageItemId(getThumbImageItemId())
-                .backdropImageTag(getBackdropImageTag()).backdropImageItemId(getBackdropImageItemId()).type(getType())
-                .isFolder(getIsFolder()).runTimeTicks(getRunTimeTicks()).mediaType(getMediaType())
-                .startDate(getStartDate()).endDate(getEndDate()).series(getSeries()).status(getStatus())
-                .album(getAlbum()).albumId(getAlbumId()).albumArtist(getAlbumArtist()).artists(getArtists())
-                .songCount(getSongCount()).episodeCount(getEpisodeCount()).channelId(getChannelId())
-                .channelName(getChannelName()).primaryImageAspectRatio(getPrimaryImageAspectRatio());
     }
 }

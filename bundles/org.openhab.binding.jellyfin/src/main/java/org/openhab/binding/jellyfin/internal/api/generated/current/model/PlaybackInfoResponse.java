@@ -16,9 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,6 +64,7 @@ public class PlaybackInfoResponse {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaSourceInfo> getMediaSources() {
         return mediaSources;
     }
@@ -90,6 +88,7 @@ public class PlaybackInfoResponse {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPlaySessionId() {
         return playSessionId;
     }
@@ -113,6 +112,7 @@ public class PlaybackInfoResponse {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_ERROR_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PlaybackErrorCode getErrorCode() {
         return errorCode;
     }
@@ -165,125 +165,5 @@ public class PlaybackInfoResponse {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `MediaSources` to the URL query string
-        if (getMediaSources() != null) {
-            for (int i = 0; i < getMediaSources().size(); i++) {
-                if (getMediaSources().get(i) != null) {
-                    joiner.add(getMediaSources().get(i).toUrlQueryString(String.format("%sMediaSources%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `PlaySessionId` to the URL query string
-        if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
-        }
-
-        // add `ErrorCode` to the URL query string
-        if (getErrorCode() != null) {
-            joiner.add(String.format("%sErrorCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getErrorCode()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private PlaybackInfoResponse instance;
-
-        public Builder() {
-            this(new PlaybackInfoResponse());
-        }
-
-        protected Builder(PlaybackInfoResponse instance) {
-            this.instance = instance;
-        }
-
-        public PlaybackInfoResponse.Builder mediaSources(List<MediaSourceInfo> mediaSources) {
-            this.instance.mediaSources = mediaSources;
-            return this;
-        }
-
-        public PlaybackInfoResponse.Builder playSessionId(String playSessionId) {
-            this.instance.playSessionId = playSessionId;
-            return this;
-        }
-
-        public PlaybackInfoResponse.Builder errorCode(PlaybackErrorCode errorCode) {
-            this.instance.errorCode = errorCode;
-            return this;
-        }
-
-        /**
-         * returns a built PlaybackInfoResponse instance.
-         *
-         * The builder is not reusable.
-         */
-        public PlaybackInfoResponse build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PlaybackInfoResponse.Builder builder() {
-        return new PlaybackInfoResponse.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PlaybackInfoResponse.Builder toBuilder() {
-        return new PlaybackInfoResponse.Builder().mediaSources(getMediaSources()).playSessionId(getPlaySessionId())
-                .errorCode(getErrorCode());
     }
 }

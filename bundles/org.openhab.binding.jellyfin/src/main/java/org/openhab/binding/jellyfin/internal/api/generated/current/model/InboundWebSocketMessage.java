@@ -18,9 +18,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.ws.rs.core.GenericType;
 
 import org.openhab.binding.jellyfin.internal.api.generated.JSON;
 
@@ -80,27 +81,6 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ActivityLogEntryStartMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ActivityLogEntryStartMessage.class.equals(Integer.class)
-                        || ActivityLogEntryStartMessage.class.equals(Long.class)
-                        || ActivityLogEntryStartMessage.class.equals(Float.class)
-                        || ActivityLogEntryStartMessage.class.equals(Double.class)
-                        || ActivityLogEntryStartMessage.class.equals(Boolean.class)
-                        || ActivityLogEntryStartMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ActivityLogEntryStartMessage.class.equals(Integer.class)
-                                || ActivityLogEntryStartMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ActivityLogEntryStartMessage.class.equals(Float.class)
-                                || ActivityLogEntryStartMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ActivityLogEntryStartMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ActivityLogEntryStartMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ActivityLogEntryStartMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -117,27 +97,6 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ActivityLogEntryStopMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ActivityLogEntryStopMessage.class.equals(Integer.class)
-                        || ActivityLogEntryStopMessage.class.equals(Long.class)
-                        || ActivityLogEntryStopMessage.class.equals(Float.class)
-                        || ActivityLogEntryStopMessage.class.equals(Double.class)
-                        || ActivityLogEntryStopMessage.class.equals(Boolean.class)
-                        || ActivityLogEntryStopMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ActivityLogEntryStopMessage.class.equals(Integer.class)
-                                || ActivityLogEntryStopMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ActivityLogEntryStopMessage.class.equals(Float.class)
-                                || ActivityLogEntryStopMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ActivityLogEntryStopMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ActivityLogEntryStopMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ActivityLogEntryStopMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -154,27 +113,6 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize InboundKeepAliveMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (InboundKeepAliveMessage.class.equals(Integer.class)
-                        || InboundKeepAliveMessage.class.equals(Long.class)
-                        || InboundKeepAliveMessage.class.equals(Float.class)
-                        || InboundKeepAliveMessage.class.equals(Double.class)
-                        || InboundKeepAliveMessage.class.equals(Boolean.class)
-                        || InboundKeepAliveMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((InboundKeepAliveMessage.class.equals(Integer.class)
-                                || InboundKeepAliveMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((InboundKeepAliveMessage.class.equals(Float.class)
-                                || InboundKeepAliveMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (InboundKeepAliveMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (InboundKeepAliveMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(InboundKeepAliveMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -191,27 +129,6 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ScheduledTasksInfoStartMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ScheduledTasksInfoStartMessage.class.equals(Integer.class)
-                        || ScheduledTasksInfoStartMessage.class.equals(Long.class)
-                        || ScheduledTasksInfoStartMessage.class.equals(Float.class)
-                        || ScheduledTasksInfoStartMessage.class.equals(Double.class)
-                        || ScheduledTasksInfoStartMessage.class.equals(Boolean.class)
-                        || ScheduledTasksInfoStartMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ScheduledTasksInfoStartMessage.class.equals(Integer.class)
-                                || ScheduledTasksInfoStartMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ScheduledTasksInfoStartMessage.class.equals(Float.class)
-                                || ScheduledTasksInfoStartMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ScheduledTasksInfoStartMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ScheduledTasksInfoStartMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ScheduledTasksInfoStartMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -228,27 +145,6 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize ScheduledTasksInfoStopMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (ScheduledTasksInfoStopMessage.class.equals(Integer.class)
-                        || ScheduledTasksInfoStopMessage.class.equals(Long.class)
-                        || ScheduledTasksInfoStopMessage.class.equals(Float.class)
-                        || ScheduledTasksInfoStopMessage.class.equals(Double.class)
-                        || ScheduledTasksInfoStopMessage.class.equals(Boolean.class)
-                        || ScheduledTasksInfoStopMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((ScheduledTasksInfoStopMessage.class.equals(Integer.class)
-                                || ScheduledTasksInfoStopMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((ScheduledTasksInfoStopMessage.class.equals(Float.class)
-                                || ScheduledTasksInfoStopMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (ScheduledTasksInfoStopMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (ScheduledTasksInfoStopMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(ScheduledTasksInfoStopMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -265,26 +161,6 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize SessionsStartMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (SessionsStartMessage.class.equals(Integer.class) || SessionsStartMessage.class.equals(Long.class)
-                        || SessionsStartMessage.class.equals(Float.class)
-                        || SessionsStartMessage.class.equals(Double.class)
-                        || SessionsStartMessage.class.equals(Boolean.class)
-                        || SessionsStartMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((SessionsStartMessage.class.equals(Integer.class)
-                                || SessionsStartMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((SessionsStartMessage.class.equals(Float.class)
-                                || SessionsStartMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (SessionsStartMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (SessionsStartMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(SessionsStartMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -301,26 +177,6 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
             // deserialize SessionsStopMessage
             try {
                 boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (SessionsStopMessage.class.equals(Integer.class) || SessionsStopMessage.class.equals(Long.class)
-                        || SessionsStopMessage.class.equals(Float.class)
-                        || SessionsStopMessage.class.equals(Double.class)
-                        || SessionsStopMessage.class.equals(Boolean.class)
-                        || SessionsStopMessage.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((SessionsStopMessage.class.equals(Integer.class)
-                                || SessionsStopMessage.class.equals(Long.class))
-                                && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((SessionsStopMessage.class.equals(Float.class)
-                                || SessionsStopMessage.class.equals(Double.class))
-                                && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (SessionsStopMessage.class.equals(Boolean.class)
-                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (SessionsStopMessage.class.equals(String.class)
-                                && token == JsonToken.VALUE_STRING);
-                    }
-                }
                 if (attemptParsing) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(SessionsStopMessage.class);
                     // TODO: there is no validation against JSON schema constraints
@@ -353,7 +209,7 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
     }
 
     // store a list of schema names defined in oneOf
-    public static final Map<String, Class<?>> schemas = new HashMap<>();
+    public static final Map<String, GenericType<?>> schemas = new HashMap<>();
 
     public InboundWebSocketMessage() {
         super("oneOf", Boolean.FALSE);
@@ -395,16 +251,23 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
     }
 
     static {
-        schemas.put("ActivityLogEntryStartMessage", ActivityLogEntryStartMessage.class);
-        schemas.put("ActivityLogEntryStopMessage", ActivityLogEntryStopMessage.class);
-        schemas.put("InboundKeepAliveMessage", InboundKeepAliveMessage.class);
-        schemas.put("ScheduledTasksInfoStartMessage", ScheduledTasksInfoStartMessage.class);
-        schemas.put("ScheduledTasksInfoStopMessage", ScheduledTasksInfoStopMessage.class);
-        schemas.put("SessionsStartMessage", SessionsStartMessage.class);
-        schemas.put("SessionsStopMessage", SessionsStopMessage.class);
+        schemas.put("ActivityLogEntryStartMessage", new GenericType<ActivityLogEntryStartMessage>() {
+        });
+        schemas.put("ActivityLogEntryStopMessage", new GenericType<ActivityLogEntryStopMessage>() {
+        });
+        schemas.put("InboundKeepAliveMessage", new GenericType<InboundKeepAliveMessage>() {
+        });
+        schemas.put("ScheduledTasksInfoStartMessage", new GenericType<ScheduledTasksInfoStartMessage>() {
+        });
+        schemas.put("ScheduledTasksInfoStopMessage", new GenericType<ScheduledTasksInfoStopMessage>() {
+        });
+        schemas.put("SessionsStartMessage", new GenericType<SessionsStartMessage>() {
+        });
+        schemas.put("SessionsStopMessage", new GenericType<SessionsStopMessage>() {
+        });
         JSON.registerDescendants(InboundWebSocketMessage.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
-        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
+        Map<String, Class<?>> mappings = new HashMap<>();
         mappings.put("ActivityLogEntryStart", ActivityLogEntryStartMessage.class);
         mappings.put("ActivityLogEntryStop", ActivityLogEntryStopMessage.class);
         mappings.put("KeepAlive", InboundKeepAliveMessage.class);
@@ -424,7 +287,7 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
     }
 
     @Override
-    public Map<String, Class<?>> getSchemas() {
+    public Map<String, GenericType<?>> getSchemas() {
         return InboundWebSocketMessage.schemas;
     }
 
@@ -439,37 +302,37 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(ActivityLogEntryStartMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ActivityLogEntryStartMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(ActivityLogEntryStopMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ActivityLogEntryStopMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(InboundKeepAliveMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(InboundKeepAliveMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(ScheduledTasksInfoStartMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ScheduledTasksInfoStartMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(ScheduledTasksInfoStopMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(ScheduledTasksInfoStopMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(SessionsStartMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SessionsStartMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(SessionsStopMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SessionsStopMessage.class, instance, new HashSet<>())) {
             super.setActualInstance(instance);
             return;
         }
@@ -570,87 +433,5 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
      */
     public SessionsStopMessage getSessionsStopMessage() throws ClassCastException {
         return (SessionsStopMessage) super.getActualInstance();
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        if (getActualInstance() instanceof ActivityLogEntryStartMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((ActivityLogEntryStartMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_0" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof ActivityLogEntryStopMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((ActivityLogEntryStopMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_1" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof InboundKeepAliveMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(
-                        ((InboundKeepAliveMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof ScheduledTasksInfoStartMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((ScheduledTasksInfoStartMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_3" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof ScheduledTasksInfoStopMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((ScheduledTasksInfoStopMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_4" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof SessionsStartMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((SessionsStartMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_5" + suffix));
-            }
-            return joiner.toString();
-        }
-        if (getActualInstance() instanceof SessionsStopMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((SessionsStopMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_6" + suffix));
-            }
-            return joiner.toString();
-        }
-        return null;
     }
 }

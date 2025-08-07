@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,6 +58,7 @@ public class ProfileCondition {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_CONDITION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ProfileConditionType getCondition() {
         return condition;
     }
@@ -84,6 +82,7 @@ public class ProfileCondition {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_PROPERTY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ProfileConditionValue getProperty() {
         return property;
     }
@@ -107,6 +106,7 @@ public class ProfileCondition {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_VALUE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getValue() {
         return value;
     }
@@ -130,6 +130,7 @@ public class ProfileCondition {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsRequired() {
         return isRequired;
     }
@@ -184,131 +185,5 @@ public class ProfileCondition {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Condition` to the URL query string
-        if (getCondition() != null) {
-            joiner.add(String.format("%sCondition%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCondition()))));
-        }
-
-        // add `Property` to the URL query string
-        if (getProperty() != null) {
-            joiner.add(String.format("%sProperty%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProperty()))));
-        }
-
-        // add `Value` to the URL query string
-        if (getValue() != null) {
-            joiner.add(String.format("%sValue%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-        }
-
-        // add `IsRequired` to the URL query string
-        if (getIsRequired() != null) {
-            joiner.add(String.format("%sIsRequired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsRequired()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ProfileCondition instance;
-
-        public Builder() {
-            this(new ProfileCondition());
-        }
-
-        protected Builder(ProfileCondition instance) {
-            this.instance = instance;
-        }
-
-        public ProfileCondition.Builder condition(ProfileConditionType condition) {
-            this.instance.condition = condition;
-            return this;
-        }
-
-        public ProfileCondition.Builder property(ProfileConditionValue property) {
-            this.instance.property = property;
-            return this;
-        }
-
-        public ProfileCondition.Builder value(String value) {
-            this.instance.value = value;
-            return this;
-        }
-
-        public ProfileCondition.Builder isRequired(Boolean isRequired) {
-            this.instance.isRequired = isRequired;
-            return this;
-        }
-
-        /**
-         * returns a built ProfileCondition instance.
-         *
-         * The builder is not reusable.
-         */
-        public ProfileCondition build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ProfileCondition.Builder builder() {
-        return new ProfileCondition.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ProfileCondition.Builder toBuilder() {
-        return new ProfileCondition.Builder().condition(getCondition()).property(getProperty()).value(getValue())
-                .isRequired(getIsRequired());
     }
 }

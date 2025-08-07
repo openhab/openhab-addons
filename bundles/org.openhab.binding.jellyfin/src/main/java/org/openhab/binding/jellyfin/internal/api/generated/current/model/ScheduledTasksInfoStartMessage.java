@@ -14,9 +14,6 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -60,6 +57,7 @@ public class ScheduledTasksInfoStartMessage {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getData() {
         return data;
     }
@@ -78,6 +76,7 @@ public class ScheduledTasksInfoStartMessage {
     @org.eclipse.jdt.annotation.NonNull
     @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SessionMessageType getMessageType() {
         return messageType;
     }
@@ -122,108 +121,5 @@ public class ScheduledTasksInfoStartMessage {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            joiner.add(String.format("%sData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getData()))));
-        }
-
-        // add `MessageType` to the URL query string
-        if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
-        }
-
-        return joiner.toString();
-    }
-
-    public static class Builder {
-
-        private ScheduledTasksInfoStartMessage instance;
-
-        public Builder() {
-            this(new ScheduledTasksInfoStartMessage());
-        }
-
-        protected Builder(ScheduledTasksInfoStartMessage instance) {
-            this.instance = instance;
-        }
-
-        public ScheduledTasksInfoStartMessage.Builder data(String data) {
-            this.instance.data = data;
-            return this;
-        }
-
-        public ScheduledTasksInfoStartMessage.Builder messageType(SessionMessageType messageType) {
-            this.instance.messageType = messageType;
-            return this;
-        }
-
-        /**
-         * returns a built ScheduledTasksInfoStartMessage instance.
-         *
-         * The builder is not reusable.
-         */
-        public ScheduledTasksInfoStartMessage build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ScheduledTasksInfoStartMessage.Builder builder() {
-        return new ScheduledTasksInfoStartMessage.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ScheduledTasksInfoStartMessage.Builder toBuilder() {
-        return new ScheduledTasksInfoStartMessage.Builder().data(getData()).messageType(getMessageType());
     }
 }
