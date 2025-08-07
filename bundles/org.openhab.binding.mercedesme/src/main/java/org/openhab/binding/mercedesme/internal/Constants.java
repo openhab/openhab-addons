@@ -356,9 +356,4 @@ public class Constants {
 
     public static final String FEATURE_APPENDIX = "-features";
     public static final String COMMAND_APPENDIX = "-commands";
-
-    public static final String JUNIT_EMAIL = "test@junit.org";
-    public static final String JUNIT_PASSWORD = "junitPassword";
-    public static final String JUNIT_TOKEN = "junitTestToken";
-    public static final String JUNIT_REFRESH_TOKEN = "junitRefreshToken";
 }

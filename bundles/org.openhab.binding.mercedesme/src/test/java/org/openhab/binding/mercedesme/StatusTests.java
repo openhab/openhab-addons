@@ -15,7 +15,6 @@ package org.openhab.binding.mercedesme;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandlerMock;
 import org.openhab.binding.mercedesme.internal.handler.ThingCallbackListener;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
@@ -45,7 +43,11 @@ import org.openhab.core.thing.internal.BridgeImpl;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-class StatusTests {
+public class StatusTests {
+    public static final String JUNIT_EMAIL = "test@junit.org";
+    public static final String JUNIT_PASSWORD = "junitPassword";
+    public static final String JUNIT_TOKEN = "junitTestToken";
+    public static final String JUNIT_REFRESH_TOKEN = "junitRefreshToken";
 
     public static void tearDown(AccountHandlerMock ahm) {
         ahm.dispose();
@@ -165,8 +167,8 @@ class StatusTests {
         tearDown(ahm);
         AccessTokenResponse token = new AccessTokenResponse();
         token.setExpiresIn(3000);
-        token.setAccessToken(Constants.JUNIT_TOKEN);
-        token.setRefreshToken(Constants.JUNIT_REFRESH_TOKEN);
+        token.setAccessToken(JUNIT_TOKEN);
+        token.setRefreshToken(JUNIT_REFRESH_TOKEN);
         ahm.onAccessTokenResponse(token);
         ahm.connect();
         tsi = tcl.getThingStatus();

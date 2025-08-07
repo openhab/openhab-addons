@@ -13,7 +13,6 @@
 package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.mockito.Mockito.mock;
-import static org.openhab.binding.mercedesme.internal.Constants.JUNIT_EMAIL;
 
 import java.util.Locale;
 
@@ -22,7 +21,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
+import org.openhab.binding.mercedesme.StatusTests;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.api.WebsocketMock;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
@@ -55,15 +56,27 @@ public class AccountHandlerMock extends AccountHandler {
         super(mock(Bridge.class), mock(MercedesMeDiscoveryService.class), mock(HttpClient.class),
                 mock(LocaleProvider.class), new VolatileStorageService());
         config = new AccountConfiguration();
+        api = new WebsocketMock(this, mock(HttpClient.class), config, mock(LocaleProvider.class),
+                new VolatileStorageService().getStorage(""));
     }
 
     public AccountHandlerMock(Bridge b, @Nullable String storedObject, HttpClient httpClient) {
         super(b, mock(MercedesMeDiscoveryService.class), httpClient, localeProvider, storageService);
         if (storedObject != null) {
             Storage<String> storage = storageService.getStorage(Constants.BINDING_ID);
-            storage.put(JUNIT_EMAIL, storedObject);
+            storage.put(StatusTests.JUNIT_EMAIL, storedObject);
         }
         config = new AccountConfiguration();
+        api = new WebsocketMock(this, mock(HttpClient.class), config, mock(LocaleProvider.class),
+                new VolatileStorageService().getStorage(""));
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        // initialize the mock API
+        api = new WebsocketMock(this, mock(HttpClient.class), config, mock(LocaleProvider.class),
+                new VolatileStorageService().getStorage(""));
     }
 
     @Override

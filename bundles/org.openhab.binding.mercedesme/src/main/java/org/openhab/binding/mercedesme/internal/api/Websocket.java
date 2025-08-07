@@ -212,10 +212,6 @@ public class Websocket extends RestApi {
                 client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
                 ClientUpgradeRequest request = getClientUpgradeRequest();
                 String websocketURL = Utils.getWebsocketServer(config.region);
-                if (Constants.JUNIT_TOKEN.equals(request.getHeader("Authorization"))) {
-                    // avoid unit test requesting real web socket - simply return
-                    return;
-                }
                 logger.trace("Websocket start {} max message size {}", websocketURL, client.getMaxBinaryMessageSize());
                 runTill = Instant.now().plusMillis(WS_RUNTIME_MS);
                 client.start();

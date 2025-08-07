@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mercedesme.internal.api;
 
-import static org.openhab.binding.mercedesme.internal.Constants.*;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -217,11 +215,6 @@ public class Authorization {
      */
     public void login() throws MercedesMeAuthException, MercedesMeApiException, MercedesMeBindingException {
         logger.trace("Start login");
-        if (isJunit()) {
-            // avoid real API calls in JUnit environment
-            throw new MercedesMeAuthException("Unit Test");
-        }
-
         HttpClient loginHttpClient = new HttpClient(new SslContextFactory.Client());
         /**
          * I need to start an extra client
@@ -515,9 +508,5 @@ public class Authorization {
             logger.warn("Failed request {}{} - {}", request.getPath(), request.getQuery(), e.getMessage());
             throw new MercedesMeApiException(request.getPath() + request.getQuery() + " - " + e.getMessage());
         }
-    }
-
-    protected boolean isJunit() {
-        return JUNIT_EMAIL.equals(config.email) && JUNIT_PASSWORD.equals(config.password);
     }
 }
