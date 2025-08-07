@@ -484,6 +484,7 @@ public class TibberHandler extends BaseThingHandler {
             value = Utils.getJsonValue(jsonData, "accumulatedProductionLastHour");
             updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "power");
+            String consumption = Utils.getJsonValue(jsonData, "power");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "minPower");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
@@ -492,7 +493,9 @@ public class TibberHandler extends BaseThingHandler {
             value = Utils.getJsonValue(jsonData, "averagePower");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_AVERAGE_CONSUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "powerProduction");
+            String production = Utils.getJsonValue(jsonData, "powerProduction");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PRODUCTION, value, "W");
+            updateConsumptionAndProductionChannel(consumption, production);
             value = Utils.getJsonValue(jsonData, "minPowerProduction");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_PRODUCTION, value, "W");
             value = Utils.getJsonValue(jsonData, "maxPowerProduction");
@@ -510,6 +513,31 @@ public class TibberHandler extends BaseThingHandler {
             value = Utils.getJsonValue(jsonData, "currentL3");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_3, value, "A");
         }
+    }
+
+    private void updateConsumptionAndProductionChannel(String consumption, String production) {
+        double consumptionValue = 0.0;
+        double productionValue = 0.0;
+        try {
+            if (consumption != null && !consumption.isBlank() && !consumption.equals(EMPTY_VALUE)
+                    && !consumption.equals(NULL_VALUE)) {
+                consumptionValue = Double.parseDouble(consumption);
+            }
+        } catch (NumberFormatException e) {
+            logger.error("Unable to parse consumption. Assume 0.", e);
+        }
+
+        try {
+            if (production != null && !production.isBlank() && !production.equals(EMPTY_VALUE)
+                    && !production.equals(NULL_VALUE)) {
+                productionValue = Double.parseDouble(production);
+            }
+        } catch (NumberFormatException e) {
+            logger.error("Unable to parse production. Assume 0.", e);
+        }
+
+        updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION_AND_PRODUCTION,
+                String.valueOf(consumptionValue - productionValue), "W");
     }
 
     private void updateChannel(String group, String channelId, String value, String unit) {
