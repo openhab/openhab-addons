@@ -128,13 +128,12 @@ public class Utils {
      * @return base REST server address
      */
     public static String getRestAPIServer(String region) {
-        String server = switch (region) {
+        return switch (region) {
             case Constants.REGION_APAC -> Constants.REST_API_BASE_PA;
             case Constants.REGION_CHINA -> Constants.REST_API_BASE_CN;
             case Constants.REGION_NORAM -> Constants.REST_API_BASE_NA;
             default -> Constants.REST_API_BASE;
         };
-        return server;
     }
 
     /**
@@ -144,13 +143,12 @@ public class Utils {
      * @return base login server address
      */
     public static String getLoginServer(String region) {
-        String server = switch (region) {
+        return switch (region) {
             case Constants.REGION_APAC -> Constants.LOGIN_BASE_URI_PA;
             case Constants.REGION_CHINA -> Constants.LOGIN_BASE_URI_CN;
             case Constants.REGION_NORAM -> Constants.LOGIN_BASE_URI_NA;
             default -> Constants.LOGIN_BASE_URI;
         };
-        return server;
     }
 
     /**
@@ -160,13 +158,12 @@ public class Utils {
      * @return widget login server address
      */
     public static String getWidgetServer(String region) {
-        String server = switch (region) {
+        return switch (region) {
             case Constants.REGION_APAC -> Constants.WIDGET_API_BASE_PA;
             case Constants.REGION_CHINA -> Constants.WIDGET_API_BASE_CN;
             case Constants.REGION_NORAM -> Constants.WIDGET_API_BASE_NA;
             default -> Constants.WIDGET_API_BASE;
         };
-        return server;
     }
 
     /**
@@ -176,13 +173,12 @@ public class Utils {
      * @return websocket base server address
      */
     public static String getWebsocketServer(String region) {
-        String server = switch (region) {
+        return switch (region) {
             case Constants.REGION_APAC -> Constants.WEBSOCKET_API_BASE_PA;
             case Constants.REGION_CHINA -> Constants.WEBSOCKET_API_BASE_CN;
             case Constants.REGION_NORAM -> Constants.WEBSOCKET_API_BASE_PA;
             default -> Constants.WEBSOCKET_API_BASE;
         };
-        return server;
     }
 
     /**
@@ -192,13 +188,12 @@ public class Utils {
      * @return application name as String
      */
     public static String getApplication(String region) {
-        String app = switch (region) {
+        return switch (region) {
             case Constants.REGION_APAC -> Constants.X_APPLICATIONNAME_AP;
             case Constants.REGION_CHINA -> Constants.X_APPLICATIONNAME_CN;
             case Constants.REGION_NORAM -> Constants.X_APPLICATIONNAME_US;
             default -> Constants.X_APPLICATIONNAME;
         };
-        return app;
     }
 
     /**
@@ -208,13 +203,12 @@ public class Utils {
      * @return application version as String
      */
     public static String getRisApplicationVersion(String region) {
-        String app = switch (region) {
+        return switch (region) {
             case Constants.REGION_APAC -> Constants.RIS_APPLICATION_VERSION_PA;
             case Constants.REGION_CHINA -> Constants.RIS_APPLICATION_VERSION_CN;
             case Constants.REGION_NORAM -> Constants.RIS_APPLICATION_VERSION_NA;
             default -> Constants.RIS_APPLICATION_VERSION;
         };
-        return app;
     }
 
     /**
@@ -224,14 +218,11 @@ public class Utils {
      * @return user agent as String
      */
     public static String getUserAgent(String region) {
-        switch (region) {
-            case Constants.REGION_APAC:
-                return Constants.WEBSOCKET_USER_AGENT_PA;
-            case Constants.REGION_CHINA:
-                return Constants.WEBSOCKET_USER_AGENT_CN;
-            default:
-                return Constants.WEBSOCKET_USER_AGENT;
-        }
+        return switch (region) {
+            case Constants.REGION_APAC -> Constants.WEBSOCKET_USER_AGENT_PA;
+            case Constants.REGION_CHINA -> Constants.WEBSOCKET_USER_AGENT_CN;
+            default -> Constants.WEBSOCKET_USER_AGENT;
+        };
     }
 
     /**
@@ -241,12 +232,10 @@ public class Utils {
      * @return SDK version as String
      */
     public static String getRisSDKVersion(String region) {
-        switch (region) {
-            case Constants.REGION_CHINA:
-                return Constants.RIS_SDK_VERSION_CN;
-            default:
-                return Constants.RIS_SDK_VERSION;
-        }
+        return switch (region) {
+            case Constants.REGION_CHINA -> Constants.RIS_SDK_VERSION_CN;
+            default -> Constants.RIS_SDK_VERSION;
+        };
     }
 
     /**
@@ -614,7 +603,7 @@ public class Utils {
      * @throws UnsupportedEncodingException if decoding fails
      */
     public static Map<String, String> getQueryParams(String query) throws UnsupportedEncodingException {
-        Map<String, String> queryPairs = new LinkedHashMap<String, String>();
+        Map<String, String> queryPairs = new LinkedHashMap<>();
         String[] pairs = query.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");

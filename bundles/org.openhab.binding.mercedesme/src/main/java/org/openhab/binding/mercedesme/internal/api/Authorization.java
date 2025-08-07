@@ -37,6 +37,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
@@ -215,7 +216,7 @@ public class Authorization {
      * @throws MercedesMeApiException if an error occurs during API calls
      */
     public void login() throws MercedesMeAuthException, MercedesMeApiException, MercedesMeBindingException {
-        logger.info("Start login");
+        logger.trace("Start login");
         if (isJunit()) {
             // avoid real API calls in JUnit environment
             throw new MercedesMeAuthException("Unit Test");
@@ -293,7 +294,7 @@ public class Authorization {
         ContentResponse resumeResponse = send(resumeRequest);
         logger.trace("Step 1: Get resume code {} - {}", resumeResponse.getStatus(),
                 resumeResponse.getRequest().getURI());
-        if (resumeResponse.getStatus() == 200) {
+        if (resumeResponse.getStatus() == HttpStatus.OK_200) {
             String response = resumeResponse.getRequest().getURI().getQuery();
             Map<String, String> params = Utils.getQueryParams(response);
             resumeUrl = params.get("resume");
@@ -327,7 +328,7 @@ public class Authorization {
 
         ContentResponse agentResponse = send(agentRequest);
         logger.trace("Step 2: Post Agent {} - {}", agentResponse.getStatus(), agentResponse.getContentAsString());
-        if (agentResponse.getStatus() != 200) {
+        if (agentResponse.getStatus() != HttpStatus.OK_200) {
             throw new MercedesMeAuthException("Failed to post user agent. HTTP " + agentResponse.getStatus());
         }
     }
@@ -354,7 +355,7 @@ public class Authorization {
         ContentResponse userResponse = send(userRequest);
         int status = userResponse.getStatus();
         logger.trace("Step 3: Post username {} - {}", status, userResponse.getContentAsString());
-        if (status != 200) {
+        if (status != HttpStatus.OK_200) {
             throw new MercedesMeAuthException("Failed to post username " + config.email + ". HTTP " + status);
         }
     }
@@ -388,7 +389,7 @@ public class Authorization {
         int status = loginResponse.getStatus();
         String loginResponseString = loginResponse.getContentAsString();
         logger.trace("Step 4: Login {} - {}", status, loginResponseString);
-        if (status == 200) {
+        if (status == HttpStatus.OK_200) {
             JSONObject loginResponseJSON = new JSONObject(loginResponseString);
             preLoginToken = loginResponseJSON.optString("token", null);
         }
@@ -458,7 +459,7 @@ public class Authorization {
         ContentResponse tokenResponse = send(tokenRequest);
         int status = tokenResponse.getStatus();
         String tokenResponseString = tokenResponse.getContentAsString();
-        if (status == 200) {
+        if (status == HttpStatus.OK_200) {
             storeToken(tokenResponseString);
             logger.info("Successfully resumed login");
         } else {
@@ -479,8 +480,8 @@ public class Authorization {
     }
 
     private String generateCodeVerifier(int size) {
-        String verfifierBytes = StringUtils.getRandomAlphanumeric(size);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(verfifierBytes.getBytes());
+        String verifierBytes = StringUtils.getRandomAlphanumeric(size);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(verifierBytes.getBytes());
     }
 
     public void addBasicHeaders(Request req) {
