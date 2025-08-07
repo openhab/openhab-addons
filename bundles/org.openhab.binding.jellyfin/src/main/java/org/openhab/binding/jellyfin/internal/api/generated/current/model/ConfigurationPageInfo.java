@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ ConfigurationPageInfo.JSON_PROPERTY_NAME, ConfigurationPageInfo.JSON_PROPERTY_ENABLE_IN_MAIN_MENU,
         ConfigurationPageInfo.JSON_PROPERTY_MENU_SECTION, ConfigurationPageInfo.JSON_PROPERTY_MENU_ICON,
         ConfigurationPageInfo.JSON_PROPERTY_DISPLAY_NAME, ConfigurationPageInfo.JSON_PROPERTY_PLUGIN_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ConfigurationPageInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ FileSystemEntryInfo.JSON_PROPERTY_NAME, FileSystemEntryInfo.JSON_PROPERTY_PATH,
         FileSystemEntryInfo.JSON_PROPERTY_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class FileSystemEntryInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

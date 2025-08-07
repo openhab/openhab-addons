@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ ReadyRequestDto.JSON_PROPERTY_WHEN, ReadyRequestDto.JSON_PROPERTY_POSITION_TICKS,
         ReadyRequestDto.JSON_PROPERTY_IS_PLAYING, ReadyRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ReadyRequestDto {
     public static final String JSON_PROPERTY_WHEN = "When";
     @org.eclipse.jdt.annotation.NonNull

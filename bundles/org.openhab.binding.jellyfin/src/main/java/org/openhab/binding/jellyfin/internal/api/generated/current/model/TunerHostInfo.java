@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         TunerHostInfo.JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE, TunerHostInfo.JSON_PROPERTY_ENABLE_STREAM_LOOPING,
         TunerHostInfo.JSON_PROPERTY_SOURCE, TunerHostInfo.JSON_PROPERTY_TUNER_COUNT,
         TunerHostInfo.JSON_PROPERTY_USER_AGENT, TunerHostInfo.JSON_PROPERTY_IGNORE_DTS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TunerHostInfo {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

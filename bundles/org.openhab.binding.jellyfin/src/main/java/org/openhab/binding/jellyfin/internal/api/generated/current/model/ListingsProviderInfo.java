@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ListingsProviderInfo.JSON_PROPERTY_KIDS_CATEGORIES, ListingsProviderInfo.JSON_PROPERTY_MOVIE_CATEGORIES,
         ListingsProviderInfo.JSON_PROPERTY_CHANNEL_MAPPINGS, ListingsProviderInfo.JSON_PROPERTY_MOVIE_PREFIX,
         ListingsProviderInfo.JSON_PROPERTY_PREFERRED_LANGUAGE, ListingsProviderInfo.JSON_PROPERTY_USER_AGENT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ListingsProviderInfo {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

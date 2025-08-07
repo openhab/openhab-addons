@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Scheduled tasks info stop message.
  */
 @JsonPropertyOrder({ ScheduledTasksInfoStopMessage.JSON_PROPERTY_MESSAGE_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ScheduledTasksInfoStopMessage {
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
     @org.eclipse.jdt.annotation.NonNull

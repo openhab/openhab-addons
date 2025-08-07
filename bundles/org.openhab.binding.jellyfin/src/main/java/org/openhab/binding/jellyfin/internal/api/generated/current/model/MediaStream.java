@@ -53,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         MediaStream.JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM, MediaStream.JSON_PROPERTY_PATH,
         MediaStream.JSON_PROPERTY_PIXEL_FORMAT, MediaStream.JSON_PROPERTY_LEVEL,
         MediaStream.JSON_PROPERTY_IS_ANAMORPHIC })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MediaStream {
     public static final String JSON_PROPERTY_CODEC = "Codec";
     @org.eclipse.jdt.annotation.NonNull

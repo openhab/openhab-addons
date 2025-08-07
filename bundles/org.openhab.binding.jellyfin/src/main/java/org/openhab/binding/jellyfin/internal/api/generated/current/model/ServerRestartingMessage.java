@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ ServerRestartingMessage.JSON_PROPERTY_MESSAGE_ID,
         ServerRestartingMessage.JSON_PROPERTY_MESSAGE_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ServerRestartingMessage {
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @org.eclipse.jdt.annotation.NonNull

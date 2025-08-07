@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         VersionInfo.JSON_PROPERTY_CHANGELOG, VersionInfo.JSON_PROPERTY_TARGET_ABI, VersionInfo.JSON_PROPERTY_SOURCE_URL,
         VersionInfo.JSON_PROPERTY_CHECKSUM, VersionInfo.JSON_PROPERTY_TIMESTAMP,
         VersionInfo.JSON_PROPERTY_REPOSITORY_NAME, VersionInfo.JSON_PROPERTY_REPOSITORY_URL })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class VersionInfo {
     public static final String JSON_PROPERTY_VERSION = "version";
     @org.eclipse.jdt.annotation.NonNull

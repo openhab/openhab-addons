@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         PlaybackStartInfo.JSON_PROPERTY_PLAY_SESSION_ID, PlaybackStartInfo.JSON_PROPERTY_REPEAT_MODE,
         PlaybackStartInfo.JSON_PROPERTY_PLAYBACK_ORDER, PlaybackStartInfo.JSON_PROPERTY_NOW_PLAYING_QUEUE,
         PlaybackStartInfo.JSON_PROPERTY_PLAYLIST_ITEM_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlaybackStartInfo {
     public static final String JSON_PROPERTY_CAN_SEEK = "CanSeek";
     @org.eclipse.jdt.annotation.NonNull

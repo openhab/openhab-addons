@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Media Update Info Dto.
  */
 @JsonPropertyOrder({ MediaUpdateInfoDto.JSON_PROPERTY_UPDATES })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MediaUpdateInfoDto {
     public static final String JSON_PROPERTY_UPDATES = "Updates";
     @org.eclipse.jdt.annotation.NonNull

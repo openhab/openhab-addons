@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ AllThemeMediaResult.JSON_PROPERTY_THEME_VIDEOS_RESULT,
         AllThemeMediaResult.JSON_PROPERTY_THEME_SONGS_RESULT,
         AllThemeMediaResult.JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class AllThemeMediaResult {
     public static final String JSON_PROPERTY_THEME_VIDEOS_RESULT = "ThemeVideosResult";
     @org.eclipse.jdt.annotation.NonNull

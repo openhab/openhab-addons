@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ SendCommand.JSON_PROPERTY_GROUP_ID, SendCommand.JSON_PROPERTY_PLAYLIST_ITEM_ID,
         SendCommand.JSON_PROPERTY_WHEN, SendCommand.JSON_PROPERTY_POSITION_TICKS, SendCommand.JSON_PROPERTY_COMMAND,
         SendCommand.JSON_PROPERTY_EMITTED_AT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SendCommand {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
     @org.eclipse.jdt.annotation.NonNull

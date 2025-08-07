@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         TaskResult.JSON_PROPERTY_STATUS, TaskResult.JSON_PROPERTY_NAME, TaskResult.JSON_PROPERTY_KEY,
         TaskResult.JSON_PROPERTY_ID, TaskResult.JSON_PROPERTY_ERROR_MESSAGE,
         TaskResult.JSON_PROPERTY_LONG_ERROR_MESSAGE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TaskResult {
     public static final String JSON_PROPERTY_START_TIME_UTC = "StartTimeUtc";
     @org.eclipse.jdt.annotation.NonNull

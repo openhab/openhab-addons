@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ ForgotPasswordResult.JSON_PROPERTY_ACTION, ForgotPasswordResult.JSON_PROPERTY_PIN_FILE,
         ForgotPasswordResult.JSON_PROPERTY_PIN_EXPIRATION_DATE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ForgotPasswordResult {
     public static final String JSON_PROPERTY_ACTION = "Action";
     @org.eclipse.jdt.annotation.NonNull

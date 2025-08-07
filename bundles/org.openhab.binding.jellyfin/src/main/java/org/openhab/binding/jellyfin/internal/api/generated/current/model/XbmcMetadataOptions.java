@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         XbmcMetadataOptions.JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO,
         XbmcMetadataOptions.JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION,
         XbmcMetadataOptions.JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class XbmcMetadataOptions {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.NonNull

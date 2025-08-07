@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ChannelFeatures.JSON_PROPERTY_AUTO_REFRESH_LEVELS, ChannelFeatures.JSON_PROPERTY_DEFAULT_SORT_FIELDS,
         ChannelFeatures.JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE, ChannelFeatures.JSON_PROPERTY_SUPPORTS_LATEST_MEDIA,
         ChannelFeatures.JSON_PROPERTY_CAN_FILTER, ChannelFeatures.JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ChannelFeatures {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

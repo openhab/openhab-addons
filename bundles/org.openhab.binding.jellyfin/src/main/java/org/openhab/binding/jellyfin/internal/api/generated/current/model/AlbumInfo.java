@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         AlbumInfo.JSON_PROPERTY_PARENT_INDEX_NUMBER, AlbumInfo.JSON_PROPERTY_PREMIERE_DATE,
         AlbumInfo.JSON_PROPERTY_IS_AUTOMATED, AlbumInfo.JSON_PROPERTY_ALBUM_ARTISTS,
         AlbumInfo.JSON_PROPERTY_ARTIST_PROVIDER_IDS, AlbumInfo.JSON_PROPERTY_SONG_INFOS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class AlbumInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

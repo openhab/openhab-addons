@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Class ImageProviderInfo.
  */
 @JsonPropertyOrder({ ImageProviderInfo.JSON_PROPERTY_NAME, ImageProviderInfo.JSON_PROPERTY_SUPPORTED_IMAGES })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ImageProviderInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

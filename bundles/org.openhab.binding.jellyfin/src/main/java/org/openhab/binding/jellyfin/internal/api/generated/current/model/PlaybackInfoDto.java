@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         PlaybackInfoDto.JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY, PlaybackInfoDto.JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY,
         PlaybackInfoDto.JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM,
         PlaybackInfoDto.JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlaybackInfoDto {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.NonNull

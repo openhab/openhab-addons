@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         MetadataEditorInfo.JSON_PROPERTY_COUNTRIES, MetadataEditorInfo.JSON_PROPERTY_CULTURES,
         MetadataEditorInfo.JSON_PROPERTY_EXTERNAL_ID_INFOS, MetadataEditorInfo.JSON_PROPERTY_CONTENT_TYPE,
         MetadataEditorInfo.JSON_PROPERTY_CONTENT_TYPE_OPTIONS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MetadataEditorInfo {
     public static final String JSON_PROPERTY_PARENTAL_RATING_OPTIONS = "ParentalRatingOptions";
     @org.eclipse.jdt.annotation.NonNull

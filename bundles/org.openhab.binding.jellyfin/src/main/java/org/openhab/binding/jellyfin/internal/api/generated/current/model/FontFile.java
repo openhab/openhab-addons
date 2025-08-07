@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ FontFile.JSON_PROPERTY_NAME, FontFile.JSON_PROPERTY_SIZE, FontFile.JSON_PROPERTY_DATE_CREATED,
         FontFile.JSON_PROPERTY_DATE_MODIFIED })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class FontFile {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

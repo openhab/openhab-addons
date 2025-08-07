@@ -48,7 +48,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         SeriesTimerInfoDto.JSON_PROPERTY_PARENT_THUMB_ITEM_ID, SeriesTimerInfoDto.JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG,
         SeriesTimerInfoDto.JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID,
         SeriesTimerInfoDto.JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SeriesTimerInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

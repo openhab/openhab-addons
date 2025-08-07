@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ ValidatePathDto.JSON_PROPERTY_VALIDATE_WRITABLE, ValidatePathDto.JSON_PROPERTY_PATH,
         ValidatePathDto.JSON_PROPERTY_IS_FILE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ValidatePathDto {
     public static final String JSON_PROPERTY_VALIDATE_WRITABLE = "ValidateWritable";
     @org.eclipse.jdt.annotation.NonNull

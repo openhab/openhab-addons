@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ PlaybackInfoResponse.JSON_PROPERTY_MEDIA_SOURCES,
         PlaybackInfoResponse.JSON_PROPERTY_PLAY_SESSION_ID, PlaybackInfoResponse.JSON_PROPERTY_ERROR_CODE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlaybackInfoResponse {
     public static final String JSON_PROPERTY_MEDIA_SOURCES = "MediaSources";
     @org.eclipse.jdt.annotation.NonNull

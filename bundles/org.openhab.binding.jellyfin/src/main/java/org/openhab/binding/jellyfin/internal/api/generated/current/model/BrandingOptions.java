@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ BrandingOptions.JSON_PROPERTY_LOGIN_DISCLAIMER, BrandingOptions.JSON_PROPERTY_CUSTOM_CSS,
         BrandingOptions.JSON_PROPERTY_SPLASHSCREEN_ENABLED })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class BrandingOptions {
     public static final String JSON_PROPERTY_LOGIN_DISCLAIMER = "LoginDisclaimer";
     @org.eclipse.jdt.annotation.NonNull

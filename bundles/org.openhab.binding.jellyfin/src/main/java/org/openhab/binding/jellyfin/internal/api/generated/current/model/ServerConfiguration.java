@@ -65,7 +65,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ServerConfiguration.JSON_PROPERTY_PARALLEL_IMAGE_ENCODING_LIMIT,
         ServerConfiguration.JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS,
         ServerConfiguration.JSON_PROPERTY_TRICKPLAY_OPTIONS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ServerConfiguration {
     public static final String JSON_PROPERTY_LOG_FILE_RETENTION_DAYS = "LogFileRetentionDays";
     @org.eclipse.jdt.annotation.NonNull

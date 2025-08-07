@@ -49,7 +49,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         MediaSourceInfo.JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL, MediaSourceInfo.JSON_PROPERTY_TRANSCODING_CONTAINER,
         MediaSourceInfo.JSON_PROPERTY_ANALYZE_DURATION_MS, MediaSourceInfo.JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX,
         MediaSourceInfo.JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX, MediaSourceInfo.JSON_PROPERTY_HAS_SEGMENTS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MediaSourceInfo {
     public static final String JSON_PROPERTY_PROTOCOL = "Protocol";
     @org.eclipse.jdt.annotation.NonNull

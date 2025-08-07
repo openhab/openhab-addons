@@ -100,7 +100,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         BaseItemDto.JSON_PROPERTY_IS_NEWS, BaseItemDto.JSON_PROPERTY_IS_KIDS, BaseItemDto.JSON_PROPERTY_IS_PREMIERE,
         BaseItemDto.JSON_PROPERTY_TIMER_ID, BaseItemDto.JSON_PROPERTY_NORMALIZATION_GAIN,
         BaseItemDto.JSON_PROPERTY_CURRENT_PROGRAM })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class BaseItemDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

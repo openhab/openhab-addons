@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ ScheduledTaskEndedMessage.JSON_PROPERTY_DATA, ScheduledTaskEndedMessage.JSON_PROPERTY_MESSAGE_ID,
         ScheduledTaskEndedMessage.JSON_PROPERTY_MESSAGE_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ScheduledTaskEndedMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @org.eclipse.jdt.annotation.NonNull

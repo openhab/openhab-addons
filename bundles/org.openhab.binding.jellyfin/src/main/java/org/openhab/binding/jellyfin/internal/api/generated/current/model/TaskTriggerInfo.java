@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ TaskTriggerInfo.JSON_PROPERTY_TYPE, TaskTriggerInfo.JSON_PROPERTY_TIME_OF_DAY_TICKS,
         TaskTriggerInfo.JSON_PROPERTY_INTERVAL_TICKS, TaskTriggerInfo.JSON_PROPERTY_DAY_OF_WEEK,
         TaskTriggerInfo.JSON_PROPERTY_MAX_RUNTIME_TICKS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TaskTriggerInfo {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.NonNull

@@ -16,14 +16,14 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.Map;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import javax.ws.rs.core.GenericType;
 
-import jakarta.ws.rs.core.GenericType;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Abstract class for oneOf,anyOf schemas defined in OpenAPI spec
  */
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public abstract class AbstractOpenApiSchema {
 
     // store the actual instance of the schema/object

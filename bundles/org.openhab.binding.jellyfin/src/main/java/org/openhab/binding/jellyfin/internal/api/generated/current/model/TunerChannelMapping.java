@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ TunerChannelMapping.JSON_PROPERTY_NAME, TunerChannelMapping.JSON_PROPERTY_PROVIDER_CHANNEL_NAME,
         TunerChannelMapping.JSON_PROPERTY_PROVIDER_CHANNEL_ID, TunerChannelMapping.JSON_PROPERTY_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TunerChannelMapping {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

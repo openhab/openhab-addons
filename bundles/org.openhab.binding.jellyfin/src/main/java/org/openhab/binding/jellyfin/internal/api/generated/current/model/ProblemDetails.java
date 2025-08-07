@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ ProblemDetails.JSON_PROPERTY_TYPE, ProblemDetails.JSON_PROPERTY_TITLE,
         ProblemDetails.JSON_PROPERTY_STATUS, ProblemDetails.JSON_PROPERTY_DETAIL,
         ProblemDetails.JSON_PROPERTY_INSTANCE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ProblemDetails {
     public static final String JSON_PROPERTY_TYPE = "type";
     @org.eclipse.jdt.annotation.NonNull

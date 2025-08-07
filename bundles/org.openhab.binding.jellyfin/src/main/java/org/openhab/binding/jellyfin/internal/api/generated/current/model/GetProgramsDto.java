@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         GetProgramsDto.JSON_PROPERTY_ENABLE_IMAGE_TYPES, GetProgramsDto.JSON_PROPERTY_ENABLE_USER_DATA,
         GetProgramsDto.JSON_PROPERTY_SERIES_TIMER_ID, GetProgramsDto.JSON_PROPERTY_LIBRARY_SERIES_ID,
         GetProgramsDto.JSON_PROPERTY_FIELDS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class GetProgramsDto {
     public static final String JSON_PROPERTY_CHANNEL_IDS = "ChannelIds";
     @org.eclipse.jdt.annotation.NonNull

@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         MusicVideoInfoRemoteSearchQuery.JSON_PROPERTY_ITEM_ID,
         MusicVideoInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
         MusicVideoInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MusicVideoInfoRemoteSearchQuery {
     public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
     @org.eclipse.jdt.annotation.NonNull

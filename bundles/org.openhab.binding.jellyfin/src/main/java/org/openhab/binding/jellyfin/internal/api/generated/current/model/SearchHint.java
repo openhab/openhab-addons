@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         SearchHint.JSON_PROPERTY_SONG_COUNT, SearchHint.JSON_PROPERTY_EPISODE_COUNT,
         SearchHint.JSON_PROPERTY_CHANNEL_ID, SearchHint.JSON_PROPERTY_CHANNEL_NAME,
         SearchHint.JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SearchHint {
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @Deprecated

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ BaseItemPerson.JSON_PROPERTY_NAME, BaseItemPerson.JSON_PROPERTY_ID,
         BaseItemPerson.JSON_PROPERTY_ROLE, BaseItemPerson.JSON_PROPERTY_TYPE,
         BaseItemPerson.JSON_PROPERTY_PRIMARY_IMAGE_TAG, BaseItemPerson.JSON_PROPERTY_IMAGE_BLUR_HASHES })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class BaseItemPerson {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

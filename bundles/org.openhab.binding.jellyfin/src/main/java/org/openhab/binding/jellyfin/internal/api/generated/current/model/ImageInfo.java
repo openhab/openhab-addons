@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ ImageInfo.JSON_PROPERTY_IMAGE_TYPE, ImageInfo.JSON_PROPERTY_IMAGE_INDEX,
         ImageInfo.JSON_PROPERTY_IMAGE_TAG, ImageInfo.JSON_PROPERTY_PATH, ImageInfo.JSON_PROPERTY_BLUR_HASH,
         ImageInfo.JSON_PROPERTY_HEIGHT, ImageInfo.JSON_PROPERTY_WIDTH, ImageInfo.JSON_PROPERTY_SIZE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ImageInfo {
     public static final String JSON_PROPERTY_IMAGE_TYPE = "ImageType";
     @org.eclipse.jdt.annotation.NonNull

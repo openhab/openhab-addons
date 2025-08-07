@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         TaskInfo.JSON_PROPERTY_LAST_EXECUTION_RESULT, TaskInfo.JSON_PROPERTY_TRIGGERS,
         TaskInfo.JSON_PROPERTY_DESCRIPTION, TaskInfo.JSON_PROPERTY_CATEGORY, TaskInfo.JSON_PROPERTY_IS_HIDDEN,
         TaskInfo.JSON_PROPERTY_KEY })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TaskInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

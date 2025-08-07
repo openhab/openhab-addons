@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ConfigImageTypes.JSON_PROPERTY_LOGO_SIZES, ConfigImageTypes.JSON_PROPERTY_POSTER_SIZES,
         ConfigImageTypes.JSON_PROPERTY_PROFILE_SIZES, ConfigImageTypes.JSON_PROPERTY_SECURE_BASE_URL,
         ConfigImageTypes.JSON_PROPERTY_STILL_SIZES })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ConfigImageTypes {
     public static final String JSON_PROPERTY_BACKDROP_SIZES = "BackdropSizes";
     @org.eclipse.jdt.annotation.NonNull

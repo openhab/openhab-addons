@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         UserConfiguration.JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS,
         UserConfiguration.JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY,
         UserConfiguration.JSON_PROPERTY_CAST_RECEIVER_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UserConfiguration {
     public static final String JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE = "AudioLanguagePreference";
     @org.eclipse.jdt.annotation.NonNull

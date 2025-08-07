@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ SeriesTimerCreatedMessage.JSON_PROPERTY_DATA, SeriesTimerCreatedMessage.JSON_PROPERTY_MESSAGE_ID,
         SeriesTimerCreatedMessage.JSON_PROPERTY_MESSAGE_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SeriesTimerCreatedMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @org.eclipse.jdt.annotation.NonNull

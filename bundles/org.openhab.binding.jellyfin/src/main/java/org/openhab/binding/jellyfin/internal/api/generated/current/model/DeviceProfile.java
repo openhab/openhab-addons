@@ -38,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         DeviceProfile.JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE, DeviceProfile.JSON_PROPERTY_DIRECT_PLAY_PROFILES,
         DeviceProfile.JSON_PROPERTY_TRANSCODING_PROFILES, DeviceProfile.JSON_PROPERTY_CONTAINER_PROFILES,
         DeviceProfile.JSON_PROPERTY_CODEC_PROFILES, DeviceProfile.JSON_PROPERTY_SUBTITLE_PROFILES })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class DeviceProfile {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

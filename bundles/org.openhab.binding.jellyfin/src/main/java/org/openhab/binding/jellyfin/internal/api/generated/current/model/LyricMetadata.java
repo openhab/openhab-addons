@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         LyricMetadata.JSON_PROPERTY_TITLE, LyricMetadata.JSON_PROPERTY_AUTHOR, LyricMetadata.JSON_PROPERTY_LENGTH,
         LyricMetadata.JSON_PROPERTY_BY, LyricMetadata.JSON_PROPERTY_OFFSET, LyricMetadata.JSON_PROPERTY_CREATOR,
         LyricMetadata.JSON_PROPERTY_VERSION, LyricMetadata.JSON_PROPERTY_IS_SYNCED })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LyricMetadata {
     public static final String JSON_PROPERTY_ARTIST = "Artist";
     @org.eclipse.jdt.annotation.NonNull

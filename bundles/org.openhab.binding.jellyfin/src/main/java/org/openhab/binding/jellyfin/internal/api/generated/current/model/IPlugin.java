@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ IPlugin.JSON_PROPERTY_NAME, IPlugin.JSON_PROPERTY_DESCRIPTION, IPlugin.JSON_PROPERTY_ID,
         IPlugin.JSON_PROPERTY_VERSION, IPlugin.JSON_PROPERTY_ASSEMBLY_FILE_PATH, IPlugin.JSON_PROPERTY_CAN_UNINSTALL,
         IPlugin.JSON_PROPERTY_DATA_FOLDER_PATH })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class IPlugin {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

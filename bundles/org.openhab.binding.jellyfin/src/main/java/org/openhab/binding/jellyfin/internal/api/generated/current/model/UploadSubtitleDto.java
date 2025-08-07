@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ UploadSubtitleDto.JSON_PROPERTY_LANGUAGE, UploadSubtitleDto.JSON_PROPERTY_FORMAT,
         UploadSubtitleDto.JSON_PROPERTY_IS_FORCED, UploadSubtitleDto.JSON_PROPERTY_IS_HEARING_IMPAIRED,
         UploadSubtitleDto.JSON_PROPERTY_DATA })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UploadSubtitleDto {
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
     @org.eclipse.jdt.annotation.Nullable

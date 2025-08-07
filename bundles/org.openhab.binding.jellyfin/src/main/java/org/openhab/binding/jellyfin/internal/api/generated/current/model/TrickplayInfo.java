@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         TrickplayInfo.JSON_PROPERTY_TILE_WIDTH, TrickplayInfo.JSON_PROPERTY_TILE_HEIGHT,
         TrickplayInfo.JSON_PROPERTY_THUMBNAIL_COUNT, TrickplayInfo.JSON_PROPERTY_INTERVAL,
         TrickplayInfo.JSON_PROPERTY_BANDWIDTH })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TrickplayInfo {
     public static final String JSON_PROPERTY_WIDTH = "Width";
     @org.eclipse.jdt.annotation.NonNull

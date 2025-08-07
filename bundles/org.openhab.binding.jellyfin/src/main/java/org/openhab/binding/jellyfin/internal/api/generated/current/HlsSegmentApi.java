@@ -5,15 +5,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.ws.rs.core.GenericType;
+
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
 import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
 import org.openhab.binding.jellyfin.internal.api.generated.Pair;
 
-import jakarta.ws.rs.core.GenericType;
-
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class HlsSegmentApi {
     private ApiClient apiClient;
 

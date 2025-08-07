@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ StartupRemoteAccessDto.JSON_PROPERTY_ENABLE_REMOTE_ACCESS,
         StartupRemoteAccessDto.JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class StartupRemoteAccessDto {
     public static final String JSON_PROPERTY_ENABLE_REMOTE_ACCESS = "EnableRemoteAccess";
     @org.eclipse.jdt.annotation.Nullable

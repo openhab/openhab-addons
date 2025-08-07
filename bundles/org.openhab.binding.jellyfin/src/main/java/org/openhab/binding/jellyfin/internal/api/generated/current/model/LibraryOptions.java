@@ -53,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         LibraryOptions.JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS, LibraryOptions.JSON_PROPERTY_CUSTOM_TAG_DELIMITERS,
         LibraryOptions.JSON_PROPERTY_DELIMITER_WHITELIST, LibraryOptions.JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION,
         LibraryOptions.JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES, LibraryOptions.JSON_PROPERTY_TYPE_OPTIONS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LibraryOptions {
     public static final String JSON_PROPERTY_ENABLED = "Enabled";
     @org.eclipse.jdt.annotation.NonNull

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Class SetShuffleModeRequestDto.
  */
 @JsonPropertyOrder({ SetShuffleModeRequestDto.JSON_PROPERTY_MODE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SetShuffleModeRequestDto {
     public static final String JSON_PROPERTY_MODE = "Mode";
     @org.eclipse.jdt.annotation.NonNull

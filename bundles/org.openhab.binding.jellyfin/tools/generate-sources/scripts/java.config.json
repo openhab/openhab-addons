@@ -1,8 +1,9 @@
 {
   "annotationLibrary": "none",
-  "library": "jersey3",
+  "library": "jersey2",
   "dateLibrary": "java8",
   "serializationLibrary": "jackson",
+  "useJakartaEe": false,
   "developerEmail": "patrik.gfeller@gmail.com",
   "developerName": "Patrik Gfeller",
   "developerOrganization": "openHAB project",

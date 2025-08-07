@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import javax.ws.rs.core.GenericType;
+
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
@@ -20,9 +22,6 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.ItemSor
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.MediaType;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SortOrder;
 
-import jakarta.ws.rs.core.GenericType;
-
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ArtistsApi {
     private ApiClient apiClient;
 

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Forgot Password Pin enter request body DTO.
  */
 @JsonPropertyOrder({ ForgotPasswordPinDto.JSON_PROPERTY_PIN })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ForgotPasswordPinDto {
     public static final String JSON_PROPERTY_PIN = "Pin";
     @org.eclipse.jdt.annotation.Nullable

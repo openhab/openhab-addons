@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Special view option dto.
  */
 @JsonPropertyOrder({ SpecialViewOptionDto.JSON_PROPERTY_NAME, SpecialViewOptionDto.JSON_PROPERTY_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SpecialViewOptionDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

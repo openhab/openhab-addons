@@ -48,7 +48,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         UserPolicy.JSON_PROPERTY_BLOCKED_CHANNELS, UserPolicy.JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT,
         UserPolicy.JSON_PROPERTY_AUTHENTICATION_PROVIDER_ID, UserPolicy.JSON_PROPERTY_PASSWORD_RESET_PROVIDER_ID,
         UserPolicy.JSON_PROPERTY_SYNC_PLAY_ACCESS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UserPolicy {
     public static final String JSON_PROPERTY_IS_ADMINISTRATOR = "IsAdministrator";
     @org.eclipse.jdt.annotation.NonNull

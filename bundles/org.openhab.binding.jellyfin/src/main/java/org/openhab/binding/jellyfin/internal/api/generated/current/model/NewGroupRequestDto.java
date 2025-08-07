@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Class NewGroupRequestDto.
  */
 @JsonPropertyOrder({ NewGroupRequestDto.JSON_PROPERTY_GROUP_NAME })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class NewGroupRequestDto {
     public static final String JSON_PROPERTY_GROUP_NAME = "GroupName";
     @org.eclipse.jdt.annotation.NonNull

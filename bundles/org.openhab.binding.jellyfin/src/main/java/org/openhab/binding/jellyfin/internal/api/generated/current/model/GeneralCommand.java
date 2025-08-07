@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ GeneralCommand.JSON_PROPERTY_NAME, GeneralCommand.JSON_PROPERTY_CONTROLLING_USER_ID,
         GeneralCommand.JSON_PROPERTY_ARGUMENTS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class GeneralCommand {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

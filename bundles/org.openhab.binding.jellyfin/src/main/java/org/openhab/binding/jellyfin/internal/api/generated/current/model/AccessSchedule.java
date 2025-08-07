@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ AccessSchedule.JSON_PROPERTY_ID, AccessSchedule.JSON_PROPERTY_USER_ID,
         AccessSchedule.JSON_PROPERTY_DAY_OF_WEEK, AccessSchedule.JSON_PROPERTY_START_HOUR,
         AccessSchedule.JSON_PROPERTY_END_HOUR })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class AccessSchedule {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         PlayRequest.JSON_PROPERTY_PLAY_COMMAND, PlayRequest.JSON_PROPERTY_CONTROLLING_USER_ID,
         PlayRequest.JSON_PROPERTY_SUBTITLE_STREAM_INDEX, PlayRequest.JSON_PROPERTY_AUDIO_STREAM_INDEX,
         PlayRequest.JSON_PROPERTY_MEDIA_SOURCE_ID, PlayRequest.JSON_PROPERTY_START_INDEX })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlayRequest {
     public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
     @org.eclipse.jdt.annotation.NonNull

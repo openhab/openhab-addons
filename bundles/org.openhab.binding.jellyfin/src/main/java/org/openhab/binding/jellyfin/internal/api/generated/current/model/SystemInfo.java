@@ -38,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         SystemInfo.JSON_PROPERTY_TRANSCODING_TEMP_PATH, SystemInfo.JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS,
         SystemInfo.JSON_PROPERTY_HAS_UPDATE_AVAILABLE, SystemInfo.JSON_PROPERTY_ENCODER_LOCATION,
         SystemInfo.JSON_PROPERTY_SYSTEM_ARCHITECTURE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SystemInfo {
     public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
     @org.eclipse.jdt.annotation.NonNull

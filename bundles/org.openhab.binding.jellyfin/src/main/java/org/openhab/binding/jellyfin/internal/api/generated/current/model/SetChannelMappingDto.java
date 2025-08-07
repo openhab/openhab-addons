@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ SetChannelMappingDto.JSON_PROPERTY_PROVIDER_ID,
         SetChannelMappingDto.JSON_PROPERTY_TUNER_CHANNEL_ID, SetChannelMappingDto.JSON_PROPERTY_PROVIDER_CHANNEL_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SetChannelMappingDto {
     public static final String JSON_PROPERTY_PROVIDER_ID = "ProviderId";
     @org.eclipse.jdt.annotation.Nullable

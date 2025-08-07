@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * The authenticate user by name request body.
  */
 @JsonPropertyOrder({ AuthenticateUserByName.JSON_PROPERTY_USERNAME, AuthenticateUserByName.JSON_PROPERTY_PW })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class AuthenticateUserByName {
     public static final String JSON_PROPERTY_USERNAME = "Username";
     @org.eclipse.jdt.annotation.NonNull

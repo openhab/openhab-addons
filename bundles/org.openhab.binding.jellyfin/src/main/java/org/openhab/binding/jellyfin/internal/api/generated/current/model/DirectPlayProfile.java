@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ DirectPlayProfile.JSON_PROPERTY_CONTAINER, DirectPlayProfile.JSON_PROPERTY_AUDIO_CODEC,
         DirectPlayProfile.JSON_PROPERTY_VIDEO_CODEC, DirectPlayProfile.JSON_PROPERTY_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class DirectPlayProfile {
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @org.eclipse.jdt.annotation.NonNull

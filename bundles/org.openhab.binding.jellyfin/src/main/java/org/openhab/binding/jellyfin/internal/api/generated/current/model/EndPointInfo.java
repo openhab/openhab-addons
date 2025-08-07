@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * EndPointInfo
  */
 @JsonPropertyOrder({ EndPointInfo.JSON_PROPERTY_IS_LOCAL, EndPointInfo.JSON_PROPERTY_IS_IN_NETWORK })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class EndPointInfo {
     public static final String JSON_PROPERTY_IS_LOCAL = "IsLocal";
     @org.eclipse.jdt.annotation.NonNull

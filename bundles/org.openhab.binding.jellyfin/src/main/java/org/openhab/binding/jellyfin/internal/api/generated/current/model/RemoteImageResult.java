@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ RemoteImageResult.JSON_PROPERTY_IMAGES, RemoteImageResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
         RemoteImageResult.JSON_PROPERTY_PROVIDERS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class RemoteImageResult {
     public static final String JSON_PROPERTY_IMAGES = "Images";
     @org.eclipse.jdt.annotation.NonNull

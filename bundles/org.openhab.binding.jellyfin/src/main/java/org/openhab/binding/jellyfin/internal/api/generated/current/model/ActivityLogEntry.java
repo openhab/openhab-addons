@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ActivityLogEntry.JSON_PROPERTY_TYPE, ActivityLogEntry.JSON_PROPERTY_ITEM_ID,
         ActivityLogEntry.JSON_PROPERTY_DATE, ActivityLogEntry.JSON_PROPERTY_USER_ID,
         ActivityLogEntry.JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, ActivityLogEntry.JSON_PROPERTY_SEVERITY })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ActivityLogEntry {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

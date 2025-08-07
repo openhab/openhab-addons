@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         TimerInfoDto.JSON_PROPERTY_STATUS, TimerInfoDto.JSON_PROPERTY_SERIES_TIMER_ID,
         TimerInfoDto.JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID, TimerInfoDto.JSON_PROPERTY_RUN_TIME_TICKS,
         TimerInfoDto.JSON_PROPERTY_PROGRAM_INFO })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TimerInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

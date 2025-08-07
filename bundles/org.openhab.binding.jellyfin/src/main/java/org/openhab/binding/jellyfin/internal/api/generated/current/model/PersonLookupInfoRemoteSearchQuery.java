@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         PersonLookupInfoRemoteSearchQuery.JSON_PROPERTY_ITEM_ID,
         PersonLookupInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
         PersonLookupInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PersonLookupInfoRemoteSearchQuery {
     public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
     @org.eclipse.jdt.annotation.NonNull

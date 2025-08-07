@@ -16,7 +16,6 @@ package org.openhab.binding.jellyfin.internal.api.generated;
 import java.util.Collection;
 import java.util.Iterator;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class StringUtil {
     /**
      * Check if the given array contains the given value (with case-insensitive comparison).

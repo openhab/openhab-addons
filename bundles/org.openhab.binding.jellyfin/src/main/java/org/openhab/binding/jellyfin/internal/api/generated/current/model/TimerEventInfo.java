@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * TimerEventInfo
  */
 @JsonPropertyOrder({ TimerEventInfo.JSON_PROPERTY_ID, TimerEventInfo.JSON_PROPERTY_PROGRAM_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TimerEventInfo {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         DeviceInfoDto.JSON_PROPERTY_APP_VERSION, DeviceInfoDto.JSON_PROPERTY_LAST_USER_ID,
         DeviceInfoDto.JSON_PROPERTY_DATE_LAST_ACTIVITY, DeviceInfoDto.JSON_PROPERTY_CAPABILITIES,
         DeviceInfoDto.JSON_PROPERTY_ICON_URL })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class DeviceInfoDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

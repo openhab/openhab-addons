@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Sessions start message. Data is the timing data encoded as \&quot;$initialDelay,$interval\&quot; in ms.
  */
 @JsonPropertyOrder({ SessionsStartMessage.JSON_PROPERTY_DATA, SessionsStartMessage.JSON_PROPERTY_MESSAGE_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SessionsStartMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @org.eclipse.jdt.annotation.NonNull

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * The quick connect request body.
  */
 @JsonPropertyOrder({ QuickConnectDto.JSON_PROPERTY_SECRET })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class QuickConnectDto {
     public static final String JSON_PROPERTY_SECRET = "Secret";
     @org.eclipse.jdt.annotation.Nullable

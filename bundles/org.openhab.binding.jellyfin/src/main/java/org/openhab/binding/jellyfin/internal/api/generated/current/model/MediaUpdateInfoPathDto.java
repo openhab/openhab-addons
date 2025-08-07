@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * The media update info path.
  */
 @JsonPropertyOrder({ MediaUpdateInfoPathDto.JSON_PROPERTY_PATH, MediaUpdateInfoPathDto.JSON_PROPERTY_UPDATE_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MediaUpdateInfoPathDto {
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.NonNull

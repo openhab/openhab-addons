@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ ProfileCondition.JSON_PROPERTY_CONDITION, ProfileCondition.JSON_PROPERTY_PROPERTY,
         ProfileCondition.JSON_PROPERTY_VALUE, ProfileCondition.JSON_PROPERTY_IS_REQUIRED })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ProfileCondition {
     public static final String JSON_PROPERTY_CONDITION = "Condition";
     @org.eclipse.jdt.annotation.NonNull

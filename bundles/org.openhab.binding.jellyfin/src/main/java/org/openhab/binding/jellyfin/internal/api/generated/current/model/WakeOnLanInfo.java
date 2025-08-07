@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Provides the MAC address and port for wake-on-LAN functionality.
  */
 @JsonPropertyOrder({ WakeOnLanInfo.JSON_PROPERTY_MAC_ADDRESS, WakeOnLanInfo.JSON_PROPERTY_PORT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class WakeOnLanInfo {
     public static final String JSON_PROPERTY_MAC_ADDRESS = "MacAddress";
     @org.eclipse.jdt.annotation.NonNull

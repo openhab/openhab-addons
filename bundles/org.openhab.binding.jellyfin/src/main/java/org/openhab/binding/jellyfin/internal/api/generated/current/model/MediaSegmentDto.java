@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ MediaSegmentDto.JSON_PROPERTY_ID, MediaSegmentDto.JSON_PROPERTY_ITEM_ID,
         MediaSegmentDto.JSON_PROPERTY_TYPE, MediaSegmentDto.JSON_PROPERTY_START_TICKS,
         MediaSegmentDto.JSON_PROPERTY_END_TICKS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MediaSegmentDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

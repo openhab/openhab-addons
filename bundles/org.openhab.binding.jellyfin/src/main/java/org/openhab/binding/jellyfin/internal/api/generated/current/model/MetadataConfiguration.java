@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * MetadataConfiguration
  */
 @JsonPropertyOrder({ MetadataConfiguration.JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MetadataConfiguration {
     public static final String JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED = "UseFileCreationTimeForDateAdded";
     @org.eclipse.jdt.annotation.NonNull

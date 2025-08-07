@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * API Exception
  */
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ApiException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 

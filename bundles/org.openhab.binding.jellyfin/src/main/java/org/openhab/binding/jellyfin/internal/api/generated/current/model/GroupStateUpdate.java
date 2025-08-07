@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Class GroupStateUpdate.
  */
 @JsonPropertyOrder({ GroupStateUpdate.JSON_PROPERTY_STATE, GroupStateUpdate.JSON_PROPERTY_REASON })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class GroupStateUpdate {
     public static final String JSON_PROPERTY_STATE = "State";
     @org.eclipse.jdt.annotation.NonNull

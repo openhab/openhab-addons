@@ -54,7 +54,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         EncodingOptions.JSON_PROPERTY_ALLOW_AV1_ENCODING, EncodingOptions.JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION,
         EncodingOptions.JSON_PROPERTY_HARDWARE_DECODING_CODECS,
         EncodingOptions.JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class EncodingOptions {
     public static final String JSON_PROPERTY_ENCODING_THREAD_COUNT = "EncodingThreadCount";
     @org.eclipse.jdt.annotation.NonNull

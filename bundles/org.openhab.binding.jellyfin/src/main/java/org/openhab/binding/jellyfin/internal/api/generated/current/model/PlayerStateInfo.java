@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         PlayerStateInfo.JSON_PROPERTY_SUBTITLE_STREAM_INDEX, PlayerStateInfo.JSON_PROPERTY_MEDIA_SOURCE_ID,
         PlayerStateInfo.JSON_PROPERTY_PLAY_METHOD, PlayerStateInfo.JSON_PROPERTY_REPEAT_MODE,
         PlayerStateInfo.JSON_PROPERTY_PLAYBACK_ORDER, PlayerStateInfo.JSON_PROPERTY_LIVE_STREAM_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlayerStateInfo {
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
     @org.eclipse.jdt.annotation.NonNull

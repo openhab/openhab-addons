@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ MessageCommand.JSON_PROPERTY_HEADER, MessageCommand.JSON_PROPERTY_TEXT,
         MessageCommand.JSON_PROPERTY_TIMEOUT_MS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MessageCommand {
     public static final String JSON_PROPERTY_HEADER = "Header";
     @org.eclipse.jdt.annotation.NonNull

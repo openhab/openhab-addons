@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Library option info dto.
  */
 @JsonPropertyOrder({ LibraryOptionInfoDto.JSON_PROPERTY_NAME, LibraryOptionInfoDto.JSON_PROPERTY_DEFAULT_ENABLED })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LibraryOptionInfoDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

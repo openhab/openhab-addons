@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ RemoveFromPlaylistRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_IDS,
         RemoveFromPlaylistRequestDto.JSON_PROPERTY_CLEAR_PLAYLIST,
         RemoveFromPlaylistRequestDto.JSON_PROPERTY_CLEAR_PLAYING_ITEM })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class RemoveFromPlaylistRequestDto {
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_IDS = "PlaylistItemIds";
     @org.eclipse.jdt.annotation.NonNull

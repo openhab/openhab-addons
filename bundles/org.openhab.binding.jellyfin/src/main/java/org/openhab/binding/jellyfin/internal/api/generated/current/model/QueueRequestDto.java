@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Class QueueRequestDto.
  */
 @JsonPropertyOrder({ QueueRequestDto.JSON_PROPERTY_ITEM_IDS, QueueRequestDto.JSON_PROPERTY_MODE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class QueueRequestDto {
     public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
     @org.eclipse.jdt.annotation.NonNull

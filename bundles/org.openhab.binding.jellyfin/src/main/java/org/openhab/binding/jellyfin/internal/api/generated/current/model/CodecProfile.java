@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ CodecProfile.JSON_PROPERTY_TYPE, CodecProfile.JSON_PROPERTY_CONDITIONS,
         CodecProfile.JSON_PROPERTY_APPLY_CONDITIONS, CodecProfile.JSON_PROPERTY_CODEC,
         CodecProfile.JSON_PROPERTY_CONTAINER, CodecProfile.JSON_PROPERTY_SUB_CONTAINER })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class CodecProfile {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.NonNull

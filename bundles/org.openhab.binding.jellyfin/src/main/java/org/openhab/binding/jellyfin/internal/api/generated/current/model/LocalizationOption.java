@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * LocalizationOption
  */
 @JsonPropertyOrder({ LocalizationOption.JSON_PROPERTY_NAME, LocalizationOption.JSON_PROPERTY_VALUE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LocalizationOption {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

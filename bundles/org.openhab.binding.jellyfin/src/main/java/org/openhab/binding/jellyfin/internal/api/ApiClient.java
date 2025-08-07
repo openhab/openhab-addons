@@ -45,6 +45,16 @@ public class ApiClient extends org.openhab.binding.jellyfin.internal.api.generat
     }
 
     /**
+     * Updates the base URI for API calls.
+     * This method provides compatibility with the existing codebase.
+     * 
+     * @param baseUri the new base URI for the API
+     */
+    public void updateBaseUri(String baseUri) {
+        this.setBasePath(baseUri);
+    }
+
+    /**
      * Overrides the default HTTP client building to use OpenHAB's ClientBuilder.
      * This ensures that the created JAX-RS Client integrates with OpenHAB's HTTP client framework,
      * providing consistent SSL handling, connection pooling, and configuration management.
@@ -53,13 +63,8 @@ public class ApiClient extends org.openhab.binding.jellyfin.internal.api.generat
      */
     @Override
     protected Client buildHttpClient() {
-        // Use OpenHAB's ClientBuilder with the same configuration as the parent class
-        if (clientConfig == null) {
-            clientConfig = getDefaultClientConfig();
-        }
-
-        ClientBuilder builder = openhabClientBuilder.withConfig(clientConfig);
-        customizeClientBuilder(builder);
-        return builder.build();
+        // Use OpenHAB's ClientBuilder - it will handle all the configuration
+        // We avoid Jersey-specific ClientConfig to prevent dependency issues
+        return openhabClientBuilder.build();
     }
 }

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ MovePlaylistItemRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
         MovePlaylistItemRequestDto.JSON_PROPERTY_NEW_INDEX })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MovePlaylistItemRequestDto {
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
     @org.eclipse.jdt.annotation.NonNull

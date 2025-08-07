@@ -12,7 +12,6 @@ import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
 import org.openhab.binding.jellyfin.internal.api.generated.Pair;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.MetadataRefreshMode;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ItemRefreshApi {
     private ApiClient apiClient;
 

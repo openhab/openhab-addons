@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         LibraryUpdateInfo.JSON_PROPERTY_FOLDERS_REMOVED_FROM, LibraryUpdateInfo.JSON_PROPERTY_ITEMS_ADDED,
         LibraryUpdateInfo.JSON_PROPERTY_ITEMS_REMOVED, LibraryUpdateInfo.JSON_PROPERTY_ITEMS_UPDATED,
         LibraryUpdateInfo.JSON_PROPERTY_COLLECTION_FOLDERS, LibraryUpdateInfo.JSON_PROPERTY_IS_EMPTY })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LibraryUpdateInfo {
     public static final String JSON_PROPERTY_FOLDERS_ADDED_TO = "FoldersAddedTo";
     @org.eclipse.jdt.annotation.NonNull

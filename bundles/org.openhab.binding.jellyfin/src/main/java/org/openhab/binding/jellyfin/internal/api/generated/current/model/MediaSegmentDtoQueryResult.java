@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ MediaSegmentDtoQueryResult.JSON_PROPERTY_ITEMS,
         MediaSegmentDtoQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
         MediaSegmentDtoQueryResult.JSON_PROPERTY_START_INDEX })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MediaSegmentDtoQueryResult {
     public static final String JSON_PROPERTY_ITEMS = "Items";
     @org.eclipse.jdt.annotation.NonNull

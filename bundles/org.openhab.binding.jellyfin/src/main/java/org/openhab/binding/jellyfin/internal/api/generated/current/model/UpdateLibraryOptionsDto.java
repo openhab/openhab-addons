@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Update library options dto.
  */
 @JsonPropertyOrder({ UpdateLibraryOptionsDto.JSON_PROPERTY_ID, UpdateLibraryOptionsDto.JSON_PROPERTY_LIBRARY_OPTIONS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UpdateLibraryOptionsDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

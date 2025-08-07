@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Class IgnoreWaitRequestDto.
  */
 @JsonPropertyOrder({ IgnoreWaitRequestDto.JSON_PROPERTY_IGNORE_WAIT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class IgnoreWaitRequestDto {
     public static final String JSON_PROPERTY_IGNORE_WAIT = "IgnoreWait";
     @org.eclipse.jdt.annotation.NonNull

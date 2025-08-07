@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Lyric model.
  */
 @JsonPropertyOrder({ LyricLine.JSON_PROPERTY_TEXT, LyricLine.JSON_PROPERTY_START })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LyricLine {
     public static final String JSON_PROPERTY_TEXT = "Text";
     @org.eclipse.jdt.annotation.NonNull

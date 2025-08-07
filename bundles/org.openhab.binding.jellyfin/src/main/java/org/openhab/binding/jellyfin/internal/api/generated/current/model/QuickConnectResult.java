@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         QuickConnectResult.JSON_PROPERTY_CODE, QuickConnectResult.JSON_PROPERTY_DEVICE_ID,
         QuickConnectResult.JSON_PROPERTY_DEVICE_NAME, QuickConnectResult.JSON_PROPERTY_APP_NAME,
         QuickConnectResult.JSON_PROPERTY_APP_VERSION, QuickConnectResult.JSON_PROPERTY_DATE_ADDED })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class QuickConnectResult {
     public static final String JSON_PROPERTY_AUTHENTICATED = "Authenticated";
     @org.eclipse.jdt.annotation.NonNull

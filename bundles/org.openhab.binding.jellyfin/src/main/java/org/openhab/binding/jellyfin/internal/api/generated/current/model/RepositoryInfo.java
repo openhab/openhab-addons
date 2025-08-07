@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ RepositoryInfo.JSON_PROPERTY_NAME, RepositoryInfo.JSON_PROPERTY_URL,
         RepositoryInfo.JSON_PROPERTY_ENABLED })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class RepositoryInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

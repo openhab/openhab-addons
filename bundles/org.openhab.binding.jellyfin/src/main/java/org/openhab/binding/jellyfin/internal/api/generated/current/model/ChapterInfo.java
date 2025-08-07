@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ ChapterInfo.JSON_PROPERTY_START_POSITION_TICKS, ChapterInfo.JSON_PROPERTY_NAME,
         ChapterInfo.JSON_PROPERTY_IMAGE_PATH, ChapterInfo.JSON_PROPERTY_IMAGE_DATE_MODIFIED,
         ChapterInfo.JSON_PROPERTY_IMAGE_TAG })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ChapterInfo {
     public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
     @org.eclipse.jdt.annotation.NonNull

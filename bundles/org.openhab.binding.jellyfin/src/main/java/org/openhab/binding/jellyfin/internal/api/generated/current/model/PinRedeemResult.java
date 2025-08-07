@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * PinRedeemResult
  */
 @JsonPropertyOrder({ PinRedeemResult.JSON_PROPERTY_SUCCESS, PinRedeemResult.JSON_PROPERTY_USERS_RESET })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PinRedeemResult {
     public static final String JSON_PROPERTY_SUCCESS = "Success";
     @org.eclipse.jdt.annotation.NonNull

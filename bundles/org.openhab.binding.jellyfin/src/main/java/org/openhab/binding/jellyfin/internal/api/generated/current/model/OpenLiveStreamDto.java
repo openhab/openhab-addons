@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         OpenLiveStreamDto.JSON_PROPERTY_ENABLE_DIRECT_STREAM,
         OpenLiveStreamDto.JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING,
         OpenLiveStreamDto.JSON_PROPERTY_DEVICE_PROFILE, OpenLiveStreamDto.JSON_PROPERTY_DIRECT_PLAY_PROTOCOLS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class OpenLiveStreamDto {
     public static final String JSON_PROPERTY_OPEN_TOKEN = "OpenToken";
     @org.eclipse.jdt.annotation.NonNull

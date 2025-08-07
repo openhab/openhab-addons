@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH,
         SubtitleOptions.JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT,
         SubtitleOptions.JSON_PROPERTY_REQUIRE_PERFECT_MATCH })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SubtitleOptions {
     public static final String JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipIfEmbeddedSubtitlesPresent";
     @org.eclipse.jdt.annotation.NonNull

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ UtcTimeResponse.JSON_PROPERTY_REQUEST_RECEPTION_TIME,
         UtcTimeResponse.JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UtcTimeResponse {
     public static final String JSON_PROPERTY_REQUEST_RECEPTION_TIME = "RequestReceptionTime";
     @org.eclipse.jdt.annotation.NonNull

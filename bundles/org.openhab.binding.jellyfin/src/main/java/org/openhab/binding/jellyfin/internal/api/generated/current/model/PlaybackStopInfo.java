@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         PlaybackStopInfo.JSON_PROPERTY_PLAY_SESSION_ID, PlaybackStopInfo.JSON_PROPERTY_FAILED,
         PlaybackStopInfo.JSON_PROPERTY_NEXT_MEDIA_TYPE, PlaybackStopInfo.JSON_PROPERTY_PLAYLIST_ITEM_ID,
         PlaybackStopInfo.JSON_PROPERTY_NOW_PLAYING_QUEUE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlaybackStopInfo {
     public static final String JSON_PROPERTY_ITEM = "Item";
     @org.eclipse.jdt.annotation.NonNull

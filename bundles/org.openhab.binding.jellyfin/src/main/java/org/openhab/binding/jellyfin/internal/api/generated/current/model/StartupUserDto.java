@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * The startup user DTO.
  */
 @JsonPropertyOrder({ StartupUserDto.JSON_PROPERTY_NAME, StartupUserDto.JSON_PROPERTY_PASSWORD })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class StartupUserDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

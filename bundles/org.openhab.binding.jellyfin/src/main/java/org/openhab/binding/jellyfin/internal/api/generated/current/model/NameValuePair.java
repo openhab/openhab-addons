@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * NameValuePair
  */
 @JsonPropertyOrder({ NameValuePair.JSON_PROPERTY_NAME, NameValuePair.JSON_PROPERTY_VALUE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class NameValuePair {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * QueueItem
  */
 @JsonPropertyOrder({ QueueItem.JSON_PROPERTY_ID, QueueItem.JSON_PROPERTY_PLAYLIST_ITEM_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class QueueItem {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

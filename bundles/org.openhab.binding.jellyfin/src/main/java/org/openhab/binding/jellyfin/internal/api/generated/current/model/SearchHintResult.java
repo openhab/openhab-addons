@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Class SearchHintResult.
  */
 @JsonPropertyOrder({ SearchHintResult.JSON_PROPERTY_SEARCH_HINTS, SearchHintResult.JSON_PROPERTY_TOTAL_RECORD_COUNT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SearchHintResult {
     public static final String JSON_PROPERTY_SEARCH_HINTS = "SearchHints";
     @org.eclipse.jdt.annotation.NonNull

@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         UserDto.JSON_PROPERTY_ENABLE_AUTO_LOGIN, UserDto.JSON_PROPERTY_LAST_LOGIN_DATE,
         UserDto.JSON_PROPERTY_LAST_ACTIVITY_DATE, UserDto.JSON_PROPERTY_CONFIGURATION, UserDto.JSON_PROPERTY_POLICY,
         UserDto.JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UserDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

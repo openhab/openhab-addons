@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ UpdateUserPassword.JSON_PROPERTY_CURRENT_PASSWORD, UpdateUserPassword.JSON_PROPERTY_CURRENT_PW,
         UpdateUserPassword.JSON_PROPERTY_NEW_PW, UpdateUserPassword.JSON_PROPERTY_RESET_PASSWORD })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UpdateUserPassword {
     public static final String JSON_PROPERTY_CURRENT_PASSWORD = "CurrentPassword";
     @org.eclipse.jdt.annotation.NonNull

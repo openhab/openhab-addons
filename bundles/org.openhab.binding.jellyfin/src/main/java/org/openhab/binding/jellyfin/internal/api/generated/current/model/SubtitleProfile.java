@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ SubtitleProfile.JSON_PROPERTY_FORMAT, SubtitleProfile.JSON_PROPERTY_METHOD,
         SubtitleProfile.JSON_PROPERTY_DIDL_MODE, SubtitleProfile.JSON_PROPERTY_LANGUAGE,
         SubtitleProfile.JSON_PROPERTY_CONTAINER })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SubtitleProfile {
     public static final String JSON_PROPERTY_FORMAT = "Format";
     @org.eclipse.jdt.annotation.NonNull

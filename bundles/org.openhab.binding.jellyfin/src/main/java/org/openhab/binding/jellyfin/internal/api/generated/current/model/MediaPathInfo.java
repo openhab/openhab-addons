@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * MediaPathInfo
  */
 @JsonPropertyOrder({ MediaPathInfo.JSON_PROPERTY_PATH })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MediaPathInfo {
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.NonNull

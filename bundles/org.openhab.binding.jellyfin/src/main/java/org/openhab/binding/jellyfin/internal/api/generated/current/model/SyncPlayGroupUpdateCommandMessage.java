@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ SyncPlayGroupUpdateCommandMessage.JSON_PROPERTY_DATA,
         SyncPlayGroupUpdateCommandMessage.JSON_PROPERTY_MESSAGE_ID,
         SyncPlayGroupUpdateCommandMessage.JSON_PROPERTY_MESSAGE_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SyncPlayGroupUpdateCommandMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @org.eclipse.jdt.annotation.NonNull

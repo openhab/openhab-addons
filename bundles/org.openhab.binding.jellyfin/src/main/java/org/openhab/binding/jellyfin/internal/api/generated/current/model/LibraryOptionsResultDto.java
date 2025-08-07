@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ LibraryOptionsResultDto.JSON_PROPERTY_METADATA_SAVERS,
         LibraryOptionsResultDto.JSON_PROPERTY_METADATA_READERS, LibraryOptionsResultDto.JSON_PROPERTY_SUBTITLE_FETCHERS,
         LibraryOptionsResultDto.JSON_PROPERTY_LYRIC_FETCHERS, LibraryOptionsResultDto.JSON_PROPERTY_TYPE_OPTIONS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LibraryOptionsResultDto {
     public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
     @org.eclipse.jdt.annotation.NonNull

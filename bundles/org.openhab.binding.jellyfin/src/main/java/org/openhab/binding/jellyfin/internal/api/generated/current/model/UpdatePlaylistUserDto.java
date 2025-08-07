@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Update existing playlist user dto. Fields set to &#x60;null&#x60; will not be updated and keep their current values.
  */
 @JsonPropertyOrder({ UpdatePlaylistUserDto.JSON_PROPERTY_CAN_EDIT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UpdatePlaylistUserDto {
     public static final String JSON_PROPERTY_CAN_EDIT = "CanEdit";
     @org.eclipse.jdt.annotation.NonNull

@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER,
         ClientCapabilitiesDto.JSON_PROPERTY_DEVICE_PROFILE, ClientCapabilitiesDto.JSON_PROPERTY_APP_STORE_URL,
         ClientCapabilitiesDto.JSON_PROPERTY_ICON_URL })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ClientCapabilitiesDto {
     public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
     @org.eclipse.jdt.annotation.NonNull

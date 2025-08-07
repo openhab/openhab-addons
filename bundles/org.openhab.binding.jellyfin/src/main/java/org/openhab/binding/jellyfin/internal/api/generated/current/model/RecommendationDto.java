@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ RecommendationDto.JSON_PROPERTY_ITEMS, RecommendationDto.JSON_PROPERTY_RECOMMENDATION_TYPE,
         RecommendationDto.JSON_PROPERTY_BASELINE_ITEM_NAME, RecommendationDto.JSON_PROPERTY_CATEGORY_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class RecommendationDto {
     public static final String JSON_PROPERTY_ITEMS = "Items";
     @org.eclipse.jdt.annotation.NonNull

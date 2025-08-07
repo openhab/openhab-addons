@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         LiveTvServiceInfo.JSON_PROPERTY_STATUS, LiveTvServiceInfo.JSON_PROPERTY_STATUS_MESSAGE,
         LiveTvServiceInfo.JSON_PROPERTY_VERSION, LiveTvServiceInfo.JSON_PROPERTY_HAS_UPDATE_AVAILABLE,
         LiveTvServiceInfo.JSON_PROPERTY_IS_VISIBLE, LiveTvServiceInfo.JSON_PROPERTY_TUNERS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LiveTvServiceInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

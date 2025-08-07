@@ -85,7 +85,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
         try {
             var uri = server.getAddress();
             var client = new ApiClient();
-            client.updateBaseUri(uri);
+            client.setBasePath(uri);
 
             var systemApi = new SystemApi(client);
             var systemInformation = systemApi.getPublicSystemInfo();

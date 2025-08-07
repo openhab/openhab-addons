@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ AuthenticationResult.JSON_PROPERTY_USER, AuthenticationResult.JSON_PROPERTY_SESSION_INFO,
         AuthenticationResult.JSON_PROPERTY_ACCESS_TOKEN, AuthenticationResult.JSON_PROPERTY_SERVER_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class AuthenticationResult {
     public static final String JSON_PROPERTY_USER = "User";
     @org.eclipse.jdt.annotation.NonNull

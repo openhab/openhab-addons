@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         LiveTvOptions.JSON_PROPERTY_MEDIA_LOCATIONS_CREATED, LiveTvOptions.JSON_PROPERTY_RECORDING_POST_PROCESSOR,
         LiveTvOptions.JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS,
         LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_N_F_O, LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_IMAGES })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LiveTvOptions {
     public static final String JSON_PROPERTY_GUIDE_DAYS = "GuideDays";
     @org.eclipse.jdt.annotation.NonNull

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Defines the MediaBrowser.Model.Configuration.PathSubstitution.
  */
 @JsonPropertyOrder({ PathSubstitution.JSON_PROPERTY_FROM, PathSubstitution.JSON_PROPERTY_TO })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PathSubstitution {
     public static final String JSON_PROPERTY_FROM = "From";
     @org.eclipse.jdt.annotation.NonNull

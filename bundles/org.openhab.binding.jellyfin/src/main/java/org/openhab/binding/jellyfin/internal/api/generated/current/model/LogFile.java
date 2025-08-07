@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ LogFile.JSON_PROPERTY_DATE_CREATED, LogFile.JSON_PROPERTY_DATE_MODIFIED,
         LogFile.JSON_PROPERTY_SIZE, LogFile.JSON_PROPERTY_NAME })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LogFile {
     public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
     @org.eclipse.jdt.annotation.NonNull

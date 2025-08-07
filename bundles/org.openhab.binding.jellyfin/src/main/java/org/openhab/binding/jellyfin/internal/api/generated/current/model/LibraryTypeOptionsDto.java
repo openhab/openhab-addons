@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ LibraryTypeOptionsDto.JSON_PROPERTY_TYPE, LibraryTypeOptionsDto.JSON_PROPERTY_METADATA_FETCHERS,
         LibraryTypeOptionsDto.JSON_PROPERTY_IMAGE_FETCHERS, LibraryTypeOptionsDto.JSON_PROPERTY_SUPPORTED_IMAGE_TYPES,
         LibraryTypeOptionsDto.JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LibraryTypeOptionsDto {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.NonNull

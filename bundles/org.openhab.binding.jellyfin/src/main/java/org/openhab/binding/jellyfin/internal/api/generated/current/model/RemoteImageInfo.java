@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         RemoteImageInfo.JSON_PROPERTY_WIDTH, RemoteImageInfo.JSON_PROPERTY_COMMUNITY_RATING,
         RemoteImageInfo.JSON_PROPERTY_VOTE_COUNT, RemoteImageInfo.JSON_PROPERTY_LANGUAGE,
         RemoteImageInfo.JSON_PROPERTY_TYPE, RemoteImageInfo.JSON_PROPERTY_RATING_TYPE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class RemoteImageInfo {
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
     @org.eclipse.jdt.annotation.NonNull

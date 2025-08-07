@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         RemoteSearchResult.JSON_PROPERTY_PREMIERE_DATE, RemoteSearchResult.JSON_PROPERTY_IMAGE_URL,
         RemoteSearchResult.JSON_PROPERTY_SEARCH_PROVIDER_NAME, RemoteSearchResult.JSON_PROPERTY_OVERVIEW,
         RemoteSearchResult.JSON_PROPERTY_ALBUM_ARTIST, RemoteSearchResult.JSON_PROPERTY_ARTISTS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class RemoteSearchResult {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

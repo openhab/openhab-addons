@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         DisplayPreferencesDto.JSON_PROPERTY_SCROLL_DIRECTION, DisplayPreferencesDto.JSON_PROPERTY_SHOW_BACKDROP,
         DisplayPreferencesDto.JSON_PROPERTY_REMEMBER_SORTING, DisplayPreferencesDto.JSON_PROPERTY_SORT_ORDER,
         DisplayPreferencesDto.JSON_PROPERTY_SHOW_SIDEBAR, DisplayPreferencesDto.JSON_PROPERTY_CLIENT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class DisplayPreferencesDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

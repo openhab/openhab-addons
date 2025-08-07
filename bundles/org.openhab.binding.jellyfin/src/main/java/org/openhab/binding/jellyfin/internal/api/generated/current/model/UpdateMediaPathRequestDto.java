@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Update library options dto.
  */
 @JsonPropertyOrder({ UpdateMediaPathRequestDto.JSON_PROPERTY_NAME, UpdateMediaPathRequestDto.JSON_PROPERTY_PATH_INFO })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UpdateMediaPathRequestDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable

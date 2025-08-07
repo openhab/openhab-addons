@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ PlaylistDto.JSON_PROPERTY_OPEN_ACCESS, PlaylistDto.JSON_PROPERTY_SHARES,
         PlaylistDto.JSON_PROPERTY_ITEM_IDS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlaylistDto {
     public static final String JSON_PROPERTY_OPEN_ACCESS = "OpenAccess";
     @org.eclipse.jdt.annotation.NonNull

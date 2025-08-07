@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         TranscodingProfile.JSON_PROPERTY_MAX_AUDIO_CHANNELS, TranscodingProfile.JSON_PROPERTY_MIN_SEGMENTS,
         TranscodingProfile.JSON_PROPERTY_SEGMENT_LENGTH, TranscodingProfile.JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES,
         TranscodingProfile.JSON_PROPERTY_CONDITIONS, TranscodingProfile.JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TranscodingProfile {
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @org.eclipse.jdt.annotation.NonNull

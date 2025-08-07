@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ DeviceOptionsDto.JSON_PROPERTY_ID, DeviceOptionsDto.JSON_PROPERTY_DEVICE_ID,
         DeviceOptionsDto.JSON_PROPERTY_CUSTOM_NAME })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class DeviceOptionsDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

@@ -20,7 +20,6 @@ import java.util.Map;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
 import org.openhab.binding.jellyfin.internal.api.generated.Pair;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class HttpBearerAuth implements Authentication {
     private final String scheme;
     private String bearerToken;

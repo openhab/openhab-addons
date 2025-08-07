@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Class to hold data on user permissions for playlists.
  */
 @JsonPropertyOrder({ PlaylistUserPermissions.JSON_PROPERTY_USER_ID, PlaylistUserPermissions.JSON_PROPERTY_CAN_EDIT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlaylistUserPermissions {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.NonNull

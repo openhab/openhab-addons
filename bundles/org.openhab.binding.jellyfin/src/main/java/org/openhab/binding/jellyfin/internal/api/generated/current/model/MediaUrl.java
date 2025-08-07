@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * MediaUrl
  */
 @JsonPropertyOrder({ MediaUrl.JSON_PROPERTY_URL, MediaUrl.JSON_PROPERTY_NAME })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MediaUrl {
     public static final String JSON_PROPERTY_URL = "Url";
     @org.eclipse.jdt.annotation.NonNull

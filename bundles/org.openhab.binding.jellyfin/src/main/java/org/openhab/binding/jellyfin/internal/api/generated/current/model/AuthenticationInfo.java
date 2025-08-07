@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         AuthenticationInfo.JSON_PROPERTY_USER_ID, AuthenticationInfo.JSON_PROPERTY_IS_ACTIVE,
         AuthenticationInfo.JSON_PROPERTY_DATE_CREATED, AuthenticationInfo.JSON_PROPERTY_DATE_REVOKED,
         AuthenticationInfo.JSON_PROPERTY_DATE_LAST_ACTIVITY, AuthenticationInfo.JSON_PROPERTY_USER_NAME })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class AuthenticationInfo {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

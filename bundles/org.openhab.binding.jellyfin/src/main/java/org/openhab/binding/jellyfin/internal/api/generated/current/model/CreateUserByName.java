@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * The create user by name request body.
  */
 @JsonPropertyOrder({ CreateUserByName.JSON_PROPERTY_NAME, CreateUserByName.JSON_PROPERTY_PASSWORD })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class CreateUserByName {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable

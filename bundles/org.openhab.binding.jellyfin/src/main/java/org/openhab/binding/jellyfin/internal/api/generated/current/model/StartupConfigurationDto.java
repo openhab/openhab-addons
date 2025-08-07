@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ StartupConfigurationDto.JSON_PROPERTY_UI_CULTURE,
         StartupConfigurationDto.JSON_PROPERTY_METADATA_COUNTRY_CODE,
         StartupConfigurationDto.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class StartupConfigurationDto {
     public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
     @org.eclipse.jdt.annotation.NonNull

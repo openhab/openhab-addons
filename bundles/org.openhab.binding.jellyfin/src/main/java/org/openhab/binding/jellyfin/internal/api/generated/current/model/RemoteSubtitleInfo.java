@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         RemoteSubtitleInfo.JSON_PROPERTY_IS_HASH_MATCH, RemoteSubtitleInfo.JSON_PROPERTY_AI_TRANSLATED,
         RemoteSubtitleInfo.JSON_PROPERTY_MACHINE_TRANSLATED, RemoteSubtitleInfo.JSON_PROPERTY_FORCED,
         RemoteSubtitleInfo.JSON_PROPERTY_HEARING_IMPAIRED })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class RemoteSubtitleInfo {
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
     @org.eclipse.jdt.annotation.NonNull

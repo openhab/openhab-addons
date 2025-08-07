@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         MediaAttachment.JSON_PROPERTY_COMMENT, MediaAttachment.JSON_PROPERTY_INDEX,
         MediaAttachment.JSON_PROPERTY_FILE_NAME, MediaAttachment.JSON_PROPERTY_MIME_TYPE,
         MediaAttachment.JSON_PROPERTY_DELIVERY_URL })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class MediaAttachment {
     public static final String JSON_PROPERTY_CODEC = "Codec";
     @org.eclipse.jdt.annotation.NonNull

@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         TrickplayOptions.JSON_PROPERTY_WIDTH_RESOLUTIONS, TrickplayOptions.JSON_PROPERTY_TILE_WIDTH,
         TrickplayOptions.JSON_PROPERTY_TILE_HEIGHT, TrickplayOptions.JSON_PROPERTY_QSCALE,
         TrickplayOptions.JSON_PROPERTY_JPEG_QUALITY, TrickplayOptions.JSON_PROPERTY_PROCESS_THREADS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class TrickplayOptions {
     public static final String JSON_PROPERTY_ENABLE_HW_ACCELERATION = "EnableHwAcceleration";
     @org.eclipse.jdt.annotation.NonNull

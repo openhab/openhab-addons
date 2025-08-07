@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ItemCounts.JSON_PROPERTY_SONG_COUNT, ItemCounts.JSON_PROPERTY_ALBUM_COUNT,
         ItemCounts.JSON_PROPERTY_MUSIC_VIDEO_COUNT, ItemCounts.JSON_PROPERTY_BOX_SET_COUNT,
         ItemCounts.JSON_PROPERTY_BOOK_COUNT, ItemCounts.JSON_PROPERTY_ITEM_COUNT })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ItemCounts {
     public static final String JSON_PROPERTY_MOVIE_COUNT = "MovieCount";
     @org.eclipse.jdt.annotation.NonNull

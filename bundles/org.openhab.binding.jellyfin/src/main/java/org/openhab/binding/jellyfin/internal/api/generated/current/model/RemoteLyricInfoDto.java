@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ RemoteLyricInfoDto.JSON_PROPERTY_ID, RemoteLyricInfoDto.JSON_PROPERTY_PROVIDER_NAME,
         RemoteLyricInfoDto.JSON_PROPERTY_LYRICS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class RemoteLyricInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         InstallationInfo.JSON_PROPERTY_VERSION, InstallationInfo.JSON_PROPERTY_CHANGELOG,
         InstallationInfo.JSON_PROPERTY_SOURCE_URL, InstallationInfo.JSON_PROPERTY_CHECKSUM,
         InstallationInfo.JSON_PROPERTY_PACKAGE_INFO })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class InstallationInfo {
     public static final String JSON_PROPERTY_GUID = "Guid";
     @org.eclipse.jdt.annotation.NonNull

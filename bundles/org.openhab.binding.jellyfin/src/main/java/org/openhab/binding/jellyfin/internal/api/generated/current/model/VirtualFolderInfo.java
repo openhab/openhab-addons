@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         VirtualFolderInfo.JSON_PROPERTY_COLLECTION_TYPE, VirtualFolderInfo.JSON_PROPERTY_LIBRARY_OPTIONS,
         VirtualFolderInfo.JSON_PROPERTY_ITEM_ID, VirtualFolderInfo.JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID,
         VirtualFolderInfo.JSON_PROPERTY_REFRESH_PROGRESS, VirtualFolderInfo.JSON_PROPERTY_REFRESH_STATUS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class VirtualFolderInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

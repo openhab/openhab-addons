@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ PlaystateRequest.JSON_PROPERTY_COMMAND, PlaystateRequest.JSON_PROPERTY_SEEK_POSITION_TICKS,
         PlaystateRequest.JSON_PROPERTY_CONTROLLING_USER_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlaystateRequest {
     public static final String JSON_PROPERTY_COMMAND = "Command";
     @org.eclipse.jdt.annotation.NonNull

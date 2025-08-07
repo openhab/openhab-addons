@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         PlayQueueUpdate.JSON_PROPERTY_PLAYLIST, PlayQueueUpdate.JSON_PROPERTY_PLAYING_ITEM_INDEX,
         PlayQueueUpdate.JSON_PROPERTY_START_POSITION_TICKS, PlayQueueUpdate.JSON_PROPERTY_IS_PLAYING,
         PlayQueueUpdate.JSON_PROPERTY_SHUFFLE_MODE, PlayQueueUpdate.JSON_PROPERTY_REPEAT_MODE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlayQueueUpdate {
     public static final String JSON_PROPERTY_REASON = "Reason";
     @org.eclipse.jdt.annotation.NonNull

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * LyricResponse model.
  */
 @JsonPropertyOrder({ LyricDto.JSON_PROPERTY_METADATA, LyricDto.JSON_PROPERTY_LYRICS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LyricDto {
     public static final String JSON_PROPERTY_METADATA = "Metadata";
     @org.eclipse.jdt.annotation.NonNull

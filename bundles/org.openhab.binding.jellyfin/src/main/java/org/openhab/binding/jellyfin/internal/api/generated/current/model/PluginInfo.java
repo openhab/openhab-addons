@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         PluginInfo.JSON_PROPERTY_CONFIGURATION_FILE_NAME, PluginInfo.JSON_PROPERTY_DESCRIPTION,
         PluginInfo.JSON_PROPERTY_ID, PluginInfo.JSON_PROPERTY_CAN_UNINSTALL, PluginInfo.JSON_PROPERTY_HAS_IMAGE,
         PluginInfo.JSON_PROPERTY_STATUS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PluginInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

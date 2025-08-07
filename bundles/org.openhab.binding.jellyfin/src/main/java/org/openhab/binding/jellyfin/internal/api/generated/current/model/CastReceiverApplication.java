@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * The cast receiver application model.
  */
 @JsonPropertyOrder({ CastReceiverApplication.JSON_PROPERTY_ID, CastReceiverApplication.JSON_PROPERTY_NAME })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class CastReceiverApplication {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.NonNull

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ LiveTvInfo.JSON_PROPERTY_SERVICES, LiveTvInfo.JSON_PROPERTY_IS_ENABLED,
         LiveTvInfo.JSON_PROPERTY_ENABLED_USERS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LiveTvInfo {
     public static final String JSON_PROPERTY_SERVICES = "Services";
     @org.eclipse.jdt.annotation.NonNull

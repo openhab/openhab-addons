@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * GuideInfo
  */
 @JsonPropertyOrder({ GuideInfo.JSON_PROPERTY_START_DATE, GuideInfo.JSON_PROPERTY_END_DATE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class GuideInfo {
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
     @org.eclipse.jdt.annotation.NonNull

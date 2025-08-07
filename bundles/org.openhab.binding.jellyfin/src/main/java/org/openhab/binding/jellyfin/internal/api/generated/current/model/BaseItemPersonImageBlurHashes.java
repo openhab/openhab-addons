@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
         BaseItemPersonImageBlurHashes.JSON_PROPERTY_MENU, BaseItemPersonImageBlurHashes.JSON_PROPERTY_CHAPTER,
         BaseItemPersonImageBlurHashes.JSON_PROPERTY_BOX_REAR, BaseItemPersonImageBlurHashes.JSON_PROPERTY_PROFILE })
 @JsonTypeName("BaseItemPerson_ImageBlurHashes")
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class BaseItemPersonImageBlurHashes {
     public static final String JSON_PROPERTY_PRIMARY = "Primary";
     @org.eclipse.jdt.annotation.NonNull

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * LiveStreamResponse
  */
 @JsonPropertyOrder({ LiveStreamResponse.JSON_PROPERTY_MEDIA_SOURCE })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class LiveStreamResponse {
     public static final String JSON_PROPERTY_MEDIA_SOURCE = "MediaSource";
     @org.eclipse.jdt.annotation.NonNull

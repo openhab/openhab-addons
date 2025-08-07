@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Client log document response dto.
  */
 @JsonPropertyOrder({ ClientLogDocumentResponseDto.JSON_PROPERTY_FILE_NAME })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ClientLogDocumentResponseDto {
     public static final String JSON_PROPERTY_FILE_NAME = "FileName";
     @org.eclipse.jdt.annotation.NonNull

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Add virtual folder dto.
  */
 @JsonPropertyOrder({ AddVirtualFolderDto.JSON_PROPERTY_LIBRARY_OPTIONS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class AddVirtualFolderDto {
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
     @org.eclipse.jdt.annotation.NonNull

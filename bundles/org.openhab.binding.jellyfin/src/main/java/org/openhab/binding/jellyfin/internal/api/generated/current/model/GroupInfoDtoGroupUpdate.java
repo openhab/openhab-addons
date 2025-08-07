@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ GroupInfoDtoGroupUpdate.JSON_PROPERTY_GROUP_ID, GroupInfoDtoGroupUpdate.JSON_PROPERTY_TYPE,
         GroupInfoDtoGroupUpdate.JSON_PROPERTY_DATA })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class GroupInfoDtoGroupUpdate {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
     @org.eclipse.jdt.annotation.NonNull

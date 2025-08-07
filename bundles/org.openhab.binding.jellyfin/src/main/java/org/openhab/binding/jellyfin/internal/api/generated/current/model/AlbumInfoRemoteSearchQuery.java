@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ AlbumInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_INFO,
         AlbumInfoRemoteSearchQuery.JSON_PROPERTY_ITEM_ID, AlbumInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
         AlbumInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class AlbumInfoRemoteSearchQuery {
     public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
     @org.eclipse.jdt.annotation.NonNull

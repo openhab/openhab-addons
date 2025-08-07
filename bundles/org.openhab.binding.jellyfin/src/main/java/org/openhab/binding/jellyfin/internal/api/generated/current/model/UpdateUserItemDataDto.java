@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         UpdateUserItemDataDto.JSON_PROPERTY_IS_FAVORITE, UpdateUserItemDataDto.JSON_PROPERTY_LIKES,
         UpdateUserItemDataDto.JSON_PROPERTY_LAST_PLAYED_DATE, UpdateUserItemDataDto.JSON_PROPERTY_PLAYED,
         UpdateUserItemDataDto.JSON_PROPERTY_KEY, UpdateUserItemDataDto.JSON_PROPERTY_ITEM_ID })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UpdateUserItemDataDto {
     public static final String JSON_PROPERTY_RATING = "Rating";
     @org.eclipse.jdt.annotation.NonNull

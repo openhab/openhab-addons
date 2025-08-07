@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ ServerDiscoveryInfo.JSON_PROPERTY_ADDRESS, ServerDiscoveryInfo.JSON_PROPERTY_ID,
         ServerDiscoveryInfo.JSON_PROPERTY_NAME, ServerDiscoveryInfo.JSON_PROPERTY_ENDPOINT_ADDRESS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class ServerDiscoveryInfo {
     public static final String JSON_PROPERTY_ADDRESS = "Address";
     @org.eclipse.jdt.annotation.NonNull

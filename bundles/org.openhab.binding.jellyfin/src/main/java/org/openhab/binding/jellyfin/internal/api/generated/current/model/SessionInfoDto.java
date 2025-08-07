@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         SessionInfoDto.JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME, SessionInfoDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
         SessionInfoDto.JSON_PROPERTY_SERVER_ID, SessionInfoDto.JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG,
         SessionInfoDto.JSON_PROPERTY_SUPPORTED_COMMANDS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class SessionInfoDto {
     public static final String JSON_PROPERTY_PLAY_STATE = "PlayState";
     @org.eclipse.jdt.annotation.NonNull

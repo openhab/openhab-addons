@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ UpdatePlaylistDto.JSON_PROPERTY_NAME, UpdatePlaylistDto.JSON_PROPERTY_IDS,
         UpdatePlaylistDto.JSON_PROPERTY_USERS, UpdatePlaylistDto.JSON_PROPERTY_IS_PUBLIC })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class UpdatePlaylistDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.NonNull

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * QueryFilters
  */
 @JsonPropertyOrder({ QueryFilters.JSON_PROPERTY_GENRES, QueryFilters.JSON_PROPERTY_TAGS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class QueryFilters {
     public static final String JSON_PROPERTY_GENRES = "Genres";
     @org.eclipse.jdt.annotation.NonNull

@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ PlayRequestDto.JSON_PROPERTY_PLAYING_QUEUE, PlayRequestDto.JSON_PROPERTY_PLAYING_ITEM_POSITION,
         PlayRequestDto.JSON_PROPERTY_START_POSITION_TICKS })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PlayRequestDto {
     public static final String JSON_PROPERTY_PLAYING_QUEUE = "PlayingQueue";
     @org.eclipse.jdt.annotation.NonNull

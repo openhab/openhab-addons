@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Class PingRequestDto.
  */
 @JsonPropertyOrder({ PingRequestDto.JSON_PROPERTY_PING })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class PingRequestDto {
     public static final String JSON_PROPERTY_PING = "Ping";
     @org.eclipse.jdt.annotation.NonNull

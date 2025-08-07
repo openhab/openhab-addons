@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         NetworkConfiguration.JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET,
         NetworkConfiguration.JSON_PROPERTY_REMOTE_I_P_FILTER,
         NetworkConfiguration.JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+
 public class NetworkConfiguration {
     public static final String JSON_PROPERTY_BASE_URL = "BaseUrl";
     @org.eclipse.jdt.annotation.NonNull
