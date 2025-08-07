@@ -674,7 +674,7 @@ public class DeviceHandler extends ViessmannThingHandler {
     }
 
     private @Nullable String getFeatureDescription(String feature) {
-        feature.replaceAll("\\.[0-3]", ".N");
+        feature = feature.replaceAll("\\.[0-3]", ".N");
         return FEATURE_DESCRIPTION_MAP.get(feature);
     }
 
