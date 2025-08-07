@@ -14,8 +14,7 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -36,7 +35,7 @@ import org.openhab.core.types.StateDescription;
 
 /**
  * Test class for ElectricalEnergyMeasurementConverter
- * 
+ *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
@@ -87,9 +86,12 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
     void testInitState() {
         ElectricalEnergyMeasurementCluster.EnergyMeasurementStruct measurement = mockCluster.new EnergyMeasurementStruct(
                 BigInteger.valueOf(1000), null, null, null, null);
+        ElectricalEnergyMeasurementCluster.EnergyMeasurementStruct measurement2 = mockCluster.new EnergyMeasurementStruct(
+                BigInteger.valueOf(1000), null, null, BigInteger.valueOf(123456789L),
+                BigInteger.valueOf(123456789L + 60000L));
 
         mockCluster.cumulativeEnergyImported = measurement;
-        mockCluster.periodicEnergyImported = measurement;
+        mockCluster.periodicEnergyImported = measurement2;
 
         converter.initState();
 
@@ -98,6 +100,6 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
                 eq(new QuantityType<>(1.0, Units.WATT_HOUR)));
         verify(mockHandler, times(1)).updateState(eq(1),
                 eq("electricalenergymeasurement-periodicenergyimported-energy"),
-                eq(new QuantityType<>(1.0, Units.WATT_HOUR)));
+                eq(new QuantityType<>(60.0, Units.WATT_HOUR)));
     }
 }
