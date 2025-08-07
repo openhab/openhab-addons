@@ -243,11 +243,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         bridgeHandler = accountHandler;
         hasChannelStructure = false;
-        token = getTokenFromBridge();
 
         initTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
-        initTask.schedule(15);
+        initTask.schedule(5);
         updateStatus(ThingStatus.UNKNOWN);
     }
 
