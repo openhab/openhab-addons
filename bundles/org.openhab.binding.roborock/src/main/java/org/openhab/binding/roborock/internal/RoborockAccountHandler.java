@@ -306,8 +306,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             logger.debug("Bridge connected to MQTT");
             updateStatus(ThingStatus.ONLINE);
         } catch (InterruptedException | RoborockCommunicationException e) {
-            logger.debug("Failed to connect to MQTT");
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.no-mqtt");
         }
     }
 

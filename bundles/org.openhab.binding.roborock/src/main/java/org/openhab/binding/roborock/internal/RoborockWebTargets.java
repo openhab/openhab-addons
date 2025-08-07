@@ -51,7 +51,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Handles performing the actual HTTP requests for communicating with the RoborockAPI.
+ * Handles performing the actual HTTP requests for communicating with the Roborock API.
  *
  * @author Paul Smedley - Initial Contribution
  *
@@ -311,11 +311,7 @@ public class RoborockWebTargets {
                     throw new RoborockCommunicationException(
                             String.format("Roborock returned error <%d> while invoking %s", status, uri));
                 }
-            } catch (TimeoutException ex) {
-                throw new RoborockCommunicationException(String.format("%s", ex.getLocalizedMessage(), ex));
-            } catch (ExecutionException ex) {
-                throw new RoborockCommunicationException(String.format("%s", ex.getLocalizedMessage(), ex));
-            } catch (InterruptedException ex) {
+            } catch (TimeoutException | ExecutionException | InterruptedException ex) {
                 throw new RoborockCommunicationException(String.format("%s", ex.getLocalizedMessage(), ex));
             }
         }

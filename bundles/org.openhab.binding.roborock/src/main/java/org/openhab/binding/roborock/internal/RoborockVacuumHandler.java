@@ -238,23 +238,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     public void initialize() {
         if (!(getBridge() instanceof Bridge bridge
                 && bridge.getHandler() instanceof RoborockAccountHandler accountHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No Roborock Bridge selected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
         bridgeHandler = accountHandler;
         hasChannelStructure = false;
         token = getTokenFromBridge();
 
-        if (!token.isEmpty()) {
-            if (rrHomeId.isEmpty()) {
-                Home home = bridgeHandler.getHomeDetail();
-                if (home != null) {
-                    rrHomeId = Integer.toString(home.data.rrHomeId);
-                }
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
-        }
         initTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
         initTask.schedule(15);
@@ -290,7 +280,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        "@text/offline.conf-error.no-token");
             }
         }
 
@@ -343,7 +334,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                                 new DecimalType(homeData.result.devices[i].deviceStatus.fanPower));
                         updateState(CHANNEL_MOP_DRYING,
                                 new DecimalType(homeData.result.devices[i].deviceStatus.dryingStatus));
-
                         updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
                                 new DecimalType(homeData.result.devices[i].deviceStatus.mainBrushWorkTime));
                         updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
@@ -356,9 +346,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             sendAllMqttCommands();
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "Communication error, Roborock API reports vacuum offline.");
+                                    "@text/offline.comm-error.vac-offline");
                         }
-
                     }
                 }
             }
