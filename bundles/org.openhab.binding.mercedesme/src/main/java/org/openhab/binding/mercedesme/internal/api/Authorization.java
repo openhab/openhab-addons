@@ -133,13 +133,12 @@ public class Authorization {
             String refreshTokenAttribute = "refresh_token="
                     + URLEncoder.encode(token.getRefreshToken(), StandardCharsets.UTF_8.toString());
             String content = grantAttribute + "&" + refreshTokenAttribute;
-            req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-            req.content(new StringContentProvider(content));
+            req.content(new StringContentProvider(content), CONTENT_TYPE_URL_ENCODED);
 
             ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             int tokenResponseStatus = cr.getStatus();
             String tokenResponse = cr.getContentAsString();
-            if (tokenResponseStatus == 200) {
+            if (tokenResponseStatus == HttpStatus.OK_200) {
                 storeToken(tokenResponse);
             } else {
                 handleInvalidToken();
@@ -281,7 +280,7 @@ public class Authorization {
         Request resumeRequest = loginHttpClient
                 .newRequest(baseUrl + "/as/authorization.oauth2?" + FormContentProvider.convert(resumeContent))
                 .followRedirects(true);
-        resumeRequest.header(HttpHeader.USER_AGENT, Constants.AUTH_USER_AGENT);
+        resumeRequest.agent(Constants.AUTH_USER_AGENT);
         resumeRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
         resumeRequest.header(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         ContentResponse resumeResponse = send(resumeRequest);
@@ -307,17 +306,16 @@ public class Authorization {
      */
     private void sendUserAgent(HttpClient loginHttpClient) throws MercedesMeAuthException, MercedesMeApiException {
         Request agentRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/ua");
-        agentRequest.header(HttpHeader.USER_AGENT, Constants.AUTH_USER_AGENT);
+        agentRequest.agent(Constants.AUTH_USER_AGENT);
         agentRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
         agentRequest.header(HttpHeader.ACCEPT, "*/*");
-        agentRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
         agentRequest.header(HttpHeader.ORIGIN, baseUrl);
 
         JSONObject agentContent = new JSONObject();
         agentContent.put("browserName", "Mobile Safari");
         agentContent.put("browserVersion", "15.6.6");
         agentContent.put("osName", "iOS");
-        agentRequest.content(new StringContentProvider(agentContent.toString(), "utf-8"));
+        agentRequest.content(new StringContentProvider(agentContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
 
         ContentResponse agentResponse = send(agentRequest);
         logger.trace("Step 2: Post Agent {} - {}", agentResponse.getStatus(), agentResponse.getContentAsString());
@@ -334,16 +332,15 @@ public class Authorization {
      */
     private void sendUsername(HttpClient loginHttpClient) throws MercedesMeAuthException, MercedesMeApiException {
         Request userRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/login/user");
-        userRequest.header(HttpHeader.USER_AGENT, Constants.AUTH_USER_AGENT);
+        userRequest.agent(Constants.AUTH_USER_AGENT);
         userRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
         userRequest.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
-        userRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
         userRequest.header(HttpHeader.ORIGIN, baseUrl);
         userRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
 
         JSONObject userContent = new JSONObject();
         userContent.put("username", config.email);
-        userRequest.content(new StringContentProvider(userContent.toString(), "utf-8"));
+        userRequest.content(new StringContentProvider(userContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
 
         ContentResponse userResponse = send(userRequest);
         int status = userResponse.getStatus();
@@ -362,10 +359,9 @@ public class Authorization {
     private String performPasswordLogin(HttpClient loginHttpClient)
             throws MercedesMeAuthException, MercedesMeApiException {
         Request loginRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/login/pass");
-        loginRequest.header(HttpHeader.USER_AGENT, Constants.AUTH_USER_AGENT);
+        loginRequest.agent(Constants.AUTH_USER_AGENT);
         loginRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
         loginRequest.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
-        loginRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
         loginRequest.header(HttpHeader.ORIGIN, baseUrl);
         loginRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
 
@@ -375,7 +371,7 @@ public class Authorization {
         loginContent.put("password", config.password);
         loginContent.put("rememberMe", false);
         loginContent.put("rid", rid);
-        loginRequest.content(new StringContentProvider(loginContent.toString(), "utf-8"));
+        loginRequest.content(new StringContentProvider(loginContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
 
         String preLoginToken = null;
         ContentResponse loginResponse = send(loginRequest);
@@ -406,10 +402,9 @@ public class Authorization {
         authParams.add("token", preLoginToken);
 
         Request authRequest = loginHttpClient.POST(baseUrl + resumeUrl).followRedirects(false);
-        authRequest.header(HttpHeader.USER_AGENT, Constants.AUTH_USER_AGENT);
+        authRequest.agent(Constants.AUTH_USER_AGENT);
         authRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
         authRequest.header(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        authRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
         authRequest.header(HttpHeader.ORIGIN, baseUrl);
         authRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
         authRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
@@ -417,7 +412,8 @@ public class Authorization {
 
         ContentResponse authResponse = send(authRequest);
         int status = authResponse.getStatus();
-        if (status < 400) {
+        logger.trace("Step 5: Resume auth {} - {}", status, authResponse.getContentAsString());
+        if (HttpStatus.isRedirection(status)) {
             String location = authResponse.getHeaders().get(HttpHeader.LOCATION);
             Map<String, String> params = Utils.getQueryParams(URI.create(location).getQuery());
             code = params.get("code");
@@ -478,12 +474,12 @@ public class Authorization {
     }
 
     public void addBasicHeaders(Request req) {
+        req.agent(Utils.getApplication(config.region));
         req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
         req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
         req.header("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
         req.header("X-Locale",
                 localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry()); // de-DE
-        req.header("User-Agent", Utils.getApplication(config.region));
         req.header("X-Applicationname", Utils.getUserAgent(config.region));
         req.header("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
     }

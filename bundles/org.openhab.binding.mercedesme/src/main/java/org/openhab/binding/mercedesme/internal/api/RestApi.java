@@ -22,7 +22,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,8 +64,7 @@ public class RestApi extends Authorization {
         Request poiRequest = httpClient.POST(poiUrl);
         addBasicHeaders(poiRequest);
         addAuthHeaders(poiRequest);
-        poiRequest.header(HttpHeader.CONTENT_TYPE, "application/json");
-        poiRequest.content(new StringContentProvider(poi.toString(), "utf-8"));
+        poiRequest.content(new StringContentProvider(poi.toString(), "utf-8"), CONTENT_TYPE_JSON);
 
         try {
             ContentResponse cr = send(poiRequest);
@@ -82,7 +81,7 @@ public class RestApi extends Authorization {
         addBasicHeaders(vehicleRequest);
         addAuthHeaders(vehicleRequest);
         ContentResponse vehicleResponse = send(vehicleRequest);
-        if (vehicleResponse.getStatus() == 200) {
+        if (vehicleResponse.getStatus() == HttpStatus.OK_200) {
             try {
                 return VehicleEvents.VEPUpdate.parseFrom(vehicleResponse.getContent());
             } catch (InvalidProtocolBufferException e) {
