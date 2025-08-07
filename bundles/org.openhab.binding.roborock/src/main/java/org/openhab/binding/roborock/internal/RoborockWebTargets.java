@@ -312,11 +312,11 @@ public class RoborockWebTargets {
                             String.format("Roborock returned error <%d> while invoking %s", status, uri));
                 }
             } catch (TimeoutException ex) {
-                throw new RoborockCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
+                throw new RoborockCommunicationException(String.format("%s", ex.getLocalizedMessage(), ex));
             } catch (ExecutionException ex) {
-                throw new RoborockCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
+                throw new RoborockCommunicationException(String.format("%s", ex.getLocalizedMessage(), ex));
             } catch (InterruptedException ex) {
-                throw new RoborockCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
+                throw new RoborockCommunicationException(String.format("%s", ex.getLocalizedMessage(), ex));
             }
         }
 
