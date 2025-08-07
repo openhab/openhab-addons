@@ -519,7 +519,8 @@ public class TibberHandler extends BaseThingHandler {
         double consumptionValue = 0.0;
         double productionValue = 0.0;
         try {
-            if (consumption != null && !consumption.isBlank() && !consumption.equals(EMPTY_VALUE) && !consumption.equals(NULL_VALUE)) {
+            if (consumption != null && !consumption.isBlank() && !consumption.equals(EMPTY_VALUE)
+                    && !consumption.equals(NULL_VALUE)) {
                 consumptionValue = Double.parseDouble(consumption);
             }
         } catch (NumberFormatException e) {
@@ -527,14 +528,16 @@ public class TibberHandler extends BaseThingHandler {
         }
 
         try {
-            if (production != null && !production.isBlank() && !production.equals(EMPTY_VALUE) && !production.equals(NULL_VALUE)) {
+            if (production != null && !production.isBlank() && !production.equals(EMPTY_VALUE)
+                    && !production.equals(NULL_VALUE)) {
                 productionValue = Double.parseDouble(production);
             }
         } catch (NumberFormatException e) {
             logger.error("Unable to parse production. Assume 0.", e);
         }
 
-        updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION_AND_PRODUCTION, String.valueOf(consumptionValue - productionValue), "W");
+        updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION_AND_PRODUCTION,
+                String.valueOf(consumptionValue - productionValue), "W");
     }
 
     private void updateChannel(String group, String channelId, String value, String unit) {
