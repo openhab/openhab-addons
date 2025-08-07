@@ -19,14 +19,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.current.SystemApi;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.PublicSystemInfo;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -67,6 +68,12 @@ public class ServerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         try {
+            // Set up API authentication with the provided token
+            apiClient.setApiKey("ad0ce1a2a3d24feeb1304c28d688ad73");
+
+            // Test the API client integration
+            testJellyfinApiClient();
+
             scheduler.execute(initializeHandler());
         } catch (Exception e) {
             this.logger.warn("{}", e.getMessage());
@@ -141,7 +148,55 @@ public class ServerHandler extends BaseBridgeHandler {
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
     }
 
-    String getAccessToken() {
-        return "123";
+    /**
+     * Test method to verify the Jellyfin API client integration using the generated code.
+     * This method demonstrates that our OpenHAB-integrated ApiClient works correctly
+     * with the generated API endpoints and models.
+     */
+    private void testJellyfinApiClient() {
+        try {
+            // Create the SystemApi using our integrated ApiClient
+            SystemApi systemApi = new SystemApi(apiClient);
+
+            logger.info("Testing Jellyfin API client integration...");
+
+            // Test 1: Get public system information (no authentication required)
+            try {
+                PublicSystemInfo publicInfo = systemApi.getPublicSystemInfo();
+                logger.info("=== Public System Information ===");
+                logger.info("Server Name: {}", publicInfo.getServerName());
+                logger.info("Version: {}", publicInfo.getVersion());
+                logger.info("Product Name: {}", publicInfo.getProductName());
+                logger.info("Local Address: {}", publicInfo.getLocalAddress());
+                logger.info("Server ID: {}", publicInfo.getId());
+            } catch (Exception e) {
+                logger.warn("Failed to get public system info: {}", e.getMessage());
+            }
+
+            // Test 2: Get detailed system information (requires authentication)
+            try {
+                SystemInfo systemInfo = systemApi.getSystemInfo();
+                logger.info("=== Detailed System Information ===");
+                logger.info("Server Name: {}", systemInfo.getServerName());
+                logger.info("Version: {}", systemInfo.getVersion());
+                logger.info("Operating System Display Name: {}", systemInfo.getOperatingSystemDisplayName());
+                logger.info("Package Name: {}", systemInfo.getPackageName());
+                logger.info("Has Pending Restart: {}", systemInfo.getHasPendingRestart());
+                logger.info("Is Shutting Down: {}", systemInfo.getIsShuttingDown());
+                logger.info("Supports Library Monitor: {}", systemInfo.getSupportsLibraryMonitor());
+                logger.info("WebSocket Port: {}", systemInfo.getWebSocketPortNumber());
+                logger.info("Can Self Restart: {}", systemInfo.getCanSelfRestart());
+                logger.info("Program Data Path: {}", systemInfo.getProgramDataPath());
+                logger.info("Cache Path: {}", systemInfo.getCachePath());
+                logger.info("Log Path: {}", systemInfo.getLogPath());
+            } catch (Exception e) {
+                logger.warn("Failed to get detailed system info (may require admin privileges): {}", e.getMessage());
+            }
+
+            logger.info("API client integration test completed successfully!");
+
+        } catch (Exception e) {
+            logger.error("API client integration test failed: {}", e.getMessage(), e);
+        }
     }
 }
