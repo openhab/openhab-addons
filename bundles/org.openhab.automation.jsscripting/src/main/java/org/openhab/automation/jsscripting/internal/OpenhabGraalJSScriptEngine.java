@@ -304,9 +304,9 @@ public class OpenhabGraalJSScriptEngine
             logger.debug("Evaluating cached global script for engine '{}' ...", engineIdentifier);
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
 
-            if (configuration.isInjection(GraalJSScriptEngineConfiguration.INJECTION_ENABLED_FOR_ALL_SCRIPTS)
-                    || (isUiBasedScript() && configuration.isInjection(
-                            GraalJSScriptEngineConfiguration.INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY))) {
+            if (configuration.isInjectionEnabledForAllScripts()
+                    || (isUiBasedScript() && configuration.isInjectionEnabledForUiBasedScript())
+                    || (isTransformationScript() && configuration.isInjectionEnabledForTransformations())) {
                 if (configuration.isInjectionCachingEnabled()) {
                     logger.debug("Evaluating cached openhab-js injection for engine '{}' ...", engineIdentifier);
                     delegate.getPolyglotContext().eval(OPENHAB_JS_SOURCE);
@@ -362,6 +362,21 @@ public class OpenhabGraalJSScriptEngine
         }
         return ctx.getAttribute("javax.script.filename") == null
                 && !engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
+    }
+
+    /**
+     * Tests if the current script is a transformation script, i.e. it is created from the script transformation
+     * service.
+     * 
+     * @return true if the script is a transformation script, false otherwise
+     */
+    private boolean isTransformationScript() {
+        ScriptContext ctx = delegate.getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return false;
+        }
+        return engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
     }
 
     /**

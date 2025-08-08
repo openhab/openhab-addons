@@ -22,11 +22,12 @@
 			If disabled, the openHAB JavaScript library can be imported manually using"<code>require('openhab')</code>.
 			]]></description>
 			<options>
-				<option value="2">Auto injection enabled only for UI-based scripts (recommended)</option>
-				<option value="1">Auto injection enabled for all scripts, i.e. including file-based scripts</option>
+				<option value="3">Auto injection enabled for all scripts, also including file-based scripts</option>
+				<option value="2">Auto injection enabled for UI-based scripts and transformations</option>
+				<option value="1">Auto injection enabled only for UI-based scripts (recommended)</option>
 				<option value="0">Disable auto-injection and import manually instead</option>
 			</options>
-			<default>2</default>
+			<default>1</default>
 		</parameter>
 		<parameter name="wrapperEnabled" type="boolean" required="true" groupName="environment">
 			<label>Wrap UI-based scripts in Self-Executing Function</label>
