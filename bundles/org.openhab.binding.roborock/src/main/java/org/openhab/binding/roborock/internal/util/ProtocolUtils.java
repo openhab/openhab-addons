@@ -33,6 +33,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.roborock.internal.RoborockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,7 @@ public final class ProtocolUtils {
         }
     }
 
-    public static byte[] decrypt(byte[] payload, String key) throws RoborockCryptoException {
+    public static byte[] decrypt(byte[] payload, String key) throws RoborockException {
         try {
             byte[] aesKeyBytes = md5bin(key);
             Cipher cipher = Cipher.getInstance(AES_ECB_PADDING);
@@ -75,11 +76,11 @@ public final class ProtocolUtils {
             return cipher.doFinal(payload);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
                 | BadPaddingException e) {
-            throw new RoborockCryptoException("Failed to decrypt data using AES/ECB/PKCS5Padding.", e);
+            throw new RoborockException("Failed to decrypt data using AES/ECB/PKCS5Padding.", e);
         }
     }
 
-    public static byte[] encrypt(byte[] payload, String key) throws RoborockCryptoException {
+    public static byte[] encrypt(byte[] payload, String key) throws RoborockException {
         try {
             byte[] aesKeyBytes = md5bin(key);
             Cipher cipher = Cipher.getInstance(AES_ECB_PADDING);
@@ -88,7 +89,7 @@ public final class ProtocolUtils {
             return cipher.doFinal(payload);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
                 | BadPaddingException e) {
-            throw new RoborockCryptoException("Failed to encrypt data using AES/ECB/PKCS5Padding.", e);
+            throw new RoborockException("Failed to encrypt data using AES/ECB/PKCS5Padding.", e);
         }
     }
 
@@ -281,7 +282,7 @@ public final class ProtocolUtils {
         try {
             byte[] decryptedResult = decrypt(payload, encryptionKey);
             return new String(decryptedResult, StandardCharsets.UTF_8);
-        } catch (RoborockCryptoException e) {
+        } catch (RoborockException e) {
             LOGGER.debug("Exception decrypting payload for protocol 102: {}", e.getMessage(), e);
             return "";
         }
@@ -333,16 +334,5 @@ public final class ProtocolUtils {
      */
     private record MessageHeader(String version, int sequence, int random, int timestamp, int protocol,
             int payloadLen) {
-    }
-
-    /**
-     * Custom exception for cryptographic errors to provide more specific error handling.
-     */
-    public static class RoborockCryptoException extends Exception {
-        private static final long serialVersionUID = 529232811860854017L;
-
-        public RoborockCryptoException(String message, Throwable cause) {
-            super(message, cause);
-        }
     }
 }

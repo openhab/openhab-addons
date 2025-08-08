@@ -64,6 +64,7 @@ public class RoborockWebTargets {
     private static final String GET_TOKEN_PATH = "/api/v1/login";
     private static final String GET_HOME_DETAIL_PATH = "/api/v1/getHomeDetail";
     private static final String GET_HOME_DATA_PATH = "/user/homes/";
+    private static final String GET_HOME_DATA_V3_PATH = "/v3/user/homes/";
     private static final String GET_ROUTINES_PATH = "/user/scene/device/";
     private static final String SET_ROUTINE_PATH = "/user/scene/";
     private static final String SET_ROUTINE_PATH_SUFFIX = "/execute";
@@ -84,9 +85,9 @@ public class RoborockWebTargets {
      *
      * @param email The user's email address.
      * @return The generated safe token.
-     * @throws RoborockCommunicationException If MD5 algorithm is not available.
+     * @throws RoborockException If MD5 algorithm is not available.
      */
-    private String generateSafeToken(String email) throws RoborockCommunicationException {
+    private String generateSafeToken(String email) throws RoborockException {
         try {
             byte[] randomBytes = new byte[20];
             secureRandom.nextBytes(randomBytes);
@@ -100,7 +101,7 @@ public class RoborockWebTargets {
             byte[] rawData = md.digest();
             return Base64.getEncoder().encodeToString(rawData);
         } catch (NoSuchAlgorithmException e) {
-            throw new RoborockCommunicationException("Decryption of received data failed", e);
+            throw new RoborockException("Decryption of received data failed", e);
         }
     }
 
@@ -112,10 +113,9 @@ public class RoborockWebTargets {
      * @param key The key (from Rriot.h).
      * @param path The request path.
      * @return The Hawk Authorization header string.
-     * @throws RoborockAuthenticationException If Hawk Authentication generation fails.
+     * @throws RoborockException If Hawk Authentication generation fails.
      */
-    private String getHawkAuthentication(String id, String secret, String key, String path)
-            throws RoborockAuthenticationException {
+    private String getHawkAuthentication(String id, String secret, String key, String path) throws RoborockException {
         try {
             int timestamp = (int) Instant.now().getEpochSecond();
             String nonce = UUID.randomUUID().toString().substring(0, 8);
@@ -131,7 +131,7 @@ public class RoborockWebTargets {
             return "Hawk id=\"" + id + "\",s=\"" + secret + "\",ts=\"" + timestamp + "\",nonce=\"" + nonce + "\",mac=\""
                     + macString + "\"";
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RoborockAuthenticationException("Failed generating HawkAuthentication string", e);
+            throw new RoborockException("Failed generating HawkAuthentication string", e);
         }
     }
 
@@ -140,10 +140,9 @@ public class RoborockWebTargets {
      *
      * @param email The user's email.
      * @return The base URL for the Roborock API.
-     * @throws RoborockCommunicationException If communication fails.
-     * @throws RoborockAuthenticationException If authentication fails.
+     * @throws RoborockException If authentication fails.
      */
-    public String getUrlByEmail(String email) throws RoborockCommunicationException, RoborockAuthenticationException {
+    public String getUrlByEmail(String email) throws RoborockException {
         safeToken = generateSafeToken(email);
 
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
@@ -163,7 +162,7 @@ public class RoborockWebTargets {
             return EU_IOT_BASE_URL; // Default to EU_IOT_BASE_URL if URL not explicitly found
         } catch (JsonSyntaxException | IllegalStateException e) {
             logger.error("Failed to parse JSON response for getUrlByEmail: {}", response, e);
-            throw new RoborockCommunicationException("Failed to parse getUrlByEmail response", e);
+            throw new RoborockException("Failed to parse getUrlByEmail response", e);
         }
     }
 
@@ -174,12 +173,10 @@ public class RoborockWebTargets {
      * @param email The user's email.
      * @param password The user's password.
      * @return A {@link Login} object containing authentication details, or null if login fails.
-     * @throws RoborockCommunicationException If communication fails.
-     * @throws RoborockAuthenticationException If authentication fails.
+     * @throws RoborockException If authentication fails.
      */
     @Nullable
-    public Login doLogin(String baseUri, String email, String password)
-            throws RoborockCommunicationException, RoborockAuthenticationException {
+    public Login doLogin(String baseUri, String email, String password) throws RoborockException {
         if (safeToken.isEmpty()) {
             logger.warn(
                     "Safe token is empty during doLogin. This might indicate getUrlByEmail was not called or failed.");
@@ -201,12 +198,10 @@ public class RoborockWebTargets {
      * @param token The authentication token.
      * @param rriot The Rriot object containing Hawk authentication details.
      * @return A {@link Home} object containing home details, or null if retrieval fails.
-     * @throws RoborockCommunicationException If communication fails.
-     * @throws RoborockAuthenticationException If authentication fails.
+     * @throws RoborockException If authentication fails.
      */
     @Nullable
-    public Home getHomeDetail(String baseUri, String token)
-            throws RoborockCommunicationException, RoborockAuthenticationException {
+    public Home getHomeDetail(String baseUri, String token) throws RoborockException {
         String response = invoke(baseUri + GET_HOME_DETAIL_PATH, HttpMethod.GET, "Authorization", token);
         return gson.fromJson(response, Home.class);
     }
@@ -217,15 +212,12 @@ public class RoborockWebTargets {
      * @param rrHomeID The Roborock Home ID.
      * @param rriot The Rriot object containing Hawk authentication details.
      * @return A {@link HomeData} object containing home data, or null if retrieval fails.
-     * @throws RoborockCommunicationException If communication fails.
-     * @throws RoborockAuthenticationException If authentication fails.
-     * @throws NoSuchAlgorithmException If cryptographic algorithm is not available.
+     * @throws RoborockException If authentication fails.
      * @throws InvalidKeyException If the provided key for Hawk authentication is invalid.
      */
     @Nullable
-    public HomeData getHomeData(String rrHomeID, Rriot rriot)
-            throws RoborockCommunicationException, RoborockAuthenticationException {
-        String path = GET_HOME_DATA_PATH + rrHomeID;
+    public HomeData getHomeData(String rrHomeID, Rriot rriot) throws RoborockException {
+        String path = GET_HOME_DATA_V3_PATH + rrHomeID;
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         String response = invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token);
         return gson.fromJson(response, HomeData.class);
@@ -237,14 +229,11 @@ public class RoborockWebTargets {
      * @param deviceID The device ID.
      * @param rriot The Rriot object containing Hawk authentication details.
      * @return The raw JSON response string containing routines, or null if retrieval fails.
-     * @throws RoborockCommunicationException If communication fails.
-     * @throws RoborockAuthenticationException If authentication fails.
-     * @throws NoSuchAlgorithmException If cryptographic algorithm is not available.
+     * @throws RoborockException If authentication fails.
      * @throws InvalidKeyException If the provided key for Hawk authentication is invalid.
      */
     @Nullable
-    public String getRoutines(String deviceID, Rriot rriot)
-            throws RoborockCommunicationException, RoborockAuthenticationException {
+    public String getRoutines(String deviceID, Rriot rriot) throws RoborockException {
         String path = GET_ROUTINES_PATH + deviceID;
         String hawkToken = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         return invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", hawkToken);
@@ -256,14 +245,10 @@ public class RoborockWebTargets {
      * @param sceneID The ID of the scene (routine) to execute.
      * @param rriot The Rriot object containing Hawk authentication details.
      * @return The raw JSON response string, or null if execution fails.
-     * @throws RoborockCommunicationException If communication fails.
-     * @throws RoborockAuthenticationException If authentication fails.
-     * @throws NoSuchAlgorithmException If cryptographic algorithm is not available.
-     * @throws InvalidKeyException If the provided key for Hawk authentication is invalid.
+     * @throws RoborockException If authentication or comms fails.
      */
     @Nullable
-    public String setRoutine(String sceneID, Rriot rriot)
-            throws RoborockCommunicationException, RoborockAuthenticationException {
+    public String setRoutine(String sceneID, Rriot rriot) throws RoborockException {
         String path = SET_ROUTINE_PATH + sceneID + SET_ROUTINE_PATH_SUFFIX;
         String hawkToken = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         return invoke(rriot.r.a + path, HttpMethod.POST, "Authorization", hawkToken);
@@ -277,12 +262,10 @@ public class RoborockWebTargets {
      * @param headerKey Optional: The name of an additional header.
      * @param headerValue Optional: The value of an additional header.
      * @return The response body as a String.
-     * @throws RoborockCommunicationException If there's a communication error (timeout, execution error, non-success
-     *             HTTP status).
-     * @throws RoborockAuthenticationException If the HTTP status is 401 Unauthorized.
+     * @throws RoborockException If there is a comms or authentication error.
      */
     private String invoke(String uri, HttpMethod method, @Nullable String headerKey, @Nullable String headerValue)
-            throws RoborockCommunicationException, RoborockAuthenticationException {
+            throws RoborockException {
         logger.debug("Calling url: {}", uri);
         String jsonResponse = "";
 
@@ -308,14 +291,14 @@ public class RoborockWebTargets {
                 }
 
                 if (status == HttpStatus.UNAUTHORIZED_401) {
-                    throw new RoborockAuthenticationException("Unauthorized");
+                    throw new RoborockException("Unauthorized");
                 }
                 if (!HttpStatus.isSuccess(status)) {
-                    throw new RoborockCommunicationException(
+                    throw new RoborockException(
                             String.format("Roborock returned error <%d> while invoking %s", status, uri));
                 }
             } catch (TimeoutException | ExecutionException | InterruptedException ex) {
-                throw new RoborockCommunicationException(String.format("%s", ex.getLocalizedMessage(), ex));
+                throw new RoborockException(String.format("%s", ex.getLocalizedMessage(), ex));
             }
         }
 

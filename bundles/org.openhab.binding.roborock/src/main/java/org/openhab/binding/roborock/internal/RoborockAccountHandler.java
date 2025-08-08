@@ -121,12 +121,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             if (login != null) {
                 return login;
             }
-        } catch (RoborockAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication error " + e.getMessage());
-        } catch (RoborockCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error " + e.getMessage());
+        } catch (RoborockException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
         }
         return new Login();
     }
@@ -135,13 +131,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public Home getHomeDetail() {
         try {
             return webTargets.getHomeDetail(baseUri, token);
-        } catch (RoborockAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication error " + e.getMessage());
-            return new Home();
-        } catch (RoborockCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error " + e.getMessage());
+        } catch (RoborockException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return new Home();
         }
     }
@@ -150,13 +141,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public HomeData getHomeData(String rrHomeId) {
         try {
             return webTargets.getHomeData(rrHomeId, rriot);
-        } catch (RoborockAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication error " + e.getMessage());
-            return new HomeData();
-        } catch (RoborockCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error " + e.getMessage());
+        } catch (RoborockException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return new HomeData();
         }
     }
@@ -165,13 +151,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public String getRoutines(String deviceId) {
         try {
             return webTargets.getRoutines(deviceId, rriot);
-        } catch (RoborockAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication error " + e.getMessage());
-            return "";
-        } catch (RoborockCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error " + e.getMessage());
+        } catch (RoborockException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return "";
         }
     }
@@ -180,13 +161,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public String setRoutine(String sceneID) {
         try {
             return webTargets.setRoutine(sceneID, rriot);
-        } catch (RoborockAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication error " + e.getMessage());
-            return "";
-        } catch (RoborockCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error " + e.getMessage());
+        } catch (RoborockException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return "";
         }
     }
@@ -239,12 +215,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         if (baseUri.isEmpty()) {
             try {
                 baseUri = webTargets.getUrlByEmail(config.email);
-            } catch (RoborockAuthenticationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication error " + e.getMessage());
-            } catch (RoborockCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Communication error " + e.getMessage());
+            } catch (RoborockException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             }
         }
         String sessionStoreToken = sessionStorage.get("token");
@@ -298,7 +270,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             connectMqttClient();
             logger.debug("Bridge connected to MQTT");
             updateStatus(ThingStatus.ONLINE);
-        } catch (InterruptedException | RoborockCommunicationException e) {
+        } catch (InterruptedException | RoborockException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.no-mqtt");
         }
@@ -310,7 +282,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         teardown(false);
     }
 
-    public void connectMqttClient() throws RoborockCommunicationException, InterruptedException {
+    public void connectMqttClient() throws RoborockException, InterruptedException {
         String mqttHost = "";
         int mqttPort = 1883;
         String mqttUser = "";
@@ -379,7 +351,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             if (isAuthFailure) {
                 logger.debug("Authorization failure.");
             }
-            throw new RoborockCommunicationException(e);
+            throw new RoborockException(e);
         }
     }
 

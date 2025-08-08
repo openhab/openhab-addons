@@ -13,7 +13,6 @@
 package org.openhab.binding.roborock.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Exception for when an unexpected response is received from the Roborock API.
@@ -22,18 +21,18 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class RoborockCommunicationException extends Exception {
+public class RoborockException extends Exception {
     private static final long serialVersionUID = 529232811860854017L;
 
-    public RoborockCommunicationException(String message) {
+    public RoborockException(String message) {
         super(message);
     }
 
-    public RoborockCommunicationException(Throwable ex) {
+    public RoborockException(Throwable ex) {
         super(ex);
     }
 
-    public RoborockCommunicationException(@Nullable String message, Throwable cause) {
+    public RoborockException(String message, Throwable cause) {
         super(message, cause);
     }
 }
