@@ -14,22 +14,20 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
-import org.openhab.core.library.unit.ImperialUnits;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT Humidifier, following the https://www.home-assistant.io/integrations/water_heater.mqtt/ specification.
@@ -37,7 +35,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class WaterHeater extends AbstractComponent<WaterHeater.ChannelConfiguration> {
+public class WaterHeater extends AbstractComponent<WaterHeater.Configuration> {
     public static final String CURRENT_TEMPERATURE_CHANNEL_ID = "current-temperature";
     public static final String MODE_CHANNEL_ID = "mode";
     public static final String STATE_CHANNEL_ID = "state";
@@ -55,83 +53,146 @@ public class WaterHeater extends AbstractComponent<WaterHeater.ChannelConfigurat
     public static final List<String> DEFAULT_MODES = List.of(MODE_OFF, MODE_ECO, MODE_ELECTRIC, MODE_GAS,
             MODE_HEAT_PUMP, MODE_HIGH_DEMAND, MODE_PERFORMANCE);
 
+    private static final Map<String, String> MODE_LABELS = Map.of(MODE_OFF, "@text/state.water-heater.mode.off",
+            MODE_ECO, "@text/state.water-heater.mode.eco", MODE_ELECTRIC, "@text/state.water-heater.mode.electric",
+            MODE_GAS, "@text/state.water-heater.mode.gas", MODE_HEAT_PUMP, "@text/state.water-heater.mode.heat-pump",
+            MODE_HIGH_DEMAND, "@text/state.water-heater.mode.high-demand", MODE_PERFORMANCE,
+            "@text/state.water-heater.mode.performance");
+
     public static final String TEMPERATURE_UNIT_C = "C";
     public static final String TEMPERATURE_UNIT_F = "F";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Humidifier");
+    public static class Configuration extends EntityConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Water Heater");
         }
 
-        protected @Nullable Boolean optimistic;
+        @Nullable
+        Value getCurrentTemperatureTemplate() {
+            return getOptionalValue("current_temperature_template");
+        }
 
-        @SerializedName("power_command_topic")
-        protected @Nullable String powerCommandTopic;
-        @SerializedName("power_command_template")
-        protected @Nullable String powerCommandTemplate;
-        @SerializedName("current_temperature_topic")
-        protected @Nullable String currentTemperatureTopic;
-        @SerializedName("current_temperature_template")
-        protected @Nullable String currentTemperatureTemplate;
-        @SerializedName("temperature_command_topic")
-        protected @Nullable String temperatureCommandTopic;
-        @SerializedName("temperature_command_template")
-        protected @Nullable String temperatureCommandTemplate;
-        @SerializedName("temperature_state_topic")
-        protected @Nullable String temperatureStateTopic;
-        @SerializedName("temperature_state_template")
-        protected @Nullable String temperatureStateTemplate;
-        @SerializedName("mode_command_topic")
-        protected @Nullable String modeCommandTopic;
-        @SerializedName("mode_command_template")
-        protected @Nullable String modeCommandTemplate;
-        @SerializedName("mode_state_topic")
-        protected @Nullable String modeStateTopic;
-        @SerializedName("mode_state_template")
-        protected @Nullable String modeStateTemplate;
+        @Nullable
+        String getCurrentTemperatureTopic() {
+            return getOptionalString("current_temperature_topic");
+        }
 
-        @SerializedName("device_class")
-        protected @Nullable String deviceClass;
-        protected String platform = "";
+        @Nullable
+        Value getModeCommandTemplate() {
+            return getOptionalValue("mode_command_template");
+        }
 
-        protected @Nullable Integer initial;
-        @SerializedName("min_temp")
-        protected @Nullable BigDecimal minTemp;
-        @SerializedName("max_temp")
-        protected @Nullable BigDecimal maxTemp;
-        protected @Nullable BigDecimal precision;
-        @SerializedName("temperature_unit")
-        protected @Nullable TemperatureUnit temperatureUnit;
+        @Nullable
+        String getModeCommandTopic() {
+            return getOptionalString("mode_command_topic");
+        }
 
-        @SerializedName("payload_on")
-        protected String payloadOn = "ON";
-        @SerializedName("payload_off")
-        protected String payloadOff = "OFF";
-        protected List<String> modes = DEFAULT_MODES;
+        List<String> getModes() {
+            return getStringList("modes");
+        }
+
+        @Nullable
+        Value getModeStateTemplate() {
+            return getOptionalValue("mode_state_template");
+        }
+
+        @Nullable
+        String getModeStateTopic() {
+            return getOptionalString("mode_state_topic");
+        }
+
+        boolean isOptimistic() {
+            return getBoolean("optimistic");
+        }
+
+        String getPayloadOn() {
+            return getString("payload_on");
+        }
+
+        String getPayloadOff() {
+            return getString("payload_off");
+        }
+
+        @Nullable
+        String getPowerCommandTopic() {
+            return getOptionalString("power_command_topic");
+        }
+
+        @Nullable
+        Value getPowerCommandTemplate() {
+            return getOptionalValue("power_command_template");
+        }
+
+        @Nullable
+        Double getPrecision() {
+            // Precision can be an int or a float
+            Object precision = config.get("precision");
+            if (precision instanceof Integer intValue) {
+                return intValue.doubleValue();
+            }
+            return (Double) precision;
+        }
+
+        boolean isRetain() {
+            return getBoolean("retain");
+        }
+
+        @Nullable
+        Integer getInitial() {
+            return getOptionalInt("initial");
+        }
+
+        @Nullable
+        Double getMaxTemp() {
+            return getOptionalDouble("max_temp");
+        }
+
+        @Nullable
+        Double getMinTemp() {
+            return getOptionalDouble("min_temp");
+        }
+
+        @Nullable
+        Value getTemperatureCommandTemplate() {
+            return getOptionalValue("temperature_command_template");
+        }
+
+        @Nullable
+        String getTemperatureCommandTopic() {
+            return getOptionalString("temperature_command_topic");
+        }
+
+        @Nullable
+        Value getTemperatureStateTemplate() {
+            return getOptionalValue("temperature_state_template");
+        }
+
+        @Nullable
+        String getTemperatureStateTopic() {
+            return getOptionalString("temperature_state_topic");
+        }
+
+        @Nullable
+        String getTemperatureUnit() {
+            return getOptionalString("temperature_unit");
+        }
+
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
-    public WaterHeater(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public WaterHeater(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        if (!PLATFORM_WATER_HEATER.equals(channelConfiguration.platform)) {
-            throw new ConfigurationException("platform must be " + PLATFORM_WATER_HEATER);
-        }
-
-        TemperatureUnit temperatureUnit = channelConfiguration.temperatureUnit;
-        if (channelConfiguration.temperatureUnit == null) {
-            if (ImperialUnits.FAHRENHEIT.equals(componentConfiguration.getUnitProvider().getUnit(Temperature.class))) {
-                temperatureUnit = TemperatureUnit.FAHRENHEIT;
-            } else {
-                temperatureUnit = TemperatureUnit.CELSIUS;
-            }
-        }
-        BigDecimal precision = channelConfiguration.precision != null ? channelConfiguration.precision
+        TemperatureUnit temperatureUnit = getTemperatureUnit(config.getTemperatureUnit());
+        Double configPrecision = config.getPrecision();
+        BigDecimal precision = configPrecision != null ? BigDecimal.valueOf(configPrecision)
                 : temperatureUnit.getDefaultPrecision();
 
-        List<String> onStates = new ArrayList<>(channelConfiguration.modes);
+        List<String> modes = config.getModes();
+        List<String> onStates = new ArrayList<>(modes);
         onStates.remove(MODE_OFF);
 
         List<String> unsupportedModes = onStates.stream().filter(mode -> !DEFAULT_MODES.contains(mode))
@@ -140,49 +201,55 @@ public class WaterHeater extends AbstractComponent<WaterHeater.ChannelConfigurat
             throw new ConfigurationException("unsupported modes: " + unsupportedModes.toString());
         }
 
-        if (channelConfiguration.powerCommandTopic != null) {
+        Value valueTemplate = config.getValueTemplate();
+
+        boolean optimistic = config.isOptimistic();
+        String powerCommandTopic = config.getPowerCommandTopic();
+        if (powerCommandTopic != null) {
             buildChannel(STATE_CHANNEL_ID, ComponentChannelType.SWITCH,
-                    new OnOffValue(onStates.toArray(new String[0]), new String[] { MODE_OFF },
-                            channelConfiguration.payloadOn, channelConfiguration.payloadOff),
-                    "State", componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.modeStateTopic, channelConfiguration.modeStateTemplate,
-                            channelConfiguration.getValueTemplate())
-                    .commandTopic(channelConfiguration.powerCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos(), channelConfiguration.powerCommandTemplate)
-                    .inferOptimistic(channelConfiguration.optimistic).build();
+                    new OnOffValue(onStates.toArray(new String[0]), new String[] { MODE_OFF }, config.getPayloadOn(),
+                            config.getPayloadOff()),
+                    "State", componentContext.getUpdateListener())
+                    .stateTopic(config.getModeStateTopic(), config.getModeStateTemplate(), valueTemplate)
+                    .commandTopic(config.getPowerCommandTopic(), config.isRetain(), config.getQos(),
+                            config.getPowerCommandTemplate())
+                    .inferOptimistic(optimistic).build();
         }
 
-        if (channelConfiguration.modeCommandTopic != null | channelConfiguration.modeStateTopic != null) {
+        String modeCommandTopic = config.getModeCommandTopic();
+        String modeStateTopic = config.getModeStateTopic();
+        if (modeCommandTopic != null || modeStateTopic != null) {
+            Map<String, String> modesMapping = modes.stream()
+                    .collect(Collectors.toMap(m -> m, m -> m, (a, b) -> a, LinkedHashMap::new));
             buildChannel(MODE_CHANNEL_ID, ComponentChannelType.STRING,
-                    new TextValue(channelConfiguration.modes.toArray(new String[0])), "Mode",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.modeStateTopic, channelConfiguration.modeStateTemplate,
-                            channelConfiguration.getValueTemplate())
-                    .commandTopic(channelConfiguration.modeCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos(), channelConfiguration.modeCommandTemplate)
-                    .inferOptimistic(channelConfiguration.optimistic).build();
+                    new TextValue(modesMapping, modesMapping, MODE_LABELS, MODE_LABELS), "Mode",
+                    componentContext.getUpdateListener())
+                    .stateTopic(modeStateTopic, config.getModeStateTemplate(), valueTemplate)
+                    .commandTopic(modeCommandTopic, config.isRetain(), config.getQos(), config.getModeCommandTemplate())
+                    .inferOptimistic(optimistic).build();
         }
 
-        if (channelConfiguration.currentTemperatureTopic != null) {
+        String currentTemperatureTopic = config.getCurrentTemperatureTopic();
+        if (currentTemperatureTopic != null) {
             buildChannel(CURRENT_TEMPERATURE_CHANNEL_ID, ComponentChannelType.TEMPERATURE,
                     new NumberValue(null, null, null, temperatureUnit.getUnit()), "Current Temperature",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.currentTemperatureTopic,
-                            channelConfiguration.currentTemperatureTemplate, channelConfiguration.getValueTemplate())
-                    .build();
+                    componentContext.getUpdateListener())
+                    .stateTopic(currentTemperatureTopic, config.getCurrentTemperatureTemplate(), valueTemplate).build();
         }
 
-        if (channelConfiguration.temperatureStateTopic != null
-                || channelConfiguration.temperatureCommandTopic != null) {
+        String temperatureStateTopic = config.getTemperatureStateTopic();
+        String temperatureCommandTopic = config.getTemperatureCommandTopic();
+        if (temperatureStateTopic != null || temperatureCommandTopic != null) {
+            Double configMinTemp = config.getMinTemp(), configMaxTemp = config.getMaxTemp();
+            BigDecimal minTemp = configMinTemp != null ? BigDecimal.valueOf(configMinTemp) : null;
+            BigDecimal maxTemp = configMaxTemp != null ? BigDecimal.valueOf(configMaxTemp) : null;
             buildChannel(TARGET_TEMPERATURE_CHANNEL_ID, ComponentChannelType.TEMPERATURE,
-                    new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp, precision,
-                            temperatureUnit.getUnit()),
-                    "Target Temperature", componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.temperatureStateTopic,
-                            channelConfiguration.temperatureStateTemplate, channelConfiguration.getValueTemplate())
-                    .commandTopic(channelConfiguration.temperatureCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos(), channelConfiguration.temperatureCommandTemplate)
-                    .inferOptimistic(channelConfiguration.optimistic).build();
+                    new NumberValue(minTemp, maxTemp, precision, temperatureUnit.getUnit()), "Target Temperature",
+                    componentContext.getUpdateListener())
+                    .stateTopic(temperatureStateTopic, config.getTemperatureStateTemplate(), valueTemplate)
+                    .commandTopic(temperatureCommandTopic, config.isRetain(), config.getQos(),
+                            config.getTemperatureCommandTemplate())
+                    .inferOptimistic(optimistic).build();
         }
 
         finalizeChannels();

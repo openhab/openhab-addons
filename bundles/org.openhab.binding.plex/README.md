@@ -24,7 +24,7 @@ This binding supports 2 things.
 ## Discovery
 
 For the auto discovery to work correctly you first need to configure and add the `PLEX Server` Thing.
-Next step is to *PLAY* something on the desired player. Only when media is played on the player it will show up in the auto discovery!
+Next step is to _PLAY_ something on the desired player. Only when media is played on the player it will show up in the auto discovery!
 
 ## Thing Configuration
 
@@ -33,8 +33,8 @@ The PLEX Server needs to be configured first. The hostname of the PLEX server is
 Then find the PLEX token please follow the instructions from the PLEX support forum:
 
 1. Sign in to your Plex account in Plex Web App
-2. Browse to a library item and view the XML for it
-3. Look in the URL and find the token as the X-Plex-Token value
+1. Browse to a library item and view the XML for it
+1. Look in the URL and find the token as the X-Plex-Token value
 
 ### `PLEX Server` Thing Configuration
 
@@ -53,7 +53,7 @@ You can add multiple PLEX players. You can choose to find the player by autodisc
 
 #### Autodiscovery
 
-Turn on the player you want to add and *play* some media on it. Navigate to `/settings/things/add/plex` and start the auto discover.
+Turn on the player you want to add and _play_ some media on it. Navigate to `/settings/things/add/plex` and start the auto discover.
 The player will be found and you can add it.
 
 #### Manual adding a player Thing
@@ -118,6 +118,7 @@ The PLEX Player supports the following channels:
 | ratingKey            | String   | RO         | The unique key in the Plex library identifying the media that is playing                                         |
 | parentRatingKey      | String   | RO         | The unique key in the Plex library identifying the parent (TV show season or album) of the media that is playing |
 | grandparentRatingKey | String   | RO         | The unique key in the Plex library identifying the grandparent (TV show) of the media that is playing            |
+| user                 | String   | RO         | The user title                                                          |
 
 ## Full Example
 

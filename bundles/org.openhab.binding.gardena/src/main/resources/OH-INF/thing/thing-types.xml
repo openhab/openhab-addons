@@ -12,6 +12,7 @@
 
 		<label>Gardena Smart SILENO Mower</label>
 		<description>Represents any Gardena smart SILENO mower model</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="common" typeId="commonProperties"/>
@@ -34,6 +35,7 @@
 
 		<label>Gardena Smart Water Control</label>
 		<description>Represents a Gardena smart Water Control</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="common" typeId="commonProperties"/>
@@ -58,6 +60,7 @@
 
 		<label>Gardena Smart Sensor</label>
 		<description>Represents a Gardena smart Sensor</description>
+		<semantic-equipment-tag>SoilSensor</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="common" typeId="commonProperties"/>
@@ -79,6 +82,7 @@
 
 		<label>Gardena Smart Pressure Pump</label>
 		<description>Represents a Gardena smart Pressure Pump</description>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="common" typeId="commonProperties"/>
@@ -101,6 +105,7 @@
 
 		<label>Gardena Smart Power Adapter</label>
 		<description>Represents a Gardena smart Power Adapter</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="common" typeId="commonProperties"/>
@@ -123,6 +128,7 @@
 
 		<label>Gardena Smart Irrigation Control</label>
 		<description>Represents a Gardena smart Irrigation Control</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="common" typeId="commonProperties"/>
@@ -405,12 +411,19 @@
 		<item-type>Switch</item-type>
 		<label>Command</label>
 		<description>A command for a device</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="powerCommandDuration">
 		<item-type>Number:Time</item-type>
 		<label>Command Duration</label>
 		<description>A duration in minutes for a command</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d min" min="1" max="59" step="1"/>
 	</channel-type>
 
@@ -418,6 +431,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Command Duration</label>
 		<description>A duration in minutes for a command</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d min" min="1" max="600" step="1"/>
 	</channel-type>
 
@@ -425,6 +442,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Command Duration</label>
 		<description>A duration in minutes for a command</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d min" min="1" max="1440" step="1"/>
 	</channel-type>
 
@@ -432,6 +453,9 @@
 		<item-type>String</item-type>
 		<label>State</label>
 		<description>The state of the device</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OK">OK</option>
@@ -446,6 +470,9 @@
 		<item-type>String</item-type>
 		<label>Last Error Code</label>
 		<description>The last error code</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<!-- common -->
@@ -540,6 +567,10 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Timestamp</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -547,12 +578,19 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Timestamp</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>The name of the device</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -560,6 +598,10 @@
 		<item-type>String</item-type>
 		<label>Activity</label>
 		<description>The activity of the device</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<!-- power socker -->
@@ -593,6 +635,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
@@ -600,6 +646,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Soil Humidity</label>
 		<description>Soil humidity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Moisture</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
@@ -607,6 +657,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Light Intensity</label>
 		<description>Light intensity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -614,6 +668,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -621,6 +679,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Operating Hours</label>
 		<description>The operating hours</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 
@@ -628,6 +690,9 @@
 		<item-type>String</item-type>
 		<label>Battery State</label>
 		<description>The state of the battery</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OK">OK</option>
@@ -645,6 +710,9 @@
 		<item-type>String</item-type>
 		<label>RF Link State</label>
 		<description>The state of the RF link</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ONLINE">Online</option>

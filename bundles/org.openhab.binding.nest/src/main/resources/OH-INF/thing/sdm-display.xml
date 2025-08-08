@@ -11,6 +11,7 @@
 
 		<label>Nest Display</label>
 		<description>A Nest Display registered with your SDM account</description>
+		<semantic-equipment-tag>Display</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="motion_event" typeId="SDMMotionEvent"/>

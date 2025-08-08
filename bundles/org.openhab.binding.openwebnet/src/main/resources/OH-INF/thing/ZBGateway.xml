@@ -10,7 +10,7 @@
 		<description>This USB gateway (BTicino/Legrand models: BTI-3578/088328) connects to a BTicino/Legrand Zigbee network
 			and uses the OpenWebNet protocol. For more information see: https://catalogo.bticino.it/BTI-3578-IT and
 			https://www.legrand.com/ecatalogue/088328-openweb-net-zigbee-gateway-radio-interface.html</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
 			<property name="model">BTI-3578/088328</property>

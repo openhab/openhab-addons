@@ -21,7 +21,7 @@ It was tested on a SUN-12K-SG04LP3-EU only, with LAN Stick LSE-3 in RAW MODBUS s
 
 To connect the logger you need the IP address of the logger and its serial number.
 The IP address can be obtained from your router and the serial number can either be read from the label of the logger, or by connecting to the logger with a browser (default user/pass: admin/admin) and getting it from the Status page.
-*Please note* that you need the "Device serial number" from the "Device information" section, not the "Inverter serial number".
+**Please note** that you need the "Device serial number" from the "Device information" section, not the "Inverter serial number".
 
 ### `logger` Thing Configuration
 

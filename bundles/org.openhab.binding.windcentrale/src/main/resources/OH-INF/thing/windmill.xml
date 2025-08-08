@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Windcentrale Windmill</label>
-
+		<semantic-equipment-tag>WindGenerator</semantic-equipment-tag>
 		<channels>
 			<channel id="power-shares" typeId="power-shares"/>
 			<channel id="power-total" typeId="power-total"/>
@@ -66,6 +66,10 @@
 		<label>Total Energy</label>
 		<description>Energy produced this year</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-relative">
@@ -78,12 +82,20 @@
 		<item-type>Number:Power</item-type>
 		<label>Wind Shares Power</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-total">
 		<item-type>Number:Power</item-type>
 		<label>Total Power</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="run-time">
@@ -107,12 +119,20 @@
 	<channel-type id="wind-direction">
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 	<channel-type id="wind-speed">
 		<item-type>Number</item-type>
 		<label>Wind Speed</label>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%d Bft" readOnly="true"/>
 	</channel-type>
 

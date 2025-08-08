@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.influxdb</artifactId>
@@ -15,9 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: InfluxDB</name>
 
   <properties>
-    <bnd.importpackage>
-      !javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!org.bouncycastle.*,!org.openjsse.*
-    </bnd.importpackage>
+    <bnd.importpackage>!javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!org.bouncycastle.*,!org.openjsse.*</bnd.importpackage>
     <retrofit.version>2.10.0</retrofit.version>
     <influx2.version>7.0.0</influx2.version>
     <influx1.version>2.24</influx1.version>
@@ -63,8 +61,8 @@
       <version>${retrofit.version}</version>
     </dependency>
     <dependency>
-      <artifactId>retrofit</artifactId>
       <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>retrofit</artifactId>
       <version>${retrofit.version}</version>
     </dependency>
     <dependency>
@@ -107,8 +105,8 @@
       <version>1.9.0</version>
     </dependency>
     <dependency>
-      <artifactId>json</artifactId>
       <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
       <version>20231013</version>
     </dependency>
 
@@ -118,13 +116,13 @@
       <version>1.10.0</version>
     </dependency>
     <dependency>
-      <artifactId>reactive-streams</artifactId>
       <groupId>org.reactivestreams</groupId>
+      <artifactId>reactive-streams</artifactId>
       <version>1.0.4</version>
     </dependency>
     <dependency>
-      <artifactId>swagger-annotations</artifactId>
       <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
       <version>1.6.13</version>
     </dependency>
     <dependency>
@@ -159,6 +157,5 @@
 
     <!-- END InfluxDB 1.0 -->
   </dependencies>
-
 
 </project>

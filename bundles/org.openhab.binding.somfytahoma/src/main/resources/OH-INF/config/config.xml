@@ -35,32 +35,32 @@
 			<limitToOptions>false</limitToOptions>
 		</parameter>
 
-		<parameter name="email" type="text" required="true">
+		<parameter name="email" type="text">
 			<label>Email Address</label>
 			<description>Email address for the portal</description>
 		</parameter>
 
-		<parameter name="password" type="text" required="true">
+		<parameter name="password" type="text">
 			<context>password</context>
 			<label>Password</label>
 			<description>Password for the portal</description>
 		</parameter>
 
-		<parameter name="refresh" type="integer" required="false" min="10">
+		<parameter name="refresh" type="integer" required="false" min="10" max="120">
 			<label>Refresh</label>
 			<description>Specifies the refresh time in seconds for polling events from the cloud</description>
 			<default>30</default>
 		</parameter>
 
-		<parameter name="statusTimeout" type="integer" required="false" min="60">
+		<parameter name="statusTimeout" type="integer" required="false" min="120">
 			<label>Status Timeout</label>
-			<description>Specifies the timeout in seconds after which the status is got from the cloud</description>
+			<description>Specifies the timeout in seconds after which statuses of all devices are retrieved from the cloud</description>
 			<default>300</default>
 		</parameter>
 
 		<parameter name="retries" type="integer" required="false">
 			<label>Retries</label>
-			<description>Specifies the number of retries when command execution</description>
+			<description>Specifies how many times the command should be retried upon failure</description>
 			<default>10</default>
 		</parameter>
 

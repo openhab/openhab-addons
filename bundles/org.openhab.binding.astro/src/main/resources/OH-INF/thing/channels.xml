@@ -29,6 +29,9 @@
 		<item-type>Number:Angle</item-type>
 		<label>Azimuth</label>
 		<description>The azimuth of the planet</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -36,6 +39,9 @@
 		<item-type>Number:Angle</item-type>
 		<label>Elevation</label>
 		<description>The elevation of the planet</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -43,6 +49,9 @@
 		<item-type>Number</item-type>
 		<label>Shade Length Ratio</label>
 		<description>Projected shade length ratio (derived from Elevation)</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 
@@ -50,6 +59,10 @@
 		<item-type>Number:Intensity</item-type>
 		<label>Direct Radiation</label>
 		<description>Level of radiation after penetration of the atmospheric layer</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -57,6 +70,10 @@
 		<item-type>Number:Intensity</item-type>
 		<label>Diffuse Radiation</label>
 		<description>Level of radiation diffracted by clouds and atmosphere</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -64,6 +81,9 @@
 		<item-type>Number:Intensity</item-type>
 		<label>Total Radiation</label>
 		<description>Total quantity of radiation on the ground</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -93,6 +113,10 @@
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>The start time of the event</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
@@ -101,6 +125,10 @@
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
 		<description>The end time of the event</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
@@ -109,6 +137,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>The duration of the event</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -140,6 +172,10 @@
 		<item-type>String</item-type>
 		<label>Sign</label>
 		<description>The sign of the zodiac</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ARIES">Aries</option>
@@ -183,6 +219,10 @@
 		<item-type>String</item-type>
 		<label>Season Name</label>
 		<description>The name of the current season</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="SPRING">Spring</option>
@@ -197,6 +237,10 @@
 		<item-type>DateTime</item-type>
 		<label>Spring</label>
 		<description>The beginning of spring</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -204,6 +248,10 @@
 		<item-type>DateTime</item-type>
 		<label>Summer</label>
 		<description>The beginning of summer</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -211,6 +259,10 @@
 		<item-type>DateTime</item-type>
 		<label>Autumn</label>
 		<description>The beginning of autumn</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -218,6 +270,10 @@
 		<item-type>DateTime</item-type>
 		<label>Winter</label>
 		<description>The beginning of winter</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -240,6 +296,10 @@
 		<item-type>DateTime</item-type>
 		<label>Total Eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -247,6 +307,10 @@
 		<item-type>DateTime</item-type>
 		<label>Partial Eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -254,6 +318,10 @@
 		<item-type>DateTime</item-type>
 		<label>Ring Eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -284,6 +352,10 @@
 		<item-type>String</item-type>
 		<label>Sun Phase Name</label>
 		<description>The name of the current sun phase</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="SUN_RISE">Sunrise</option>
@@ -323,6 +395,10 @@
 		<item-type>DateTime</item-type>
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -330,6 +406,10 @@
 		<item-type>DateTime</item-type>
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -337,6 +417,10 @@
 		<item-type>DateTime</item-type>
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -344,6 +428,10 @@
 		<item-type>DateTime</item-type>
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -351,6 +439,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon in days</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -358,6 +450,9 @@
 		<item-type>Number:Angle</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -365,6 +460,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -372,6 +470,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Moon Illumination</label>
 		<description>The illumination of the moon</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -379,6 +480,9 @@
 		<item-type>String</item-type>
 		<label>Moon Phase Name</label>
 		<description>The name of the current moon phase</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NEW">New moon</option>
@@ -450,6 +554,10 @@
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>The DateTime when the distance is reached</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -457,6 +565,9 @@
 		<item-type>Number:Length</item-type>
 		<label>Distance</label>
 		<description>The distance of the object</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

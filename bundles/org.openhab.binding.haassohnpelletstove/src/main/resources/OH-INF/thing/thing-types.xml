@@ -11,7 +11,7 @@
 			optional
 			WLAN-Modul. More information can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion. It allows
 			to power on/off the stove as well as receiving different operation information about the stove.</description>
-
+		<semantic-equipment-tag>Furnace</semantic-equipment-tag>
 
 		<channels>
 			<channel id="channelIsTemp" typeId="isTemp"/>
@@ -36,7 +36,7 @@
 				<label>PIN</label>
 				<description>Please add the PIN of your oven here. You can find it in the Menu directly in your oven.</description>
 			</parameter>
-			<parameter name="refreshRate" type="integer" unit="s" min="0" max="1000">
+			<parameter name="refreshRate" type="integer" unit="s" min="1" max="1000">
 				<label>Refresh Rate</label>
 				<description>How often the Pellet Stove should schedule a refresh after a channel is linked to an item. Temperature
 					data will be refreshed according this set time in seconds. Valid input is 0 - 999.
@@ -51,6 +51,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Is Temperature Stove</label>
 		<description>Receives the is temperature of the stove as number:temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -58,6 +62,10 @@
 		<item-type>String</item-type>
 		<label>Mode Stove</label>
 		<description>Receives the actual mode of the stove as string</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -65,18 +73,30 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature Stove</label>
 		<description>Set the target temperature of the stove as number:temperature</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>On/Off Stove</label>
 		<description>To turn the stove on/off as switch</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ecoMode">
 		<item-type>Switch</item-type>
 		<label>On/Off Eco Mode</label>
 		<description>To turn the Eco Mode on/off for the stove as switch</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ignitions">

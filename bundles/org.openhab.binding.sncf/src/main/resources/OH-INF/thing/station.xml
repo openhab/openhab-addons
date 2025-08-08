@@ -11,7 +11,7 @@
 
 		<label>Station</label>
 		<description>Represents a station hosting some transportation mode.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="arrivals" typeId="passage">
 				<label>Next Arrival</label>
@@ -77,6 +77,10 @@
 		<label>Timestamp</label>
 		<description>Timestamp of the future event.</description>
 		<category>time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 

@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Xiaomi Mi Smart Socket Plug</label>
 		<description>Allows you to enable or disable the socket, read voltage, current and power consumption.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="inUse" typeId="inUse"/>

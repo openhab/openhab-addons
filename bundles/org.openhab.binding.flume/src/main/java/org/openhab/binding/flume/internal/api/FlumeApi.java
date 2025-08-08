@@ -283,8 +283,7 @@ public class FlumeApi {
         }
 
         Map<String, List<FlumeApiQueryBucket>> queryBuckets = queryData.get(0);
-
-        List<FlumeApiQueryBucket> queryBucket = queryBuckets.get(query.requestId);
+        List<FlumeApiQueryBucket> queryBucket = queryBuckets.get(query.requestId());
 
         return (queryBucket == null || queryBucket.isEmpty()) ? null : queryBucket.get(0).value;
     }
@@ -386,7 +385,7 @@ public class FlumeApi {
      * @throws ExecutionException
      * @throws IOException
      */
-    private JsonObject sendAndValidate(Request request, boolean verifyToken)
+    private synchronized JsonObject sendAndValidate(Request request, boolean verifyToken)
             throws FlumeApiException, InterruptedException, TimeoutException, ExecutionException, IOException {
         ContentResponse response;
 
@@ -404,8 +403,8 @@ public class FlumeApi {
             case 200:
                 break;
             case 400:
-                // Flume API sense response code 400 (vs. normal 401) on invalid user credentials
-                throw new FlumeApiException("@text/api.invalid-user-credentials [\"" + response.getReason() + "\"]",
+                logger.warn("@text/api-request: {}", response);
+                throw new FlumeApiException("@text/api.bad-request [\"" + response.getReason() + "\"]",
                         response.getStatus(), true);
             case 401:
                 throw new FlumeApiException("@text/api.invalid-user-credentials [\"" + response.getReason() + "\"]",

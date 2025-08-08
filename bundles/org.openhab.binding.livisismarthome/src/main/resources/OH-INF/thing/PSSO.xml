@@ -11,7 +11,7 @@
 
 		<label>Pluggable Smart Switch Outdoor (PSSO)</label>
 		<description>A pluggable outdoor switch that can be switched on and off.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switchActuator"/>
 		</channels>

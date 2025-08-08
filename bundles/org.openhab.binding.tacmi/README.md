@@ -18,11 +18,37 @@ CoE (CAN over Ethernet) Connection
 - Send ON/OFF to digital CAN-inputs defined in TAPPS2
 - Send numeric values to analog CAN-inputs defined in TAPPS2
 
+JSON API
+
+- Read selected data via the JSON API (inputs, outputs, logging).
+  See [API documentation](https://wiki.ta.co.at/C.M.I._JSON-API) for details
+
 Depending on what you want to achieve, either the "Schema API Page" or the CoE way might be better.
 As rough guidance: Anything you want to provide to the TA equipment it has to work / operate with the CoE might be better.
 If you plan things mainly for user interaction the "Schema API Page" might be better.
 
-## Prerequisites
+## Supported Bridge and Things
+
+- TA C.M.I. **Schema API Connection** - Thing \
+  This thing reflecting one of our 'schema API page' as defined in the prerequisites.
+  This thing doesn't need the bridge.
+  Multiple of these pages on different C.M.I.'s could be defined within an openHAB instance.
+- TA C.M.I. **CoE Bridge** \
+  In order to get the CAN over Ethernet (COE) envionment working a `coe-bridge` has to be created.
+  The bridge itself opens the UDP port 5441 for communication with the C.M.I. devices.
+  The bridge could be used for multiple C.M.I. devices.
+- TA C.M.I. **CoE Connection** - Thing \
+  This thing reflects a connection to a node behind a specific C.M.I..
+  This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
+- TA C.M.I. **JSON API Connection** - Thing \
+  This is a thing connection that regularly polls the CMI using the JSON API.
+
+## Discovery
+
+Autodiscovering is not supported.
+You have to define the things manually.
+
+## Schema API
 
 ### Setting up the "Schema API Page"
 
@@ -53,47 +79,7 @@ The first sample is a sensor reading, but also the 'operation mode' of a heating
 
 In this screenshot you also see the schema page id - the parenthesized number on the bottom page overview, in this sample 4.
 
-### CoE Configuration
-
-#### Configure CAN outputs in TAPPS2
-
-You need to configure CAN outputs in your Functional data on the UVR16x2.
-This can be done by using the TAPPS2 application from TA. Follow the user guide on how to do this.
-
-#### Configure your CMI for CoE
-
-Now follow the User Guide of the CMI on how to setup CAN over Ethernet (COE).
-Here you will map your outputs that you configured in the previous step.
-This can be accomplished via the GUI on the CMI or via the coe.csv file.
-As the target device you need to put the IP of your openHAB server.
-Don’t forget to reboot the CMI after you uploaded the coe.csv file.
-
-## Supported Bridge and Things
-
-- TA C.M.I. schema API connection - Thing
-
-This thing reflecting one of our 'schema API page' as defined in the prerequisites.
-This thing doesn't need the bridge.
-Multiple of these pages on different C.M.I.'s could be defined within an openHAB instance.
-
-- TA C.M.I. CoE Bridge
-
-In order to get the CAN over Ethernet (COE) envionment working a `coe-bridge` has to be created.
-The bridge itself opens the UDP port 5441 for communication with the C.M.I. devices.
-The bridge could be used for multiple C.M.I. devices.
-
-- TA C.M.I. CoE Connection - Thing
-
-This thing reflects a connection to a node behind a specific C.M.I..
-This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
-
-## Discovery
-
-Autodiscovering is not supported. We have to define the things manually.
-
-## Thing Configuration
-
-### TA C.M.I. schema API connection
+### Connection Configuration
 
 The _TA C.M.I. Schema API Connection_ has to be manually configured.
 
@@ -109,22 +95,7 @@ The thing has the following configuration parameters:
 
 This thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within an openHAB instance.
 
-### TA C.M.I. CoE Connection
-
-The _TA C.M.I. CoE Connection_ has to be manually configured.
-
-This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
-
-| Parameter Label         | Parameter ID    | Description                                                                                                   | Accepted values        |
-|-------------------------|-----------------|---------------------------------------------------------------------------------------------------------------|------------------------|
-| C.M.I. IP Address       | host            | Host name or IP address of the C.M.I                                                                          | host name or ip        |
-| Node                    | node            | The CoE / CAN Node number openHAB should represent                                                            | 1-64                   |
-
-The thing has no channels by default - they have to be added manually matching the configured inputs / outputs for the related CAN Node. Digital and Analog channels are supported. Please read TA's documentation related to the CAN-protocol - multiple analog (4) and digital (16) channels are combined so please be aware of this design limitation.
-
-## Channels
-
-### TA C.M.I. schema API connection
+### TA C.M.I. schema API Channels
 
 The channels provided by this thing depend on the configuration of the "schema API page".
 All the channels are dynamically created to match it.
@@ -142,7 +113,49 @@ The behavior in detail:
 - `On-Fetch` (`1`): This is the default for read-only values. This means the channel is updated every time the schema page is polled. Ideally for values you want to monitor and log into charts.
 - `On-Change` (`2`): When channel values can be changed via OH it is better to only update the channel when the value changes. The binding will cache the previous value and only send an update when it changes to the previous known value. This is especially useful if you intend to link other things (like i.e. Zigbee or Shelly switches) to the TA via OH that can be controlled by different sources. This prevents unintended toggles or even toggle-loops.
 
+### Some additional hints and comments
+
+You might already have noticed that some state information is in German.
+As I have set the `Accept-Language`-Http-Header to `en` for all request and found no other way setting a language for the schema pages I assume it is a lack of internationalization in the C.M.I.
+You could circumvent this by creating map files to map things properly to your language.
+
+If you want to see the possible options of a multi-state field you could open the _schema API page_ with your web browser and click on the object.
+A Popup with an option field will be shown showing all possible options, like in this screenshot:
+
+![screenshot-operation-mode-values](doc/images/operation-mode-values.png)
+
+Please be also aware that there are field having more 'state' values than options, i.E. a manual output override: It has 'Auto/On', 'Auto/Off', 'Manual/On', 'Manual/Off' as state, but only 'Auto', 'Manual/On' and 'Manual/Off' as updateable option.
+You only set it to 'Auto' and the extension On/Off is added depending on the system's current state.
+
+## CoE
+
+### Configure CAN outputs in TAPPS2
+
+You need to configure CAN outputs in your Functional data on the UVR16x2.
+This can be done by using the TAPPS2 application from TA. Follow the user guide on how to do this.
+
+### Configure your CMI for CoE
+
+Now follow the User Guide of the CMI on how to setup CAN over Ethernet (COE).
+Here you will map your outputs that you configured in the previous step.
+This can be accomplished via the GUI on the CMI or via the coe.csv file.
+As the target device you need to put the IP of your openHAB server.
+Don’t forget to reboot the CMI after you uploaded the coe.csv file.
+
 ### TA C.M.I. CoE Connection
+
+The _TA C.M.I. CoE Connection_ has to be manually configured.
+
+This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
+
+| Parameter Label         | Parameter ID    | Description                                                                                                   | Accepted values        |
+|-------------------------|-----------------|---------------------------------------------------------------------------------------------------------------|------------------------|
+| C.M.I. IP Address       | host            | Host name or IP address of the C.M.I                                                                          | host name or ip        |
+| Node                    | node            | The CoE / CAN Node number openHAB should represent                                                            | 1-64                   |
+
+The thing has no channels by default - they have to be added manually matching the configured inputs / outputs for the related CAN Node. Digital and Analog channels are supported. Please read TA's documentation related to the CAN-protocol - multiple analog (4) and digital (16) channels are combined so please be aware of this design limitation.
+
+### CoE Connection Channels
 
 Some comments on the CoE Connection and channel configuration:
 As you might already have taken notice when studying the TA's manual, there are always a multiple CoE-values updated within a single CoE-message.
@@ -210,9 +223,9 @@ The known measure types are:
 | 14     | el. Current   | mA      |                                              |
 | 15     | Time          | hours   |                                              |
 | 16     | dimensionless | [none]  | use for multiplexers, etc                    |
-| 17..   | repeating again from 1, e.g 17==1, 18==2, ...                          |
+| 17..   | repeating     | again   | from 1, e.g 17==1, 18==2, ...                |
 
-## Full Example
+## Full Example (CoE/Schema API)
 
 As there is no common configuration as everything depends on the configuration of the TA devices.
 So we just can provide some samples providing the basics so you can build the configuration matching your system.
@@ -264,18 +277,20 @@ sitemap heatingTA label="heatingTA"
 }
 ```
 
-## Some additional hints and comments
+## JSON API
 
-Some additional hints and comments:
+Before setting up the JSON API, it is worth reading the [API documention](https://wiki.ta.co.at/C.M.I._JSON-API).
+Once configured, the exposed items should show up as channels.
 
-You might already have noticed that some state information is in German.
-As I have set the `Accept-Language`-Http-Header to `en` for all request and found no other way setting a language for the schema pages I assume it is a lack of internationalization in the C.M.I.
-You could circumvent this by creating map files to map things properly to your language.
+### Configuring the JSON API
 
-If you want to see the possible options of a multi-state field you could open the _schema API page_ with your web browser and click on the object.
-A Popup with an option field will be shown showing all possible options, like in this screenshot:
+The _TA C.M.I. JSON API Connection_ has to be manually configured.
 
-![screenshot-operation-mode-values](doc/images/operation-mode-values.png)
-
-Please be also aware that there are field having more 'state' values than options, i.E. a manual output override: It has 'Auto/On', 'Auto/Off', 'Manual/On', 'Manual/Off' as state, but only 'Auto', 'Manual/On' and 'Manual/Off' as updateable option.
-You only set it to 'Auto' and the extension On/Off is added depending on the system's current state.
+| Parameter Label   | Parameter ID | Description                                                                     | Accepted values               |
+| ----------------- | ------------ | ------------------------------------------------------------------------------- | ----------------------------- |
+| C.M.I. IP Address | host         | Host name or IP address of the C.M.I.                                           | Any String                    |
+| User name         | username     | User name for authentication on the C.M.I.                                      | Any String                    |
+| Password          | password     | Password for authentication on the C.M.I.                                       | Any String                    |
+| Node Id           | nodeId       | The node ID of the device you want to monitor  (CMI &rarr; CAN-Bus)             | An Integer that is not 0      |
+| API-Parameters    | params       | The params to query. E.g. I,O,Sg (See the [API documentation](https://wiki.ta.co.at/C.M.I._JSON-API) for details) <br/> Possible options are: Inputs (I), Outputs (O), General (Sg), Logging Analog (La), Logging Digital (Ld)     | Any String                    |
+| Poll Interval     | pollInterval | Poll interval in seconds. The documentation suggests 60s, but less is possible. | An integer between 10 and 900 |

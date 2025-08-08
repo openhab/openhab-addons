@@ -48,6 +48,7 @@ import org.openhab.binding.energidataservice.internal.api.DateQueryParameter;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameterType;
 import org.openhab.binding.energidataservice.internal.api.GlobalLocationNumber;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecord;
+import org.openhab.binding.energidataservice.internal.api.dto.DayAheadPriceRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
 import org.openhab.binding.energidataservice.internal.api.filter.DatahubTariffFilterFactory;
 import org.openhab.binding.energidataservice.internal.config.DatahubPriceConfiguration;
@@ -129,11 +130,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
 
         String channelId = channelUID.getId();
         if (ELECTRICITY_CHANNELS.contains(channelId)) {
-            if (!electricityPriceProvider.forceRefreshPrices(getChannelSubscription(channelId))) {
-                // All subscriptions are automatically notified upon actual changes after download.
-                // If cached values are the same, we will update the requested channel directly.
-                updateChannelFromCache(getChannelSubscription(channelId), channelId);
-            }
+            updateChannelFromCache(getChannelSubscription(channelId), channelId);
         } else if (CO2_EMISSION_CHANNELS.contains(channelId)) {
             Subscription subscription = getChannelSubscription(channelId);
             unsubscribe(subscription);
@@ -446,21 +443,44 @@ public class EnergiDataServiceHandler extends BaseThingHandler
         Map<String, String> properties = editProperties();
         try {
             Currency currency = config.getCurrency();
-            ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, currency,
-                    DateQueryParameter.of(startDate), DateQueryParameter.of(endDate.plusDays(1)), properties);
             boolean isDKK = CURRENCY_DKK.equals(currency);
             TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
-            if (spotPriceRecords.length == 0) {
-                return 0;
+            LocalDate dayAheadFirstDate = electricityPriceProvider.getDayAheadTransitionDate().plusDays(1);
+
+            if (startDate.isBefore(dayAheadFirstDate)) {
+                ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, currency,
+                        DateQueryParameter.of(startDate),
+                        DateQueryParameter
+                                .of((endDate.isBefore(dayAheadFirstDate) ? endDate.plusDays(1) : dayAheadFirstDate)),
+                        properties);
+                for (ElspotpriceRecord record : Arrays.stream(spotPriceRecords)
+                        .sorted(Comparator.comparing(ElspotpriceRecord::hour)).toList()) {
+                    BigDecimal spotPrice = isDKK ? record.spotPriceDKK() : record.spotPriceEUR();
+                    if (spotPrice == null) {
+                        continue;
+                    }
+                    spotPriceTimeSeries.add(record.hour(),
+                            getEnergyPrice(spotPrice.divide(BigDecimal.valueOf(1000)), currency));
+                }
             }
-            for (ElspotpriceRecord record : Arrays.stream(spotPriceRecords)
-                    .sorted(Comparator.comparing(ElspotpriceRecord::hour)).toList()) {
-                spotPriceTimeSeries.add(record.hour(), getEnergyPrice(
-                        (isDKK ? record.spotPriceDKK() : record.spotPriceEUR()).divide(BigDecimal.valueOf(1000)),
-                        currency));
+            if (!endDate.isBefore(dayAheadFirstDate)) {
+                DayAheadPriceRecord[] spotPriceRecords = apiController.getDayAheadPrices(config.priceArea, currency,
+                        DateQueryParameter.of(startDate.isBefore(dayAheadFirstDate) ? dayAheadFirstDate : startDate),
+                        DateQueryParameter.of(endDate.plusDays(1)), properties);
+                for (DayAheadPriceRecord record : Arrays.stream(spotPriceRecords)
+                        .sorted(Comparator.comparing(DayAheadPriceRecord::time)).toList()) {
+                    BigDecimal spotPrice = isDKK ? record.dayAheadPriceDKK() : record.dayAheadPriceEUR();
+                    if (spotPrice == null) {
+                        continue;
+                    }
+                    spotPriceTimeSeries.add(record.time(),
+                            getEnergyPrice(spotPrice.divide(BigDecimal.valueOf(1000)), currency));
+                }
             }
-            sendTimeSeries(CHANNEL_SPOT_PRICE, spotPriceTimeSeries);
-            return spotPriceRecords.length;
+            if (spotPriceTimeSeries.size() > 0) {
+                sendTimeSeries(CHANNEL_SPOT_PRICE, spotPriceTimeSeries);
+            }
+            return spotPriceTimeSeries.size();
         } finally {
             updateProperties(properties);
         }

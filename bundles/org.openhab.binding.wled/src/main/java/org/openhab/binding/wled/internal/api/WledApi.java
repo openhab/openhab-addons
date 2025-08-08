@@ -94,6 +94,8 @@ public interface WledApi {
 
     void setWhiteOnly(PercentType percentType, int segmentIndex) throws ApiException;
 
+    void setLegacyWhite(String whiteChannel, PercentType brightness, int segmentIndex) throws ApiException;
+
     void setMirror(boolean bool, int segmentIndex) throws ApiException;
 
     void setReverse(boolean bool, int segmentIndex) throws ApiException;

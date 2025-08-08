@@ -10,7 +10,7 @@
 		<description>
 			Tasmota Smart Plug
 		</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power">
 				<label>Power</label>
@@ -58,7 +58,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -97,6 +97,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Apparent Power</label>
 		<description>Apparent Power (VA)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -104,6 +108,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Reactive Power</label>
 		<description>Reactive Power (VAr)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -111,6 +119,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Power Factor</label>
 		<description>Power Factor (PF)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -120,6 +132,7 @@
 		<description>The date/time when the energy total measurement started</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>

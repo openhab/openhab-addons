@@ -12,6 +12,7 @@
 
 		<label>T110 Smart Contact Sensor</label>
 		<description>Tapo Smart Window/Door Sensor</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensor" typeId="contactSensor"/>
 			<channel-group id="device" typeId="childDeviceState"/>

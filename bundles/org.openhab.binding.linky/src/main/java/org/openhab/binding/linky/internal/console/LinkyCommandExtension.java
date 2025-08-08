@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.LinkyBindingConstants;
-import org.openhab.binding.linky.internal.handler.LinkyHandler;
+import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
+import org.openhab.binding.linky.internal.handler.ThingLinkyRemoteHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
 import org.openhab.core.io.console.StringsCompleter;
@@ -62,10 +62,10 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension imple
         if (args.length >= 2) {
             Thing thing = getThing(args[0]);
             ThingHandler thingHandler = null;
-            LinkyHandler handler = null;
+            ThingLinkyRemoteHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof LinkyHandler linkyHandler) {
+                if (thingHandler instanceof ThingLinkyRemoteHandler linkyHandler) {
                     handler = linkyHandler;
                 }
             }

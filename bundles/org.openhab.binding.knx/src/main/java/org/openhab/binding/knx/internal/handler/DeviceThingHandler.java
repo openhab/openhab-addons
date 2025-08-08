@@ -131,7 +131,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     continue;
                 }
 
-                String dpt = inboundSpecs.get(0).getDPT(); // there can be only one DPT on number channels
+                String dpt = inboundSpecs.getFirst().getDPT(); // there can be only one DPT on number channels
                 Unit<?> unit = UnitUtils.parseUnit(DPTUnits.getUnitForDpt(dpt));
                 String dimension = unit == null ? null : UnitUtils.getDimensionName(unit);
                 String expectedItemType = dimension == null ? "Number" : "Number:" + dimension; // unknown dimension ->

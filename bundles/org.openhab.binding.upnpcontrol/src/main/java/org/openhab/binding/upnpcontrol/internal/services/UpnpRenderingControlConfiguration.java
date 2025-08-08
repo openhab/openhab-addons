@@ -53,7 +53,11 @@ public class UpnpRenderingControlConfiguration {
         if (rcService != null) {
             volume = (rcService.getStateVariable("Volume") != null);
             if (volume) {
-                maxvolume = rcService.getStateVariable("Volume").getTypeDetails().getAllowedValueRange().getMaximum();
+                long maxVolumeValue = rcService.getStateVariable("Volume").getTypeDetails().getAllowedValueRange()
+                        .getMaximum();
+                if (maxVolumeValue > 0) {
+                    maxvolume = maxVolumeValue;
+                }
             }
             mute = (rcService.getStateVariable("Mute") != null);
             loudness = (rcService.getStateVariable("Loudness") != null);

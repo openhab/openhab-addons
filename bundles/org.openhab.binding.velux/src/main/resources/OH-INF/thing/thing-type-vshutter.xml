@@ -15,6 +15,7 @@
 		<label>@text/thing-type.velux.vshutter.label</label>
 		<description>@text/thing-type.velux.vshutter.description</description>
 		<category>Blinds</category>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="position" typeId="position"/>
 		</channels>

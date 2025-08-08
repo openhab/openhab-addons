@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiNetwork;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
@@ -46,6 +47,7 @@ public class UniFiControllerCache {
     private final Logger logger = LoggerFactory.getLogger(UniFiControllerCache.class);
 
     private final UniFiSiteCache sitesCache = new UniFiSiteCache();
+    private final UniFiNetworkCache networksCache = new UniFiNetworkCache();
     private final UniFiWlanCache wlansCache = new UniFiWlanCache();
     private final UniFiDeviceCache devicesCache = new UniFiDeviceCache();
     private final UniFiClientCache clientsCache = new UniFiClientCache();
@@ -55,6 +57,7 @@ public class UniFiControllerCache {
 
     public void clear() {
         sitesCache.clear();
+        networksCache.clear();
         wlansCache.clear();
         devicesCache.clear();
         clientsCache.clear();
@@ -75,6 +78,20 @@ public class UniFiControllerCache {
 
     public Collection<UniFiSite> getSites() {
         return sitesCache.values();
+    }
+
+    // Networks Cache
+
+    public void putNetworks(final UniFiNetwork @Nullable [] networks) {
+        networksCache.putAll(networks);
+    }
+
+    public @Nullable UniFiNetwork getNetwork(@Nullable final String id) {
+        return networksCache.get(id);
+    }
+
+    public Collection<UniFiNetwork> getNetworks() {
+        return networksCache.values();
     }
 
     // Wlans Cache

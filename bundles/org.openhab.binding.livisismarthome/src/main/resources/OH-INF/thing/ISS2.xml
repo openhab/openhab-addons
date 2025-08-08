@@ -11,7 +11,7 @@
 
 		<label>In Wall Smart Switch (ISS2)</label>
 		<description>An in wall switch with push buttons that can be switched on and off.</description>
-
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switchActuator"/>
 			<channel id="button1" typeId="system.button"/>

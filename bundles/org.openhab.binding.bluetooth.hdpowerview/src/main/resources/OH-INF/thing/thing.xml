@@ -14,6 +14,7 @@
 
 		<label>PowerView Shade</label>
 		<description>Hunter Douglas (Luxaflex) PowerView Gen3 Shade</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 
 		<channels>
 			<channel id="primary" typeId="primary"/>
@@ -58,6 +59,10 @@
 		<label>Position</label>
 		<description>The vertical position of the shade</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -66,6 +71,10 @@
 		<label>Secondary Position</label>
 		<description>The secondary vertical position (on top-down/bottom-up shades)</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -74,6 +83,10 @@
 		<label>Tilt</label>
 		<description>The tilt of the slats in the shade</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%.1f %%"/>
 	</channel-type>
 

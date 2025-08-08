@@ -301,7 +301,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
         if (configurationError.isBlank()) {
             updateVersion();
-            logger.trace("No configuration error");
+            logger.trace("Configuration OK.");
             return true;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);

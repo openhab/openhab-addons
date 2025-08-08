@@ -6,6 +6,7 @@
 
 	<bridge-type id="api">
 		<label>Air Quality API</label>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
@@ -22,6 +23,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Air Quality Station</label>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="aqi" typeId="aqi"/>
@@ -134,7 +136,8 @@
 		<description>@text/alertLevelChannelDescription</description>
 		<category>error</category>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -176,6 +179,10 @@
 		<label>@text/dewPointLabel</label>
 		<description>@text/dewPointDescription</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

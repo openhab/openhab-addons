@@ -13,10 +13,13 @@
 package org.openhab.binding.avmfritz.internal.dto;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
@@ -25,9 +28,19 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
+import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseThingHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingDeviceHandler;
+import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * Tests for {@link DeviceListModel}.
@@ -129,8 +142,21 @@ public class AVMFritzDeviceListModelTest {
                         <interfaces>512,513</interfaces>
                     </etsiunitinfo>
                 </device>\
+                <device identifier="XXXXX-XXXXXXX-X" id="23" functionbitmask="130" fwversion="03.65" manufacturer="AVM" productname="FRITZ!Smart Energy 250">
+                    <present>1</present>
+                    <txbusy>0</txbusy>
+                    <name>FRITZ!Smart Energy 250 #8</name>
+                    <battery>90</battery>
+                    <batterylow>0</batterylow>
+                    <powermeter>
+                        <voltage>0</voltage>
+                        <power>532000</power>
+                        <energy>5921</energy>
+                    </powermeter>
+                </device>
             </devicelist>\
                 """;
+
         //@formatter:on
         XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
         Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
@@ -140,7 +166,7 @@ public class AVMFritzDeviceListModelTest {
     @Test
     public void validateDeviceListModel() {
         assertNotNull(devices);
-        assertEquals(18, devices.getDevicelist().size());
+        assertEquals(19, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -276,6 +302,46 @@ public class AVMFritzDeviceListModelTest {
         assertNull(device.getHkr());
 
         assertNull(device.getLevelControlModel());
+    }
+
+    @Test
+    public void validateSmartEnergy250() {
+        Optional<AVMFritzBaseModel> optionalDevice = findModel("FRITZ!Smart Energy 250");
+        assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
+
+        DeviceModel device = (DeviceModel) optionalDevice.get();
+        assertEquals("FRITZ!Smart Energy 250", device.getProductName());
+        assertEquals("XXXXX-XXXXXXX-X", device.getIdentifier());
+        assertEquals("23", device.getDeviceId());
+        assertEquals("03.65", device.getFirmwareVersion());
+        assertEquals("AVM", device.getManufacturer());
+
+        assertEquals(1, device.getPresent());
+        assertEquals("FRITZ!Smart Energy 250 #8", device.getName());
+        assertTrue(device.isPowermeter());
+
+        assertFalse(device.isHANFUNButton());
+        assertFalse(device.isHANFUNAlarmSensor());
+        assertFalse(device.isButton());
+        assertFalse(device.isHeatingThermostat());
+        assertFalse(device.isTemperatureSensor());
+        assertFalse(device.isSwitchableOutlet());
+        assertFalse(device.isDectRepeater());
+        assertFalse(device.hasMicrophone());
+        assertFalse(device.isHANFUNUnit());
+        assertFalse(device.isHANFUNOnOff());
+        assertFalse(device.isHANFUNBlinds());
+        assertFalse(device.isHumiditySensor());
+
+        assertEquals(new BigDecimal("90"), device.getBattery());
+        assertEquals(BatteryModel.BATTERY_OFF, device.getBatterylow());
+
+        PowerMeterModel powerMeter = device.getPowermeter();
+        assertNotNull(powerMeter);
+        assertEquals(new BigDecimal("0.000"), powerMeter.getVoltage());
+        assertEquals(new BigDecimal("532.000"), powerMeter.getPower());
+        assertEquals(new BigDecimal("5921"), powerMeter.getEnergy());
     }
 
     @Test
@@ -963,5 +1029,56 @@ public class AVMFritzDeviceListModelTest {
         assertNotNull(model.getNextchange());
         assertEquals(1484341200, model.getNextchange().getEndperiod());
         assertEquals(new BigDecimal(28), model.getNextchange().getTchange());
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testCallbacks() {
+        AVMFritzBaseThingHandler thingHandler0 = mock(AVMFritzHeatingDeviceHandler.class);
+        AVMFritzBaseThingHandler thingHandler1 = mock(AVMFritzHeatingDeviceHandler.class);
+        AVMFritzBaseThingHandler thingHandler2 = mock(AVMFritzHeatingDeviceHandler.class);
+
+        Thing thing0 = mock(Thing.class);
+        Thing thing1 = mock(Thing.class);
+        Thing thing2 = mock(Thing.class);
+
+        when(thing0.getUID()).thenReturn(new ThingUID("fritz:thing:thing0"));
+        when(thing1.getUID()).thenReturn(new ThingUID("fritz:thing:thing1"));
+        when(thing2.getUID()).thenReturn(new ThingUID("fritz:thing:thing2"));
+
+        when(thing0.getHandler()).thenReturn(thingHandler0);
+        when(thing1.getHandler()).thenReturn(thingHandler1);
+        when(thing2.getHandler()).thenReturn(thingHandler2);
+
+        when(thingHandler0.getIdentifier()).thenReturn("087610000437");
+        when(thingHandler1.getIdentifier()).thenReturn("087610000436");
+        when(thingHandler2.getIdentifier()).thenReturn("087610000435");
+
+        when(thingHandler0.getThing()).thenReturn(thing0);
+        when(thingHandler1.getThing()).thenReturn(thing1);
+        when(thingHandler2.getThing()).thenReturn(thing2);
+
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getUID()).thenReturn(new ThingUID("fritz:box:aardvark"));
+        when(bridge.getThings()).thenReturn(List.of(thing0, thing1, thing2));
+
+        HttpClient httpClient = mock(HttpClient.class);
+        AVMFritzDynamicCommandDescriptionProvider cDP = mock(AVMFritzDynamicCommandDescriptionProvider.class);
+        AVMFritzBaseBridgeHandler bridgeHandler = new BoxHandler(bridge, httpClient, cDP);
+
+        bridgeHandler.childHandlerInitialized(thingHandler0, thing0);
+        bridgeHandler.childHandlerInitialized(thingHandler1, thing1);
+        bridgeHandler.childHandlerInitialized(thingHandler2, thing2);
+
+        AVMFritzDiscoveryService discoveryService = mock(AVMFritzDiscoveryService.class);
+        bridgeHandler.registerStatusListener(discoveryService);
+
+        bridgeHandler.onDeviceListAdded(devices.getDevicelist());
+
+        verify(thingHandler0, times(1)).onDeviceUpdated(any(), any());
+        verify(thingHandler1, times(1)).onDeviceUpdated(any(), any());
+        verify(thingHandler2, times(1)).onDeviceUpdated(any(), any());
+
+        verify(discoveryService, times(devices.getDevicelist().size() - 3)).onDeviceAdded(any());
     }
 }

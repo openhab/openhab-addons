@@ -14,8 +14,7 @@ package org.openhab.binding.teslapowerwall.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Class for holding the set of parameters used to read the battery soe.
@@ -26,18 +25,12 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class GridStatus {
 
+    @SerializedName("grid_status")
     public String gridStatus = "";
-    public Boolean gridServices = false;
+
+    @SerializedName("grid_services_active")
+    public boolean gridServicesActive;
 
     private GridStatus() {
-    }
-
-    public static GridStatus parse(String response) {
-        /* parse json string */
-        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-        GridStatus info = new GridStatus();
-        info.gridStatus = jsonObject.get("grid_status").getAsString();
-        info.gridServices = jsonObject.get("grid_services_active").getAsString().equalsIgnoreCase("true");
-        return info;
     }
 }

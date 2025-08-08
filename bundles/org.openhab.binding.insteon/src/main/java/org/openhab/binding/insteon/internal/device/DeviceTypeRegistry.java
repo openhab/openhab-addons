@@ -39,6 +39,9 @@ public class DeviceTypeRegistry extends InsteonResourceLoader {
     private static final DeviceTypeRegistry DEVICE_TYPE_REGISTRY = new DeviceTypeRegistry();
     private static final String RESOURCE_NAME = "/device-types.xml";
 
+    private static final List<String> EXCLUDED_BASE_FEATURES = List.of("NetworkBridge_Hub", "NetworkBridge_PLM",
+            "X10_Dimmer", "X10_Sensor", "X10_Switch");
+
     private Map<String, DeviceType> deviceTypes = new LinkedHashMap<>();
     private Map<String, FeatureEntry> baseFeatures = new LinkedHashMap<>();
 
@@ -135,8 +138,8 @@ public class DeviceTypeRegistry extends InsteonResourceLoader {
                 }
             }
         }
-        // add base features if device type not network brige or x10 categories
-        if (!name.startsWith("NetworkBridge") && !name.startsWith("X10")) {
+        // add base features if device type not in excluded list
+        if (!EXCLUDED_BASE_FEATURES.contains(name)) {
             baseFeatures.forEach(features::putIfAbsent);
         }
         deviceTypes.put(name, new DeviceType(name, flags, features, links));

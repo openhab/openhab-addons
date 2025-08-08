@@ -7,7 +7,7 @@
 	<bridge-type id="squeezeboxserver">
 		<label>SqueezeBox Server</label>
 		<description>This is a SqueezeBox Server instance.</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="favoritesList" typeId="favoritesList"/>
 		</channels>
@@ -54,7 +54,7 @@
 
 		<label>SqueezeBox Player</label>
 		<description>This is a SqueezeBox Player instance</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="mute" typeId="mute"/>
@@ -94,10 +94,6 @@
 
 		<properties>
 			<property name="vendor">Logitech</property>
-			<property name="modelId"></property>
-			<property name="name"></property>
-			<property name="uid"></property>
-			<property name="ip"></property>
 			<property name="thingTypeVersion">1</property>
 		</properties>
 
@@ -156,6 +152,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of your device</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%">
 		</state>
 	</channel-type>
@@ -189,6 +189,10 @@
 		<label>Control</label>
 		<description>Control the Zone Player, e.g. start/stop/next/previous/ffward/rewind</description>
 		<category>Player</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="stream" advanced="true">
 		<item-type>String</item-type>
@@ -221,6 +225,10 @@
 		<label>Current Playing Time</label>
 		<description>Current Playing Time</description>
 		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="duration">
@@ -228,6 +236,10 @@
 		<label>Track Duration</label>
 		<description>Duration of Current Track (in seconds)</description>
 		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentPlaylistShuffle">
@@ -272,54 +284,90 @@
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Album name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="artist">
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Artist name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="year" advanced="true">
 		<item-type>String</item-type>
 		<label>Year</label>
 		<description>Release year of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="genre" advanced="true">
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>Genre name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="albumArtist" advanced="true">
 		<item-type>String</item-type>
 		<label>Album Artist</label>
 		<description>Main artist for the album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="trackArtist" advanced="true">
 		<item-type>String</item-type>
 		<label>Track Artist</label>
 		<description>Main artist for the track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="band" advanced="true">
 		<item-type>String</item-type>
 		<label>Band/Orchestra</label>
 		<description>Band/orchestra performing the work</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="composer" advanced="true">
 		<item-type>String</item-type>
 		<label>Composer</label>
 		<description>Original composer of the work</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="conductor" advanced="true">
 		<item-type>String</item-type>
 		<label>Conductor</label>
 		<description>Conductor</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="coverartdata">
@@ -349,6 +397,10 @@
 		<item-type>Number</item-type>
 		<label>Sleep</label>
 		<description>Power off player in specified number of minutes</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state pattern="%d"></state>
 	</channel-type>
 </thing:thing-descriptions>

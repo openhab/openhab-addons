@@ -7,6 +7,7 @@
 	<bridge-type id="json">
 		<label>WLED via JSON API</label>
 		<description>A connection to a WLED device controlled via the JSON API.</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="globalBrightness" typeId="globalBrightness"/>
 			<channel id="playlists" typeId="playlists"/>
@@ -64,6 +65,7 @@
 		<description>Controls an entire LED strip, or a section of the strip if the LED string is split into multiple
 			segments.</description>
 		<category>ColorLight</category>
+		<semantic-equipment-tag>LightStrip</semantic-equipment-tag>
 		<channels>
 			<channel id="masterControls" typeId="masterControls"/>
 			<channel id="segmentBrightness" typeId="segmentBrightness"/>
@@ -97,6 +99,10 @@
 		<label>Global Brightness</label>
 		<description>Allows you to fade and turn all segments ON and OFF at the same time</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="masterControls">
@@ -106,7 +112,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -115,6 +121,10 @@
 		<label>Segment Brightness</label>
 		<description>Changes the brightness of the whole segment</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="primaryColor" advanced="true">

@@ -4,7 +4,7 @@ This binding is intended to monitor a local folder, FTP and S3 bucket and their 
 
 ## Supported Things
 
-The binding support three types of things: `localfolder`, `ftpfolder` and `s3bucket`.
+The binding support three types of things: `localfolder`, `ftpfolder`, `s3bucket` and `azureblob`.
 
 ## Thing Configuration
 
@@ -44,6 +44,17 @@ The `s3bucket` thing has the following configuration options:
 | awsSecret      | AWS Secret           | AWS secret                                         | no       | n/a           |
 | awsRegion      | AWS Region           | AWS region of S3 bucket                            | yes      | ""            |
 | s3Anonymous    | Anonymous Connection | Connect anonymously (works for public buckets)     | yes      | true          |
+
+The `azureblob` thing has the following configuration options:
+
+| Parameter          | Name                      | Description                                             | Required | Default value |
+|--------------------|---------------------------|---------------------------------------------------------|----------|---------------|
+| azureAccountName   | Azure Account Name        | Name of the A zure account where the conaner located    | yes      | n/a           |
+| azureContainerName | Azure Blob Container Name | Name of the Azure container to be watched               | yes      | n/a           |
+| contanerPath       | Container Path            | Container path (folder) to be monitored                 | no       | ""            |
+| pollIntervalAzure  | Polling Interval          | Interval for polling Azure contaner changes, in seconds | yes      | 60            |
+| azureAnonymous     | Anonymous Connection      | Connect anonymously (works for public containers)       | no       | false         |
+| azureAccessKey     | Azure Access              | Access Key for Azure storage account                    | no       | ""            |
 
 ## Events
 
@@ -96,5 +107,16 @@ when
     Channel "folderwatcher:s3bucket:myS3bucket:newfile" triggered
 then
     logInfo("NewS3File", receivedEvent.toString())
+end
+```
+
+Azure Blob container example:
+
+```java
+rule "New Azure file"
+when
+    Channel "folderwatcher:azureblob:myAzureBlob:newfile" triggered
+then
+    logInfo("NewAzureFile", receivedEvent.toString())
 end
 ```

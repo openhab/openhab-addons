@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Precipitation Forecast</label>
 		<description>Provides precipitation forecast for the next hour</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="update-time" typeId="timestamp"/>

@@ -13,8 +13,8 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyComponents.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
@@ -154,9 +154,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         this.httpClient = httpClient;
 
         // Create thing handler depending on device generation
-        String thingType = getThingType();
-        blu = ShellyDeviceProfile.isBluSeries(thingType);
-        gen2 = ShellyDeviceProfile.isGeneration2(thingType);
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        blu = ShellyDeviceProfile.isBluSeries(thingTypeUID);
+        gen2 = ShellyDeviceProfile.isGeneration2(thingTypeUID);
         if (blu) {
             this.api = new ShellyBluApi(thingName, thingTable, this);
         } else if (gen2) {
@@ -185,7 +185,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void initialize() {
         // start background initialization:
         initJob = scheduler.schedule(() -> {
-            boolean start = true;
+            boolean start = false;
             try {
                 if (initializeThingConfig()) {
                     logger.debug("{}: Config: {}", thingName, config);
@@ -193,8 +193,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
             } catch (ShellyApiException e) {
                 start = handleApiException(e);
-            } catch (IllegalArgumentException e) {
-                logger.debug("{}: Unable to initialize, retrying later", thingName, e);
             } finally {
                 // even this initialization failed we start the status update
                 // the updateJob will then try to auto-initialize the thing
@@ -294,7 +292,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         cache.clear();
         resetStats();
 
-        profile.initFromThingType(thingType);
+        profile.initFromThingType(thing.getThingTypeUID());
         logger.debug(
                 "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
                 thingName, getThing().getLabel(), thingType, config.deviceAddress.toUpperCase(), gen2, profile.isBlu,
@@ -333,8 +331,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         api.setConfig(thingName, config);
-        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType, profile.device);
-        tmpPrf.initFromThingType(thingType);
+        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
+        tmpPrf.initFromThingType(thing.getThingTypeUID());
         String mode = getString(tmpPrf.device.mode);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, mode);
@@ -356,7 +354,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             tmpPrf.updatePeriod = "m".equalsIgnoreCase(getString(tmpPrf.settings.sleepMode.unit))
                     ? tmpPrf.settings.sleepMode.period * 60 // minutes
                     : tmpPrf.settings.sleepMode.period * 3600; // hours
-            tmpPrf.updatePeriod += 60; // give 1min extra
+            if (tmpPrf.isSmoke) {
+                tmpPrf.updatePeriod += 1800; // for smoke sensor give 30min extra
+            } else {
+                tmpPrf.updatePeriod += 60; // give 1min extra
+            }
         } else if (tmpPrf.settings.coiot != null && tmpPrf.settings.coiot.updatePeriod != null) {
             // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
             tmpPrf.updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS,
@@ -608,7 +610,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 && prf.status.rangeExtender.apClients != null) {
             for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
                 String secondaryIp = config.deviceIp + ":" + client.mport.toString();
-                String name = "shellyplusrange-" + client.mac.replaceAll(":", "");
+                String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
                 DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
                         bindingConfig, httpClient, messages);
                 if (result != null) {
@@ -1003,6 +1005,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     protected boolean initializeThingConfig() {
         thingType = getThing().getThingTypeUID().getId();
+        if (THING_TYPE_SHELLYUNKNOWN.equals(getThing().getThingTypeUID())) {
+            setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR, "offline.device-unsupported");
+            return false;
+        }
+
         final Map<String, String> properties = getThing().getProperties();
         thingName = getString(properties.get(PROPERTY_SERVICE_NAME));
         if (thingName.isEmpty()) {
@@ -1488,7 +1495,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         try {
             refreshSettings |= forceRefresh;
             if (refreshSettings) {
-                profile = api.getDeviceProfile(thingType, null);
+                profile = api.getDeviceProfile(thing.getThingTypeUID(), null);
                 if (!isThingOnline()) {
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }

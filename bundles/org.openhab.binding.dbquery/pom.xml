@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.dbquery</artifactId>
@@ -15,9 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: DBQuery Binding</name>
 
   <properties>
-    <bnd.importpackage>
-      !javax.annotation;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!org.bouncycastle.*,!org.openjsse.*
-    </bnd.importpackage>
+    <bnd.importpackage>!javax.annotation;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!org.bouncycastle.*,!org.openjsse.*</bnd.importpackage>
     <influx2.version>7.0.0</influx2.version>
     <io.reactivex.rxjava3>3.1.8</io.reactivex.rxjava3>
     <retrofit.version>2.10.0</retrofit.version>
@@ -31,8 +29,8 @@
       <version>${influx2.version}</version>
     </dependency>
     <dependency>
-      <artifactId>influxdb-client-core</artifactId>
       <groupId>com.influxdb</groupId>
+      <artifactId>influxdb-client-core</artifactId>
       <version>${influx2.version}</version>
     </dependency>
     <dependency>
@@ -62,8 +60,8 @@
       <version>${retrofit.version}</version>
     </dependency>
     <dependency>
-      <artifactId>retrofit</artifactId>
       <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>retrofit</artifactId>
       <version>${retrofit.version}</version>
     </dependency>
     <dependency>
@@ -72,9 +70,10 @@
       <version>${retrofit.version}</version>
     </dependency>
 
-    <dependency> <!-- also used for querydb library -->
-      <artifactId>gson</artifactId>
+    <dependency>
       <groupId>com.google.code.gson</groupId>
+      <!-- also used for querydb library -->
+      <artifactId>gson</artifactId>
       <version>${gson.version}</version>
     </dependency>
     <dependency>
@@ -83,13 +82,13 @@
       <version>3.0.2</version>
     </dependency>
     <dependency>
-      <artifactId>gson-fire</artifactId>
       <groupId>io.gsonfire</groupId>
+      <artifactId>gson-fire</artifactId>
       <version>1.8.0</version>
     </dependency>
     <dependency>
-      <artifactId>okio</artifactId>
       <groupId>com.squareup.okio</groupId>
+      <artifactId>okio</artifactId>
       <version>${okio.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -100,23 +99,23 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <artifactId>commons-csv</artifactId>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
       <version>1.10.0</version>
     </dependency>
     <dependency>
-      <artifactId>json</artifactId>
       <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
       <version>20231013</version>
     </dependency>
     <dependency>
-      <artifactId>okhttp</artifactId>
       <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
       <version>${okhttp3.version}</version>
     </dependency>
     <dependency>
-      <artifactId>logging-interceptor</artifactId>
       <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>logging-interceptor</artifactId>
       <version>${okhttp3.version}</version>
     </dependency>
     <dependency>
@@ -125,8 +124,8 @@
       <version>${io.reactivex.rxjava3}</version>
     </dependency>
     <dependency>
-      <artifactId>reactive-streams</artifactId>
       <groupId>org.reactivestreams</groupId>
+      <artifactId>reactive-streams</artifactId>
       <version>1.0.4</version>
     </dependency>
     <dependency>

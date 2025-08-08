@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="senseenergy"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sense Home Energy Monitor Report Thing -->
+	<thing-type id="proxy-device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="monitor"/>
+		</supported-bridge-type-refs>
+
+		<label>Proxy Device</label>
+		<description>
+			A proxy device to notify the sense monitor of real-time power draw. All channels are "one-way" in that
+			they only report their settings to Sense.
+		</description>
+
+		<channels>
+			<channel id="proxy-device-power" typeId="proxy-device-power"/>
+			<channel id="proxy-device-switch" typeId="proxy-device-switch"/>
+			<channel id="proxy-device-dimmer" typeId="proxy-device-dimmer"/>
+			<channel id="proxy-device-state" typeId="proxy-device-state"/>
+		</channels>
+
+		<config-description>
+			<parameter name="powerLevels" type="text">
+				<label>Power Levels</label>
+				<description>Power levels for different states. Examples: "5W" (static full ON power), ".2W, 5W" (for static power
+					range), "OFF=.2W, LOW=2W, HIGH=5W" (for static power in different states), ".2,2W,2.5W,3W" (for non-linear dimmer
+					rage".</description>
+			</parameter>
+
+			<parameter name="voltage" type="decimal" unit="V">
+				<label>Voltage</label>
+				<description>Supply voltage for device.</description>
+				<unitLabel>V</unitLabel>
+				<default>120</default>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="macAddress" type="text">
+				<context>network-address</context>
+				<label>Spoof'd MAC Address</label>
+				<description>A spoof'ed MAC address for this proxy device.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="senseName" type="text">
+				<label>Sense Name</label>
+				<description>Name of device to be used by Sense.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="proxy-device-power">
+		<item-type>Number:Power</item-type>
+		<label>Power Level</label>
+		<description>Realtime power to send to Sense. Note, if you are using the Switch, Dimmer or State channels, it is not
+			necessary to use this channel.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="proxy-device-switch">
+		<item-type>Switch</item-type>
+		<label>Device Switch</label>
+		<description>OnOff switch to notify when device is On/Off. This will report to sense the full ON or full OFF values
+			specified.
+		</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="proxy-device-dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Device Dimmer</label>
+		<description>Dimmer to notify the current power. This will report to sense an interpolated value based on the
+			specified levels.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="proxy-device-state">
+		<item-type>String</item-type>
+		<label>Device State</label>
+		<description>Current device state. This will report to sense the specified power based on the device state.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+</thing:thing-descriptions>

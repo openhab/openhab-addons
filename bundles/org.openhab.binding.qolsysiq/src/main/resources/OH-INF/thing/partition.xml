@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Partition</label>
 		<description>A Qolsys IQ Partition</description>
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<channel id="armState" typeId="armState"/>
 			<channel id="alarmState" typeId="alarmState"/>
@@ -45,6 +46,10 @@
 		<description>Reports the current partition arm state or sends an arm or disarm command to the system. For security
 			codes, append the 6 digit code to the command separated by a colon (e.g. 'DISARM:123456')</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ALARM">In Alarm</option>
@@ -69,6 +74,9 @@
 		<label>Partition Alarm State</label>
 		<description>Reports on the current alarm state, or triggers an instant alarm.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUXILIARY">Auxiliary</option>

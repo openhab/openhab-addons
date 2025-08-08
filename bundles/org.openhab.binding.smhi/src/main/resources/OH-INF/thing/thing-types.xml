@@ -7,7 +7,7 @@
 	<thing-type id="forecast">
 		<label>SMHI Weather Forecast</label>
 		<description>Gets weather forecasts from SMHI</description>
-
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="hour_0" typeId="hourlyForecast">
 				<label>Current Hour</label>

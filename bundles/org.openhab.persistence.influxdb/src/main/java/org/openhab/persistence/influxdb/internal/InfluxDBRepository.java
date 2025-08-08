@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.persistence.FilterCriteria;
 
 /**
@@ -63,10 +64,11 @@ public interface InfluxDBRepository {
      * Executes Flux query
      *
      * @param filter the query filter
+     * @param alias
      * @return Query results
-     * 
+     *
      */
-    List<InfluxRow> query(FilterCriteria filter, String retentionPolicy);
+    List<InfluxRow> query(FilterCriteria filter, String retentionPolicy, @Nullable String alias);
 
     /**
      * Write points to database

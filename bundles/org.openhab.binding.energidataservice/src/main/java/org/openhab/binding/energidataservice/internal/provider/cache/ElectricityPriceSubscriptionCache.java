@@ -16,17 +16,20 @@ import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBi
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.NavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Electricity price specific {@link SubscriptionDataCache} implementation.
+ * All price durations must be the same.
  *
  * @author Jacob Laursen - Initial contribution
  */
@@ -35,13 +38,13 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
 
     public static final int NUMBER_OF_HISTORIC_HOURS = 24;
 
-    protected final Map<Instant, BigDecimal> priceMap;
+    protected final NavigableMap<Instant, BigDecimal> priceMap;
 
     protected final Clock clock;
 
-    protected ElectricityPriceSubscriptionCache(Clock clock, int initialCapacity) {
+    protected ElectricityPriceSubscriptionCache(Clock clock) {
         this.clock = clock.withZone(NORD_POOL_TIMEZONE);
-        this.priceMap = new ConcurrentHashMap<>(initialCapacity);
+        this.priceMap = new ConcurrentSkipListMap<>();
     }
 
     @Override
@@ -68,19 +71,39 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
      */
     @Override
     public @Nullable BigDecimal get(Instant time) {
-        return priceMap.get(getHourStart(time));
+        Map.Entry<Instant, BigDecimal> entry = priceMap.floorEntry(time);
+        if (entry == null) {
+            return null;
+        }
+
+        Instant validUntil = getValidUntil(entry.getKey());
+        if (validUntil != null && time.isBefore(validUntil)) {
+            return entry.getValue();
+        }
+
+        return null;
     }
 
-    /**
-     * Get number of future prices including current hour.
-     * 
-     * @return number of future prices
-     */
-    @Override
-    public long getNumberOfFuturePrices() {
-        Instant currentHourStart = getCurrentHourStart();
+    private @Nullable Instant getValidUntil(Instant current) {
+        Instant next = getPriceMapHigherKey(current);
+        if (next != null) {
+            return next;
+        }
 
-        return priceMap.entrySet().stream().filter(p -> !p.getKey().isBefore(currentHourStart)).count();
+        Instant previous = getPriceMapLowerKey(current);
+        if (previous != null) {
+            return current.plus(Duration.between(previous, current));
+        }
+
+        return null;
+    }
+
+    private @Nullable Instant getPriceMapHigherKey(Instant current) {
+        return priceMap.higherKey(current);
+    }
+
+    private @Nullable Instant getPriceMapLowerKey(Instant current) {
+        return priceMap.lowerKey(current);
     }
 
     /**
@@ -90,15 +113,56 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
      */
     @Override
     public boolean areHistoricPricesCached() {
-        return arePricesCached(getCurrentHourStart().minus(1, ChronoUnit.HOURS));
+        return arePricesCached(getCurrentHourStart());
     }
 
+    /**
+     * Check if prices are cached until provided {@link Instant}.
+     * The default gap expected between prices is one hour.
+     * It is assumed that gaps can only become shorter, not longer.
+     * For example, after day-ahead price transition to 15-minutes
+     * resolution, we no longer expect one hour between prices.
+     *
+     * @param end Check until this time (exclusive)
+     * @return true if prices are fully cached
+     */
     protected boolean arePricesCached(Instant end) {
-        for (Instant hourStart = getFirstHourStart(); hourStart.compareTo(end) <= 0; hourStart = hourStart.plus(1,
-                ChronoUnit.HOURS)) {
-            if (priceMap.get(hourStart) == null) {
+        Instant current = getFirstHourStart();
+        Instant previous = null;
+        Duration maxGap = Duration.ofHours(1);
+
+        while (current.isBefore(end)) {
+            if (!priceMap.containsKey(current)) {
                 return false;
             }
+
+            Instant next = getPriceMapHigherKey(current);
+            if (next != null) {
+                Duration gap = Duration.between(current, next);
+                if (gap.compareTo(maxGap) > 0) {
+                    return false;
+                }
+                if (gap.compareTo(maxGap) < 0) {
+                    maxGap = gap;
+                }
+            } else {
+                // No next entry — infer end time of final segment
+                if (previous != null) {
+                    Instant prev = previous;
+                    Duration gap = Duration.between(prev, current);
+                    if (current.plus(gap).isBefore(end)) {
+                        return false;
+                    }
+                } else {
+                    // Only one entry, can't infer duration
+                    return false;
+                }
+
+                break;
+            }
+
+            previous = current;
+            current = next;
         }
 
         return true;

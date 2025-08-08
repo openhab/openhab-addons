@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Myfox Camera</label>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="cloud_status" typeId="cloud_status"></channel>
 			<channel id="shutter" typeId="shutter"></channel>

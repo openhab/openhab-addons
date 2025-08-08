@@ -7,7 +7,7 @@
 	<thing-type id="anthem">
 		<label>Anthem</label>
 		<description>Thing for Anthem AV processor</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>
 			<channel-group id="1" typeId="zone">
@@ -20,6 +20,10 @@
 				<description>Controls zone 2 of the processor</description>
 			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">

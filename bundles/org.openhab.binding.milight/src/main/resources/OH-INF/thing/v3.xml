@@ -8,6 +8,7 @@
 		<label>Milight Bridge (first Edition)</label>
 		<description>A Milight/Easybulb bridge. This bridge cannot handle newer light bulbs (2016+) of the aforementioned
 			manufacturers.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="host" type="text">
@@ -70,6 +71,7 @@
 		<description>RGB bulb with white channel. No saturation control. If the set saturation is below a threshold of 50%,
 			the bulb turns into white mode.</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lednightmode" typeId="lednightmode"/>
@@ -97,6 +99,7 @@
 		<label>Cold/warm White Bulb (first Edition)</label>
 		<description>White bulb for the older bridge (up to 2016)</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lednightmode" typeId="lednightmode"/>

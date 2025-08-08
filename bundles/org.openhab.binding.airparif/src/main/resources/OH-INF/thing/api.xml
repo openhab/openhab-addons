@@ -10,6 +10,7 @@
 			Bridge to the AirParif API Portal. In order to receive the data, you must register an account on
 			https://www.airparif.fr/contact and receive your API token.
 		</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="pollens" typeId="bridge-pollens"/>

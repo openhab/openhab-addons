@@ -1,0 +1,13 @@
+{
+  viewer {
+    home(id: \"%s\") {
+      currentSubscription {
+        priceInfo {
+          current {
+            currency
+          }
+        }
+      }
+    }
+  }
+}

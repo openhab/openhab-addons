@@ -51,6 +51,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
@@ -71,6 +72,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -108,6 +111,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             THING_TYPE_ZONE);
 
     private static final Set<ResourceType> SUPPORTED_SCENE_TYPES = Set.of(ResourceType.SCENE, ResourceType.SMART_SCENE);
+
+    private static final Set<Archetype> STRIPLIGHT_ARCHETYPES = Set.of(Archetype.HUE_LIGHTSTRIP,
+            Archetype.HUE_LIGHTSTRIP_TV, Archetype.HUE_TUBE, Archetype.STRING_LIGHT, Archetype.CHRISTMAS_TREE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
@@ -1069,6 +1075,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateServiceContributors();
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
+                updateEquipmentTag();
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1408,6 +1415,56 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 newProperties.remove(PROPERTY_LEGACY_THING_UID);
 
                 updateThing(editBuilder.withProperties(newProperties).build());
+            }
+        }
+    }
+
+    /**
+     * Update the thing's semantic equipment tag. The main determinant for the equipment type is the supported channels.
+     * For lights use the product archetype to split between light bulbs and strip lights. Rooms and Zones are
+     * considered to be zones.
+     */
+    private void updateEquipmentTag() {
+        if (!disposing) {
+            int sensorCount = 0;
+            SemanticTag equipmentTag = null;
+
+            if (Set.of(ResourceType.ROOM, ResourceType.ZONE).contains(thisResource.getType())) {
+                equipmentTag = Equipment.ZONE;
+            }
+            if ((thing.getChannel(CHANNEL_2_COLOR) != null) || (thing.getChannel(CHANNEL_2_BRIGHTNESS) != null)
+                    || (thing.getChannel(CHANNEL_2_SWITCH) != null)) {
+                equipmentTag = (thisResource.getProductData() instanceof ProductData productData)
+                        && STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype()) ? Equipment.LIGHT_STRIP
+                                : Equipment.LIGHTBULB;
+            }
+            if (thing.getChannel(CHANNEL_2_BUTTON_LAST_EVENT) != null) {
+                equipmentTag = Equipment.BUTTON;
+            }
+            if (thing.getChannel(CHANNEL_2_ROTARY_STEPS) != null) {
+                equipmentTag = Equipment.DIAL;
+            }
+            if (thing.getChannel(CHANNEL_2_SECURITY_CONTACT) != null) {
+                equipmentTag = Equipment.CONTACT_SENSOR;
+            }
+            if (thing.getChannel(CHANNEL_2_MOTION) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.MOTION_DETECTOR;
+            }
+            if (thing.getChannel(CHANNEL_2_LIGHT_LEVEL) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.ILLUMINANCE_SENSOR;
+            }
+            if (thing.getChannel(CHANNEL_2_TEMPERATURE) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.TEMPERATURE_SENSOR;
+            }
+            if (sensorCount > 1) {
+                equipmentTag = Equipment.SENSOR;
+            }
+            if (equipmentTag != null) {
+                logger.debug("{} -> updateEquipmentTag({})", resourceId, equipmentTag.getName());
+                updateThing(editThing().withSemanticEquipmentTag(equipmentTag).build());
             }
         }
     }

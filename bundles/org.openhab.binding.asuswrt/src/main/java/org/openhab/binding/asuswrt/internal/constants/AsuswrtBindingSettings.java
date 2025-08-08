@@ -37,9 +37,10 @@ public class AsuswrtBindingSettings {
     public static final Boolean HTTP_SSL_TRUST_ALL = true; // trust all ssl-certs
 
     public static final Integer COOKIE_LIFETIME_S = 3600; // lifetime of login-cookie
-    public static final Integer POLLING_INTERVAL_S_MIN = 5; // minimum polling interval
-    public static final Integer POLLING_INTERVAL_S_DEFAULT = 20; // default polling interval
-    public static final Integer RECONNECT_INTERVAL_S = 30; // interval trying try to reconnect to router
+    public static final Integer POLLING_INTERVAL_MIN_S = 5; // minimum polling interval
+    public static final Integer POLLING_INTERVAL_DEFAULT_S = 20; // default polling interval
+    public static final Integer RECONNECT_BACKOFF_START_S = 30;
+    public static final Integer RECONNECT_BACKOFF_MAX_S = 3000;
     public static final Integer DISCOVERY_TIMEOUT_S = 10; // discovery service timeout in s
     public static final Integer DISCOVERY_AUTOREMOVE_S = 1800; // discovery service remove things after x seconds
 

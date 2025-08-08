@@ -8,6 +8,7 @@
 		<label>Gateway Device</label>
 		<description>A WiFi connected gateway device (WN1900, GW1000, GW1100, WH2680, WH2650) to bridge Sensors</description>
 		<category>NetworkAppliance</category>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:fineoffsetweatherstation:gateway"/>
 	</bridge-type>
@@ -27,6 +28,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Maximum Wind Speed</label>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -91,7 +96,7 @@
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Ultraviolet</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -102,7 +107,7 @@
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Ultraviolet</tag>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -124,7 +129,7 @@
 		<category>AirQuality</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<tag>ParticulateMatter</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -135,7 +140,7 @@
 		<category>AirQuality</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<tag>ParticulateMatter</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -158,6 +163,7 @@
 		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Water</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

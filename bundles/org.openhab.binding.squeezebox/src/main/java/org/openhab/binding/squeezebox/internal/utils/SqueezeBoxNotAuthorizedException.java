@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.squeezebox.internal.utils;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception thrown when calling LMS command line interface, and
  * the LMS is set up to require authentication.
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class SqueezeBoxNotAuthorizedException extends Exception {
 
     private static final long serialVersionUID = -5190671725971757821L;

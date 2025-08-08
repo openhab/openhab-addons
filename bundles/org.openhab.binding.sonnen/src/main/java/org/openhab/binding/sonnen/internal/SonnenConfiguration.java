@@ -25,4 +25,5 @@ public class SonnenConfiguration {
     public String hostIP = "";
     public int refreshInterval = 30;
     public String authToken = "";
+    public int chargingPower = -1;
 }

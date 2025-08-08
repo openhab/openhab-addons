@@ -7,6 +7,7 @@
 	<bridge-type id="hub2">
 		<label>Insteon Hub 2</label>
 		<description>An Insteon Hub 2 that communicates with Insteon devices.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -44,6 +45,13 @@
 				<label>Device Poll Interval</label>
 				<description>Device poll interval in seconds.</description>
 				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="deviceResponseTimeoutInMinutes" type="integer" min="30" max="360">
+				<label>Device Response Timeout</label>
+				<description>Device response timeout in minutes before a device is considered offline.</description>
+				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
 

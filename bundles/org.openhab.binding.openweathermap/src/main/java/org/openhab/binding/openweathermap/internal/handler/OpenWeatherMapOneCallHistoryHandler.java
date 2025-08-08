@@ -305,6 +305,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
                     @Nullable
                     State tempstate = new QuantityType<>(historyData.getVisibility(), METRE).toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
+                    break;
                 case CHANNEL_RAIN:
                     Precipitation rain = historyData.getRain();
                     state = getQuantityTypeState(rain == null ? 0 : rain.get1h(), MILLI(METRE));

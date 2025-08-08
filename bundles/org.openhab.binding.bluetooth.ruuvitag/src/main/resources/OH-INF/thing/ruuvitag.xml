@@ -13,7 +13,7 @@
 
 		<label>RuuviTag SmartBeacon</label>
 		<description>A RuuviTag SmartBeacon</description>
-
+		<semantic-equipment-tag>Tracker</semantic-equipment-tag>
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="accelerationx" typeId="ruuvitag_accelerationx"/>
@@ -56,6 +56,10 @@
 	<channel-type id="ruuvitag_batteryVoltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_dataFormat" advanced="true">
@@ -66,6 +70,10 @@
 	<channel-type id="ruuvitag_humidity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_measurementSequenceNumber" advanced="true">
@@ -81,16 +89,28 @@
 	<channel-type id="ruuvitag_pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_txPower">
 		<item-type>Number:Power</item-type>
 		<label>TX Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -8,7 +8,7 @@
 	<bridge-type id="cloud">
 		<label>SleepIQ Cloud</label>
 		<description>The SleepIQ cloud service provides connections to all beds in an account.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">Select Comfort</property>
 		</properties>
@@ -40,6 +40,7 @@
 
 		<label>Single Chamber Bed</label>
 		<description>A Sleep Number bed with SleepIQ and a single air chamber</description>
+		<semantic-equipment-tag>Bed</semantic-equipment-tag>
 
 		<channel-groups>
 		<channel-group id="bed" typeId="chamberGroupType"/>
@@ -62,7 +63,7 @@
 
 		<label>Dual Chamber Bed</label>
 		<description>A Sleep Number bed with SleepIQ and two individual air chambers</description>
-
+		<semantic-equipment-tag>Bed</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="left" typeId="chamberGroupType"/>
 			<channel-group id="right" typeId="chamberGroupType"/>
@@ -117,6 +118,10 @@
 		<item-type>Switch</item-type>
 		<label>In Bed</label>
 		<description>The presence of a person or object on the chamber</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sleepNumberType">
@@ -129,6 +134,10 @@
 		<item-type>Number</item-type>
 		<label>Pressure</label>
 		<description>The current pressure inside the chamber</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%d kPa" readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastLinkType">
@@ -160,12 +169,20 @@
 		<item-type>Number:Time</item-type>
 		<label>Sleep Goal</label>
 		<description>The goal for the amount of sleep per night (in minutes)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="privacyMode">
 		<item-type>Switch</item-type>
 		<label>Privacy Mode</label>
 		<description>Enable/disable privacy mode</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="todaySleepIQType">
@@ -190,36 +207,60 @@
 		<item-type>String</item-type>
 		<label>Today's Message</label>
 		<description>The description of today's sleep quality</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="todaySleepDurationSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Duration</label>
 		<description>The total duration of sleep for today in seconds</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="todaySleepInBedSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep In Bed Duration</label>
 		<description>The total duration of time in bed in seconds</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="todaySleepOutOfBedSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Out Of Bed Duration</label>
 		<description>The total duration of time out of bed in seconds</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="todaySleepRestfulSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Restful Duration</label>
 		<description>The total duration of restful sleep for today in seconds</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="todaySleepRestlessSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Restless Duration</label>
 		<description>The total duration of restless sleep for today in seconds</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="monthlySleepIQType">
@@ -244,6 +285,10 @@
 		<item-type>Number</item-type>
 		<label>Preset</label>
 		<description>Bed position preset</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 		<state readOnly="false" min="1" max="6" step="1" pattern="%d">
 			<options>
 				<option value="1">Favorite</option>
@@ -259,24 +304,40 @@
 		<item-type>Number</item-type>
 		<label>Head Position</label>
 		<description>The position of the adjustable head</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 		<state readOnly="false" min="0" max="100" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="foundationPositionFootType">
 		<item-type>Number</item-type>
 		<label>Foot Position</label>
 		<description>The position of the adjustable foot</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 		<state readOnly="false" min="0" max="100" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightStandOutletType">
 		<item-type>Switch</item-type>
 		<label>Night Stand</label>
 		<description>The night stand outlet</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="underBedLightType">
 		<item-type>Switch</item-type>
 		<label>Under Bed Light</label>
 		<description>The under bed lighting</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 

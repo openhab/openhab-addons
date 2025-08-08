@@ -9,7 +9,18 @@ See below for a list of supported channels.
 Supports one TV, monitor or projector per thing, also corresponding to a unique serial port.
 The protocol supports daisy-chaining of serial devices.
 
-The LG serial command set appears to be similar on many models ([1], [5]), but not all commands will work on all models.
+This binding supports the following thing types:
+
+| Thing ID          | Description                                                                                           |
+|-------------------|-------------------------------------------------------------------------------------------------------|
+| lgtv              | Generic LG TV thing. This thing should be used when there is no proper thing defined for your device. |
+| lgtv-LV-series    | This thing supports the LED LCD TV models LV and LW except \*LV255C, \*LV355B, \*LV355C                  |
+| lgtv-LVx55-series | This thing supports the \*LV255C, \*LV355B, \*LV355C models                                              |
+| lgtv-LK-series    | This thing supports the LCD TV models LK                                                              |
+| lgtv-PW-series    | This thing supports the PLASMA TV models PW                                                           |
+| lgtv-M6503C       | This thing supports the M6503C monitor                                                                |
+
+The LG serial command set appears to be similar on many models ([\[1\]](#ref1), [\[5\]](#ref5)), but not all commands will work on all models.
 
 The control port on most TVs is a male DE-9 connector that requires a "Null modem" cable to connect to a serial port or USB to serial adapter.
 
@@ -32,10 +43,11 @@ No discovery supported; manual configuration is required.
 
 The thing has the following configuration parameters:
 
-| Parameter Label        | Parameter ID         | Description                                                                     | Accepted values  |
-|------------------------|----------------------|---------------------------------------------------------------------------------|------------------|
-| Serial Port            | port                 | Serial port to use for connecting to TV/monitor/projector.                      | Serial port name |
-| Set ID                 | setId                | Set ID configured in the TV. If 0, will send the commands to every chained TV.  | 0-99; default 1  |
+| Parameter Label        | Parameter ID         | Description                                                                     | Accepted values       |
+|------------------------|----------------------|---------------------------------------------------------------------------------|-----------------------|
+| Serial Port            | port                 | Serial port to use for connecting to TV/monitor/projector.                      | Serial port name      |
+| Refresh Interval       | refreshInterval      | Interval at which updates are pulled from the TV (in seconds).                  | 10-65535; default 120 |
+| Set ID                 | setId                | Set ID configured in the TV. If 0, will send the commands to every chained TV.  | 0-99; default 1       |
 
 It is necessary to specify the serial port used for communication.
 On Linux systems, this will usually be either `/dev/ttyS0`, `/dev/ttyUSB0` or `/dev/ttyACM0` (or a higher  number than `0` if multiple devices are present).
@@ -47,7 +59,7 @@ However, the item values for the Thing with Set ID 0 will never display the righ
 
 ## Channels
 
-The following channels are common to most TVs, taken from [4].
+The following channels are common to most TVs, taken from [\[4\]](#ref4).
 
 | Channel ID      | Command | Item Type | Description                                      |
 |-----------------|---------|-----------|--------------------------------------------------|
@@ -57,7 +69,7 @@ The following channels are common to most TVs, taken from [4].
 | volume-mute     | k e     | Switch    | Set mute on or off                               |
 
 As for others, please refer to the documentation of your device in the section named "Controlling the multiple product", "External control" or any section that refers to RS-232.
-If your device documentation doesn't give such information, you can look at the "LG protocol references" below and use the "Generic LG TV" thing which should contain all the different possible channels/commands.
+If your device documentation doesn't give such information, you can refer to the [LG protocol references](#lg-protocol-references) below and use the "Generic LG TV" thing which should contain all the different possible channels/commands.
 
 Note: Devices might not respond or return an error to some command when the device is powered off which can put items in an incorrect state until the device is turned on.
 For instance, getting the volume status when the device is off makes no sense.
@@ -122,34 +134,54 @@ Here is the list of all the LG TV commands added to the binding, in channel type
 
 ## Not added or linked commands
 
-The following commands/channels are not currently implemented in the binding but the commands could be sent via the `raw` channel.
+The following commands/channels are not currently implemented in the binding but the commands could be [sent via the raw channel](#using-raw-channel-via-rules-example).
 
-| Channel ID         | Command | Description
+| Channel ID         | Command | Description                                                                                                |
 |--------------------|---------|------------------------------------------------------------------------------------------------------------|
-| abnormal-state     | k z     | Used to read the power off status when in Stand-by mode                                                    |
-| auto-configuration | j u     | To adjust picture position and minimize image shaking automatically. it works only in RGB(PC) mode.        |
-| power-on-delay     | f h     | Set the schedule delay when the power is turned on (Unit: second)                                          |
-| remote-lock        | k m     | To control Remote Lock on/off to the set. Locks the remote control and the local keys.                     |
-| reset              | f k     | Execute the Picture, Screen and Factory Reset functions                                                    |
-| scheduled-input    | f u     | To select input source for TV depending on day                                                             |
-| time               | f a     | Set the current time                                                                                       |
-| on-timer-on-off    | f b     | Set days for On Timer                                                                                      |
-| off-timer-on-off   | f c     | Set days for Off Timer                                                                                     |
-| on-timer-time      | f d     | Set On Timer                                                                                               |
-| off-timer-time     | f e     | Set Off Timer                                                                                              |
-| h-size             | f s     | Set the Horizontal size, from 0 to 100                                                                     |
-| v-size             | f t     | Set the Vertical size, from 0 to 100                                                                       |
+| abnormal-state     | k z     | To read the power off status when in Stand-by mode                                                         |
+| auto-configuration | j u     | To adjust picture position and minimize image shaking automatically. Works only in RGB(PC) mode.           |
+| power-on-delay     | f h     | To set the schedule delay when the power is turned on (Unit: second)                                       |
+| remote-lock        | k m     | To turn the Remote Lock on or off. Locks the remote control and the local keys.                            |
+| reset              | f k     | To execute the Picture, Screen and Factory Reset functions                                                 |
+| scheduled-input    | f u     | To select input source for the TV depending on day                                                         |
+| time               | f a     | To set the current time                                                                                    |
+| on-timer-on-off    | f b     | To set the days for the On Timer                                                                           |
+| off-timer-on-off   | f c     | To set the days for the Off Timer                                                                          |
+| on-timer-time      | f d     | To set the On Timer                                                                                        |
+| off-timer-time     | f e     | To set the Off Timer                                                                                       |
+| h-size             | f s     | To set the Horizontal size, from 0 to 100                                                                  |
+| v-size             | f t     | To set the Vertical size, from 0 to 100                                                                    |
+
+### Using `raw` channel via rules Example
+
+```java
+
+// Rule to toggle the Remote Control Lock mode using a virtual switch item
+rule "LGTV Remote Lock toggle"
+when
+    Item LgRemoteLock received command
+then
+    // Send raw command to toggle Remote Lock
+    // command: km, setId: 01, data: 01/00 (on/off)
+    if (receivedCommand == ON) {
+        Generic_LG_TV_Raw.sendCommand("km 01 01")
+    } else {
+        Generic_LG_TV_Raw.sendCommand("km 01 00")
+    }
+end
+
+```
 
 ## LG protocol references
 
-[1] Manual for M6503C monitor <https://gscs-b2c.lge.com/downloadFile?fileId=KROWM000237239.pdf>
+[1] Manual for M6503C monitor <https://gscs-b2c.lge.com/downloadFile?fileId=KROWM000237239.pdf><a name="ref1"/>
 
 [2] <https://sites.google.com/site/brendanrobert/projects/bits-and-pieces/lg-tv-hacks>
 
 [3] <https://code.google.com/archive/p/lg-tv-command/source/default/source>
 
-[4] <https://github.com/suan/libLGTV_serial>
+[4] <https://github.com/suan/libLGTV_serial><a name="ref4"/>
 
-[5] Manual for LV series, LK series, PW series and PZ series <https://gscs-b2c.lge.com/downloadFile?fileId=ujpO8yH69djwNZzwuavqpQ>
+[5] Manual for LV series, LK series, PW series and PZ series <https://gscs-b2c.lge.com/downloadFile?fileId=ujpO8yH69djwNZzwuavqpQ><a name="ref5"/>
 
 [6] Manual for LD series, LE series, LX series and PK series <https://gscs-b2c.lge.com/downloadFile?fileId=76If0tKDLOUizuoXikllgQ>

@@ -7,7 +7,7 @@
 	<bridge-type id="meaterapi">
 		<label>MEATER Cloud REST API</label>
 		<description>This bridge represents the MEATER Cloud REST API connector</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="status" typeId="status"/>
 		</channels>
@@ -37,7 +37,7 @@
 
 		<label>MEATER Probe</label>
 		<description>This thing represents a MEATER Probe</description>
-
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="internalTemperature" typeId="internalTemperature"/>
 			<channel id="ambientTemperature" typeId="ambientTemperature"/>
@@ -80,6 +80,10 @@
 		<label>Last Probe Connection</label>
 		<description>Date and time of last probe connection</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
 
@@ -88,6 +92,10 @@
 		<label>Cook Elapsed Time</label>
 		<description>Time since the start of cook in seconds. Default: 0</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -96,6 +104,10 @@
 		<label>Cook Remaining Time</label>
 		<description>Remaining time in seconds or UNDEF when unknown</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -104,6 +116,10 @@
 		<label>Cook Estimated End Time</label>
 		<description>Date and time of estimated end time for current cook</description>
 		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
 
@@ -112,6 +128,10 @@
 		<label>Probe Internal Temperature</label>
 		<description>Internal temperature reading of MEATER Probe</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -121,6 +141,10 @@
 		<description>Ambient temperature reading of MEATER Probe. If ambient is less than internal, ambient will equal
 			internal</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -129,6 +153,10 @@
 		<label>Current Cook Target Temperature</label>
 		<description>Target temperature of current cook</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -137,6 +165,10 @@
 		<label>Current Cook Peak Temperature</label>
 		<description>Peak temperature of current cook</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -159,6 +191,10 @@
 		<label>Current Cook State</label>
 		<description>One of Not Started, Configured, Started, Ready For Resting, Resting, Slightly Underdone, Finished,
 			Slightly Overdone, OVERCOOK!</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 

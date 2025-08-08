@@ -6,15 +6,26 @@
 	<channel-type id="heading">
 		<item-type>Number:Angle</item-type>
 		<label>Position Heading Angle</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="gps">
 		<item-type>Location</item-type>
 		<label>Position GPS</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="status-pos">
 		<item-type>Number</item-type>
 		<label>Status Positioning</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state>
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/PositionErrorState.swift#L8 -->
 			<options>

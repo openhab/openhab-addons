@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -145,5 +146,18 @@ public class ThingMock implements Thing {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    @Override
+    public void setSemanticEquipmentTag(@Nullable SemanticTag semanticEquipmentTag) {
+    }
+
+    @Override
+    public void setSemanticEquipmentTag(@Nullable String semanticEquipmentTag) {
+    }
+
+    @Override
+    public @Nullable String getSemanticEquipmentTag() {
+        return null;
     }
 }

@@ -7,7 +7,7 @@
 	<bridge-type id="account">
 		<label>Tesla Account</label>
 		<description>Tesla Owner Account</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="refreshToken" type="text" required="false">
 				<label>Refresh Token</label>

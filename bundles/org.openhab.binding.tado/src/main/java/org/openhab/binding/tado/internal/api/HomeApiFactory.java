@@ -14,9 +14,9 @@ package org.openhab.binding.tado.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
-import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
-import org.openhab.binding.tado.swagger.codegen.api.auth.OAuthAuthorizer;
 import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
+import org.openhab.binding.tado.swagger.codegen.api.client.OAuthorizerV2;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
 
 import com.google.gson.Gson;
 
@@ -24,17 +24,14 @@ import com.google.gson.Gson;
  * Factory to create and configure {@link HomeApi} instances.
  *
  * @author Dennis Frommknecht - Initial contribution
+ * @author Andrew Fiddian-Green - Use OAuthAuthorizerV2
  */
 @NonNullByDefault
 public class HomeApiFactory {
-    private static final String OAUTH_SCOPE = "home.user";
-    private static final String OAUTH_CLIENT_ID = "public-api-preview";
-    private static final String OAUTH_CLIENT_SECRET = "4HJGRffVR8xb3XdEUQpjgZ1VplJi6Xgw";
 
-    public HomeApi create(String username, String password) {
+    public HomeApi create(OAuthClientService oAuthClientService) {
         Gson gson = GsonBuilderFactory.defaultGsonBuilder().create();
-        Authorizer authorizer = new OAuthAuthorizer().passwordFlow(username, password).clientId(OAUTH_CLIENT_ID)
-                .clientSecret(OAUTH_CLIENT_SECRET).scopes(OAUTH_SCOPE);
+        OAuthorizerV2 authorizer = new OAuthorizerV2(oAuthClientService);
         return new HomeApi(gson, authorizer);
     }
 }

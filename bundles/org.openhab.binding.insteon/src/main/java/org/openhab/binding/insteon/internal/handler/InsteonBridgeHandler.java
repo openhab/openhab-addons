@@ -14,7 +14,6 @@ package org.openhab.binding.insteon.internal.handler;
 
 import static org.openhab.binding.insteon.internal.InsteonBindingConstants.*;
 
-import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -99,8 +98,20 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
     }
 
     public @Nullable ProductData getProductData(DeviceAddress address) {
-        return Optional.ofNullable(getDeviceCache(address)).map(DeviceCache::getProductData)
-                .orElse(Optional.ofNullable(modem).map(modem -> modem.getProductData(address)).orElse(null));
+        DeviceCache deviceCache = getDeviceCache(address);
+        if (deviceCache != null) {
+            ProductData productData = deviceCache.getProductData();
+            if (productData != null) {
+                return productData;
+            }
+        }
+
+        InsteonModem modem = getModem();
+        if (modem != null) {
+            return modem.getProductData(address);
+        }
+
+        return null;
     }
 
     protected InsteonBridgeConfiguration getBridgeConfig() {
@@ -118,6 +129,10 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
     public int getDevicePollInterval() {
         return getBridgeConfig().getDevicePollInterval();
+    }
+
+    public int getDeviceResponseTimeout() {
+        return getBridgeConfig().getDeviceResponseTimeout();
     }
 
     public boolean isDeviceDiscoveryEnabled() {
@@ -343,8 +358,6 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
      * @param modem the discovered modem
      */
     public void modemDiscovered(InsteonModem modem) {
-        modem.setPollInterval(getDevicePollInterval());
-
         initializeChannels(modem);
         updateProperties(modem);
         loadDeviceCache(modem);

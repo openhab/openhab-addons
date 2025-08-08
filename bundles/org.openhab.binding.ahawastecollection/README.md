@@ -8,13 +8,13 @@ This binding provides information about the upcoming waste collection dates for 
 
 ## Discovery
 
-Discovery is not possible, due some form input values from the website above are required.
+Discovery is not possible, due to some form input values from the website above are required.
 
 ## Thing Configuration
 
 For configuration of the **collectionSchedule** thing, you need the form inputs from the aha collections schedule web page. Follow the steps below to get the required configuration parameters from the form input values.
 
-1. Open [aha Abfuhrkalender](https://www.aha-region.de/abholtermine/abfuhrkalender) in your favorite brower with developer-console.
+1. Open [aha Abfuhrkalender](https://www.aha-region.de/abholtermine/abfuhrkalender) in your favorite browser with developer-console.
 1. Open the developer console and switch to network tab (for example press F12 in chrome / edge / firefox).
 1. Fill in the form: Select your commune, Street and house number and hit "Suchen".
 1. Select the first request to [https://www.aha-region.de/abholtermine/abfuhrkalender](https://www.aha-region.de/abholtermine/abfuhrkalender) (see first screenshot below)
@@ -46,7 +46,7 @@ The thing **aha Waste Collection Schedule** provides four channels for the upcom
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | generalWaste  | DateTime | Next collection day for general waste  |
-| leightweightPackaging  | DateTime | Next collection day for leightweight packaging  |
+| leightweightPackaging  | DateTime | Next collection day for lightweight packaging  |
 | bioWaste  | DateTime | Next collection day for bio waste  |
 | paper  | DateTime | Next collection day for paper  |
 
@@ -62,7 +62,7 @@ wasteCollection.items
 
 ```java
 DateTime collectionDay_generalWaste "Next general waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:generalWaste"}
-DateTime collectionDay_leightweightPackaging "Next lightweight packaging collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:leightweightPackaging"}
+DateTime collectionDay_lightweightPackaging "Next lightweight packaging collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:leightweightPackaging"}
 DateTime collectionDay_bioWaste "Next bio waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:bioWaste"}
 DateTime collectionDay_paper "Next paper collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:paper"}
 ```

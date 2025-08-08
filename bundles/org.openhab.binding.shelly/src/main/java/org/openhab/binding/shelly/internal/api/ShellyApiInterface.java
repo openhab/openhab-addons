@@ -27,6 +27,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLi
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link ShellyApiInterface} Defines device API
@@ -43,7 +44,7 @@ public interface ShellyApiInterface {
 
     ShellySettingsDevice getDeviceInfo() throws ShellyApiException;
 
-    ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice device)
+    ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice device)
             throws ShellyApiException;
 
     ShellySettingsStatus getStatus() throws ShellyApiException;
@@ -136,7 +137,7 @@ public interface ShellyApiInterface {
 
     void setActionURLs() throws ShellyApiException;
 
-    void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException;
+    void sendIRKey(String keyCode) throws ShellyApiException;
 
     void postEvent(String device, String index, String event, Map<String, String> parms) throws ShellyApiException;
 

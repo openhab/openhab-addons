@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homewizard"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hwe-wtr">
+		<label>HomeWizard Watermeter</label>
+		<description>This thing provides the measurement data that is available through the API of a HomeWizard
+			Watermeter.</description>
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="water" typeId="es-water-group"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:homewizard:device"/>
+	</thing-type>
+
+	<channel-group-type id="es-water-group">
+		<label>Recent Measurements</label>
+		<channels>
+			<channel id="active_liter" typeId="es-active-liter"/>
+			<channel id="total_liter" typeId="es-total-liter"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="es-active-liter">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Active Liters</label>
+		<description>
+			This channel provides the active water usage in liters per minute.
+		</description>
+
+	</channel-type>
+
+	<channel-type id="es-total-liter">
+		<item-type>Number:Volume</item-type>
+		<label>Total Liters</label>
+		<description>
+			This channel provides total water usage in cubic meters.
+		</description>
+
+	</channel-type>
+
+</thing:thing-descriptions>

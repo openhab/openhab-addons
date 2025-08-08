@@ -7,6 +7,7 @@
 	<thing-type id="mower">
 		<label>Mower</label>
 		<description>Mower robot connected via robonect module</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 		<channels>
 			<channel id="name" typeId="nameType"/>
 			<channel id="battery" typeId="system.battery-level"/>
@@ -150,6 +151,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The temperature inside the mower</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -157,6 +162,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>The relative humidity in the mower in percent</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
@@ -185,6 +194,10 @@
 		<item-type>String</item-type>
 		<label>Mower Mode</label>
 		<description>The mower mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="AUTO">Auto</option>
@@ -219,6 +232,10 @@
 		<item-type>Number</item-type>
 		<label>Mower Status</label>
 		<description>The status of the mower</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Detecting Status</option>
@@ -240,6 +257,10 @@
 		<item-type>Switch</item-type>
 		<label>Start</label>
 		<description>On if started, Off if stopped</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -271,6 +292,10 @@
 		<item-type>String</item-type>
 		<label>Error Message</label>
 		<description>The error message</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

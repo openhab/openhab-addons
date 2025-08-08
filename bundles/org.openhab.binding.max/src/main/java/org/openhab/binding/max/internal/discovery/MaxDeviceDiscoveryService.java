@@ -60,7 +60,7 @@ public class MaxDeviceDiscoveryService extends AbstractThingHandlerDiscoveryServ
     public void dispose() {
         super.dispose();
         thingHandler.unregisterDeviceStatusListener(this);
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
     }
 
     @Override

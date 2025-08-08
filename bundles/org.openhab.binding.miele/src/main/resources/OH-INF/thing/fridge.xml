@@ -12,6 +12,7 @@
 
 		<label>Fridge</label>
 		<description>This is a Miele@home compatible fridge</description>
+		<semantic-equipment-tag>Refrigerator</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="state"/>

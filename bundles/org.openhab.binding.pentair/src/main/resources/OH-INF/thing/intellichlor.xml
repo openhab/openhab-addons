@@ -12,6 +12,7 @@
 
 		<label>Intellichlor IC40</label>
 		<description>Pentair Intellichlor IC40</description>
+		<semantic-equipment-tag>Chlorinator</semantic-equipment-tag>
 
 		<channels>
 			<channel id="saltOutput" typeId="saltOutput"/>
@@ -45,6 +46,10 @@
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Salinity (PPM)</label>
 		<description>Current salt content reading of the water (PPM).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -59,6 +64,10 @@
 		<item-type>Switch</item-type>
 		<label>Low Flow</label>
 		<description>Water flow rate is low.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -66,6 +75,10 @@
 		<item-type>Switch</item-type>
 		<label>Low Salt</label>
 		<description>Low salt level.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -73,6 +86,10 @@
 		<item-type>Switch</item-type>
 		<label>Very Low Salt</label>
 		<description>Very low salt level.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -94,6 +111,10 @@
 		<item-type>Switch</item-type>
 		<label>Low Voltage</label>
 		<description>Chlorinator cell is at a low voltage.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -101,6 +122,10 @@
 		<item-type>Switch</item-type>
 		<label>Low Water Temperature</label>
 		<description>Water temperature is too low for chlorine generation.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

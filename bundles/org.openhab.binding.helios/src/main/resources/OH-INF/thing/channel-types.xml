@@ -16,6 +16,10 @@
 		<item-type>DateTime</item-type>
 		<label>Audio Loop Test Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="callstate">
@@ -45,6 +49,10 @@
 		<item-type>DateTime</item-type>
 		<label>Call State Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="card">
@@ -62,6 +70,10 @@
 		<item-type>DateTime</item-type>
 		<label>Card Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="code">
@@ -79,6 +91,10 @@
 		<item-type>DateTime</item-type>
 		<label>Code Entered Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="devicestate">
@@ -95,6 +111,10 @@
 		<item-type>DateTime</item-type>
 		<label>Device State Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="keypressed">
@@ -106,6 +126,10 @@
 		<item-type>DateTime</item-type>
 		<label>Key Press Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="keyreleased">
@@ -117,36 +141,60 @@
 		<item-type>DateTime</item-type>
 		<label>Key Released Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="motion">
 		<item-type>Switch</item-type>
 		<label>Motion</label>
 		<description>Motion detection indicator</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="motionstamp">
 		<item-type>DateTime</item-type>
 		<label>Motion Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="noise">
 		<item-type>Switch</item-type>
 		<label>Noise</label>
 		<description>Noise detection indicator</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="noisestamp">
 		<item-type>DateTime</item-type>
 		<label>Noise Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="switchstate">
 		<item-type>Switch</item-type>
 		<label>Switch State</label>
 		<description>ON when a switch switched on, OFF when a switch switched off</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="switchstateswitch">
@@ -170,6 +218,10 @@
 		<item-type>DateTime</item-type>
 		<label>Switch Switch Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="switchenabler" advanced="true">

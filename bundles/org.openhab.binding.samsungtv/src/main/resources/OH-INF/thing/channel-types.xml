@@ -9,18 +9,30 @@
 		<label>Volume</label>
 		<description>Volume level of the TV.</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="mute">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mute state of the TV.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brightness" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness of the TV picture.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="contrast" advanced="true">
@@ -54,6 +66,10 @@
 		<item-type>Number</item-type>
 		<label>Source ID</label>
 		<description>Id of the current source.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -61,12 +77,20 @@
 		<item-type>Number</item-type>
 		<label>Channel</label>
 		<description>Selected TV channel number.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="programtitle">
 		<item-type>String</item-type>
 		<label>Program Title</label>
 		<description>Program title of the current channel.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -74,6 +98,10 @@
 		<item-type>String</item-type>
 		<label>Channel Name</label>
 		<description>Name of the current TV channel.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -95,18 +123,30 @@
 		<description>TV power. Some of the Samsung TV models doesn't allow to set
 			Power ON remotely.
 		</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="artmode">
 		<item-type>Switch</item-type>
 		<label>Art Mode</label>
 		<description>TV Art Mode.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="setartmode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Set Art Mode</label>
 		<description>Set ArtMode ON/OFF from an external source (needed for >=2022 Frame TV's)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="artwork" advanced="true">
@@ -144,6 +184,10 @@
 		<item-type>Switch</item-type>
 		<label>Artwork Orientation</label>
 		<description>TV orientation, Landcape or Portrait</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="sourceapp" advanced="true">

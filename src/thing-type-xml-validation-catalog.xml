@@ -1,0 +1,4 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+	<public publicId="https://openhab.org/schemas/thing-description/v1.0.0" uri="thing-description-schema.xsd"/>
+	<system systemId="https://openhab.org/schemas/thing-description-1.0.0.xsd" uri="thing-description-schema.xsd"/>
+</catalog>

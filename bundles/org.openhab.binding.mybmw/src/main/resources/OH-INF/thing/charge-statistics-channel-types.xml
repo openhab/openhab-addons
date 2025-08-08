@@ -11,11 +11,18 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Charged</label>
 		<description>Total energy charged in current month</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="statistic-sessions-channel">
 		<item-type>Number</item-type>
 		<label>Charge Sessions</label>
 		<description>Number of charging sessions this month</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

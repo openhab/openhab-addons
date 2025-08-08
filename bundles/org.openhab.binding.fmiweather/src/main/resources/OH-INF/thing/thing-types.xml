@@ -8,6 +8,7 @@
 	<thing-type id="observation">
 		<label>FMI Current Weather (Observation)</label>
 		<description>Finnish Meteorological Institute (FMI) weather observation</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="current" typeId="current-group"/>
@@ -26,6 +27,7 @@
 	<thing-type id="forecast">
 		<label>FMI Weather Forecast</label>
 		<description>Finnish Meteorological Institute (FMI) weather forecast</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="forecast" typeId="group-forecast">
@@ -320,48 +322,80 @@
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="forecast-time-channel">
 		<item-type>DateTime</item-type>
 		<label>Forecast Time</label>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="humidity-channel">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind-direction-channel">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction</label>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind-speed-channel">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind-gust-channel">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Gust</label>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation-channel">
@@ -369,6 +403,10 @@
 		<label>Precipitation</label>
 		<description>Precipitation in one hour</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="snow-depth-channel">
@@ -503,6 +541,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Precipitation Intensity</label>
 		<description>Equivalent to the precipitation amount if the same intensity prevails for an hour. </description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

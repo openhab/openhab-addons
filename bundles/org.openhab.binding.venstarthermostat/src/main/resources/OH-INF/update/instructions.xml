@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="venstarthermostat:colorTouchThermostat">
+		<instruction-set targetVersion="1">
+			<update-channel id="temperature">
+				<type>venstarthermostat:temperature</type>
+			</update-channel>
+			<update-channel id="humidity">
+				<type>venstarthermostat:humidity</type>
+			</update-channel>
+			<update-channel id="outdoorTemperature">
+				<type>venstarthermostat:outdoorTemperature</type>
+			</update-channel>
+			<update-channel id="systemMode">
+				<type>venstarthermostat:systemMode</type>
+			</update-channel>
+			<update-channel id="heatingSetpoint">
+				<type>venstarthermostat:heatingSetpoint</type>
+			</update-channel>
+			<update-channel id="coolingSetpoint">
+				<type>venstarthermostat:coolingSetpoint</type>
+			</update-channel>
+			<update-channel id="systemState">
+				<type>venstarthermostat:systemState</type>
+			</update-channel>
+			<update-channel id="fanMode">
+				<type>venstarthermostat:fanMode</type>
+			</update-channel>
+			<update-channel id="fanState">
+				<type>venstarthermostat:fanState</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

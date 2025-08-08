@@ -16,7 +16,7 @@
 <li>hardwired - on the control panel electronics board, in keypads and expanders. The number of available hardwired zones is determined by the control panel during identification procedure.</li>
 <li>wireless - in the INTEGRA 128-WRL control panel and/or when the ACU-120, ACU-270, ACU-100 or ACU-250 controller is connected. The number of available wireless zones depends on the number of wireless devices registered in the system and is determined during the procedure of adding the devices.</li>
 <li>virtual - zones which physically do not exist, but have been programmed as FOLLOW OUTPUT or are controlled by means of a keyfob.</li></ul>]]></description>
-
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<channel typeId="violation" id="violation"/>
 			<channel typeId="tamper" id="tamper"/>
@@ -53,6 +53,10 @@
 		<item-type>Switch</item-type>
 		<label>Violation</label>
 		<description>Active when violation is detected in the zone</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -60,6 +64,10 @@
 		<item-type>Switch</item-type>
 		<label>Tamper</label>
 		<description>Active when detector in the zone is tampered</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -67,6 +75,10 @@
 		<item-type>Switch</item-type>
 		<label>Alarm</label>
 		<description>Active when violation is detected in the zone and zone is armed</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -74,6 +86,10 @@
 		<item-type>Switch</item-type>
 		<label>Tamper Alarm</label>
 		<description>Active when detector in the zone is tampered and zone is armed</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -81,6 +97,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm Memory</label>
 		<description>Memorized alarm state for the zone</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -88,6 +107,10 @@
 		<item-type>Switch</item-type>
 		<label>Tamper Alarm Memory</label>
 		<description>Memorized tamper alarm state for the zone</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -95,6 +118,10 @@
 		<item-type>Switch</item-type>
 		<label>Bypass</label>
 		<description>Active when zone is bypassed</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="no_violation_trouble" advanced="true">

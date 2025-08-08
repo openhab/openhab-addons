@@ -7,6 +7,7 @@
 	<thing-type id="collectionSchedule">
 		<label>aha Waste Collection Schedule</label>
 		<description>aha Waste Collection Schedule from http://www.aha-region.de/abholtermine/abfuhrkalender</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="generalWaste" typeId="collectionDateGeneralWaste"/>
@@ -46,24 +47,40 @@
 		<item-type>DateTime</item-type>
 		<label>General Waste</label>
 		<description>Next collection day for general waste</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 	<channel-type id="collectionDateLeightweightPackaging">
 		<item-type>DateTime</item-type>
 		<label>Leightweight Packaging</label>
 		<description>Next collection day for leightweight packaging</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 	<channel-type id="collectionDateBioWaste">
 		<item-type>DateTime</item-type>
 		<label>Bio Waste</label>
 		<description>Next collection day for bio waste</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 	<channel-type id="collectionDatePaper">
 		<item-type>DateTime</item-type>
 		<label>Paper</label>
 		<description>Next collection day for paper</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 

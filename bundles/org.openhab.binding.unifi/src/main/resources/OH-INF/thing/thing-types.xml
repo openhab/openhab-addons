@@ -5,10 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="controller">
-
 		<label>UniFi Controller</label>
 		<description>A UniFi controller</description>
-
 		<config-description-ref uri="thing-type:unifi:controller"/>
 	</bridge-type>
 
@@ -32,6 +30,27 @@
 		<representation-property>sid</representation-property>
 
 		<config-description-ref uri="thing-type:unifi:site"/>
+	</thing-type>
+
+	<thing-type id="network">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi Network</label>
+		<description>A UniFi Network</description>
+
+		<channels>
+			<channel id="enable" typeId="networkEnable"/>
+			<channel id="totalClients" typeId="totalClients"/>
+			<channel id="site" typeId="site">
+				<description>UniFi Site the network is associated with</description>
+			</channel>
+			<channel id="purpose" typeId="purpose"/>
+		</channels>
+		<representation-property>nid</representation-property>
+
+		<config-description-ref uri="thing-type:unifi:network"/>
 	</thing-type>
 
 	<thing-type id="wlan">
@@ -148,7 +167,7 @@
 
 		<label>UniFi Access Point</label>
 		<description>An access point managed by a UniFi controller</description>
-
+		<semantic-equipment-tag>WirelessAccessPoint</semantic-equipment-tag>
 		<channels>
 			<channel id="online" typeId="online">
 				<description>Online status of the device</description>
@@ -366,6 +385,10 @@
 		<label>Received Signal Strength Indicator</label>
 		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -489,6 +512,27 @@
 				<option value="11">Isolated</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="purpose">
+		<item-type>String</item-type>
+		<label>Purpose</label>
+		<description>Purpose of the network</description>
+		<state readOnly="true">
+			<options>
+				<option value="corporate">Corporate</option>
+				<option value="guest">Guest</option>
+				<option value="remote-user-vpn">VPN</option>
+				<option value="wan">WAN</option>
+				<option value="vlan-only">VLAN Only</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="networkEnable">
+		<item-type>Switch</item-type>
+		<label>Enable</label>
+		<description>Enable status of the network</description>
 	</channel-type>
 
 </thing:thing-descriptions>

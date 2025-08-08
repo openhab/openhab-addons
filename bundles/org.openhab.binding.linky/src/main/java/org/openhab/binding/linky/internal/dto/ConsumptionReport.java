@@ -40,6 +40,8 @@ public class ConsumptionReport {
     }
 
     public class ChronoData {
+        @SerializedName("heure")
+        public Aggregate heure;
         @SerializedName("jour")
         public Aggregate days;
         @SerializedName("semaine")

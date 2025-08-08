@@ -7,12 +7,13 @@
 	<thing-type id="ac_unit">
 		<label>Daikin AC Unit</label>
 		<description>Daikin AC Unit</description>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="acunit-power"/>
 			<channel id="settemp" typeId="acunit-settemp"/>
-			<channel id="indoortemp" typeId="acunit-indoortemp"/>
-			<channel id="outdoortemp" typeId="acunit-outdoortemp"/>
+			<channel id="indoortemp" typeId="system.indoor-temperature"/>
+			<channel id="outdoortemp" typeId="system.outdoor-temperature"/>
 			<channel id="humidity" typeId="acunit-humidity"/>
 			<channel id="mode" typeId="acunit-mode"/>
 			<channel id="homekitmode" typeId="acunit-homekitmode"/>
@@ -57,7 +58,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>host</representation-property>
 		<config-description-ref uri="thing-type:daikin:config"/>
@@ -66,12 +67,13 @@
 	<thing-type id="airbase_ac_unit">
 		<label>Daikin Airbase AC Unit</label>
 		<description>Daikin Airbase AC Unit</description>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="acunit-power"/>
 			<channel id="settemp" typeId="acunit-settemp"/>
-			<channel id="indoortemp" typeId="acunit-indoortemp"/>
-			<channel id="outdoortemp" typeId="acunit-outdoortemp"/>
+			<channel id="indoortemp" typeId="system.indoor-temperature"/>
+			<channel id="outdoortemp" typeId="system.outdoor-temperature"/>
 			<channel id="mode" typeId="acunit-mode"/>
 			<channel id="homekitmode" typeId="acunit-homekitmode"/>
 			<channel id="airbasefanspeed" typeId="airbase-acunit-fan"/>
@@ -85,6 +87,9 @@
 			<channel id="zone8" typeId="airbase-acunit-zone8"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>host</representation-property>
 		<config-description-ref uri="thing-type:daikin:config"/>
 	</thing-type>
@@ -94,6 +99,10 @@
 		<label>Power</label>
 		<description>Power for the AC unit</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -102,24 +111,12 @@
 		<label>Set Point</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-
-	<channel-type id="acunit-indoortemp">
-		<item-type>Number:Temperature</item-type>
-		<label>Indoor Temperature</label>
-		<description>The indoor temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
-	</channel-type>
-
-	<channel-type id="acunit-outdoortemp">
-		<item-type>Number:Temperature</item-type>
-		<label>Outdoor Temperature</label>
-		<description>The outdoor temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="acunit-humidity" advanced="true">
@@ -134,6 +131,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Current mode of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">auto</option>
@@ -165,6 +166,10 @@
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">auto</option>
@@ -183,6 +188,10 @@
 		<item-type>String</item-type>
 		<label>Fan Swing</label>
 		<description>Current fan swing setting of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="STOPPED">stopped</option>
@@ -471,6 +480,10 @@
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -478,6 +491,10 @@
 		<item-type>Switch</item-type>
 		<label>Zone 1</label>
 		<description>Zone 1 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -485,6 +502,10 @@
 		<item-type>Switch</item-type>
 		<label>Zone 2</label>
 		<description>Zone 2 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -492,6 +513,10 @@
 		<item-type>Switch</item-type>
 		<label>Zone 3</label>
 		<description>Zone 3 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -499,6 +524,10 @@
 		<item-type>Switch</item-type>
 		<label>Zone 4</label>
 		<description>Zone 4 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -506,6 +535,10 @@
 		<item-type>Switch</item-type>
 		<label>Zone 5</label>
 		<description>Zone 5 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -513,6 +546,10 @@
 		<item-type>Switch</item-type>
 		<label>Zone 6</label>
 		<description>Zone 6 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -520,6 +557,10 @@
 		<item-type>Switch</item-type>
 		<label>Zone 7</label>
 		<description>Zone 7 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -527,6 +568,10 @@
 		<item-type>Switch</item-type>
 		<label>Zone 8</label>
 		<description>Zone 8 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 

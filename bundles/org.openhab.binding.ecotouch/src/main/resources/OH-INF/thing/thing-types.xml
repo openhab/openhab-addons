@@ -8,6 +8,7 @@
 		<label>Waterkotte EcoTouch Geo</label>
 		<description>Waterkotte EcoTouch Geo heat pump</description>
 		<category>HVAC</category>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature_outside" typeId="temperature_outside"/>
@@ -155,6 +156,7 @@
 		<label>Waterkotte EcoTouch Air</label>
 		<description>Waterkotte EcoTouch Air heat pump</description>
 		<category>HVAC</category>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature_outside" typeId="temperature_outside"/>
@@ -308,6 +310,10 @@
 		<label>Temperature Outside</label>
 		<description>The current outside temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_outside_1h" advanced="true">
@@ -315,6 +321,10 @@
 		<label>Average Temperature 1h</label>
 		<description>The outside temperature averaged over one hour</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_outside_24h">
@@ -322,18 +332,30 @@
 		<label>Average Temperature 24h</label>
 		<description>The outside temperature averaged over one day</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_source_in">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Source In</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_source_out">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Source Out</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_evaporation" advanced="true">
@@ -357,18 +379,30 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Return Set</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_return">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Return</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_flow">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Flow</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_condensation" advanced="true">
@@ -392,18 +426,30 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Room</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_room_1h">
 		<item-type>Number:Temperature</item-type>
 		<label>Avg. Room Temp 1h</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_water">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Water</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_pool" advanced="true">
@@ -432,16 +478,28 @@
 	<channel-type id="power_compressor">
 		<item-type>Number:Power</item-type>
 		<label>Power Compressor</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power_heating">
 		<item-type>Number:Power</item-type>
 		<label>Power Heating</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power_cooling">
 		<item-type>Number:Power</item-type>
 		<label>Power Cooling</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="cop_heating">
@@ -459,6 +517,10 @@
 		<label>Heating Return</label>
 		<description>Temperature Heating Return</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_heating_set">
@@ -466,6 +528,10 @@
 		<label>Heating Set</label>
 		<description>Temperature Heating Setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_heating_set2" advanced="true">
@@ -480,6 +546,10 @@
 		<label>Cooling Return</label>
 		<description>Temperature Cooling Return</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_cooling_set" advanced="true">
@@ -494,6 +564,10 @@
 		<label>Cooling Set BMS</label>
 		<description>Temperature Cooling Setpoint BMS</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="26" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_water_set" advanced="true">
@@ -508,6 +582,10 @@
 		<label>Water Set BMS</label>
 		<description>Temperature Water Setpoint BMS</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="28" max="70" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_pool_set" advanced="true">
@@ -714,17 +792,29 @@
 	<channel-type id="enable_heating">
 		<item-type>Switch</item-type>
 		<label>Enable Heating</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="enable_cooling">
 		<item-type>Switch</item-type>
 		<label>Enable Cooling</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="enable_warmwater">
 		<item-type>Switch</item-type>
 		<label>Enable Water</label>
 		<description>Enable Warm Water</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="enable_pool" advanced="true">
@@ -776,6 +866,9 @@
 	<channel-type id="state_alarm">
 		<item-type>Switch</item-type>
 		<label>State Alarm</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="state_cooling" advanced="true">
@@ -891,18 +984,30 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Surrounding</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_suction_air">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Suction Air</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_sump">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Sump</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="percent_water_limit_min" advanced="true">
@@ -931,6 +1036,10 @@
 		<label>EcoVent Exhaust Air</label>
 		<description>EcoVent Temperature Exhaust Air</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_temp_exit_air">
@@ -938,6 +1047,10 @@
 		<label>EcoVent Exit Air</label>
 		<description>EcoVent Temperature Exit Air</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_temp_outdoor_air">
@@ -945,6 +1058,10 @@
 		<label>EcoVent Outdoor Air</label>
 		<description>EcoVent Temperature Outdoor Air</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_temp_supply_air">
@@ -952,21 +1069,37 @@
 		<label>EcoVent Supply Air</label>
 		<description>EcoVent Temperature Supply Air</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_CO2_value">
 		<item-type>Number:Dimensionless</item-type>
 		<label>EcoVent CO2</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_moisture_value">
 		<item-type>Number:Dimensionless</item-type>
 		<label>EcoVent Air Moisture</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Moisture</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_output_y1">
 		<item-type>Number:Dimensionless</item-type>
 		<label>EcoVent Fan</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_mode">

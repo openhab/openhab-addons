@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Fan Device</label>
 		<description>A generic fan device.</description>
+		<semantic-equipment-tag>Fan</semantic-equipment-tag>
 
 		<channels>
 			<channel id="command" typeId="command"/>

@@ -8,6 +8,7 @@
 	<bridge-type id="account">
 		<label>Pixometer Account</label>
 		<description>This Bridge handles your Pixometer account.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="user" type="text" required="true">
 				<label>Username</label>

@@ -8,7 +8,7 @@
 		<label>HS220</label>
 		<description>TP-Link HS220 Smart Wi-Fi Light Switch, Dimmer</description>
 		<category>WallSwitch</category>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="led" typeId="led"/>

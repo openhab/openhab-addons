@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.danfossairunit.internal.handler;
 
+import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.*;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -27,8 +31,10 @@ import org.openhab.binding.danfossairunit.internal.DanfossAirUnit;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitCommunicationController;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitConfiguration;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitWriteAccessor;
+import org.openhab.binding.danfossairunit.internal.FixedTimeZoneProvider;
 import org.openhab.binding.danfossairunit.internal.UnexpectedResponseValueException;
 import org.openhab.binding.danfossairunit.internal.ValueCache;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -52,9 +58,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DanfossAirUnitHandler extends BaseThingHandler {
 
-    private static final int TCP_PORT = 30046;
     private static final int POLLING_INTERVAL_SECONDS = 5;
+
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitHandler.class);
+    private final TimeZoneProvider timeZoneProvider;
+
     private @NonNullByDefault({}) DanfossAirUnitConfiguration config;
     private @Nullable ValueCache valueCache;
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -62,33 +70,33 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     private @Nullable DanfossAirUnit airUnit;
     private boolean propertiesInitializedSuccessfully = false;
 
-    public DanfossAirUnitHandler(Thing thing) {
+    public DanfossAirUnitHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        Channel channel = Channel.getByName(channelUID.getIdWithoutGroup());
+
         if (command instanceof RefreshType) {
-            updateAllChannels();
-        } else {
-            try {
-                DanfossAirUnit localAirUnit = this.airUnit;
-                if (localAirUnit != null) {
-                    Channel channel = Channel.getByName(channelUID.getIdWithoutGroup());
-                    DanfossAirUnitWriteAccessor writeAccessor = channel.getWriteAccessor();
-                    if (writeAccessor != null) {
-                        updateState(channelUID, writeAccessor.access(localAirUnit, command));
-                    }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
-                            "@text/offline.connection-not-initialized");
-                    return;
+            updateChannel(channel, true);
+            return;
+        }
+
+        try {
+            DanfossAirUnit airUnit = this.airUnit;
+            if (airUnit != null) {
+                DanfossAirUnitWriteAccessor writeAccessor = channel.getWriteAccessor();
+                if (writeAccessor != null) {
+                    updateState(channelUID, writeAccessor.access(airUnit, command));
                 }
-            } catch (IllegalArgumentException e) {
-                logger.debug("Ignoring unknown channel id: {}", channelUID.getIdWithoutGroup(), e);
-            } catch (IOException ioe) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
+                        "@text/offline.connection-not-initialized");
             }
+        } catch (IOException ioe) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
         }
     }
 
@@ -99,24 +107,23 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         valueCache = new ValueCache(config.updateUnchangedValuesEveryMillis);
         try {
             var localCommunicationController = new DanfossAirUnitCommunicationController(
-                    InetAddress.getByName(config.host), TCP_PORT);
+                    InetAddress.getByName(config.host));
             this.communicationController = localCommunicationController;
-            this.airUnit = new DanfossAirUnit(localCommunicationController);
+            TimeZoneProvider timeZoneProvider = config.timeZone.isBlank() ? this.timeZoneProvider
+                    : FixedTimeZoneProvider.of(ZoneId.of(config.timeZone));
+
+            airUnit = new DanfossAirUnit(localCommunicationController, timeZoneProvider);
             startPolling();
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.unknown-host [\"" + config.host + "\"]");
-            return;
+        } catch (DateTimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
     private void updateAllChannels() {
         if (!initializeProperties()) {
-            return;
-        }
-
-        DanfossAirUnit localAirUnit = this.airUnit;
-        if (localAirUnit == null) {
             return;
         }
 
@@ -127,26 +134,48 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                 logger.debug("Polling thread interrupted...");
                 return;
             }
-            try {
-                updateState(channel.getGroup().getGroupName(), channel.getChannelName(),
-                        channel.getReadAccessor().access(localAirUnit));
-                if (getThing().getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } catch (UnexpectedResponseValueException e) {
-                updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
-                logger.debug(
-                        "Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
-                        channel.getChannelName(), e.getMessage());
-                if (getThing().getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } catch (IOException e) {
-                updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                logger.debug("Cannot update channel {}: an error occurred retrieving the value: {}",
-                        channel.getChannelName(), e.getMessage());
+            updateChannel(channel);
+        }
+    }
+
+    private void updateChannel(Channel channel) {
+        updateChannel(channel, false);
+    }
+
+    private void updateChannel(Channel channel, boolean forceUpdate) {
+        DanfossAirUnit airUnit = this.airUnit;
+        if (airUnit == null) {
+            return;
+        }
+
+        ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getGroup().getGroupName(),
+                channel.getChannelName());
+        if (!isLinked(channelUID)) {
+            return;
+        }
+
+        try {
+            State state = channel.getReadAccessor().access(airUnit);
+            if (forceUpdate) {
+                forceUpdateState(channelUID, state);
+            } else {
+                updateState(channelUID, state);
             }
+        } catch (UnexpectedResponseValueException e) {
+            updateState(channelUID, UnDefType.UNDEF);
+            logger.debug(
+                    "Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
+                    channel.getChannelName(), e.getMessage());
+        } catch (IOException e) {
+            updateState(channelUID, UnDefType.UNDEF);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("Cannot update channel {}: an error occurred retrieving the value: {}",
+                    channel.getChannelName(), e.getMessage());
+            return;
+        }
+
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -163,13 +192,16 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         logger.debug("Initializing DanfossHRV properties '{}'", getThing().getUID());
 
         try {
-            Map<String, String> properties = new HashMap<>(2);
+            Map<String, String> properties = new HashMap<>(5);
             properties.put(Thing.PROPERTY_MODEL_ID, localAirUnit.getUnitName());
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, localAirUnit.getHardwareRevision());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, localAirUnit.getSoftwareRevision());
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, localAirUnit.getUnitSerialNumber());
+            properties.put(PROPERTY_CCM_SERIAL_NUMBER, localAirUnit.getCCMSerialNumber());
             updateProperties(properties);
             propertiesInitializedSuccessfully = true;
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
+        } catch (IOException | UnexpectedResponseValueException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("Cannot initialize properties: an error occurred: {}", e.getMessage());
         }
@@ -183,11 +215,11 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
         stopPolling();
 
-        this.airUnit = null;
+        airUnit = null;
 
-        DanfossAirUnitCommunicationController localCommunicationController = this.communicationController;
-        if (localCommunicationController != null) {
-            localCommunicationController.disconnect();
+        DanfossAirUnitCommunicationController communicationController = this.communicationController;
+        if (communicationController != null) {
+            communicationController.disconnect();
         }
         this.communicationController = null;
     }
@@ -205,14 +237,20 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         this.pollingJob = null;
     }
 
-    private void updateState(String groupId, String channelId, State state) {
-        ValueCache cache = valueCache;
-        if (cache == null) {
-            return;
+    @Override
+    protected void updateState(ChannelUID channelUID, State state) {
+        if (updateCache(channelUID, state)) {
+            super.updateState(channelUID, state);
         }
+    }
 
-        if (cache.updateValue(channelId, state)) {
-            updateState(new ChannelUID(thing.getUID(), groupId, channelId), state);
-        }
+    private void forceUpdateState(ChannelUID channelUID, State state) {
+        updateCache(channelUID, state);
+        super.updateState(channelUID, state);
+    }
+
+    private boolean updateCache(ChannelUID channelUID, State state) {
+        ValueCache valueCache = this.valueCache;
+        return valueCache != null && valueCache.updateValue(channelUID.getId(), state);
     }
 }

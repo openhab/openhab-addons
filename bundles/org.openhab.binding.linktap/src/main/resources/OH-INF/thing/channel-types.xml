@@ -9,6 +9,10 @@
 		<label>Watering Mode</label>
 		<description>The watering mode</description>
 		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Off</option>
@@ -27,6 +31,10 @@
 		<label>Manual Watering</label>
 		<description>Manual watering mode status</description>
 		<category>Water</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -43,6 +51,10 @@
 		<label>RF Linked</label>
 		<description>Is the device RF linked</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>SignalStrength</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -59,6 +71,10 @@
 		<label>High Flow Detected</label>
 		<description>Unusually high flow rate detected alert</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -67,6 +83,10 @@
 		<label>Low Flow Detected</label>
 		<description>Unusually low flow rate detected alert</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -75,6 +95,9 @@
 		<label>Fallen Status</label>
 		<description>The device has fallen</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -83,6 +106,10 @@
 		<label>Shutdown Value Failed</label>
 		<description>The device has failed to close the valve</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -91,6 +118,10 @@
 		<label>Final ECO Segment</label>
 		<description>In ECO mode this is true when the final ON watering on segment is running</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -99,6 +130,10 @@
 		<label>Signal Level</label>
 		<description>Reception Signal Strength</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>SignalStrength</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
@@ -107,6 +142,10 @@
 		<label>Battery Level</label>
 		<description>Battery Remaining Level</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
@@ -115,6 +154,10 @@
 		<label>Water Cutoff</label>
 		<description>Water cut-off alert</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -123,6 +166,10 @@
 		<label>Flow Rate</label>
 		<description>Current water flow rate</description>
 		<category>Flow</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -131,6 +178,10 @@
 		<label>Current Watering Volume</label>
 		<description>Accumulated volume of current watering cycle</description>
 		<category>Water</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -139,6 +190,10 @@
 		<label>Current Watering Limit</label>
 		<description>Volume limit for the current watering cycle</description>
 		<category>Water</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -147,6 +202,10 @@
 		<label>Watering Cycle Duration</label>
 		<description>Total duration of current watering cycle</description>
 		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -155,6 +214,10 @@
 		<label>Watering Cycle Remaining</label>
 		<description>Remaining duration of the current watering cycle</description>
 		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -163,6 +226,10 @@
 		<label>Watering Cycle Failsafe</label>
 		<description>Failsafe duration of the current watering cycle</description>
 		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -171,6 +238,10 @@
 		<label>Child Lock Mode</label>
 		<description>The child lock mode</description>
 		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Unlocked</option>
@@ -185,6 +256,10 @@
 		<label>Instant Duration Limit</label>
 		<description>Max duration allowed for the immediate watering</description>
 		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="false" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -193,6 +268,10 @@
 		<label>Instant Volume Limit</label>
 		<description>Max Volume limit for immediate watering</description>
 		<category>Water</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state readOnly="false" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -201,6 +280,10 @@
 		<label>Pause plan schedule</label>
 		<description>When ON will pause the current watering plan for an hour every 55 minutes</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -209,6 +292,10 @@
 		<label>Plan Paused Until</label>
 		<description>Displays when the last pause issued will expiry, resuming the current watering plan</description>
 		<category>Calendar</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -217,6 +304,10 @@
 		<label>Watering Plan Id</label>
 		<description>Displays the current watering plan id</description>
 		<category>Calendar</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

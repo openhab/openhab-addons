@@ -7,6 +7,7 @@
 	<thing-type id="server">
 		<label>Unified Remote Server</label>
 		<description>Unified Remote Server Thing for Unified Remote Binding</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channels>
 			<channel id="mouse-move" typeId="mouse-move-channel"/>
 			<channel id="send-key" typeId="send-key-channel"/>

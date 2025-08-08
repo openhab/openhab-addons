@@ -8,6 +8,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Delivery</label>
 		<description>The total amount delivered in the past period.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="gjValvePositionType">

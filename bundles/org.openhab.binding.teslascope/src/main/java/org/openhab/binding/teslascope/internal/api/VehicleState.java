@@ -25,10 +25,15 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VehicleState {
     // vehicle_state
-    public int locked;
+    @SerializedName("car_version")
+    public String carVersion = "";
+
+    public boolean locked;
+
+    public double odometer;
 
     @SerializedName("sentry_mode")
-    public int sentryMode;
+    public boolean sentryMode;
 
     @SerializedName("valet_mode")
     public int valetMode;
@@ -51,15 +56,6 @@ public class VehicleState {
     @SerializedName("rp_window")
     public int rpWindow;
 
-    @SerializedName("sun_roof_state")
-    public String sunRoofState = "";
-
-    @SerializedName("sunRoofPercentOpen")
-    public int sunRoofPercentOpen;
-
-    @SerializedName("homelink_nearby")
-    public int homelinkNearby;
-
     @SerializedName("tpms_pressure_fl")
     public double tpmsPressureFL;
 
@@ -71,6 +67,15 @@ public class VehicleState {
 
     @SerializedName("tpms_pressure_rr")
     public double tpmsPressureRR;
+
+    @SerializedName("sun_roof_state")
+    public String sunRoofState = "";
+
+    @SerializedName("sunRoofPercentOpen")
+    public int sunRoofPercentOpen;
+
+    @SerializedName("homelink_nearby")
+    public int homelinkNearby;
 
     @SerializedName("tpms_soft_warning_fl")
     public int tpmsSoftWarningFL;

@@ -116,36 +116,36 @@ roku:roku_tv:mytv1 "My Roku TV" [ hostName="192.168.10.1", refresh=10 ]
 ```java
 // Roku streaming media player items:
 
-String Player_ActiveApp        "Current App: [%s]"             { channel="roku:roku_player:myplayer1:activeApp" }
-String Player_ActiveAppName    "Current App Name: [%s]"        { channel="roku:roku_player:myplayer1:activeAppName" }
+String Player_ActiveApp        "Current App [%s]"              { channel="roku:roku_player:myplayer1:activeApp" }
+String Player_ActiveAppName    "Current App Name [%s]"         { channel="roku:roku_player:myplayer1:activeAppName" }
 String Player_Button           "Send Command to Roku"          { channel="roku:roku_player:myplayer1:button" }
 Player Player_Control          "Control"                       { channel="roku:roku_player:myplayer1:control" }
-String Player_PlayMode         "Status: [%s]"                  { channel="roku:roku_player:myplayer1:playMode" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]"     { channel="roku:roku_player:myplayer1:timeElapsed" }
-Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"       { channel="roku:roku_player:myplayer1:timeTotal" }
-DateTime Player_EndTime        "End Time: [%1$tl:%1$tM %1$tp]" { channel="roku:roku_player:myplayer1:endTime" }
+String Player_PlayMode         "Status [%s]"                   { channel="roku:roku_player:myplayer1:playMode" }
+Number:Time Player_TimeElapsed "Elapsed Time [%s]"             { channel="roku:roku_player:myplayer1:timeElapsed" }
+Number:Time Player_TimeTotal   "Total Time [%s]"               { channel="roku:roku_player:myplayer1:timeTotal" }
+DateTime Player_EndTime        "End Time [%s]"                 { channel="roku:roku_player:myplayer1:endTime" }
 Dimmer Player_Progress         "Progress [%.0f%%]"             { channel="roku:roku_player:myplayer1:progress" }
 
 // Roku TV items:
 
-Switch Player_Power              "Power: [%s]"                   { channel="roku:roku_tv:mytv1:power" }
-String Player_PowerState         "Power State: [%s]              { channel="roku:roku_tv:mytv1:powerState" }
-String Player_ActiveApp          "Current App: [%s]"             { channel="roku:roku_tv:mytv1:activeApp" }
-String Player_ActiveAppName      "Current App Name: [%s]"        { channel="roku:roku_tv:mytv1:activeAppName" }
-String Player_Button             "Send Command to Roku"          { channel="roku:roku_tv:mytv1:button" }
-Player Player_Control            "Control"                       { channel="roku:roku_tv:mytv1:control" }
-String Player_PlayMode           "Status: [%s]"                  { channel="roku:roku_tv:mytv1:playMode" }
-Number:Time Player_TimeElapsed   "Elapsed Time: [%d %unit%]"     { channel="roku:roku_tv:mytv1:timeElapsed" }
-Number:Time Player_TimeTotal     "Total Time: [%d %unit%]"       { channel="roku:roku_tv:mytv1:timeTotal" }
-DateTime Player_EndTime          "End Time: [%1$tl:%1$tM %1$tp]" { channel="roku:roku_tv:mytv1:endTime" }
-Dimmer Player_Progress           "Progress [%.0f%%]"             { channel="roku:roku_tv:mytv1:progress" }
-String Player_ActiveChannel      "Current Channel: [%s]"         { channel="roku:roku_tv:mytv1:activeChannel" }
-String Player_SignalMode         "Signal Mode: [%s]"             { channel="roku:roku_tv:mytv1:signalMode" }
-Number Player_SignalQuality      "Signal Quality: [%d %%]"       { channel="roku:roku_tv:mytv1:signalQuality" }
-String Player_ChannelName        "Channel Name: [%s]"            { channel="roku:roku_tv:mytv1:channelName" }
-String Player_ProgramTitle       "Program Title: [%s]"           { channel="roku:roku_tv:mytv1:programTitle" }
-String Player_ProgramDescription "Program Description: [%s]"     { channel="roku:roku_tv:mytv1:programDescription" }
-String Player_ProgramRating      "Program Rating: [%s]"          { channel="roku:roku_tv:mytv1:programRating" }
+Switch Player_Power              "Power [%s]"                  { channel="roku:roku_tv:mytv1:power" }
+String Player_PowerState         "Power State [%s]"            { channel="roku:roku_tv:mytv1:powerState" }
+String Player_ActiveApp          "Current App [%s]"            { channel="roku:roku_tv:mytv1:activeApp" }
+String Player_ActiveAppName      "Current App Name [%s]"       { channel="roku:roku_tv:mytv1:activeAppName" }
+String Player_Button             "Send Command to Roku"        { channel="roku:roku_tv:mytv1:button" }
+Player Player_Control            "Control"                     { channel="roku:roku_tv:mytv1:control" }
+String Player_PlayMode           "Status [%s]"                 { channel="roku:roku_tv:mytv1:playMode" }
+Number:Time Player_TimeElapsed   "Elapsed Time [%s]"           { channel="roku:roku_tv:mytv1:timeElapsed" }
+Number:Time Player_TimeTotal     "Total Time [%s]"             { channel="roku:roku_tv:mytv1:timeTotal" }
+DateTime Player_EndTime          "End Time [%s]"               { channel="roku:roku_tv:mytv1:endTime" }
+Dimmer Player_Progress           "Progress [%.0f%%]"           { channel="roku:roku_tv:mytv1:progress" }
+String Player_ActiveChannel      "Current Channel [%s]"        { channel="roku:roku_tv:mytv1:activeChannel" }
+String Player_SignalMode         "Signal Mode [%s]"            { channel="roku:roku_tv:mytv1:signalMode" }
+Number Player_SignalQuality      "Signal Quality [%d %%]"      { channel="roku:roku_tv:mytv1:signalQuality" }
+String Player_ChannelName        "Channel Name [%s]"           { channel="roku:roku_tv:mytv1:channelName" }
+String Player_ProgramTitle       "Program Title [%s]"          { channel="roku:roku_tv:mytv1:programTitle" }
+String Player_ProgramDescription "Program Description [%s]"    { channel="roku:roku_tv:mytv1:programDescription" }
+String Player_ProgramRating      "Program Rating [%s]"         { channel="roku:roku_tv:mytv1:programRating" }
 
 // A virtual switch used to trigger a rule to start a given app
 Switch Player_StartYouTube       "Start YouTube"

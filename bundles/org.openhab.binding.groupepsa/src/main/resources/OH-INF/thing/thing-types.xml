@@ -62,7 +62,7 @@
 
 		<label>Groupe PSA Car</label>
 		<description>Car connected via Groupe PSA (Peugeot, Citroen, Vauxhall, Opel, DS) Bridge</description>
-
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="battery" typeId="battery"/>
 			<channel-group id="doors" typeId="doors"/>
@@ -178,6 +178,10 @@
 		<label>Current</label>
 		<description>Electrical current</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -186,6 +190,10 @@
 		<label>Voltage</label>
 		<description>Voltage</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -194,6 +202,10 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -228,6 +240,10 @@
 		<label>Door Open</label>
 		<description>Door is open</description>
 		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ignition">
@@ -261,6 +277,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Speed</label>
 		<description>Current speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -275,6 +295,10 @@
 		<item-type>Location</item-type>
 		<label>Position</label>
 		<description>Last known position</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state pattern="%2$s°N %3$s°E %1$sm"/>
 	</channel-type>
 
@@ -333,6 +357,9 @@
 		<item-type>String</item-type>
 		<label>Emergency Call</label>
 		<description>Emergency call status</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NoRequest">None</option>
@@ -424,6 +451,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fuel Level</label>
 		<description>Fuel level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -446,6 +477,10 @@
 		<label>Remaining Charge</label>
 		<description>Remaining battery charge</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -475,6 +510,10 @@
 		<item-type>String</item-type>
 		<label>Charging Status</label>
 		<description>Battery charging status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Disconnected">Disconnected</option>
@@ -490,6 +529,10 @@
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
 		<description>Battery charging mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="No">No</option>
@@ -518,6 +561,10 @@
 		<label>Charging Time Remaining</label>
 		<description>Time remaining till charged</description>
 		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%tT"/>
 	</channel-type>
 
@@ -526,6 +573,10 @@
 		<label>Time Till Next Charging</label>
 		<description>Time till the next charging starts</description>
 		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%tT"/>
 	</channel-type>
 

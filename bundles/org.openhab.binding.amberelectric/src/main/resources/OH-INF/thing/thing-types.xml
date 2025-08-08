@@ -7,6 +7,7 @@
 	<thing-type id="service">
 		<label>Amber Electric</label>
 		<description>Amber Electric - wholesale access to power prices</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="electricity-price" typeId="electricity-price"/>
@@ -27,10 +28,15 @@
 				<label>Current Feed-In Status</label>
 				<description>Current price status of Feed-In</description>
 			</channel>
-			<channel id="nem-time" typeId="nemtime"/>
+			<channel id="nem-time" typeId="nem-time"/>
 			<channel id="spike" typeId="spike"/>
 			<channel id="renewables" typeId="renewables"/>
+			<channel id="estimate" typeId="estimate"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
@@ -40,11 +46,6 @@
 			<parameter name="nmi" type="text">
 				<label>NMI</label>
 				<description>NMI for your address (Optional)</description>
-			</parameter>
-			<parameter name="refresh" type="integer" min="60" unit="s">
-				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in seconds</description>
-				<default>60</default>
 			</parameter>
 		</config-description>
 
@@ -61,6 +62,10 @@
 		<item-type>String</item-type>
 		<label>Current Electricity Status</label>
 		<description>Current price status of grid import</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="nem-time">
@@ -73,12 +78,26 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Current Renewables</label>
 		<description>Current level of renewables in the grid</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="spike">
 		<item-type>Switch</item-type>
 		<label>Energy Price Spike</label>
 		<description>Report if the grid has a current price spike</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="estimate">
+		<item-type>Switch</item-type>
+		<label>Estimated Price?</label>
+		<description>Report if the current price is an estimate (on), or a finalised price (off) from AEMO</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

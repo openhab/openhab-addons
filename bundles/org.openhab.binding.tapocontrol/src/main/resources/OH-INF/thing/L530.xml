@@ -12,6 +12,7 @@
 
 		<label>L530 Series Color-Bulb</label>
 		<description>Tapo Smart Multicolor Light-Bulb</description>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="actuator" typeId="colorBulb"/>
 			<channel-group id="effects" typeId="lightEffectL530"/>
@@ -41,6 +42,10 @@
 		<item-type>String</item-type>
 		<label>Light Effect Theme</label>
 		<description>Name of active lightning effect</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 		<command>
 			<options>

@@ -17,7 +17,7 @@ The supported thing types are:
 - `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
 - `cinemaone` Cinema One (2nd Gen)
 - `alto`
-- `strato` Includes Strato, Strato S, Strato C or Strato V
+- `strato` Includes Strato, Strato S, Strato C, Strato V or Strato M
 
 The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.
 
@@ -100,7 +100,7 @@ The following channels are available:
 | ui#user_input              | String      | Indicates if the user is being prompted for input, what type of input, and any currently entered characters                     |
 | ui#user_input_prompt       | String      | Indicates user input prompt info and properties currently shown on screen                                                       |
 | ui#sendcmd                 | String      | Sends a raw command to the Kaleidescape player (WriteOnly)                                                                      |
-| -- music channels (not available on Alto and Strato) --                                                                                                                    |
+| -- music channels (not available on Alto and Strato) --                                                                                                                    |||
 | music#control              | Player      | Control Music Playback e.g. play/pause/next/previous/ffward/rewind                                                              |
 | music#repeat               | Switch      | Controls repeat playback for music                                                                                              |
 | music#random               | Switch      | Controls random playback for music                                                                                              |
@@ -116,7 +116,7 @@ The following channels are available:
 | music#track_handle         | String      | The handle of the currently playing track                                                                                       |
 | music#album_handle         | String      | The handle of the currently playing album                                                                                       |
 | music#nowplay_handle       | String      | The handle of the current now playing list                                                                                      |
-| -- metadata display channels (music related channels not available on Alto and Strato) --                                                                                  |
+| -- metadata display channels (music related channels not available on Alto and Strato) --                                                                                  |||
 | detail#type                | String      | Indicates if the currently selected item is a Movie or Album                                                                    |
 | detail#title               | String      | The title of the selected movie                                                                                                 |
 | detail#album_title         | String      | The title of the selected album                                                                                                 |
@@ -130,7 +130,7 @@ The following channels are available:
 | detail#artist              | String      | The artist of the selected album                                                                                                |
 | detail#directors           | String      | A list of directors of the selected movie                                                                                       |
 | detail#genres              | String      | A list of genres of the selected item                                                                                           |
-| detail#rating_reason       | String      | An explaination of why the selected movie received its rating                                                                   |
+| detail#rating_reason       | String      | An explanation of why the selected movie received its rating                                                                    |
 | detail#synopsis            | String      | A synopsis of the selected movie                                                                                                |
 | detail#review              | String      | A review of the selected album                                                                                                  |
 | detail#color_description   | String      | Indicates if the selected movie is in Color, Black and White, etc.                                                              |
@@ -163,12 +163,12 @@ String z1_Ui_TitleName "Movie Title: [%s]" { channel="kaleidescape:player:myzone
 String z1_Ui_PlayMode "Play Mode: [%s]" { channel="kaleidescape:player:myzone1:ui#play_mode" }
 String z1_Ui_PlaySpeed "Play Speed: [%s]" { channel="kaleidescape:player:myzone1:ui#play_speed" }
 Number z1_Ui_TitleNum "Title Number: [%s]" { channel="kaleidescape:player:myzone1:ui#title_num" }
-Number:Time z1_Ui_TitleLength "Title Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#title_length" }
-Number:Time z1_Ui_TitleLoc "Title Location: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#title_loc" }
+Number:Time z1_Ui_TitleLength "Title Length: [%s]" { channel="kaleidescape:player:myzone1:ui#title_length" }
+Number:Time z1_Ui_TitleLoc "Title Location: [%s]" { channel="kaleidescape:player:myzone1:ui#title_loc" }
 DateTime z1_Ui_TitleEndTime "Title End Time: [%s]" { channel="kaleidescape:player:myzone1:ui#endtime" }
 Number z1_Ui_ChapterNum "Chapter Number: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_num" }
-Number:Time z1_Ui_ChapterLength "Chapter Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#chapter_length" }
-Number:Time z1_Ui_ChapterLoc "Chapter Location: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#chapter_loc" }
+Number:Time z1_Ui_ChapterLength "Chapter Length: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_length" }
+Number:Time z1_Ui_ChapterLoc "Chapter Location: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_loc" }
 String z1_Ui_MovieMediaType "Media Type: [%s]" { channel="kaleidescape:player:myzone1:ui#movie_media_type" }
 String z1_Ui_MovieLocation "Movie Location: [%s]" { channel="kaleidescape:player:myzone1:ui#movie_location" }
 String z1_Ui_AspectRatio "Aspect Ratio: [%s]" { channel="kaleidescape:player:myzone1:ui#aspect_ratio" }
@@ -204,8 +204,8 @@ String z1_Music_Artist "Artist: [%s]" { channel="kaleidescape:player:myzone1:mus
 String z1_Music_Album "Album: [%s]" { channel="kaleidescape:player:myzone1:music#album" }
 String z1_Music_PlayMode "Play Mode: [%s]" { channel="kaleidescape:player:myzone1:music#play_mode" }
 String z1_Music_PlaySpeed "Play Speed: [%s]" { channel="kaleidescape:player:myzone1:music#play_speed" }
-Number:Time z1_Music_TrackLength "Track Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:music#track_length" }
-Number:Time z1_Music_TrackPosition "Track Position: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:music#track_position" }
+Number:Time z1_Music_TrackLength "Track Length: [%s]" { channel="kaleidescape:player:myzone1:music#track_length" }
+Number:Time z1_Music_TrackPosition "Track Position: [%s]" { channel="kaleidescape:player:myzone1:music#track_position" }
 Number z1_Music_TrackProgress "Track Progress: [%s %%]" { channel="kaleidescape:player:myzone1:music#track_progress" }
 String z1_Music_Title "Music Title Raw: [%s]" { channel="kaleidescape:player:myzone1:music#title" }
 String z1_Music_TrackHandle "Track Handle: [%s]" { channel="kaleidescape:player:myzone1:music#track_handle" }
@@ -221,7 +221,7 @@ String z1_Detail_CoverUrl "[%s]" { channel="kaleidescape:player:myzone1:detail#c
 String z1_Detail_HiresCoverUrl "[%s]" { channel="kaleidescape:player:myzone1:detail#hires_cover_url" }
 String z1_Detail_Rating "Rating: [%s]" { channel="kaleidescape:player:myzone1:detail#rating" }
 String z1_Detail_Year "Year: [%s]" { channel="kaleidescape:player:myzone1:detail#year" }
-Number:Time z1_Detail_RunningTime "Running Time: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:detail#running_time" }
+Number:Time z1_Detail_RunningTime "Running Time: [%s]" { channel="kaleidescape:player:myzone1:detail#running_time" }
 String z1_Detail_Actors "Actors: [%s]" { channel="kaleidescape:player:myzone1:detail#actors" }
 String z1_Detail_Directors "Directors: [%s]" { channel="kaleidescape:player:myzone1:detail#directors" }
 String z1_Detail_Artist "Artist: [%s]" { channel="kaleidescape:player:myzone1:detail#artist" }
@@ -234,30 +234,6 @@ String z1_Detail_Country "Country: [%s]" { channel="kaleidescape:player:myzone1:
 String z1_Detail_AspectRatio "Aspect Ratio: [%s]" { channel="kaleidescape:player:myzone1:detail#aspect_ratio" }
 String z1_Detail_DiscLocation "Disc Location: [%s]" { channel="kaleidescape:player:myzone1:detail#disc_location" }
 String z1_MovieSearch "Movie Search"
-```
-
-### `ksecondsformat.js` Example
-
-```javascript
-(function(timestamp) {
-    var totalSeconds = Date.parse(timestamp) / 1000
-
-    if (isNaN(totalSeconds)) {
-        return '-';
-    } else {
-        hours = Math.floor(totalSeconds / 3600);
-        totalSeconds %= 3600;
-        minutes = Math.floor(totalSeconds / 60);
-        seconds = totalSeconds % 60;
-        if ( minutes < 10 ) {
-            minutes = '0' + minutes;
-        }
-        if ( seconds < 10 ) {
-            seconds = '0' + seconds;
-        }
-        return hours + ':' + minutes + ':' + seconds;
-    }
-})(input)
 ```
 
 ### `kaleidescape.sitemap` Example

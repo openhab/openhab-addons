@@ -7,7 +7,7 @@
 	<bridge-type id="bridge">
 		<label>Verisure Bridge</label>
 		<description>This bridge represents the http://mypages.verisure.com web page connector.</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="status" typeId="status"/>
 		</channels>
@@ -47,7 +47,7 @@
 
 		<label>Verisure Alarm</label>
 		<description>A Verisure Alarm.</description>
-
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="changedByUser" typeId="changedByUser"/>
 			<channel id="changedVia" typeId="changedVia"/>
@@ -80,7 +80,7 @@
 
 		<label>Yale Doorman SmartLock</label>
 		<description>Integrated Yale Doorman SmartLock.</description>
-
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="changedByUser" typeId="changedByUser"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -118,7 +118,7 @@
 
 		<label>Verisure SmartPlug</label>
 		<description>A Verisure SmartPlug in your system.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="hazardous" typeId="hazardous"/>
 			<channel id="location" typeId="location"/>
@@ -150,7 +150,7 @@
 
 		<label>Verisure Smoke Detector</label>
 		<description>A climate device in a Smoke detector.</description>
-
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidityEnabled" typeId="humidityEnabled"/>
@@ -185,7 +185,7 @@
 
 		<label>Verisure Water Detector</label>
 		<description>A climate device in a Water detector.</description>
-
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -217,7 +217,7 @@
 
 		<label>Verisure Siren</label>
 		<description>A climate device in a Siren.</description>
-
+		<semantic-equipment-tag>Siren</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -250,7 +250,7 @@
 
 		<label>Verisure Night Control</label>
 		<description>A climate device in a Night Control.</description>
-
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -283,7 +283,7 @@
 
 		<label>Verisure Door or Window Sensor</label>
 		<description>A Verisure door or window sensor in your system.</description>
-
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -316,7 +316,7 @@
 
 		<label>Verisure User Presence</label>
 		<description>Verisure Presence information about your configured and active Verisure users.</description>
-
+		<semantic-equipment-tag>OccupancySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="userName" typeId="userName"/>
 			<channel id="webAccount" typeId="webAccount"/>
@@ -349,7 +349,7 @@
 
 		<label>Verisure Broadband Connection</label>
 		<description>Status of the Verisure broadband connection.</description>
-
+		<semantic-equipment-tag>Router</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="connected" typeId="connected"/>
@@ -378,7 +378,7 @@
 
 		<label>Verisure Mice Detection</label>
 		<description>Status of the Verisure mice detection.</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="countLatestDetection" typeId="countLatestDetection"/>
 			<channel id="countLast24Hours" typeId="countLast24Hours"/>
@@ -460,7 +460,7 @@
 
 		<label>Verisure Gateway</label>
 		<description>Communication status for the Verisure Gateway.</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="statusGSMOverUDP" typeId="communicationTestResult"/>
 			<channel id="testTimeGSMOverUDP" typeId="timestamp"/>
@@ -542,6 +542,10 @@
 		<item-type>String</item-type>
 		<label>User Location Status</label>
 		<description>Information on user location status (HOME/AWAY).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -591,6 +595,10 @@
 		<item-type>String</item-type>
 		<label>Alarm Status</label>
 		<description>Verisure alarm status.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="DISARMED">DISARMED</option>
@@ -604,6 +612,10 @@
 		<item-type>Switch</item-type>
 		<label>SmartLock Status</label>
 		<description>Verisure smart lock status.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="autoRelock">
@@ -641,6 +653,10 @@
 		<item-type>Switch</item-type>
 		<label>SmartPlug Status</label>
 		<description>Verisure smart plug status.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="connected">
@@ -653,6 +669,10 @@
 		<item-type>Contact</item-type>
 		<label>Door/Window State</label>
 		<description>Is door/window opened or closed. (OPEN/CLOSED)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -661,6 +681,10 @@
 		<label>Temperature</label>
 		<description>Current temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 
@@ -669,6 +693,10 @@
 		<label>Humidity</label>
 		<description>Current humidity in %.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 

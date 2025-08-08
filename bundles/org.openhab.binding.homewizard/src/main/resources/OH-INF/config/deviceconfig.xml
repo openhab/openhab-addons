@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:homewizard:device">
+		<parameter name="ipAddress" type="text" required="true">
+			<label>Network Address</label>
+			<description>The IP or host name of the HomeWizard device.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="refreshDelay" type="integer" min="1" unit="s">
+			<label>Refresh Interval</label>
+			<description>The refresh interval in seconds for polling the HomeWizard device.</description>
+			<advanced>true</advanced>
+			<default>5</default>
+		</parameter>
+		<parameter name="apiVersion" type="integer" min="1">
+			<label>API Version</label>
+			<description>The API version for polling the HomeWizard device.</description>
+			<options>
+				<option value="1">v1</option>
+				<option value="2">v2</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>1</default>
+		</parameter>
+		<parameter name="bearerToken" type="text">
+			<label>Bearer Token</label>
+			<description>The bearer token to be used when using API v2.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

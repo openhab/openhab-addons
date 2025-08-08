@@ -40,10 +40,11 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
-import org.openhab.binding.shelly.internal.handler.ShellyBluSensorHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private boolean connected = false; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
+    private final int pidCycleThreshold = 50;
 
     private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.of( //
             SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH, //
@@ -120,7 +122,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice devInfo)
+    public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
         ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
 
@@ -191,7 +193,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         logger.trace("{}: ShellyEvent received: {}", thingName, gson.toJson(message));
 
         boolean updated = false;
-        ShellyBluSensorHandler t = (ShellyBluSensorHandler) thing;
+        ShellyBluHandler t = (ShellyBluHandler) thing;
         if (t == null) {
             logger.debug("{}: Thing is not initialized -> ignore event", thingName);
             return;
@@ -217,7 +219,11 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             getString(e.data.addr), getInteger(e.data.pid));
                     if (e.data.pid != null) {
                         int pid = e.data.pid;
-                        if (pid == lastPid) {
+                        if (lastPid != -1 && pid < (lastPid - pidCycleThreshold)) {
+                            logger.debug(
+                                    "{}: PID={} received is so low that a new cycle has probably begun since lastPID={}",
+                                    thingName, pid, lastPid);
+                        } else if (pid <= lastPid) {
                             logger.debug("{}: Duplicate packet for PID={} received, ignore", thingName, pid);
                             break;
                         }

@@ -25,4 +25,8 @@ public class Calendar {
     public List<CalendarTask> getTasks() {
         return tasks;
     }
+
+    public void setTasks(List<CalendarTask> tasks) {
+        this.tasks = tasks;
+    }
 }

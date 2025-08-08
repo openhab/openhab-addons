@@ -950,7 +950,7 @@ public enum HeatpumpChannel {
      * EVU 2
      * (original: EVU 2)
      */
-    // CHANNEL_HZIO_EVU2(185, "HZIO_EVU2", NumberItem.class, null, false, null),
+    CHANNEL_HZIO_EVU2(185, "inputUtilityLock2", SwitchItem.class, null, false, HeatpumpVisibility.IN_EVU),
 
     /**
      * Safety tempearture limiter floor heating

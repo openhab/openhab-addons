@@ -84,7 +84,7 @@ public class GreeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GreeConfiguration.class);
-        if (config.ipAddress.isEmpty() || (config.refresh < 0)) {
+        if (config.ipAddress.isBlank() || (config.refreshInterval < 0)) {
             String message = messages.get("thinginit.invconf");
             logger.warn("{}: {}", thingId, message);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
@@ -405,8 +405,9 @@ public class GreeHandler extends BaseThingHandler {
         };
 
         if (refreshTask == null) {
-            refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
-            logger.debug("{}: Automatic refresh started ({} second interval)", thingId, config.refresh);
+            refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, config.refreshInterval, TimeUnit.SECONDS);
+            device.setRefreshInterval(config.refreshInterval);
+            logger.debug("{}: Automatic refresh started ({} second interval)", thingId, config.refreshInterval);
             forceRefresh = true;
         }
     }
@@ -414,7 +415,7 @@ public class GreeHandler extends BaseThingHandler {
     private boolean isMinimumRefreshTimeExceeded() {
         long currentTime = Instant.now().toEpochMilli();
         long timeSinceLastRefresh = currentTime - lastRefreshTime;
-        if (!forceRefresh && (timeSinceLastRefresh < config.refresh * 1000)) {
+        if (!forceRefresh && (timeSinceLastRefresh < config.refreshInterval * 1000)) {
             return false;
         }
         lastRefreshTime = currentTime;

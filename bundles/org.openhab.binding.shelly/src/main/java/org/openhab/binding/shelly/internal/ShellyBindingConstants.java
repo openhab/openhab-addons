@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
-
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link ShellyBindingConstants} class defines common constants, which are
@@ -31,88 +26,6 @@ public class ShellyBindingConstants {
     public static final String VENDOR = "Shelly";
     public static final String BINDING_ID = "shelly";
     public static final String SYSTEM_ID = "system";
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SHELLY1, //
-            THING_TYPE_SHELLY1L, //
-            THING_TYPE_SHELLY1PM, //
-            THING_TYPE_SHELLYEM, //
-            THING_TYPE_SHELLY3EM, //
-            THING_TYPE_SHELLY2_RELAY, //
-            THING_TYPE_SHELLY2_ROLLER, //
-            THING_TYPE_SHELLY25_RELAY, //
-            THING_TYPE_SHELLY25_ROLLER, //
-            THING_TYPE_SHELLY4PRO, //
-            THING_TYPE_SHELLYPLUG, //
-            THING_TYPE_SHELLYPLUGS, //
-            THING_TYPE_SHELLYPLUGU1, //
-            THING_TYPE_SHELLYUNI, //
-            THING_TYPE_SHELLYDIMMER, //
-            THING_TYPE_SHELLYDIMMER2, //
-            THING_TYPE_SHELLYIX3, //
-            THING_TYPE_SHELLYBULB, //
-            THING_TYPE_SHELLYDUO, //
-            THING_TYPE_SHELLYVINTAGE, //
-            THING_TYPE_SHELLYDUORGBW, //
-            THING_TYPE_SHELLYRGBW2_COLOR, //
-            THING_TYPE_SHELLYRGBW2_WHITE, //
-            THING_TYPE_SHELLYHT, //
-            THING_TYPE_SHELLYTRV, //
-            THING_TYPE_SHELLYSENSE, //
-            THING_TYPE_SHELLYEYE, //
-            THING_TYPE_SHELLYSMOKE, //
-            THING_TYPE_SHELLYGAS, //
-            THING_TYPE_SHELLYFLOOD, //
-            THING_TYPE_SHELLYDOORWIN, //
-            THING_TYPE_SHELLYDOORWIN2, //
-            THING_TYPE_SHELLYBUTTON1, //
-            THING_TYPE_SHELLYBUTTON2, //
-            THING_TYPE_SHELLMOTION, //
-
-            // Shelly Plus
-            THING_TYPE_SHELLYPLUS1, //
-            THING_TYPE_SHELLYPLUS1PM, //
-            THING_TYPE_SHELLYPLUS2PM_RELAY, //
-            THING_TYPE_SHELLYPLUS2PM_ROLLER, //
-            THING_TYPE_SHELLYPLUSI4, //
-            THING_TYPE_SHELLYPLUSI4DC, //
-            THING_TYPE_SHELLYPLUSDIMMER10V, //
-            THING_TYPE_SHELLYPLUSUNI, //
-            THING_TYPE_SHELLYPLUSHT, //
-            THING_TYPE_SHELLYPLUSHTG3, //
-            THING_TYPE_SHELLYPLUSSMOKE, //
-            THING_TYPE_SHELLYPLUSPLUGS, //
-            THING_TYPE_SHELLYPLUSPLUGUS, //
-            THING_TYPE_SHELLYPLUSDIMMERUS, //
-            THING_TYPE_SHELLYPLUSRGBWPM, //
-
-            // Shelly Wall Display
-            THING_TYPE_SHELLYPLUSWALLDISPLAY, //
-
-            // Shelly Plus Mini
-            THING_TYPE_SHELLY1MINI, //
-            THING_TYPE_SHELLYPMMINI, //
-            THING_TYPE_SHELLY1PMMINI, //
-
-            // Shelly Pro
-            THING_TYPE_SHELLYPRO1, //
-            THING_TYPE_SHELLYPRO1PM, //
-            THING_TYPE_SHELLYPRO2_RELAY, //
-            THING_TYPE_SHELLYPRO2PM_RELAY, //
-            THING_TYPE_SHELLYPRO2PM_ROLLER, //
-            THING_TYPE_SHELLYPRO3, //
-            THING_TYPE_SHELLYPRO3EM, //
-            THING_TYPE_SHELLYPROEM50, //
-            THING_TYPE_SHELLYPRO4PM, //
-
-            // Shelly BLU
-            THING_TYPE_SHELLYBLUBUTTON, //
-            THING_TYPE_SHELLYBLUDW, //
-            THING_TYPE_SHELLYBLUMOTION, //
-            THING_TYPE_SHELLYBLUHT, //
-            THING_TYPE_SHELLYBLUGW, //
-
-            THING_TYPE_SHELLYPROTECTED, //
-            THING_TYPE_SHELLYUNKNOWN);
 
     // Thing Configuration Properties
     public static final String CONFIG_DEVICEIP = "deviceIp";
@@ -180,6 +93,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_REACTWATTS = "reactiveWatts";
     public static final String CHANNEL_EMETER_VOLTAGE = "voltage";
     public static final String CHANNEL_EMETER_CURRENT = "current";
+    public static final String CHANNEL_EMETER_FREQUENCY = "frequency";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
     public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
     public static final String CHANNEL_GROUP_NMETER = "nmeter";
@@ -300,7 +214,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_BUTTON_TRIGGER1 = CHANNEL_BUTTON_TRIGGER + "1";
     public static final String CHANNEL_BUTTON_TRIGGER2 = CHANNEL_BUTTON_TRIGGER + "2";
 
-    public static final String SERVICE_TYPE = "_http._tcp.local.";
     public static final String SHELLY_API_MIN_FWVERSION = "v1.8.2";
     public static final String SHELLY_API_MIN_FWCOIOT = "v1.6";// v1.6.0+
     public static final String SHELLY_API_FWCOIOT2 = "v1.8";// CoAP 2 with FW 1.8+
@@ -337,6 +250,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 1;
     public static final int DIGITS_AMPERE = 3;
+    public static final int DIGITS_FREQUENCY = 1;
     public static final int DIGITS_TEMP = 1;
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;

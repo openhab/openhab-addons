@@ -20,6 +20,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Florian Hotze - Initial contribution
  * @author Luca Arnecke - Update to evcc version 0.123.1
+ * @author Marcel Goerentz - Replace invalid chars with hyphens in vehicleName
  */
 public class Loadpoint {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
@@ -271,7 +272,7 @@ public class Loadpoint {
      * @return vehicle's title/name
      */
     public String getVehicleName() {
-        return vehicleName != null ? vehicleName.replace(":", "-") : vehicleName;
+        return vehicleName != null ? vehicleName.replaceAll("[^a-zA-Z0-9_-]", "-") : null;
     }
 
     /**

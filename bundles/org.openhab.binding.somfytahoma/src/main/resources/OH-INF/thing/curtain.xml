@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Curtain</label>
+		<semantic-equipment-tag>Drapes</semantic-equipment-tag>
 		<channels>
 			<channel id="control" typeId="control"></channel>
 		</channels>

@@ -7,6 +7,7 @@
 	<bridge-type id="sdm_account">
 		<label>Nest SDM Account</label>
 		<description>An account for using the Smart Device Management (SDM) API</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:nest:sdm_account"/>
 	</bridge-type>
 

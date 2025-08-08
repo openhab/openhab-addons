@@ -8,6 +8,7 @@
 	<bridge-type id="ipbridge">
 		<label>Alarm Decoder IP Bridge</label>
 		<description>Nu Tech Alarm Decoder IP Bridge</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">Nu Tech Software Solutions</property>
 		</properties>
@@ -49,6 +50,7 @@
 	<bridge-type id="serialbridge">
 		<label>Alarm Decoder Serial Bridge</label>
 		<description>Nu Tech Alarm Decoder Serial Bridge</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">Nu Tech Software Solutions</property>
 		</properties>
@@ -82,6 +84,8 @@
 
 		<label>Alarm Zone</label>
 		<description>Alarm Decoder REL or EXP zone</description>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
+
 
 		<channels>
 			<channel id="contact" typeId="contact-channel"/>
@@ -108,6 +112,7 @@
 
 		<label>Alarm RF Zone</label>
 		<description>Alarm Decoder RFX zone</description>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lowbat" typeId="system.low-battery">
@@ -149,6 +154,7 @@
 
 		<label>Virtual Zone</label>
 		<description>Alarm Decoder virtual zone</description>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="command" typeId="contact-command-channel"/>
@@ -171,6 +177,7 @@
 
 		<label>Alarm Keypad</label>
 		<description>Alarm Decoder keypad thing</description>
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 
 		<channels>
 			<channel id="zone" typeId="number-channel">

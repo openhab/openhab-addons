@@ -15,7 +15,7 @@ package org.openhab.binding.energidataservice.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This class represents a dynamic date to be used in a query.
+ * This represents a dynamic date to be used in a query.
  *
  * @author Jacob Laursen - Initial contribution
  */

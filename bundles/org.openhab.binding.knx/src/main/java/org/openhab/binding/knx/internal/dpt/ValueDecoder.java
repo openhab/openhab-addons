@@ -181,6 +181,13 @@ public class ValueDecoder {
                     } else {
                         return handleNumericDpt(id, translator, preferredType);
                     }
+                case "9":
+                    if ((data.length == 2) && (data[0] == (byte) 0x7f) && (data[1] == (byte) 0xff)) {
+                        // 0x7fff denotes invalid data, this is not handled by Calimero
+                        LOGGER.debug("Ignoring incoming packet for DPT '{}', 0x7fff indicates invalid value", id);
+                        return null;
+                    }
+                    return handleNumericDpt(id, translator, preferredType);
                 case "10":
                     return handleDpt10(value);
                 case "11":
@@ -498,11 +505,16 @@ public class ValueDecoder {
         if (allowedTypes.contains(QuantityType.class) && !disableUoM) {
             String unit = DPTUnits.getUnitForDpt(id);
             if (unit != null) {
-                if (translator instanceof DPTXlator64BitSigned translatorSigned) {
-                    // prevent loss of precision, do not represent 64bit decimal using double
-                    return new QuantityType<>(translatorSigned.getValueSigned() + " " + unit);
+                try {
+                    if (translator instanceof DPTXlator64BitSigned translatorSigned) {
+                        // prevent loss of precision, do not represent 64bit decimal using double
+                        return new QuantityType<>(translatorSigned.getValueSigned() + " " + unit);
+                    }
+                    return new QuantityType<>(value + " " + unit);
+                } catch (IllegalArgumentException e) {
+                    LOGGER.debug("Could not represent value '{}' received for DPT '{}' as QuantityType", value, id);
+                    return null;
                 }
-                return new QuantityType<>(value + " " + unit);
             } else {
                 LOGGER.trace("Could not determine unit for DPT '{}', fallback to plain decimal", id);
             }

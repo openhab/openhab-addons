@@ -12,6 +12,7 @@
 
 		<label>Pentair Intelliflo</label>
 		<description>A Pentair Intelliflo pump</description>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 
 		<channels>
 			<channel id="run" typeId="run"/>
@@ -59,6 +60,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Pump power</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

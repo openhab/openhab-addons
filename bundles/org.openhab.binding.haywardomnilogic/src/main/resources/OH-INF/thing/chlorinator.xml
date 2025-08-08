@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Chlorinator</label>
+		<semantic-equipment-tag>Chlorinator</semantic-equipment-tag>
 		<channels>
 			<channel id="chlorEnable" typeId="system.power"/>
 			<channel id="chlorOperatingMode" typeId="chlorOperatingMode"/>
@@ -37,6 +38,10 @@
 	<channel-type id="chlorOperatingMode">
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="1">Timed Percent</option>
@@ -65,6 +70,9 @@
 	<channel-type id="chlorError">
 		<item-type>String</item-type>
 		<label>Chlorinator Error</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -78,12 +86,20 @@
 	<channel-type id="avgSaltLevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Average Salt Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%,d ppm" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="instantSaltLevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Instant Salt Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%,d ppm" readOnly="true"/>
 	</channel-type>
 

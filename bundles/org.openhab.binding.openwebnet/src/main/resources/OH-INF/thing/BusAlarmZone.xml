@@ -12,7 +12,7 @@
 
 		<label>Alarm Zone</label>
 		<description>A OpenWebNet BUS/SCS configured alarm zone.</description>
-
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<!-- read only -->
 			<channel id="state" typeId="alarmZoneState"/>

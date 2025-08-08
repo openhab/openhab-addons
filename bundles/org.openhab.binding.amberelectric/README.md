@@ -1,6 +1,6 @@
 # Amber Electric Binding
 
-A binding that supports the Australian energy retailer Amber's API (<https://www.amber.com.au/>) and provides data on the current pricing for buying and selling power, as well as the current level of renewables in the NEM.
+A binding that supports the Australian energy retailer Amber's API (<https://www.amber.com.au/>) and provides data on the current pricing for buying and selling power, as well as the current level of renewables in the Australian National Electricity Market (NEM).
 
 ## Supported Things
 
@@ -12,25 +12,27 @@ The binding does not support auto discovery.
 
 ## Thing Configuration
 
-As a minimum, the IP address is needed:
+As a minimum, the apiKey is needed:
 
-- `apiKey` - The API key from the 'Developer' section of <https://apps.amber.com.au>
-- 'nmi' optional -  the NMI for your property. Required if you have multiple properties with Amber
-- 'refresh' the refresh rate for querying the API.
+| Thing Parameter | Default Value | Required | Advanced | Description                                                                                           |
+|-----------------|---------------|----------|----------|-------------------------------------------------------------------------------------------------------|
+| apiKey          | N/A           | Yes      | No       | The API key from the 'Developer' section of <https://apps.amber.com.au>                               |
+| nmi             | N/A           | No       | No       | The NMI (NMI (National Metering Identifier) for your property. Required if you have multiple accounts |
 
 ## Channels
 
-| channel id             | type                 | description                                       |
-|------------------------|----------------------|---------------------------------------------------|
-| electricity-price      | Number:EnergyPrice   | Current price to import power from the grid       |
-| controlled-load-price  | Number:EnergyPrice   | Current price to import power for Controlled Load |
-| feed-in-price          | Number:EnergyPrice   | Current price to export power to the grid         |
-| electricity-status     | String               | Current price status of grid import               |
-| controlled-load-status | String               | Current price status of controlled load import    |
-| feed-in-status         | String               | Current price status of Feed-In                   |
-| nem-time               | String               | NEM time of last pricing update                   |
-| renewables             | Number:Dimensionless | Current level of renewables in the grid           |
-| spike                  | Switch               | Report if the grid has a current price spike      |
+| channel id             | type                 | description                                          |
+|------------------------|----------------------|------------------------------------------------------|
+| electricity-price      | Number:EnergyPrice   | Current price to import power from the grid          |
+| controlled-load-price  | Number:EnergyPrice   | Current price to import power for Controlled Load    |
+| feed-in-price          | Number:EnergyPrice   | Current price to export power to the grid            |
+| electricity-status     | String               | Current price status of grid import                  |
+| controlled-load-status | String               | Current price status of controlled load import       |
+| feed-in-status         | String               | Current price status of Feed-In                      |
+| nem-time               | String               | NEM time of last pricing update                      |
+| renewables             | Number:Dimensionless | Current level of renewables in the NEM               |
+| spike                  | Switch               | Report if the grid has a current price spike         |
+| estimate               | Switch               | Report if the current pricing is an estimate or not  |
 
 ## Full Example
 
@@ -52,6 +54,7 @@ String AmberElectric_FeedInStatus { channel="amberelectric:service:AmberElectric
 String AmberElectric_nemtime { channel="amberelectric:service:AmberElectric:nem-time" }
 Number AmberElectric_Renewables { channel="amberelectric:service:AmberElectric:renewables" }
 Switch AmberElectric_Spike { channel="amberelectric:service:AmberElectric:spike" }
+Switch AmberElectric_Estimate { channel="amberelectric:service:AmberElectric:estimate" }
 ```
 
 ### `amberelectric.sitemap`
@@ -66,4 +69,5 @@ Text item=AmberElectric_FeedInStatus label="Feed-In Price Status"
 Text item=AmberElectric_nemtime label="Current time of NEM pricing"
 Text item=AmberElectric_Renewables label="Renewables Level"
 Switch item=AmberElectric_Spike  label="Spike Status"
+Switch item=AmberElectric_Estimate  label="Estimated Pricing (On = Estimate, Off = final pricing"
 ```

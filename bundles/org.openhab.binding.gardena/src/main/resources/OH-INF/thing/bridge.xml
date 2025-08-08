@@ -8,6 +8,7 @@
 	<bridge-type id="account">
 		<label>Gardena Smart System Account</label>
 		<description>The Gardena smart system account</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="apiSecret" type="text" required="true">

@@ -1,0 +1,33 @@
+{
+	"id": "1",
+	"type": "next",
+	"payload": {
+		"data": {
+			"liveMeasurement": {
+				"timestamp": "2025-05-19T15:47:35.000+02:00",
+				"power": 0,
+				"lastMeterConsumption": 11646.7548,
+				"lastMeterProduction": 15334.4176,
+				"accumulatedConsumption": 0.0832,
+				"accumulatedConsumptionLastHour": 0.0023,
+				"accumulatedCost": 0.022155,
+				"accumulatedReward": null,
+				"currency": "EUR",
+				"minPower": 0,
+				"averagePower": 5.3,
+				"maxPower": 2084,
+				"voltagePhase1": null,
+				"voltagePhase2": null,
+				"voltagePhase3": null,
+				"currentL1": null,
+				"currentL2": null,
+				"currentL3": null,
+				"powerProduction": 3128,
+				"accumulatedProduction": 14.3516,
+				"accumulatedProductionLastHour": 2.2123,
+				"minPowerProduction": 0,
+				"maxPowerProduction": 4391
+			}
+		}
+	}
+}

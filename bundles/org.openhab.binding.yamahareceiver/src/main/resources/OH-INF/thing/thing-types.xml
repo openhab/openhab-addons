@@ -10,6 +10,7 @@
 			RX-S600,
 			HTR-xxxx
 		</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power"/>
@@ -79,6 +80,7 @@
 		</supported-bridge-type-refs>
 		<label>Yamaha Receiver Zone</label>
 		<description>Yamaha Receiver Zone</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="zone_channels" id="zone_channels"/>
@@ -142,6 +144,10 @@
 		<label>Power</label>
 		<description>Power the AVR or zone ON/OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="party_mode">
@@ -149,6 +155,10 @@
 		<label>Party Mode</label>
 		<description>Party mode ON/OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="party_mode_volume">
@@ -156,6 +166,10 @@
 		<label>Party Mode Volume Up/Down</label>
 		<description>Increase or decrease of party mode volume</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="party_mode_mute">
@@ -163,6 +177,10 @@
 		<label>Party Mode Mute</label>
 		<description>Mute when party mode</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="surroundProgram">
@@ -208,6 +226,10 @@
 		<label>Volume</label>
 		<description>Set the volume level</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="volumeDB" advanced="true">
@@ -223,6 +245,10 @@
 		<label>Mute</label>
 		<description>Enable/Disable Mute on the AVR</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="dialogueLevel">
@@ -230,6 +256,10 @@
 		<label>Dialogue Level</label>
 		<description>Set the dialogue level</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="2" step="1" pattern="%d"/>
 	</channel-type>
 
@@ -238,6 +268,10 @@
 		<label>HDMI1 Output</label>
 		<description>Switch the HDMI1 Output ON/OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hdmi2Out">
@@ -245,6 +279,10 @@
 		<label>HDMI2 Output</label>
 		<description>Switch the HDMI2 Output ON/OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="scene">
@@ -252,6 +290,10 @@
 		<label>Scene</label>
 		<description>Set the active scene of the AVR</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state pattern="%s">
 			<options>
 				<option value="Scene 1">Scene 1</option>
@@ -281,6 +323,10 @@
 		<item-type>String</item-type>
 		<label>Station</label>
 		<description>Current station name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -288,6 +334,10 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Artist</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -295,6 +345,10 @@
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -302,6 +356,10 @@
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Track title</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -309,6 +367,10 @@
 		<item-type>String</item-type>
 		<label>Track Picture URL</label>
 		<description>Track picture URL</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -316,6 +378,10 @@
 		<item-type>Number</item-type>
 		<label>Preset</label>
 		<description>Select a saved channel by its preset number</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state pattern="%s">
 			<!-- There is a maximum of 40 preset channels in the xml API. The names of the stations can be requested via NET_RADIO/Play_Control/Preset/Preset_Sel_Item/Item_1/Title -->
 			<options>
@@ -420,6 +486,10 @@
 			AVR is in that navigation menu already.
 		</description>
 		<category>Navigation</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="navigation_current_item">
@@ -443,6 +513,10 @@
 		<label>Menu Depth</label>
 		<description>Hierarchical level</description>
 		<category>Navigation</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

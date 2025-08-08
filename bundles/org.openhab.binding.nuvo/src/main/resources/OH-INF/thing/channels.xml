@@ -10,7 +10,7 @@
 		<description>
 			Grand Concerto or Essentia G Amplifier System
 		</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="system" typeId="system">
 				<label>System</label>
@@ -123,7 +123,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -392,6 +392,10 @@
 		<item-type>Switch</item-type>
 		<label>All Off</label>
 		<description>Turn All Zones Off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -399,6 +403,10 @@
 		<item-type>Switch</item-type>
 		<label>Page</label>
 		<description>Activates the Page Mode for All Zones</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="sendcmd">
@@ -426,6 +434,10 @@
 		<label>Control</label>
 		<description>Transport Controls e.g. Play/Pause/Next/Previous for the Current Source</description>
 		<category>Player</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="treble">
@@ -453,18 +465,30 @@
 		<item-type>Switch</item-type>
 		<label>Loudness Compensation</label>
 		<description>A Switch That Controls the Loudness Compensation Setting for the Zone</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="dnd">
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb</label>
 		<description>A Switch That Controls If the Zone Should Ignore an Incoming Audio Page</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="lock">
 		<item-type>Contact</item-type>
 		<label>Locked</label>
 		<description>Indicates If This Zone Is Locked</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">Unlocked</option>
@@ -477,6 +501,10 @@
 		<item-type>Switch</item-type>
 		<label>Party Mode</label>
 		<description>Activate Party Mode With This Zone as the Host</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="display_line1">
@@ -507,6 +535,10 @@
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>The Current Playback Mode of the Source</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -514,14 +546,22 @@
 		<item-type>Number:Time</item-type>
 		<label>Track Length</label>
 		<description>The Total Running Time of the Current Playing Track</description>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="track_position">
 		<item-type>Number:Time</item-type>
 		<label>Track Position</label>
 		<description>The Running Time Elapsed of the Current Playing Track</description>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="button_press">

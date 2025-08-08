@@ -7,6 +7,7 @@
 	<bridge-type id="account">
 		<label>Mercedes Me Account</label>
 		<description>Mercedes Benz account data</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:mercedesme:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>

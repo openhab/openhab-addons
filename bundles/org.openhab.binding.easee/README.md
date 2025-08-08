@@ -157,7 +157,7 @@ Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="4
 Number:ElectricCurrent  Easee_Circuit_Phase1                  "Phase 1"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#phase1" }
 Number:ElectricCurrent  Easee_Circuit_Phase2                  "Phase 2"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#phase2" }
 Number:ElectricCurrent  Easee_Circuit_Phase3                  "Phase 3"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#phase3" }
-String                  Easee_Circuit_Dynamic_Phases          "Dynamic Power [MAP(easeePhases.map):%s]"   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#setDynamicCurrents" }
+String                  Easee_Circuit_Dynamic_Phases          "Dynamic Power [MAP(easeePhases.map):%s]"   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#dynamicCurrents" }
 Switch                  Easee_Charger_Start_Stop              "Start / Stop"                              { channel="easee:mastercharger:mysite1:myCharger1:commands#startStop" }
 ```
 

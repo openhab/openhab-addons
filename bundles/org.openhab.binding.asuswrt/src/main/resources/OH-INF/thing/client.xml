@@ -12,6 +12,8 @@
 
 		<label>Asuswrt Client</label>
 		<description>Client connected to Asuswrt-Router</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+
 		<channel-groups>
 			<channel-group id="network-info" typeId="clientNetworkGroup"></channel-group>
 			<channel-group id="traffic" typeId="traffic-group"></channel-group>

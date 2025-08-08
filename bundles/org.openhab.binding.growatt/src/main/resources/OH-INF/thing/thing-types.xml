@@ -8,6 +8,7 @@
 	<bridge-type id="bridge">
 		<label>Growatt Bridge</label>
 		<description>Bridge Thing for Growatt Binding</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="userName" type="text" required="false">
@@ -32,6 +33,7 @@
 
 		<label>Growatt Inverter</label>
 		<description>Inverter Thing for Growatt Binding</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<!-- All known channels; unused channels are dynamically deleted -->
 		<channels>
@@ -589,6 +591,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Status Code</label>
 		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
 
@@ -596,6 +601,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Status Code</label>
 		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
 
@@ -603,6 +611,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fault Code</label>
 		<category>Siren</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
 
@@ -613,9 +624,13 @@
 	</channel-type>
 
 	<channel-type id="advanced-electric-frequency" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="Hz">Number:Frequency</item-type>
 		<label>Electric Frequency</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.2f Hz"/>
 	</channel-type>
 
@@ -623,6 +638,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Electric VA</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.0f VA"/>
 	</channel-type>
 
@@ -630,6 +649,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Work Time</label>
 		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.1f h"/>
 	</channel-type>
 
@@ -637,6 +660,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Electric Power</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.0f W"/>
 	</channel-type>
 
@@ -644,6 +671,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Electric Current</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.1f A"/>
 	</channel-type>
 
@@ -651,6 +682,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Electric Voltage</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.1f V"/>
 	</channel-type>
 
@@ -658,6 +693,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Electric Energy</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.0f kWh"/>
 	</channel-type>
 
@@ -665,6 +704,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Electric Reactive Power</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.0f var"/>
 	</channel-type>
 
@@ -672,6 +715,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Electric Reactive Energy</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.0f kvarh"/>
 	</channel-type>
 
@@ -679,6 +726,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Outdoor Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.0f °C"/>
 	</channel-type>
 
@@ -687,6 +738,10 @@
 		<label>Inverter Clock Offset</label>
 		<description>Time offset of inverter clock vs. OH system clock.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%0.0f s"/>
 	</channel-type>
 

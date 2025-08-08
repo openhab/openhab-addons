@@ -14,6 +14,9 @@ package org.openhab.binding.lutron.internal.protocol.leap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lutron.internal.protocol.FanSpeedType;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.LeapRequest;
+
+import com.google.gson.Gson;
 
 /**
  * Contains static methods for constructing LEAP messages
@@ -99,8 +102,13 @@ public class Request {
     }
 
     public static String request(CommuniqueType cType, String url) {
-        String request = "{\"CommuniqueType\": \"%s\",\"Header\": {\"Url\": \"%s\"}}";
-        return String.format(request, cType.toString(), url);
+        LeapRequest leapRequest = new LeapRequest();
+        leapRequest.communiqueType = cType.toString();
+        leapRequest.header = new LeapRequest.Header();
+        leapRequest.header.url = url;
+
+        Gson gson = new Gson();
+        return gson.toJson(leapRequest);
     }
 
     public static String ping() {
@@ -150,6 +158,11 @@ public class Request {
         return request(CommuniqueType.READREQUEST, String.format("/zone/%d/status", zone));
     }
 
+    public static String getZoneStatuses() {
+        return request(CommuniqueType.READREQUEST,
+                "/zone/status/expanded?where=Zone.ControlType:\"Dimmed\"|\"Switched\"|\"CCO\"|\"Shade\"");
+    }
+
     public static String getOccupancyGroupStatus() {
         return request(CommuniqueType.READREQUEST, "/occupancygroup/status");
     }
@@ -164,5 +177,9 @@ public class Request {
 
     public static String subscribeZoneStatus() {
         return request(CommuniqueType.SUBSCRIBEREQUEST, "/zone/status");
+    }
+
+    public static String subscribeAreaStatus() {
+        return request(CommuniqueType.SUBSCRIBEREQUEST, "/area/status");
     }
 }

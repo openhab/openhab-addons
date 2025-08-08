@@ -12,6 +12,7 @@
 
 		<label>Controller</label>
 		<description>A Pentair Controller such as EasyTouch or IntelliTouch.</description>
+		<semantic-equipment-tag>SwimmingPool</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="poolheat" typeId="heat">
@@ -189,6 +190,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Water Temperature</label>
 		<description>The temperature of the water. Only valid when pool pump is running.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -196,6 +201,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Solar Temperature</label>
 		<description>The temperature of the solar sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -203,6 +212,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Air Temperature</label>
 		<description>The temperature of the air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -210,6 +223,10 @@
 		<item-type>Switch</item-type>
 		<label>Auxillary Switch</label>
 		<description>The on/off control for this circuit.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="circuitName">
@@ -230,6 +247,10 @@
 		<item-type>String</item-type>
 		<label>Heat Mode</label>
 		<description>The current head mode (None, Heater, Solar Preferred, Solar).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NONE">None</option>
@@ -244,6 +265,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Set Point</label>
 		<description>The set point temperature for this mode.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" min="15" max="105" step="1"/>
 	</channel-type>
 
@@ -251,6 +276,10 @@
 		<item-type>String</item-type>
 		<label>Light Mode</label>
 		<description>The current light mode.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">Off</option>
@@ -298,6 +327,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Start Time</label>
 		<description>The start time for this schedule.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state min="0" max="1440"/>
 	</channel-type>
 
@@ -305,6 +338,10 @@
 		<item-type>Number:Time</item-type>
 		<label>End Time</label>
 		<description>The end time (or duration for Egg Timer) of this schedule.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state min="0" max="1440"/>
 	</channel-type>
 
@@ -324,6 +361,10 @@
 		<item-type>Switch</item-type>
 		<label>Service Mode</label>
 		<description>Controller is in service mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -331,6 +372,10 @@
 		<item-type>Switch</item-type>
 		<label>Heater Delay</label>
 		<description>Pump is continuing to run to allow the heater to cool.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="solarState">

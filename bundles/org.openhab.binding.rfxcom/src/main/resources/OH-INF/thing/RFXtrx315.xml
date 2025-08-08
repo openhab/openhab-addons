@@ -7,6 +7,7 @@
 	<bridge-type id="RFXtrx315">
 		<label>RFXtrx315 USB 315MHz Transceiver</label>
 		<description>This is an RFXCOM 315MHz transceiver bridge.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="bridgeId" type="text" required="true">

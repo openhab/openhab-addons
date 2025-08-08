@@ -29,10 +29,10 @@ public class HpHcTariff extends Tariff {
     public HpHcTariff(String line) {
         super(line, 9);
         try {
-            this.hcHT = Double.parseDouble(values[5]);
-            this.hcTTC = Double.parseDouble(values[6]);
-            this.hpHT = Double.parseDouble(values[7]);
-            this.hpTTC = Double.parseDouble(values[8]);
+            this.hcHT = parseDouble(values[5]);
+            this.hcTTC = parseDouble(values[6]);
+            this.hpHT = parseDouble(values[7]);
+            this.hpTTC = parseDouble(values[8]);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
         }

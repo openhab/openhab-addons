@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class GreeConfiguration {
     public String ipAddress = "";
     public String broadcastAddress = "";
-    public int refresh = 60;
+    public int refreshInterval = 60;
     /**
      * The currentTemperatureOffset is configureable in case the user wants to offset this temperature for calibration
      * of the temperature sensor.
@@ -38,7 +38,8 @@ public class GreeConfiguration {
 
     @Override
     public String toString() {
-        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh=" + refresh
-                + ", currentTemperatureOffset=" + currentTemperatureOffset + ", encryptionType=" + encryptionType;
+        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refreshInterval="
+                + refreshInterval + ", currentTemperatureOffset=" + currentTemperatureOffset + ", encryptionType="
+                + encryptionType;
     }
 }

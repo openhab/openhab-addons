@@ -12,7 +12,7 @@
 
 		<label>Zigbee Switch</label>
 		<description>An OpenWebNet Zigbee switch (actuator) for the control of 1 load/light. BTicino models: 4591/3684/etc.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="switch_01" typeId="switch"/>
 		</channels>

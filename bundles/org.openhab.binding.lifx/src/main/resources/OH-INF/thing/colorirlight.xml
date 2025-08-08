@@ -6,6 +6,7 @@
 
 	<thing-type id="colorirlight">
 		<label>LIFX Color IR Light</label>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="color"/>
 			<channel id="temperature" typeId="temperature"/>

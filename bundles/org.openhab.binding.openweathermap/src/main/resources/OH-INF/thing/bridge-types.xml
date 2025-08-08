@@ -8,9 +8,8 @@
 	<bridge-type id="weather-api">
 		<label>OpenWeatherMap Account</label>
 		<description>Provides access to the OpenWeatherMap API.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<representation-property>apikey</representation-property>
-
 		<config-description-ref uri="bridge-type:openweathermap:weather-api"/>
 	</bridge-type>
 

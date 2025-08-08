@@ -12,6 +12,7 @@
 
 		<label>BTicino Smarther Chronothermostat</label>
 		<description>This thing represents a BTicino Smarther chronothermostat module.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="measures" typeId="module-measures"/>
@@ -83,6 +84,10 @@
 		<label>Temperature</label>
 		<description>Indoor temperature as measured by the sensor</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
 
@@ -91,6 +96,10 @@
 		<label>Humidity</label>
 		<description>Indoor humidity as measured by the sensor</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
 
@@ -120,6 +129,10 @@
 		<label>Temperature</label>
 		<description>Current operational target temperature set on the module</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
 
@@ -164,6 +177,10 @@
 		<label>Temperature</label>
 		<description>New operational set-point temperature to be set on the module (valid only for Mode = "Manual")</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" min="7.1" max="104" step="0.1"/>
 	</channel-type>
 
@@ -210,6 +227,10 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power on, send new operational settings to the module</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="config-fetchprograms" advanced="true">

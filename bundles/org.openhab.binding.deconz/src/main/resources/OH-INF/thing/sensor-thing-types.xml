@@ -11,6 +11,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Air Quality Sensor</label>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="airquality" id="airquality"/>
 			<channel typeId="airqualityppb" id="airqualityppb"/>
@@ -25,6 +26,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Alarm Sensor</label>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel typeId="alarm" id="alarm"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -38,6 +40,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Carbon-monoxide Sensor</label>
+		<semantic-equipment-tag>COSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="carbonmonoxide" id="carbonmonoxide"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -51,6 +54,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Battery Sensor</label>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="system.battery-level" id="battery_level"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -67,6 +71,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Color Controller</label>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel typeId="system.color" id="color"/>
 			<channel typeId="buttonevent" id="buttonevent"/>
@@ -85,6 +90,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Consumption Sensor</label>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel typeId="consumption" id="consumption"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -98,6 +104,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Daylight Sensor</label>
+		<semantic-equipment-tag>IlluminanceSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="value" id="value"/>
 			<channel typeId="light" id="light"/>
@@ -111,6 +118,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Fire Sensor</label>
+		<semantic-equipment-tag>FireDetector</semantic-equipment-tag>
 		<channels>
 			<channel typeId="fire" id="fire"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -124,6 +132,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Humidity Sensor</label>
+		<semantic-equipment-tag>HumiditySensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="humidity" id="humidity"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -137,6 +146,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Light Sensor</label>
+		<semantic-equipment-tag>IlluminanceSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="lightlux" id="lightlux"/>
 			<channel typeId="light_level" id="light_level"/>
@@ -153,6 +163,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Moisture Sensor</label>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="moisture" id="moisture"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -166,6 +177,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Power Sensor</label>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="power" id="power"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -179,6 +191,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Open/Close Sensor</label>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="open" id="open"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -192,6 +205,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Presence Sensor</label>
+		<semantic-equipment-tag>OccupancySensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="system.motion" id="presence"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -209,6 +223,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Pressure Sensor</label>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="pressure" id="pressure"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -222,6 +237,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Switch/Button</label>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel typeId="buttonevent" id="buttonevent"/>
 			<channel typeId="button" id="button"/>
@@ -236,6 +252,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Temperature Sensor</label>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="temperature" id="temperature"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -250,6 +267,7 @@
 		</supported-bridge-type-refs>
 		<label>Thermostat</label>
 		<description>A Thermostat sensor/actor</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel typeId="temperature" id="temperature"/>
 			<channel typeId="heatsetpoint" id="heatsetpoint"/>
@@ -266,6 +284,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Vibration Sensor</label>
+		<semantic-equipment-tag>VibrationSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="vibration" id="vibration"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -279,6 +298,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Water Leakage Sensor</label>
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="waterleakage" id="waterleakage"/>
 			<channel typeId="last_updated" id="last_updated"/>

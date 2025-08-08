@@ -25,7 +25,8 @@ public enum ChannelGroup {
     TEMPS("temps"),
     HUMIDITY("humidity"),
     RECUPERATOR("recuperator"),
-    SERVICE("service");
+    SERVICE("service"),
+    OPERATION("operation");
 
     private final String groupName;
 

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="text">
+		<item-type>String</item-type>
+		<label>Simple Text</label>
+	</channel-type>
+	<channel-type id="custom-name">
+		<item-type>String</item-type>
+		<label>Custom Name</label>
+		<description>Name given from IKEA home smart</description>
+	</channel-type>
+	<channel-type id="light-preset">
+		<item-type>String</item-type>
+		<label>Light Preset</label>
+		<command>
+			<options>
+				<option value="Off">Off</option>
+				<option value="Warm">Warm</option>
+				<option value="Slowdown">Slowdown</option>
+				<option value="Smooth">Smooth</option>
+				<option value="Bright">Bright</option>
+			</options>
+		</command>
+	</channel-type>
+	<channel-type id="sensor-schedule">
+		<item-type>Number</item-type>
+		<label>Sensor Schedule</label>
+		<state>
+			<options>
+				<option value="0">Always</option>
+				<option value="1">Follow Sun</option>
+				<option value="2">Time schedule</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">Always</option>
+				<option value="1">Follow Sun</option>
+				<option value="2">Time schedule</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="repeat">
+		<item-type>Number</item-type>
+		<label>Repeat Options</label>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Title</option>
+				<option value="2">Playlist</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Title</option>
+				<option value="2">Playlist</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="startup">
+		<item-type>Number</item-type>
+		<label>Startup Behavior</label>
+		<description>Startup behavior after power cutoff</description>
+		<state>
+			<options>
+				<option value="0">Previous</option>
+				<option value="1">On</option>
+				<option value="2">Off</option>
+				<option value="3">Toggle</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">Previous</option>
+				<option value="1">On</option>
+				<option value="2">Off</option>
+				<option value="3">Toggle</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="disable-status-light">
+		<item-type>Switch</item-type>
+		<label>Disable Status Light</label>
+		<description>Disable status light on device</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="child-lock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+		<description>Child lock for button on device</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>On Off Switch</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="switch-ro">
+		<item-type>Switch</item-type>
+		<label>On Off Switch</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm Switch</label>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="illuminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illuminance</label>
+		<description>Illuminance in Lux </description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<category>Contact</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schedule-start-time">
+		<item-type>DateTime</item-type>
+		<label>Schedule Time</label>
+		<state pattern="%1$tH:%1$tM"/>
+		<command>
+			<options>
+				<option value="16:00">16:00</option>
+				<option value="16:30">16:30</option>
+				<option value="17:00">17:00</option>
+				<option value="17:30">17:30</option>
+				<option value="18:00">18:00</option>
+				<option value="18:30">18:30</option>
+				<option value="19:00">19:00</option>
+				<option value="19:30">19:30</option>
+				<option value="20:00">20:00</option>
+			</options>
+		</command>
+	</channel-type>
+	<channel-type id="schedule-end-time">
+		<item-type>DateTime</item-type>
+		<label>Schedule Time</label>
+		<state pattern="%1$tH:%1$tM"/>
+		<command>
+			<options>
+				<option value="04:00">4:00</option>
+				<option value="04:30">4:30</option>
+				<option value="05:00">5:00</option>
+				<option value="05:30">5:30</option>
+				<option value="06:00">6:00</option>
+				<option value="06:30">6:30</option>
+				<option value="07:00">7:00</option>
+				<option value="07:30">7:30</option>
+				<option value="08:00">8:00</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Date Time</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM"/>
+	</channel-type>
+	<channel-type id="datetime-reset">
+		<item-type>DateTime</item-type>
+		<label>Date Time</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM"/>
+		<command>
+			<options>
+				<option value="0">Reset now</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="scene-trigger">
+		<item-type>Number</item-type>
+		<label>Scene Trigger</label>
+		<command>
+			<options>
+				<option value="0">Trigger</option>
+				<option value="1">Undo</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="pm25">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Particulate Matter category 2.5</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="voc">
+		<item-type>Number</item-type>
+		<label>VOC Index</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="time">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Time</label>
+	</channel-type>
+	<channel-type id="duration">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Time</label>
+		<command>
+			<options>
+				<option value="1 min">1 minute</option>
+				<option value="3 min">3 minutes</option>
+				<option value="5 min">5 minutes</option>
+				<option value="10 min">10 minutes</option>
+				<option value="15 min">15 minutes</option>
+				<option value="20 min">20 minutes</option>
+				<option value="30 min">30 minutes</option>
+				<option value="40 min">40 minutes</option>
+				<option value="60 min">60 minutes</option>
+			</options>
+		</command>
+	</channel-type>
+	<channel-type id="fan-mode">
+		<item-type>Number</item-type>
+		<label>Fan Mode</label>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+				<option value="4">On</option>
+				<option value="5">Off</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+				<option value="4">On</option>
+				<option value="5">Off</option>
+			</options>
+		</command>
+	</channel-type>
+	<channel-type id="blind-state">
+		<item-type>Number</item-type>
+		<label>Blind State</label>
+		<description>State if blind is moving up, down or stopped</description>
+		<state>
+			<options>
+				<option value="0">Stopped</option>
+				<option value="1">Up</option>
+				<option value="2">Down</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">Stopped</option>
+				<option value="1">Up</option>
+				<option value="2">Down</option>
+			</options>
+		</command>
+	</channel-type>
+	<channel-type id="blind-dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Blind Level</label>
+		<description>Current blind level</description>
+		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="ota-status">
+		<item-type>Number</item-type>
+		<label>OTA Status</label>
+		<description>Over-the-air overall status</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Up to date</option>
+				<option value="1">Update available</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="ota-state" advanced="true">
+		<item-type>Number</item-type>
+		<label>OTA State</label>
+		<description>Over-the-air current state</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Ready to check</option>
+				<option value="1">Check in progress</option>
+				<option value="2">Ready to download</option>
+				<option value="3">Download in progress</option>
+				<option value="4">Update in progress</option>
+				<option value="5">Update failed</option>
+				<option value="6">Ready to update</option>
+				<option value="7">Check failed</option>
+				<option value="8">Download failed</option>
+				<option value="9">Update complete</option>
+				<option value="10">Battery check failed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="ota-percent" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>OTA Progress</label>
+		<description>Over-the-air update progress</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="links" advanced="true">
+		<item-type>String</item-type>
+		<label>Links</label>
+		<description>Linked controllers and sensors</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="link-candidates" advanced="true">
+		<item-type>String</item-type>
+		<label>Link Candidates</label>
+		<description>Candidates which can be linked</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+</thing:thing-descriptions>

@@ -7,6 +7,7 @@
 	<thing-type id="station">
 		<label>Station</label>
 		<description>Provides river level informations for this station</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="height" typeId="height"/>
@@ -57,6 +58,10 @@
 		<label>Observation Time</label>
 		<description>Observation date and time</description>
 		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -16,6 +16,10 @@
 	<channel-type id="cmd-last-update">
 		<item-type>DateTime</item-type>
 		<label>Command Updated</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

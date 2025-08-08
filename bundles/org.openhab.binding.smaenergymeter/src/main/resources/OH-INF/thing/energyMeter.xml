@@ -6,7 +6,7 @@
 
 	<thing-type id="energymeter">
 		<label>SMA Energy Meter</label>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="powerIn" typeId="powerInType"/>
 			<channel id="powerOut" typeId="powerOutType"/>
@@ -60,96 +60,160 @@
 		<item-type>Number</item-type>
 		<label>Purchased Power</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerOutType">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Power</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyInType">
 		<item-type>Number</item-type>
 		<label>Purchased Energy</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyOutType">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Energy</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerInTypeL1">
 		<item-type>Number</item-type>
 		<label>Purchased Power L1</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerOutTypeL1">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Power L1</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyInTypeL1">
 		<item-type>Number</item-type>
 		<label>Purchased Energy L1</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyOutTypeL1">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Energy L1</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerInTypeL2">
 		<item-type>Number</item-type>
 		<label>Purchased Power L2</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerOutTypeL2">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Power L2</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyInTypeL2">
 		<item-type>Number</item-type>
 		<label>Purchased Energy L2</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyOutTypeL2">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Energy L2</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerInTypeL3">
 		<item-type>Number</item-type>
 		<label>Purchased Power L3</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerOutTypeL3">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Power L3</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyInTypeL3">
 		<item-type>Number</item-type>
 		<label>Purchased Energy L3</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyOutTypeL3">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Energy L3</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

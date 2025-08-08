@@ -60,6 +60,7 @@ import org.openhab.binding.mqtt.homie.internal.homie300.Property;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes.DataTypeEnum;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.test.storage.VolatileStorageService;
@@ -77,6 +78,7 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.BundleResolver;
 
 /**
  * Tests cases for {@link HomieThingHandler}.
@@ -96,13 +98,16 @@ public class HomieThingHandlerTests {
     private @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistryMock;
     private @Mock @NonNullByDefault({}) ChannelTypeRegistry channelTypeRegistryMock;
     private @Mock @NonNullByDefault({}) ChannelType channelTypeMock;
+    private @Mock @NonNullByDefault({}) BundleResolver bundleResolver;
+    private @Mock @NonNullByDefault({}) TranslationProvider translationProvider;
 
     private @NonNullByDefault({}) Thing thing;
     private @NonNullByDefault({}) HomieThingHandler thingHandler;
 
     private final MqttChannelTypeProvider channelTypeProvider = spy(
             new MqttChannelTypeProvider(thingTypeRegistryMock, new VolatileStorageService()));
-    private final MqttChannelStateDescriptionProvider stateDescriptionProvider = new MqttChannelStateDescriptionProvider();
+    private final MqttChannelStateDescriptionProvider stateDescriptionProvider = new MqttChannelStateDescriptionProvider(
+            translationProvider, bundleResolver);
 
     private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
     private final String deviceTopic = "homie/" + deviceID;

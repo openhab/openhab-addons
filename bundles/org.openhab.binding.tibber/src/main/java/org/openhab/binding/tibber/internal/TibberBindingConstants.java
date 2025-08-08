@@ -20,10 +20,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TibberBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link TibberBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Stian Kjoglum - Initial contribution
+ * @author Bernd Weymann - Enhance used constants
  */
 @NonNullByDefault
 public class TibberBindingConstants {
@@ -34,55 +34,90 @@ public class TibberBindingConstants {
     // Tibber base URL for queries and mutations
     public static final String BASE_URL = "https://api.tibber.com/v1-beta/gql";
 
-    // Tibber driver version
-    public static final String TIBBER_DRIVER = "com.tibber/1.8.3";
-
     // List of all Thing Type UIDs
     public static final ThingTypeUID TIBBER_THING_TYPE = new ThingTypeUID(BINDING_ID, "tibberapi");
 
-    // List of all Channel ids - Used for queries
-    public static final String CURRENT_TOTAL = "current_total";
-    public static final String CURRENT_STARTSAT = "current_startsAt";
-    public static final String CURRENT_LEVEL = "current_level";
+    // Channel groups
+    public static final String CHANNEL_GROUP_PRICE = "price";
+    public static final String CHANNEL_GROUP_LIVE = "live";
+    public static final String CHANNEL_GROUP_STATISTICS = "statistics";
 
-    public static final String TODAY_PRICES = "today_prices";
-    public static final String TOMORROW_PRICES = "tomorrow_prices";
-    public static final String DAILY_FROM = "daily_from";
-    public static final String DAILY_TO = "daily_to";
-    public static final String DAILY_COST = "daily_cost";
-    public static final String DAILY_CONSUMPTION = "daily_consumption";
-    public static final String HOURLY_FROM = "hourly_from";
-    public static final String HOURLY_TO = "hourly_to";
-    public static final String HOURLY_COST = "hourly_cost";
-    public static final String HOURLY_CONSUMPTION = "hourly_consumption";
-    public static final String LIVE_TIMESTAMP = "live_timestamp";
-    public static final String LIVE_POWER = "live_power";
-    public static final String LIVE_LASTMETERCONSUMPTION = "live_lastMeterConsumption";
-    public static final String LIVE_LASTMETERPRODUCTION = "live_lastMeterProduction";
-    public static final String LIVE_ACCUMULATEDCONSUMPTION = "live_accumulatedConsumption";
-    public static final String LIVE_ACCUMULATEDCONSUMPTION_THIS_HOUR = "live_accumulatedConsumptionThisHour";
-    public static final String LIVE_ACCUMULATEDCOST = "live_accumulatedCost";
-    public static final String LIVE_ACCUMULATEREWARD = "live_accumulatedReward";
-    public static final String LIVE_CURRENCY = "live_currency";
-    public static final String LIVE_MINPOWER = "live_minPower";
-    public static final String LIVE_AVERAGEPOWER = "live_averagePower";
-    public static final String LIVE_MAXPOWER = "live_maxPower";
-    public static final String LIVE_VOLTAGE1 = "live_voltage1";
-    public static final String LIVE_VOLTAGE2 = "live_voltage2";
-    public static final String LIVE_VOLTAGE3 = "live_voltage3";
-    public static final String LIVE_CURRENT1 = "live_current1";
-    public static final String LIVE_CURRENT2 = "live_current2";
-    public static final String LIVE_CURRENT3 = "live_current3";
-    public static final String LIVE_POWERPRODUCTION = "live_powerProduction";
-    public static final String LIVE_ACCUMULATEDPRODUCTION = "live_accumulatedProduction";
-    public static final String LIVE_ACCUMULATEDPRODUCTION_THIS_HOUR = "live_accumulatedProductionThisHour";
-    public static final String LIVE_MINPOWERPRODUCTION = "live_minPowerproduction";
-    public static final String LIVE_MAXPOWERPRODUCTION = "live_maxPowerproduction";
+    // price channels
+    public static final String CHANNEL_SPOT_PRICE = "spot-price";
+    public static final String CHANNEL_PRICE_LEVELS = "level";
+    public static final String CHANNEL_AVERAGE = "average";
 
-    // Lift of all config ids
-    public static final String CONFIG_BRIDGE_TOKEN = "token";
-    public static final String CONFIG_BRIDGE_REFRESH = "refresh";
+    // live channels
+    public static final String CHANNEL_CONSUMPTION = "consumption";
+    public static final String CHANNEL_MIN_COSNUMPTION = "minimum-consumption";
+    public static final String CHANNEL_PEAK_CONSUMPTION = "peak-consumption";
+    public static final String CHANNEL_AVERAGE_CONSUMPTION = "average-consumption";
+    public static final String CHANNEL_PRODUCTION = "production";
+    public static final String CHANNEL_MIN_PRODUCTION = "minimum-production";
+    public static final String CHANNEL_PEAK_PRODUCTION = "peak-production";
+    public static final String CHANNEL_VOLTAGE_1 = "voltage1";
+    public static final String CHANNEL_VOLTAGE_2 = "voltage2";
+    public static final String CHANNEL_VOLTAGE_3 = "voltage3";
+    public static final String CHANNEL_CURRENT_1 = "current1";
+    public static final String CHANNEL_CURRENT_2 = "current2";
+    public static final String CHANNEL_CURRENT_3 = "current3";
+
+    // statistics channels
+    public static final String CHANNEL_TOTAL_CONSUMPTION = "total-consumption";
+    public static final String CHANNEL_DAILY_CONSUMPTION = "daily-consumption";
+    public static final String CHANNEL_DAILY_COST = "daily-cost";
+    public static final String CHANNEL_LAST_HOUR_CONSUMPTION = "last-hour-consumption";
+    public static final String CHANNEL_TOTAL_PRODUCTION = "total-production";
+    public static final String CHANNEL_DAILY_PRODUCTION = "daily-production";
+    public static final String CHANNEL_LAST_HOUR_PRODUCTION = "last-hour-production";
+
+    public static final String CURRENCY_QUERY_RESOURCE_PATH = "/graphql/currency.graphql";
+    public static final String PRICE_QUERY_RESOURCE_PATH = "/graphql/prices.graphql";
+    public static final String REALTIME_QUERY_RESOURCE_PATH = "/graphql/realtime.graphql";
+    public static final String WEBSOCKET_SUBSCRIPTION_RESOURCE_PATH = "/graphql/websocket.graphql";
+
+    public static final String SCHEDULE_CONTAINER = "{\"size\":%s, \"cost\":%s, \"schedule\":%s}";
+    public static final String QUERY_CONTAINER = "{\"query\":\"%s\"}";
+    public static final String WEBSOCKET_URL_QUERY = "{\"query\":\"{viewer {websocketSubscriptionUrl }}\"}";
+    public static final String CONNECT_MESSAGE = "{\"type\":\"connection_init\", \"payload\":{\"token\":\"%s\"}}";
+    public static final String DISCONNECT_MESSAGE = "{\"type\":\"connection_terminate\",\"payload\":null}";
+    public static final String SUBSCRIPTION_MESSAGE = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription { liveMeasurement(homeId:\\\"%s\\\") { timestamp power lastMeterConsumption lastMeterProduction accumulatedConsumption accumulatedConsumptionLastHour accumulatedCost currency minPower averagePower maxPower voltagePhase1 voltagePhase2 voltagePhase3 currentL1 currentL2 currentL3 powerProduction accumulatedProduction accumulatedProductionLastHour minPowerProduction maxPowerProduction }}\"}}";
+
+    public static final String[] CURRENCY_QUERY_JSON_PATH = new String[] { "data", "viewer", "home",
+            "currentSubscription", "priceInfo", "current" };
+    public static final String[] PRICE_INFO_JSON_PATH = new String[] { "data", "viewer", "home", "currentSubscription",
+            "priceInfo" };
+    public static final String[] REALTIME_FEATURE_JSON_PATH = new String[] { "data", "viewer", "home", "features" };
+    public static final String[] SOCKET_MESSAGE_JSON_PATH = new String[] { "payload", "data", "liveMeasurement" };
+
+    public static final String EMPTY_VALUE = "";
+    public static final String NULL_VALUE = "null-value";
+
+    public static final String CRON_DAILY_AT = "30 0 %s ? * * *";
+
+    public static final String JSON_DATA = "data";
+    public static final String JSON_VIEWER = "viewer";
+    public static final String JSON_HOME = "home";
+    public static final String JSON_SUBSRCIPTION = "currentSubscription";
+    public static final String JSON_DAILY = "daily";
+    public static final String JSON_HOURLY = "hourly";
+    public static final String JSON_NODES = "nodes";
+
+    public static final String PRICE_LEVEL_VERY_CHEAP = "very_cheap";
+    public static final String PRICE_LEVEL_CHEAP = "cheap";
+    public static final String PRICE_LEVEL_NORMAL = "normal";
+    public static final String PRICE_LEVEL_EXPENSIVE = "expensive";
+    public static final String PRICE_LEVEL_VERY_EXPENSIVE = "very_expensive";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(TIBBER_THING_TYPE)
             .collect(Collectors.toSet());
+
+    // parameter keys
+    public static final String PARAM_EARLIEST_START = "earliestStart";
+    public static final String PARAM_LATEST_END = "latestEnd";
+    public static final String PARAM_ASCENDING = "ascending";
+    public static final String PARAM_POWER = "power";
+    public static final String PARAM_DURATION = "duration";
+    public static final String PARAM_CURVE = "curve";
+    public static final String PARAM_TIMESTAMP = "timestamp";
 }

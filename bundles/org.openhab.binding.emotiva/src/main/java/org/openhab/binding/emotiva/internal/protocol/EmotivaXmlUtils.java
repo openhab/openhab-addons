@@ -214,8 +214,7 @@ public class EmotivaXmlUtils {
 
             String[] lines = elementAsString.split("\n");
             for (String line : lines) {
-
-                if (line.trim().startsWith("<") && line.trim().endsWith("/>")) {
+                if (line != null && line.trim().startsWith("<") && line.trim().endsWith("/>")) {
                     Document doc = db.parse(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)));
                     doc.getDocumentElement();
                     EmotivaCommandDTO commandDTO = getEmotivaCommandDTO(doc.getDocumentElement());
@@ -231,7 +230,13 @@ public class EmotivaXmlUtils {
     private static EmotivaCommandDTO getEmotivaCommandDTO(Element xmlElement) {
         EmotivaControlCommands commandType;
         try {
-            commandType = EmotivaControlCommands.valueOf(xmlElement.getTagName().trim());
+            String tagName = xmlElement.getTagName();
+            if (tagName == null || tagName.isBlank()) {
+                LOGGER.debug("Could not create EmotivaCommand, tag name was '{}'", tagName);
+                commandType = EmotivaControlCommands.none;
+            } else {
+                commandType = EmotivaControlCommands.valueOf(tagName.trim());
+            }
         } catch (IllegalArgumentException e) {
             LOGGER.debug("Could not create EmotivaCommand, unknown command {}", xmlElement.getTagName());
             commandType = EmotivaControlCommands.none;
@@ -250,7 +255,7 @@ public class EmotivaXmlUtils {
     }
 
     private static EmotivaBarNotifyDTO getEmotivaBarNotify(Element xmlElement) {
-        var barNotify = new EmotivaBarNotifyDTO(xmlElement.getTagName().trim());
+        var barNotify = new EmotivaBarNotifyDTO(xmlElement.getTagName());
         if (xmlElement.hasAttribute("type")) {
             barNotify.setType(xmlElement.getAttribute("type"));
         }
@@ -275,7 +280,13 @@ public class EmotivaXmlUtils {
     private static EmotivaNotifyDTO getEmotivaNotifyTags(Element xmlElement) {
         String notifyTagName;
         try {
-            notifyTagName = EmotivaSubscriptionTags.valueOf(xmlElement.getTagName().trim()).name();
+            String tagName = xmlElement.getTagName();
+            if (tagName == null || tagName.isBlank()) {
+                LOGGER.debug("Could not create EmotivaNotify, subscription tag name was '{}'", tagName);
+                notifyTagName = UNKNOWN_TAG;
+            } else {
+                notifyTagName = EmotivaSubscriptionTags.valueOf(tagName.trim()).name();
+            }
         } catch (IllegalArgumentException e) {
             LOGGER.debug("Could not create EmotivaNotify, unknown subscription tag {}", xmlElement.getTagName());
             notifyTagName = UNKNOWN_TAG;

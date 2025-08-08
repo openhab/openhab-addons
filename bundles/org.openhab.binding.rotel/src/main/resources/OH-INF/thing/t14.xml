@@ -8,6 +8,7 @@
 	<thing-type id="t14">
 		<label>T14 Tuner</label>
 		<description>Connection to the Rotel T14 tuner</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

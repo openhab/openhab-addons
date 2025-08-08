@@ -39,6 +39,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Shutter State</label>
 		<description>Represents state of the roller shutter</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -8,7 +8,7 @@
 	<thing-type id="pigpio-remote" extensible="pigpio-digital-input,pigpio-digital-output">
 		<label>Pigpio Remote</label>
 		<description>The remote pigpio thing represents a remote raspberry pi with pigpio installed. Pins are channels.</description>
-
+		<semantic-equipment-tag>Computer</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">Raspberry Pi Foundation</property>
 		</properties>

@@ -13,6 +13,7 @@
 
 		<label>RadonEye RD200</label>
 		<description>Indoor radon monitor</description>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
@@ -46,6 +47,10 @@
 		<item-type>Number:RadiationSpecificActivity</item-type>
 		<label>Radon Current Level</label>
 		<description>Radon gas level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Radon</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="radoneye_decay">

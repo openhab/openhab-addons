@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Siren</label>
+		<semantic-equipment-tag>Siren</semantic-equipment-tag>
 		<channels>
 			<channel id="battery" typeId="battery"></channel>
 			<channel id="onoff" typeId="system.power"></channel>

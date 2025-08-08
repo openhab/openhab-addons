@@ -6,6 +6,7 @@
 	<bridge-type id="webservice">
 		<label>Tankerkönig Webservice</label>
 		<description>The Tankerkönig Webservice can handle 1 to 10 gas stations.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="holiday" typeId="holiday"/>
 		</channels>
@@ -31,5 +32,9 @@
 		<item-type>Switch</item-type>
 		<label>Holiday</label>
 		<description>ON if today is a holiday.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>
