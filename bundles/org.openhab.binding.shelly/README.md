@@ -464,7 +464,7 @@ If you want to use those events triggering a rule:
 - If a physical switch is connected to the Shelly use the input channel(`input` or `input1`/`input2`) to trigger a rule
 - For a momentary button use the `button` trigger channel as trigger, channels `lastEvent` and `eventCount` will provide details on the event
 
-### Alarms
+### Alarms / Events
 
 The binding provides health monitoring functions for the device.
 When an alarm condition is detected the channel alarm gets triggered and provides one of the following alarm types:
@@ -517,9 +517,9 @@ Shelly Dimmer Gen 3 is an exception, it does NOT support any Add-Ons incl. the L
 
 | Group   | Channel      | Type    | read-only | Description                                                                       |
 | ------- | ------------ | ------- | --------- | --------------------------------------------------------------------------------- |
-| lora    | dataRx       | String  | yes       | Received LoRa Datagram, BASE64-encoded. Use the LORA_RECEIVED trigger event.      |
+| lora    | dataRxRaw    | String  | yes       | Received LoRa Datagram, BASE64-encoded. Use the LORA_RECEIVED trigger event.      |
 |         | bytesRx      | Number  | yes       | Number of bytes received from LoRa network so far.                                |
-|         | dataTx       | String  | write     | Use this channel to send a BASE64-encoded datagram to the LoRa network.           |
+|         | dataTxRaw    | String  | r/w       | Use this channel to send a BASE64-encoded datagram to the LoRa network.           |
 |         | bytesTx      | Number  | yes       | Number of bytes sent to the LoRa network so far                                   |
 |         | errorsTx     | Number  | yes       | Number of failed transmissions to the LoRa network                                |
 |         | snr          | Number  | yes       | SNR (signal / noise ratio) of the received packet                                 |
