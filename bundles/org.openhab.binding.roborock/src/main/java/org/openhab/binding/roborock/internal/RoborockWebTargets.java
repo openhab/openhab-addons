@@ -84,20 +84,24 @@ public class RoborockWebTargets {
      *
      * @param email The user's email address.
      * @return The generated safe token.
-     * @throws NoSuchAlgorithmException If MD5 algorithm is not available.
+     * @throws RoborockCommunicationException If MD5 algorithm is not available.
      */
-    private String generateSafeToken(String email) throws NoSuchAlgorithmException {
-        byte[] randomBytes = new byte[20];
-        secureRandom.nextBytes(randomBytes);
-        Encoder urlEncoder = Base64.getUrlEncoder().withoutPadding();
-        String token = urlEncoder.encodeToString(randomBytes);
+    private String generateSafeToken(String email) throws RoborockCommunicationException {
+        try {
+            byte[] randomBytes = new byte[20];
+            secureRandom.nextBytes(randomBytes);
+            Encoder urlEncoder = Base64.getUrlEncoder().withoutPadding();
+            String token = urlEncoder.encodeToString(randomBytes);
 
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        md.update(email.getBytes(StandardCharsets.UTF_8));
-        md.update(token.substring(0, 16).getBytes(StandardCharsets.UTF_8));
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(email.getBytes(StandardCharsets.UTF_8));
+            md.update(token.substring(0, 16).getBytes(StandardCharsets.UTF_8));
 
-        byte[] rawData = md.digest();
-        return Base64.getEncoder().encodeToString(rawData);
+            byte[] rawData = md.digest();
+            return Base64.getEncoder().encodeToString(rawData);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RoborockCommunicationException("Decryption of received data failed", e);
+        }
     }
 
     /**
@@ -108,24 +112,27 @@ public class RoborockWebTargets {
      * @param key The key (from Rriot.h).
      * @param path The request path.
      * @return The Hawk Authorization header string.
-     * @throws NoSuchAlgorithmException If HmacSHA256 algorithm is not available.
-     * @throws InvalidKeyException If the provided key is invalid.
+     * @throws RoborockAuthenticationException If Hawk Authentication generation fails.
      */
     private String getHawkAuthentication(String id, String secret, String key, String path)
-            throws NoSuchAlgorithmException, InvalidKeyException {
-        int timestamp = (int) Instant.now().getEpochSecond();
-        String nonce = UUID.randomUUID().toString().substring(0, 8);
-        String prestr = id + ":" + secret + ":" + nonce + ":" + timestamp + ":" + ProtocolUtils.md5Hex(path) + "::";
+            throws RoborockAuthenticationException {
+        try {
+            int timestamp = (int) Instant.now().getEpochSecond();
+            String nonce = UUID.randomUUID().toString().substring(0, 8);
+            String prestr = id + ":" + secret + ":" + nonce + ":" + timestamp + ":" + ProtocolUtils.md5Hex(path) + "::";
 
-        Mac mac = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-        mac.init(secretKey);
+            Mac mac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            mac.init(secretKey);
 
-        byte[] macBytes = mac.doFinal(prestr.getBytes(StandardCharsets.UTF_8));
-        String macString = Base64.getEncoder().encodeToString(macBytes);
+            byte[] macBytes = mac.doFinal(prestr.getBytes(StandardCharsets.UTF_8));
+            String macString = Base64.getEncoder().encodeToString(macBytes);
 
-        return "Hawk id=\"" + id + "\",s=\"" + secret + "\",ts=\"" + timestamp + "\",nonce=\"" + nonce + "\",mac=\""
-                + macString + "\"";
+            return "Hawk id=\"" + id + "\",s=\"" + secret + "\",ts=\"" + timestamp + "\",nonce=\"" + nonce + "\",mac=\""
+                    + macString + "\"";
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RoborockAuthenticationException("Failed generating HawkAuthentication string", e);
+        }
     }
 
     /**
@@ -135,10 +142,8 @@ public class RoborockWebTargets {
      * @return The base URL for the Roborock API.
      * @throws RoborockCommunicationException If communication fails.
      * @throws RoborockAuthenticationException If authentication fails.
-     * @throws NoSuchAlgorithmException If MD5 algorithm is not available for safe token generation.
      */
-    public String getUrlByEmail(String email)
-            throws RoborockCommunicationException, RoborockAuthenticationException, NoSuchAlgorithmException {
+    public String getUrlByEmail(String email) throws RoborockCommunicationException, RoborockAuthenticationException {
         safeToken = generateSafeToken(email);
 
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
@@ -171,12 +176,10 @@ public class RoborockWebTargets {
      * @return A {@link Login} object containing authentication details, or null if login fails.
      * @throws RoborockCommunicationException If communication fails.
      * @throws RoborockAuthenticationException If authentication fails.
-     * @throws NoSuchAlgorithmException If MD5 algorithm is not available for safe token generation (though safeToken is
-     *             done prior).
      */
     @Nullable
     public Login doLogin(String baseUri, String email, String password)
-            throws RoborockCommunicationException, RoborockAuthenticationException, NoSuchAlgorithmException {
+            throws RoborockCommunicationException, RoborockAuthenticationException {
         if (safeToken.isEmpty()) {
             logger.warn(
                     "Safe token is empty during doLogin. This might indicate getUrlByEmail was not called or failed.");
@@ -220,8 +223,8 @@ public class RoborockWebTargets {
      * @throws InvalidKeyException If the provided key for Hawk authentication is invalid.
      */
     @Nullable
-    public HomeData getHomeData(String rrHomeID, Rriot rriot) throws RoborockCommunicationException,
-            RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
+    public HomeData getHomeData(String rrHomeID, Rriot rriot)
+            throws RoborockCommunicationException, RoborockAuthenticationException {
         String path = GET_HOME_DATA_PATH + rrHomeID;
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         String response = invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token);
@@ -240,8 +243,8 @@ public class RoborockWebTargets {
      * @throws InvalidKeyException If the provided key for Hawk authentication is invalid.
      */
     @Nullable
-    public String getRoutines(String deviceID, Rriot rriot) throws RoborockCommunicationException,
-            RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
+    public String getRoutines(String deviceID, Rriot rriot)
+            throws RoborockCommunicationException, RoborockAuthenticationException {
         String path = GET_ROUTINES_PATH + deviceID;
         String hawkToken = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         return invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", hawkToken);
@@ -259,8 +262,8 @@ public class RoborockWebTargets {
      * @throws InvalidKeyException If the provided key for Hawk authentication is invalid.
      */
     @Nullable
-    public String setRoutine(String sceneID, Rriot rriot) throws RoborockCommunicationException,
-            RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
+    public String setRoutine(String sceneID, Rriot rriot)
+            throws RoborockCommunicationException, RoborockAuthenticationException {
         String path = SET_ROUTINE_PATH + sceneID + SET_ROUTINE_PATH_SUFFIX;
         String hawkToken = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         return invoke(rriot.r.a + path, HttpMethod.POST, "Authorization", hawkToken);

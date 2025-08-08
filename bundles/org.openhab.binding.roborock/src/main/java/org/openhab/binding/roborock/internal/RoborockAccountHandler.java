@@ -18,7 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -125,9 +124,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         } catch (RoborockAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "NoSuchAlgorithmException error " + e.getMessage());
         } catch (RoborockCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication error " + e.getMessage());
@@ -154,7 +150,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public HomeData getHomeData(String rrHomeId) {
         try {
             return webTargets.getHomeData(rrHomeId, rriot);
-        } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (RoborockAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
             return new HomeData();
@@ -169,7 +165,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public String getRoutines(String deviceId) {
         try {
             return webTargets.getRoutines(deviceId, rriot);
-        } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (RoborockAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
             return "";
@@ -184,7 +180,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public String setRoutine(String sceneID) {
         try {
             return webTargets.setRoutine(sceneID, rriot);
-        } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (RoborockAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
             return "";
@@ -246,9 +242,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             } catch (RoborockAuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication error " + e.getMessage());
-            } catch (NoSuchAlgorithmException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "NoSuchAlgorithmException error " + e.getMessage());
             } catch (RoborockCommunicationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Communication error " + e.getMessage());
