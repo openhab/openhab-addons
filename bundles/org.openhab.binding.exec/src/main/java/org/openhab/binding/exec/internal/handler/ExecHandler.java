@@ -24,13 +24,16 @@ import java.util.Date;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.exec.internal.ExecBindingConstants;
 import org.openhab.binding.exec.internal.ExecWhitelistWatchService;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -73,6 +76,7 @@ public class ExecHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
 
     private final BundleContext bundleContext;
+    private final ScheduledExecutorService execScheduler;
 
     // List of Configurations constants
     public static final String INTERVAL = "interval";
@@ -92,6 +96,8 @@ public class ExecHandler extends BaseThingHandler {
         super(thing);
         this.bundleContext = FrameworkUtil.getBundle(ExecHandler.class).getBundleContext();
         this.execWhitelistWatchService = execWhitelistWatchService;
+        this.execScheduler = ThreadPoolManager
+                .getScheduledPool(ExecBindingConstants.BINDING_ID + "-" + thing.getUID().getId());
     }
 
     @Override
@@ -102,7 +108,7 @@ public class ExecHandler extends BaseThingHandler {
             if (channelUID.getId().equals(RUN)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        scheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
+                        execScheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
                     }
                 }
             } else if (channelUID.getId().equals(INPUT)) {
@@ -113,7 +119,7 @@ public class ExecHandler extends BaseThingHandler {
                         if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN))) {
                             logger.trace("Executing command '{}' after a change of the input channel to '{}'",
                                     getConfig().get(COMMAND), lastInput);
-                            scheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
+                            execScheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
                         }
                     }
                 }
@@ -128,7 +134,8 @@ public class ExecHandler extends BaseThingHandler {
         if (executionJob == null || executionJob.isCancelled()) {
             if ((getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
                 int pollingInterval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
-                executionJob = scheduler.scheduleWithFixedDelay(this::execute, 0, pollingInterval, TimeUnit.SECONDS);
+                executionJob = execScheduler.scheduleWithFixedDelay(this::execute, 0, pollingInterval,
+                        TimeUnit.SECONDS);
             }
         }
 
