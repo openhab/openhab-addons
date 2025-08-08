@@ -48,19 +48,12 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 public class SerialBindingHandlerTest {
 
     private @Nullable MockupBridgeHandler handler;
-
     private @Nullable SerialBridgeConfiguration config;
-
     private @Nullable ByteBufferInputStream bin;
-
     private @Nullable ByteArrayOutputStream bos;
-
     private final ThingHandlerCallback callbackMock = Mockito.mock(ThingHandlerCallback.class);
-
     private final Bridge bridgeMock = Mockito.mock(Bridge.class);
-
     private final SerialPortIdentifier mockIdentifier = Mockito.mock(SerialPortIdentifier.class);
-
     private final SerialPort mockSerialPort = Mockito.mock(SerialPort.class);
 
     private final SerialPortManager serialPortManager = new SerialPortManager() {
