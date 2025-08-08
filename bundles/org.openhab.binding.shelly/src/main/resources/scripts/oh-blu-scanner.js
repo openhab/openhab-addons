@@ -192,4 +192,3 @@ if(BLEConfig.enable === false) {
 } else {
     Timer.set(1000, false, startBLEScan);
 }
- 
