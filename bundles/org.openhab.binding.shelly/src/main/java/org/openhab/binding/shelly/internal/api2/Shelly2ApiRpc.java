@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -371,12 +373,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             getThing().reinitializeThing();
                         }
                     }
-
-                    if (config.enableLoRa && profile.settings.loraRxEnabled) {
-                        logger.info("{}: LoRa with RX is enabled, install script {}", thingName, SHELLY2_LORA_GWSCRIPT);
-                        installScript(SHELLY2_LORA_GWSCRIPT, true);
-                    }
-                }
+                    /*
+                     * if (config.enableLoRa && profile.settings.loraRxEnabled) {
+                     * logger.info("{}: LoRa with RX is enabled, install script {}", thingName, SHELLY2_LORA_GWSCRIPT);
+                     * installScript(SHELLY2_LORA_GWSCRIPT, true);
+                     * }
+                     */ }
             } catch (ShellyApiException e) {
                 logger.debug("{}: Device config failed", thingName, e);
             }
@@ -689,6 +691,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
+    // public void onNotifyEvent(Shelly2RpcNotifyEvent message) {
     public void onNotifyEvent(Shelly2RpcNotifyEvent message) {
         try {
             logger.debug("{}: NotifyEvent  received: {}", thingName, gson.toJson(message));
@@ -768,12 +771,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         break;
 
                     case SHELLY2_EVENT_LORADATA:
-                        logger.debug("{}: LoRa data received, payload = {}", thingName, e.data.info);
-                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(e.data.info.data));
-                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.data.info.rssi));
-                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.data.info.snr));
+                        String rawData = e.rawData; // BASE64-encoded
+                        String data = new String(Base64.getDecoder().decode(rawData.getBytes(StandardCharsets.UTF_8)));
+                        logger.debug("{}: LoRa data received, payload = {} / {}", thingName, rawData, data);
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(rawData));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(data));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.rssi));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.snr));
 
-                        getThing().postEvent(e.data.info.event, false);
+                        getThing().postEvent(e.event.toUpperCase(), false);
                         break;
 
                     default:
