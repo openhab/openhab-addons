@@ -55,11 +55,8 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
     private final ScheduledThreadPoolExecutor readSchedulerExcecutor = new ScheduledThreadPoolExecutor(1);
 
     private @Nullable ServerSocket server;
-
     private @Nullable Socket socket;
-
     private @Nullable ScheduledFuture<?> readScheduler;
-
     private @Nullable ScheduledFuture<?> connectionScheduler;
 
     public TcpServerBridgeHandler(final Bridge bridge) {
@@ -69,7 +66,7 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
     @Override
     public void initialize() {
         config = getConfigAs(TcpServerBridgeConfiguration.class);
-        if (!initialize(config)) {
+        if (!checkAndProcessConfiguration(config)) {
             return;
         }
 
@@ -80,7 +77,7 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
         }
 
         final String bindAddress = config.bindAddress;
-        if (bindAddress == null || bindAddress.isEmpty()) {
+        if (bindAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "BindAddress must be set");
             return;
         }

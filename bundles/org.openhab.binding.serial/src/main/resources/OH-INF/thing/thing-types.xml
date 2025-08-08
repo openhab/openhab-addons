@@ -19,7 +19,6 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
-				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
 			</parameter>
@@ -79,13 +78,13 @@
 				<advanced>true</advanced>
 				<label>Charset</label>
 				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1). Enter 'HEX' to
-					convert binary data into hexadecimal strings, seperated by space.</description>
+					convert binary data into hexadecimal strings, separated by space.</description>
 			</parameter>
 			<parameter name="eolPattern" type="text">
 				<advanced>true</advanced>
 				<label>EOL Pattern</label>
 				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
-					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.".</description>
+					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -95,14 +94,15 @@
 		<description>TCP socket which can send and receive data</description>
 
 		<channels>
-			<channel id="stringTcp" typeId="stringData"/>
-			<channel id="binaryTcp" typeId="binaryData"/>
-			<channel id="dataTcp" typeId="system.rawbutton"/>
+			<channel id="string" typeId="stringData"/>
+			<channel id="binary" typeId="binaryData"/>
+			<channel id="data" typeId="system.rawbutton"/>
 		</channels>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<context>network-address</context>
+				<label>Address</label>
 				<description>The IP address or hostname</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="true">
@@ -115,7 +115,7 @@
 				<label>Socket Timeout</label>
 				<description>Timeout in seconds</description>
 			</parameter>
-			<parameter name="keepAlive" type="boolean" min="0">
+			<parameter name="keepAlive" type="boolean">
 				<advanced>true</advanced>
 				<label>Keep-Alive</label>
 				<description>Send keep-alive</description>
@@ -130,13 +130,13 @@
 				<advanced>true</advanced>
 				<label>Charset or HEX</label>
 				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1). Enter 'HEX' to
-					convert binary data into hexadecimal strings, seperated by space.</description>
+					convert binary data into hexadecimal strings, separated by space.</description>
 			</parameter>
 			<parameter name="eolPattern" type="text">
 				<advanced>true</advanced>
 				<label>EOL pattern</label>
 				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
-					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.".</description>
+					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -163,7 +163,7 @@
 				<label>Socket Timeout</label>
 				<description>Timeout in seconds</description>
 			</parameter>
-			<parameter name="keepAlive" type="boolean" min="0">
+			<parameter name="keepAlive" type="boolean">
 				<advanced>true</advanced>
 				<label>Keep-Alive</label>
 				<description>Send keep-alive</description>
@@ -172,13 +172,13 @@
 				<advanced>true</advanced>
 				<label>Charset or HEX</label>
 				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1). Enter 'HEX' to
-					convert binary data into hexadecimal strings, seperated by space.</description>
+					convert binary data into hexadecimal strings, separated by space.</description>
 			</parameter>
 			<parameter name="eolPattern" type="text">
 				<advanced>true</advanced>
 				<label>EOL pattern</label>
 				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
-					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.".</description>
+					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -280,7 +280,9 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="0">
 				<label>Refresh Interval</label>
-				<description>Interval for automatic channel refresh in seconds</description>
+				<description>Interval for the automatic channel update in seconds. This value is only required if the peer has to
+					send the “Refresh Value” command regularly in order to return the current properties. It is not required if the
+					peer automatically forwards changed values to its clients.</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -334,7 +336,9 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="0">
 				<label>Refresh Interval</label>
-				<description>Interval for automatic channel refresh in seconds</description>
+				<description>Interval for the automatic channel update in seconds. This value is only required if the peer has to
+					send the “Refresh Value” command regularly in order to return the current properties. It is not required if the
+					peer automatically forwards changed values to its clients.</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -376,7 +380,9 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="0">
 				<label>Refresh Interval</label>
-				<description>Interval for automatic channel refresh in seconds</description>
+				<description>Interval for the automatic channel update in seconds. This value is only required if the peer has to
+					send the “Refresh Value” command regularly in order to return the current properties. It is not required if the
+					peer automatically forwards changed values to its clients.</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -426,7 +432,9 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="0">
 				<label>Refresh Interval</label>
-				<description>Interval for automatic channel refresh in seconds</description>
+				<description>Interval for the automatic channel update in seconds. This value is only required if the peer has to
+					send the “Refresh Value” command regularly in order to return the current properties. It is not required if the
+					peer automatically forwards changed values to its clients.</description>
 			</parameter>
 		</config-description>
 	</channel-type>

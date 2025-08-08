@@ -83,8 +83,8 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
             }
         } else {
             switch (channelUID.getId()) {
-                case STRING_CHANNEL, STRING_TCP_CHANNEL -> writeString(command.toFullString(), false);
-                case BINARY_CHANNEL, BINARY_TCP_CHANNEL -> writeString(command.toFullString(), true);
+                case STRING_CHANNEL -> writeString(command.toFullString(), false);
+                case BINARY_CHANNEL -> writeString(command.toFullString(), true);
                 default -> {
                 }
             }
@@ -92,7 +92,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public boolean initialize(CommonBridgeConfiguration config) {
+    public boolean checkAndProcessConfiguration(CommonBridgeConfiguration config) {
         this.config = config;
 
         try {
@@ -115,7 +115,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
 
         String eolPatternStr = config.eolPattern;
         this.eolPattern = null;
-        if (eolPatternStr != null && !eolPatternStr.trim().isEmpty()) {
+        if (eolPatternStr != null && !eolPatternStr.isBlank()) {
             try {
                 Pattern eolPattern = Pattern.compile(eolPatternStr, Pattern.CASE_INSENSITIVE);
                 this.eolPattern = eolPattern;
@@ -181,20 +181,20 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
     /**
      * Refreshes the channel with the last received data
      *
-     * @param channelId the channel to refresh
+     * @param channelUID the channel to refresh
      * @param data the data to use
      */
-    protected void refresh(final String channelId, final String data) {
-        if (!isLinked(channelId)) {
+    protected void refresh(final String channelUID, final String data) {
+        if (!isLinked(channelUID)) {
             return;
         }
 
-        switch (channelId) {
-            case STRING_CHANNEL -> updateState(channelId, new StringType(data));
+        switch (channelUID) {
+            case STRING_CHANNEL -> updateState(channelUID, new StringType(data));
             case BINARY_CHANNEL -> {
                 String sb = "data:" + RawType.DEFAULT_MIME_TYPE + ";base64,"
                         + Base64.getEncoder().encodeToString(data.getBytes(charset));
-                updateState(channelId, new StringType(sb));
+                updateState(channelUID, new StringType(sb));
             }
             default -> {
             }

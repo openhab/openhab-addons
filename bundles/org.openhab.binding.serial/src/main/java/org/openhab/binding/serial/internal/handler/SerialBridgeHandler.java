@@ -57,7 +57,7 @@ public class SerialBridgeHandler extends CommonBridgeHandler implements SerialPo
     @Override
     public void initialize() {
         config = getConfigAs(SerialBridgeConfiguration.class);
-        if (!initialize(config)) {
+        if (!checkAndProcessConfiguration(config)) {
             return;
         }
 

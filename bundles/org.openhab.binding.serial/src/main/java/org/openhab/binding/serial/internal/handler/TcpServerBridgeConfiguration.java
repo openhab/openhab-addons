@@ -13,10 +13,9 @@
 package org.openhab.binding.serial.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Class describing the serial bridge user configuration
+ * Class describing the {@link TcpServerBridgeConfiguration} configuration
  *
  * @author Roland Tapken - Initial contribution
  */
@@ -25,7 +24,7 @@ public class TcpServerBridgeConfiguration extends CommonBridgeConfiguration {
     /**
      * IP address or hostname
      */
-    public @Nullable String bindAddress = "0.0.0.0";
+    public String bindAddress = "0.0.0.0";
 
     /**
      * TCP Port
@@ -44,7 +43,7 @@ public class TcpServerBridgeConfiguration extends CommonBridgeConfiguration {
 
     @Override
     public String toString() {
-        return "TcpBridgeConfiguration [BindAddress=" + bindAddress + ", Port=" + port + ", timeout=" + timeout
+        return "TcpServerBridgeConfiguration [BindAddress=" + bindAddress + ", Port=" + port + ", timeout=" + timeout
                 + ", keepAlive=" + keepAlive + ", charset=" + charset + ", eolPattern=" + eolPattern + "]";
     }
 }

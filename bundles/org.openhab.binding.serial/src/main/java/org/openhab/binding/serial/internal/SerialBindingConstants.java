@@ -34,11 +34,8 @@ public class SerialBindingConstants {
 
     // List of all Channel ids
     public static final String TRIGGER_CHANNEL = "data";
-    public static final String TRIGGER_TCP_CHANNEL = "dataTcp";
     public static final String STRING_CHANNEL = "string";
-    public static final String STRING_TCP_CHANNEL = "stringTcp";
     public static final String BINARY_CHANNEL = "binary";
-    public static final String BINARY_TCP_CHANNEL = "binaryTcp";
     public static final String DEVICE_STRING_CHANNEL = "string";
     public static final String DEVICE_NUMBER_CHANNEL = "number";
     public static final String DEVICE_DIMMER_CHANNEL = "dimmer";

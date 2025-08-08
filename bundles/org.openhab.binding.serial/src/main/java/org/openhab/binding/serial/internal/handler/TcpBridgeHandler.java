@@ -47,9 +47,7 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
     private final ScheduledThreadPoolExecutor readSchedulerExcecutor = new ScheduledThreadPoolExecutor(1);
 
     private TcpBridgeConfiguration config = new TcpBridgeConfiguration();
-
     private @Nullable Socket socket;
-
     private @Nullable ScheduledFuture<?> readScheduler;
 
     public TcpBridgeHandler(final Bridge bridge) {
@@ -59,12 +57,12 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
     @Override
     public void initialize() {
         config = getConfigAs(TcpBridgeConfiguration.class);
-        if (!initialize(config)) {
+        if (!checkAndProcessConfiguration(config)) {
             return;
         }
 
         final String address = config.address;
-        if (address == null || address.isEmpty()) {
+        if (address.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address must be set");
             return;
         }
@@ -109,7 +107,7 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
      */
     private void waitForData() {
         // If this is ever changed to values >= 1000,
-        // this may interfere with tryToReconnect. In this case
+        // this may interfere with tryToReconect. In this case
         // some kind of locking is required.
         int interval = 250;
         if (getThing().getStatus() == ThingStatus.ONLINE) {
@@ -148,14 +146,14 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
 
     @Override
     protected void processInput(String result) {
-        if (isLinked(TRIGGER_TCP_CHANNEL)) {
-            triggerChannel(TRIGGER_TCP_CHANNEL, CommonTriggerEvents.PRESSED);
+        if (isLinked(TRIGGER_CHANNEL)) {
+            triggerChannel(TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
         }
-        if (isLinked(STRING_TCP_CHANNEL)) {
-            refresh(STRING_TCP_CHANNEL, result);
+        if (isLinked(STRING_CHANNEL)) {
+            refresh(STRING_CHANNEL, result);
         }
-        if (isLinked(BINARY_TCP_CHANNEL)) {
-            refresh(BINARY_TCP_CHANNEL, result);
+        if (isLinked(BINARY_CHANNEL)) {
+            refresh(BINARY_CHANNEL, result);
         }
     }
 

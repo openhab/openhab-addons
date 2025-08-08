@@ -15,7 +15,6 @@ package org.openhab.binding.serial.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.LinkedList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,18 +29,13 @@ public class ByteBufferInputStream extends InputStream {
 
     private final LinkedList<byte[]> bufferQueue = new LinkedList<>();
 
-    int available = 0;
+    private int available = 0;
 
-    int pos = 0;
+    private int pos = 0;
 
     public void appendBuffer(byte[] bytes) {
         bufferQueue.add(bytes);
         available += bytes.length;
-    }
-
-    @SuppressWarnings("unused")
-    public void appendBuffer(byte[] bytes, int from, int to) {
-        appendBuffer(Arrays.copyOfRange(bytes, from, to));
     }
 
     public void appendString(String str, Charset charset) {

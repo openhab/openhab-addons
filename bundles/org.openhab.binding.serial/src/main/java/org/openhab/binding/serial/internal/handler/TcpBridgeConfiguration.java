@@ -13,10 +13,9 @@
 package org.openhab.binding.serial.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Class describing the serial bridge user configuration
+ * Class describing the {@link TcpBridgeConfiguration} configuration
  *
  * @author Roland Tapken - Initial contribution
  */
@@ -25,7 +24,7 @@ public class TcpBridgeConfiguration extends CommonBridgeConfiguration {
     /**
      * IP address or hostname
      */
-    public @Nullable String address;
+    public String address = "";
 
     /**
      * TCP Port
