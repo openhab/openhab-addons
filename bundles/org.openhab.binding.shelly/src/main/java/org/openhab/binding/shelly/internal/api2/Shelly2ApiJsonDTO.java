@@ -153,8 +153,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
 
     // LoRa
-    public static final String SHELLY2_LORA_GWSCRIPT = "oh-lora.js";
-    public static final String SHELLY2_EVENT_LORADATA = "oh-lora.data";
+    public static final String SHELLY2_EVENT_LORADATA = "lora_received";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -1248,7 +1247,7 @@ public class Shelly2ApiJsonDTO {
     // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
     // "ts":1682877414.25}
 
-    public class Shelly2NotifyEventMessage {
+    public class Shelly2NotifyBluEventData {
         public String addr;
         public String name;
         public Boolean encryption;
@@ -1271,9 +1270,6 @@ public class Shelly2ApiJsonDTO {
         public Double temperature;
         @SerializedName("Humidity")
         public Double humidity;
-
-        public ShellyNotifyLoraEvent info;
-
         public Integer rssi;
         public Integer tx_power;
     }
@@ -1296,11 +1292,18 @@ public class Shelly2ApiJsonDTO {
         public String component;
         public String name;
         public String event;
-        public Shelly2NotifyEventMessage data;
+        public Shelly2NotifyBluEventData data;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")
         public Integer cfgRev;
+
+        // LoRa
+        @SerializedName("info")
+        String rawData;
+        Integer rssi;
+        Integer snr;
+        Long tsu;
     }
 
     public class Shelly2NotifyEventData {
