@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.secure.KnxSecureException;
+import io.calimero.secure.KnxSecureException;
 
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
