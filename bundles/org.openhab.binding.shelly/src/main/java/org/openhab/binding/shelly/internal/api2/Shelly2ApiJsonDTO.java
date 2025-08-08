@@ -1247,7 +1247,6 @@ public class Shelly2ApiJsonDTO {
         public String authType;
     }
 
-    // {"component":"script:1","id":1,"event":"oh-lora.data","data":{"component":"lora:100","name":"lora","id":100,"now":1752923898.77490592002,"info":{"component":"lora:100","id":100,"event":"lora_received","ts":1752923898.76999998092,"data":"MDEyMzQ1Njc4OQ==","rssi":-46,"snr":8,"tsu":50111400560}},"ts":1752923898.81}
     public static class ShellyNotifyLoraEvent {
         public String component;
         public Integer id;

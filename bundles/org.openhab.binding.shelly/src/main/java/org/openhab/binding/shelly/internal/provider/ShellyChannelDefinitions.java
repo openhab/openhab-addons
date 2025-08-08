@@ -288,8 +288,10 @@ public class ShellyChannelDefinitions {
 
                 // LoRa Add-On
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXDATA, "loraRxData", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXDATARAW, "loraRxDataRaw", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXBYTES, "loraRxBytes", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXDATA, "loraTxData", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXDATARAW, "loraTxDataRaw", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXBYTES, "loraTxBytes", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXERRORS, "loraTxErrors", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_SNR, "loraSNR", ITEMT_NUMBER))
@@ -390,8 +392,10 @@ public class ShellyChannelDefinitions {
         }
 
         addChannel(thing, add, profile.settings.loraRxEnabled != null, CHGR_LORA, CHANNEL_LORA_RXDATA);
+        addChannel(thing, add, profile.settings.loraRxEnabled != null, CHGR_LORA, CHANNEL_LORA_RXDATARAW);
+        addChannel(thing, add, profile.settings.loraRxEnabled != null, CHGR_LORA, CHANNEL_LORA_RXBYTES);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXDATA);
-        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_RXBYTES);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXDATARAW);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXBYTES);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXERRORS);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_RSSI);

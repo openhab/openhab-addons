@@ -767,7 +767,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.snr));
                     getThing().postEvent(SHELLY2_EVENT_LORADATA.toUpperCase(), false);
                     break;
-
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
             }

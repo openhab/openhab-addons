@@ -217,8 +217,10 @@ public class ShellyBindingConstants {
 
     // LoRa
     public static final String CHANNEL_GROUP_LORA = "lora";
-    public static final String CHANNEL_LORA_RXDATA = "dataRx";
-    public static final String CHANNEL_LORA_TXDATA = "dataTx";
+    public static final String CHANNEL_LORA_RXDATA = "dataRx"; // Regular String
+    public static final String CHANNEL_LORA_TXDATA = "dataTx"; // Regular String
+    public static final String CHANNEL_LORA_RXDATARAW = "dataRxRaw"; // BASE64-encoded string
+    public static final String CHANNEL_LORA_TXDATARAW = "dataTxRaw";// BASE64-encoded string
     public static final String CHANNEL_LORA_RXBYTES = "bytesRx";
     public static final String CHANNEL_LORA_TXBYTES = "bytesTx";
     public static final String CHANNEL_LORA_TXERRORS = "errorsTx";
