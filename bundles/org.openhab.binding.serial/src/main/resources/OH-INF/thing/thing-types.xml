@@ -103,7 +103,6 @@
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<context>network-address</context>
-				<label>Address</label>
 				<description>The IP address or hostname</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="true">
