@@ -177,6 +177,14 @@
 				<description>Average power consumption since midnight in watts</description>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<add-channel id="consumption-and-production" groupIds="live">
+				<type>tibber:power</type>
+				<label>Power Usage</label>
+				<description>Current power consumption (as positive value) and production (as negative value)</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
