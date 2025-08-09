@@ -18,12 +18,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HexFormat;
@@ -380,16 +376,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         this.mqttClient = null;
     }
 
-    private String getEndpoint() {
-        try {
-            byte[] md5Bytes = MessageDigest.getInstance("MD5").digest(rriot.k.getBytes());
-            byte[] subArray = Arrays.copyOfRange(md5Bytes, 8, 14);
-            return Base64.getEncoder().encodeToString(subArray);
-        } catch (NoSuchAlgorithmException e) {
-            return "";
-        }
-    }
-
     public int sendCommand(String method, String params, String thingID, String localKey, byte[] nonce)
             throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
@@ -399,7 +385,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String nonceHex = HexFormat.of().formatHex(nonce);
 
         Map<String, Object> security = new HashMap<>();
-        security.put("endpoint", getEndpoint());
+        security.put("endpoint", ProtocolUtils.getEndpoint(rriot));
         security.put("nonce", nonceHex.toLowerCase());
 
         JsonElement paramsElement = JsonParser.parseString(params);
@@ -447,7 +433,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             int randomInt = secureRandom.nextInt(90000) + 10000;
             int seq = secureRandom.nextInt(900000) + 100000;
 
-            int totalLength = 19 + encryptedPayload.length + 4;
+            int totalLength = HEADER_LENGTH_WITHOUT_CRC + encryptedPayload.length + CRC_LENGTH;
             byte[] message = new byte[totalLength];
 
             // Write fixed string '1.0'
@@ -456,20 +442,21 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             message[2] = '0';
 
             // Write integer fields
-            ProtocolUtils.writeInt32BE(message, seq, 3);
-            ProtocolUtils.writeInt32BE(message, randomInt, 7);
-            ProtocolUtils.writeInt32BE(message, timestamp, 11);
-            ProtocolUtils.writeInt16BE(message, protocol, 15);
-            ProtocolUtils.writeInt16BE(message, encryptedPayload.length, 17);
+            ProtocolUtils.writeInt32BE(message, seq, SEQ_OFFSET);
+            ProtocolUtils.writeInt32BE(message, randomInt, RANDOM_OFFSET);
+            ProtocolUtils.writeInt32BE(message, timestamp, TIMESTAMP_OFFSET);
+            ProtocolUtils.writeInt16BE(message, protocol, PROTOCOL_OFFSET);
+            ProtocolUtils.writeInt16BE(message, encryptedPayload.length, PAYLOAD_OFFSET);
 
             // Copy encrypted payload
-            System.arraycopy(encryptedPayload, 0, message, 19, encryptedPayload.length);
+            System.arraycopy(encryptedPayload, 0, message, HEADER_LENGTH_WITHOUT_CRC, encryptedPayload.length);
 
             // Calculate CRC32 and write to the end
             CRC32 crc32 = new CRC32();
-            crc32.update(message, 0, message.length - 4); // Calculate CRC for all bytes except the last 4 (CRC field
-                                                          // itself)
-            ProtocolUtils.writeInt32BE(message, (int) crc32.getValue(), message.length - 4);
+            crc32.update(message, 0, message.length - CRC_LENGTH); // Calculate CRC for all bytes except the last 4 (CRC
+                                                                   // field
+            // itself)
+            ProtocolUtils.writeInt32BE(message, (int) crc32.getValue(), message.length - CRC_LENGTH);
             return message;
         } catch (Exception e) {
             logger.debug("Exception encrypting payload, {}", e.getMessage());

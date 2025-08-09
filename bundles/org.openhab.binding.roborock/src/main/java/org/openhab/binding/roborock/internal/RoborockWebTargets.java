@@ -183,7 +183,6 @@ public class RoborockWebTargets {
      *
      * @param baseUri The base URI for API calls.
      * @param token The authentication token.
-     * @param rriot The Rriot object containing Hawk authentication details.
      * @return A {@link Home} object containing home details, or null if retrieval fails.
      * @throws RoborockException If authentication fails.
      */

@@ -22,6 +22,7 @@ import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HexFormat;
 import java.util.zip.CRC32;
 
@@ -34,6 +35,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.roborock.internal.RoborockException;
+import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +45,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class ProtocolUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolUtils.class);
-
-    private static final String MD5_ALGORITHM = "MD5";
-    private static final String AES_ECB_PADDING = "AES/ECB/PKCS5Padding";
-    private static final String AES_CBC_NO_PADDING = "AES/CBC/NoPadding";
-    private static final String VERSION_1_0 = "1.0";
-    private static final int HEADER_LENGTH_WITHOUT_CRC = 19; // 3 (version) + 4 (seq) + 4 (random) + 4 (timestamp) + 2
-                                                             // (protocol) + 2 (payloadLen)
-    private static final int CRC_LENGTH = 4;
 
     private ProtocolUtils() {
         // Prevent instantiation of util class
@@ -334,5 +328,15 @@ public final class ProtocolUtils {
      */
     private record MessageHeader(String version, int sequence, int random, int timestamp, int protocol,
             int payloadLen) {
+    }
+
+    public static String getEndpoint(Rriot rriot) {
+        try {
+            byte[] md5Bytes = MessageDigest.getInstance("MD5").digest(rriot.k.getBytes());
+            byte[] subArray = Arrays.copyOfRange(md5Bytes, 8, 14);
+            return Base64.getEncoder().encodeToString(subArray);
+        } catch (NoSuchAlgorithmException e) {
+            return "";
+        }
     }
 }
