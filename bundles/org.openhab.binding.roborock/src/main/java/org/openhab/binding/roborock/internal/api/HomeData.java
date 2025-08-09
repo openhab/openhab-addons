@@ -62,6 +62,7 @@ public class HomeData {
         public String name = "";
         public String localKey = "";
         public String productId = "";
+        public String pv = "";
         public boolean online;
         public String sn = "";
         public @NonNullByDefault({}) DeviceStatus deviceStatus;

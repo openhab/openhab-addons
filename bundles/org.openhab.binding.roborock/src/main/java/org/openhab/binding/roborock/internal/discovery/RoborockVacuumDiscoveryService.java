@@ -71,11 +71,16 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
 
             if (homeData != null) {
                 for (int i = 0; i < homeData.result.devices.length; i++) {
-                    Map<String, Object> properties = Map.of("sn",
-                            (homeData.result.devices[i].sn != null) ? homeData.result.devices[i].sn : "N/A");
-                    ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, homeData.result.devices[i].duid);
-                    thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
-                            .withLabel(homeData.result.devices[i].name).build());
+                    if ("1.0".equals(homeData.result.devices[i].pv)) {
+                        Map<String, Object> properties = Map.of("sn",
+                                (homeData.result.devices[i].sn != null) ? homeData.result.devices[i].sn : "N/A");
+                        ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, homeData.result.devices[i].duid);
+                        thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                                .withProperties(properties).withLabel(homeData.result.devices[i].name).build());
+                    } else {
+                        logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.",
+                                homeData.result.devices[i].duid, homeData.result.devices[i].pv);
+                    }
                 }
             }
         }
