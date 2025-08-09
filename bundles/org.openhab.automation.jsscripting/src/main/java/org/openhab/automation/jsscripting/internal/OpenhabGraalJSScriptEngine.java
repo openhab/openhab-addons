@@ -326,7 +326,7 @@ public class OpenhabGraalJSScriptEngine
     protected String onScript(String script) {
         if (isUiBasedScript() && configuration.isWrapperEnabled()) {
             logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
-            return "(function() {" + script + "})()";
+            return "(function() {" + System.lineSeparator() + script + System.lineSeparator() + "})()";
         }
         return super.onScript(script);
     }
