@@ -143,6 +143,7 @@ See section [Discovery](#discovery) for details.
 | thing-type          | Model                                                  | Vendor ID               |
 | ------------------- | ------------------------------------------------------ | ----------------------- |
 | shellyblubutton     | Shelly BLU Button 1                                    | SBBT-002C               |
+| shellyblubutton     | Shelly BLU Tough ZB (Zigbee button)                    | SBBT-102C               |
 | shellybludw         | Shelly BLU Door/Windows                                | SBDW-002C               |
 | shellyblumotion     | Shelly BLU Motion                                      | SBMO-003Z               |
 | shellybluht         | Shelly BLU H&T                                         | SBHT-003C               |
@@ -1789,7 +1790,7 @@ See notes on discovery of Shelly BLU devices above.
 
 # Shelly BLU Wall Switch 4 (thing-type: shellybluwallswitch4)
 
-ee notes on discovery of Shelly BLU devices above.
+See notes on discovery of Shelly BLU devices above.
 
 | Group   | Channel       | Type     | read-only | Description                                                                         |
 | ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
