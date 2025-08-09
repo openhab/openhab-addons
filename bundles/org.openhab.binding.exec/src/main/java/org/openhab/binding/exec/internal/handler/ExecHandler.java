@@ -25,6 +25,7 @@ import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.PatternSyntaxException;
@@ -83,7 +84,8 @@ public class ExecHandler extends BaseThingHandler {
     public static final String AUTORUN = "autorun";
 
     private ExecutorService executor;
-    private @Nullable ScheduledFuture<?> executionJob;
+    private @Nullable ScheduledFuture<?> scheduledTask;
+    private volatile @Nullable Future<?> lastTriggeredTask;
     private @Nullable String lastInput;
 
     private static Runtime rt = Runtime.getRuntime();
@@ -127,11 +129,11 @@ public class ExecHandler extends BaseThingHandler {
     public void initialize() {
         channelTransformation = new ChannelTransformation((List<String>) getConfig().get(TRANSFORM));
 
-        ScheduledFuture<?> job = executionJob;
-        if (job == null || job.isCancelled()) {
+        ScheduledFuture<?> task = scheduledTask;
+        if (task == null || task.isCancelled()) {
             if ((getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
                 int pollingInterval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
-                executionJob = scheduler.scheduleWithFixedDelay(this::triggerExecution, 0, pollingInterval,
+                scheduledTask = scheduler.scheduleWithFixedDelay(this::triggerExecution, 0, pollingInterval,
                         TimeUnit.SECONDS);
             }
         }
@@ -141,16 +143,21 @@ public class ExecHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = executionJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
-            executionJob = null;
+        Future<?> task = scheduledTask;
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
+            scheduledTask = null;
+        }
+        task = lastTriggeredTask;
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
+            lastTriggeredTask = null;
         }
         channelTransformation = null;
     }
 
     private void triggerExecution() {
-        executor.execute(this::execute);
+        lastTriggeredTask = executor.submit(this::execute);
     }
 
     public void execute() {
