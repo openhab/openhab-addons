@@ -15,6 +15,7 @@
 			<parameter name="password" type="text">
 				<label>Password</label>
 				<description>Password for Roborock account</description>
+				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer" unit="min" min="1">
 				<label>Refresh Interval</label>

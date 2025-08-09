@@ -35,6 +35,18 @@ public class RoborockBindingConstants {
     public static final String SALT = "TXdfu$jyZ#TZHsg4";
     public static final int AES_BLOCK_SIZE = 16;
 
+    // Constants used by RoborockWebTargets
+    public static final int TIMEOUT_MS = 30000;
+    public static final String EU_IOT_BASE_URL = "https://euiot.roborock.com";
+    public static final String GET_URL_BY_EMAIL_URI = EU_IOT_BASE_URL + "/api/v1/getUrlByEmail";
+    public static final String GET_TOKEN_PATH = "/api/v1/login";
+    public static final String GET_HOME_DETAIL_PATH = "/api/v1/getHomeDetail";
+    public static final String GET_HOME_DATA_PATH = "/user/homes/";
+    public static final String GET_HOME_DATA_V3_PATH = "/v3/user/homes/";
+    public static final String GET_ROUTINES_PATH = "/user/scene/device/";
+    public static final String SET_ROUTINE_PATH = "/user/scene/";
+    public static final String SET_ROUTINE_PATH_SUFFIX = "/execute";
+
     // List of all Channel ids
     public static final String CHANNEL_BATTERY = "status#battery";
     public static final String CHANNEL_CLEAN_AREA = "status#clean_area";

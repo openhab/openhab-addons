@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscoveryService<RoborockAccountHandler> {
 
-    private Logger logger = LoggerFactory.getLogger(RoborockVacuumDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(RoborockVacuumDiscoveryService.class);
 
     public RoborockVacuumDiscoveryService() {
         super(RoborockAccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5, false);

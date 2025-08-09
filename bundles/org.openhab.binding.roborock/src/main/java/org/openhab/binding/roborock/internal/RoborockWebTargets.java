@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.roborock.internal;
 
+import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -45,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -58,17 +59,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class RoborockWebTargets {
-    private static final int TIMEOUT_MS = 30000;
-    private static final String EU_IOT_BASE_URL = "https://euiot.roborock.com";
-    private static final String GET_URL_BY_EMAIL_URI = EU_IOT_BASE_URL + "/api/v1/getUrlByEmail";
-    private static final String GET_TOKEN_PATH = "/api/v1/login";
-    private static final String GET_HOME_DETAIL_PATH = "/api/v1/getHomeDetail";
-    private static final String GET_HOME_DATA_PATH = "/user/homes/";
-    private static final String GET_HOME_DATA_V3_PATH = "/v3/user/homes/";
-    private static final String GET_ROUTINES_PATH = "/user/scene/device/";
-    private static final String SET_ROUTINE_PATH = "/user/scene/";
-    private static final String SET_ROUTINE_PATH_SUFFIX = "/execute";
-
     private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(RoborockWebTargets.class);
     private HttpClient httpClient;
@@ -151,19 +141,16 @@ public class RoborockWebTargets {
 
         try {
             JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
-            JsonElement dataElement = jsonResponse.get("data");
-            if (dataElement != null && dataElement.isJsonObject()) {
-                JsonElement urlElement = dataElement.getAsJsonObject().get("url");
-                if (urlElement != null && urlElement.isJsonPrimitive()) {
-                    return urlElement.getAsString();
-                }
+            if (jsonResponse.has("data") && jsonResponse.get("data").isJsonObject()
+                    && jsonResponse.getAsJsonObject("data").has("url")
+                    && jsonResponse.getAsJsonObject("data").get("url").isJsonPrimitive()) {
+                return jsonResponse.getAsJsonObject("data").get("url").getAsString();
             }
             logger.warn("URL not found in getUrlByEmail response: {}", response);
-            return EU_IOT_BASE_URL; // Default to EU_IOT_BASE_URL if URL not explicitly found
         } catch (JsonSyntaxException | IllegalStateException e) {
             logger.error("Failed to parse JSON response for getUrlByEmail: {}", response, e);
-            throw new RoborockException("Failed to parse getUrlByEmail response", e);
         }
+        return EU_IOT_BASE_URL;
     }
 
     /**

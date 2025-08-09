@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -94,8 +93,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private Rriot rriot = new Login().new Rriot();
     private final SecureRandom secureRandom = new SecureRandom();
 
-    /** The file we store definitions in */
-    protected final Map<Thing, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
+    protected final Map<String, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
 
     private final Gson gson = new Gson();
 
@@ -197,7 +195,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         logger.debug("Child registered with gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
                 getThing().getUID(), getThing().getLabel());
         if (childHandler instanceof RoborockVacuumHandler) {
-            childDevices.put(childThing, (RoborockVacuumHandler) childHandler);
+            childDevices.put(childThing.getUID().getId(), (RoborockVacuumHandler) childHandler);
         } else {
             logger.warn("Initialized child handler is not a RoborockVacuumHandler: {}",
                     childHandler.getClass().getName());
@@ -208,7 +206,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         logger.debug("Child released from gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
                 getThing().getUID(), getThing().getLabel());
-        childDevices.remove(childThing);
+        childDevices.remove(childThing.getUID().getId());
     }
 
     private void initAPI() {
@@ -366,20 +364,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         logger.debug("Received MQTT message for device {}", destination);
 
         // check list of child handlers and send message to the right one
-        for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
-            if (entry.getKey().getUID().getAsString().contains(destination)) {
-                try {
-                    logger.debug("Submit response to child {} -> {}", destination, entry.getKey().getUID());
-                    entry.getValue().handleMessage(publish.getPayloadAsBytes());
-                } catch (RuntimeException e) {
-                    logger.debug(
-                            "Unhandled exception processing MQTT message for device {}. Message will be discarded.",
-                            destination, e);
-                }
-                return;
-            }
+        RoborockVacuumHandler handler = childDevices.get(destination);
+        if (handler != null) {
+            handler.handleMessage(publish.getPayloadAsBytes());
+        } else {
+            logger.warn("Received MQTT message for unknown device destination: {}", destination);
         }
-        logger.warn("Received MQTT message for unknown device destination: {}", destination);
     }
 
     public void disconnectMqttClient() {
