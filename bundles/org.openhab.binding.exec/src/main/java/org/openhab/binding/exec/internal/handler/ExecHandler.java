@@ -149,7 +149,7 @@ public class ExecHandler extends BaseThingHandler {
         channelTransformation = null;
     }
 
-    public void triggerExecution() {
+    private void triggerExecution() {
         executor.execute(this::execute);
     }
 
