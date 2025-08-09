@@ -22,13 +22,13 @@ import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.api.dto.Result;
-import org.openhab.binding.evcc.internal.api.dto.Status;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -81,11 +81,23 @@ public class EvccAPI {
         final String response = httpRequest(this.host + EVCC_REST_API + "state", "GET");
         logger.trace("API Response >> {}", response);
         try {
-            Status status = gson.fromJson(response, Status.class);
-            if (status == null) {
-                throw new EvccApiException("Status is null");
+            JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
+            if (jsonObject == null) {
+                throw new EvccApiException("Invalid response - no json.");
             }
-            return status.getResult();
+            Result result = null;
+            if (jsonObject.has("result")) {
+                result = gson.fromJson(jsonObject.get("result"), Result.class);
+            }
+            if (jsonObject.has("version")) {
+                // Attribute version available - continue as Result
+                result = gson.fromJson(jsonObject, Result.class);
+            }
+            if (result != null) {
+                return result;
+            } else {
+                throw new EvccApiException("Invalid response - no result: " + response);
+            }
         } catch (JsonSyntaxException e) {
             throw new EvccApiException("Error parsing response: " + response, e);
         }
