@@ -20,6 +20,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * LifecycleTracker implementation
  *
+ * <p>
+ * We can't use core's lifecycle tracker for JS Scripting, because its dispose hooks are called after the engine has
+ * been closed (which will not work).
+ *
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
