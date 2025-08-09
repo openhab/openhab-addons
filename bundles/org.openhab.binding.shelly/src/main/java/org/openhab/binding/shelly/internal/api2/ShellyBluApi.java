@@ -72,8 +72,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             Map.entry("2", SHELLY_BTNEVENT_2SHORTPUSH), //
             Map.entry("3", SHELLY_BTNEVENT_3SHORTPUSH), //
             Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), //
-            Map.entry("80", SHELLY_BTNEVENT_HOLDING), //
-            Map.entry("254", SHELLY_BTNEVENT_HOLDING)); // for firmware prior to 1.0.20
+            Map.entry("80", SHELLY_BTNEVENT_HOLD), //
+            Map.entry("254", SHELLY_BTNEVENT_HOLD)); // for firmware prior to 1.0.20
 
     /**
      * Regular constructor - called by Thing handler
@@ -311,7 +311,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                     t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
                                             getStringType(input.event));
                                     // ignore HOLDING events for counter and trigger
-                                    if (!SHELLY_BTNEVENT_HOLDING.equalsIgnoreCase(input.event)) {
+                                    if (!SHELLY_BTNEVENT_HOLD.equalsIgnoreCase(input.event)) {
                                         t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
                                                 getDecimal(input.eventCount));
                                         t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
