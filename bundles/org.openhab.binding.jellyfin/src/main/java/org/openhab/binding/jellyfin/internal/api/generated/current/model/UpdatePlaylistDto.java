@@ -1,0 +1,207 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+package org.openhab.binding.jellyfin.internal.api.generated.current.model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+/**
+ * Update existing playlist dto. Fields set to &#x60;null&#x60; will not be updated and keep their current values.
+ */
+@JsonPropertyOrder({ UpdatePlaylistDto.JSON_PROPERTY_NAME, UpdatePlaylistDto.JSON_PROPERTY_IDS,
+        UpdatePlaylistDto.JSON_PROPERTY_USERS, UpdatePlaylistDto.JSON_PROPERTY_IS_PUBLIC })
+
+public class UpdatePlaylistDto {
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @org.eclipse.jdt.annotation.NonNull
+    private String name;
+
+    public static final String JSON_PROPERTY_IDS = "Ids";
+    @org.eclipse.jdt.annotation.NonNull
+    private List<UUID> ids;
+
+    public static final String JSON_PROPERTY_USERS = "Users";
+    @org.eclipse.jdt.annotation.NonNull
+    private List<PlaylistUserPermissions> users;
+
+    public static final String JSON_PROPERTY_IS_PUBLIC = "IsPublic";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean isPublic;
+
+    public UpdatePlaylistDto() {
+    }
+
+    public UpdatePlaylistDto name(@org.eclipse.jdt.annotation.NonNull String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Gets or sets the name of the new playlist.
+     * 
+     * @return name
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getName() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
+        this.name = name;
+    }
+
+    public UpdatePlaylistDto ids(@org.eclipse.jdt.annotation.NonNull List<UUID> ids) {
+        this.ids = ids;
+        return this;
+    }
+
+    public UpdatePlaylistDto addIdsItem(UUID idsItem) {
+        if (this.ids == null) {
+            this.ids = new ArrayList<>();
+        }
+        this.ids.add(idsItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets item ids of the playlist.
+     * 
+     * @return ids
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_IDS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<UUID> getIds() {
+        return ids;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IDS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIds(@org.eclipse.jdt.annotation.NonNull List<UUID> ids) {
+        this.ids = ids;
+    }
+
+    public UpdatePlaylistDto users(@org.eclipse.jdt.annotation.NonNull List<PlaylistUserPermissions> users) {
+        this.users = users;
+        return this;
+    }
+
+    public UpdatePlaylistDto addUsersItem(PlaylistUserPermissions usersItem) {
+        if (this.users == null) {
+            this.users = new ArrayList<>();
+        }
+        this.users.add(usersItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the playlist users.
+     * 
+     * @return users
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_USERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<PlaylistUserPermissions> getUsers() {
+        return users;
+    }
+
+    @JsonProperty(JSON_PROPERTY_USERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUsers(@org.eclipse.jdt.annotation.NonNull List<PlaylistUserPermissions> users) {
+        this.users = users;
+    }
+
+    public UpdatePlaylistDto isPublic(@org.eclipse.jdt.annotation.NonNull Boolean isPublic) {
+        this.isPublic = isPublic;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether the playlist is public.
+     * 
+     * @return isPublic
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsPublic(@org.eclipse.jdt.annotation.NonNull Boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    /**
+     * Return true if this UpdatePlaylistDto object is equal to o.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UpdatePlaylistDto updatePlaylistDto = (UpdatePlaylistDto) o;
+        return Objects.equals(this.name, updatePlaylistDto.name) && Objects.equals(this.ids, updatePlaylistDto.ids)
+                && Objects.equals(this.users, updatePlaylistDto.users)
+                && Objects.equals(this.isPublic, updatePlaylistDto.isPublic);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, ids, users, isPublic);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class UpdatePlaylistDto {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    ids: ").append(toIndentedString(ids)).append("\n");
+        sb.append("    users: ").append(toIndentedString(users)).append("\n");
+        sb.append("    isPublic: ").append(toIndentedString(isPublic)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
+}

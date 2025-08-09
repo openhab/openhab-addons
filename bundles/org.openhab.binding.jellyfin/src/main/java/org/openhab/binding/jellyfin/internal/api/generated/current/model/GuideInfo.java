@@ -1,0 +1,128 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+package org.openhab.binding.jellyfin.internal.api.generated.current.model;
+
+import java.time.OffsetDateTime;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+/**
+ * GuideInfo
+ */
+@JsonPropertyOrder({ GuideInfo.JSON_PROPERTY_START_DATE, GuideInfo.JSON_PROPERTY_END_DATE })
+
+public class GuideInfo {
+    public static final String JSON_PROPERTY_START_DATE = "StartDate";
+    @org.eclipse.jdt.annotation.NonNull
+    private OffsetDateTime startDate;
+
+    public static final String JSON_PROPERTY_END_DATE = "EndDate";
+    @org.eclipse.jdt.annotation.NonNull
+    private OffsetDateTime endDate;
+
+    public GuideInfo() {
+    }
+
+    public GuideInfo startDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime startDate) {
+        this.startDate = startDate;
+        return this;
+    }
+
+    /**
+     * Gets or sets the start date.
+     * 
+     * @return startDate
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public OffsetDateTime getStartDate() {
+        return startDate;
+    }
+
+    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStartDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public GuideInfo endDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime endDate) {
+        this.endDate = endDate;
+        return this;
+    }
+
+    /**
+     * Gets or sets the end date.
+     * 
+     * @return endDate
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public OffsetDateTime getEndDate() {
+        return endDate;
+    }
+
+    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEndDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    /**
+     * Return true if this GuideInfo object is equal to o.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        GuideInfo guideInfo = (GuideInfo) o;
+        return Objects.equals(this.startDate, guideInfo.startDate) && Objects.equals(this.endDate, guideInfo.endDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startDate, endDate);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class GuideInfo {\n");
+        sb.append("    startDate: ").append(toIndentedString(startDate)).append("\n");
+        sb.append("    endDate: ").append(toIndentedString(endDate)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
+}

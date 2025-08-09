@@ -1,0 +1,363 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+package org.openhab.binding.jellyfin.internal.api.generated.current.model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+/**
+ * SubtitleOptions
+ */
+@JsonPropertyOrder({ SubtitleOptions.JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT,
+        SubtitleOptions.JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES, SubtitleOptions.JSON_PROPERTY_DOWNLOAD_LANGUAGES,
+        SubtitleOptions.JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES,
+        SubtitleOptions.JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES, SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_USERNAME,
+        SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH,
+        SubtitleOptions.JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT,
+        SubtitleOptions.JSON_PROPERTY_REQUIRE_PERFECT_MATCH })
+
+public class SubtitleOptions {
+    public static final String JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipIfEmbeddedSubtitlesPresent";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean skipIfEmbeddedSubtitlesPresent;
+
+    public static final String JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES = "SkipIfAudioTrackMatches";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean skipIfAudioTrackMatches;
+
+    public static final String JSON_PROPERTY_DOWNLOAD_LANGUAGES = "DownloadLanguages";
+    @org.eclipse.jdt.annotation.NonNull
+    private List<String> downloadLanguages;
+
+    public static final String JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES = "DownloadMovieSubtitles";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean downloadMovieSubtitles;
+
+    public static final String JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES = "DownloadEpisodeSubtitles";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean downloadEpisodeSubtitles;
+
+    public static final String JSON_PROPERTY_OPEN_SUBTITLES_USERNAME = "OpenSubtitlesUsername";
+    @org.eclipse.jdt.annotation.NonNull
+    private String openSubtitlesUsername;
+
+    public static final String JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH = "OpenSubtitlesPasswordHash";
+    @org.eclipse.jdt.annotation.NonNull
+    private String openSubtitlesPasswordHash;
+
+    public static final String JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT = "IsOpenSubtitleVipAccount";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean isOpenSubtitleVipAccount;
+
+    public static final String JSON_PROPERTY_REQUIRE_PERFECT_MATCH = "RequirePerfectMatch";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean requirePerfectMatch;
+
+    public SubtitleOptions() {
+    }
+
+    public SubtitleOptions skipIfEmbeddedSubtitlesPresent(
+            @org.eclipse.jdt.annotation.NonNull Boolean skipIfEmbeddedSubtitlesPresent) {
+        this.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
+        return this;
+    }
+
+    /**
+     * Get skipIfEmbeddedSubtitlesPresent
+     * 
+     * @return skipIfEmbeddedSubtitlesPresent
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getSkipIfEmbeddedSubtitlesPresent() {
+        return skipIfEmbeddedSubtitlesPresent;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSkipIfEmbeddedSubtitlesPresent(
+            @org.eclipse.jdt.annotation.NonNull Boolean skipIfEmbeddedSubtitlesPresent) {
+        this.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
+    }
+
+    public SubtitleOptions skipIfAudioTrackMatches(
+            @org.eclipse.jdt.annotation.NonNull Boolean skipIfAudioTrackMatches) {
+        this.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
+        return this;
+    }
+
+    /**
+     * Get skipIfAudioTrackMatches
+     * 
+     * @return skipIfAudioTrackMatches
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getSkipIfAudioTrackMatches() {
+        return skipIfAudioTrackMatches;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSkipIfAudioTrackMatches(@org.eclipse.jdt.annotation.NonNull Boolean skipIfAudioTrackMatches) {
+        this.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
+    }
+
+    public SubtitleOptions downloadLanguages(@org.eclipse.jdt.annotation.NonNull List<String> downloadLanguages) {
+        this.downloadLanguages = downloadLanguages;
+        return this;
+    }
+
+    public SubtitleOptions addDownloadLanguagesItem(String downloadLanguagesItem) {
+        if (this.downloadLanguages == null) {
+            this.downloadLanguages = new ArrayList<>();
+        }
+        this.downloadLanguages.add(downloadLanguagesItem);
+        return this;
+    }
+
+    /**
+     * Get downloadLanguages
+     * 
+     * @return downloadLanguages
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<String> getDownloadLanguages() {
+        return downloadLanguages;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDownloadLanguages(@org.eclipse.jdt.annotation.NonNull List<String> downloadLanguages) {
+        this.downloadLanguages = downloadLanguages;
+    }
+
+    public SubtitleOptions downloadMovieSubtitles(@org.eclipse.jdt.annotation.NonNull Boolean downloadMovieSubtitles) {
+        this.downloadMovieSubtitles = downloadMovieSubtitles;
+        return this;
+    }
+
+    /**
+     * Get downloadMovieSubtitles
+     * 
+     * @return downloadMovieSubtitles
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getDownloadMovieSubtitles() {
+        return downloadMovieSubtitles;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDownloadMovieSubtitles(@org.eclipse.jdt.annotation.NonNull Boolean downloadMovieSubtitles) {
+        this.downloadMovieSubtitles = downloadMovieSubtitles;
+    }
+
+    public SubtitleOptions downloadEpisodeSubtitles(
+            @org.eclipse.jdt.annotation.NonNull Boolean downloadEpisodeSubtitles) {
+        this.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
+        return this;
+    }
+
+    /**
+     * Get downloadEpisodeSubtitles
+     * 
+     * @return downloadEpisodeSubtitles
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getDownloadEpisodeSubtitles() {
+        return downloadEpisodeSubtitles;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDownloadEpisodeSubtitles(@org.eclipse.jdt.annotation.NonNull Boolean downloadEpisodeSubtitles) {
+        this.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
+    }
+
+    public SubtitleOptions openSubtitlesUsername(@org.eclipse.jdt.annotation.NonNull String openSubtitlesUsername) {
+        this.openSubtitlesUsername = openSubtitlesUsername;
+        return this;
+    }
+
+    /**
+     * Get openSubtitlesUsername
+     * 
+     * @return openSubtitlesUsername
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getOpenSubtitlesUsername() {
+        return openSubtitlesUsername;
+    }
+
+    @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOpenSubtitlesUsername(@org.eclipse.jdt.annotation.NonNull String openSubtitlesUsername) {
+        this.openSubtitlesUsername = openSubtitlesUsername;
+    }
+
+    public SubtitleOptions openSubtitlesPasswordHash(
+            @org.eclipse.jdt.annotation.NonNull String openSubtitlesPasswordHash) {
+        this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
+        return this;
+    }
+
+    /**
+     * Get openSubtitlesPasswordHash
+     * 
+     * @return openSubtitlesPasswordHash
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getOpenSubtitlesPasswordHash() {
+        return openSubtitlesPasswordHash;
+    }
+
+    @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOpenSubtitlesPasswordHash(@org.eclipse.jdt.annotation.NonNull String openSubtitlesPasswordHash) {
+        this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
+    }
+
+    public SubtitleOptions isOpenSubtitleVipAccount(
+            @org.eclipse.jdt.annotation.NonNull Boolean isOpenSubtitleVipAccount) {
+        this.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
+        return this;
+    }
+
+    /**
+     * Get isOpenSubtitleVipAccount
+     * 
+     * @return isOpenSubtitleVipAccount
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIsOpenSubtitleVipAccount() {
+        return isOpenSubtitleVipAccount;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsOpenSubtitleVipAccount(@org.eclipse.jdt.annotation.NonNull Boolean isOpenSubtitleVipAccount) {
+        this.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
+    }
+
+    public SubtitleOptions requirePerfectMatch(@org.eclipse.jdt.annotation.NonNull Boolean requirePerfectMatch) {
+        this.requirePerfectMatch = requirePerfectMatch;
+        return this;
+    }
+
+    /**
+     * Get requirePerfectMatch
+     * 
+     * @return requirePerfectMatch
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getRequirePerfectMatch() {
+        return requirePerfectMatch;
+    }
+
+    @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setRequirePerfectMatch(@org.eclipse.jdt.annotation.NonNull Boolean requirePerfectMatch) {
+        this.requirePerfectMatch = requirePerfectMatch;
+    }
+
+    /**
+     * Return true if this SubtitleOptions object is equal to o.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SubtitleOptions subtitleOptions = (SubtitleOptions) o;
+        return Objects.equals(this.skipIfEmbeddedSubtitlesPresent, subtitleOptions.skipIfEmbeddedSubtitlesPresent)
+                && Objects.equals(this.skipIfAudioTrackMatches, subtitleOptions.skipIfAudioTrackMatches)
+                && Objects.equals(this.downloadLanguages, subtitleOptions.downloadLanguages)
+                && Objects.equals(this.downloadMovieSubtitles, subtitleOptions.downloadMovieSubtitles)
+                && Objects.equals(this.downloadEpisodeSubtitles, subtitleOptions.downloadEpisodeSubtitles)
+                && Objects.equals(this.openSubtitlesUsername, subtitleOptions.openSubtitlesUsername)
+                && Objects.equals(this.openSubtitlesPasswordHash, subtitleOptions.openSubtitlesPasswordHash)
+                && Objects.equals(this.isOpenSubtitleVipAccount, subtitleOptions.isOpenSubtitleVipAccount)
+                && Objects.equals(this.requirePerfectMatch, subtitleOptions.requirePerfectMatch);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(skipIfEmbeddedSubtitlesPresent, skipIfAudioTrackMatches, downloadLanguages,
+                downloadMovieSubtitles, downloadEpisodeSubtitles, openSubtitlesUsername, openSubtitlesPasswordHash,
+                isOpenSubtitleVipAccount, requirePerfectMatch);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class SubtitleOptions {\n");
+        sb.append("    skipIfEmbeddedSubtitlesPresent: ").append(toIndentedString(skipIfEmbeddedSubtitlesPresent))
+                .append("\n");
+        sb.append("    skipIfAudioTrackMatches: ").append(toIndentedString(skipIfAudioTrackMatches)).append("\n");
+        sb.append("    downloadLanguages: ").append(toIndentedString(downloadLanguages)).append("\n");
+        sb.append("    downloadMovieSubtitles: ").append(toIndentedString(downloadMovieSubtitles)).append("\n");
+        sb.append("    downloadEpisodeSubtitles: ").append(toIndentedString(downloadEpisodeSubtitles)).append("\n");
+        sb.append("    openSubtitlesUsername: ").append(toIndentedString(openSubtitlesUsername)).append("\n");
+        sb.append("    openSubtitlesPasswordHash: ").append(toIndentedString(openSubtitlesPasswordHash)).append("\n");
+        sb.append("    isOpenSubtitleVipAccount: ").append(toIndentedString(isOpenSubtitleVipAccount)).append("\n");
+        sb.append("    requirePerfectMatch: ").append(toIndentedString(requirePerfectMatch)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
+}
