@@ -140,7 +140,6 @@ public class ShellyDeviceProfileTest {
     }
 
     @ParameterizedTest
-
     @MethodSource("provideTestCasesForGetControlGroup")
     void getControlGroup(ThingTypeUID thingTypeUID, String mode, int numRollers, int numOutputs, int numLights,
             int index, String expectedControlGroup) throws ShellyApiException {

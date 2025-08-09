@@ -657,13 +657,16 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUWALLSWITCH4, "shellybluwallswitch4"), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4_2, "shellbluwallswitch4"), //
             Map.entry(SHELLYDT_BLURCBUTTON4, "shellyblurcbutton4"), //
+            Map.entry(SHELLYDT_BLUHT, "shellybluht"), //
+            Map.entry(SHELLYDT_BLUDW, "shellybludw"), //
+            Map.entry(SHELLYDT_BLUMOTION, "shellyblumotion"), //
             Map.entry(SHELLYDT_BLUREMOTE, "shellybluremote"), //
 
             // with unspecific model (string everything behind -
             Map.entry(SHELLYDT_BLUCLASS_BUTTON, "shellyblubutton"), //
-            Map.entry(SHELLYDT_BLUDW, "shellybludw"), //
-            Map.entry(SHELLYDT_BLUMOTION, "shellyblumotion"), //
-            Map.entry(SHELLYDT_BLUHT, "shellybluht"));
+            Map.entry(SHELLYDT_BLUCLASS_HT, "shellybluht"), //
+            Map.entry(SHELLYDT_BLUCLASS_DW, "shellybludw"), //
+            Map.entry(SHELLYDT_BLUCLASS_MOTION, "shellyblumotion"));
 
     /**
      * Generates a service name based on the provided model name and MAC address.
@@ -703,8 +706,5 @@ public class ShellyDevices {
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //
             Map.entry(THING_TYPE_SHELLYBLUBUTTON1, 1), //
             Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
-            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
-            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 1));
+            Map.entry(THING_TYPE_SHELLYBLUDW, 1));
 }
