@@ -30,7 +30,7 @@ import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemInformationBl
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInfromationBlockParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInformationBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParser;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
@@ -134,7 +134,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Parser used to convert incoming raw messages into system blocks
      */
-    private final SystemInfromationBlockParser systemInformationBlockParser = new SystemInfromationBlockParser();
+    private final SystemInformationBlockParser systemInformationBlockParser = new SystemInformationBlockParser();
     /**
      * Parser used to convert incoming raw messages into system state blocks
      */
@@ -218,8 +218,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *         the stiebel eltron modbus documentation)
      */
     private short getScaledInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof QuantityType quantityCommand) {
-            QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
+        if (command instanceof QuantityType) {
+            QuantityType<?> c = ((QuantityType<?>) command).toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * 10);
             } else {
@@ -523,9 +523,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_DEWPOINT), getScaled(block.dewpointFek, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_OUTDOOR_TEMPERATURE),
                 getScaled(block.temperatureOutdoor, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE), getScaled(block.temperatureHk1, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE), getScaled(block.temperatureHc1, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE_SETPOINT),
-                getScaled(block.temperatureHk1SetPoint, CELSIUS));
+                getScaled(block.temperatureHc1SetPoint, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_SUPPLY_TEMPERATURE),
                 getScaled(block.temperatureSupply, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_RETURN_TEMPERATURE),
