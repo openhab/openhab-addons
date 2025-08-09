@@ -54,6 +54,7 @@ import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChanne
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
+import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.QuantityType;
@@ -138,6 +139,7 @@ public class OpenhabGraalJSScriptEngine
     /** {@link Lock} synchronization of multi-thread access */
     private final Lock lock = new ReentrantLock();
     private final JSRuntimeFeatures jsRuntimeFeatures;
+    private final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     private final GraalJSScriptEngineConfiguration configuration;
 
     // these fields start as null because they are populated on first use
@@ -145,6 +147,7 @@ public class OpenhabGraalJSScriptEngine
     private String engineIdentifier = "<uninitialized>";
 
     private boolean initialized = false;
+    private boolean closed = false;
 
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
@@ -283,7 +286,7 @@ public class OpenhabGraalJSScriptEngine
         scriptDependencyListener = localScriptDependencyListener;
 
         ScriptExtensionModuleProvider scriptExtensionModuleProvider = new ScriptExtensionModuleProvider(
-                scriptExtensionAccessor, lock);
+                scriptExtensionAccessor, lock, lifecycleTracker);
 
         // Wrap the "require" function to also allow loading modules from the ScriptExtensionModuleProvider
         Function<Function<Object[], Object>, Function<String, Object>> wrapRequireFn = originalRequireFn -> moduleName -> scriptExtensionModuleProvider
@@ -345,8 +348,26 @@ public class OpenhabGraalJSScriptEngine
     }
 
     @Override
-    public void close() {
-        jsRuntimeFeatures.close();
+    public void close() throws Exception {
+        if (closed) {
+            logger.debug("Engine '{}' is already disposed and closed.", engineIdentifier);
+            return;
+        }
+
+        lock.lock();
+        try {
+            try {
+                jsRuntimeFeatures.close();
+                this.lifecycleTracker.dispose();
+            } finally {
+                logger.debug("Engine '{}' disposed.", engineIdentifier);
+                super.close();
+                logger.debug("Engine '{}' closed.", engineIdentifier);
+            }
+        } finally {
+            closed = true;
+            lock.unlock();
+        }
     }
 
     /**
