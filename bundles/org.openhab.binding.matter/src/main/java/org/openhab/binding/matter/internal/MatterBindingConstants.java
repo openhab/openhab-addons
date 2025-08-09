@@ -391,6 +391,10 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_LABEL_CONTROLLER_PAIR_DEVICE_RESULT = "@text/thing-action.controller.pairDevice.result.label";
     public static final String THING_ACTION_RESULT_DEVICE_ADDED = "@text/thing-action.result.device-added";
     public static final String THING_ACTION_RESULT_PAIRING_FAILED = "@text/thing-action.result.pairing-failed";
+    public static final String THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA = "@text/thing-action.controller.getDebugNodeData.label";
+    public static final String THING_ACTION_DESC_CONTROLLER_GET_DEBUG_NODE_DATA = "@text/thing-action.controller.getDebugNodeData.description";
+    public static final String THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA_RESULT = "@text/thing-action.controller.getDebugNodeData.result.label";
+    public static final String THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA_FAILED = "@text/thing-action.controller.getDebugNodeData.failed.label";
 
     // Matter Controller Statuses
     public static final String THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA = "@text/thing-status.detail.controller.waitingForData";

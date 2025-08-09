@@ -84,7 +84,7 @@ public class ApplicationBasicCluster extends BaseCluster {
     /**
      * This indicates a global identifier for an Application given a catalog.
      */
-    public class ApplicationStruct {
+    public static class ApplicationStruct {
         /**
          * This field shall indicate the Connectivity Standards Alliance issued vendor ID for the catalog. The DIAL
          * registry shall use value 0x0000.

@@ -83,7 +83,7 @@ public class DescriptorCluster extends BaseCluster {
      * The device type and revision define endpoint conformance to a release of a device type definition. See the Data
      * Model specification for more information.
      */
-    public class DeviceTypeStruct {
+    public static class DeviceTypeStruct {
         /**
          * This shall indicate the device type definition. The endpoint shall conform to the device type definition and
          * cluster specifications required by the device type.

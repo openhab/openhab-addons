@@ -44,7 +44,7 @@ public class ValidProxiesCluster extends BaseCluster {
     /**
      * Encapsulates the Node ID of a Valid Proxy.
      */
-    public class ValidProxyStruct {
+    public static class ValidProxyStruct {
         public BigInteger nodeId; // node-id
 
         public ValidProxyStruct(BigInteger nodeId) {

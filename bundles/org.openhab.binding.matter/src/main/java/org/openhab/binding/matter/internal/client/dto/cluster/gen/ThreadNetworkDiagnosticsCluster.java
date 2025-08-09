@@ -460,7 +460,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     /**
      * The ConnectionStatus Event shall indicate that a Node’s connection status to a Thread network has changed.
      */
-    public class ConnectionStatus {
+    public static class ConnectionStatus {
         public ConnectionStatusEnum connectionStatus; // ConnectionStatusEnum
 
         public ConnectionStatus(ConnectionStatusEnum connectionStatus) {
@@ -471,7 +471,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     /**
      * The NetworkFaultChange Event shall indicate a change in the set of network faults currently detected by the Node.
      */
-    public class NetworkFaultChange {
+    public static class NetworkFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per Section 11.14.5.1, “NetworkFaultEnum
          * Type”.
@@ -489,7 +489,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         }
     }
 
-    public class NeighborTableStruct {
+    public static class NeighborTableStruct {
         /**
          * This field shall specify the IEEE 802.15.4 extended address for the neighboring Node.
          */
@@ -581,7 +581,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         }
     }
 
-    public class RouteTableStruct {
+    public static class RouteTableStruct {
         /**
          * This field shall specify the IEEE 802.15.4 extended address for the Node for which this route table entry
          * corresponds.
@@ -645,7 +645,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         }
     }
 
-    public class SecurityPolicy {
+    public static class SecurityPolicy {
         /**
          * This field shall specify the interval of time, in hours, that Thread security keys are rotated. Null when
          * there is no dataset configured.
@@ -663,7 +663,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         }
     }
 
-    public class OperationalDatasetComponents {
+    public static class OperationalDatasetComponents {
         /**
          * This field shall be True if the Node has an active timestamp present, else False.
          */

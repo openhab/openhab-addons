@@ -1,7 +1,7 @@
 // Include this first to auto-register Crypto, Network and Time Node.js implementations
 import "@matter/node";
 
-import { Environment, Logger, StorageService } from "@matter/general";
+import { Environment, Logger, MatterAggregateError, StorageService } from "@matter/general";
 import { Endpoint, ServerNode } from "@matter/node";
 import { BasicInformationServer } from "@matter/node/behaviors";
 import { AggregatorEndpoint } from "@matter/node/endpoints";
@@ -9,19 +9,24 @@ import { DeviceCommissioner, FabricManager } from "@matter/protocol";
 import { FabricIndex, VendorId } from "@matter/types";
 import { BridgeEvent, BridgeEventType, EventType } from "../MessageTypes";
 import { BridgeController } from "./BridgeController";
-import { ColorDeviceType } from "./devices/ColorDeviceType";
-import { ContactSensorDeviceType } from "./devices/ContactSensorDeviceType";
-import { DimmableDeviceType } from "./devices/DimmableDeviceType";
-import { DoorLockDeviceType } from "./devices/DoorLockDeviceType";
-import { FanDeviceType } from "./devices/FanDeviceType";
-import { GenericDeviceType } from "./devices/GenericDeviceType";
-import { HumiditySensorType } from "./devices/HumiditySensorType";
-import { OccupancySensorDeviceType } from "./devices/OccupancySensorDeviceType";
-import { OnOffLightDeviceType } from "./devices/OnOffLightDeviceType";
-import { OnOffPlugInDeviceType } from "./devices/OnOffPlugInDeviceType";
-import { TemperatureSensorType } from "./devices/TemperatureSensorType";
-import { ThermostatDeviceType } from "./devices/ThermostatDeviceType";
-import { WindowCoveringDeviceType } from "./devices/WindowCoveringDeviceType";
+import { DeviceFunctions } from "./DeviceFunctions";
+
+import {
+    BaseDeviceType,
+    ColorDeviceType,
+    ContactSensorDeviceType,
+    DimmableDeviceType,
+    DoorLockDeviceType,
+    FanDeviceType,
+    HumiditySensorType,
+    OccupancySensorDeviceType,
+    OnOffLightDeviceType,
+    OnOffPlugInDeviceType,
+    TemperatureSensorType,
+    ThermostatDeviceType,
+    WindowCoveringDeviceType,
+} from "./devices";
+import { ModeSelectDeviceType } from "./devices/ModeSelectDeviceType";
 
 type DeviceType =
     | OnOffLightDeviceType
@@ -35,7 +40,8 @@ type DeviceType =
     | OccupancySensorDeviceType
     | ContactSensorDeviceType
     | FanDeviceType
-    | ColorDeviceType;
+    | ColorDeviceType
+    | ModeSelectDeviceType;
 
 const logger = Logger.get("DeviceNode");
 
@@ -49,9 +55,10 @@ export class DeviceNode {
     #environment: Environment = Environment.default;
 
     private aggregator: Endpoint<AggregatorEndpoint> | null = null;
-    private devices: Map<string, GenericDeviceType> = new Map();
+    private devices: Map<string, BaseDeviceType> = new Map();
     private storageService: StorageService;
     private inCommissioning: boolean = false;
+    private deviceFunctions: DeviceFunctions;
 
     constructor(
         private bridgeController: BridgeController,
@@ -68,11 +75,13 @@ export class DeviceNode {
         logger.info(`Device Node Storage location: ${this.storagePath} (Directory)`);
         this.#environment.vars.set("storage.path", this.storagePath);
         this.storageService = this.#environment.get(StorageService);
+        this.deviceFunctions = new DeviceFunctions(this.bridgeController);
+        this.#environment.set(DeviceFunctions, this.deviceFunctions);
     }
 
     //public methods
 
-    async initializeBridge(resetStorage: boolean = false) {
+    public async initializeBridge(resetStorage: boolean = false) {
         await this.close();
         logger.info(`Initializing bridge`);
         await this.#init();
@@ -89,7 +98,7 @@ export class DeviceNode {
         logger.info(`Bridge initialized`);
     }
 
-    async startBridge() {
+    public async startBridge() {
         if (this.devices.size === 0) {
             throw new Error("No devices added, not starting");
         }
@@ -116,13 +125,13 @@ export class DeviceNode {
         await ohStorage.set("lastStart", Date.now());
     }
 
-    async close() {
+    public async close() {
         await this.server?.close();
         this.server = null;
         this.devices.clear();
     }
 
-    async addEndpoint(
+    public async addEndpoint(
         deviceType: string,
         id: string,
         nodeLabel: string,
@@ -163,6 +172,7 @@ export class DeviceNode {
             ContactSensor: ContactSensorDeviceType,
             Fan: FanDeviceType,
             ColorLight: ColorDeviceType,
+            ModeSelect: ModeSelectDeviceType,
         };
 
         const DeviceClass = deviceTypeMap[deviceType];
@@ -179,17 +189,37 @@ export class DeviceNode {
             serialNumber,
         );
         this.devices.set(id, device);
-        await this.aggregator.add(device.endpoint);
+        try {
+            await this.aggregator.add(device.endpoint);
+        } catch (e) {
+            logger.error(`Error adding device ${id} to aggregator: ${e}`);
+            if (e instanceof MatterAggregateError) {
+                const errors = e.errors;
+                logger.error(`Name: ${e.name} Message: ${e.message} Cause: ${e.cause}`);
+                let errorMessage = "";
+                for (const error of errors) {
+                    errorMessage += `Error: ${error.message} Cause: ${error.cause}\n`;
+                }
+                logger.error(errorMessage);
+                throw new Error(errorMessage);
+            }
+            throw e;
+        }
     }
 
-    async setEndpointStates(endpointId: string, states: { clusterName: string; attributeName: string; state: any }[]) {
+    public async setEndpointStates(
+        endpointId: string,
+        states: { clusterName: string; attributeName: string; state: any }[],
+    ) {
         const device = this.devices.get(endpointId);
         if (device) {
+            // First notify waiters about the incoming states
+            this.deviceFunctions.notifyStateWaiters(endpointId, states);
             void device.updateStates(states);
         }
     }
 
-    async openCommissioningWindow() {
+    public async openCommissioningWindow() {
         const dc = this.#getStartedServer().env.get(DeviceCommissioner);
         logger.debug("opening basic commissioning window");
         await dc.allowBasicCommissioning(() => {
@@ -198,7 +228,7 @@ export class DeviceNode {
         logger.debug("basic commissioning window open");
     }
 
-    async closeCommissioningWindow() {
+    public async closeCommissioningWindow() {
         const server = this.#getStartedServer();
         if (!server.state.commissioning.commissioned) {
             throw new Error("Bridge is not commissioned, not closing commissioning window");
@@ -208,7 +238,7 @@ export class DeviceNode {
         await dc.endCommissioning();
     }
 
-    getCommissioningState() {
+    public getCommissioningState() {
         const server = this.#getStartedServer();
         return {
             pairingCodes: {
@@ -219,12 +249,12 @@ export class DeviceNode {
         };
     }
 
-    getFabrics() {
+    public getFabrics() {
         const fabricManager = this.#getStartedServer().env.get(FabricManager);
         return fabricManager.fabrics;
     }
 
-    async removeFabric(fabricIndex: number) {
+    public async removeFabric(fabricIndex: number) {
         const fabricManager = this.#getStartedServer().env.get(FabricManager);
         await fabricManager.removeFabric(FabricIndex(fabricIndex));
     }
