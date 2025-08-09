@@ -355,8 +355,8 @@ public class OpenhabGraalJSScriptEngine
         }
 
         lock.lock();
-        jsRuntimeFeatures.close();
         try {
+            jsRuntimeFeatures.close();
             try {
                 this.lifecycleTracker.dispose();
             } finally {
