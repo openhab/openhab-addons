@@ -253,6 +253,11 @@ public class LGWebOSHandler extends BaseThingHandler
     }
 
     @Override
+    public String getBroadcastAddress() {
+        return getLGWebOSConfig().getBroadcastAddress();
+    }
+
+    @Override
     public void storeKey(@Nullable String key) {
         if (!getKey().equals(key)) {
             logger.debug("Store new access Key in the thing configuration");

@@ -27,21 +27,40 @@ The binding has no configuration parameter.
 TVs are auto discovered through SSDP in the local network.
 The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
 
-Please note, that if you are running openHAB in a Docker container you need to use macvlan or host networking for this binding to work.
-If automatic discovery is not possible you may still manually configure a device based on host and access key.
+Please note, that if you are running openHAB in a Docker container you have several alternatives for this binding to work:
+* use macvlan or host networking
+* manually configure the device:
+  * host and access key for basic functionality
+  * mac address and broadcast address to be able to turn on the TV
 
 ## Thing Configuration
 
-WebOS TV has three configuration parameters.
+WebOS TV has five configuration parameters.
 
 Parameters:
 
-| Name       | Description                                                                                                                                                                    |
-|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| host       | Hostname or IP address of TV                                                                                                                                                   |
-| key        | Key exchanged with TV after pairing (enter it after you paired the device)                                                                                                     |
-| macAddress | The MAC address of your TV to turn on via Wake On Lan (WOL). The binding will attempt to detect it.                                                                            |
-| useTLS     | Enable Transport Layer Security. This is required by latest firmware versions and should work with older versions as well. In case of compatibility issues it can be disabled. |
+| Name             | Description                                                                                                                                                                    |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| host             | Hostname or IP address of TV                                                                                                                                                   |
+| key              | Key exchanged with TV after pairing (enter it after you paired the device)                                                                                                     |
+| macAddress       | The MAC address of your TV to turn on via Wake On Lan (WOL). The binding will attempt to detect it.                                                                            |
+| broadcastAddress | The broadcast address of the network your TV is located on. Only needed when running in docker container, leave empty otherwise                                                |
+| useTLS           | Enable Transport Layer Security. This is required by latest firmware versions and should work with older versions as well. In case of compatibility issues it can be disabled. |
+
+### Configuration for wake-on-lan in docker
+
+To be able to turn on the TV from within a docker container, the binding needs to know where to send the broadcast wakeonlan packet to. Configure the
+broadcast address of the network the TV is located in as `broadcastAddress`.
+
+Example: If your TV has the IP address `192.168.0.123`, the broadcast address is `192.168.0.255`.
+
+In addition forwarding of broadcast packets needs to be enabled:
+* net.ipv4.icmp_echo_ignore_broadcasts=0
+* net.ipv4.conf.all.bc_forwarding=1
+* net.ipv4.conf.${interface}.bc_forwarding=1
+
+See for example [here](https://www.devwithimagination.com/2020/06/15/homebridge-docker-and-wake-on-lan/) for instructions how to do that.
+
 
 ### Configuration in .things file
 
