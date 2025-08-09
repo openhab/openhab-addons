@@ -37,6 +37,11 @@
       <version>3.12.0</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.resource</artifactId>
+      <version>1.0.1</version>
+    </dependency>
   </dependencies>
 
 </project>

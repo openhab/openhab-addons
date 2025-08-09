@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>!net.sf.ehcache.*,!net.spy.*</bnd.importpackage>
-    <bouncycastle.version>1.78.1</bouncycastle.version>
+    <bouncycastle.version>1.81</bouncycastle.version>
   </properties>
 
   <dependencies>
