@@ -466,10 +466,8 @@ The following is a list of supported Matter device types and their corresponding
 | Outdoor Temperature | Number                 | thermostat.outdoorTemperature      |                                                                                          |
 | Heating Setpoint    | Number                 | thermostat.occupiedHeatingSetpoint |                                                                                          |
 | Cooling Setpoint    | Number                 | thermostat.occupiedCoolingSetpoint |                                                                                          |
-| System Mode         | Number, String, Switch | thermostat.systemMode              | [OFF=0,AUTO=1,ON=1,COOL=3,HEAT=4,EMERGENCY_HEAT=5,PRECOOLING=6,FAN_ONLY=7,DRY=8,SLEEP=9] |
+| System Mode         | Number, String, Switch | thermostat.systemMode              | [OFF=0,AUTO=1,COOL=3,HEAT=4,EMERGENCY_HEAT=5,PRECOOLING=6,FAN_ONLY=7,DRY=8,SLEEP=9] |
 | Running Mode        | Number, String         | thermostat.runningMode             |                                                                                          |
-
-For `systemMode` the `ON` option should map to the system mode custom value that would be appropriate if a 'ON' command was issued, defaults to the `AUTO` mapping.
 
 The following attributes can be set in the options of any thermostat member or on the Group item to set temperature options.
 

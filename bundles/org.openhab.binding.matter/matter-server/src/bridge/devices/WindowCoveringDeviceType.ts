@@ -8,7 +8,7 @@ export class WindowCoveringDeviceType extends BaseDeviceType {
     override createEndpoint(clusterValues: Record<string, any>) {
         const features: WindowCovering.Feature[] = [
             WindowCovering.Feature.Lift,
-            WindowCovering.Feature.PositionAwareLift,
+            WindowCovering.Feature.PositionAwareLift
         ];
         const endpoint = new Endpoint(
             WindowCoveringDevice.with(CustomWindowCoveringServer.with(...features), ...this.baseClusterServers),

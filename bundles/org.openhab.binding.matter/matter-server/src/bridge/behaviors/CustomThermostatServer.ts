@@ -39,7 +39,7 @@ export class CustomThermostatServer extends ThermostatServer {
     }
 
     override initialize(_options?: {}): MaybePromise {
-        super.initialize();
+        super.initialize(_options);
         const ev: any = this.endpoint.events;
         ev.thermostat.occupiedHeatingSetpoint$Changed?.on((v: any, _o: any, ctx?: ActionContext) => {
             this.env

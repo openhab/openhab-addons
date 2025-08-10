@@ -37,7 +37,7 @@ export class CustomFanControlServer extends FanControlServer {
     }
 
     override initialize(_options?: {}): MaybePromise {
-        super.initialize();
+        super.initialize(_options);
         const events: any = this.endpoint.events;
         events.fanControl.fanMode$Changed.on((v: any, _o: any, ctx?: ActionContext) => {
             this.env.get(DeviceFunctions).attributeChanged(this.endpoint.id, "fanControl", "fanMode", v, ctx);
