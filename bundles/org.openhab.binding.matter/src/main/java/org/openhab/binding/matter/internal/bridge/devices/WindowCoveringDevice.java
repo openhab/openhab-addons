@@ -150,10 +150,9 @@ public class WindowCoveringDevice extends BaseDevice {
         try {
             // check if this is matter initiated or openHAB initiated, if openHAB we will fake the target position so
             // operation direction is correct
-            if (lastTargetPercent == null) {
+            if (lastTargetPercent == null && currentPercent != lastCurrentPercent) {
                 // either 0/OPEN or 100/CLOSED, if the value was not updated, we ignore it (probably should not happen)
-                Integer targetPercent = currentPercent < lastCurrentPercent ? 0
-                        : currentPercent > lastCurrentPercent ? 100 : null;
+                Integer targetPercent = currentPercent < lastCurrentPercent ? 0 : 100;
                 if (targetPercent != null) {
                     setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
                             WindowCoveringCluster.ATTRIBUTE_TARGET_POSITION_LIFT_PERCENT100THS, targetPercent * 100)
