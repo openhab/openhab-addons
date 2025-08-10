@@ -271,13 +271,13 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.lux.isValid = true;
                             sensorData.lux.value = (double) e.data.illuminance;
                         }
-                        if (e.data.temperatures != null) {
+                        if (e.data.temperature != null || e.data.temperatures != null) {
                             if (sensorData.tmp == null) {
                                 sensorData.tmp = new ShellySensorTmp();
                             }
                             sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
-                            sensorData.tmp.tC = e.data.temperatures[1]; // CHECK
                             sensorData.tmp.isValid = true;
+                            sensorData.tmp.tC = e.data.temperature != null ? e.data.temperature : e.data.temperature; // CHECK
                         }
                         if (e.data.humidity != null) {
                             if (sensorData.hum == null) {
@@ -294,7 +294,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (e.data.motionState != null) {
                             sensorData.motion = e.data.motionState == 1;
                         }
-
+                        if (e.data.dimmer != null) {
+                            t.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CHANNEL, getDecimal(e.data.dimmer.channel));
+                            t.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_ROTATE, getDecimal(e.data.dimmer.rotate));
+                        }
                         if (e.data.buttonEvents != null) {
                             logger.trace("{}: Shelly BLU button events received: {}", thingName,
                                     gson.toJson(e.data.buttonEvents));
@@ -303,8 +306,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                     ShellyInputState input = deviceStatus.inputs.get(bttnIdx);
                                     input.event = mapValue(MAP_INPUT_EVENT_TYPE,
                                             e.data.buttonEvents[bttnIdx].toString());
-                                    input.eventCount++;
-                                    deviceStatus.inputs.set(bttnIdx, input);
 
                                     String group = getProfile().getInputGroup(bttnIdx);
                                     String suffix = profile.getInputSuffix(bttnIdx);
@@ -312,10 +313,15 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                             getStringType(input.event));
                                     // ignore HOLDING events for counter and trigger
                                     if (!SHELLY_BTNEVENT_HOLD.equalsIgnoreCase(input.event)) {
+                                        logger.debug("{}: update to {}, pid={}", message.src, input.event, e.data.pid);
+                                        input.eventCount++;
                                         t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
                                                 getDecimal(input.eventCount));
                                         t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
+                                    } else {
+                                        logger.debug("{}: ignore H, pid={}", message.src, e.data.pid);
                                     }
+                                    deviceStatus.inputs.set(bttnIdx, input);
                                 }
                             }
                         }

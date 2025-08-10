@@ -126,6 +126,7 @@ let BTHomeDecoder = {
     return val !== null ? this.utoi(val, 32) : null;
   },
 
+  
   // Decode value buffer according to type
   getBufValue: function (type, buffer) {
     if (buffer.length < getByteSize(type)) return null;
@@ -174,8 +175,21 @@ let BTHomeDecoder = {
       // Apply scaling factor if defined
       if (typeof _bth.f !== "undefined") _value *= _bth.f;
 
-      // Handle button events separately (accumulate)
-      if (bthIdx === BTH_BUTTON_INDEX) {
+      // Special handling for Temperature singular/plural
+      if (bthIdx === BTH_TEMP_INDEX) {
+        if (result["Temperature"] !== undefined) {
+          if (!Array.isArray(result["Temperature"])) {
+             result["Temperatures"] = [result["Temperature"]];
+              delete result["Temperature"];
+            }
+            result["Temperatures"].push(_value);
+          } else if (result["Temperatures"] !== undefined) {
+          result["Temperatures"].push(_value);
+        } else {
+          result["Temperature"] = _value;
+        }
+      }      // Handle button events separately (accumulate)
+      else if (bthIdx === BTH_BUTTON_INDEX) {
         bttns.push(_value);
       } else {
         // If property already exists, convert to array or append

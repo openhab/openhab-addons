@@ -650,6 +650,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4_2, THING_TYPE_SHELLYBLUWALLSWITCH4), //
             Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4), //
+            Map.entry(SHELLYDT_BLUREMOTE, THING_TYPE_SHELLYBLUREMOTE), //
 
             // with unspecific model (string everything behind -
             Map.entry(SHELLYDT_BLUCLASS_BUTTON, THING_TYPE_SHELLYBLUBUTTON), //
@@ -716,5 +717,6 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLYBLUBUTTON, 1), //
             Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
             Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
-            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 1));
+            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2), //
+            Map.entry(THING_TYPE_SHELLYBLUHT, 1));
 }

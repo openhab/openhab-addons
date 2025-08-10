@@ -1205,7 +1205,13 @@ public class Shelly2ApiJsonDTO {
     // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
     // "ts":1682877414.25}
 
-    public class Shelly2NotifyEventMessage {
+    public class Shelly2NotifyBluEvent {
+        public static class ShellyBluRemoteDimmer {
+            public Integer button;
+            public Integer channel;
+            public Integer rotate;
+        }
+
         public String addr;
         public String name;
         public Boolean encryption;
@@ -1216,8 +1222,6 @@ public class Shelly2ApiJsonDTO {
         public Integer battery;
         @SerializedName("Buttons")
         public Integer[] buttonEvents;
-        @SerializedName("Dimmer")
-        public Double dimmer;
         @SerializedName("Illuminance")
         public Integer illuminance;
         @SerializedName("Window")
@@ -1226,10 +1230,13 @@ public class Shelly2ApiJsonDTO {
         public Double rotation;
         @SerializedName("Motion")
         public Integer motionState;
+        @SerializedName("Temperature")
+        public Double temperature;
         @SerializedName("Temperatures")
         public Double[] temperatures;
         @SerializedName("Humidity")
         public Double humidity;
+        public ShellyBluRemoteDimmer dimmer;
 
         public Integer rssi;
         public Integer tx_power;
@@ -1240,7 +1247,7 @@ public class Shelly2ApiJsonDTO {
         public Double ts;
         public String component;
         public String event;
-        public Shelly2NotifyEventMessage data;
+        public Shelly2NotifyBluEvent data;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")
