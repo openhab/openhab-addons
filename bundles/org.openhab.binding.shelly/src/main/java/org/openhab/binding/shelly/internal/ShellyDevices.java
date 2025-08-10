@@ -651,6 +651,20 @@ public class ShellyDevices {
             // Password protected device
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED));
 
+    public static final Map<String, ThingTypeUID> BLU_THING_TYPE_BY_MODEL = Map.ofEntries( //
+            Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON1), //
+            Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4), //
+            Map.entry(SHELLYDT_BLUWALLSWITCH4_2, THING_TYPE_SHELLYBLUWALLSWITCH4), //
+            Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4), //
+            Map.entry(SHELLYDT_BLUREMOTE, THING_TYPE_SHELLYBLUREMOTE), //
+
+            // with unspecific model (string everything behind -
+            Map.entry(SHELLYDT_BLUCLASS_BUTTON, THING_TYPE_SHELLYBLUBUTTON1), //
+            Map.entry(SHELLYDT_BLUCLASS_HT, THING_TYPE_SHELLYBLUHT), //
+            Map.entry(SHELLYDT_BLUCLASS_DW, THING_TYPE_SHELLYBLUDW), //
+            Map.entry(SHELLYDT_BLUCLASS_MOTION, THING_TYPE_SHELLYBLUMOTION) //
+    );
+
     public static final Map<String, String> BLU_SERVICE_NAMES_BY_MODEL = Map.ofEntries( //
             // with specific model id
             Map.entry(SHELLYDT_BLUBUTTON1, "shellyblubutton"), //
@@ -705,6 +719,9 @@ public class ShellyDevices {
     // Number of inputs
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //
             Map.entry(THING_TYPE_SHELLYBLUBUTTON1, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
+            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
             Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUDW, 1));
+            Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2));
 }

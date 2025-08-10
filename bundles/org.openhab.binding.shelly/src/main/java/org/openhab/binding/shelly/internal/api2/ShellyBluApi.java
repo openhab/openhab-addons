@@ -242,6 +242,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.lux.isValid = true;
                             sensorData.lux.value = (double) e.blu.illuminance;
                         }
+<<<<<<< HEAD
                         if (e.blu.temperatures != null) {
                             if (e.blu.temperatures.length == 1) {
                                 if (sensorData.tmp == null) {
@@ -254,6 +255,15 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                 // BLU TRV reports current temp and target temp
                                 // However, we don't support BLU TRV yet, so ignore
                             }
+=======
+                        if (e.data.temperature != null || e.data.temperatures != null) {
+                            if (sensorData.tmp == null) {
+                                sensorData.tmp = new ShellySensorTmp();
+                            }
+                            sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
+                            sensorData.tmp.isValid = true;
+                            sensorData.tmp.tC = e.data.temperature != null ? e.data.temperature : e.data.temperature; // CHECK
+>>>>>>> fd8c18a537 (Update script to return Temperatur or Temperatures depending if this is)
                         }
                         if (e.blu.humidity != null) {
                             if (sensorData.hum == null) {
@@ -270,6 +280,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (e.blu.motionState != null) {
                             sensorData.motion = e.blu.motionState == 1;
                         }
+<<<<<<< HEAD
                         if (e.blu.firmware != null) {
                             int digit4 = (int) (e.blu.firmware & 0x000000FF);
                             int digit3 = (int) (e.blu.firmware & 0x0000FF00) >> 8;
@@ -281,26 +292,47 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             logger.debug("{}: Detected firmware version: {}", thingName, profile.fwVersion);
                         }
                         if (e.blu.buttons != null) {
+=======
+                        if (e.data.dimmer != null) {
+                            t.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CHANNEL, getDecimal(e.data.dimmer.channel));
+                            t.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_ROTATE, getDecimal(e.data.dimmer.rotate));
+                        }
+                        if (e.data.buttonEvents != null) {
+>>>>>>> fd8c18a537 (Update script to return Temperatur or Temperatures depending if this is)
                             logger.trace("{}: Shelly BLU button events received: {}", thingName,
                                     gson.toJson(e.blu.buttons));
                             for (int bttnIdx = 0; bttnIdx < e.blu.buttons.length; bttnIdx++) {
                                 if (e.blu.buttons[bttnIdx] != 0) {
                                     ShellyInputState input = deviceStatus.inputs.get(bttnIdx);
+<<<<<<< HEAD
                                     input.event = MAP_BLU_INPUT_EVENT_TYPE.getOrDefault(e.blu.buttons[bttnIdx], "");
+=======
+                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE,
+                                            e.data.buttonEvents[bttnIdx].toString());
+>>>>>>> fd8c18a537 (Update script to return Temperatur or Temperatures depending if this is)
 
                                     String group = getProfile().getInputGroup(bttnIdx);
                                     String suffix = profile.getInputSuffix(bttnIdx);
                                     // ignore HOLDING events for counter and trigger
+<<<<<<< HEAD
                                     if (!SHELLY_BTNEVENT_HOLDING.equalsIgnoreCase(input.event)) {
                                         logger.debug("{}: update to {}, pid={}", message.src, input.event, e.blu.pid);
                                         t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
                                                 getStringType(input.event));
+=======
+                                    if (!SHELLY_BTNEVENT_HOLD.equalsIgnoreCase(input.event)) {
+                                        logger.debug("{}: update to {}, pid={}", message.src, input.event, e.data.pid);
+>>>>>>> fd8c18a537 (Update script to return Temperatur or Temperatures depending if this is)
                                         input.eventCount++;
                                         t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
                                                 getDecimal(input.eventCount));
                                         t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
                                     } else {
+<<<<<<< HEAD
                                         logger.debug("{}: ignore H, pid={}", message.src, e.blu.pid);
+=======
+                                        logger.debug("{}: ignore H, pid={}", message.src, e.data.pid);
+>>>>>>> fd8c18a537 (Update script to return Temperatur or Temperatures depending if this is)
                                     }
                                     deviceStatus.inputs.set(bttnIdx, input);
                                 }
