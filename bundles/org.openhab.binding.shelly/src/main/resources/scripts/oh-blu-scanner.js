@@ -22,6 +22,7 @@ let uint32 = 6;
 let int32 = 7;
 
 let BTH_BUTTON_INDEX = 0x3a;  // Button object ID
+let BTH_TEMP_INDEX = 0x45;  // Button object ID
 
 // BTHome object definitions: id => {name, type, optional scale factor}
 let BTH = [];
@@ -216,10 +217,21 @@ let BTHomeDecoder = {
 // Shelly BLU BLE data parser wrapper
 let ShellyBLUParser = {
   getData: function (res) {
-    let result = BTHomeDecoder.unpack(res.service_data[BTHOME_SVC_ID_STR]);
+    // Datagramm vor Dekodierung ausgeben
+      let rawData = res.service_data[BTHOME_SVC_ID_STR];
+      let hexString = "";
+      for (let i = 0; i < rawData.length; i++) {
+        let byteHex = rawData.at(i).toString(16);
+        if (byteHex.length < 2) byteHex = "0" + byteHex; // einfache Null-Vorbereitung
+        hexString += byteHex + " ";
+      }
+    console.log("BLE Datagram:", hexString.trim());
+    
+    let result = BTHomeDecoder.unpack(rawData);
     if (!result) return null;
     result.addr = res.addr;
     result.rssi = res.rssi;
+    result.packet = hexString;
     return result;
   }
 };
