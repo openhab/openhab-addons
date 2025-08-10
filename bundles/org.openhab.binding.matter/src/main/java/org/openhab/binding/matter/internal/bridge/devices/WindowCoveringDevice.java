@@ -50,8 +50,8 @@ import org.openhab.core.types.State;
 public class WindowCoveringDevice extends BaseDevice {
     private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private @Nullable ScheduledFuture<?> movementFinishedTimer = null;
-    private int lastCurrentPercent;
     private @Nullable Integer lastTargetPercent;
+    private int lastCurrentPercent;
     private boolean invert = false;
 
     public WindowCoveringDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
