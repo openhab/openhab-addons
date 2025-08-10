@@ -283,11 +283,17 @@ The following actions are supported:
 
 ```java
 Bridge mqtt:broker:myBroker [ host="localhost", port=1883 ]
-Bridge mqtt:awtrix-clock:myBroker:myAwtrix "Living Room Display" (mqtt:broker:myBroker) [ basetopic="awtrix", appLockTimeout=10, lowBatteryThreshold=25 ] {
-    Thing awtrix-app clock "Clock App" [ appname="clock", useButtons=true ]
-    Thing awtrix-app weather "Weather App" [ appname="weather" ]
-    Thing awtrix-app calendar "Calendar App" [ appname="calendar" ]
-    Thing awtrix-app custom "Custom App" [ appname="custom" ]
+{
+    // .. Other things on your MQTT network
+
+    Bridge mqtt:awtrix-clock:myBroker:myAwtrix "Living Room Display" (mqtt:broker:myBroker) [ basetopic="awtrix", appLockTimeout=10, lowBatteryThreshold=25 ] {
+
+        // These do not (!) represent native Awtrix apps. Native apps cannot be controlled by this binding
+        Thing awtrix-app myClock "Clock App" [ appname="clock", useButtons=true ]
+        Thing awtrix-app myWeather "Weather App" [ appname="weather" ]
+        Thing awtrix-app myCalendar "Calendar App" [ appname="calendar" ]
+        Thing awtrix-app myCustom "Custom App" [ appname="custom" ]
+    }
 }
 ```
 
@@ -303,9 +309,9 @@ Switch Display_Sound "Sound" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myA
 Switch Display_AutoBrightness "Auto Brightness" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:autoBrightness" }
 Number:Temperature Display_Temperature "Temperature [%.1f °C]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:temperature" }
 Number:Dimensionless Display_Humidity "Humidity [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:humidity" }
-Number Display_Battery "Battery Level [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:batteryLevel" }
+Number Display_Battery "Battery Level [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:battery-level" }
 Switch Display_LowBattery "Low Battery" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:lowBattery" }
-Number:Dimensionless Display_WiFi "WiFi Signal [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:rssi" }
+Number Display_WiFi "WiFi Signal [%d dBm]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:rssi" }
 String Display_CurrentApp "Active App [%s]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:app" }
 
 // Clock App items
