@@ -124,4 +124,16 @@
 		<config-description-ref uri="thing-type:shelly:blugw"/>
 	</thing-type>
 
+   <channel-type id="remoteChannel">
+        <item-type>Number</item-type>
+        <label>@text/channel-type.shelly.remoteChannel.label</label>
+        <description>@text/channel-type.shelly.remoteChannel.description</description>
+    </channel-type>
+    
+    <channel-type id="remoteRotate">
+        <item-type>Number</item-type>
+        <label>@text/channel-type.shelly.remoteRotate.label</label>
+        <description>@text/channel-type.shelly.remoteRotate.description</description>
+    </channel-type>
+
 </thing:thing-descriptions>

@@ -18,7 +18,6 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConf
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
-import org.openhab.binding.shelly.internal.api2.ShellyBluEventDataDTO.Shelly2NotifyBluEventData;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -1189,6 +1188,58 @@ public class Shelly2ApiJsonDTO {
         public String response;
         @SerializedName("auth_type")
         public String authType;
+    }
+
+    // BTHome samples
+    // BLU Button 1
+    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
+    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
+    // {"component":"script:2", "id":2, "event":"oh-blu.data",
+    // "data":{"encryption":false,"BTHome_version":2,"pid":205,"Battery":100,"Button":1,"addr":"b4:35:22:fd:b3:81","rssi":-68},
+    // "ts":1682877399.22}
+    //
+    // BLU Door Window
+    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
+    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
+    // {"component":"script:2", "id":2, "event":"oh-blu.data",
+    // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
+    // "ts":1682877414.25}
+
+    public class Shelly2NotifyBluEventData {
+        public static class ShellyBluRemoteDimmer {
+            public Integer button;
+            public Integer channel;
+            public Integer rotate;
+        }
+
+        public String addr;
+        public String name;
+        public Boolean encryption;
+        @SerializedName("BTHome_version")
+        public Integer bthVersion;
+        public Integer pid;
+        @SerializedName("Battery")
+        public Integer battery;
+        @SerializedName("Buttons")
+        public Integer[] buttonEvents;
+        @SerializedName("Illuminance")
+        public Integer illuminance;
+        @SerializedName("Window")
+        public Integer windowState;
+        @SerializedName("Rotation")
+        public Double rotation;
+        @SerializedName("Motion")
+        public Integer motionState;
+        @SerializedName("Temperature")
+        public Double temperature;
+        @SerializedName("Temperatures")
+        public Double[] temperatures;
+        @SerializedName("Humidity")
+        public Double humidity;
+        public ShellyBluRemoteDimmer dimmer;
+
+        public Integer rssi;
+        public Integer tx_power;
     }
 
     public class Shelly2NotifyEvent {

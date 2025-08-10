@@ -238,7 +238,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME, "sensorSleepTime", ITEMT_NUMBER))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSE_KEY, "senseKey", ITEMT_STRING)) // Sense
+
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_SENSE_KEY, "senseKey", ITEMT_STRING)) // Sense
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CHANNEL, "remoteChannel", ITEMT_NUMBER)) // BLU Remote
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_ROTATE, "remoteRotate", ITEMT_NUMBER)) // BLU Remote
 
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
@@ -583,7 +586,11 @@ public class ShellyChannelDefinitions {
         }
 
         // Sense
-        addChannel(thing, newChannels, profile.isSense, CHANNEL_GROUP_SENSOR, CHANNEL_SENSE_KEY);
+        addChannel(thing, newChannels, profile.isSense, CHANNEL_GROUP_CONTROL, CHANNEL_SENSE_KEY);
+
+        // BLU Remote
+        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_CONTROL, CHANNEL_CHANNEL);
+        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_CONTROL, CHANNEL_ROTATE);
 
         // UNI
         addChannel(thing, newChannels, sdata.adcs != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE);

@@ -148,6 +148,8 @@ public class ShellyBindingConstants {
 
     public static final String CHANNEL_GROUP_CONTROL = "control";
     public static final String CHANNEL_SENSE_KEY = "key";
+    public static final String CHANNEL_CHANNEL = "channel"; // BLU Remote
+    public static final String CHANNEL_ROTATE = "rotate"; // BLU Remote
 
     public static final String CHANNEL_GROUP_BATTERY = "battery";
     public static final String CHANNEL_SENSOR_BAT_LEVEL = "batteryLevel";
