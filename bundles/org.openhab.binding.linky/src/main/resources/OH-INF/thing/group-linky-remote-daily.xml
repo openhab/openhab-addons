@@ -26,6 +26,14 @@
 				<label>Consumption</label>
 				<description>The energy consumption</description>
 			</channel>
+            <channel id="consumptionIdx0" typeId="consumption">
+                <label>Consumption Idx0</label>
+                <description>The energy consumption Idx0</description>
+            </channel>
+            <channel id="consumptionIdx1" typeId="consumption">
+                <label>Consumption Idx1</label>
+                <description>The energy consumption Idx1</description>
+            </channel>
 
 			<channel id="max-power" typeId="power">
 				<label>Peak Value</label>

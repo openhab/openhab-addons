@@ -405,16 +405,16 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3,
                         new DateTimeType(values.baseValue[dSize - 3].date.atZone(zoneId)));
 
-                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue,
+                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue,
+                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue,
+                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue,
+                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
             }, () -> {
                 updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1, Double.NaN);
@@ -469,10 +469,11 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         values.yearValue[idxCurrentYear - 2].value);
             }
 
-            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue, Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue, Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue, Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue, -1, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue, -1, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue, -1,
+                    Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue, -1, Units.KILOWATT_HOUR);
         }, () -> {
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, Double.NaN);
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, Double.NaN);
@@ -498,6 +499,11 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private synchronized void updateEnergyIndex() {
         dailyIndex.getValue().ifPresentOrElse(values -> {
             int dSize = values.baseValue.length;
+
+            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_IDX0, values.baseValue, 0,
+                    Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_IDX1, values.baseValue, 1,
+                    Units.KILOWATT_HOUR);
 
             /*
              * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, values.baseValue[dSize - 1].value);
@@ -568,7 +574,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private synchronized void updateLoadCurveData() {
         if (isLinked(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER)) {
             loadCurveConsumption.getValue().ifPresentOrElse(values -> {
-                updateTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue,
+                updateTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
             }, () -> {
             });
@@ -576,11 +582,14 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
-            IntervalReading[] iv, Unit<T> unit) {
+            IntervalReading[] iv, int idx, Unit<T> unit) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < iv.length; i++) {
             try {
+                if (iv[i] == null) {
+                    continue;
+                }
                 if (iv[i].date == null) {
                     continue;
                 }
@@ -590,7 +599,13 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 if (Double.isNaN(iv[i].value)) {
                     continue;
                 }
-                timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
+                if (idx != -1) {
+                    if (iv[i + 1] != null) {
+                        timeSeries.add(timestamp, new QuantityType<>(iv[i + 1].valueFromFournisseur[idx], unit));
+                    }
+                } else {
+                    timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
+                }
             } catch (Exception ex) {
                 logger.error("error occurs durring updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
                         ex);
@@ -782,7 +797,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         if (!isDataLastDayAvailable(meterReading)) {
             logger.debug("Data including yesterday are not yet available");
-            return null;
+            return meterReading;
+            // return null;
         }
 
         if (meterReading != null) {
