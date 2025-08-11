@@ -1206,12 +1206,12 @@ public class Shelly2ApiJsonDTO {
     // "ts":1682877414.25}
 
     public class Shelly2NotifyBluEventData {
-        public static class ShellyBluRemoteDimmer {
-            public Integer button;
-            public Integer channel;
-            public Integer rotate;
+        public static class Shelly2NotifyBluEventDimmer {
+            public Integer direction;
+            public Integer steps;
         }
 
+        public String packet;
         public String addr;
         public String name;
         public Boolean encryption;
@@ -1220,23 +1220,32 @@ public class Shelly2ApiJsonDTO {
         public Integer pid;
         @SerializedName("Battery")
         public Integer battery;
-        @SerializedName("Buttons")
-        public Integer[] buttonEvents;
+        @SerializedName("Button")
+        public Integer[] buttons;
         @SerializedName("Illuminance")
         public Integer illuminance;
         @SerializedName("Window")
         public Integer windowState;
-        @SerializedName("Rotation")
-        public Double rotation;
         @SerializedName("Motion")
         public Integer motionState;
         @SerializedName("Temperature")
-        public Double temperature;
-        @SerializedName("Temperatures")
         public Double[] temperatures;
         @SerializedName("Humidity")
         public Double humidity;
-        public ShellyBluRemoteDimmer dimmer;
+        @SerializedName("Vibration") // BLU Distance
+        public Integer vibration;
+        @SerializedName("Distance_mm") // BLU Distance
+        public Double distance;
+        @SerializedName("Channel") // BLU Remote
+        public Integer channel;
+        @SerializedName("Rotation") // BLU Remote
+        public Double[] rotations;
+        @SerializedName("Dimmer") // BLU Remote
+        public Shelly2NotifyBluEventDimmer dimmer;
+        @SerializedName("Firmware32") // BLU DW
+        public Long firmware32;
+        @SerializedName("Firmware24")
+        public Long firmware24;
 
         public Integer rssi;
         public Integer tx_power;
@@ -1248,7 +1257,7 @@ public class Shelly2ApiJsonDTO {
         public String component;
         public String event;
         @SerializedName("data")
-        public Shelly2NotifyBluEventData blu;
+        public Shelly2NotifyBluEventData data;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")

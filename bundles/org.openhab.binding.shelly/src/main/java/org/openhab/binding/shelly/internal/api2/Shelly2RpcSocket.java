@@ -255,7 +255,7 @@ public class Shelly2RpcSocket {
                         } else {
                             for (Shelly2NotifyEvent e : events.params.events) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    String address = getString(e.blu != null ? e.blu.addr : "").replace(":", "");
+                                    String address = getString(e.data != null ? e.data.addr : "").replace(":", "");
                                     ShellyThingTable thingTable = this.thingTable;
                                     if (thingTable.findThing(address) != null) {
                                         // known device
@@ -267,11 +267,11 @@ public class Shelly2RpcSocket {
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            ShellyThingCreator.addBluThing(message.src, e.blu, thingTable);
+                                            ShellyThingCreator.addBluThing(message.src, e.data, thingTable);
                                         } else {
                                             logger.debug(
                                                     "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
-                                                    message.src, e.event, e.blu.addr);
+                                                    message.src, e.event, e.data.addr);
                                         }
                                     }
                                 } else {

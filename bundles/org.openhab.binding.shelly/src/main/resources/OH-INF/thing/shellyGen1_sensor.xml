@@ -586,10 +586,29 @@
 		<state readOnly="false" min="0" max="86400" pattern="%.0f %unit%"/>
 	</channel-type>
 
+	<channel-type id="sensorChannel">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorChannel.label</label>
+		<description>@text/channel-type.shelly.sensorChannel.description</description>
+	</channel-type>
+
+	<channel-type id="sensorRotation">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorRotation.label</label>
+		<description>@text/channel-type.shelly.sensorRotation.description</description>
+		<category>Tilt</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Tilt</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+
 	<channel-type id="senseKey">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.senseKey.label</label>
 		<description>@text/channel-type.shelly.senseKey.description</description>
 	</channel-type>
 
- </thing:thing-descriptions>
+</thing:thing-descriptions>

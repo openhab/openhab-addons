@@ -239,9 +239,14 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME, "sensorSleepTime", ITEMT_NUMBER))
 
-                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_SENSE_KEY, "senseKey", ITEMT_STRING)) // Sense
-                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CHANNEL, "remoteChannel", ITEMT_NUMBER)) // BLU Remote
-                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_ROTATE, "remoteRotate", ITEMT_NUMBER)) // BLU Remote
+                // BLU Remote
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_CHANNEL, "sensorChannel", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATION1, "sensorRotation", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATION2, "sensorRotation", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATION3, "sensorRotation", ITEMT_NUMBER))
+
+                // Shelly Sense
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_SENSE_KEY, "senseKey", ITEMT_STRING))
 
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
@@ -589,8 +594,10 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, profile.isSense, CHANNEL_GROUP_CONTROL, CHANNEL_SENSE_KEY);
 
         // BLU Remote
-        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_CONTROL, CHANNEL_CHANNEL);
-        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_CONTROL, CHANNEL_ROTATE);
+        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL);
+        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION1);
+        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION2);
+        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION3);
 
         // UNI
         addChannel(thing, newChannels, sdata.adcs != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE);
