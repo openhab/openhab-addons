@@ -468,8 +468,23 @@ public class ShellyComponents {
                 }
             }
             if (sdata.accel != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
-                        toQuantityType(getDouble(sdata.accel.tilt.doubleValue()), DIGITS_NONE, Units.DEGREE_ANGLE));
+                if (sdata.accel.tilt != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
+                            toQuantityType(getDouble(sdata.accel.tilt.doubleValue()), DIGITS_NONE, Units.DEGREE_ANGLE));
+                }
+
+                if (sdata.accel.rotation1 != null) {
+                    // BLU Remote
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION1,
+                            toQuantityType(getDouble(sdata.accel.rotation1.doubleValue()), DIGITS_ROTATION,
+                                    Units.DEGREE_ANGLE));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION2,
+                            toQuantityType(getDouble(sdata.accel.rotation2.doubleValue()), DIGITS_ROTATION,
+                                    Units.DEGREE_ANGLE));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION3,
+                            toQuantityType(getDouble(sdata.accel.rotation3.doubleValue()), DIGITS_ROTATION,
+                                    Units.DEGREE_ANGLE));
+                }
             }
             if (sdata.flood != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,

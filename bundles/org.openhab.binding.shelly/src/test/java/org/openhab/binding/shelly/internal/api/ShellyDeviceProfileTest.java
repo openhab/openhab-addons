@@ -111,6 +111,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
 
                 // Shelly Mini series
                 Arguments.of(THING_TYPE_SHELLYMINI_1, true, false), //
@@ -120,10 +121,9 @@ public class ShellyDeviceProfileTest {
 
                 // Shelly BLU
                 Arguments.of(THING_TYPE_SHELLYBLUBUTTON, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
-                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
 
                 // Shelly Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //

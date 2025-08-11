@@ -123,6 +123,10 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_SLEEPTIME = "sensorSleepTime";
     public static final String CHANNEL_SENSOR_ALARM_STATE = "alarmState";
     public static final String CHANNEL_SENSOR_ERROR = "lastError";
+    public static final String CHANNEL_SENSOR_ROTATION1 = "rotation1"; // BLU Remote
+    public static final String CHANNEL_SENSOR_ROTATION2 = "rotation2"; // BLU Remote
+    public static final String CHANNEL_SENSOR_ROTATION3 = "rotation3"; // BLU Remote
+    public static final String CHANNEL_SENSOR_CHANNEL = "channel"; // BLU Remote
 
     // TRV
     public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp";
@@ -148,8 +152,6 @@ public class ShellyBindingConstants {
 
     public static final String CHANNEL_GROUP_CONTROL = "control";
     public static final String CHANNEL_SENSE_KEY = "key";
-    public static final String CHANNEL_CHANNEL = "channel"; // BLU Remote
-    public static final String CHANNEL_ROTATE = "rotate"; // BLU Remote
 
     public static final String CHANNEL_GROUP_BATTERY = "battery";
     public static final String CHANNEL_SENSOR_BAT_LEVEL = "batteryLevel";
@@ -200,6 +202,7 @@ public class ShellyBindingConstants {
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
+
     // Button/xi3
     public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_STATUS_EVENTTYPE = "lastEvent";
@@ -256,6 +259,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_TEMP = 1;
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;
+    public static final int DIGITS_ROTATION = 1;
 
     public static final int SHELLY_API_TIMEOUT_MS = 10000;
     public static final int UPDATE_STATUS_INTERVAL_SECONDS = 3; // check for updates every x sec

@@ -1206,10 +1206,9 @@ public class Shelly2ApiJsonDTO {
     // "ts":1682877414.25}
 
     public class Shelly2NotifyBluEvent {
-        public static class ShellyBluRemoteDimmer {
-            public Integer button;
-            public Integer channel;
-            public Integer rotate;
+        public static class Shelly2NotifyBluEventDimme {
+            public Integer direction;
+            public Integer steps;
         }
 
         public String addr;
@@ -1220,23 +1219,28 @@ public class Shelly2ApiJsonDTO {
         public Integer pid;
         @SerializedName("Battery")
         public Integer battery;
-        @SerializedName("Buttons")
-        public Integer[] buttonEvents;
+        @SerializedName("Button")
+        public Integer[] buttons;
         @SerializedName("Illuminance")
         public Integer illuminance;
         @SerializedName("Window")
         public Integer windowState;
-        @SerializedName("Rotation")
-        public Double rotation;
         @SerializedName("Motion")
         public Integer motionState;
         @SerializedName("Temperature")
-        public Double temperature;
-        @SerializedName("Temperatures")
         public Double[] temperatures;
         @SerializedName("Humidity")
         public Double humidity;
-        public ShellyBluRemoteDimmer dimmer;
+        @SerializedName("Vibration") // BLU Distance
+        public Integer vibration;
+        @SerializedName("Distance_mm") // BLU Distance
+        public Double distance;
+        @SerializedName("Channel") // BLU Remote
+        public Integer channel;
+        @SerializedName("Rotation") // BLU Remote
+        public Double[] rotations;
+        @SerializedName("Dimmer") // BLU Remote
+        public Shelly2NotifyBluEventDimme dimmer;
 
         public Integer rssi;
         public Integer tx_power;

@@ -271,13 +271,18 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.lux.isValid = true;
                             sensorData.lux.value = (double) e.data.illuminance;
                         }
-                        if (e.data.temperature != null || e.data.temperatures != null) {
-                            if (sensorData.tmp == null) {
-                                sensorData.tmp = new ShellySensorTmp();
+                        if (e.data.temperatures != null) {
+                            if (e.data.temperatures.length == 1) {
+                                if (sensorData.tmp == null) {
+                                    sensorData.tmp = new ShellySensorTmp();
+                                }
+                                sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
+                                sensorData.tmp.isValid = true;
+                                sensorData.tmp.tC = e.data.temperatures[0];
+                            } else {
+                                // BLU TRV reports current temp and target temp
+                                // However, we don't support BLU TRV yet, so ignore
                             }
-                            sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
-                            sensorData.tmp.isValid = true;
-                            sensorData.tmp.tC = e.data.temperature != null ? e.data.temperature : e.data.temperature; // CHECK
                         }
                         if (e.data.humidity != null) {
                             if (sensorData.hum == null) {
@@ -285,27 +290,41 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             }
                             sensorData.hum.value = e.data.humidity;
                         }
-                        if (e.data.rotation != null) {
-                            if (sensorData.accel == null) {
-                                sensorData.accel = new ShellySensorAccel();
-                            }
-                            sensorData.accel.tilt = e.data.rotation.intValue();
-                        }
                         if (e.data.motionState != null) {
                             sensorData.motion = e.data.motionState == 1;
                         }
-                        if (e.data.dimmer != null) {
-                            t.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CHANNEL, getDecimal(e.data.dimmer.channel));
-                            t.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_ROTATE, getDecimal(e.data.dimmer.rotate));
+                        if (e.data.rotations != null) {
+                            if (sensorData.accel == null) {
+                                sensorData.accel = new ShellySensorAccel();
+                            }
+                            if (e.data.rotations.length == 1) { // BLU DW
+                                sensorData.accel.tilt = e.data.rotations[0].intValue();
+                            } else if (e.data.rotations.length == 3) { // BLU Remote
+                                sensorData.accel.rotation1 = e.data.rotations[0];
+                                sensorData.accel.rotation2 = e.data.rotations[1];
+                                sensorData.accel.rotation3 = e.data.rotations[2];
+                            }
                         }
-                        if (e.data.buttonEvents != null) {
+                        if (e.data.dimmer != null) {
+                            int i = 1;
+                        }
+
+                        if (e.data.channel != null) { // BLU Remote
+                            t.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL, getDecimal(e.data.channel));
+                        }
+                        if (e.data.vibration != null) {
+                            if (sensorData.accel == null) {
+                                sensorData.accel = new ShellySensorAccel();
+                            }
+                            sensorData.accel.vibration = getInteger(e.data.vibration);
+                        }
+                        if (e.data.buttons != null) {
                             logger.trace("{}: Shelly BLU button events received: {}", thingName,
-                                    gson.toJson(e.data.buttonEvents));
-                            for (int bttnIdx = 0; bttnIdx < e.data.buttonEvents.length; bttnIdx++) {
-                                if (e.data.buttonEvents[bttnIdx] != 0) {
+                                    gson.toJson(e.data.buttons));
+                            for (int bttnIdx = 0; bttnIdx < e.data.buttons.length; bttnIdx++) {
+                                if (e.data.buttons[bttnIdx] != 0) {
                                     ShellyInputState input = deviceStatus.inputs.get(bttnIdx);
-                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE,
-                                            e.data.buttonEvents[bttnIdx].toString());
+                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE, e.data.buttons[bttnIdx].toString());
 
                                     String group = getProfile().getInputGroup(bttnIdx);
                                     String suffix = profile.getInputSuffix(bttnIdx);
