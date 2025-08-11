@@ -73,6 +73,9 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     private static final String MEASURE_DAILY_CONSUMPTION_URL = PRM_INFO_BASE_URL
             + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=ENERGIE&mesuresCorrigees=false&typeDonnees=CONS";
 
+    private static final String MEASURE_DAILY_INDEX_URL = PRM_INFO_BASE_URL
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=INDEX&mesuresCorrigees=false&typeDonnees=CONS";
+
     private static final String MEASURE_MAX_POWER_URL = PRM_INFO_BASE_URL
             + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=PMAX&mesuresCorrigees=false&typeDonnees=CONS";
 
@@ -142,6 +145,11 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     @Override
     public String getDailyConsumptionUrl() {
         return MEASURE_DAILY_CONSUMPTION_URL;
+    }
+
+    @Override
+    public String getDailyIndexUrl() {
+        return MEASURE_DAILY_INDEX_URL;
     }
 
     @Override

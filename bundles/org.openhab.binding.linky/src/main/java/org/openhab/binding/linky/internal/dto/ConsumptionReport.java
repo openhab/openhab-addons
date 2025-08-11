@@ -31,6 +31,9 @@ public class ConsumptionReport {
         public LocalDateTime dateDebut;
         public LocalDateTime dateFin;
         public Double valeur;
+        public ClassesTemporelles[] classesTemporellesFournisseur;
+        public ClassesTemporelles[] classesTemporellesDistributeur;
+        public Calendrier[] calendrier;
     }
 
     public class Aggregate {
