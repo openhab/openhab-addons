@@ -69,7 +69,7 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
 
         if (configuration.userName.isBlank() || configuration.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Username and password must be configured");
+                    "@text/configuration-user-password-error");
             return;
         }
         ftpServer.addEventListener(this);
