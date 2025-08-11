@@ -99,8 +99,9 @@
 		</parameter>
 		<parameter name="unit" type="text">
 			<label>Unit Of Measurement</label>
-			<description>Unit of measurement (optional). The unit is used for representing the value in the GUI as well as for
-				converting incoming values (like from '°F' to '°C'). Examples: "°C", "°F"</description>
+			<description><![CDATA[Unit of measurement (optional). The unit is used for representing the value in the GUI as well as for
+				converting incoming values (like from °F to °C). Examples: <code>°C</code>, <code>°F</code>,
+				<code>kW</code>, etc.]]></description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
