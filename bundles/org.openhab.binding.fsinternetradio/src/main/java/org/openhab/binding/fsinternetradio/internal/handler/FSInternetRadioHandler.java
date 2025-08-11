@@ -97,8 +97,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                                         PercentType.valueOf(String.valueOf(radio.getVolumePercent())));
                                 break;
                             case CHANNEL_MODE:
-                                updateState(channel.getUID(),
-                                        DecimalType.valueOf(String.valueOf(radio.getMode())));
+                                updateState(channel.getUID(), DecimalType.valueOf(String.valueOf(radio.getMode())));
                                 break;
                             case CHANNEL_MUTE:
                                 updateState(channel.getUID(), OnOffType.from(radio.getMuted()));
