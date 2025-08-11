@@ -240,7 +240,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                             && "controlledLoad".equals(currentPrices.channelType)) {
                         updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
                                 new StringType(currentPrices.descriptor));
-                        updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
+                        updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
                                 convertPriceToState(currentPrices.perKwh));
                     }
                 }
