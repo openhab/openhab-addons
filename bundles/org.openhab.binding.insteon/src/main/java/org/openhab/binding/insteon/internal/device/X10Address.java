@@ -163,8 +163,8 @@ public class X10Address implements DeviceAddress {
      * @return unit code as integer if found, otherwise -1
      */
     public static int unitCodeToInt(byte code) {
-        return UNIT_CODES.entrySet().stream().filter(entry -> entry.getValue() == code).map(Entry::getKey).findFirst()
-                .orElse(-1);
+        return UNIT_CODES.entrySet().stream().filter(entry -> entry.getValue() == code).mapToInt(Entry::getKey)
+                .findFirst().orElse(-1);
     }
 
     /**

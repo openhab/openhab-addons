@@ -70,9 +70,9 @@
     <bnd.version>7.1.0</bnd.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
-    <jackson.version>2.18.2</jackson.version>
-    <jna.version>5.16.0</jna.version>
-    <karaf.version>4.4.7</karaf.version>
+    <jackson.version>2.19.2</jackson.version>
+    <jna.version>5.17.0</jna.version>
+    <karaf.version>4.4.8</karaf.version>
     <netty.version>4.1.118.Final</netty.version>
     <okhttp3.version>4.12.0</okhttp3.version>
     <okio.version>3.9.0</okio.version>
