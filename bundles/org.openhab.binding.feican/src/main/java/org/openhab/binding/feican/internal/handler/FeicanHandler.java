@@ -81,7 +81,7 @@ public class FeicanHandler extends BaseThingHandler {
 
         if (config.ipAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "IP address is not set in the configuration");
+                    "@text/configuration-ip-address-not-set");
             return;
         }
 
