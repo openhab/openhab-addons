@@ -45,6 +45,26 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.openmuc</groupId>
+      <artifactId>jdlms</artifactId>
+      <version>1.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.beanit</groupId>
+      <artifactId>asn1bean</artifactId>
+      <version>1.14.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openmuc</groupId>
+      <artifactId>jrxtx</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>1.81</version>
+    </dependency>
   </dependencies>
 
   <build>
