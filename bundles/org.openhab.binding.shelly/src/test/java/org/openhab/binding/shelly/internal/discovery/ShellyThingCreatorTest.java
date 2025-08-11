@@ -71,6 +71,7 @@ public class ShellyThingCreatorTest {
     }
 
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset() {
+        Arguments.of("shellyprorgbw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRORGBWPM);
         return Stream.of( //
                 Arguments.of("johndoe-" + DEVICE_ID, "", THING_TYPE_SHELLYUNKNOWN), //
                 Arguments.of("shellyplug-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUG), //
@@ -104,11 +105,14 @@ public class ShellyThingCreatorTest {
 
                 // Shelly Plus
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS3EM63),
+                Arguments.of("shellyplusrgbw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSRGBWPM),
+                Arguments.of("shellyplusrgbw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSRGBWPM),
 
                 // Shelly Pro
                 Arguments.of("shellypro3em-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM),
                 Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM63),
                 Arguments.of("shellypro3em400-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM400), //
+                Arguments.of("shellyprorgbw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRORGBWPM),
 
                 // Shelly BLU
                 Arguments.of("shellyblubutton-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUBUTTON), //
@@ -247,6 +251,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
                 Arguments.of(SHELLYDT_PRO3EM3CT63, "", THING_TYPE_SHELLYPRO3EM63), //
                 Arguments.of(SHELLYDT_PRO3EM400, "", THING_TYPE_SHELLYPRO3EM400), //
+                Arguments.of(SHELLYDT_PRORGBWPM, "", THING_TYPE_SHELLYPRORGBWPM), //
 
                 // BLU Series
                 Arguments.of(SHELLYDT_BLUBUTTON1, "", THING_TYPE_SHELLYBLUBUTTON), //

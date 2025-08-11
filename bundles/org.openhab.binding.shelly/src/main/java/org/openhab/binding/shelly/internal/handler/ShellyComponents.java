@@ -29,8 +29,10 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyADC;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
@@ -652,6 +654,85 @@ public class ShellyComponents {
             }
         }
         return updated;
+    }
+
+    public static boolean updateLights(ShellyThingInterface th, ShellyStatusLightChannel light, int lightId,
+            ShellyColorUtils col) {
+        ShellyDeviceProfile profile = th.getProfile();
+
+        // In white mode we have multiple channels
+        boolean updated = false;
+        Integer channelId = lightId + 1;
+        String controlGroup = buildControlGroupName(profile, channelId);
+        // The bulb has a combined channel set for color or white mode
+        // The RGBW2 uses 2 different thing types: color=1 channel, white=4 channel
+        if (profile.isBulb) {
+            th.updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_COLOR_MODE, getOnOff(profile.inColor));
+        }
+
+        col.power = getOnOff(light.ison);
+
+        if (profile.settings.lights != null) {
+            // Channel control/timer
+            ShellySettingsRgbwLight ls = profile.settings.lights.get(lightId);
+            updated |= th.updateChannel(controlGroup, CHANNEL_TIMER_AUTOON,
+                    toQuantityType(getDouble(ls.autoOn), Units.SECOND));
+            updated |= th.updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF,
+                    toQuantityType(getDouble(ls.autoOff), Units.SECOND));
+            updated |= th.updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
+            updated |= th.updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
+        }
+
+        if (getBool(light.overpower)) {
+            th.postEvent(ALARM_TYPE_OVERPOWER, false);
+        }
+
+        if (profile.inColor) {
+            col.setRGBW(getInteger(light.red), getInteger(light.green), getInteger(light.blue),
+                    getInteger(light.white));
+            col.setGain(getInteger(light.gain));
+            col.setEffect(getInteger(light.effect));
+
+            String colorGroup = CHANNEL_GROUP_COLOR_CONTROL;
+            updated |= th.updateChannel(colorGroup, CHANNEL_COLOR_RED, col.percentRed);
+            updated |= th.updateChannel(colorGroup, CHANNEL_COLOR_GREEN, col.percentGreen);
+            updated |= th.updateChannel(colorGroup, CHANNEL_COLOR_BLUE, col.percentBlue);
+            updated |= th.updateChannel(colorGroup, CHANNEL_COLOR_WHITE, col.percentWhite);
+            updated |= th.updateChannel(colorGroup, CHANNEL_COLOR_GAIN, col.percentGain);
+            updated |= th.updateChannel(colorGroup, CHANNEL_COLOR_EFFECT, getDecimal(col.effect));
+            setFullColor(th, colorGroup, col);
+
+            updated |= th.updateChannel(colorGroup, CHANNEL_COLOR_PICKER, col.toHSB());
+        }
+
+        if (!profile.inColor || profile.isBulb) {
+            String whiteGroup = buildWhiteGroupName(profile, channelId);
+            col.setBrightness(getInteger(light.brightness));
+            updated |= th.updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
+            updated |= th.updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Value", toQuantityType(
+                    col.power == OnOffType.ON ? col.percentBrightness.doubleValue() : 0, DIGITS_NONE, Units.PERCENT));
+
+            if ((profile.isBulb || profile.isDuo) && (light.temp != null)) {
+                col.setTemp(getInteger(light.temp));
+                updated |= th.updateChannel(whiteGroup, CHANNEL_COLOR_TEMP, col.percentTemp);
+                updated |= th.updateChannel(whiteGroup, CHANNEL_COLOR_PICKER, col.toHSB());
+            }
+        }
+        return updated;
+    }
+
+    private static void setFullColor(ShellyThingInterface th, String colorGroup, ShellyColorUtils col) {
+        if ((col.red == SHELLY_MAX_COLOR) && (col.green == SHELLY_MAX_COLOR) && (col.blue == 0)) {
+            th.updateChannel(colorGroup, CHANNEL_COLOR_FULL, new StringType(SHELLY_COLOR_YELLOW));
+        } else if ((col.red == SHELLY_MAX_COLOR) && (col.green == 0) && (col.blue == 0)) {
+            th.updateChannel(colorGroup, CHANNEL_COLOR_FULL, new StringType(SHELLY_COLOR_RED));
+        } else if ((col.red == 0) && (col.green == SHELLY_MAX_COLOR) && (col.blue == 0)) {
+            th.updateChannel(colorGroup, CHANNEL_COLOR_FULL, new StringType(SHELLY_COLOR_GREEN));
+        } else if ((col.red == 0) && (col.green == 0) && (col.blue == SHELLY_MAX_COLOR)) {
+            th.updateChannel(colorGroup, CHANNEL_COLOR_FULL, new StringType(SHELLY_COLOR_BLUE));
+        } else if ((col.red == 0) && (col.green == 0) && (col.blue == 0) && (col.white == SHELLY_MAX_COLOR)) {
+            th.updateChannel(colorGroup, CHANNEL_COLOR_FULL, new StringType(SHELLY_COLOR_WHITE));
+        }
     }
 
     public static boolean updateTempChannel(@Nullable ShellyShortTemp sensor, ShellyThingInterface thingHandler,
