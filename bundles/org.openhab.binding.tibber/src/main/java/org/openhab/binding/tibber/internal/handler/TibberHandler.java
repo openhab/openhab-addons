@@ -524,7 +524,7 @@ public class TibberHandler extends BaseThingHandler {
                 consumptionValue = Double.parseDouble(consumption);
             }
         } catch (NumberFormatException e) {
-            logger.error("Unable to parse consumption. Assume 0.", e);
+            logger.error("Unable to parse consumption value: {}. Assuming 0.", consumption, e);
         }
 
         try {
