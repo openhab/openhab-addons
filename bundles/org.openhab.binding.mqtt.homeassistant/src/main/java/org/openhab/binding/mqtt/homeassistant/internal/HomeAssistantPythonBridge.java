@@ -30,6 +30,8 @@ import org.graalvm.python.embedding.VirtualFileSystem;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Centralizes all calls into python to ensure thread safety and a single cached context
@@ -40,6 +42,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = HomeAssistantPythonBridge.class)
 public class HomeAssistantPythonBridge {
     private static final String PYTHON = "python";
+    private final Logger logger = LoggerFactory.getLogger(HomeAssistantPythonBridge.class);
     private final Context context;
     private final Value newRawTemplateMeth, newCommandTemplateMeth, newValueTemplateMeth, renderCommandTemplateMeth,
             renderValueTemplateMeth, renderCommandTemplateWithVariablesMeth, renderValueTemplateWithVariablesMeth,
@@ -50,7 +53,8 @@ public class HomeAssistantPythonBridge {
         VirtualFileSystem vfs = VirtualFileSystem.newBuilder().resourceLoadingClass(HomeAssistantPythonBridge.class)
                 .build();
 
-        context = GraalPyResources.contextBuilder(vfs).build();
+        context = GraalPyResources.contextBuilder(vfs).logHandler(new LogHandler(logger))
+                .option("engine.WarnInterpreterOnly", "false").build();
 
         Value bindings = context.getBindings(PYTHON);
 

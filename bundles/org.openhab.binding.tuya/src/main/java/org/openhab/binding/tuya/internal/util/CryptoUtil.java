@@ -313,11 +313,11 @@ public class CryptoUtil {
 
     public static byte @Nullable [] hmac(byte[] data, byte[] key) {
         try {
-            Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec(key, "HmacSHA256");
-            sha256_HMAC.init(secret_key);
+            Mac sha256HMAC = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(key, "HmacSHA256");
+            sha256HMAC.init(secretKey);
 
-            return sha256_HMAC.doFinal(data);
+            return sha256HMAC.doFinal(data);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             LOGGER.warn("Creating HMAC hash failed: {}", e.getMessage());
         }

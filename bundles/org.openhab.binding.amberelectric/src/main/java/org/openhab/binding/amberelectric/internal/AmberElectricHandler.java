@@ -240,7 +240,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                             && "controlledLoad".equals(currentPrices.channelType)) {
                         updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
                                 new StringType(currentPrices.descriptor));
-                        updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
+                        updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
                                 convertPriceToState(currentPrices.perKwh));
                     }
                 }
@@ -250,7 +250,6 @@ public class AmberElectricHandler extends BaseThingHandler {
                 sendTimeSeries(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, elecTimeSeries);
                 sendTimeSeries(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE, feedInTimeSeries);
             }
-
         } catch (AmberElectricCommunicationException e) {
             logger.debug("Unexpected error connecting to Amber Electric API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

@@ -12,14 +12,14 @@ Relevant messages from the Insteon network (like notifications about switches be
 The binding also supports sending and receiving of legacy X10 messages.
 
 The openHAB binding supports configuring most of the device local settings, linking a device to the modem, managing link database records and scenes along with monitoring inbound/outbound messages.
-Other tools can be used to managed Insteon devices, such as the [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) open source project, or the [HouseLinc](https://www.insteon.com/houselinc) software from Insteon can also be used for configuration, but it wipes the modem link database clean on its initial use, requiring to re-link the modem to all devices.
+Other tools can be used to manage Insteon devices, such as the [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) open source project, or the [HouseLinc](https://www.insteon.com/houselinc) software from Insteon can also be used for configuration, but it wipes the modem link database clean on its initial use, requiring to re-link the modem to all devices.
 
 At startup, the binding will download the modem database along with each configured device all-link database if not previously downloaded and currently awake.
 Therefore, the initialization on the first start may take some additional time to complete depending on the number of devices configured.
 The modem and device link databases information is then cached and updated accordingly based on relevant messages the binding receives.
 To force a database redownload, use the [openHAB console](#console-commands).
 
-**Important note as of openHAB 4.3.0**
+## Important Note for openHAB 4.3.0
 
 The binding has been rewritten to simplify the user experience by retrieving all the configuration directly from the device when possible, and improving the way the Insteon things are configured in MainUI.
 If switching from a previous release, you will need to reconfigure your Insteon environment with the new bridges, things and channels to take advantage of these enhancements.
@@ -56,7 +56,7 @@ For the legacy bridge configuration, only missing device are discovered.
 The naming convention for devices is **_Vendor_ _Model_ _Description_** if its product data is retrievable, otherwise **Insteon Device AA.BB.CC**, where `AA.BB.CC` is the Insteon device address.
 For scenes, it is **Insteon Scene 42**, where `42` is the scene group number.
 The device auto-discovery is enabled by default while disabled for scenes.
-X10 devices are not auto discovered.
+X10 devices are not auto-discovered.
 
 ## Thing Configuration
 
@@ -137,6 +137,7 @@ Likewise, for a wired device that wasn't connected during the first binding init
   | X10_Switch  | X10 Switch  |
   | X10_Dimmer  | X10 Dimmer  |
   | X10_Sensor  | X10 Sensor  |
+
 </details>
 
 ### `network`
@@ -157,8 +158,9 @@ Likewise, for a wired device that wasn't connected during the first binding init
   | --------------------- | --------------------------------------------------------------------------------------------------------------- |
   | Hub (2245-222)        | `/hub2/my_user_name:my_password@192.168.1.100:25105,poll_time=1000`                                             |
   | Legacy Hub (2242-222) | `/hub/192.168.1.100:9761`                                                                                       |
-  | PLM                   | `/dev/ttyS0` or `/dev/ttyUSB0` (Linux)<br>`COM1` (Windows)<br>`/tcp/192.168.1.100:9761` (Networked via ser2net) |
+  | PLM                   | `/dev/ttyS0` or `/dev/ttyUSB0` (Linux), `COM1` (Windows), `/tcp/192.168.1.100:9761` (Networked via ser2net) |
   | Smartenit ZBPLM       | `/dev/ttyUSB0,baudRate=115200` (Linux)                                                                          |
+
 </details>
 
 ### `legacy-device`
@@ -865,7 +867,7 @@ end
 <details>
   <summary>Legacy</summary>
 
-##### Items
+##### Legacy Items
 
   Here is a simple example, just using the load (main) switch:
 
@@ -879,7 +881,7 @@ end
   Switch keypadSwitchD            "keypad button D"    { channel="insteon:device:home:AABBCC:keypadButtonD"}
   ```
 
-##### Things
+##### Legacy Things
 
   The value after group must either be a number or string.
   The hexadecimal value 0xf3 can either converted to a numeric value 243 or the string value "0xf3".
@@ -896,7 +898,7 @@ end
   }
   ```
 
-##### Sitemap
+##### Legacy Sitemap
 
   The following sitemap will bring the items to life in the GUI:
 
@@ -977,7 +979,7 @@ The modem's link database (see [Insteon Terminal](https://github.com/pfrommerd/i
 
 The mini remote buttons cannot be modeled as items since they don't have a state or can receive commands. However, button triggered events can be monitored through rules that can set off subsequent actions:
 
-##### Rules
+#### Rules
 
 ```java
 rule "Mini Remote Button A Pressed On"
@@ -992,7 +994,7 @@ end
 
 Link such that the modem is a responder to the motion sensor.
 
-##### Items
+#### Items
 
 ```java
 Switch               motionSensor             "motion sensor [MAP(motion.map):%s]" { channel="insteon:device:home:aabbcc:motion"}
@@ -1071,7 +1073,7 @@ The battery and light level are only updated when either there is motion, light 
 Similar in operation to the motion sensor above.
 Link such that the modem is a responder to the motion sensor.
 
-##### Items
+#### Items
 
 ```java
 Contact              doorSensor             "door sensor [MAP(contact.map):%s]" { channel="insteon:device:home:aabbcc:contact" }
@@ -1100,9 +1102,9 @@ Note that battery level is only updated when the sensor is triggered or through 
 
 ### Locks
 
-It is important to sync with the lock contorller within 5 feet to avoid bad connection and link twice for both ON and OFF functionality.
+It is important to sync with the lock controller within 5 feet to avoid poor connection and link twice for both ON and OFF functionality.
 
-##### Items
+#### Items
 
 ```java
 Switch doorLock "Front Door [MAP(lock.map):%s]"  { channel="insteon:device:home:aabbcc:lock" }
@@ -1135,7 +1137,7 @@ To invert the state, either relink the modem as a responder with the sensor stat
 By default, the device is inverted where an on command is sent when the sensor is closed, and off when open.
 For a garage door opener, ensure the input sensor is closed (status LED off) during the linking process.
 
-##### Items
+#### Items
 
 ```java
 Switch  garageDoorOpener                 "door opener"                        { channel="insteon:device:home:aabbcc:switch" }
@@ -1166,7 +1168,7 @@ CLOSED=closed
 
 Here is an example configuration for a FanLinc module, which has a dimmable light and a variable speed fan:
 
-##### Items
+#### Items
 
 ```java
 Dimmer fanLincDimmer "dimmer [%d %%]" { channel="insteon:device:home:aabbcc:dimmer" }
@@ -1183,7 +1185,7 @@ String fanLincFan    "fan speed"      { channel="insteon:device:home:aabbcc:fan-
 
 </details>
 
-##### Sitemap
+#### Sitemap
 
 ```perl
 Slider item=fanLincDimmer switchSupport
@@ -1198,7 +1200,7 @@ Additionally, the device can be reset.
 
 See the example below:
 
-##### Items
+#### Items
 
 ```java
 Number:Power  iMeterPower   "power [%d W]"       { channel="insteon:device:home:aabbcc:power-usage" }
@@ -1225,7 +1227,7 @@ The channels to change the alert delay and duration are only used for the siren 
 
 Here is an example configuration for a siren module:
 
-##### Items
+#### Items
 
 ```java
 Switch siren                   "siren"                 { channel="insteon:device:home:aabbcc:siren" }
@@ -1235,7 +1237,7 @@ Number:Time sirenAlertDuration "alert duration [%d s]" { channel="insteon:device
 String sirenAlertType          "alert type [%s]"       { channel="insteon:device:home:aabbcc:alert-type" }
 ```
 
-##### Sitemap
+#### Sitemap
 
 ```perl
 Switch   item=siren
@@ -1251,7 +1253,7 @@ The smoke bridge monitors First Alert ONELINK smoke and carbon monoxide detector
 
 Here is an example configuration for a smoke bridge:
 
-##### Items
+#### Items
 
 ```java
 Switch smokeAlarm          "smoke alarm"           { channel="insteon:device:home:aabbcc:smoke-alarm" }
@@ -1268,7 +1270,7 @@ When pump control is enabled, the 8th valve will remain on and cannot be control
 Each sprinkler program can be turned on/off by using `PLAY` and `PAUSE` commands.
 To skip forward or back to the next or previous valve in the program, use `NEXT` and `PREVIOUS` commands.
 
-##### Items
+#### Items
 
 ```java
 Switch valve1   "valve 1"   { channel="insteon:device:home:aabbcc:valve1" }
@@ -1291,7 +1293,7 @@ Player program4 "program 4" { channel="insteon:device:home:aabbcc:program4" }
 The thermostat (2441TH) is one of the most complex Insteon devices available.
 To ensure all links are configured between the modem and device, and the status reporting is enabled, use the `insteon device addMissingLinks` console command.
 
-##### Items
+#### Items
 
 ```java
 Number:Temperature   thermostatCoolSetpoint "cool setpoint [%.1f °F]" { channel="insteon:device:home:aabbcc:cool-setpoint" }
@@ -1341,7 +1343,7 @@ String               thermostatTimeFormat         "time format [%s]"            
 
 </details>
 
-##### Sitemap
+#### Sitemap
 
 For the thermostat to display in the GUI, add this to the sitemap file:
 
@@ -1431,7 +1433,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   Since it is a broadcast message, the corresponding item does _not_ take the address of any device, but of the modem itself.
   The format is `broadcastOnOff#X` where X is the group that you want to be able to broadcast messages to:
 
-### Things
+### Legacy Things
 
   ```java
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
@@ -1450,7 +1452,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   }
   ```
 
-### Items
+### Legacy Items
 
   ```java
   Switch  broadcastOnOff "group on/off"  { channel="insteon:device:home:AABBCC:broadcastOnOff#2" }

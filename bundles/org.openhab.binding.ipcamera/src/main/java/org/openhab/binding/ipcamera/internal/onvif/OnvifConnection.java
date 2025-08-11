@@ -825,9 +825,9 @@ public class OnvifConnection {
             logger.error("Error parsing ONVIF xml.", e);
             return;
         }
-        NodeList NotificationMessageNodeList = xmlDocument.getElementsByTagName("wsnt:NotificationMessage");
-        for (int i = 0; i < NotificationMessageNodeList.getLength(); i++) {
-            Element notificationMessageElement = (Element) NotificationMessageNodeList.item(i);
+        NodeList notificationMessages = xmlDocument.getElementsByTagName("wsnt:NotificationMessage");
+        for (int i = 0; i < notificationMessages.getLength(); i++) {
+            Element notificationMessageElement = (Element) notificationMessages.item(i);
 
             Element topicElement = (Element) notificationMessageElement.getElementsByTagName("wsnt:Topic").item(0);
             String topic = topicElement.getFirstChild().getNodeValue().replace("tns1:", "");
@@ -855,6 +855,13 @@ public class OnvifConnection {
                         ipCameraHandler.noMotionDetected(CHANNEL_CELL_MOTION_ALARM);
                     }
                     break;
+                case "RuleEngine/PackageDetector/PackageDetected":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.motionDetected(CHANNEL_ITEM_LEFT);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.noMotionDetected(CHANNEL_ITEM_LEFT);
+                    }
+                    break;
                 case "VideoAnalytics/Motion":
                     if ("Trigger".equals(dataValue)) {
                         ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
@@ -878,6 +885,7 @@ public class OnvifConnection {
                         ipCameraHandler.noAudioDetected();
                     }
                     break;
+                case "RuleEngine/AreaDetection/AreaDetected":
                 case "RuleEngine/FieldDetector/ObjectsInside":
                     if ("true".equals(dataValue)) {
                         ipCameraHandler.motionDetected(CHANNEL_FIELD_DETECTION_ALARM);
@@ -885,6 +893,7 @@ public class OnvifConnection {
                         ipCameraHandler.noMotionDetected(CHANNEL_FIELD_DETECTION_ALARM);
                     }
                     break;
+                case "RuleEngine/LineCrossDetector/LineCross":
                 case "RuleEngine/LineDetector/Crossed":
                     if ("ObjectId".equals(dataName)) {
                         ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
@@ -950,6 +959,9 @@ public class OnvifConnection {
                         ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.OFF);
                     }
                     break;
+                case "RuleEngine/Analytics/VehicleDetection":
+                case "RuleEngine/VehicleDetector/Vehicle":
+                case "VideoAnalytics/VehicleDetection/Vehicle":
                 case "RuleEngine/MyRuleDetector/VehicleDetect":
                     if ("true".equals(dataValue)) {
                         ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.ON);
@@ -957,6 +969,7 @@ public class OnvifConnection {
                         ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.OFF);
                     }
                     break;
+                case "RuleEngine/PetDetector/Pet":
                 case "RuleEngine/MyRuleDetector/DogCatDetect":
                     if ("true".equals(dataValue)) {
                         ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
@@ -964,6 +977,7 @@ public class OnvifConnection {
                         ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
                     }
                     break;
+                case "RuleEngine/FaceDetector/FaceDetected":
                 case "RuleEngine/MyRuleDetector/FaceDetect":
                     if ("true".equals(dataValue)) {
                         ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.ON);
@@ -971,6 +985,10 @@ public class OnvifConnection {
                         ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
                     }
                     break;
+                case "VideoAnalytics/PersonDetection/Person":
+                case "RuleEngine/PeopleDetector/People":
+                case "RuleEngine/SmartMotionHumanDetection/HumanDetection":
+                case "RuleEngine/HumanDetection/HumanDetected":
                 case "RuleEngine/MyRuleDetector/PeopleDetect":
                     if ("true".equals(dataValue)) {
                         ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.ON);

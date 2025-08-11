@@ -1,0 +1,32 @@
+{
+	"code": 0,
+	"message": "SUCCESS",
+	"request_id": "ad98602e2ce411f0b2260242ac480009",
+	"data": {
+		"wifivertion": 116,
+		"otastatus": 0,
+		"mcuversion": "mcu-3D0",
+		"trdversion": "0.0.0",
+		"ConnectType": "online",
+		"heater_state": 1,
+		"filter_state": 1,
+		"bubble_state": 0,
+		"ozone_state": 0,
+		"uvc_state": 0,
+		"jet_state": 0,
+		"temperature_unit": 0,
+		"temperature_setting": 80,
+		"water_temperature": 82,
+		"auto_inflate": 0,
+		"filter_current": 0,
+		"safety_lock": 0,
+		"heat_time_switch": 0,
+		"heat_state": 4,
+		"bubble_level": 1,
+		"heat_time": 0,
+		"is_online": true,
+		"fault": "",
+		"warning": "",
+		"device_heat_perhour": 0
+	}
+}

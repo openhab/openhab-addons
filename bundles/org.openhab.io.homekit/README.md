@@ -86,7 +86,7 @@ At the very least, you cannot use repeating (111-11-111) or sequential (123-45-6
 
 Other settings, such as using Fahrenheit temperatures and specifying the interface to advertise the HomeKit bridge are also illustrated in the following sample:
 
-```
+```ini
 org.openhab.homekit:port=9123
 org.openhab.homekit:pin=031-45-154
 org.openhab.homekit:useFahrenheitTemperature=true
@@ -152,7 +152,7 @@ In order to add metadata to an item:
 
 - click on "Save"
 
-### Textual configuration
+### Textual Configuration
 
 ```java
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
@@ -163,7 +163,7 @@ The tag can be:
 - full qualified: i.e. with accessory type and characteristic, e.g. "LeakSensor.LeakDetectedState"
 - shorthand version: with only either accessory type or characteristic, e.g. "LeakSensor", "LeakDetectedState".
 
-if shorthand version has only accessory type, then HomeKit will automatically link *all* mandatory characteristics of this accessory type to the openHAB item.
+if shorthand version has only accessory type, then HomeKit will automatically link _all_ mandatory characteristics of this accessory type to the openHAB item.
 e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, TargetPosition, PositionState.
 Following are equal configuration:
 
@@ -517,7 +517,7 @@ In addition, thermostat can have thresholds for cooling and heating modes.
 When a thermostat is configured with all three of TargetTemperature, HeatingThresholdTemperature, and CoolingThresholdTemperature, Home will set the characteristics as follows:
 
 - TargetTemperature is used when the thermostat is in HEAT or COOL TargetHeatingCoolingMode.
-- CoolingThresholdThemperature and HeatingThresholdTemperature are *only* used in AUTO TargetHeatingCoolingMode.
+- CoolingThresholdThemperature and HeatingThresholdTemperature are _only_ used in AUTO TargetHeatingCoolingMode.
 - In AUTO TargetHeatingCoolingMode, TargetTemperature will be set to the average of CoolingThresholdThemperature and HeatingThresholdTemperature.
 
 Example with thresholds:
@@ -715,12 +715,12 @@ Switch Button3 "Switch C" (gSceneController) { homekit="StatelessProgrammableSwi
 Switch Button4 "Switch D" (gSceneController) { homekit="StatelessProgrammableSwitch"[ServiceIndex=4] }
 ```
 
-## Supported accessory types
+## Supported Accessory Types
 
 For configuration options, the default values are in parentheses.
 For enum values, the parentheses indicate the default values if the item is a Number or a Switch.
 All enum values can be customized via item metadata. I.e. `HEAT="heating", COOL="cooling"`, or `HEAT=5, COOL=7` for a Number.
-<a id="customizeable-enum">Some enums can have the list of valid values customized, meaning that if you customize the mapping, any value that is missing will not be presented to the user.</a>
+<a name="customizable-enum">Some enums can have the list of valid values customized, meaning that if you customize the mapping, any value that is missing will not be presented to the user.</a>
 They are appropriately marked.
 Enums that are linked to Switches or Contacts have an `inverted` param that will reverse the sense of `ON`/`OFF` or `OPEN`/`CLOSED`.
 
@@ -931,7 +931,7 @@ All accessories also support the following optional characteristic that can be l
 |                             | Mute                        |                             | Contact, Dimmer, Switch                        | Mute indication. ON/OPEN = speaker is muted                                                                                                                                                                                                                                                                                                                   | inverted (false)                                                      |                                                                                                             |
 |                             |                             | Active                      | Contact, Dimmer, Number, String, Switch        | Accessory current working status                                                                                                                                                                                                                                                                                                                              | inverted (false)                                                      | INACTIVE (0, OFF), ACTIVE (1, ON)                                                                           |
 |                             |                             | Volume                      | Number                                         | Speaker volume from 0% to 100%                                                                                                                                                                                                                                                                                                                                |                                                                       |                                                                                                             |
-| StatelessProgrammableSwitch |                             |                             |                                                | A stateless programmable switch is a button or scene controller that simply sends an event to Home when it is pressed, allowing automations to occur. See [Stateless Programmable Switch Groups](#Stateless-Programmable-Switch-Groups) for configuring multiple in one accessory.                                                                            |                                                                       |                                                                                                             |
+| StatelessProgrammableSwitch |                             |                             |                                                | A stateless programmable switch is a button or scene controller that simply sends an event to Home when it is pressed, allowing automations to occur. See [Stateless Programmable Switch Groups](#stateless-programmable-switch-groups) for configuring multiple in one accessory.                                                                            |                                                                       |                                                                                                             |
 |                             | ProgrammableSwitchEvent     |                             | Contact, Number, String, Switch                | The button press event. Note that the event will be forwarded to Home for every _update_ of the item, not just on change.                                                                                                                                                                                                                                     | inverted (false)                                                      | SINGLE_PRESS (0, ON, OPEN), DOUBLE_PRESS (1), LONG_PRESS (2) [*](#customizable-enum)                        |
 |                             |                             | Volume                      | Number                                         | Speaker volume from 0% to 100%                                                                                                                                                                                                                                                                                                                                |                                                                       |                                                                                                             |
 | Switchable                  |                             |                             |                                                | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                                                                                                                                 |                                                                       |                                                                                                             |
@@ -1190,18 +1190,18 @@ switch?).
 If you added it incorrectly, simply updating the item type will not cause Home to update the type.
 To resolve:
 
-1) If using text configuration: Comment out the HomeKit metadata for an accessory.
+1. If using text configuration: Comment out the HomeKit metadata for an accessory.
 If in the GUI, delete the HomeKit metadata for all items associated with the accessory.
 
-2) If you have `useDummyAccessories` enabled, open the
+1. If you have `useDummyAccessories` enabled, open the
 [openhab-cli](https://www.openhab.org/docs/administration/console.html).
 Run `openhab:homekit listDummyAccessories` and
 confirm your item is in the list.
 Once you've confirmed, clear it with `openhab:homekit clearDummyAccessories`.
 
-3) Kill your Home app on your iOS device.
+1. Kill your Home app on your iOS device.
 Re-open it, and confirm that the accessory is gone.
 
-4) Uncomment the HomeKit metadata or re-add it via the UI.
+1. Uncomment the HomeKit metadata or re-add it via the UI.
 
-5) You should now see the updated configuration for your accessory.
+1. You should now see the updated configuration for your accessory.

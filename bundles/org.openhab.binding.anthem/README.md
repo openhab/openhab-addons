@@ -29,9 +29,9 @@ The Anthem AV processor supports the following channels (some zones/channels are
 
 | Channel                 | Type    | Description  |
 |-------------------------|---------|--------------|
-| *General*               |         |                                          |
+| _General_               |         |                                          |
 | general#command         | String  | Send a custom command                    |
-| *Main Zone*             |         |                                          |
+| _Main Zone_             |         |                                          |
 | 1#power                 | Switch  | Power the zone on or off                 |
 | 1#volume                | Dimmer  | Increase or decrease the volume level    |
 | 1#volumeDB              | Number  | The actual volume setting                |
@@ -39,7 +39,7 @@ The Anthem AV processor supports the following channels (some zones/channels are
 | 1#activeInput           | Number  | The currently active input source        |
 | 1#activeInputShortName  | String  | Short friendly name of the active input  |
 | 1#activeInputLongName   | String  | Long friendly name of the active input   |
-| *Zone 2*                |         |                                          |
+| _Zone 2_                |         |                                          |
 | 2#power                 | Switch  | Power the zone on or off                 |
 | 2#volume                | Dimmer  | Increase or decrease the volume level    |
 | 2#volumeDB              | Number  | The actual volume setting                |

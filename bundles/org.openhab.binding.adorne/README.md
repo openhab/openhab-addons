@@ -30,6 +30,7 @@ Background discovery is not supported.
 ### Hub
 
 The hub offers two optional configuration parameters:
+
 | Parameter | Description                                                                                                                                                                                                                                                           |
 |-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | host      | The URL to reach the hub. The hub makes itself known through mDNS as `LCM1.local` and the host parameter defaults to this value. As long as the openHAB server and the hub are on the same broadcast domain for mDNS the host parameter doesn't need to be specified. |
@@ -38,6 +39,7 @@ The hub offers two optional configuration parameters:
 ### Devices
 
 All devices share one required paramenter:
+
 | Parameter | Description                                                                    |
 |-----------|--------------------------------------------------------------------------------|
 | zoneId    | The zone ID that is assigned by the hub to each device as a unique identifier. |

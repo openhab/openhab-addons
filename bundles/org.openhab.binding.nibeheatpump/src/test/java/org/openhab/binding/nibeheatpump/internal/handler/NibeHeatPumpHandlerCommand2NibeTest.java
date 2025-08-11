@@ -42,7 +42,7 @@ import org.openhab.core.types.Command;
 public class NibeHeatPumpHandlerCommand2NibeTest {
     private NibeHeatPumpHandler product; // the class under test
     private Method m;
-    private static String METHOD_NAME = "convertCommandToNibeValue";
+    private static final String METHOD_NAME = "convertCommandToNibeValue";
     private Class<?>[] parameterTypes;
     private Object[] parameters;
 

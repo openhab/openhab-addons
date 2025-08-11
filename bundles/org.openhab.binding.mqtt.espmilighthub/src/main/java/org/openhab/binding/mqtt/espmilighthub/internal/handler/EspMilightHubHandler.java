@@ -319,21 +319,19 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
     // https://cormusa.org/wp-content/uploads/2018/04/CORM_2011_Calculation_of_CCT_and_Duv_and_Practical_Conversion_Formulae.pdf
     // page 19
     private static BigDecimal calculateDuvFromHSB(HSBType hsb) {
-        PercentType[] xy = hsb.toXY();
-        var x = xy[0].toBigDecimal().divide(BIG_DECIMAL_100);
-        var y = xy[1].toBigDecimal().divide(BIG_DECIMAL_100);
-        var u = BIG_DECIMAL_4.multiply(x).divide(
-                BIG_DECIMAL_2.multiply(x).negate().add(BIG_DECIMAL_12.multiply(y).add(BIG_DECIMAL_3)),
-                MathContext.DECIMAL128);
-        var v = BIG_DECIMAL_6.multiply(y).divide(
-                BIG_DECIMAL_2.multiply(x).negate().add(BIG_DECIMAL_12.multiply(y).add(BIG_DECIMAL_3)),
-                MathContext.DECIMAL128);
-        var Lfp = u.subtract(BIG_DECIMAL_0292).pow(2).add(v.subtract(BIG_DECIMAL_024).pow(2))
-                .sqrt(MathContext.DECIMAL128);
-        var a = new BigDecimal(
-                Math.acos(u.subtract(BIG_DECIMAL_0292).divide(Lfp, MathContext.DECIMAL128).doubleValue()));
-        BigDecimal Lbb = polynomialFit(a, CORM_COEFFICIENTS);
-        return Lfp.subtract(Lbb);
+        PercentType[] xyCoordinates = hsb.toXY();
+        var normalizedX = xyCoordinates[0].toBigDecimal().divide(BIG_DECIMAL_100);
+        var normalizedY = xyCoordinates[1].toBigDecimal().divide(BIG_DECIMAL_100);
+        var chromaticityU = BIG_DECIMAL_4.multiply(normalizedX).divide(BIG_DECIMAL_2.multiply(normalizedX).negate()
+                .add(BIG_DECIMAL_12.multiply(normalizedY).add(BIG_DECIMAL_3)), MathContext.DECIMAL128);
+        var chromaticityV = BIG_DECIMAL_6.multiply(normalizedY).divide(BIG_DECIMAL_2.multiply(normalizedX).negate()
+                .add(BIG_DECIMAL_12.multiply(normalizedY).add(BIG_DECIMAL_3)), MathContext.DECIMAL128);
+        var distanceFromPlanckian = chromaticityU.subtract(BIG_DECIMAL_0292).pow(2)
+                .add(chromaticityV.subtract(BIG_DECIMAL_024).pow(2)).sqrt(MathContext.DECIMAL128);
+        var angle = new BigDecimal(Math.acos(chromaticityU.subtract(BIG_DECIMAL_0292)
+                .divide(distanceFromPlanckian, MathContext.DECIMAL128).doubleValue()));
+        BigDecimal planckianOffset = polynomialFit(angle, CORM_COEFFICIENTS);
+        return distanceFromPlanckian.subtract(planckianOffset);
     }
 
     /*

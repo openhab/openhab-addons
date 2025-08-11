@@ -222,7 +222,6 @@ The `json-attributes` channel for this component will always appear as part of c
 | state           | String        | RO  | Additional states may be supported, such as currently processing actions, or stopping the valve where it currently is. Inspect the state and command descriptions for values supported by your device. Possible values are CLOSE, OPEN, STOP for commands; open, opening, closed, closing for states. |
 | json-attributes | String        | RO  | Additional attributes, as a serialized JSON string.                                                                                                                                                                                                                                                   |
 
-
 ## Supported Devices
 
 See the [Home Assistant documentation](https://www.home-assistant.io/integrations/mqtt/#support-by-third-party-tools) for a broad list of devices that should be supported by this binding.

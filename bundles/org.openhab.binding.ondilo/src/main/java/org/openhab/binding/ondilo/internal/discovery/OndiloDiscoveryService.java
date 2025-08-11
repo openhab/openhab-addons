@@ -78,10 +78,8 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
 
     protected void checkForDiscoveredPools() {
         try {
-            logger.trace("Checking for discovered Ondilo ICOs from bridgeHandler");
             Optional<List<Pool>> registeredPools = bridgeHandler.getPools();
             if (registeredPools.isPresent()) {
-                logger.trace("Found {} Ondilo ICOs from bridgeHandler", registeredPools.get().size());
                 addDiscoveredPools(registeredPools.get());
             } else {
                 logger.trace("No Ondilo ICOs found from bridgeHandler");
@@ -92,26 +90,23 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
     }
 
     protected void addDiscoveredPools(List<Pool> pools) {
-        logger.trace("Adding {} discovered Ondilo ICOs to inbox", pools.size());
         for (Pool pool : pools) {
-            logger.trace("Discovered Ondilo ICO: id={}, name={}", pool.id, pool.name);
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             ThingTypeUID thingTypeUID = THING_TYPE_ONDILO;
             ThingUID poolThingUid = new ThingUID(THING_TYPE_ONDILO, bridgeUID, String.valueOf(pool.id));
 
             Map<String, Object> properties = new HashMap<>();
-            properties.put(ONDILO_ID, pool.id);
-            properties.put(ONDILO_NAME, pool.name);
-            properties.put(ONDILO_TYPE, pool.type);
-            properties.put(ONDILO_VOLUME, pool.getVolume());
-            properties.put(ONDILO_DISINFECTION, pool.getDisinfection());
-            properties.put(ONDILO_ADDRESS, pool.getAddress());
-            properties.put(ONDILO_LOCATION, pool.getLocation());
+            properties.put(PROPERTY_ONDILO_ID, pool.id);
+            properties.put(PROPERTY_ONDILO_NAME, pool.name);
+            properties.put(PROPERTY_ONDILO_TYPE, pool.type);
+            properties.put(PROPERTY_ONDILO_VOLUME, pool.getVolume());
+            properties.put(PROPERTY_ONDILO_DISINFECTION, pool.getDisinfection());
+            properties.put(PROPERTY_ONDILO_ADDRESS, pool.getAddress());
+            properties.put(PROPERTY_ONDILO_LOCATION, pool.getLocation());
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(poolThingUid).withThingType(thingTypeUID)
-                    .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(ONDILO_ID)
+                    .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(PROPERTY_ONDILO_ID)
                     .withLabel("Ondilo ICO: " + pool.name).build();
-            logger.trace("Registering discovered Ondilo ICO ThingUID: {}", poolThingUid);
             thingDiscovered(discoveryResult);
         }
     }

@@ -1904,6 +1904,7 @@ This binding currently supports following channels for F1x55 pump models:
 ### SMO40
 
 To keep this documentation light, all parameters are documented in the NIBE ModbusManager except of:
+
 | Channel Type ID | Item Type | Min | Max | Type    | Description                                           | Values |
 | --------------- | --------- | --- | --- | ------- | ----------------------------------------------------- | ------ |
 | 45780           | Number    | 0   | 120 | Setting | Silent Mode Frequency 1 (defined in the service-menu) |        |

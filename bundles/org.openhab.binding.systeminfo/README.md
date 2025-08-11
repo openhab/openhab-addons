@@ -76,9 +76,9 @@ In the list below, you can find, how are channel group and channels id`s related
 - **group** `battery` (deviceIndex)
   - **channel** `name, remainingCapacity, remainingTime`
 - **group** `cpu`
-  - **channel** `name, description, maxfreq, freq `(deviceIndex)`, load, load1, load5, load15, uptime, threads`
+  - **channel** `name, description, maxfreq, freq` (deviceIndex)`, load, load1, load5, load15, uptime, threads`
 - **group** `sensors`
-  - **channel** `cpuTemp, cpuVoltage, fanSpeed `(deviceIndex)
+  - **channel** `cpuTemp, cpuVoltage, fanSpeed` (deviceIndex)
 - **group** `network` (deviceIndex)
   - **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
 - **group** `currentProcess`
