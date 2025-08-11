@@ -64,7 +64,10 @@ public class SmartMeterChannelTypeProvider extends AbstractStorageBasedTypeProvi
 
     @Override
     public <Q extends Quantity<Q>> void valueChanged(MeterValue<Q> value) {
-        putChannelType(getChannelType(value.getUnit(), value.getObisCode()));
+        ChannelType channelType = getChannelType(value.getUnit(), value.getObisCode());
+        if (getChannelType(channelType.getUID(), null) == null) {
+            putChannelType(channelType);
+        }
     }
 
     private ChannelType getChannelType(@Nullable Unit<?> unit, String obis) {
@@ -89,7 +92,8 @@ public class SmartMeterChannelTypeProvider extends AbstractStorageBasedTypeProvi
 
     @Override
     public <Q extends Quantity<Q>> void valueRemoved(MeterValue<Q> value) {
-        removeChannelType(getChannelType(value.getUnit(), value.getObisCode()).getUID());
+        String obisChannelId = SmartMeterBindingConstants.getObisChannelId(value.getObisCode());
+        removeChannelType(new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID, obisChannelId));
     }
 
     /**
