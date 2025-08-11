@@ -48,9 +48,9 @@ public class SimpleFtpFile implements FtpFile {
     }
 
     @Override
-    public @Nullable OutputStream createOutputStream(long arg0) throws IOException {
+    public OutputStream createOutputStream(long arg0) throws IOException {
         logger.trace("createOutputStream: {}", arg0);
-        file = new MyOutputStream();
+        MyOutputStream file = this.file = new MyOutputStream();
         return file;
     }
 
