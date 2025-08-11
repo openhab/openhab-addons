@@ -567,7 +567,7 @@
 
 	<channel-type id="waterDeviceType">
 		<item-type>String</item-type>
-		<label>Pet Waterstation Device Name</label>
+		<label>Device Name</label>
 		<description>The pet waterstation device name</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
