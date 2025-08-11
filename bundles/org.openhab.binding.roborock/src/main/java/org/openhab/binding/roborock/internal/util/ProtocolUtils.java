@@ -16,9 +16,7 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -30,7 +28,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,15 +47,18 @@ public final class ProtocolUtils {
         // Prevent instantiation of util class
     }
 
-    public static String md5Hex(String data) {
+    private static byte[] md5bin(String key) {
         try {
             MessageDigest md = MessageDigest.getInstance(MD5_ALGORITHM);
-            byte[] hashBytes = md.digest(data.getBytes(StandardCharsets.UTF_8));
-            return HexFormat.of().formatHex(hashBytes);
+            return md.digest(key.getBytes(StandardCharsets.UTF_8));
         } catch (NoSuchAlgorithmException e) {
             LOGGER.error("MD5 algorithm not found, this should not happen.", e);
-            return "";
+            return new byte[0];
         }
+    }
+
+    public static String md5Hex(String key) {
+        return HexFormat.of().formatHex(md5bin(key));
     }
 
     public static byte[] decrypt(byte[] payload, String key) throws RoborockException {
@@ -85,11 +85,6 @@ public final class ProtocolUtils {
                 | BadPaddingException e) {
             throw new RoborockException("Failed to encrypt data using AES/ECB/PKCS5Padding.", e);
         }
-    }
-
-    private static byte[] md5bin(String key) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance(MD5_ALGORITHM);
-        return md.digest(key.getBytes(StandardCharsets.UTF_8));
     }
 
     private static String bytesToString(byte[] data, int start, int length) {
@@ -158,45 +153,6 @@ public final class ProtocolUtils {
             result.append(hex.charAt(index));
         }
         return result.toString();
-    }
-
-    /**
-     * Decrypts a ciphertext using AES/CBC/NoPadding.
-     * The IV is assumed to be an array of zeros with a length equal to AES_BLOCK_SIZE.
-     *
-     * @param ciphertext The data to decrypt.
-     * @param nonce The key for decryption.
-     * @return The decrypted byte array, or an empty array on failure.
-     */
-    public static byte[] decryptCbc(byte[] ciphertext, byte[] nonce) {
-        if (ciphertext.length == 0 || nonce.length == 0) {
-            LOGGER.warn("Attempted to decrypt CBC with null or empty ciphertext/nonce.");
-            return new byte[0];
-        }
-
-        try {
-            Cipher cipher = Cipher.getInstance(AES_CBC_NO_PADDING);
-            Key secretKey = new SecretKeySpec(nonce, "AES");
-
-            byte[] ivBytes = new byte[AES_BLOCK_SIZE];
-            IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
-
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
-
-            // This assumes the incoming ciphertext is padded to AES_BLOCK_SIZE
-            byte[] decryptedBytes = cipher.doFinal(ciphertext);
-            return decryptedBytes;
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            LOGGER.error("Error initializing cipher. Check algorithm and padding.", e);
-        } catch (InvalidKeyException e) {
-            LOGGER.error("Invalid decryption key (token).", e);
-        } catch (InvalidAlgorithmParameterException e) {
-            LOGGER.error("Invalid algorithm parameter (IV).", e);
-        } catch (IllegalBlockSizeException | BadPaddingException e) {
-            // BadPaddingException often indicates incorrect key, IV, or corrupted ciphertext.
-            LOGGER.error("Error during decryption or invalid ciphertext. Check key, IV, and data integrity.", e);
-        }
-        return new byte[0];
     }
 
     /**

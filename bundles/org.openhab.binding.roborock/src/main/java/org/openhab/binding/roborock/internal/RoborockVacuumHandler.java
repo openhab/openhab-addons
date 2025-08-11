@@ -79,7 +79,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link RoborockHandler} is responsible for handling commands, which are
+ * The {@link RoborockVacuumHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Paul Smedley - Initial contribution
@@ -506,6 +506,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             // Occasionally get non-JSON returned from the Roborock MQTT server
             logger.debug("Invalid JSON response", e);
         }
+        logger.trace("Finished processing MQTT message.");
     }
 
     private void handleGetStatus(String response) {

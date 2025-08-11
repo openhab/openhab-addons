@@ -88,7 +88,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private String baseUri = "";
     private Rriot rriot = new Login().new Rriot();
     private final SecureRandom secureRandom = new SecureRandom();
-
+    private String mqttUser = "";
     protected final Map<String, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
 
     private final Gson gson = new Gson();
@@ -279,7 +279,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     public void connectMqttClient() throws RoborockException, InterruptedException {
         String mqttHost = "";
         int mqttPort = 1883;
-        String mqttUser = "";
         String mqttPassword = "";
         try {
             URI mqttURL = new URI(rriot.r.m);
@@ -407,8 +406,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
         byte[] message = build(thingID, localKey, protocol, timestamp, payload.getBytes(StandardCharsets.UTF_8));
         // now send message via mqtt
-        String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
-
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
         if (this.mqttClient != null && this.mqttClient.getState().isConnected()) {
             logger.debug("Publishing {} message to {}", method, topic);
