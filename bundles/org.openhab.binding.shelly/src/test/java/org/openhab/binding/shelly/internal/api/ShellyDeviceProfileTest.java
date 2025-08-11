@@ -117,9 +117,10 @@ public class ShellyDeviceProfileTest {
 
                 // Shelly BLU
                 Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, true, true), //
 
                 // Shelly Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
