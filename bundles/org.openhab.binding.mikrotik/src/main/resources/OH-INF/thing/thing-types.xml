@@ -368,7 +368,11 @@
 	<channel-type id="poeOutState" advanced="true">
 		<item-type>String</item-type>
 		<label>PoE Out State</label>
-		<description>https://wiki.mikrotik.com/wiki/Manual:PoE-Out</description>
+		<description>Defines the PoE-Out state of the port, allowing control over various power delivery modes</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="auto-on">Auto On</option>
@@ -382,6 +386,10 @@
 		<item-type>String</item-type>
 		<label>PoE Out Status</label>
 		<description>Shows current PoE-Out status on port</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="powered-on">Powered On</option>
@@ -398,6 +406,10 @@
 	<channel-type id="poeOutPower" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>PoE Out Consumption</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class RouterosRouterboardInfo extends RouterosBaseData {
+    private static final String CAPS_MAN_MIN_FIRMWARE_VERSION = "7.13";
 
     public RouterosRouterboardInfo(Map<String, String> props) {
         super(props);
@@ -55,6 +56,6 @@ public class RouterosRouterboardInfo extends RouterosBaseData {
 
     public boolean hasBuiltinCapsMan() {
         return ModuleDescriptor.Version.parse(getFirmwareVersion())
-                .compareTo(ModuleDescriptor.Version.parse("7.13")) >= 1;
+                .compareTo(ModuleDescriptor.Version.parse(CAPS_MAN_MIN_FIRMWARE_VERSION)) >= 1;
     }
 }

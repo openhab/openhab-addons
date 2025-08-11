@@ -48,8 +48,10 @@ import org.slf4j.LoggerFactory;
 import me.legrange.mikrotik.MikrotikApiException;
 
 /**
- * The {@link MikrotikInterfaceThingHandler} is a {@link MikrotikBaseThingHandler} subclass that wraps shared
- * functionality for all interface things of different types. It is responsible for handling commands, which are
+ * The {@link MikrotikInterfaceThingHandler} is a
+ * {@link MikrotikBaseThingHandler} subclass that wraps shared
+ * functionality for all interface things of different types. It is responsible
+ * for handling commands, which are
  * sent to one of the channels and emit channel updates whenever required.
  *
  * @author Oleg Vivtash - Initial contribution
@@ -377,7 +379,8 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     @Override
     protected void executeCommand(ChannelUID channelUID, Command command) {
         RouterosInterfaceBase iface = this.iface;
-        if (iface == null) {
+        if (!(iface instanceof RouterosEthernetInterface routerOsIface)) {
+            logger.warn("Cannot set POE Out State: interface is null or not an Ethernet interface");
             return;
         }
 
@@ -390,7 +393,7 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
             String channelID = channelUID.getIdWithoutGroup();
             switch (channelID) {
                 case MikrotikBindingConstants.CHANNEL_POE_OUT_STATE:
-                    routeros.setPOEOutState((RouterosEthernetInterface) iface, command.toString());
+                    routeros.setPOEOutState(routerOsIface, command.toString());
                     break;
                 default:
                     logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
