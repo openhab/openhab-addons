@@ -59,6 +59,8 @@ public class LinkyBindingConstants {
 
     // List of all Channel id's
     public static final String CHANNEL_CONSUMPTION = "consumption";
+    public static final String CHANNEL_CONSUMPTION_IDX0 = "consumptionIdx0";
+    public static final String CHANNEL_CONSUMPTION_IDX1 = "consumptionIdx1";
     public static final String CHANNEL_MAX_POWER = "max-power";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_TIMESTAMP_CHANNEL = "power";
