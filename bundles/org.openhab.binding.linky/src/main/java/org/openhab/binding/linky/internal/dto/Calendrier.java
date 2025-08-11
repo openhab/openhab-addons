@@ -12,18 +12,15 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import java.time.LocalDateTime;
-
 /**
- * The {@link IntervalReading} holds informations for the energy consumption of a period
+ * The {@link Calendrier} holds informations about energy consumption
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class IntervalReading {
-    public Double value = 0.0;
-    public Double[] valueFromFournisseur;
-    public Double[] valueFromDistributeur;
-    public LocalDateTime date;
+public class Calendrier {
+    public String idCalendrier;
+    public String libelleCalendrier;
+
 }
