@@ -65,7 +65,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     public static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
     public static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
 
-    private static final String USER_INFO_CONTRACT_URL = BASE_URL + "/mon-compte-client/api/private/v1/userinfos";
+    private static final String USER_INFO_CONTRACT_URL = BASE_URL + "/mon-compte/api/private/v2/userinfos";
     private static final String USER_INFO_URL = BASE_URL + "/userinfos";
     private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures-prm/api/private/v1/personnes/";
     private static final String PRM_INFO_URL = BASE_URL + "/mes-prms-part/api/private/v2/personnes/%s/prms";
@@ -334,7 +334,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             if (hashRes != null && hashRes.containsKey("cnAlex")) {
                 cookieKey = "personne_for_" + hashRes.get("cnAlex");
             } else {
-                throw new LinkyException("Connection failed step 7, missing cookieKey");
+                throw new LinkyException("Connection failed step 5, missing cookieKey");
             }
 
             List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
