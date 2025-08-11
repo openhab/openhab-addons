@@ -533,7 +533,7 @@ public class TibberHandler extends BaseThingHandler {
                 productionValue = Double.parseDouble(production);
             }
         } catch (NumberFormatException e) {
-            logger.error("Unable to parse production. Assume 0.", e);
+            logger.error("Unable to parse production value: {}. Assume 0.", production, e);
         }
 
         updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION_AND_PRODUCTION,
