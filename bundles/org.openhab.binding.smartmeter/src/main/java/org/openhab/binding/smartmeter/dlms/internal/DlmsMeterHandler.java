@@ -77,7 +77,6 @@ public class DlmsMeterHandler extends BaseThingHandler {
     private final Set<DlmsChannelInfo> dlmsChannelInfos = new HashSet<>();
     private final SmartMeterChannelTypeProvider channelTypeProvider;
 
-    private @NonNullByDefault({}) DlmsMeterConfiguration config;
     private @Nullable DlmsConnection connection;
     private @Nullable ScheduledFuture<?> refreshTask;
     private @Nullable ScheduledFuture<?> reconnectTask;
@@ -140,11 +139,9 @@ public class DlmsMeterHandler extends BaseThingHandler {
 
     private void goOnline() {
         cancelTasks();
-        config = getConfigAs(DlmsMeterConfiguration.class);
-        // note: the connection process uses auto baudrate negotiation by default
-        SerialConnectionBuilder connectionBuilder = new SerialConnectionBuilder(config.port);
+        DlmsMeterConfiguration config = getConfigAs(DlmsMeterConfiguration.class);
         try {
-            connection = connectionBuilder.build();
+            connection = new SerialConnectionBuilder(config.port).enableHandshake().build();
         } catch (IOException e) {
             goOffline(e.getMessage());
             return;
