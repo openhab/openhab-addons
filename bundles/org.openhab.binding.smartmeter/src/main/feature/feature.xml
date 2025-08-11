@@ -9,6 +9,6 @@
 		<bundle dependency="true">mvn:org.openmuc/jdlms/1.8.0</bundle>
 		<bundle dependency="true">mvn:com.beanit/asn1bean/1.14.0</bundle>
 		<bundle dependency="true">mvn:org.openmuc/jrxtx/1.0.1</bundle>
-		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk18on/1.76</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk18on/1.81</bundle>
 	</feature>
 </features>
