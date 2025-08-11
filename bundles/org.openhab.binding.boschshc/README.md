@@ -10,6 +10,7 @@ Binding for Bosch Smart Home devices.
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
     - [Door/Window Contact](#doorwindow-contact)
     - [Door/Window Contact II](#doorwindow-contact-ii)
+    - [Door/Window Contact II Plus](#doorwindow-contact-ii-plus)
     - [Light Control II](#light-control-ii)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
@@ -105,7 +106,7 @@ The Twinguard smoke detector warns you in case of fire and constantly monitors t
 | low-battery        | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 | smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
 
-### Door/Window Contact
+### Door/Window Contact {#doorwindow-contact}
 
 Detects open windows and doors.
 
@@ -117,7 +118,7 @@ Detects open windows and doors.
 | battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
-### Door/Window Contact II
+### Door/Window Contact II {#doorwindow-contact-ii}
 
 Detects open windows and doors and features an additional button.
 
@@ -131,7 +132,7 @@ Detects open windows and doors and features an additional button.
 | bypass          | Switch    | &#9744;  | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined. |
 | signal-strength | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
 
-### Door/Window Contact II Plus
+### Door/Window Contact II Plus {#doorwindow-contact-ii-plus}
 
 Detects open windows and doors, provides a configurable button and a vibration sensor.
 
