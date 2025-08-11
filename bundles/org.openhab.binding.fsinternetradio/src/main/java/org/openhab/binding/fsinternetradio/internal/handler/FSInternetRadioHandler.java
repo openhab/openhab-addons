@@ -62,12 +62,12 @@ public class FSInternetRadioHandler extends BaseThingHandler {
     private final Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
-            FrontierSiliconRadio radio = this.radio;
-            if (radio == null) {
+            FrontierSiliconRadio frontierRadio = radio;
+            if (frontierRadio == null) {
                 logger.warn("Radio is not initialized, cannot update channels.");
                 return;
             }
-            if (!radio.isLoggedIn()) {
+            if (!frontierRadio.isLoggedIn()) {
                 // radio is not set, so set all channels to 'undefined'
                 for (Channel channel : getThing().getChannels()) {
                     updateState(channel.getUID(), UnDefType.UNDEF);
@@ -77,7 +77,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                 return; // if login is successful, this method is called again :-)
             }
             try {
-                final boolean radioOn = radio.getPower();
+                final boolean radioOn = frontierRadio.getPower();
                 for (Channel channel : getThing().getChannels()) {
                     if (!radioOn && !CHANNEL_POWER.equals(channel.getUID().getId())) {
                         // if radio is off, set all channels (except for 'POWER') to 'undefined'
@@ -90,26 +90,27 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                                 break;
                             case CHANNEL_VOLUME_ABSOLUTE:
                                 updateState(channel.getUID(),
-                                        DecimalType.valueOf(String.valueOf(radio.getVolumeAbsolute())));
+                                        DecimalType.valueOf(String.valueOf(frontierRadio.getVolumeAbsolute())));
                                 break;
                             case CHANNEL_VOLUME_PERCENT:
                                 updateState(channel.getUID(),
-                                        PercentType.valueOf(String.valueOf(radio.getVolumePercent())));
+                                        PercentType.valueOf(String.valueOf(frontierRadio.getVolumePercent())));
                                 break;
                             case CHANNEL_MODE:
-                                updateState(channel.getUID(), DecimalType.valueOf(String.valueOf(radio.getMode())));
+                                updateState(channel.getUID(),
+                                        DecimalType.valueOf(String.valueOf(frontierRadio.getMode())));
                                 break;
                             case CHANNEL_MUTE:
-                                updateState(channel.getUID(), OnOffType.from(radio.getMuted()));
+                                updateState(channel.getUID(), OnOffType.from(frontierRadio.getMuted()));
                                 break;
                             case CHANNEL_PRESET:
                                 // preset is write-only, ignore
                                 break;
                             case CHANNEL_PLAY_INFO_NAME:
-                                updateState(channel.getUID(), StringType.valueOf(radio.getPlayInfoName()));
+                                updateState(channel.getUID(), StringType.valueOf(frontierRadio.getPlayInfoName()));
                                 break;
                             case CHANNEL_PLAY_INFO_TEXT:
-                                updateState(channel.getUID(), StringType.valueOf(radio.getPlayInfoText()));
+                                updateState(channel.getUID(), StringType.valueOf(frontierRadio.getPlayInfoText()));
                                 break;
                             default:
                                 logger.warn("Ignoring unknown channel during update: {}", channel.getLabel());
