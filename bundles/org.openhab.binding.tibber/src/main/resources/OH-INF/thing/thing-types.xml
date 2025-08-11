@@ -16,7 +16,7 @@
 
 		<properties>
 			<property name="vendor">Tibber</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description>

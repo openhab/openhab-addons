@@ -13,10 +13,7 @@
 package org.openhab.binding.smartmeter.internal;
 
 import java.net.URI;
-import java.util.Collection;
 import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -25,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -32,9 +31,9 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.util.UnitUtils;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * A {@link ChannelTypeProvider} that listens for changes to the {@link MeterDevice} and updates the
@@ -46,21 +45,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { ChannelTypeProvider.class, SmartMeterChannelTypeProvider.class })
-public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, MeterValueListener {
+public class SmartMeterChannelTypeProvider extends AbstractStorageBasedTypeProvider implements MeterValueListener {
 
-    private final Logger logger = LoggerFactory.getLogger(SmartMeterChannelTypeProvider.class);
-
-    private final Map<String, ChannelType> obisChannelMap = new ConcurrentHashMap<>();
-
-    @Override
-    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return obisChannelMap.values();
+    @Activate
+    public SmartMeterChannelTypeProvider(@Reference StorageService storageService) {
+        super(storageService);
     }
 
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        return obisChannelMap.values().stream().filter(channelType -> channelType.getUID().equals(channelTypeUID))
-                .findFirst().orElse(null);
+        return getChannelTypes(locale).stream().filter(t -> t.getUID().equals(channelTypeUID)).findFirst().orElse(null);
     }
 
     @Override
@@ -70,35 +64,36 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
 
     @Override
     public <Q extends Quantity<Q>> void valueChanged(MeterValue<Q> value) {
-        if (!obisChannelMap.containsKey(value.getObisCode())) {
-            logger.debug("Creating ChannelType for OBIS {}", value.getObisCode());
-            obisChannelMap.put(value.getObisCode(), getChannelType(value.getUnit(), value.getObisCode()));
+        ChannelType channelType = getChannelType(value.getUnit(), value.getObisCode());
+        if (getChannelType(channelType.getUID(), null) == null) {
+            putChannelType(channelType);
         }
     }
 
     private ChannelType getChannelType(@Nullable Unit<?> unit, String obis) {
         String obisChannelId = SmartMeterBindingConstants.getObisChannelId(obis);
-        StateChannelTypeBuilder stateDescriptionBuilder;
+        StateChannelTypeBuilder stateChannelTypeBuilder;
         if (unit != null) {
             String dimension = UnitUtils.getDimensionName(unit);
-            stateDescriptionBuilder = ChannelTypeBuilder
+            stateChannelTypeBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID, obisChannelId), obis,
                             CoreItemFactory.NUMBER + ":" + dimension)
                     .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true)
                             .withPattern("%.2f %unit%").build())
                     .withConfigDescriptionURI(URI.create(SmartMeterBindingConstants.CHANNEL_TYPE_METERREADER_OBIS));
         } else {
-            stateDescriptionBuilder = ChannelTypeBuilder
+            stateChannelTypeBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID, obisChannelId), obis,
                             CoreItemFactory.STRING)
                     .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true).build());
         }
-        return stateDescriptionBuilder.build();
+        return stateChannelTypeBuilder.build();
     }
 
     @Override
     public <Q extends Quantity<Q>> void valueRemoved(MeterValue<Q> value) {
-        obisChannelMap.remove(value.getObisCode());
+        String obisChannelId = SmartMeterBindingConstants.getObisChannelId(value.getObisCode());
+        removeChannelType(new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID, obisChannelId));
     }
 
     /**
@@ -108,7 +103,8 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
      * @return The {@link ChannelTypeUID} or null.
      */
     public @Nullable ChannelTypeUID getChannelTypeIdForObis(String obis) {
-        ChannelType channeltype = obisChannelMap.get(obis);
-        return channeltype != null ? channeltype.getUID() : null;
+        String id = SmartMeterBindingConstants.getObisChannelId(obis);
+        return getChannelTypes(null).stream().map(t -> t.getUID()).filter(uid -> id.equals(uid.getId())).findFirst()
+                .orElse(null);
     }
 }

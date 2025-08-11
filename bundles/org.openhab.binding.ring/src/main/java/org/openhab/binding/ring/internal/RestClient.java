@@ -191,7 +191,7 @@ public class RestClient {
     public Tokens getTokens(String username, String password, String refreshToken, String twofactorCode,
             String hardwareId) throws AuthenticationException, JsonParseException {
         Map<String, String> additionalHeaders = new HashMap<>();
-        ParamBuilder pb = new ParamBuilder(false);
+        ParamBuilder pb = new ParamBuilder(true);
         pb.add("client_id", "ring_official_android");
         pb.add("scope", "client");
         if (refreshToken.isBlank()) {

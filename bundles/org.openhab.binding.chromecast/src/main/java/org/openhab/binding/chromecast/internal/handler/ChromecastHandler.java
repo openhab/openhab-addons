@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +27,7 @@ import org.openhab.binding.chromecast.internal.ChromecastStatusUpdater;
 import org.openhab.binding.chromecast.internal.action.ChromecastActions;
 import org.openhab.binding.chromecast.internal.config.ChromecastConfig;
 import org.openhab.core.audio.AudioSink;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
@@ -52,7 +54,16 @@ import su.litvak.chromecast.api.v2.ChromeCast;
  */
 @NonNullByDefault
 public class ChromecastHandler extends BaseThingHandler {
+
+    private static final String CHROMECAST_HANDLER_THREADPOOL_NAME = "chromecastBinding";
+
     private final Logger logger = LoggerFactory.getLogger(ChromecastHandler.class);
+
+    /**
+     * The thread pool used to schedule and run tasks.
+     */
+    private final ScheduledExecutorService executor = ThreadPoolManager
+            .getScheduledPool(CHROMECAST_HANDLER_THREADPOOL_NAME);
 
     /**
      * The actual implementation. A new one is created each time #initialize is called.
@@ -93,7 +104,7 @@ public class ChromecastHandler extends BaseThingHandler {
             localCoordinator = new Coordinator(this, thing, chromecast, config.refreshRate);
             coordinator = localCoordinator;
 
-            scheduler.submit(() -> {
+            executor.submit(() -> {
                 Coordinator c = coordinator;
                 if (c != null) {
                     c.initialize();
@@ -214,7 +225,7 @@ public class ChromecastHandler extends BaseThingHandler {
         private Coordinator(ChromecastHandler handler, Thing thing, ChromeCast chromeCast, long refreshRate) {
             this.chromeCast = chromeCast;
 
-            this.scheduler = new ChromecastScheduler(handler.scheduler, CONNECT_DELAY, this::connect, refreshRate,
+            this.scheduler = new ChromecastScheduler(handler.executor, CONNECT_DELAY, this::connect, refreshRate,
                     this::refresh);
             this.statusUpdater = new ChromecastStatusUpdater(thing, handler);
 

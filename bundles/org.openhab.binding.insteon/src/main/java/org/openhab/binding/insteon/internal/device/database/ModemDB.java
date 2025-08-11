@@ -14,7 +14,6 @@ package org.openhab.binding.insteon.internal.device.database;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,11 +142,11 @@ public class ModemDB {
     }
 
     private int getRecordIndex(InsteonAddress address, int group, boolean isController) {
-        return getRecords(address, group, isController).findFirst().map(this::getRecordIndex).orElse(-1);
+        return getRecords(address, group, isController).mapToInt(this::getRecordIndex).findFirst().orElse(-1);
     }
 
     private int getRecordIndex(InsteonAddress address, int group) {
-        return getRecords(address, group, null).findFirst().map(this::getRecordIndex).orElse(-1);
+        return getRecords(address, group, null).mapToInt(this::getRecordIndex).findFirst().orElse(-1);
     }
 
     public boolean hasRecord(@Nullable InsteonAddress address, @Nullable Integer group,
@@ -176,7 +175,7 @@ public class ModemDB {
     }
 
     private int getChangeIndex(InsteonAddress address, int group, boolean isController) {
-        return getChanges(address, group, isController).findFirst().map(this::getChangeIndex).orElse(-1);
+        return getChanges(address, group, isController).mapToInt(this::getChangeIndex).findFirst().orElse(-1);
     }
 
     public @Nullable ModemDBChange pollNextChange() {
@@ -582,10 +581,19 @@ public class ModemDB {
      * Sets the default controller group
      */
     private void setDefaultControllerGroup() {
+        int maxSize = 0;
+        int defaultControllerGroup = 0;
         // Set the default controller group to the one with the most related devices
-        defaultControllerGroup = DEFAULT_CONTROLLER_GROUPS.stream()
-                .max(Comparator.comparingInt(group -> getRelatedDevices(group).size())).orElse(0);
+        for (int group : DEFAULT_CONTROLLER_GROUPS) {
+            int size = getRelatedDevices(group).size();
+            if (size > maxSize) {
+                maxSize = size;
+                defaultControllerGroup = group;
+            }
+        }
+
         logger.debug("set default controller group to {}", defaultControllerGroup);
+        this.defaultControllerGroup = defaultControllerGroup;
     }
 
     /**

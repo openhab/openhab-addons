@@ -250,7 +250,7 @@ public class LinkDB {
      * @return first available record location if found, otherwise the next lowest record or change location
      */
     public int getNextAvailableLocation() {
-        return getRecords().stream().filter(LinkDBRecord::isAvailable).map(LinkDBRecord::getLocation).findFirst()
+        return getRecords().stream().filter(LinkDBRecord::isAvailable).mapToInt(LinkDBRecord::getLocation).findFirst()
                 .orElse(Math.min(getLastRecordLocation(), getLastChangeLocation() - LinkDBRecord.SIZE));
     }
 

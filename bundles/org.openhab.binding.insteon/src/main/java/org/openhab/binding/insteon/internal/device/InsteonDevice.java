@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -127,17 +126,18 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     }
 
     public double getLastMsgValueAsDouble(String type, int group, double defaultValue) {
-        return Optional.ofNullable(getFeature(type, group)).map(DeviceFeature::getLastMsgValue).map(Double::doubleValue)
-                .orElse(defaultValue);
+        DeviceFeature feature = getFeature(type, group);
+        return feature != null ? feature.getLastMsgValueAsDouble(defaultValue) : defaultValue;
     }
 
     public int getLastMsgValueAsInteger(String type, int group, int defaultValue) {
-        return Optional.ofNullable(getFeature(type, group)).map(DeviceFeature::getLastMsgValue).map(Double::intValue)
-                .orElse(defaultValue);
+        DeviceFeature feature = getFeature(type, group);
+        return feature != null ? feature.getLastMsgValueAsInteger(defaultValue) : defaultValue;
     }
 
     public @Nullable State getFeatureState(String type, int group) {
-        return Optional.ofNullable(getFeature(type, group)).map(DeviceFeature::getState).orElse(null);
+        DeviceFeature feature = getFeature(type, group);
+        return feature != null ? feature.getState() : null;
     }
 
     public boolean isBatteryPowered() {
@@ -395,7 +395,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         if (modem != null) {
             List<InsteonAddress> relatedDevices = linkDB.getRelatedDevices(feature.getGroup());
             // return broadcast group with matching link and modem db related devices
-            return linkDB.getBroadcastGroups(feature.getComponentId()).stream()
+            return linkDB.getBroadcastGroups(feature.getComponentId()).stream().mapToInt(Integer::intValue)
                     .filter(group -> modem.getDB().getRelatedDevices(group).stream()
                             .allMatch(address -> getAddress().equals(address) || relatedDevices.contains(address)))
                     .findFirst().orElse(-1);
@@ -568,8 +568,14 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      * @param renamer the device type renamer
      */
     public void updateType(DeviceTypeRenamer renamer) {
-        Optional.ofNullable(getType()).map(DeviceType::getName).map(renamer::getNewDeviceType)
-                .map(name -> DeviceTypeRegistry.getInstance().getDeviceType(name)).ifPresent(this::updateType);
+        DeviceType currentType = getType();
+        if (currentType != null) {
+            String name = renamer.getNewDeviceType(currentType.getName());
+            DeviceType newType = DeviceTypeRegistry.getInstance().getDeviceType(name);
+            if (newType != null) {
+                updateType(newType);
+            }
+        }
     }
 
     /**
