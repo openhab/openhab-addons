@@ -152,13 +152,10 @@ public class WindowCoveringDevice extends BaseDevice {
             // operation direction is correct
             if (lastTargetPercent == null && currentPercent != lastCurrentPercent) {
                 // either 0/OPEN or 100/CLOSED, if the value was not updated, we ignore it (probably should not happen)
-                Integer targetPercent = currentPercent < lastCurrentPercent ? 0 : 100;
-                if (targetPercent != null) {
-                    setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
-                            WindowCoveringCluster.ATTRIBUTE_TARGET_POSITION_LIFT_PERCENT100THS, targetPercent * 100)
-                            .get();
-                    this.lastTargetPercent = targetPercent;
-                }
+                int targetPercent = currentPercent < lastCurrentPercent ? 0 : 100;
+                setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
+                        WindowCoveringCluster.ATTRIBUTE_TARGET_POSITION_LIFT_PERCENT100THS, targetPercent * 100).get();
+                lastTargetPercent = targetPercent;
             }
             setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
                     WindowCoveringCluster.ATTRIBUTE_CURRENT_POSITION_LIFT_PERCENT100THS, currentPercent * 100).get();
