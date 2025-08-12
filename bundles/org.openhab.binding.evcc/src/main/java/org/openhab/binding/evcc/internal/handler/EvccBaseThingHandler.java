@@ -229,7 +229,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
     @Override
     public void updateFromEvccState(JsonObject state) {
-        if (!isInitialized) {
+        if (!isInitialized || state.isEmpty()) {
             return;
         }
 

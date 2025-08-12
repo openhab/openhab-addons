@@ -59,7 +59,8 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
 
     @Override
     public void updateFromEvccState(JsonObject state) {
-        state = state.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject();
+        state = state.has(JSON_MEMBER_BATTERY) ? state.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject()
+                : new JsonObject();
         super.updateFromEvccState(state);
     }
 

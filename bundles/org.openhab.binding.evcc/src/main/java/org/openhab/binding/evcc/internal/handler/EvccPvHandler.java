@@ -65,6 +65,7 @@ public class EvccPvHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
+        return state.has(JSON_MEMBER_PV) ? state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject()
+                : new JsonObject();
     }
 }

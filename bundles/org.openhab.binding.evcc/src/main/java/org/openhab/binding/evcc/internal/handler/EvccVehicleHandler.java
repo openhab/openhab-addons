@@ -89,6 +89,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
+        return state.has(JSON_MEMBER_VEHICLES) ? state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId)
+                : new JsonObject();
     }
 }

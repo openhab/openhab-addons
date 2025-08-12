@@ -84,9 +84,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        Optional.ofNullable(pollJob).ifPresent(job -> {
-            job.cancel(true);
-        });
+        Optional.ofNullable(pollJob).ifPresent(job -> job.cancel(true));
         listeners.clear();
     }
 
@@ -102,12 +100,12 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         if (refreshInterval <= 0) {
             refreshInterval = 30;
         }
-        pollJob = scheduler.scheduleWithFixedDelay(() -> {
-            fetchEvccState().ifPresent(state -> {
+        pollJob = scheduler.scheduleWithFixedDelay(() -> fetchEvccState().ifPresent(state -> {
+            if (!state.isEmpty() && state.has("siteTitle")) {
                 this.lastState = state;
                 notifyListeners(state);
-            });
-        }, refreshInterval, refreshInterval, TimeUnit.SECONDS);
+            }
+        }), refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
 
     public Optional<JsonObject> fetchEvccState() {
@@ -118,7 +116,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
             if (response.getStatus() == 200) {
                 @Nullable
                 JsonObject returnValue = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                if (null != returnValue) {
+                if (returnValue != null && !(returnValue.isEmpty() || returnValue.isJsonNull())) {
                     updateStatus(ThingStatus.ONLINE);
                     JsonObject result = returnValue.has("result") ? returnValue.getAsJsonObject("result") : returnValue;
                     return Optional.of(result);
@@ -163,6 +161,6 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        return; // No commands to handle!
+        ; // No commands to handle!
     }
 }
