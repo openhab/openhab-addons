@@ -531,19 +531,6 @@ public class TibberHandler extends BaseThingHandler {
         }
     }
 
-    private double parseValueSafely(@Nullable String value, String valueType) {
-        if (value == null || value.isBlank() || EMPTY_VALUE.equals(value) || NULL_VALUE.equals(value)) {
-            return 0.0;
-        }
-
-        try {
-            return Double.parseDouble(value);
-        } catch (NumberFormatException e) {
-            logger.error("Unable to parse {} value: {}. Assuming 0.", valueType, value, e);
-            return 0.0;
-        }
-    }
-
     private void updateChannel(String group, String channelId, String value, String unit) {
         if (EMPTY_VALUE.equals(value)) {
             // value not present - don't update
