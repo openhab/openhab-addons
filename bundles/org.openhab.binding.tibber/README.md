@@ -87,7 +87,7 @@ All values read-only.
 | production                 | Number:Power             | Net power production at the moment in watts                                      |
 | minimum-production         | Number:Power             | Minimum net power production since midnight in watts                             |
 | peak-production            | Number:Power             | Maximum net power production since midnight in watts                             |
-| consumption-and-production | Number:Power             | Current power consumption (as positive value) and production (as negative value) |
+| power-balance              | Number:Power             | Current power consumption (as positive value) and production (as negative value) |
 | voltage1                   | Number:ElectricPotential | Electric potential on phase 1                                                    |
 | voltage2                   | Number:ElectricPotential | Electric potential on phase 2                                                    |
 | voltage3                   | Number:ElectricPotential | Electric potential on phase 3                                                    |
@@ -453,7 +453,7 @@ Number:Power                Tibber_API_Average_Consumption      "Average Consump
 Number:Power                Tibber_API_Live_Production          "Live Production"            {channel="tibber:tibberapi:xyz:live#production"}
 Number:Power                Tibber_API_Minimum_Production       "Minimum Production"         {channel="tibber:tibberapi:xyz:live#minimum-production"}
 Number:Power                Tibber_API_Peak_Production          "Peak Production"            {channel="tibber:tibberapi:xyz:live#peak-production"}
-Number:Power                Tibber_API_Consumption_Production   "Consumption and Production" {channel="tibber:tibberapi:xyz:live#consumption-and-production"}
+Number:Power                Tibber_API_Power_Balance            "Power Balance"              {channel="tibber:tibberapi:xyz:live#consumption-and-production"}
 Number:ElectricPotential    Tibber_API_Voltage_1                "Voltage 1"                  {channel="tibber:tibberapi:xyz:live#voltage1"}
 Number:ElectricPotential    Tibber_API_Voltage_2                "Voltage 2"                  {channel="tibber:tibberapi:xyz:live#voltage2"}
 Number:ElectricPotential    Tibber_API_Voltage_3                "Voltage 3"                  {channel="tibber:tibberapi:xyz:live#voltage3"}
