@@ -647,7 +647,7 @@ Import-Package: \\
               <phase>verify</phase>
               <configuration>
                 <workingDirectory>${project.build.directory}/node</workingDirectory>
-                <arguments>exec -- markdownlint "../../**/*.md" --ignore "**/node_modules/**" -c .github/markdownlint.json</arguments>
+                <arguments>exec -- markdownlint "../../**/*.md" --ignore "**/node_modules/**" -c .github/markdownlint.yaml</arguments>
               </configuration>
             </execution>
           </executions>
