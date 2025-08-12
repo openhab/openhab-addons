@@ -24,6 +24,8 @@ import org.openhab.binding.evcc.internal.handler.EvccPvHandler;
 import org.openhab.binding.evcc.internal.handler.EvccSiteHandler;
 import org.openhab.binding.evcc.internal.handler.EvccStatisticsHandler;
 import org.openhab.binding.evcc.internal.handler.EvccVehicleHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -49,12 +51,17 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
     private final ChannelTypeRegistry channelTypeRegistry;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
     public EvccHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference ChannelTypeRegistry channelTypeRegistry) {
+            @Reference ChannelTypeRegistry channelTypeRegistry, @Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider) {
         this.httpClientFactory = httpClientFactory;
         this.channelTypeRegistry = channelTypeRegistry;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -67,7 +74,7 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID type = thing.getThingTypeUID();
 
         if (THING_TYPE_SERVER.equals(type)) {
-            return new EvccBridgeHandler((Bridge) thing, httpClientFactory);
+            return new EvccBridgeHandler((Bridge) thing, httpClientFactory, i18nProvider, localeProvider);
         }
 
         if (THING_TYPE_SITE.equals(type)) {

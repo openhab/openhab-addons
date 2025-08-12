@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,6 +35,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -56,6 +58,8 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,6 +112,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         isInitialized = true;
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
             handler.register(this);
+
         }, () -> logger.error("No bridgeHandler present when initializing the thing"));
     }
 
@@ -150,7 +155,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         String itemType = typeUnit.itemType;
 
         if (!"Unknown".equals(itemType)) {
-            Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), thingKey))
+            String label = getChannelLabel(thingKey);
+            Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), thingKey)).withLabel(label)
                     .withType(channelTypeUID).withAcceptedItemType(itemType).build();
             if (getThing().getChannels().stream().noneMatch(c -> c.getUID().equals(channel.getUID()))) {
                 builder.withChannel(channel);
@@ -159,6 +165,22 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             String valString = Objects.requireNonNullElse(value.toString(), "Null");
             logUnknownChannelXmlAsync(thingKey, "Hint for type: " + valString);
         }
+    }
+
+    private String getChannelLabel(String thingKey) {
+        String returnValue = thingKey;
+        @Nullable
+        String tmp = Optional.ofNullable(bridgeHandler).map(handler -> {
+            String labelKey = "channel-type.evcc." + thingKey + ".label";
+            BundleContext ctx = FrameworkUtil.getBundle(EvccBridgeHandler.class).getBundleContext();
+            TranslationProvider tp = handler.getI18nProvider();
+            Locale locale = handler.getLocaleProvider().getLocale();
+            return tp.getText(ctx.getBundle(), labelKey, thingKey, locale);
+        }).orElse(thingKey);
+        if (null != tmp) {
+            returnValue = tmp;
+        }
+        return returnValue;
     }
 
     private ItemTypeUnit getItemType(ChannelTypeUID channelTypeUID) {

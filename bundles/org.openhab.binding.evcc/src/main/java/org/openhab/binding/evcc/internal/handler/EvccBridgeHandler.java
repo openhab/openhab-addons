@@ -26,6 +26,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.evcc.internal.EvccConfiguration;
 import org.openhab.binding.evcc.internal.discovery.EvccDiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -54,14 +56,19 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     private final Gson gson = new Gson();
 
     private final HttpClient httpClient;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
     private final CopyOnWriteArrayList<EvccThingLifecycleAware> listeners = new CopyOnWriteArrayList<>();
     private @Nullable ScheduledFuture<?> pollJob;
     private volatile JsonObject lastState = new JsonObject();
     private String endpoint = "";
 
-    public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
+    public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, TranslationProvider i18nProvider,
+            LocaleProvider localeProvider) {
         super(bridge);
         httpClient = httpClientFactory.getCommonHttpClient();
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -94,6 +101,14 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     public String getBaseURL() {
         return endpoint.substring(0, endpoint.lastIndexOf("/"));
+    }
+
+    public TranslationProvider getI18nProvider() {
+        return i18nProvider;
+    }
+
+    public LocaleProvider getLocaleProvider() {
+        return localeProvider;
     }
 
     private void startPolling(int refreshInterval) {
