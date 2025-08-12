@@ -510,33 +510,25 @@ public class TibberHandler extends BaseThingHandler {
             String production = Utils.getJsonValue(jsonData, "powerProduction");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION, consumption, "W");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PRODUCTION, production, "W");
-            updateConsumptionAndProductionChannel(consumption, production);
+            double consumptionValue = parseValueSafely(consumption, "consumption");
+            double productionValue = parseValueSafely(production, "production");
+
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION_AND_PRODUCTION,
+                String.valueOf(consumptionValue - productionValue), "W");
         }
     }
 
-    private void updateConsumptionAndProductionChannel(String consumption, String production) {
-        double consumptionValue = 0.0;
-        double productionValue = 0.0;
-        try {
-            if (consumption != null && !consumption.isBlank() && !consumption.equals(EMPTY_VALUE)
-                    && !consumption.equals(NULL_VALUE)) {
-                consumptionValue = Double.parseDouble(consumption);
-            }
-        } catch (NumberFormatException e) {
-            logger.error("Unable to parse consumption value: {}. Assuming 0.", consumption, e);
+    private double parseValueSafely(@Nullable String value, String valueType) {
+        if (value == null || value.isBlank() || EMPTY_VALUE.equals(value) || NULL_VALUE.equals(value)) {
+            return 0.0;
         }
-
+        
         try {
-            if (production != null && !production.isBlank() && !production.equals(EMPTY_VALUE)
-                    && !production.equals(NULL_VALUE)) {
-                productionValue = Double.parseDouble(production);
-            }
+            return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            logger.error("Unable to parse production value: {}. Assume 0.", production, e);
+            logger.error("Unable to parse {} value: {}. Assuming 0.", valueType, value, e);
+            return 0.0;
         }
-
-        updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION_AND_PRODUCTION,
-                String.valueOf(consumptionValue - productionValue), "W");
     }
 
     private void updateChannel(String group, String channelId, String value, String unit) {
