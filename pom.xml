@@ -610,6 +610,9 @@ Import-Package: \\
           <groupId>com.github.eirslett</groupId>
           <artifactId>frontend-maven-plugin</artifactId>
           <version>1.15.0</version>
+          <configuration>
+              <installDirectory>${project.build.directory}/node</installDirectory>
+          </configuration>
           <executions>
             <!-- Install Node.js and npm -->
             <execution>
@@ -630,6 +633,7 @@ Import-Package: \\
                 <goal>npm</goal>
               </goals>
               <configuration>
+                <workingDirectory>${project.build.directory}/node</workingDirectory>
                 <arguments>install markdownlint-cli --no-save</arguments>
               </configuration>
             </execution>
@@ -642,7 +646,8 @@ Import-Package: \\
               </goals>
               <phase>verify</phase>
               <configuration>
-                <arguments>exec markdownlint "**/*.md" -c .github/markdownlint.json</arguments>
+                <workingDirectory>${project.build.directory}/node</workingDirectory>
+                <arguments>exec -- markdownlint "../../**/*.md" --ignore "**/node_modules/**" -c .github/markdownlint.json</arguments>
               </configuration>
             </execution>
           </executions>
@@ -699,6 +704,11 @@ Import-Package: \\
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
       </plugin>
+
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+        </plugin>
     </plugins>
     <extensions>
       <extension>
