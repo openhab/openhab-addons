@@ -1292,7 +1292,7 @@ Operations and conditions can also optionally take functions:
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
     console.log(event);
-}).build("Test Rule", "My Test Rule");
+}).build("Test Rule", "My Test Rule",["tag1"],"mytestrule");
 ```
 
 Note that the Rule Builder currently does **not** provide type definitions and therefore auto-completion does not work.
