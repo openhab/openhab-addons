@@ -593,7 +593,7 @@
 		<item-type>Switch</item-type>
 		<label>Powered On</label>
 		<description>The device's state running state.</description>
-		<category>Temperature</category>
+		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
