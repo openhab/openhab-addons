@@ -513,8 +513,8 @@ public class TibberHandler extends BaseThingHandler {
             double consumptionValue = parseValueSafely(consumption, "consumption");
             double productionValue = parseValueSafely(production, "production");
 
-            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION_AND_PRODUCTION,
-                String.valueOf(consumptionValue - productionValue), "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_POWER_BALANCE, String.valueOf(consumptionValue - productionValue),
+                    "W");
         }
     }
 
@@ -522,7 +522,7 @@ public class TibberHandler extends BaseThingHandler {
         if (value == null || value.isBlank() || EMPTY_VALUE.equals(value) || NULL_VALUE.equals(value)) {
             return 0.0;
         }
-        
+
         try {
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
