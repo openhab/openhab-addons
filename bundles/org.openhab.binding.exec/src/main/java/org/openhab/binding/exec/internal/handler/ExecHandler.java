@@ -18,16 +18,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -175,15 +178,6 @@ public class ExecHandler extends BaseThingHandler {
         if (commandLine != null && !commandLine.isEmpty()) {
             updateState(RUN, OnOffType.ON);
 
-            // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
-            // Runtime.Exec(), on Mac OS X (Yosemite and El Capitan), there seems to be a lock race condition
-            // randomly appearing (on UNIXProcess) *when* one tries to gobble up the stdout and sterr output of the
-            // subprocess in separate threads. It seems to be common "wisdom" to do that in separate threads, but
-            // only when keeping everything between .exec() and .waitfor() in the same thread, this lock race
-            // condition seems to go away. This approach of not reading the outputs in separate threads *might* be a
-            // problem for external commands that generate a lot of output, but this will be dependent on the limits
-            // of the underlying operating system.
-
             Date date = Calendar.getInstance().getTime();
             try {
                 if (lastInput != null) {
@@ -260,6 +254,10 @@ public class ExecHandler extends BaseThingHandler {
             StringBuilder outputBuilder = new StringBuilder();
             StringBuilder errorBuilder = new StringBuilder();
 
+            TextOutputConsumer errConsumer = new TextOutputConsumer();
+            Future<List<String>> stdErrFuture = errConsumer.consume(proc.getErrorStream(), StandardCharsets.UTF_8,
+                    Thread.currentThread().getName() + "-stderr-consumer");
+
             try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
                     BufferedReader br = new BufferedReader(isr)) {
                 String line;
@@ -269,18 +267,6 @@ public class ExecHandler extends BaseThingHandler {
                 }
             } catch (IOException e) {
                 logger.warn("An exception occurred while reading the stdout when executing '{}' : '{}'", commandLine,
-                        e.getMessage());
-            }
-
-            try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                    BufferedReader br = new BufferedReader(isr)) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    errorBuilder.append(line).append("\n");
-                    logger.debug("Exec [{}]: '{}'", "ERROR", line);
-                }
-            } catch (IOException e) {
-                logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'", commandLine,
                         e.getMessage());
             }
 
@@ -295,6 +281,22 @@ public class ExecHandler extends BaseThingHandler {
             if (!exitVal) {
                 logger.warn("Forcibly termininating the process ('{}') after a timeout of {} ms", commandLine, timeOut);
                 proc.destroyForcibly();
+            }
+
+            try {
+                List<String> stdErr = stdErrFuture.get(timeOut, TimeUnit.MILLISECONDS);
+                for (String line : stdErr) {
+                    errorBuilder.append(line).append("\n");
+                    logger.debug("Exec [{}]: '{}'", "ERROR", line);
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while waiting for process ('{}') stderr content", commandLine);
+            } catch (TimeoutException e) {
+                logger.warn("Timed out while waiting for process ('{}') stderr content", commandLine);
+            } catch (ExecutionException e) {
+                Throwable cause = e.getCause();
+                logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'", commandLine,
+                        cause != null ? cause.getMessage() : e.getMessage());
             }
 
             updateState(RUN, OnOffType.OFF);
