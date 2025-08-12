@@ -35,6 +35,10 @@
 				<label>Peak Production</label>
 				<description>Maximum net power production since midnight in watts</description>
 			</channel>
+			<channel id="power-balance" typeId="power">
+				<label>Power Balance</label>
+				<description>Current power consumption (as positive value) and production (as negative value)</description>
+			</channel>
 			<channel id="voltage1" typeId="voltage">
 				<label>Voltage 1</label>
 				<description>Electric potential on phase 1</description>
