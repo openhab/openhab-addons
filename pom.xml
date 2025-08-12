@@ -611,7 +611,7 @@ Import-Package: \\
           <artifactId>frontend-maven-plugin</artifactId>
           <version>1.15.0</version>
           <configuration>
-              <installDirectory>${project.build.directory}/node</installDirectory>
+            <installDirectory>${project.build.directory}/node</installDirectory>
           </configuration>
           <executions>
             <!-- Install Node.js and npm -->
@@ -705,10 +705,10 @@ Import-Package: \\
         <artifactId>spotless-maven-plugin</artifactId>
       </plugin>
 
-        <plugin>
-          <groupId>com.github.eirslett</groupId>
-          <artifactId>frontend-maven-plugin</artifactId>
-        </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+      </plugin>
     </plugins>
     <extensions>
       <extension>
