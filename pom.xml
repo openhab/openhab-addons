@@ -606,6 +606,47 @@ Import-Package: \\
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>1.15.0</version>
+          <executions>
+            <!-- Install Node.js and npm -->
+            <execution>
+              <id>install-node-and-npm</id>
+              <goals>
+                <goal>install-node-and-npm</goal>
+              </goals>
+              <configuration>
+                <nodeVersion>v20.11.0</nodeVersion>
+                <npmVersion>10.2.5</npmVersion>
+              </configuration>
+            </execution>
+
+            <!-- Install markdownlint-cli -->
+            <execution>
+              <id>npm-install-markdownlint</id>
+              <goals>
+                <goal>npm</goal>
+              </goals>
+              <configuration>
+                <arguments>install markdownlint-cli --no-save</arguments>
+              </configuration>
+            </execution>
+
+            <!-- Run markdownlint during verify -->
+            <execution>
+              <id>run-markdownlint</id>
+              <goals>
+                <goal>npm</goal>
+              </goals>
+              <phase>verify</phase>
+              <configuration>
+                <arguments>exec markdownlint "**/*.md" -c .github/markdownlint.json</arguments>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
 
