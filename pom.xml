@@ -647,7 +647,7 @@ Import-Package: \\
               <phase>verify</phase>
               <configuration>
                 <workingDirectory>${project.build.directory}</workingDirectory>
-                <arguments>exec -- markdownlint "../**/*.md" --ignore "**/node_modules/**" -c ${basedirRoot}/.github/markdownlint.yaml</arguments>
+                <arguments>exec -- markdownlint "../**/*.md" --ignore "**/node_modules/**" --ignore "**/target/**" --ignore "**/.vscode/**" --ignore "**/itests/**" --ignore "**/features/**" -c ${basedirRoot}/.github/markdownlint.yaml</arguments>
               </configuration>
             </execution>
           </executions>
