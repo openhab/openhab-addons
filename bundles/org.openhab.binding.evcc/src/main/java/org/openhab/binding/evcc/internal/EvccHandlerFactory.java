@@ -71,39 +71,26 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
+        ThingHandler handler = null;
         ThingTypeUID type = thing.getThingTypeUID();
 
         if (THING_TYPE_SERVER.equals(type)) {
-            return new EvccBridgeHandler((Bridge) thing, httpClientFactory, i18nProvider, localeProvider);
+            handler = new EvccBridgeHandler((Bridge) thing, httpClientFactory, i18nProvider, localeProvider);
+        } else if (THING_TYPE_SITE.equals(type)) {
+            handler = new EvccSiteHandler(thing, channelTypeRegistry);
+        } else if (THING_TYPE_VEHICLE.equals(type)) {
+            handler = new EvccVehicleHandler(thing, channelTypeRegistry);
+        } else if (THING_TYPE_LOADPOINT.equals(type)) {
+            handler = new EvccLoadpointHandler(thing, channelTypeRegistry);
+        } else if (THING_TYPE_HEATING.equals(type)) {
+            handler = new EvccHeatingHandler(thing, channelTypeRegistry);
+        } else if (THING_TYPE_BATTERY.equals(type)) {
+            handler = new EvccBatteryHandler(thing, channelTypeRegistry);
+        } else if (THING_TYPE_PV.equals(type)) {
+            handler = new EvccPvHandler(thing, channelTypeRegistry);
+        } else if (THING_TYPE_STATISTICS.equals(type)) {
+            handler = new EvccStatisticsHandler(thing, channelTypeRegistry);
         }
-
-        if (THING_TYPE_SITE.equals(type)) {
-            return new EvccSiteHandler(thing, channelTypeRegistry);
-        }
-
-        if (THING_TYPE_VEHICLE.equals(type)) {
-            return new EvccVehicleHandler(thing, channelTypeRegistry);
-        }
-
-        if (THING_TYPE_LOADPOINT.equals(type)) {
-            return new EvccLoadpointHandler(thing, channelTypeRegistry);
-        }
-
-        if (THING_TYPE_HEATING.equals(type)) {
-            return new EvccHeatingHandler(thing, channelTypeRegistry);
-        }
-
-        if (THING_TYPE_BATTERY.equals(type)) {
-            return new EvccBatteryHandler(thing, channelTypeRegistry);
-        }
-
-        if (THING_TYPE_PV.equals(type)) {
-            return new EvccPvHandler(thing, channelTypeRegistry);
-        }
-
-        if (THING_TYPE_STATISTICS.equals(type)) {
-            return new EvccStatisticsHandler(thing, channelTypeRegistry);
-        }
-        return null;
+        return handler;
     }
 }

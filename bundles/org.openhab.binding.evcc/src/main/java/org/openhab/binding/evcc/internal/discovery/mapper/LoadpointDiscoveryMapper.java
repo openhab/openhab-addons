@@ -52,7 +52,7 @@ public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
             String title = lp.has("title") ? lp.get("title").getAsString().toLowerCase(Locale.ROOT) : "loadpoint" + i;
 
             ThingUID uid = new ThingUID("DUMMY:DUMMY:DUMMY");
-            Map<String, Object> properties = new HashMap<String, Object>();
+            Map<String, Object> properties = new HashMap<>();
             properties.put(PROPERTY_INDEX, i);
             properties.put(PROPERTY_TITLE, title);
 

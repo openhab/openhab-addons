@@ -110,10 +110,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         updateThing(builder.build());
         updateStatus(ThingStatus.ONLINE);
         isInitialized = true;
-        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
-            handler.register(this);
-
-        }, () -> logger.error("No bridgeHandler present when initializing the thing"));
+        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> handler.register(this),
+                () -> logger.error("No bridgeHandler present when initializing the thing"));
     }
 
     @Override

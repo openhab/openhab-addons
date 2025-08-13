@@ -101,9 +101,6 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        if (state.has("gridConfigured")) {
-            modifyJSON(state);
-        }
         return state;
     }
 }

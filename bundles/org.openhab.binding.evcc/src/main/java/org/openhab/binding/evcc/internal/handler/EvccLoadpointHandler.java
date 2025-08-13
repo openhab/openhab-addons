@@ -63,16 +63,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
             JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
 
-            // For backward compatibility add these elements if present
-            if (state.has("vehiclePresent")) {
-                state.add("connected", state.get("vehiclePresent"));
-            }
-            if (state.has("enabled")) {
-                state.add("charging", state.get("enabled"));
-            }
-            if (state.has("phases")) {
-                state.add("phasesConfigured", state.get("phases"));
-            }
+            modifyJSON(state);
             commonInitialize(state);
         });
     }
@@ -112,14 +103,24 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     public void updateFromEvccState(JsonObject state) {
         version = Utils.convertVersionStringToIntArray(state.get("version").getAsString().split(" ")[0]);
         state = state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
+        modifyJSON(state);
         super.updateFromEvccState(state);
     }
 
-    public void updateJSON(JsonObject state) {
+    public void modifyJSON(JsonObject state) {
+        // This is for backward compatibility with older evcc versions
         if (state.has("chargeCurrent")) {
-            // This is for backward compatibility with older evcc versions
             state.addProperty("offeredCurrent", state.get("chargeCurrent").getAsDouble());
             state.remove("chargeCurrent");
+        }
+        if (state.has("vehiclePresent")) {
+            state.add("connected", state.get("vehiclePresent"));
+        }
+        if (state.has("enabled")) {
+            state.add("charging", state.get("enabled"));
+        }
+        if (state.has("phases")) {
+            state.add("phasesConfigured", state.get("phases"));
         }
     }
 

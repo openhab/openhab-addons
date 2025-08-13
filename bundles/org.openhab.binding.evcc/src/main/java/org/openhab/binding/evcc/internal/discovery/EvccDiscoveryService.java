@@ -101,9 +101,8 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop evcc device background discovery");
-        Optional.ofNullable(evccDiscoveryJob).ifPresent(backgroundScan -> {
-            backgroundScan.cancel(isBackgroundDiscoveryEnabled());
-        });
+        Optional.ofNullable(evccDiscoveryJob)
+                .ifPresent(backgroundScan -> backgroundScan.cancel(isBackgroundDiscoveryEnabled()));
         evccDiscoveryJob = null;
     }
 }

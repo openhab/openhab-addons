@@ -117,8 +117,8 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         }
         pollJob = scheduler.scheduleWithFixedDelay(() -> fetchEvccState().ifPresent(state -> {
             if (!state.isEmpty() && state.has("siteTitle")) {
-                this.lastState = state;
                 notifyListeners(state);
+                this.lastState = state;
             }
         }), refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
