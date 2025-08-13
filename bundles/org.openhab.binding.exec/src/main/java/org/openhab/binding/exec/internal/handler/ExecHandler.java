@@ -18,7 +18,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -85,6 +88,7 @@ public class ExecHandler extends BaseThingHandler {
     public static final String COMMAND = "command";
     public static final String TRANSFORM = "transform";
     public static final String AUTORUN = "autorun";
+    public static final String CHARSET = "charset";
 
     private ExecutorService executor;
     private @Nullable ScheduledFuture<?> scheduledTask;
@@ -175,6 +179,19 @@ public class ExecHandler extends BaseThingHandler {
             timeOut = ((BigDecimal) getConfig().get(TIME_OUT)).intValue() * 1000;
         }
 
+        Charset charset = null;
+        String charsetValue = (String) getConfig().get(CHARSET);
+        if (charsetValue != null && !charsetValue.isBlank()) {
+            try {
+                charset = Charset.forName(charsetValue);
+            } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+                logger.warn("Invalid or unsupported character encoding '{}', falling back to UTF-8", charsetValue);
+            }
+        }
+        if (charset == null) {
+            charset = StandardCharsets.UTF_8;
+        }
+
         if (commandLine != null && !commandLine.isEmpty()) {
             updateState(RUN, OnOffType.ON);
 
@@ -263,10 +280,10 @@ public class ExecHandler extends BaseThingHandler {
             StringBuilder errorBuilder = new StringBuilder();
 
             TextOutputConsumer errConsumer = new TextOutputConsumer();
-            Future<List<String>> stdErrFuture = errConsumer.consume(proc.getErrorStream(), StandardCharsets.UTF_8,
+            Future<List<String>> stdErrFuture = errConsumer.consume(proc.getErrorStream(), charset,
                     Thread.currentThread().getName() + "-stderr-consumer");
 
-            try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+            try (InputStreamReader isr = new InputStreamReader(proc.getInputStream(), charset);
                     BufferedReader br = new BufferedReader(isr)) {
                 String line;
                 while ((line = br.readLine()) != null) {
