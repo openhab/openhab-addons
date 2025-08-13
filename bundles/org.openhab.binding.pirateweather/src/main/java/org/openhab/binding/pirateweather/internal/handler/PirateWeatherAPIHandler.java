@@ -74,7 +74,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
         config = getConfigAs(PirateWeatherAPIConfiguration.class);
 
         boolean configValid = true;
-        if (config.apikey == null || config.apikey.trim().isEmpty()) {
+        if (config.apikey == null || config.apikey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");
             configValid = false;
