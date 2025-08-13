@@ -91,7 +91,7 @@ public class PirateWeatherConnection {
 
         PirateWeatherAPIConfiguration config = handler.getPirateWeatherAPIConfig();
         String apikey = config.apikey;
-        if (apikey == null || apikey == apikey.isBlank()) {
+        if (apikey == null || apikey.isBlank()) {
             throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-apikey");
         }
 
