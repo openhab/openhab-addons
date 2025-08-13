@@ -57,7 +57,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
 
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
-    private @NonNullByDefault({}) PirateWeatherConnection connection;
+    private @Nullable PirateWeatherConnection connection;
 
     // keeps track of the parsed config
     private @NonNullByDefault({}) PirateWeatherAPIConfiguration config;
