@@ -192,6 +192,8 @@ public class ExecHandler extends BaseThingHandler {
                         commandLine, date, lastInput, e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
+                updateState(STDOUT, new StringType());
+                updateState(STDERR, new StringType(e.getMessage()));
                 return;
             }
 
@@ -205,6 +207,8 @@ public class ExecHandler extends BaseThingHandler {
                     logger.warn("An exception occurred while splitting '{}' : '{}'", commandLine, e.getMessage());
                     updateState(RUN, OnOffType.OFF);
                     updateState(OUTPUT, new StringType(e.getMessage()));
+                    updateState(STDOUT, new StringType());
+                    updateState(STDERR, new StringType(e.getMessage()));
                     return;
                 }
             } else {
@@ -230,6 +234,8 @@ public class ExecHandler extends BaseThingHandler {
                         logger.warn("OS {} not supported, please manually split commands!", getOperatingSystemName());
                         updateState(RUN, OnOffType.OFF);
                         updateState(OUTPUT, new StringType("OS not supported, please manually split commands!"));
+                        updateState(STDOUT, new StringType());
+                        updateState(STDERR, new StringType("OS not supported, please manually split commands!"));
                         return;
                 }
             }
@@ -249,6 +255,8 @@ public class ExecHandler extends BaseThingHandler {
                         e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
+                updateState(STDOUT, new StringType());
+                updateState(STDERR, new StringType(e.getMessage()));
                 return;
             }
 
@@ -303,14 +311,24 @@ public class ExecHandler extends BaseThingHandler {
             updateState(RUN, OnOffType.OFF);
             updateState(EXIT, new DecimalType(proc.exitValue()));
 
+            ChannelTransformation transformation = channelTransformation;
+            String transformedStdout = Objects.requireNonNull(StringUtils.chomp(outputBuilder.toString()));
+            String transformedStderr = Objects.requireNonNull(StringUtils.chomp(errorBuilder.toString()));
+            if (transformation != null) {
+                transformedStdout = transformation.apply(transformedStdout).orElse(transformedStdout);
+                transformedStderr = transformation.apply(transformedStderr).orElse(transformedStderr);
+            }
+            updateState(STDOUT, new StringType(transformedStdout));
+            updateState(STDERR, new StringType(transformedStderr));
+
             outputBuilder.append(errorBuilder.toString());
 
             outputBuilder.append(errorBuilder.toString());
 
             String transformedResponse = Objects.requireNonNull(StringUtils.chomp(outputBuilder.toString()));
 
-            if (channelTransformation != null) {
-                transformedResponse = channelTransformation.apply(transformedResponse).orElse(transformedResponse);
+            if (transformation != null) {
+                transformedResponse = transformation.apply(transformedResponse).orElse(transformedResponse);
             }
 
             updateState(OUTPUT, new StringType(transformedResponse));
@@ -349,6 +367,8 @@ public class ExecHandler extends BaseThingHandler {
                 logger.warn("An exception occurred while splitting '{}' : '{}'", commandLine, e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
+                updateState(STDOUT, new StringType());
+                updateState(STDERR, new StringType(e.getMessage()));
                 return new String[] {};
             }
         }

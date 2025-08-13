@@ -10,11 +10,17 @@
 
 		<channels>
 			<channel id="output" typeId="output"/>
+			<channel id="stdout" typeId="stdout"/>
+			<channel id="stderr" typeId="stderr"/>
 			<channel id="input" typeId="input"/>
 			<channel id="exit" typeId="exit"/>
 			<channel id="run" typeId="run"/>
 			<channel id="lastexecution" typeId="lastexecution"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="command" type="text" required="true">
@@ -51,6 +57,18 @@
 		<item-type>String</item-type>
 		<label>Output</label>
 		<description>Output of the last execution of the command</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="stdout">
+		<item-type>String</item-type>
+		<label>Standard Out</label>
+		<description>The stdout output of the last execution of the command</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="stderr">
+		<item-type>String</item-type>
+		<label>Standard Error</label>
+		<description>The stderr output of the last execution of the command</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="input">
