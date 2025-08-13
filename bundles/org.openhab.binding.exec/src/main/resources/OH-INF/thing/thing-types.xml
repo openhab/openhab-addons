@@ -49,6 +49,12 @@
 				<description>When true, the command will execute each time the state of the input channel changes</description>
 				<default>false</default>
 			</parameter>
+			<parameter name="charset" type="text" required="false">
+				<label>Character Encoding</label>
+				<description>The character encoding to use for process output. Any string valid for Java's Charset.forName() can be
+					used. If blank, UTF-8 will be used.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>
