@@ -233,10 +233,13 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     public void updateData(@Nullable PhilipsAirAPIConnection connection) {
+        logger.trace("Update data for {}", thing.getUID());
         try {
             if (requestData(connection)) {
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
+            } else {
+                logger.debug("No connection --> no update for {}", thing.getUID());
             }
         } catch (PhilipsAirAPIException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());

@@ -29,14 +29,19 @@ import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.Utils;
 import org.eclipse.californium.core.coap.CoAP.Type;
+import org.eclipse.californium.core.coap.EmptyMessage;
 import org.eclipse.californium.core.coap.Request;
+import org.eclipse.californium.core.coap.Response;
+import org.eclipse.californium.core.config.CoapConfig;
 import org.eclipse.californium.core.network.CoapEndpoint;
+import org.eclipse.californium.core.network.interceptors.MessageInterceptor;
 import org.eclipse.californium.elements.config.Configuration;
 import org.eclipse.californium.elements.exception.ConnectorException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
+import org.openhab.binding.philipsair.internal.connection.CoapMessageLogger;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -69,7 +74,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     private static final int DISCOVERY_TIME = 15;
     private static final String PATH = "sys/dev/info";
     private static final int COAP_PORT = 5683;
-    private static final long BACKGROUND_DISCOVERY_INTERVAL = 1800;
+    private static final long BACKGROUND_DISCOVERY_INTERVAL = 3600;
 
     private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirCoapDiscovery.class);
@@ -82,8 +87,56 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
             @Reference NetworkAddressService networkAddressService) throws IllegalArgumentException {
         super(DISCOVERY_TIME);
 
-        Configuration netConfig = Configuration.getStandard();
+        CoapConfig.register();
+
+        Configuration netConfig = Configuration.getStandard().set(CoapConfig.RESPONSE_MATCHING,
+                CoapConfig.MatcherMode.RELAXED); // allow many responders
+
         CoapEndpoint endpoint = new CoapEndpoint.Builder().setConfiguration(netConfig).build();
+        if (logger.isTraceEnabled()) {
+            MessageInterceptor interceptor = new CoapMessageLogger();
+            endpoint.addInterceptor(interceptor);
+        }
+
+        endpoint.addInterceptor(new MessageInterceptor() {
+            @Override
+
+            public void receiveResponse(@Nullable Response response) {
+                if (response == null) {
+                    logger.debug("Response is null");
+                    return;
+                }
+                if (response.getPayload() != null) {
+                    // Token/MID validate? Accept even if matcher rejects.
+                    String payload = response.getPayloadString();
+                    InetSocketAddress src = response.getSourceContext().getPeerAddress();
+                    logger.trace("Received coap response from {}  - {}", src, Utils.prettyPrint(response));
+                    if (payload != null && !payload.isBlank() && payload.contains("product_id")) {
+                        PhilipsAirCoapDiscovery.this.discovered(payload, src.getHostString());
+                    }
+                }
+            }
+
+            @Override
+            public void sendRequest(@Nullable Request request) {
+            }
+
+            @Override
+            public void sendResponse(@Nullable Response response) {
+            }
+
+            @Override
+            public void sendEmptyMessage(@Nullable EmptyMessage message) {
+            }
+
+            @Override
+            public void receiveRequest(@Nullable Request request) {
+            }
+
+            @Override
+            public void receiveEmptyMessage(@Nullable EmptyMessage message) {
+            }
+        });
 
         this.networkAddressService = networkAddressService;
         this.client = new CoapClient();
@@ -92,12 +145,13 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
+
         stopBackgroundDiscovery();
         ScheduledFuture<?> coapDiscoveryJob = this.coapDiscoveryJob;
         if (coapDiscoveryJob == null || coapDiscoveryJob.isCancelled()) {
             logger.debug("Starting PhilipsAir (COAP) background discovery job");
-            coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundScan, 0, BACKGROUND_DISCOVERY_INTERVAL,
-                    TimeUnit.SECONDS);
+            this.coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundScan, 0,
+                    BACKGROUND_DISCOVERY_INTERVAL, TimeUnit.SECONDS);
         }
     }
 
@@ -181,10 +235,13 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         client.setURI(uri);
         Request multicastRequest = Request.newGet();
         multicastRequest.setType(Type.NON);
+        multicastRequest.setURI(uri);
 
         // sends a multicast request
         MultiCoapHandler handler = new MultiCoapHandler(this, logger);
         client.advanced(handler, multicastRequest);
+
+        // note: with the Californium R4 this is not working Work around is via message interceptor
         while (handler.waitOn(DISCOVERY_TIME * 1000L)) {
             // Loop while waiting for responses
         }
@@ -219,6 +276,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
         @Override
         public void onLoad(@Nullable CoapResponse response) {
+            logger.debug("Received coap response {}", Utils.prettyPrint(response));
+
             on();
             if (response != null) {
                 InetSocketAddress ip = response.advanced().getSourceContext().getPeerAddress();
