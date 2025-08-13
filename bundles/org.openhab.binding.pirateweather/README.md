@@ -36,12 +36,13 @@ Once the system location will be changed, the background discovery updates the c
 
 ### Current Weather And Forecast
 
-| Parameter      | Description                                                                                                                    |
-|----------------|-------------------------------------------------------------------------------------------------------------------------------|
-| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                  |
-| forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="24", step="1").                         |
-| forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 8 (min="0", max="8", step="1"). |
-| numberOfAlerts | Number of alerts to be shown. Optional, the default value is 0 (min="0", step="1").                                           |
+| Parameter      | Description                                                                    | Default | Required |
+|----------------|--------------------------------------------------------------------------------|---------|----------|
+| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). | –       | Yes      |
+| forecastHours  | Number of hours for hourly forecast.                                           | 24      | No       |
+| forecastDays   | Number of days for daily forecast (including today’s forecast).                | 8       | No       |
+| numberOfAlerts | Number of alerts to be shown.                                                  | 0       | No       |
+
 
 Once one of the parameters `forecastHours`, `forecastDays` or `numberOfAlerts` will be changed, the available channel groups on the thing will be created or removed accordingly.
 
