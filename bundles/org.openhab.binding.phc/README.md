@@ -5,7 +5,7 @@ This binding allows you to integrate modules(at the Moment AM, EM, JRM and DIM) 
 The serial protocol is mainly extracted, with thanks to the developers from the projects [PHCtoUDP](https://sourceforge.net/projects/phctoudp/) and [OpenHC](https://sourceforge.net/projects/openhc/?source=directory).
 
 The basics of the module bus protocol can also be found in the [Wiki of the PHC-Forum (german)](https://wiki.phc-forum.de/index.php/PHC-Protokoll_des_internen_Bus).
-While the Wiki is offline you can find a PDF version in this [PHC-Forum post PDF](https://phc-forum.de/index.php/forum/phc-programmierung/129-phc-protokoll?start=15#1329).
+While the Wiki is offline you can find a PDF version in this [PHC-Forum post](https://phc-forum.de/index.php/forum/phc-programmierung/129-phc-protokoll?start=15#1329).
 
 ## Serial Communication
 
