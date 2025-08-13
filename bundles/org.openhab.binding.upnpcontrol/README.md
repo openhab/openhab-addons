@@ -19,7 +19,6 @@ Each discovered renderer will also be registered as an openHAB audio sink.
 Two thing types are supported, a server thing, `upnpserver`, and a renderer thing, `upnprenderer`.
 
 The binding has been tested with the AV Media Server and AV Media Renderer from [Intel Developer Tools](https://www.meshcommander.com/upnptools) for UPnP Technology.
-For more information about the UPNP Control binding, see the [openHAB UPNP Control binding documentation](https://www.openhab.org/addons/bindings/upnpcontrol/).
 A second test set included a [TVersity Media Server](http://tversity.com/).
 It complies with part of the UPnP AV Media standard, but has not been verified to comply with the full specification.
 Tests have focused on the playback of audio, but if the server and renderer support it, other media types should play as well.
