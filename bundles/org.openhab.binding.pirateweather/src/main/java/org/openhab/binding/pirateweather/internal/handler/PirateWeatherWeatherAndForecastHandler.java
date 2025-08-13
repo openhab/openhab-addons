@@ -127,7 +127,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                 PirateWeatherWeatherAndForecastConfiguration.class);
 
         boolean configValid = true;
-        if (config.location == null || config.location.trim().isEmpty()) {
+        if (config.location == null || config.location.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
             configValid = false;
