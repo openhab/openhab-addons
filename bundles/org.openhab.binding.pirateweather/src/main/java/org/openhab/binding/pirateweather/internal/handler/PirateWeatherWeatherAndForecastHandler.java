@@ -676,7 +676,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     }
 
     /**
-     * Update the channel from the last Dark Sky data retrieved.
+     * Update the channel from the last Pirate Weather data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
      * @param count
