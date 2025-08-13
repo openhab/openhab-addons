@@ -49,11 +49,13 @@ If user have multiple HomeIds / Pulse, separate Things have to be created for th
 Current and forecast Tibber price information.
 All read-only.
 
-| Channel ID        | Type                 | Description                            | Time Series  |
-|-------------------|----------------------|----------------------------------------|--------------|
-| spot-price        | Number:EnergyPrice   | Spot prices for today and tomorrow     | yes          |
-| level             | Number               | Price levels for today and tomorrow    | yes          |
-| average           | Number:EnergyPrice   | Average price from last 24 hours       | yes          |
+| Channel ID        | Type                 | Description                                | Time Series  |
+|-------------------|----------------------|--------------------------------------------|--------------|
+| total-price       | Number:EnergyPrice   | Total price including energy and taxes     | yes          |
+| spot-price        | Number:EnergyPrice   | Spot prices for energy today and tomorrow  | yes          |
+| tax               | Number:EnergyPrice   | Taxes and additional expenses              | yes          |
+| level             | Number               | Price levels for today and tomorrow        | yes          |
+| average           | Number:EnergyPrice   | Average price from last 24 hours           | yes          |
 
 The `level` number is mapping the [Tibber Rating](https://developer.tibber.com/docs/reference#pricelevel) into numbers.
 Zero reflects _normal_ price while values above 0 are _expensive_ and values below 0 are _cheap_.
