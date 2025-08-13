@@ -4,7 +4,7 @@ This is an openHAB binding for Bluetooth for [Hunter Douglas PowerView](https://
 In some countries the PowerView system is sold under the brand name [Luxaflex](https://www.luxaflex.com/).
 
 This binding supports Generation 3 shades connected directly via their in built Bluetooth Low Energy interface.
-There is a different [hdpowerview](https://www.openhab.org/addons/bindings/hdpowerview/) binding for shades that are connected via a hub or gateway.
+For shades that are connected via a hub or gateway, there is a different [hdpowerview binding](https://www.openhab.org/addons/bindings/hdpowerview/).
 
 PowerView shades have motorization control for their vertical position, and some also have vane controls to change the angle of their slats.
 
