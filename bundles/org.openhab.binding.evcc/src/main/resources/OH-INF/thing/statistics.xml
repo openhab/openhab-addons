@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evcc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="statistics" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+
+		<label>Statistics</label>
+		<description>Statistics about your evcc instance</description>
+		<channel-groups>
+			<channel-group id="30d" typeId="statistics-group">
+				<label>Last 30 Days</label>
+				<description>Statistics from the last 30 days</description>
+			</channel-group>
+			<channel-group id="365d" typeId="statistics-group">
+				<label>Last 365 Days</label>
+				<description>Statistics from the last 365days</description>
+			</channel-group>
+			<channel-group id="this-year" typeId="statistics-group">
+				<label>Last Year</label>
+				<description>Statistics from the last year</description>
+			</channel-group>
+			<channel-group id="total" typeId="statistics-group">
+				<label>Total</label>
+				<description>Total statistics</description>
+			</channel-group>
+		</channel-groups>
+	</thing-type>
+
+	<channel-group-type id="statistics-group">
+		<label>Statistics Group</label>
+		<channels>
+			<channel id="avg-co2" typeId="avg-co2-type"/>
+			<channel id="avg-price" typeId="avg-price-type"/>
+			<channel id="charged-energy" typeId="charged-energy-type"/>
+			<channel id="solar-percentage" typeId="solar-percentage-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="avg-co2-type">
+		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
+		<label>Average C02</label>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Info</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="avg-price-type">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Average Price</label>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Info</tag>
+		</tags>
+		<state pattern="%.2f %unit%"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="charged-energy-type">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Charged Energy</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="solar-percentage-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Solar Percentage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+</thing:thing-descriptions>
