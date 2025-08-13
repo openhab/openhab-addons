@@ -611,7 +611,7 @@ Import-Package: \\
           <artifactId>frontend-maven-plugin</artifactId>
           <version>1.15.0</version>
           <configuration>
-            <installDirectory>${project.build.directory}/node</installDirectory>
+            <installDirectory>${project.build.directory}</installDirectory>
           </configuration>
           <executions>
             <!-- Install Node.js and npm -->
@@ -633,7 +633,7 @@ Import-Package: \\
                 <goal>npm</goal>
               </goals>
               <configuration>
-                <workingDirectory>${project.build.directory}/node</workingDirectory>
+                <workingDirectory>${project.build.directory}</workingDirectory>
                 <arguments>install markdownlint-cli --no-save</arguments>
               </configuration>
             </execution>
@@ -646,8 +646,8 @@ Import-Package: \\
               </goals>
               <phase>verify</phase>
               <configuration>
-                <workingDirectory>${project.build.directory}/node</workingDirectory>
-                <arguments>exec -- markdownlint "../../**/*.md" --ignore "**/node_modules/**" -c .github/markdownlint.yaml</arguments>
+                <workingDirectory>${project.build.directory}</workingDirectory>
+                <arguments>exec -- markdownlint "../**/*.md" --ignore "**/node_modules/**" -c ${basedirRoot}/.github/markdownlint.yaml</arguments>
               </configuration>
             </execution>
           </executions>
