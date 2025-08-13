@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -466,7 +465,7 @@ public class TelegramActions implements ThingActions {
                     temp = "file://" + photoURL;
                 }
                 try {
-                    sendPhoto = new SendPhoto(chatId, Path.of(new URL(temp).getPath()).toFile());
+                    sendPhoto = new SendPhoto(chatId, Path.of(URI.create(temp).toURL().getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL: {}", photoURL);
                     return false;
@@ -595,7 +594,7 @@ public class TelegramActions implements ThingActions {
                 // Load video from local file system
                 logger.debug("Read file from local file system: {}", animationURL);
                 try {
-                    sendAnimation = new SendAnimation(chatId, Path.of(new URL(temp).getPath()).toFile());
+                    sendAnimation = new SendAnimation(chatId, Path.of(URI.create(temp).toURL().getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL, should start with http or file: {}", animationURL);
                     return false;
@@ -681,7 +680,7 @@ public class TelegramActions implements ThingActions {
                 // Load video from local file system with file://path
                 logger.debug("Read file from local file: {}", videoURL);
                 try {
-                    sendVideo = new SendVideo(chatId, Path.of(new URL(temp).getPath()).toFile());
+                    sendVideo = new SendVideo(chatId, Path.of(URI.create(temp).toURL().getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL, should start with http or file: {}", videoURL);
                     return false;

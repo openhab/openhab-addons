@@ -58,8 +58,8 @@ public class FSInternetRadioDiscoveryParticipantJavaTest {
     static {
         try {
             DEFAULT_RADIO_IDENTITY = new RemoteDeviceIdentity(new UDN("radioUDN"), 60,
-                    new URL("http://radioDescriptiveURL"), null, null);
-            DEFAULT_RADIO_BASE_URL = new URL("http://radioBaseURL");
+                    URI.create("http://radioDescriptiveURL").toURL(), null, null);
+            DEFAULT_RADIO_BASE_URL = URI.create("http://radioBaseURL").toURL();
         } catch (final MalformedURLException ex) {
             throw new Error("Initialization error", ex);
         }
@@ -155,8 +155,8 @@ public class FSInternetRadioDiscoveryParticipantJavaTest {
     private RemoteDevice createUnknownRemoteDevice() throws ValidationException, MalformedURLException {
         int deviceIdentityMaxAgeSeconds = 60;
         RemoteDeviceIdentity identity = new RemoteDeviceIdentity(new UDN("unknownUDN"), deviceIdentityMaxAgeSeconds,
-                new URL("http://unknownDescriptorURL"), null, null);
-        URL anotherBaseURL = new URL("http://unknownBaseUrl");
+                URI.create("http://unknownDescriptorURL").toURL(), null, null);
+        URL anotherBaseURL = URI.create("http://unknownBaseUrl").toURL();
         String friendlyName = "Unknown remote device";
         ManufacturerDetails manifacturerDetails = new ManufacturerDetails("UnknownManifacturer");
         ModelDetails modelDetails = new ModelDetails("unknownModel");

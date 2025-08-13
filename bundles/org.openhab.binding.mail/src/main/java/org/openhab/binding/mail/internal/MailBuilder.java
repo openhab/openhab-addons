@@ -14,6 +14,7 @@ package org.openhab.binding.mail.internal;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,7 +126,7 @@ public class MailBuilder {
      * @throws MalformedURLException if url has invalid format
      */
     public MailBuilder withURLAttachment(String urlString) throws MalformedURLException {
-        attachmentURLs.add(new URL(urlString));
+        attachmentURLs.add(URI.create(urlString).toURL());
         return this;
     }
 

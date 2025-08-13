@@ -63,7 +63,7 @@ public class Util {
      * @throws URISyntaxException if parameter could not be converted to a URI
      */
     public static URI uriFromString(String s) throws MalformedURLException, URISyntaxException {
-        URL url = new URL(s);
+        URL url = URI.create(s).toURL();
         URI uri = new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(),
                 url.getPath(), url.getQuery(), url.getRef());
         return URI.create(uri.toASCIIString().replace("+", "%2B").replace("%25%25", "%"));

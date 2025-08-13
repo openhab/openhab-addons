@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -366,7 +367,7 @@ public class HttpTransportImpl implements HttpTransport {
         String correctedRequest = request;
         if (correctedRequest != null && !correctedRequest.isBlank()) {
             correctedRequest = fixRequest(correctedRequest);
-            URL url = new URL(this.uri + correctedRequest);
+            URL url = URI.create(this.uri + correctedRequest).toURL();
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             if (connection != null) {
                 connection.setConnectTimeout(connectTimeout);
@@ -543,7 +544,7 @@ public class HttpTransportImpl implements HttpTransport {
     private String getPEMCertificateFromServer(String host) {
         HttpsURLConnection connection = null;
         try {
-            URL url = new URL(host);
+            URL url = URI.create(host).toURL();
 
             connection = (HttpsURLConnection) url.openConnection();
             connection.setHostnameVerifier(hostnameVerifier);
