@@ -1,6 +1,6 @@
 # tado° Binding
 
-The tado° binding integrates devices from [tado° official website](https://www.tado.com).
+The binding integrates tado° devices as shown in the [tado° official website](https://www.tado.com).
 
 It requires a fully functional tado° installation.
 You can then monitor and control all zone types (Heating, AC, Hot Water) as well as retrieve the HOME/AWAY status of mobile devices, and setting the HOME/AWAY status of your home.
