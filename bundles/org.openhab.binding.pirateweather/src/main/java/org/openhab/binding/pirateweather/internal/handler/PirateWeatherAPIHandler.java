@@ -102,10 +102,8 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
             }
         }
 
-        if (configValid) {
-            connection = new PirateWeatherConnection(this, httpClient);
-
             updateStatus(ThingStatus.UNKNOWN);
+            connection = new PirateWeatherConnection(this, httpClient);
 
             ScheduledFuture<?> localRefreshJob = refreshJob;
             if (localRefreshJob == null || localRefreshJob.isCancelled()) {
@@ -113,7 +111,6 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
                 refreshJob = scheduler.scheduleWithFixedDelay(this::updateThings, INITIAL_DELAY_IN_SECONDS,
                         TimeUnit.MINUTES.toSeconds(refreshInterval), TimeUnit.SECONDS);
             }
-        }
     }
 
     @Override
