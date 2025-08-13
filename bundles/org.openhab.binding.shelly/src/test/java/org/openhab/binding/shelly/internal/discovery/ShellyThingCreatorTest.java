@@ -208,9 +208,11 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO1, "", THING_TYPE_SHELLYPRO1), //
                 Arguments.of(SHELLYDT_PRO1_2, "", THING_TYPE_SHELLYPRO1), //
                 Arguments.of(SHELLYDT_PRO1_3, "", THING_TYPE_SHELLYPRO1), //
+                Arguments.of(SHELLYDT_PRO1UL, "", THING_TYPE_SHELLYPRO1), //
                 Arguments.of(SHELLYDT_PRO1PM, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1PM_2, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1PM_3, "", THING_TYPE_SHELLYPRO1PM), //
+                Arguments.of(SHELLYDT_PRO1PMUL, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1CB, "", THING_TYPE_SHELLYPRO1CB), //
                 Arguments.of(SHELLYDT_PRO2, "", THING_TYPE_SHELLYPRO2), //
                 Arguments.of(SHELLYDT_PRO2_2, "", THING_TYPE_SHELLYPRO2), //
