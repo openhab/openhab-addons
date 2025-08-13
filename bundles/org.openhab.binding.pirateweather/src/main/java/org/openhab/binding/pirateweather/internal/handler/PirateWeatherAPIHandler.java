@@ -86,12 +86,10 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
             configValid = false;
         }
         String language = config.language;
-        if (language != null && !(language = language.trim()).isEmpty()) {
-            if (!PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error-not-supported-language");
-                configValid = false;
-            }
+        if (language != null && !language.isBlank() && !PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-not-supported-language");
+            return;
         } else {
             language = localeProvider.getLocale().getLanguage();
             if (PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language)) {
