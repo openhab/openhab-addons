@@ -1,8 +1,8 @@
 # LIRC Binding
 
-This binding integrates infrared transceivers through [LIRC](https://www.lirc.org) or [WinLIRC](http://winlirc.sourceforge.net).
+This binding integrates infrared transceivers through [LIRC project website](https://www.lirc.org) or [WinLIRC project page](http://winlirc.sourceforge.net).
 
-A list of remote configuration files for LIRC is available [here](http://lirc-remotes.sourceforge.net/remotes-table.html).
+A list of remote configuration files for LIRC is available at the [LIRC Remote Configuration Files Table on SourceForge](http://lirc-remotes.sourceforge.net/remotes-table.html).
 
 ## Supported Things
 

@@ -146,7 +146,7 @@ Supported sound types include:
 
 For special use cases, there is also a `playSoundWithId(int soundId)` method, where you can pass the numeric ID of the sound to play.
 The exact meaning of the number depends on the specific device; you'll need to experiment with different numbers to see how the number-to-sound mapping looks like.
-For reference, a list for the Deebot 900 can be found [here](https://github.com/bmartin5692/sucks/blob/D901/protocol.md#user-content-sounds).
+For reference, a list for the Deebot 900 can be found in the [Deebot 900 protocol documentation on GitHub](https://github.com/bmartin5692/sucks/blob/D901/protocol.md#user-content-sounds).
 
 ## File Based Configuration
 
@@ -181,7 +181,7 @@ When encountering an unsupported model during discovery, the binding creates a l
 2023-04-21 12:02:39.607 [INFO ] [acs.internal.api.impl.EcovacsApiImpl] - Found unsupported device DEEBOT N8 PRO CARE (class s1f8g7, company eco-ng), ignoring.
 ```
 
-In such a case, please [create an issue on GitHub](https://github.com/openhab/openhab-addons/issues), listing the contents of the log line.
+In such a case, please [create an issue in the openHAB Add-ons GitHub repository](https://github.com/openhab/openhab-addons/issues), listing the contents of the log line.
 In addition to that, if the model is similar to an already supported one, you can try to add the support yourself (until getting an updated binding).
 For doing so, you can follow the following steps:
 
