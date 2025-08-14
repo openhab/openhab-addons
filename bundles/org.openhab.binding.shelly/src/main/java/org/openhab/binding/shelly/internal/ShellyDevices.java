@@ -661,6 +661,7 @@ public class ShellyDevices {
 
     public static final Map<String, ThingTypeUID> BLU_THING_TYPE_BY_MODEL = Map.ofEntries( //
             Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON1), //
+            Map.entry(SHELLYDT_BLUTOUGHZB, THING_TYPE_SHELLYBLUBUTTON1), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4_2, THING_TYPE_SHELLYBLUWALLSWITCH4), //
             Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4), //
@@ -682,6 +683,7 @@ public class ShellyDevices {
     public static final Map<String, String> BLU_SERVICE_NAMES_BY_MODEL = Map.ofEntries( //
             // with specific model id
             Map.entry(SHELLYDT_BLUBUTTON1, "shellyblubutton"), //
+            Map.entry(SHELLYDT_BLUTOUGHZB, "shellyblubutton"), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4, "shellybluwallswitch4"), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4_2, "shellbluwallswitch4"), //
             Map.entry(SHELLYDT_BLURCBUTTON4, "shellyblurcbutton4"), //

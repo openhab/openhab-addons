@@ -127,6 +127,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_ROTATION2 = "rotation2"; // BLU Remote
     public static final String CHANNEL_SENSOR_ROTATION3 = "rotation3"; // BLU Remote
     public static final String CHANNEL_SENSOR_CHANNEL = "channel"; // BLU Remote
+    public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
+    public static final String CHANNEL_SENSOR_DIRECTION = "direction"; // BLU Remote
 
     // TRV
     public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp";

@@ -1029,9 +1029,6 @@ public class Shelly1ApiJsonDTO {
         public static class ShellySensorAccel {
             public Integer tilt; // Tilt in °
             public Integer vibration; // Whether vibration is detected
-            public Double rotation1; // BLU Remote
-            public Double rotation2; // BLU Remote
-            public Double rotation3; // BLU Remote
         }
 
         public static class ShellyMotionSettings {
@@ -1198,7 +1195,7 @@ public class Shelly1ApiJsonDTO {
         public Boolean calibrated;
         public ArrayList<ShellyThermnostat> thermostats;
 
-        // Shelly Remote
+        // Shelly BLU Remote
         public Integer channel;
         public String direction;
         public Integer steps;

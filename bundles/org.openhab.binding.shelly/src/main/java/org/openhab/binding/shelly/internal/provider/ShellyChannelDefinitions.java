@@ -244,7 +244,8 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATION1, "sensorRotation", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATION2, "sensorRotation", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATION3, "sensorRotation", ITEMT_NUMBER))
-
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DIRECTION, "sensorDirection", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STEPS, "sensorSteps", ITEMT_NUMBER))
                 // Shelly Sense
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_SENSE_KEY, "senseKey", ITEMT_STRING))
 
@@ -463,7 +464,7 @@ public class ShellyChannelDefinitions {
             for (int i = 0; i < profile.numInputs; i++) {
                 String group = profile.getInputGroup(i);
                 String suffix = profile.getInputSuffix(i); // multi ? String.valueOf(i + 1) : "";
-                addChannel(thing, add, !profile.isButton, group, CHANNEL_INPUT + suffix);
+                addChannel(thing, add, !profile.isButton && !profile.isMultiButton, group, CHANNEL_INPUT + suffix);
                 addChannel(thing, add, true, group,
                         (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {
@@ -594,10 +595,14 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, profile.isSense, CHANNEL_GROUP_CONTROL, CHANNEL_SENSE_KEY);
 
         // BLU Remote
-        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL);
-        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION1);
-        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION2);
-        addChannel(thing, newChannels, profile.isRemote, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION3);
+        if (profile.isRemote) {
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION1);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION2);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION3);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DIRECTION);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STEPS);
+        }
 
         // UNI
         addChannel(thing, newChannels, sdata.adcs != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE);

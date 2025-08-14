@@ -1244,8 +1244,6 @@ public class Shelly2ApiJsonDTO {
         public Shelly2NotifyBluEventDimmer dimmer;
         @SerializedName("Firmware32") // BLU DW
         public Long firmware32;
-        @SerializedName("Firmware24")
-        public Long firmware24;
 
         public Integer rssi;
         public Integer tx_power;
