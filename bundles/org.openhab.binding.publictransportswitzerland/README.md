@@ -22,7 +22,8 @@ Upcoming departures for a single station. This is what you would usually see dis
 #### UI based Configuration
 
 `station` is the station name for which to display departures.
-The name has to be one that is used by the Swiss Federal Railways. Please consult the [SBB Official Website](https://sbb.ch/en).
+The name has to be one that is used by the Swiss Federal Railways.
+Please consult the [SBB official website](https://sbb.ch/en).
 
 #### Textual configuration
 

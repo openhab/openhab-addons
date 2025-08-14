@@ -25,7 +25,7 @@ If there are many modules on one bridge, the initialization can take a few minut
 Sometimes after initialization, you might have to switch two times or the reaction could be a bit slow, but after you used a channel it should all work fine.
 
 For all devices running with Linux that use the ch341 driver (HL-340), the new version (ch34x) is needed.
-A guide for installing the CH340/341 UART Driver for Raspberry Pi is available on the [raspberrypi-ch340-driver GitHub repository](https://github.com/aperepel/raspberrypi-ch340-driver).
+A guide for installing the CH340/341 UART driver for Raspberry Pi is available in the [raspberrypi-ch340-driver GitHub repository](https://github.com/aperepel/raspberrypi-ch340-driver).
 
 If you don´t have the same kernel as used in the guide you have to compile the module yourself. In the guide is described a specific way for the Raspberry Pi. With another Linux version you can go the normal way with linux-headers.
 
