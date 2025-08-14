@@ -103,7 +103,6 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellydw2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDOORWIN2),
                 Arguments.of("shellygas-" + DEVICE_ID, "", "", THING_TYPE_SHELLYGAS),
                 Arguments.of("shellyuni-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNI),
-
                 Arguments.of("shellyem-" + DEVICE_ID, "", "", THING_TYPE_SHELLYEM),
                 Arguments.of("shellyem3-" + DEVICE_ID, "", "", THING_TYPE_SHELLY3EM),
                 Arguments.of("shellyemg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSEM),
