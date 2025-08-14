@@ -110,7 +110,7 @@
 
 	</thing-type>
 
-	<channel-type id="pulse-time" advanced="true">
+	<channel-type id="pulse-time">
 		<item-type>Number</item-type>
 		<label>Pulse Time</label>
 		<description>Set PulseTime for relay&lt;x&gt; in 0.1 second increments</description>
