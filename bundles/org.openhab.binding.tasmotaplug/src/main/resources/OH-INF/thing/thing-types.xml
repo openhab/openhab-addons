@@ -29,6 +29,23 @@
 				<description>Controls the smart plug relay for the 4th channel</description>
 			</channel>
 
+			<channel id="pulse-time" typeId="pulse-time">
+				<label>Pulse Time</label>
+				<description>Set PulseTime for relay 1 in 0.1 second increments</description>
+			</channel>
+			<channel id="pulse-time2" typeId="pulse-time">
+				<label>Pulse Time 2</label>
+				<description>Set PulseTime for relay 2 in 0.1 second increments</description>
+			</channel>
+			<channel id="pulse-time3" typeId="pulse-time">
+				<label>Pulse Time 3</label>
+				<description>Set PulseTime for relay 3 in 0.1 second increments</description>
+			</channel>
+			<channel id="pulse-time4" typeId="pulse-time">
+				<label>Pulse Time 4</label>
+				<description>Set PulseTime for relay 4 in 0.1 second increments</description>
+			</channel>
+
 			<!-- Energy Monitor Channels -->
 			<channel id="voltage" typeId="system.electric-voltage"/>
 			<channel id="current" typeId="system.electric-current"/>
@@ -58,7 +75,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -92,6 +109,13 @@
 		</config-description>
 
 	</thing-type>
+
+	<channel-type id="pulse-time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Pulse Time</label>
+		<description>Set PulseTime for relay&lt;x&gt; in 0.1 second increments</description>
+		<state min="1" max="64900" step="1" pattern="%d"/>
+	</channel-type>
 
 	<channel-type id="volt-ampere">
 		<item-type>Number:Power</item-type>
