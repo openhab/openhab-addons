@@ -19,11 +19,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -84,14 +88,28 @@ public class ServerHandler extends BaseBridgeHandler {
 
     private synchronized Runnable initializeHandler() {
         return () -> {
-            this.stopTasks();
-            this.startTasks();
+            try {
+                if (this.configurationExists()) {
+                    this.stopTasks();
+                    this.startTasks();
+                } else {
+                    logger.warn("Jellyfin configuration is missing or incomplete. Please check your settings.");
+
+                    var description = "";
+                    ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
+                            ThingStatusDetail.CONFIGURATION_PENDING, description);
+                    this.getThing().setStatusInfo(statusInfo);
+                }
+            } catch (Exception e) {
+                this.logger.warn("Error during initialization: {}", e.getMessage(), e);
+
+                this.exceptionHandler.handle(e);
+            }
         };
     }
 
     private synchronized void startTasks() {
-        String taskId = getTask();
-
+        String taskId = TASKS.CONNECT;
         Runnable task = null;
 
         long delay = TASKS.delays.get(taskId);
@@ -113,12 +131,34 @@ public class ServerHandler extends BaseBridgeHandler {
         }
     }
 
-    private String getTask() {
-        return TASKS.CONNECT;
+    private boolean configurationExists() {
+        var configuration = this.getConfigAs(Configuration.class);
+
+        return (configuration.token.trim() != "");
     }
 
     private Object handleConnection(ApiClient instance) {
-        // TODO Auto-generated method stub
+        try {
+            // Get public system information from the Jellyfin server
+            var systemApi = new org.openhab.binding.jellyfin.internal.api.generated.current.SystemApi(instance);
+            var publicSystemInfo = systemApi.getPublicSystemInfo();
+
+            // Log all available server information at INFO level
+            logger.info("Jellyfin Server Information:");
+            logger.info("  Server Name: {}", publicSystemInfo.getServerName());
+            logger.info("  Local Address: {}", publicSystemInfo.getLocalAddress());
+            logger.info("  Version: {}", publicSystemInfo.getVersion());
+            logger.info("  Product Name: {}", publicSystemInfo.getProductName());
+            // Note: getOperatingSystem() is deprecated but still available for logging
+            @SuppressWarnings("deprecation")
+            String operatingSystem = publicSystemInfo.getOperatingSystem();
+            logger.info("  Operating System: {}", operatingSystem);
+            logger.info("  Server ID: {}", publicSystemInfo.getId());
+            logger.info("  Startup Wizard Completed: {}", publicSystemInfo.getStartupWizardCompleted());
+
+        } catch (Exception e) {
+            logger.warn("Failed to retrieve public system information: {}", e.getMessage(), e);
+        }
         return null;
     }
 
@@ -139,9 +179,5 @@ public class ServerHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> executeTask(Runnable task, long initialDelay, long interval) {
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
-    }
-
-    String getAccessToken() {
-        return "123";
     }
 }
