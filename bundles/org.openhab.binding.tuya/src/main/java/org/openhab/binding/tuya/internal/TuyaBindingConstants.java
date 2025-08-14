@@ -50,6 +50,8 @@ public class TuyaBindingConstants {
     public static final String CONFIG_LOCAL_KEY = "localKey";
     public static final String CONFIG_DEVICE_ID = "deviceId";
     public static final String CONFIG_PRODUCT_ID = "productId";
+    public static final String CONFIG_IP = "ip";
+    public static final String CONFIG_PROTOCOL = "protocol";
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_COLOR = new ChannelTypeUID(BINDING_ID, "color");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_DIMMER = new ChannelTypeUID(BINDING_ID, "dimmer");

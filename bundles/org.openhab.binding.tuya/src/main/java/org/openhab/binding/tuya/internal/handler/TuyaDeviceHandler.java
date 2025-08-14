@@ -19,6 +19,8 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYP
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_QUANTITY;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_STRING;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_SWITCH;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_IP;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PROTOCOL;
 import static org.openhab.core.library.CoreItemFactory.NUMBER;
 
 import java.math.BigDecimal;
@@ -512,8 +514,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
             try {
                 Configuration newConfig = editConfiguration();
-                newConfig.put("ip", deviceInfo.ip);
-                newConfig.put("protocol", deviceInfo.protocolVersion);
+                newConfig.put(CONFIG_IP, deviceInfo.ip);
+                newConfig.put(CONFIG_PROTOCOL, deviceInfo.protocolVersion);
                 updateConfiguration(newConfig);
 
                 configuration.ip = deviceInfo.ip;
