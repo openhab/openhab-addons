@@ -72,7 +72,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             Map.entry("2", SHELLY_BTNEVENT_2SHORTPUSH), //
             Map.entry("3", SHELLY_BTNEVENT_3SHORTPUSH), //
             Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), //
-            Map.entry("80", SHELLY_BTNEVENT_HOLD), //
+            Map.entry("128", SHELLY_BTNEVENT_HOLD), //
             Map.entry("254", SHELLY_BTNEVENT_HOLD)); // for firmware prior to 1.0.20
 
     /**
@@ -209,7 +209,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             }
 
             for (Shelly2NotifyEvent e : message.params.events) {
-                logger.debug("{}: BluEvent received: {}", thingName, gson.toJson(message));
                 String event = getString(e.event);
                 if (event.startsWith(SHELLY2_EVENT_BLUPREFIX)) {
                     logger.debug("{}: BLU event {} received from address {}, pid={}", thingName, event,
@@ -218,10 +217,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         int pid = e.data.pid;
                         if (lastPid != -1 && pid < (lastPid - pidCycleThreshold)) {
                             logger.debug(
-                                    "{}: PID={} received is so low that a new cycle has probably begun since lastPID={}",
+                                    "{}: Received pid {} is so low that a new cycle has probably begun since lastPID={}",
                                     thingName, pid, lastPid);
                         } else if (pid <= lastPid) {
-                            logger.debug("{}: Duplicate packet for PID={} received, ignore", thingName, pid);
+                            logger.debug("{}: Duplicate packet for pid {} received, ignore", thingName, pid);
                             break;
                         }
                         lastPid = pid;
@@ -236,9 +235,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                     gson.toJson(message));
                             break;
                         }
-                        logger.debug("{}: BLU Device discovered", thingName);
                         if (e.data.name != null) {
                             profile.settings.name = getBluServiceName(e.data.name, e.data.addr);
+                            logger.debug("{}: BLU Device {} discovered, mapped to serviceName {}", thingName,
+                                    e.data.name, profile.settings.name);
                         }
                         break;
                     case SHELLY2_EVENT_BLUDATA:
@@ -300,13 +300,18 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             if (e.data.rotations.length == 1) { // BLU DW
                                 sensorData.accel.tilt = e.data.rotations[0].intValue();
                             } else if (e.data.rotations.length == 3) { // BLU Remote
-                                sensorData.accel.rotation1 = e.data.rotations[0];
-                                sensorData.accel.rotation2 = e.data.rotations[1];
-                                sensorData.accel.rotation3 = e.data.rotations[2];
+                                sensorData.rotation1 = getDouble(e.data.rotations[0]);
+                                sensorData.rotation2 = getDouble(e.data.rotations[1]);
+                                sensorData.rotation3 = getDouble(e.data.rotations[2]);
                             }
                         }
                         if (e.data.dimmer != null) {
-                            int i = 1;
+                            if (e.data.dimmer.direction != null) {
+                                sensorData.direction = e.data.dimmer.direction == 2 ? "up" : "down";
+                            }
+                            if (e.data.dimmer.steps != null) {
+                                sensorData.steps = getInteger(e.data.dimmer.steps);
+                            }
                         }
 
                         if (e.data.channel != null) { // BLU Remote
@@ -318,6 +323,18 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             }
                             sensorData.accel.vibration = getInteger(e.data.vibration);
                         }
+                        if (e.data.firmware != null) {
+                            int digit4 = (int) (e.data.firmware & 0x000000FF);
+                            int digit3 = (int) (e.data.firmware & 0x0000FF00) >> 8;
+                            int digit2 = (int) (e.data.firmware & 0x00FF0000) >> 16;
+                            int digit1 = (int) (e.data.firmware & 0xFF000000) >> 24;
+                            profile.fwVersion = digit1 > 0 ? //
+                                    digit1 + "." + digit2 + "." + digit3 + "." + digit4
+                                    : digit2 + "," + digit3 + "." + digit4;
+                            logger.debug("{}: Detected firmware version: {}", thingName, profile.fwVersion);
+
+                        }
+
                         if (e.data.buttons != null) {
                             logger.trace("{}: Shelly BLU button events received: {}", thingName,
                                     gson.toJson(e.data.buttons));
@@ -328,11 +345,11 @@ public class ShellyBluApi extends Shelly2ApiRpc {
 
                                     String group = getProfile().getInputGroup(bttnIdx);
                                     String suffix = profile.getInputSuffix(bttnIdx);
-                                    t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
-                                            getStringType(input.event));
                                     // ignore HOLDING events for counter and trigger
                                     if (!SHELLY_BTNEVENT_HOLD.equalsIgnoreCase(input.event)) {
                                         logger.debug("{}: update to {}, pid={}", message.src, input.event, e.data.pid);
+                                        t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
+                                                getStringType(input.event));
                                         input.eventCount++;
                                         t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
                                                 getDecimal(input.eventCount));

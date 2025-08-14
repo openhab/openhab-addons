@@ -83,7 +83,7 @@ BTH[0x3a] = { n: "Button", t: uint8 };                                        //
 BTH[0x3c] = { n: "Dimmer", t: uint16 };                                       // Dimmer event (2 bytes: direction up/down + steps)
 BTH[0x3d] = { n: "Count", t: uint16 };                                        // Count
 BTH[0x3e] = { n: "Count", t: uint32 };                                        // Count
-BTH[0x3f] = { n: "Rotation", t: int16 };                              // Rotation (scaled by 0.1)
+BTH[0x3f] = { n: "Rotation", t: int16, f: 0.01 };                             // Rotation (scaled by 0.1)
 BTH[0x40] = { n: "Distance_mm", t: uint16, u: "mm" };                         // Distance in millimeters
 BTH[0x41] = { n: "Distance_m", t: uint16, f: 0.1, u: "m" };                   // Distance in meters (scaled by 0.1)
 BTH[0x42] = { n: "Duration", t: uint24, f: 0.001, u: "s" };                   // Duration in seconds (scaled by 0.001)
@@ -269,7 +269,7 @@ let ShellyBLUParser = {
     if (!service_data) return null;
 
     let hexDump = bufToHex(service_data);
-    console.log("Received BTHome RAW packet (hex):", hexDump);
+    // console.log("Received BTHome RAW packet (hex):", hexDump);
     
     let result = BTHomeDecoder.unpack(service_data);
     if (!result) return null;

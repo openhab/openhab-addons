@@ -156,7 +156,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_BLUCLASS_MOTION = "SBMO";
     public static final String SHELLYDT_BLUCLASS_DISTANCE = "SBDI";
 
-    public static final String SHELLYDT_BLUBUTTON = "SBBT-002C";
+    public static final String SHELLYDT_BLUBUTTON1 = "SBBT-002C";
     public static final String SHELLYDT_BLUTOUGHZB = "SBBT-102C";
     public static final String SHELLYDT_BLUWALLSWITCH4 = "SBBT-EU5027";
     public static final String SHELLYDT_BLUWALLSWITCH4_2 = "SBBT-EU3870";
@@ -475,7 +475,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
 
             // BLU Series
-            Map.entry(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON),
+            Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON),
             Map.entry(SHELLYDT_BLUTOUGHZB, THING_TYPE_SHELLYBLUBUTTON),
             Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4),
             Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4),
@@ -659,7 +659,7 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED));
 
     public static final Map<String, ThingTypeUID> BLU_THING_TYPE_BY_MODEL = Map.ofEntries( //
-            Map.entry(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON), //
+            Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON), //
             Map.entry(SHELLYDT_BLUTOUGHZB, THING_TYPE_SHELLYBLUBUTTON), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4_2, THING_TYPE_SHELLYBLUWALLSWITCH4), //
@@ -681,7 +681,7 @@ public class ShellyDevices {
 
     public static final Map<String, String> BLU_SERVICE_NAMES_BY_MODEL = Map.ofEntries( //
             // with specific model id
-            Map.entry(SHELLYDT_BLUBUTTON, "shellyblubutton"), //
+            Map.entry(SHELLYDT_BLUBUTTON1, "shellyblubutton"), //
             Map.entry(SHELLYDT_BLUTOUGHZB, "shellyblubutton"), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4, "shellybluwallswitch4"), //
             Map.entry(SHELLYDT_BLUWALLSWITCH4_2, "shellbluwallswitch4"), //

@@ -302,6 +302,7 @@
 				<option value="L">@text/channel-type.shelly.lastEvent.state.option.L</option>
 				<option value="SL">@text/channel-type.shelly.lastEvent.state.option.SL</option>
 				<option value="LS">@text/channel-type.shelly.lastEvent.state.option.LS</option>
+				<option value="H">@text/channel-type.shelly.lastEvent.state.option.H</option>
 			</options>
 		</state>
 	</channel-type>
@@ -600,9 +601,27 @@
 			<tag>Measurement</tag>
 			<tag>Tilt</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%0.2f %unit%"/>
 	</channel-type>
 
+	<channel-type id="sensorSteps">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorSteps.label</label>
+		<description>@text/channel-type.shelly.sensorSteps.description</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="sensorDirection">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorDirection.label</label>
+		<description>@text/channel-type.shelly.sensorDirection.description</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="up">@text/channel-type.shelly.sensorDirection.state.option.up</option>
+				<option value="down">@text/channel-type.shelly.sensorDirection.state.option.down</option>
+			</options>
+		</state>
+	</channel-type>
 
 	<channel-type id="senseKey">
 		<item-type>String</item-type>
