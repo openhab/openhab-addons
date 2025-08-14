@@ -472,19 +472,6 @@ public class ShellyComponents {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
                             toQuantityType(getDouble(sdata.accel.tilt.doubleValue()), DIGITS_NONE, Units.DEGREE_ANGLE));
                 }
-
-                if (sdata.accel.rotation1 != null) {
-                    // BLU Remote
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION1,
-                            toQuantityType(getDouble(sdata.accel.rotation1.doubleValue()), DIGITS_ROTATION,
-                                    Units.DEGREE_ANGLE));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION2,
-                            toQuantityType(getDouble(sdata.accel.rotation2.doubleValue()), DIGITS_ROTATION,
-                                    Units.DEGREE_ANGLE));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION3,
-                            toQuantityType(getDouble(sdata.accel.rotation3.doubleValue()), DIGITS_ROTATION,
-                                    Units.DEGREE_ANGLE));
-                }
             }
             if (sdata.flood != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -514,6 +501,21 @@ public class ShellyComponents {
                 ShellyADC adc = sdata.adcs.get(0);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
                         toQuantityType(getDouble(adc.voltage), 2, Units.VOLT));
+            }
+            if (sdata.rotation1 != null) {
+                // BLU Remote
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION1,
+                        toQuantityType(getDouble(sdata.rotation1.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION2,
+                        toQuantityType(getDouble(sdata.rotation2.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION3,
+                        toQuantityType(getDouble(sdata.rotation3.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
+            }
+            if (sdata.direction != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DIRECTION,
+                        getStringType(sdata.direction));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STEPS,
+                        getDecimal(sdata.steps.doubleValue()));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
