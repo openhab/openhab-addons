@@ -134,73 +134,29 @@ However, the install mode is not automatically enabled in this situation because
 
 There are several settings for a bridge:
 
-- **gatewayAddress** (required)
-Network address of the Homematic gateway
-
-- **gatewayType**
-Hint for the binding to identify the gateway type (auto|ccu|noccu) (default = "auto").
-
-- **callbackHost**
-Callback network address of the system runtime, default is auto-discovery. This value must not contain any white spaces.
-
-- **xmlCallbackPort**
-Callback port of the binding's XML-RPC server, default is 9125 and counts up for each additional bridge
-
-- **binCallbackPort**
-Callback port of the binding's BIN-RPC server, default is 9126 and counts up for each additional bridge
-
-- **timeout**
-The timeout in seconds for connections to a Homematic gateway (default = 15)
-
-- **discoveryTimeToLive**
-The time to live in seconds for discovery results of a Homematic gateway (default = -1, which means infinite)
-
-- **socketMaxAlive**
-The maximum lifetime of a socket connection to and from a Homematic gateway in seconds (default = 900)
-
-- **rfPort**
-The port number of the RF daemon (default = 2001)
-
-- **wiredPort**
-The port number of the HS485 daemon (default = 2000)
-
-- **hmIpPort**
-The port number of the HMIP server (default = 2010)
-
-- **cuxdPort**
-The port number of the CUxD daemon (default = 8701)
-
-- **groupPort**
-The port number of the Group daemon (default = 9292)
-
-- **callbackRegTimeout**
-Maximum time in seconds for callback registration in the Homematic gateway (default = 120s).
-For a CCU2, the value may need to be increased to 180s.
-
-- **installModeDuration**
-Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
-
-- **unpairOnDeletion**
-If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.<br>
-**Warning:** The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion completely, both options need to be set to false! (default = false)
-
-- **factoryResetOnDeletion**
-If set to true, devices are automatically factory reset when their corresponding things are removed.
-Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
-
-- **bufferSize**
-  If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway.
-  In this case, e.g. the discovery fails.
-  With this setting the buffer size can be adjusted. The value is specified in kB.
-
-- **useAuthentication**
-Username and password are send to the gateway to authenticate the access to the gateway.
-
-- **userName**
-Username for Authentication to the gateway.
-
-- **password**
-Password for Authentication to the gateway.
+| Setting                | Description                                                                                                                                                                                                      | Default Value |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| gatewayAddress         | Network address of the Homematic gateway.                                                                                                                                                                        | -             |
+| gatewayType            | Hint for the binding to identify the gateway type (`auto`, `ccu`, `noccu`).                                                                                                                                      | auto          |
+| callbackHost           | Callback network address of the system runtime. This value must not contain any white spaces.                                                                                                                    | -             |
+| xmlCallbackPort        | Callback port of the binding's XML-RPC server. Counts up for each additional bridge.                                                                                                                             | 9125          |
+| binCallbackPort        | Callback port of the binding's BIN-RPC server. Counts up for each additional bridge.                                                                                                                             | 9126          |
+| timeout                | Timeout in seconds for connections to a Homematic gateway.                                                                                                                                                       | 15            |
+| discoveryTimeToLive    | Time to live in seconds for discovery results of a Homematic gateway. Use `-1` for infinite.                                                                                                                     | -1            |
+| socketMaxAlive         | Maximum lifetime of a socket connection to and from a Homematic gateway in seconds.                                                                                                                              | 900           |
+| rfPort                 | Port number of the RF daemon.                                                                                                                                                                                    | 2001          |
+| wiredPort              | Port number of the HS485 daemon.                                                                                                                                                                                 | 2000          |
+| hmIpPort               | Port number of the HMIP server.                                                                                                                                                                                  | 2010          |
+| cuxdPort               | Port number of the CUxD daemon.                                                                                                                                                                                  | 8701          |
+| groupPort              | Port number of the Group daemon.                                                                                                                                                                                 | 9292          |
+| callbackRegTimeout     | Maximum time in seconds for callback registration in the Homematic gateway. For a CCU2, this value may need to be increased to 180 seconds.                                                                      | 120           |
+| installModeDuration    | Time in seconds that the controller will be in install mode when a device discovery is initiated.                                                                                                                | 60            |
+| unpairOnDeletion       | If set to `true`, devices are automatically unpaired from the gateway when their corresponding things are deleted. **Warning:** To avoid unpairing completely, set this and `factoryResetOnDeletion` to `false`. | false         |
+| factoryResetOnDeletion | If set to `true`, devices are automatically factory reset when their corresponding things are removed. This also unpairs the device, even if `unpairOnDeletion` is set to `false`.                               | false         |
+| bufferSize             | Adjusts the buffer size in kB for communication with the gateway. Increase if discovery fails due to a large number of devices.                                                                                  | 2048          |
+| useAuthentication      | If set to `true`, username and password are sent to the gateway to authenticate access.                                                                                                                          | false         |
+| userName               | Username for authentication to the gateway.                                                                                                                                                                      | -             |
+| password               | Password for authentication to the gateway.                                                                                                                                                                      | -             |
 
 The syntax for a bridge is:
 

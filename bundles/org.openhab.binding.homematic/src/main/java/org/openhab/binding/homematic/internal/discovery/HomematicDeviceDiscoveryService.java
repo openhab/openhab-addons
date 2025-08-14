@@ -46,7 +46,7 @@ public class HomematicDeviceDiscoveryService
         extends AbstractThingHandlerDiscoveryService<@NonNull HomematicBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(HomematicDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
-
+    private static final int MINIMAL_SCAN_TIMEOUT_SECONDS = 120;
     private Future<?> loadDevicesFuture;
     private volatile boolean isInInstallMode = false;
     private volatile Object installModeSync = new Object();
@@ -102,7 +102,7 @@ public class HomematicDeviceDiscoveryService
 
     @Override
     public int getScanTimeout() {
-        return getInstallModeDuration();
+        return Math.max(MINIMAL_SCAN_TIMEOUT_SECONDS, getInstallModeDuration());
     }
 
     @Override
