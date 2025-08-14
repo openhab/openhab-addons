@@ -589,52 +589,6 @@ Import-Package: \\
             </execution>
           </executions>
         </plugin>
-        <plugin>
-          <groupId>com.github.eirslett</groupId>
-          <artifactId>frontend-maven-plugin</artifactId>
-          <version>1.15.0</version>
-          <configuration>
-            <installDirectory>${project.build.directory}</installDirectory>
-          </configuration>
-          <executions>
-            <!-- Install Node.js and npm -->
-            <execution>
-              <id>install-node-and-npm</id>
-              <goals>
-                <goal>install-node-and-npm</goal>
-              </goals>
-              <configuration>
-                <nodeVersion>v20.11.0</nodeVersion>
-                <npmVersion>10.2.5</npmVersion>
-              </configuration>
-            </execution>
-
-            <!-- Install markdownlint-cli -->
-            <execution>
-              <id>npm-install-markdownlint</id>
-              <goals>
-                <goal>npm</goal>
-              </goals>
-              <configuration>
-                <workingDirectory>${project.build.directory}</workingDirectory>
-                <arguments>install markdownlint-cli --no-save</arguments>
-              </configuration>
-            </execution>
-
-            <!-- Run markdownlint during verify -->
-            <execution>
-              <id>run-markdownlint</id>
-              <goals>
-                <goal>npm</goal>
-              </goals>
-              <phase>verify</phase>
-              <configuration>
-                <workingDirectory>${project.build.directory}</workingDirectory>
-                <arguments>exec -- markdownlint "../**/*.md" --ignore "**/node_modules/**" --ignore "**/target/**" --ignore "**/.vscode/**" --ignore "**/itests/**" --ignore "**/features/**" -c ${basedirRoot}/.github/markdownlint.yaml</arguments>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -895,6 +849,66 @@ Import-Package: \\
         <maven.compiler.release>${oh.java.version}</maven.compiler.release>
       </properties>
     </profile>
+
+    <profile>
+      <id>check-markdown</id>
+      <activation>
+        <file>
+          <exists>README.md</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>1.15.1</version>
+            <executions>
+              <!-- Install Node.js and npm -->
+              <execution>
+                <id>install-node-and-npm-markdownlint</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <configuration>
+                  <nodeVersion>v20.11.0</nodeVersion>
+                  <npmVersion>10.2.5</npmVersion>
+                  <installDirectory>${project.build.directory}</installDirectory>
+                </configuration>
+              </execution>
+
+              <!-- Install markdownlint-cli -->
+              <execution>
+                <id>npm-install-markdownlint</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <configuration>
+                  <workingDirectory>${project.build.directory}</workingDirectory>
+                  <arguments>install markdownlint-cli --no-save</arguments>
+                </configuration>
+              </execution>
+
+              <!-- Run markdownlint during verify -->
+              <execution>
+                <id>run-markdownlint</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>verify</phase>
+                <configuration>
+                  <workingDirectory>${project.build.directory}</workingDirectory>
+                  <arguments>exec -- markdownlint -c ${basedirRoot}/.github/markdownlint.yaml ../*.md ../doc/**/*.md</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
 </project>
