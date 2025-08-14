@@ -204,6 +204,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         ANY
     }
 
+    private boolean isArcUltra;
+
     public ZonePlayerHandler(ThingRegistry thingRegistry, Thing thing, UpnpIOService upnpIOService,
             @Nullable String opmlUrl, SonosStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
@@ -212,6 +214,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         logger.debug("Creating a ZonePlayerHandler for thing '{}'", getThing().getUID());
         this.service = upnpIOService;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.isArcUltra = ARC_ULTRA_THING_TYPE_UID.equals(thing.getThingTypeUID());
     }
 
     @Override
@@ -613,7 +616,14 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     updateChannel(NIGHTMODE);
                     break;
                 case "DialogLevel":
-                    updateChannel(SPEECHENHANCEMENT);
+                    if (!isArcUltra) {
+                        updateChannel(SPEECHENHANCEMENT);
+                    }
+                    break;
+                case "SpeechEnhanceEnabled":
+                    if (isArcUltra) {
+                        updateChannel(SPEECHENHANCEMENT);
+                    }
                     break;
                 case LINEINCONNECTED:
                     if (SonosBindingConstants.WITH_LINEIN_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
@@ -908,7 +918,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
                 break;
             case SPEECHENHANCEMENT:
-                value = getDialogLevel();
+                value = getSpeechEnhanceEnabled();
                 if (value != null) {
                     newState = OnOffType.from(value);
                 }
@@ -2138,7 +2148,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setSpeechEnhancement(Command command) {
-        setEqualizerBooleanSetting(command, "DialogLevel");
+        setEqualizerBooleanSetting(command, isArcUltra ? "SpeechEnhanceEnabled" : "DialogLevel");
     }
 
     private void setEqualizerBooleanSetting(Command command, String eqType) {
@@ -2169,8 +2179,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return stateMap.get("NightMode");
     }
 
-    public @Nullable String getDialogLevel() {
-        return stateMap.get("DialogLevel");
+    public @Nullable String getSpeechEnhanceEnabled() {
+        return stateMap.get(isArcUltra ? "SpeechEnhanceEnabled" : "DialogLevel");
     }
 
     public @Nullable String getPlayMode() {
