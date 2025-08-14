@@ -257,8 +257,10 @@ public class ShellyDevices {
             "shellypro2pm-roller");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3 = new ThingTypeUID(BINDING_ID, "shellypro3");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO4PM = new ThingTypeUID(BINDING_ID, "shellypro4pm");
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM = new ThingTypeUID(BINDING_ID, "shellypro3em");
     public static final ThingTypeUID THING_TYPE_SHELLYPROEM50 = new ThingTypeUID(BINDING_ID, "shellyproem50");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM = new ThingTypeUID(BINDING_ID, "shellypro3em");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em63");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM400 = new ThingTypeUID(BINDING_ID, "shellypro3em400");
 
     // Shelly Blu series
     public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON = new ThingTypeUID(BINDING_ID, "shellyblubutton");
@@ -325,7 +327,8 @@ public class ShellyDevices {
 
     // 3EM devices (not the regular EM)
     public static final Set<ThingTypeUID> GROUP_3EM_THING_TYPES = Set.of( //
-            THING_TYPE_SHELLY3EM, THING_TYPE_SHELLYPLUS3EM63, THING_TYPE_SHELLYPRO3EM);
+            THING_TYPE_SHELLY3EM, THING_TYPE_SHELLYPLUS3EM63, //
+            THING_TYPE_SHELLYPRO3EM, THING_TYPE_SHELLYPRO3EM63, THING_TYPE_SHELLYPRO3EM400);
 
     // Mini Devices
     public static final Set<ThingTypeUID> GROUP_MINI_THING_TYPES = Set.of(THING_TYPE_SHELLYMINI_1,
@@ -443,6 +446,8 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PROEM50, THING_TYPE_SHELLYPROEM50), //
             Map.entry(SHELLYDT_PRO3EM, THING_TYPE_SHELLYPRO3EM), //
             Map.entry(SHELLYDT_PRO3EM_2, THING_TYPE_SHELLYPRO3EM), //
+            Map.entry(SHELLYDT_PRO3EM3CT63, THING_TYPE_SHELLYPRO3EM63), //
+            Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
 
             // BLU Series
             Map.entry(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON),
@@ -563,10 +568,12 @@ public class ShellyDevices {
             Map.entry("shellydimmerg3", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
-            Map.entry("shellyplusem", THING_TYPE_SHELLYPLUSEM), Map.entry("shellyemg3", THING_TYPE_SHELLYPLUSEM),
-            Map.entry("shellyplus3em63", THING_TYPE_SHELLYPLUS3EM63),
             Map.entry("shellyblugw", THING_TYPE_SHELLYPLUSBLUGW), //
-            Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW),
+            Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW), //
+            Map.entry("shellyplusem", THING_TYPE_SHELLYPLUSEM), //
+            Map.entry("shellyemg3", THING_TYPE_SHELLYPLUSEM), //
+            Map.entry("shellyplus3em63", THING_TYPE_SHELLYPLUS3EM63), //
+            Map.entry("shelly3em63g3", THING_TYPE_SHELLYPLUS3EM63), //
 
             // Wall Display
             Map.entry("shellywalldisplay", THING_TYPE_SHELLYPLUSWALLDISPLAY),
@@ -594,6 +601,9 @@ public class ShellyDevices {
             Map.entry("shellypro4pm", THING_TYPE_SHELLYPRO4PM), //
             Map.entry("shellyproem50", THING_TYPE_SHELLYPROEM50), //
             Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM), //
+            Map.entry("shellypro3em63", THING_TYPE_SHELLYPRO3EM63), //
+            Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63), //
+            Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400),
 
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON), //
