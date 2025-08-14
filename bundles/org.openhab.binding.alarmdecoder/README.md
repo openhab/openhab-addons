@@ -175,7 +175,7 @@ Thing config file example:
 
 The `lrr` thing reports messages sent to a Long Range Radio (LRR) or emulated LRR device.
 These are normally specifically formatted messages as described in the [SIA DC-05-1999.09](https://www.alarmdecoder.com/wiki/index.php/File:SIA-ContactIDCodes_Protocol.pdf) standard for Contact ID reporting.
-They can also, depending on configuration, be other types of messages as described in the [AlarmDecoder LRR Support documentation](https://www.alarmdecoder.com/wiki/index.php/LRR_Support).
+They can also, depending on configuration, be other types of messages as described in the [AlarmDecoder LRR Support documentation](http://www.alarmdecoder.com/wiki/index.php/LRR_Support).
 For panels that support multiple partitions, the partition for which a given lrr thing will receive messages can be defined.
 
 - `partition` (default = 0) Partition for which to receive LRR events (0 = All)
