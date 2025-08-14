@@ -1,6 +1,6 @@
 # Souliss Binding
 
-[Souliss Project Website](http://www.souliss.net/) is a networking framework for Arduino and compatible boards, and is designed to let you easily build a smart home that is distributed over multiple boards via Ethernet, WiFi, wireless point-to-point and RS485 bus.
+[Souliss](https://souliss.github.io/) is a networking framework for Arduino and compatible boards, and is designed to let you easily build a smart home that is distributed over multiple boards via Ethernet, WiFi, wireless point-to-point and RS485 bus.
 
 Souliss is an open-source and community driven project. You can use the [Souliss Wiki documentation](https://github.com/souliss/souliss/wiki) and [Souliss Community Page on GitHub](https://github.com/souliss/souliss/wiki/Community) to get help and share your results.
 
