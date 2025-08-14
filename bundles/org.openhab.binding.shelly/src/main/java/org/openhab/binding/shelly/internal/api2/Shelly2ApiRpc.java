@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -331,6 +333,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
+        if (dc.lora100 != null && config.enableLoRa) {
+            profile.settings.loraDetected = true;
+            profile.settings.loraRxEnabled = dc.lora100.rxEnabled;
+            profile.settings.loraComponentIds = new Integer[1]; // so far only 1 add-on is supported
+            profile.settings.loraComponentIds[0] = dc.lora100.id != null ? dc.lora100.id : 100;
+        }
+
         profile.initialized = true;
         if (!discovery) {
             getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
@@ -364,7 +373,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             getThing().reinitializeThing();
                         }
                     }
-                }
+                    /*
+                     * if (config.enableLoRa && profile.settings.loraRxEnabled) {
+                     * logger.info("{}: LoRa with RX is enabled, install script {}", thingName, SHELLY2_LORA_GWSCRIPT);
+                     * installScript(SHELLY2_LORA_GWSCRIPT, true);
+                     * }
+                     */ }
             } catch (ShellyApiException e) {
                 logger.debug("{}: Device config failed", thingName, e);
             }
@@ -428,7 +442,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (!install) {
                 if (ourId != -1) {
                     startScript(ourId, false);
-                    enableScript(script, false);
+                    enableScript(script, ourId, false);
                     deleteScript(ourId);
                     logger.debug("{}: Script {} was disabledd, id={}", thingName, script, ourId);
                 }
@@ -487,13 +501,24 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (upload) {
                 logger.debug("{}: Script will be installed...", thingName);
 
-                // Create new script, get id
-                ShellyScriptResponse rsp = apiRequest(
-                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withName(script),
-                        ShellyScriptResponse.class);
-                ourId = rsp.id;
-                logger.debug("{}: Script has been created, id={}", thingName, ourId);
-                upload = true;
+                if (ourId == -1) {
+                    // find free script id
+                    ourId = 0;
+                    while (++ourId < 10 && testScriptId(scriptList, ourId)) {
+                    }
+                }
+                if (ourId < 10) {
+                    // Create new script, get id
+                    ShellyScriptResponse rsp = apiRequest(new Shelly2RpcRequest()
+                            .withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withId(ourId).withName(script),
+                            ShellyScriptResponse.class);
+                    ourId = rsp.id;
+                    logger.debug("{}: Script has been created, id={}", thingName, ourId);
+                    upload = true;
+                } else {
+                    logger.debug("{}: Too many scripts installed on this device", thingName);
+                    upload = false;
+                }
             }
 
             if (upload) {
@@ -514,7 +539,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 } while (processed < length);
                 running = false;
             }
-            if (enableScript(script, true) && upload) {
+            if (enableScript(script, ourId, true) && upload) {
                 logger.info("{}: Script {} was {} installed successful", thingName, thingName, script);
             }
 
@@ -533,6 +558,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
     }
 
+    private boolean testScriptId(ShellyScriptListResponse scriptList, int id) {
+        for (ShellyScriptListEntry s : scriptList.scripts) {
+            if (s.id == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean startScript(int ourId, boolean start) {
         if (ourId != -1) {
             try {
@@ -546,9 +580,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return false;
     }
 
-    private boolean enableScript(String script, boolean enable) {
+    private boolean enableScript(String script, int scriptId, boolean enable) {
         try {
             Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
+            params.id = scriptId;
             params.config.name = script;
             params.config.enable = enable;
             apiRequest(SHELLYRPC_METHOD_SCRIPT_SETCONFIG, params, String.class);
@@ -656,6 +691,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
+    // public void onNotifyEvent(Shelly2RpcNotifyEvent message) {
     public void onNotifyEvent(Shelly2RpcNotifyEvent message) {
         try {
             logger.debug("{}: NotifyEvent  received: {}", thingName, gson.toJson(message));
@@ -733,6 +769,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
                         getThing().postEvent(e.event, false);
                         break;
+
+                    case SHELLY2_EVENT_LORADATA:
+                        String rawData = e.rawData; // BASE64-encoded
+                        String data = new String(Base64.getDecoder().decode(rawData.getBytes(StandardCharsets.UTF_8)));
+                        logger.debug("{}: LoRa data received, payload = {} / {}", thingName, rawData, data);
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(rawData));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(data));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.rssi));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.snr));
+
+                        getThing().postEvent(e.event.toUpperCase(), false);
+                        break;
+
                     default:
                         logger.debug("{}: Event {} was not handled", thingName, e.event);
                 }
@@ -1184,6 +1233,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             apiRequest(SHELLYRPC_METHOD_RGBW_SET, params, String.class);
         }
         throw new ShellyApiException("API call not implemented");
+    }
+
+    @Override
+    public void loraSendData(int index, String data) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (profile.settings.loraComponentIds == null || index >= profile.settings.loraComponentIds.length) {
+            throw new IllegalArgumentException("Invalid LoRa component id");
+        }
+        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LORA_SENDDATA)
+                .withId(profile.settings.loraComponentIds[index]).withData(data);
+        apiRequest(req);
     }
 
     @Override
