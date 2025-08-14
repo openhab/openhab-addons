@@ -79,7 +79,7 @@ PID behind the heos:player:--- should be changed as required.
 It is recommended to use the Player PID.
 If the PID isn't known it can be discovered by establishing a Telnet connection (port 1255) to one player and search for available players (Command: heos://player/get_players) within the network.
 Another way is to use the UI to discover the Player via the bridge and get the PID.
-For further details refer to the [HEOS CLI](https://rn.dmglobal.com/usmodel/HEOS_CLI_ProtocolSpecification-Version-1.17.pdf).
+For further details refer to the [HEOS CLI](https://rn.dmglobal.com/usmodel/HEOS_CLI_ProtocolSpecification-Version-1.17.pdf) specification.
 
 ### Group Configuration
 
