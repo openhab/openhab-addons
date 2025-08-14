@@ -248,7 +248,10 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         if (status) {
             logger.debug("{}: connected", thing.getUID().getId());
 
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+            // Tuya devices are never offline (if they are battery devices they are expected
+            // to be unreachable practically all the time) so really we're just clearing the
+            // status message here rather than actually setting the Thing online.
+            updateStatus(ThingStatus.ONLINE);
 
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null) {
