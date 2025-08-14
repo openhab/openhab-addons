@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.http.internal;
 
-import java.net.IDN;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,10 +61,25 @@ public class Util {
      * @throws URISyntaxException if parameter could not be converted to a URI
      */
     public static URI uriFromString(String s) throws MalformedURLException, URISyntaxException {
-        URL url = URI.create(s).toURL();
-        URI uri = new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(),
-                url.getPath(), url.getQuery(), url.getRef());
+        URI uri = parse(s);
         return URI.create(uri.toASCIIString().replace("+", "%2B").replace("%25%25", "%"));
+    }
+
+    private static final Pattern URL_PATTERN = Pattern.compile("^(?:(?<scheme>[a-zA-Z][a-zA-Z0-9+.-]*):)?//?"
+            + "(?:(?<userinfo>[^@/?#]*)@)?" + "(?<host>[^:/?#]*)(?::(?<port>\\d+))?" + "(?<path>/[^?#]*)?"
+            + "(?:\\?(?<query>[^#]*))?" + "(?:#(?<fragment>.*))?");
+
+    public static URI parse(String url) throws URISyntaxException {
+        Matcher m = URL_PATTERN.matcher(url.trim());
+        if (!m.matches()) {
+            throw new URISyntaxException(url, "Invalid URL");
+        }
+
+        String portStr = m.group("port");
+        int port = (portStr != null && !portStr.isEmpty()) ? Integer.parseInt(portStr) : -1;
+
+        return new URI(m.group("scheme"), m.group("userinfo"), m.group("host"), port, m.group("path"), m.group("query"),
+                m.group("fragment"));
     }
 
     /**
