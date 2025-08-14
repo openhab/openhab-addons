@@ -115,9 +115,11 @@ public class ShellyDevices {
     public static final String SHELLYDT_PRO1 = "SPSW-001XE16EU";
     public static final String SHELLYDT_PRO1_2 = "SPSW-101XE16EU";
     public static final String SHELLYDT_PRO1_3 = "SPSW-201XE16EU";
+    public static final String SHELLYDT_PRO1UL = "SPSW-201XE15UL";
     public static final String SHELLYDT_PRO1PM = "SPSW-001PE16EU";
     public static final String SHELLYDT_PRO1PM_2 = "SPSW-101PE16EU";
     public static final String SHELLYDT_PRO1PM_3 = "SPSW-201PE16EU";
+    public static final String SHELLYDT_PRO1PMUL = "SPSW-201PE15UL";
     public static final String SHELLYDT_PRO1CB = "SPCB-01VENEU";
     public static final String SHELLYDT_PRO2 = "SPSW-002XE16EU";
     public static final String SHELLYDT_PRO2_2 = "SPSW-102XE16EU";
@@ -428,9 +430,11 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO1, THING_TYPE_SHELLYPRO1), //
             Map.entry(SHELLYDT_PRO1_2, THING_TYPE_SHELLYPRO1), //
             Map.entry(SHELLYDT_PRO1_3, THING_TYPE_SHELLYPRO1), //
+            Map.entry(SHELLYDT_PRO1UL, THING_TYPE_SHELLYPRO1), //
             Map.entry(SHELLYDT_PRO1PM, THING_TYPE_SHELLYPRO1PM), //
             Map.entry(SHELLYDT_PRO1PM_2, THING_TYPE_SHELLYPRO1PM),
             Map.entry(SHELLYDT_PRO1PM_3, THING_TYPE_SHELLYPRO1PM), //
+            Map.entry(SHELLYDT_PRO1PMUL, THING_TYPE_SHELLYPRO1PM), //
             Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB), //
             Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2), //
             Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2), //
