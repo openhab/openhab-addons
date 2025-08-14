@@ -204,7 +204,9 @@ public class TuyaDevice implements ChannelFutureListener {
         Channel channel = this.channel;
         if (channel != null) {
             channel.writeAndFlush(m);
-            // requestStatus(dps);
+            // We could try a requestStatus(dps) here however it shouldn't be necessary as
+            // once new values for the DPs have been sampled the device should send an update
+            // (but not necessarily if the new values are the same as the old).
         } else {
             logger.warn("{}: Refreshing status failed. Device is not connected.", deviceId);
         }
