@@ -81,5 +81,11 @@
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="listenToNetworkChanges" type="boolean" required="false" groupName="core">
+			<label>Listen to network changes</label>
+			<description>Listen to changes on the network interface, e.g. changing of IP address, and restart HomeKit bridge.</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>
