@@ -31,7 +31,7 @@
     <mariadb.version>3.5.5</mariadb.version>
     <mysql.version>9.4.0</mysql.version>
     <postgresql.version>42.7.7</postgresql.version>
-    <sqlite.version>3.42.0.0</sqlite.version>
+    <sqlite.version>3.50.3.0</sqlite.version>
     <oracle.version>23.5.0.2407</oracle.version>
   </properties>
 
