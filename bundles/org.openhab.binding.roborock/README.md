@@ -39,6 +39,7 @@ These should be created via discovery as the thingID is set to the ID discovered
 | String  | network#ssid                      | Network SSID               |
 | String  | network#bssid                     | Network BSSID              |
 | Number  | network#rssi                      | Network RSSI               |
+| String  | actions#command                   | Send command via cloud     |
 | String  | actions#rpc                       | Send command via cloud     |
 | Number  | status#segment_status             | Segment Status             |
 | Number  | status#map_status                 | Map Box Status             |

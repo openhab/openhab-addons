@@ -150,7 +150,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (channelUID.getId().equals(CHANNEL_RPC)) {
+            if (channelUID.getId().equals(CHANNEL_RPC) || channelUID.getId().equals(CHANNEL_COMMAND)) {
                 sendCommand(command.toString());
                 return;
             }
