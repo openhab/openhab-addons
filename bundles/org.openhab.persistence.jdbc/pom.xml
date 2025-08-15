@@ -32,7 +32,7 @@
     <mysql.version>9.4.0</mysql.version>
     <postgresql.version>42.7.7</postgresql.version>
     <sqlite.version>3.50.3.0</sqlite.version>
-    <oracle.version>23.5.0.2407</oracle.version>
+    <oracle.version>23.9.0.25.07</oracle.version>
   </properties>
 
   <dependencies>
@@ -101,7 +101,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.oracle.database.jdbc.ojdbc11</artifactId>
+      <artifactId>com.oracle.database.jdbc.ojdbc17</artifactId>
       <version>${oracle.version}</version>
     </dependency>
   </dependencies>
