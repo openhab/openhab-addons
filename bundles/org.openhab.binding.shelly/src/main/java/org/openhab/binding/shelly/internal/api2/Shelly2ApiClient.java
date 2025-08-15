@@ -116,13 +116,24 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             SHELLY2_BTNT_FOLLOW, SHELLY_BTNT_EDGE, //
             SHELLY2_BTNT_DETACHED, SHELLY_BTNT_MOMENTARY);
 
-    protected static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.of(//
-            SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH, //
-            SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH, //
-            SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH, //
-            SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH, //
-            SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH, //
-            SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH);
+    protected static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.ofEntries(//
+            Map.entry(SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH),
+            Map.entry(SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH),
+            Map.entry(SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH),
+            Map.entry(SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH),
+            Map.entry(SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH),
+            Map.entry(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH),
+
+            // BTHome
+            Map.entry("1", SHELLY_BTNEVENT_1SHORTPUSH), // press
+            Map.entry("2", SHELLY_BTNEVENT_2SHORTPUSH), // double_press
+            Map.entry("3", SHELLY_BTNEVENT_3SHORTPUSH), // triple_press
+            Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), // long_press
+            Map.entry("5", SHELLY_BTNEVENT_LONGSHORTPUSH), // we have no long_double_press
+            Map.entry("6", SHELLY_BTNEVENT_SHORTLONGPUSH), // we have no long_triple_press
+            Map.entry("128", SHELLY_BTNEVENT_HOLD), // hold_press
+            Map.entry("254", SHELLY_BTNEVENT_HOLD) // hold_press old firmware
+    );
 
     protected static final Map<String, String> MAP_INPUT_EVENT_ID = Map.of(//
             SHELLY2_EVENT_BTNUP, SHELLY_EVENT_BTN_OFF, //

@@ -158,7 +158,6 @@ public class ShellyDevices {
 
     public static final String SHELLYDT_BLUBUTTON1 = "SBBT-002C";
     public static final String SHELLYDT_BLUHT = "SBHT-003C";
-    public static final String SHELLYDT_BLUHTZB = "SBHT-203C";
     public static final String SHELLYDT_BLUDW = "SBDW-002C";
     public static final String SHELLYDT_BLUMOTION = "SBMO-003Z";
 
@@ -460,9 +459,9 @@ public class ShellyDevices {
 
             // BLU Series
             Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON),
+            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
             Map.entry(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW),
             Map.entry(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION),
-            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
 
             Map.entry(SHELLYDT_BLUCLASS_BUTTON, THING_TYPE_SHELLYBLUBUTTON), //
             Map.entry(SHELLYDT_BLUCLASS_HT, THING_TYPE_SHELLYBLUHT), //
@@ -647,7 +646,8 @@ public class ShellyDevices {
     // Number of inputs
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //
             Map.entry(THING_TYPE_SHELLYBLUBUTTON, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUHT, 1));
+            Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUDW, 1));
 
     /**
      * Generates a service name based on the provided model name and MAC address.
@@ -659,13 +659,12 @@ public class ShellyDevices {
      */
     public static String getBluServiceName(String model, String mac) throws IllegalArgumentException {
         String bluClass = model.contains("-") ? substringBefore(model, "-") : model;
-        for (Map.Entry<String, ThingTypeUID> entry : THING_TYPE_BY_SERVICE_NAME.entrySet()) {
-            String uid = entry.getValue().getId();
-            if (model.equals(uid) || bluClass.equals(uid)) {
-                String serviceName = entry.getKey();
-                if (!serviceName.isEmpty()) {
-                    return serviceName + "-" + mac.replaceAll(":", "").toLowerCase();
-                }
+        ThingTypeUID uid = THING_TYPE_BY_DEVICE_TYPE.containsKey(model) ? THING_TYPE_BY_DEVICE_TYPE.get(model)
+                : THING_TYPE_BY_DEVICE_TYPE.get(bluClass);
+        if (uid != null) {
+            String serviceName = uid.getId();
+            if (!serviceName.isEmpty()) {
+                return serviceName + "-" + mac.replaceAll(":", "").toLowerCase();
             }
         }
 

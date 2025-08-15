@@ -256,9 +256,9 @@ public class ShellyThingCreatorTest {
 
                 // BLU Series
                 Arguments.of(SHELLYDT_BLUBUTTON1, "", THING_TYPE_SHELLYBLUBUTTON), //
+                Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
                 Arguments.of(SHELLYDT_BLUDW, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of(SHELLYDT_BLUMOTION, "", THING_TYPE_SHELLYBLUMOTION), //
-                Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
 
                 Arguments.of(SHELLYDT_BLUCLASS_BUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
                 Arguments.of(SHELLYDT_BLUCLASS_HT, "", THING_TYPE_SHELLYBLUHT), //
