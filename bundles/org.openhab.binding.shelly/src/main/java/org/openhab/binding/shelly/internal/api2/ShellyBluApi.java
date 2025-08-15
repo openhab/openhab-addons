@@ -13,12 +13,10 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.getBluServiceName;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
-
-import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +26,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorTmp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorAccel;
@@ -71,17 +68,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         super(thingName, thingTable, thing);
 
         ShellyDeviceProfile profile = thing.getProfile();
-        ThingTypeUID thingTypeUID = thing.getThing().getThingTypeUID();
-        if (THING_TYPE_CAP_NUM_INPUTS.containsKey(thingTypeUID)) {
-            // Initialize the tables
-            profile.numInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUID);
-            profile.settings.inputs = new ArrayList<>();
-            profile.status.inputs = new ArrayList<>();
-            for (int i = 0; i < profile.numInputs; i++) {
-                profile.settings.inputs.add(new ShellySettingsInput(SHELLY_BTNT_MOMENTARY));
-                profile.status.inputs.add(new ShellyInputState(i));
-            }
-        }
+        ThingTypeUID uid = thing.getThing().getThingTypeUID();
+        profile.initializeInputs(uid, SHELLY_BTNT_MOMENTARY);
         deviceStatus = profile.status;
     }
 
