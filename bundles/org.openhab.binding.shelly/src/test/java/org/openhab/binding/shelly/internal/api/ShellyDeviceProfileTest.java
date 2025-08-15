@@ -110,6 +110,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
 
                 // Shelly Mini series
                 Arguments.of(THING_TYPE_SHELLYMINI_1, true, false), //
@@ -122,7 +123,6 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
-                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
 
                 // Shelly Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
@@ -145,7 +145,7 @@ public class ShellyDeviceProfileTest {
     @ParameterizedTest
     @MethodSource("provideTestCasesForBuildBluServiceName")
     void buildBluServiceName(String name, String mac, String expectedServiceName) {
-        String actualServiceName = ShellyDeviceProfile.buildBluServiceName(name, mac);
+        String actualServiceName = getBluServiceName(name, mac);
         assertThat(actualServiceName, is(equalTo(expectedServiceName)));
     }
 
@@ -163,7 +163,7 @@ public class ShellyDeviceProfileTest {
     @Test
     void buildBluServiceNameWhenNameUnknownThrowIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            ShellyDeviceProfile.buildBluServiceName("sbbt", "001A2B3C4D5E");
+            getBluServiceName("sbbt", "001A2B3C4D5E");
         });
     }
 

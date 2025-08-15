@@ -448,6 +448,8 @@ The following trigger types are sent:
 | LONG_PRESSED       | The button was pressed for a longer time (lastEvent=L)              |
 | SHORT_LONG_PRESSED | A short followed by a long button push (lastEvent=SL)               |
 | LONG_SHORT_PRESSED | A long followed by a short button push (lastEvent=LS)               |
+| LONG_SHORT_PRESSED | A long followed by a short button push (lastEvent=LS)               |
+| HOLD               | Hold pressed                                                        |
 
 Check the channel definitions for the various devices to see if the device supports those events.
 You could use the Shelly App to set the timing for those events.

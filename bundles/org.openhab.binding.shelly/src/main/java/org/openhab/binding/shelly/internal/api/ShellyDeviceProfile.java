@@ -166,8 +166,7 @@ public class ShellyDeviceProfile {
         }
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(device.numRollers);
-        List<ShellySettingsInput> inputs = settings.inputs;
-        numInputs = inputs != null ? inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
+        numInputs = settings.inputs != null ? settings.inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
         numMeters = !isEMeter ? getInteger(device.numMeters) : getInteger(device.numEMeters);
@@ -418,24 +417,5 @@ public class ShellyDeviceProfile {
 
         // If device is not yet intialized or the enabled property is missing we assume that CoIoT is enabled
         return true;
-    }
-
-    /**
-     * Generates a service name based on the provided model name and MAC address.
-     * Delimiters will be stripped from the returned MAC address.
-     *
-     * @param name Model name such as SBBT-02C or just SBDW
-     * @param mac MAC address with or without colon delimiters
-     * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
-     */
-    public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
-        String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
-        return SERVICE_NAME_SHELLYBLU_PREFIX + switch (model) {
-            case SHELLYDT_BLUBUTTON -> "button";
-            case SHELLYDT_BLUDW -> "dw";
-            case SHELLYDT_BLUMOTION -> "motion";
-            case SHELLYDT_BLUHT -> "ht";
-            default -> throw new IllegalArgumentException("Unsupported BLU device model " + model);
-        } + "-" + mac.replaceAll(":", "").toLowerCase();
     }
 }

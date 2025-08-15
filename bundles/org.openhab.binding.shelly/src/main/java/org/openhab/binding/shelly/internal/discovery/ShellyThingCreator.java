@@ -12,16 +12,23 @@
  */
 package org.openhab.binding.shelly.internal.discovery;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+import static org.openhab.core.thing.Thing.*;
 
 import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyBluEventData;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
+import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.thing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShellyThingCreator} maps the device id into the thing type id
@@ -30,8 +37,7 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class ShellyThingCreator {
-    private static final Pattern SHELLY_SERVICE_NAME_PATTERN = Pattern
-            .compile("^([a-z0-9]*shelly[a-z0-9]*)-([a-z0-9]+)$", Pattern.CASE_INSENSITIVE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyThingCreator.class);
 
     public static ThingUID getThingUID(String serviceName) {
         return getThingUID(serviceName, "", "");
@@ -102,7 +108,34 @@ public class ShellyThingCreator {
         return THING_TYPE_BY_SERVICE_NAME.getOrDefault(type, THING_TYPE_SHELLYUNKNOWN);
     }
 
-    public static boolean isValidShellyServiceName(String serviceName) {
-        return SHELLY_SERVICE_NAME_PATTERN.matcher(serviceName).matches();
+    public static void addBluThing(String gateway, Shelly2NotifyEvent e, @Nullable ShellyThingTable thingTable) {
+        String model = getString(e.data.name);
+        String bluClass = substringBefore(model, "-").toUpperCase();
+        String mac = getString(e.data.addr).replaceAll(":", "");
+
+        ThingTypeUID thingTypeUID = THING_TYPE_BY_DEVICE_TYPE.containsKey(model) ? //
+                THING_TYPE_BY_DEVICE_TYPE.get(model) : THING_TYPE_BY_DEVICE_TYPE.get(bluClass);
+        if (thingTypeUID == null) {
+            LOGGER.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
+            return;
+        }
+
+        String serviceName = getBluServiceName(getString(e.data.name), mac);
+        Map<String, Object> properties = new TreeMap<>();
+        addProperty(properties, PROPERTY_MODEL_ID, model);
+        addProperty(properties, PROPERTY_SERVICE_NAME, serviceName);
+        addProperty(properties, PROPERTY_DEV_NAME, e.data.name);
+        addProperty(properties, PROPERTY_DEV_TYPE, thingTypeUID.getId());
+        addProperty(properties, PROPERTY_DEV_GEN, "BLU");
+        addProperty(properties, PROPERTY_GW_DEVICE, gateway);
+        addProperty(properties, CONFIG_DEVICEADDRESS, mac);
+
+        if (thingTable != null) {
+            LOGGER.debug("{}: Create thing {} for BLU device {} / {}", gateway, thingTypeUID, model, mac);
+            thingTable.discoveredResult(thingTypeUID, model, serviceName, mac, properties);
+        }
     }
+
+    private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
+        properties.put(key, value != null ? value : "");
 }
