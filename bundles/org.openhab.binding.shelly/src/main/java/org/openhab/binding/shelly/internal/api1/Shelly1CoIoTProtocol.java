@@ -394,5 +394,4 @@ public class Shelly1CoIoTProtocol {
     public String getLastWakeup() {
         return lastWakeup;
     }
-
 }

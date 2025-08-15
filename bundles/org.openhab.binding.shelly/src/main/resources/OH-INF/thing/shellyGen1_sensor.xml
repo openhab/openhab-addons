@@ -302,7 +302,7 @@
 				<option value="L">@text/channel-type.shelly.lastEvent.state.option.L</option>
 				<option value="SL">@text/channel-type.shelly.lastEvent.state.option.SL</option>
 				<option value="LS">@text/channel-type.shelly.lastEvent.state.option.LS</option>
-                <option value="H">@text/channel-type.shelly.lastEvent.state.option.H</option>
+				<option value="H">@text/channel-type.shelly.lastEvent.state.option.H</option>
 			</options>
 		</state>
 	</channel-type>

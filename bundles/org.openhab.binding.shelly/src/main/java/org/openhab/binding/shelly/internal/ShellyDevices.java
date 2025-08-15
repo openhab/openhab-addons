@@ -668,5 +668,4 @@ public class ShellyDevices {
 
         throw new IllegalArgumentException("Unsupported BLU device model " + model);
     }
-
 }
