@@ -402,11 +402,14 @@ Number:Power Discharge_Power "Discharge Power [%.0f W]" <energy> {channel="growa
 ## Grott Application Installation and Setup
 
 The Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
-It intercepts data packets between the inverter and the cloud server, and it sends a copy of the intercepted data also to openHAB.
+It intercepts data packets between the inverter data logger and the cloud server, and it passes a copy of the intercepted data also to openHAB.
 
 If you have an openHABian system then you can install it automatically via the openHABian configuration UI.
 See [openHABian Installation of Grott](#openhabian-installation-of-grott) below.
 Otherwise see [Manual Installation of Grott](#manual-installation-of-grott) below.
+
+After installing Grott you **MUST** change your Growatt data logger configuration to send its data to the Grott proxy server instead of to the Growatt server.
+See [Route Growatt Inverter Logging via Grott Proxy](#route-growatt-inverter-logging-via-grott-proxy) below.
 
 **NOTE**: make sure that the Grott application is **FULLY OPERATIONAL** for your inverter **BEFORE** you create any things in openHAB!
 Otherwise the binding might create a wrong (or even empty) list of channels for the inverter thing.
