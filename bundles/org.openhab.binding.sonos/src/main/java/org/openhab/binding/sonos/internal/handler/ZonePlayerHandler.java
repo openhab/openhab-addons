@@ -204,8 +204,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         ANY
     }
 
-    private boolean isArcUltra;
-
     public ZonePlayerHandler(ThingRegistry thingRegistry, Thing thing, UpnpIOService upnpIOService,
             @Nullable String opmlUrl, SonosStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
@@ -214,7 +212,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         logger.debug("Creating a ZonePlayerHandler for thing '{}'", getThing().getUID());
         this.service = upnpIOService;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.isArcUltra = ARC_ULTRA_THING_TYPE_UID.equals(thing.getThingTypeUID());
     }
 
     @Override
@@ -616,12 +613,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     updateChannel(NIGHTMODE);
                     break;
                 case "DialogLevel":
-                    if (!isArcUltra) {
+                    if (!isSpeechEnhanceEnabledStateUsable()) {
                         updateChannel(SPEECHENHANCEMENT);
                     }
                     break;
                 case "SpeechEnhanceEnabled":
-                    if (isArcUltra) {
+                    if (isSpeechEnhanceEnabledStateUsable()) {
                         updateChannel(SPEECHENHANCEMENT);
                     }
                     break;
@@ -2148,7 +2145,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setSpeechEnhancement(Command command) {
-        setEqualizerBooleanSetting(command, isArcUltra ? "SpeechEnhanceEnabled" : "DialogLevel");
+        setEqualizerBooleanSetting(command,
+                isSpeechEnhanceEnabledStateUsable() ? "SpeechEnhanceEnabled" : "DialogLevel");
     }
 
     private void setEqualizerBooleanSetting(Command command, String eqType) {
@@ -2180,7 +2178,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public @Nullable String getSpeechEnhanceEnabled() {
-        return stateMap.get(isArcUltra ? "SpeechEnhanceEnabled" : "DialogLevel");
+        return stateMap.get(isSpeechEnhanceEnabledStateUsable() ? "SpeechEnhanceEnabled" : "DialogLevel");
+    }
+
+    private boolean isSpeechEnhanceEnabledStateUsable() {
+        return ARC_ULTRA_THING_TYPE_UID.equals(getThing().getThingTypeUID());
     }
 
     public @Nullable String getPlayMode() {
