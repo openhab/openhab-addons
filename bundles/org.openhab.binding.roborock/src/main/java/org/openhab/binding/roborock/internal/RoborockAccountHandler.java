@@ -375,11 +375,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         this.mqttClient = null;
     }
 
-    public int sendCommand(String method, String params, String thingID, String localKey, byte[] nonce)
+    public int sendCommand(String method, String params, String thingID, String localKey, byte[] nonce, int id)
             throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
-        int id = secureRandom.nextInt(22767 + 1) + 10000;
 
         String nonceHex = HexFormat.of().formatHex(nonce);
 

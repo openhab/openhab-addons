@@ -16,6 +16,7 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -104,6 +105,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private long lastSuccessfulPollTimestamp;
     private boolean supportsRoutines = true;
     private final Gson gson = new Gson();
+    private final SecureRandom secureRandom = new SecureRandom();
     private String lastHistoryID = "";
 
     private final Map<String, Integer> outstandingRequests = new ConcurrentHashMap<>();
@@ -983,7 +985,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return 0;
         }
         try {
-            return localBridge.sendCommand(method, params, getThing().getUID().getId(), localKey, nonce);
+            @Nullable
+            String methodName = null;
+            int id;
+            do {
+                id = secureRandom.nextInt(22767 + 1) + 10000;
+                final int tempId = id;
+                // make sure id is unique
+                methodName = outstandingRequests.entrySet().stream().filter(entry -> entry.getValue() == tempId)
+                        .map(Map.Entry::getKey).findFirst().orElse(null);
+            } while (methodName != null);
+            return localBridge.sendCommand(method, params, getThing().getUID().getId(), localKey, nonce, id);
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return 0;
