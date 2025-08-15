@@ -401,10 +401,12 @@ Number:Power Discharge_Power "Discharge Power [%.0f W]" <energy> {channel="growa
 
 ## Grott Application Installation and Setup
 
-You can install the Grott application either on the same computer as openHAB or on another.
-The following assumes you will be running it on the same computer.
 The Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
 It intercepts data packets between the inverter and the cloud server, and it sends a copy of the intercepted data also to openHAB.
+
+If you have an openHABian system then you can install it automatically via the openHABian configuration UI.
+See [openHABian Installation of Grott](#openhabian-installation-of-grott) below.
+Otherwise see [Manual Installation of Grott](#manual-installation-of-grott) below.
 
 **NOTE**: make sure that the Grott application is **FULLY OPERATIONAL** for your inverter **BEFORE** you create any things in openHAB!
 Otherwise the binding might create a wrong (or even empty) list of channels for the inverter thing.
@@ -413,7 +415,17 @@ Otherwise the binding might create a wrong (or even empty) list of channels for 
 You should configure the Grott application via its `grott.ini` file.
 Configure Grott to match your inverter according to the [instructions](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor).
 
-### Install Python
+### openHABian Installation of Grott
+
+On an openHABian system, you can install and upgrade the Grott proxy server application via the `sudo openhabian-config` command.
+Select the menu option `2F`.
+
+### Manual Installation of Grott
+
+You can install the Grott application either on the same computer as openHAB or on another.
+The following assumes you will be running the Grott application on the same computer as openHAB is running on.
+
+#### Install Python
 
 If Python is not already installed on you computer, then install it first.
 And install the following additional necessary python packages:
@@ -423,7 +435,7 @@ sudo pip3 install paho-mqtt
 sudo pip3 install requests
 ```
 
-### Install Grott
+#### Install Grott
 
 First install the Grott application and the Grott application extension files in a Grott specific home folder.
 Note that Grott requires the `grottext.py` application extension in addition to the standard application files.
@@ -455,7 +467,7 @@ extname = grottext
 extvar = {"url": "http://127.0.0.1:8080/growatt"} // or ip address of openHAB (if remote)
 ```
 
-### Start Grott as a Service
+#### Start Grott as a Service
 
 Finally you should set your computer to starts the Grott application automatically as a service when your computer starts.
 For Windows see wiki: <https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Windows)>
