@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Soundbar Arc SL Thing Type -->
-	<thing-type id="ArcSL" listed="false">
-		<label>Arc SL</label>
-		<description>Represents SONOS Arc SL soundbar</description>
+	<!-- Soundbar Arc Ultra Thing Type -->
+	<thing-type id="ArcUltra" listed="false">
+		<label>Arc Ultra</label>
+		<description>Represents SONOS Arc Ultra soundbar</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
@@ -59,6 +59,7 @@
 			<!-- Extended SONOS channels -->
 			<channel id="codec" typeId="codec"/>
 			<channel id="linein" typeId="linein"/>
+			<channel id="microphone" typeId="microphone"/>
 			<channel id="nightmode" typeId="nightmode"/>
 			<channel id="speechenhancement" typeId="speechenhancement"/>
 			<channel id="subwoofer" typeId="subwoofer"/>
@@ -72,7 +73,7 @@
 
 		<properties>
 			<property name="vendor">SONOS</property>
-			<property name="modelId">Arc SL</property>
+			<property name="modelId">Arc Ultra</property>
 		</properties>
 
 		<representation-property>udn</representation-property>
