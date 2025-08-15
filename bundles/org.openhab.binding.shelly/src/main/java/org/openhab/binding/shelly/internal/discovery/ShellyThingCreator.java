@@ -16,17 +16,17 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
-import static org.openhab.core.thing.Thing.*;
+import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,4 +138,5 @@ public class ShellyThingCreator {
 
     private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
         properties.put(key, value != null ? value : "");
+    }
 }
