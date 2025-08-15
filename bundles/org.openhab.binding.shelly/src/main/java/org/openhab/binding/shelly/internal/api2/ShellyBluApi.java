@@ -19,7 +19,6 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -60,20 +59,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
     private final int PID_CYCLE_TRESHHOLD = 50;
-
-    private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.of( //
-            SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH, //
-            SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH, //
-            SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH, //
-            SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH, //
-            SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH, //
-            SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH, //
-            "1", SHELLY_BTNEVENT_1SHORTPUSH, //
-            "2", SHELLY_BTNEVENT_2SHORTPUSH, //
-            "3", SHELLY_BTNEVENT_3SHORTPUSH, //
-            "4", SHELLY_BTNEVENT_LONGPUSH, //
-            "128", SHELLY_BTNEVENT_HOLD, //
-            "254", SHELLY_BTNEVENT_HOLD);
 
     /**
      * Regular constructor - called by Thing handler
