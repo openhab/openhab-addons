@@ -27,13 +27,13 @@ import static org.openhab.binding.tuya.internal.local.TuyaDevice.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jose4j.base64url.Base64;
 import org.openhab.binding.tuya.internal.local.CommandType;
 import org.openhab.binding.tuya.internal.local.MessageWrapper;
 import org.openhab.binding.tuya.internal.local.ProtocolVersion;
@@ -169,7 +169,7 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
             if (encryptedPayload == null) {
                 return Optional.empty();
             }
-            String payloadStr = Base64.encode(encryptedPayload);
+            String payloadStr = Base64.getEncoder().encodeToString(encryptedPayload);
             String hash = CryptoUtil
                     .md5("data=" + payloadStr + "||lpv=" + protocol.getString() + "||" + new String(deviceKey));
 
