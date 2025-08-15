@@ -27,7 +27,7 @@
     <!-- JDBC database driver versions -->
     <derby.version>10.17.1.0</derby.version>
     <h2.version>2.2.224</h2.version>
-    <hsqldb.version>2.3.3</hsqldb.version>
+    <hsqldb.version>2.7.4</hsqldb.version>
     <mariadb.version>3.0.8</mariadb.version>
     <mysql.version>9.4.0</mysql.version>
     <postgresql.version>42.4.4</postgresql.version>
