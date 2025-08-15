@@ -312,4 +312,4 @@ In other words: to get to a clean slate after an openHAB restart, close all door
 
 ## Reference Information
 
-The protocol used to communicate with the Alarm Decoder is described in the [AlarmDecoder Protocol documentation](https://www.alarmdecoder.com/wiki/index.php/Protocol).
+The protocol used to communicate with the Alarm Decoder is described in the [AlarmDecoder Protocol documentation](http://www.alarmdecoder.com/wiki/index.php/Protocol).

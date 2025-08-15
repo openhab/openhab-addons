@@ -31,7 +31,7 @@ Two connection types are supported:
 A transparent bridge between the serial interface of the heat pump and network (i.e. wifi) is used.
 This way no additional wires are required between heat pump and computer, running openHAB.
 
-There are many existing projects providing such functionality, such as the [ser2net project page for Serial to Network Proxy](http://ser2net.sourceforge.net/).
+There are many existing projects providing such functionality, such as [Serial to Network Proxy (ser2net)](http://ser2net.sourceforge.net/).
 
 For my setup, I used a low budget (~5c) circuit, that is integrated into the heat pump and connects to a wifi using an ESP8266 based module.
 
