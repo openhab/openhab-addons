@@ -2643,8 +2643,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 ZonePlayerHandler coordinator = getCoordinatorHandler();
 
                 String currentURI = coordinator.getCurrentURI();
-                logger.debug("playNotificationSoundURI: currentURI {} metadata {}", currentURI,
-                        coordinator.getCurrentURIMetadataAsString());
+                logger.debug("playNotificationSoundURI: notificationURL {} currentURI {} metadata {}", notificationURL,
+                        currentURI, coordinator.getCurrentURIMetadataAsString());
 
                 if (isPlayingStreamOrRadio(currentURI)) {
                     handleNotifForRadioStream(currentURI, notificationURL, coordinator);
