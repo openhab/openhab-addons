@@ -123,8 +123,8 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
         ZonedDateTime latestWithdrawal = earliestWithdrawal.plus(1, ChronoUnit.DAYS);
 
         Double waterConsumption = dataPoint.getWithdrawals().stream()
-                .filter(e -> earliestWithdrawal.isBefore(LocalDate.parse(e.date).atStartOfDay(ZoneId.of("UTC")))
-                        && latestWithdrawal.isAfter(LocalDate.parse(e.date).atStartOfDay(ZoneId.of("UTC"))))
+                .filter(e -> earliestWithdrawal.isBefore(LocalDate.parse(e.date).atStartOfDay(ZoneId.systemDefault()))
+                        && latestWithdrawal.isAfter(LocalDate.parse(e.date).atStartOfDay(ZoneId.systemDefault())))
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
         return new QuantityType<>(waterConsumption, Units.LITRE);
     }
