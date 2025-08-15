@@ -2656,10 +2656,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     handleNotifForSharedQueue(currentURI, notificationURL, coordinator);
                 } else if (isPlaylistEmpty(coordinator)) {
                     handleNotifForEmptyQueue(notificationURL, coordinator);
-                } else if (currentURI == null) {
-                    logger.warn("Notification feature not possible while the current media is abnormally undefined.");
-                    logger.warn(
-                            "Check your local network setup, UPnP subscriptions should succeed so that each Sonos device can provide its current information to the openHAB server.");
                 } else {
                     logger.warn(
                             "Notification feature not yet implemented while the current media ({}) is playing or last played",
