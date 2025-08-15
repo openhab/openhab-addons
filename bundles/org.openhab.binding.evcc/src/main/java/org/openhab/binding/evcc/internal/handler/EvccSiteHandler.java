@@ -83,7 +83,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             }
 
             // Set the smart cost type
-            if (state.has("smartCostType")) {
+            if (state.has("smartCostType") && !state.get("smartCostType").isJsonNull()) {
                 smartCostType = state.get("smartCostType").getAsString();
             }
 
