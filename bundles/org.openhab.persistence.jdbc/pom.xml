@@ -29,7 +29,7 @@
     <h2.version>2.2.224</h2.version>
     <hsqldb.version>2.3.3</hsqldb.version>
     <mariadb.version>3.0.8</mariadb.version>
-    <mysql.version>9.2.0</mysql.version>
+    <mysql.version>9.4.0</mysql.version>
     <postgresql.version>42.4.4</postgresql.version>
     <sqlite.version>3.42.0.0</sqlite.version>
     <oracle.version>23.5.0.2407</oracle.version>
