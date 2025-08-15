@@ -33,7 +33,7 @@ This way no additional wires are required between heat pump and computer, runnin
 
 There are many existing projects providing such functionality, such as [Serial to Network Proxy (ser2net)](http://ser2net.sourceforge.net/).
 
-For my setup, I used a low budget (~5c) circuit, that is integrated into the heat pump and connects to a wifi using an ESP8266 based module.
+For my setup, I used a low budget (~5€) circuit, that is integrated into the heat pump and connects to a wifi using an ESP8266 based module.
 
 Board:
 
