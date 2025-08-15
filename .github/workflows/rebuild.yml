@@ -51,13 +51,13 @@ jobs:
 
     - name: Checkout
       if: ${{ github.head_ref == '' && env.LABEL == 'rebuild' }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         persist-credentials: false
 
     - name: Checkout merge
       if: ${{ github.head_ref != '' && env.LABEL == 'rebuild' }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         ref: refs/pull/${{github.event.pull_request.number}}/merge
         persist-credentials: false
