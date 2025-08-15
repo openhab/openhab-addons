@@ -13,12 +13,12 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,7 +59,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private boolean connected = false; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
-    private final int pidCycleThreshold = 50;
+    private final int PID_CYCLE_TRESHHOLD = 50;
 
     private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.of( //
             SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH, //
@@ -71,23 +71,33 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             "1", SHELLY_BTNEVENT_1SHORTPUSH, //
             "2", SHELLY_BTNEVENT_2SHORTPUSH, //
             "3", SHELLY_BTNEVENT_3SHORTPUSH, //
-            "4", SHELLY_BTNEVENT_LONGPUSH);
+            "4", SHELLY_BTNEVENT_LONGPUSH, //
+            "128", SHELLY_BTNEVENT_HOLD, //
+            "254", SHELLY_BTNEVENT_HOLD);
 
     /**
      * Regular constructor - called by Thing handler
      *
      * @param thingName Symbolic thing name
+     * @param thingTable Table of known things (build at runtime)
      * @param thing Thing Handler (ThingHandlerInterface)
      */
     public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
         super(thingName, thingTable, thing);
 
-        ShellyInputState input = new ShellyInputState();
-        deviceStatus.inputs = new ArrayList<>();
-        input.input = 0;
-        input.event = "";
-        input.eventCount = 0;
-        deviceStatus.inputs.add(input);
+        ShellyDeviceProfile profile = thing.getProfile();
+        ThingTypeUID thingTypeUID = thing.getThing().getThingTypeUID();
+        if (THING_TYPE_CAP_NUM_INPUTS.containsKey(thingTypeUID)) {
+            // Initialize the tables
+            profile.numInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUID);
+            profile.settings.inputs = new ArrayList<>();
+            profile.status.inputs = new ArrayList<>();
+            for (int i = 0; i < profile.numInputs; i++) {
+                profile.settings.inputs.add(new ShellySettingsInput(SHELLY_BTNT_MOMENTARY));
+                profile.status.inputs.add(new ShellyInputState(i));
+            }
+        }
+        deviceStatus = profile.status;
     }
 
     @Override
@@ -130,6 +140,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.device = devInfo;
         }
         profile.isBlu = true;
+        profile.alwaysOn = false;
         profile.settingsJson = "{}";
         profile.thingName = thingName;
         profile.name = getString(profile.settings.name);
@@ -150,21 +161,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.settings.sleepMode = new ShellySensorSleepMode();
             profile.settings.sleepMode.unit = "m";
             profile.settings.sleepMode.period = 720;
-        }
-
-        if (profile.isButton) {
-            ShellySettingsInput settings = new ShellySettingsInput();
-            profile.numInputs = 1;
-            settings.btnType = SHELLY_BTNT_MOMENTARY;
-
-            List<ShellySettingsInput> inputs = profile.settings.inputs;
-            if (inputs != null) {
-                inputs.set(0, settings);
-            } else {
-                inputs = profile.settings.inputs = new ArrayList<>();
-                inputs.add(settings);
-            }
-            profile.status = deviceStatus;
         }
 
         profile.initialized = true;
@@ -192,7 +188,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     public void onNotifyEvent(Shelly2RpcNotifyEvent message) {
         logger.trace("{}: ShellyEvent received: {}", thingName, gson.toJson(message));
 
-        boolean updated = false;
         ShellyBluHandler t = (ShellyBluHandler) thing;
         if (t == null) {
             logger.debug("{}: Thing is not initialized -> ignore event", thingName);
@@ -212,19 +207,18 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             }
 
             for (Shelly2NotifyEvent e : message.params.events) {
-                logger.debug("{}: BluEvent received: {}", thingName, gson.toJson(message));
                 String event = getString(e.event);
                 if (event.startsWith(SHELLY2_EVENT_BLUPREFIX)) {
                     logger.debug("{}: BLU event {} received from address {}, pid={}", thingName, event,
                             getString(e.data.addr), getInteger(e.data.pid));
                     if (e.data.pid != null) {
                         int pid = e.data.pid;
-                        if (lastPid != -1 && pid < (lastPid - pidCycleThreshold)) {
+                        if (lastPid != -1 && pid < (lastPid - PID_CYCLE_TRESHHOLD)) {
                             logger.debug(
-                                    "{}: PID={} received is so low that a new cycle has probably begun since lastPID={}",
+                                    "{}: Received pid {} is so low that a new cycle has probably begun since lastPID={}",
                                     thingName, pid, lastPid);
                         } else if (pid <= lastPid) {
-                            logger.debug("{}: Duplicate packet for PID={} received, ignore", thingName, pid);
+                            logger.debug("{}: Duplicate packet for pid {} received, ignore", thingName, pid);
                             break;
                         }
                         lastPid = pid;
@@ -239,9 +233,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                     gson.toJson(message));
                             break;
                         }
-                        logger.debug("{}: BLU Device discovered", thingName);
                         if (e.data.name != null) {
-                            profile.settings.name = ShellyDeviceProfile.buildBluServiceName(e.data.name, e.data.addr);
+                            profile.settings.name = getBluServiceName(e.data.name, e.data.addr);
+                            logger.debug("{}: BLU Device {} discovered, mapped to serviceName {}", thingName,
+                                    e.data.name, profile.settings.name);
                         }
                         break;
                     case SHELLY2_EVENT_BLUDATA:
@@ -274,13 +269,18 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.lux.isValid = true;
                             sensorData.lux.value = (double) e.data.illuminance;
                         }
-                        if (e.data.temperature != null) {
-                            if (sensorData.tmp == null) {
-                                sensorData.tmp = new ShellySensorTmp();
+                        if (e.data.temperatures != null) {
+                            if (e.data.temperatures.length == 1) {
+                                if (sensorData.tmp == null) {
+                                    sensorData.tmp = new ShellySensorTmp();
+                                }
+                                sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
+                                sensorData.tmp.isValid = true;
+                                sensorData.tmp.tC = e.data.temperatures[0];
+                            } else {
+                                // BLU TRV reports current temp and target temp
+                                // However, we don't support BLU TRV yet, so ignore
                             }
-                            sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
-                            sensorData.tmp.tC = e.data.temperature;
-                            sensorData.tmp.isValid = true;
                         }
                         if (e.data.humidity != null) {
                             if (sensorData.hum == null) {
@@ -297,23 +297,45 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (e.data.motionState != null) {
                             sensorData.motion = e.data.motionState == 1;
                         }
-
-                        if (e.data.buttonEvent != null) {
-                            ShellyInputState input = deviceStatus.inputs != null ? deviceStatus.inputs.get(0)
-                                    : new ShellyInputState();
-                            input.event = mapValue(MAP_INPUT_EVENT_TYPE, e.data.buttonEvent + "");
-                            input.eventCount++;
-                            deviceStatus.inputs.set(0, input);
-                            // sensorData.inputs.set(0, input);
-
-                            String group = getProfile().getInputGroup(0);
-                            String suffix = profile.getInputSuffix(0);
-                            t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix, getStringType(input.event));
-                            t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix, getDecimal(input.eventCount));
-                            t.triggerButton(profile.getInputGroup(0), 0, input.event);
+                        if (e.data.firmware != null) {
+                            int digit4 = (int) (e.data.firmware & 0x000000FF);
+                            int digit3 = (int) (e.data.firmware & 0x0000FF00) >> 8;
+                            int digit2 = (int) (e.data.firmware & 0x00FF0000) >> 16;
+                            int digit1 = (int) (e.data.firmware & 0xFF000000) >> 24;
+                            profile.fwVersion = digit1 > 0 ? //
+                                    digit1 + "." + digit2 + "." + digit3 + "." + digit4
+                                    : digit2 + "," + digit3 + "." + digit4;
+                            logger.debug("{}: Detected firmware version: {}", thingName, profile.fwVersion);
                         }
-                        updated |= ShellyComponents.updateDeviceStatus(t, deviceStatus);
-                        updated |= ShellyComponents.updateSensors(getThing(), deviceStatus);
+                        if (e.data.buttons != null) {
+                            logger.trace("{}: Shelly BLU button events received: {}", thingName,
+                                    gson.toJson(e.data.buttons));
+                            for (int bttnIdx = 0; bttnIdx < e.data.buttons.length; bttnIdx++) {
+                                if (e.data.buttons[bttnIdx] != 0) {
+                                    ShellyInputState input = deviceStatus.inputs.get(bttnIdx);
+                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE, e.data.buttons[bttnIdx].toString());
+
+                                    String group = getProfile().getInputGroup(bttnIdx);
+                                    String suffix = profile.getInputSuffix(bttnIdx);
+                                    // ignore HOLDING events for counter and trigger
+                                    if (!SHELLY_BTNEVENT_HOLD.equalsIgnoreCase(input.event)) {
+                                        logger.debug("{}: update to {}, pid={}", message.src, input.event, e.data.pid);
+                                        t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
+                                                getStringType(input.event));
+                                        input.eventCount++;
+                                        t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
+                                                getDecimal(input.eventCount));
+                                        t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
+                                    } else {
+                                        logger.debug("{}: ignore H, pid={}", message.src, e.data.pid);
+                                    }
+                                    deviceStatus.inputs.set(bttnIdx, input);
+                                }
+                            }
+                        }
+
+                        ShellyComponents.updateDeviceStatus(t, deviceStatus);
+                        ShellyComponents.updateSensors(getThing(), deviceStatus);
                         break;
                     default:
                         super.onNotifyEvent(message);
@@ -322,8 +344,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         } catch (ShellyApiException e) {
             logger.debug("{}: Unable to process event", thingName, e);
             t.incProtErrors();
-        }
-        if (updated) {
         }
     }
 }

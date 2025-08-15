@@ -132,7 +132,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             SHELLY2_EVENT_3PUSH, SHELLY_EVENT_TRIPLE_SHORTPUSH, //
             SHELLY2_EVENT_LPUSH, SHELLY_EVENT_LONGPUSH, //
             SHELLY2_EVENT_LSPUSH, SHELLY_EVENT_LONG_SHORTPUSH, //
-            SHELLY2_EVENT_SLPUSH, SHELLY_EVENT_SHORT_LONGTPUSH);
+            SHELLY2_EVENT_SLPUSH, SHELLY_EVENT_SHORT_LONGTPUSH, //
+            SHELLY2_EVENT_HOLD, SHELLY_EVENT_HOLD);
 
     protected static final Map<String, String> MAP_INPUT_MODE = Map.of(//
             SHELLY2_RMODE_SINGLE, SHELLY_INP_MODE_ONEBUTTON, //
@@ -965,7 +966,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         String group = profile.getInputGroup(is.id);
         ShellyInputState input = relayStatus.inputs.size() > is.id ? relayStatus.inputs.get(is.id)
-                : new ShellyInputState();
+                : new ShellyInputState(is.id);
         boolean updated = false;
         input.input = getBool(is.state) ? 1 : 0; // old format Integer, new one Boolean
         if (input.event == null && profile.inButtonMode(is.id)) {
