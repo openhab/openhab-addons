@@ -483,14 +483,12 @@ public class TibberHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_DAILY_PRODUCTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "accumulatedProductionLastHour");
             updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, value, "kWh");
-            value = Utils.getJsonValue(jsonData, "power");
-            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "minPower");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "maxPower");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, value, "W");
-            value = Utils.getJsonValue(jsonData, "powerProduction");
-            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PRODUCTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "averagePower");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_AVERAGE_CONSUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "minPowerProduction");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_PRODUCTION, value, "W");
             value = Utils.getJsonValue(jsonData, "maxPowerProduction");
@@ -507,6 +505,29 @@ public class TibberHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_2, value, "A");
             value = Utils.getJsonValue(jsonData, "currentL3");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_3, value, "A");
+
+            String consumption = Utils.getJsonValue(jsonData, "power");
+            String production = Utils.getJsonValue(jsonData, "powerProduction");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION, consumption, "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PRODUCTION, production, "W");
+            double consumptionValue = parseValueSafely(consumption, "consumption");
+            double productionValue = parseValueSafely(production, "production");
+
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_POWER_BALANCE, String.valueOf(consumptionValue - productionValue),
+                    "W");
+        }
+    }
+
+    private double parseValueSafely(@Nullable String value, String valueType) {
+        if (value == null || value.isBlank() || EMPTY_VALUE.equals(value) || NULL_VALUE.equals(value)) {
+            return 0.0;
+        }
+
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            logger.error("Unable to parse {} value: {}. Assuming 0.", valueType, value, e);
+            return 0.0;
         }
     }
 

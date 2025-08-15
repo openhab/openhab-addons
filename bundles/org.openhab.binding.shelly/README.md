@@ -108,6 +108,8 @@ See section [Discovery](#discovery) for details.
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
+| shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
+| shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
 
 ### Shelly Plus Mini series (Generation 2+3+4)
 
@@ -129,9 +131,11 @@ See section [Discovery](#discovery) for details.
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
-| shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
-| shellyproem50       | Shelly Pro EM-50 with 2 power meters and 1 relay         | SPEM-002CEBEU50                                |
 | shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU       |
+| shellyproem50       | Shelly Pro EM-50 - 2 channel, single phase energy meter  | SPEM-002CEBEU50                                |
+| shellypro3em        | Shelly Pro 3EM - 3-phase energy meter                    | SPEM-003CEBEU, SPEM-003CEBEU120                |
+| shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter| SPEM-003CEBEU63                                |
+| shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                | SPEM-003CEBEU400                               |
 
 ### Shelly BLU
 
@@ -141,8 +145,6 @@ See section [Discovery](#discovery) for details.
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW                    |
 | shellyblumotion   | Shelly BLU Motion                                      | SBMO                    |
 | shellybluht       | Shelly BLU H&T                                         | SBMO                    |
-| shellyblugw       | Shelly BLU Gateway                                     | SNGW-BT01               |
-| shellyblugw3      | Shelly BLU Gateway 3                                   | S3GW-1DBT001            |
 
 ### Special Thing Types
 

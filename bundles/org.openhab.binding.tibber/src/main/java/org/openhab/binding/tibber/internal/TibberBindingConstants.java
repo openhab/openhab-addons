@@ -51,9 +51,11 @@ public class TibberBindingConstants {
     public static final String CHANNEL_CONSUMPTION = "consumption";
     public static final String CHANNEL_MIN_COSNUMPTION = "minimum-consumption";
     public static final String CHANNEL_PEAK_CONSUMPTION = "peak-consumption";
+    public static final String CHANNEL_AVERAGE_CONSUMPTION = "average-consumption";
     public static final String CHANNEL_PRODUCTION = "production";
     public static final String CHANNEL_MIN_PRODUCTION = "minimum-production";
     public static final String CHANNEL_PEAK_PRODUCTION = "peak-production";
+    public static final String CHANNEL_POWER_BALANCE = "power-balance";
     public static final String CHANNEL_VOLTAGE_1 = "voltage1";
     public static final String CHANNEL_VOLTAGE_2 = "voltage2";
     public static final String CHANNEL_VOLTAGE_3 = "voltage3";

@@ -10,22 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evcc.internal.api.dto;
+package org.openhab.binding.ecovacs.internal.api.commands;
 
-import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This class represents the status response (/api/state).
- * This DTO was written for evcc version 0.117.0
- *
- * @author Florian Hotze - Initial contribution
+ * @author Jimmy Tanagra - Initial contribution
  */
-public class Status {
-
-    @SerializedName("result")
-    private Result result;
-
-    public Result getResult() {
-        return result;
+@NonNullByDefault
+public class SceneCleaningCommand extends AbstractAreaCleaningCommand {
+    public SceneCleaningCommand(String sceneDefinition, int cleanPasses) {
+        super("sceneClean", sceneDefinition, cleanPasses);
     }
 }

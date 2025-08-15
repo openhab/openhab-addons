@@ -168,7 +168,22 @@
 				<label>Last Hour Production</label>
 				<description>Net energy produced since last hour shift in kilowatt-hours</description>
 			</add-channel>
+		</instruction-set>
 
+		<instruction-set targetVersion="4">
+			<add-channel id="average-consumption" groupIds="live">
+				<type>tibber:power</type>
+				<label>Average Consumption</label>
+				<description>Average power consumption since midnight in watts</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<add-channel id="power-balance" groupIds="live">
+				<type>tibber:power</type>
+				<label>Power Balance</label>
+				<description>Current power consumption (as positive value) and production (as negative value)</description>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
