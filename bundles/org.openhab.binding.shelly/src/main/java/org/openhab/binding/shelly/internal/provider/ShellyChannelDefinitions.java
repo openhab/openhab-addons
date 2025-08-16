@@ -464,12 +464,14 @@ public class ShellyChannelDefinitions {
             for (int i = 0; i < profile.numInputs; i++) {
                 String group = profile.getInputGroup(i);
                 String suffix = profile.getInputSuffix(i); // multi ? String.valueOf(i + 1) : "";
-                addChannel(thing, add, !profile.isButton && !profile.isMultiButton, group, CHANNEL_INPUT + suffix);
+                addChannel(thing, add, !profile.isBlu && !profile.isButton && !profile.isMultiButton, group,
+                        CHANNEL_INPUT + suffix);
                 addChannel(thing, add, true, group,
                         (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {
                     ShellyInputState input = status.inputs.get(i);
-                    addChannel(thing, add, input.event != null, group, CHANNEL_STATUS_EVENTTYPE + suffix);
+                    addChannel(thing, add, input.event != null && !profile.isDW, group,
+                            CHANNEL_STATUS_EVENTTYPE + suffix);
                     addChannel(thing, add, input.eventCount != null, group, CHANNEL_STATUS_EVENTCOUNT + suffix);
                 }
             }
@@ -574,7 +576,8 @@ public class ShellyChannelDefinitions {
         }
         // Create tilt for DW/DW2, for BLU DW create channel even tilt is currently not reported
         if (sdata.accel != null || (profile.isBlu && profile.isDW && sdata.lux != null)) {
-            addChannel(thing, newChannels, sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT);
+            addChannel(thing, newChannels, sdata.lux != null || sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR,
+                    CHANNEL_SENSOR_TILT);
         }
 
         // Gas

@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.substringBefore;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -679,28 +679,6 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUCLASS_DISTANCE, THING_TYPE_SHELLYBLUDISTANCE) //
     );
 
-    public static final Map<String, String> BLU_SERVICE_NAMES_BY_MODEL = Map.ofEntries( //
-            // with specific model id
-            Map.entry(SHELLYDT_BLUBUTTON1, "shellyblubutton"), //
-            Map.entry(SHELLYDT_BLUTOUGHZB, "shellyblubutton"), //
-            Map.entry(SHELLYDT_BLUWALLSWITCH4, "shellybluwallswitch4"), //
-            Map.entry(SHELLYDT_BLUWALLSWITCH4_2, "shellbluwallswitch4"), //
-            Map.entry(SHELLYDT_BLURCBUTTON4, "shellyblurcbutton4"), //
-            Map.entry(SHELLYDT_BLUHT, "shellybluht"), //
-            Map.entry(SHELLYDT_BLUHTZB, "shellybluht"), //
-            Map.entry(SHELLYDT_BLUDW, "shellybludw"), //
-            Map.entry(SHELLYDT_BLUMOTION, "shellyblumotion"), //
-            Map.entry(SHELLYDT_BLUDISTANCE, "shellybludistance"), //
-            Map.entry(SHELLYDT_BLUREMOTE, "shellybluremote"), //
-
-            // with unspecific model (string everything behind -
-            Map.entry(SHELLYDT_BLUCLASS_BUTTON, "shellyblubutton"), //
-            Map.entry(SHELLYDT_BLUCLASS_HT, "shellybluht"), //
-            Map.entry(SHELLYDT_BLUCLASS_DW, "shellybludw"), //
-            Map.entry(SHELLYDT_BLUCLASS_MOTION, "shellyblumotion"), //
-            Map.entry(SHELLYDT_BLUCLASS_DISTANCE, "shellybludistance") //
-    );
-
     /**
      * Generates a service name based on the provided model name and MAC address.
      * Delimiters will be stripped from the returned MAC address.
@@ -709,15 +687,15 @@ public class ShellyDevices {
      * @param mac MAC address with or without colon delimiters
      * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
      */
-
     public static String getBluServiceName(String model, String mac) throws IllegalArgumentException {
-        String serviceName = getString(BLU_SERVICE_NAMES_BY_MODEL.get(model));
-        String bluClass = model.contains("-") ? substringBefore(model, "-") : model; // e.g. SBBT-02C or just SBDW
-        if (serviceName.isEmpty()) {
-            serviceName = getString(BLU_SERVICE_NAMES_BY_MODEL.get(bluClass));
-        }
-        if (!serviceName.isEmpty()) {
-            return serviceName + "-" + mac.replaceAll(":", "").toLowerCase();
+        String bluClass = model.contains("-") ? substringBefore(model, "-") : model;
+        ThingTypeUID uid = THING_TYPE_BY_DEVICE_TYPE.containsKey(model) ? THING_TYPE_BY_DEVICE_TYPE.get(model)
+                : THING_TYPE_BY_DEVICE_TYPE.get(bluClass);
+        if (uid != null) {
+            String serviceName = uid.getId();
+            if (!serviceName.isEmpty()) {
+                return serviceName + "-" + mac.replaceAll(":", "").toLowerCase();
+            }
         }
 
         throw new IllegalArgumentException("Unsupported BLU device model " + model);
@@ -741,6 +719,9 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLYBLUBUTTON, 1), //
             Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
             Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
+            Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
             Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2), //
-            Map.entry(THING_TYPE_SHELLYBLUHT, 1));
+            Map.entry(THING_TYPE_SHELLYBLUDISTANCE, 1) //
+    );
 }

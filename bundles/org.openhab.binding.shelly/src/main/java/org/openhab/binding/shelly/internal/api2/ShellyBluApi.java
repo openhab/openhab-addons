@@ -13,12 +13,11 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.getBluServiceName;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,7 +28,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorTmp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorAccel;
@@ -72,8 +70,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             Map.entry("2", SHELLY_BTNEVENT_2SHORTPUSH), //
             Map.entry("3", SHELLY_BTNEVENT_3SHORTPUSH), //
             Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), //
-            Map.entry("128", SHELLY_BTNEVENT_HOLD), //
-            Map.entry("254", SHELLY_BTNEVENT_HOLD)); // for firmware prior to 1.0.20
+            Map.entry("128", SHELLY_BTNEVENT_HOLDING), //
+            Map.entry("254", SHELLY_BTNEVENT_HOLDING)); // for firmware prior to 1.0.20
 
     /**
      * Regular constructor - called by Thing handler
@@ -87,16 +85,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
 
         ShellyDeviceProfile profile = thing.getProfile();
         ThingTypeUID thingTypeUID = thing.getThing().getThingTypeUID();
-        if (THING_TYPE_CAP_NUM_INPUTS.containsKey(thingTypeUID)) {
-            // Initialize the tables
-            profile.numInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUID);
-            profile.settings.inputs = new ArrayList<>();
-            profile.status.inputs = new ArrayList<>();
-            for (int i = 0; i < profile.numInputs; i++) {
-                profile.settings.inputs.add(new ShellySettingsInput(SHELLY_BTNT_MOMENTARY));
-                profile.status.inputs.add(new ShellyInputState(0));
-            }
-        }
+        profile.initializeInputs(thingTypeUID, SHELLY_BTNT_MOMENTARY);
         deviceStatus = profile.status;
     }
 
@@ -307,13 +296,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         }
                         if (e.data.dimmer != null) {
                             if (e.data.dimmer.direction != null) {
-                                sensorData.direction = e.data.dimmer.direction == 2 ? "up" : "down";
+                                sensorData.direction = e.data.dimmer.direction == 1 ? "up" : "down";
                             }
                             if (e.data.dimmer.steps != null) {
                                 sensorData.steps = getInteger(e.data.dimmer.steps);
                             }
                         }
-
                         if (e.data.channel != null) { // BLU Remote
                             t.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL, getDecimal(e.data.channel));
                         }
@@ -322,6 +310,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                 sensorData.accel = new ShellySensorAccel();
                             }
                             sensorData.accel.vibration = getInteger(e.data.vibration);
+                        }
+                        if (e.data.distance != null) {
+                            sensorData.distance = e.data.distance;
                         }
                         if (e.data.firmware != null) {
                             int digit4 = (int) (e.data.firmware & 0x000000FF);
@@ -346,7 +337,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                     String group = getProfile().getInputGroup(bttnIdx);
                                     String suffix = profile.getInputSuffix(bttnIdx);
                                     // ignore HOLDING events for counter and trigger
-                                    if (!SHELLY_BTNEVENT_HOLD.equalsIgnoreCase(input.event)) {
+                                    if (!SHELLY_BTNEVENT_HOLDING.equalsIgnoreCase(input.event)) {
                                         logger.debug("{}: update to {}, pid={}", message.src, input.event, e.data.pid);
                                         t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
                                                 getStringType(input.event));

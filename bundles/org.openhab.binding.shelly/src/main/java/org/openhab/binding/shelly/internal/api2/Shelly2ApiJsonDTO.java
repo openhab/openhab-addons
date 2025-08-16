@@ -1206,7 +1206,7 @@ public class Shelly2ApiJsonDTO {
     // "ts":1682877414.25}
 
     public class Shelly2NotifyBluEvent {
-        public static class Shelly2NotifyBluEventDimme {
+        public static class Shelly2NotifyBluEventDimmer {
             public Integer direction;
             public Integer steps;
         }
@@ -1240,7 +1240,7 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("Rotation") // BLU Remote
         public Double[] rotations;
         @SerializedName("Dimmer") // BLU Remote
-        public Shelly2NotifyBluEventDimme dimmer;
+        public Shelly2NotifyBluEventDimmer dimmer;
         @SerializedName("Firmware32") // BLU Remote
         public Long firmware;
 

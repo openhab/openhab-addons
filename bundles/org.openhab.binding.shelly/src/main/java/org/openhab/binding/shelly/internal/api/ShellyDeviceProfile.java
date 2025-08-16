@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
@@ -231,6 +233,21 @@ public class ShellyDeviceProfile {
                                                                    // sleep mode)
     }
 
+    public void initializeInputs(ThingTypeUID thingTypeUID, String btnType) {
+        if (numInputs == 0 && THING_TYPE_CAP_NUM_INPUTS.containsKey(thingTypeUID)) {
+            // Initialize the tables
+            numInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUID);
+        }
+        if (numInputs > 0) {
+            settings.inputs = new ArrayList<>();
+            status.inputs = new ArrayList<>();
+            for (int i = 0; i < numInputs; i++) {
+                settings.inputs.add(btnType.isEmpty() ? new ShellySettingsInput() : new ShellySettingsInput(btnType));
+                status.inputs.add(new ShellyInputState(i));
+            }
+        }
+    }
+
     public void updateFromStatus(ShellySettingsStatus status) {
         if (hasRelays) {
             // Dimmer-2 doesn't report inputs under /settings, only on /status, we need to update that info after init
@@ -317,9 +334,9 @@ public class ShellyDeviceProfile {
         List<ShellySettingsDimmer> dimmers = settings.dimmers;
         List<ShellySettingsRelay> relays = settings.relays;
         List<ShellySettingsRgbwLight> lights = settings.lights;
-        if (isButton) {
+        if (isButton || isMultiButton) {
             return true;
-        } else if ((isMultiButton || isIX) && inputs != null && idx < inputs.size()) {
+        } else if ((isIX || isBlu) && inputs != null && idx < inputs.size()) {
             ShellySettingsInput input = inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {

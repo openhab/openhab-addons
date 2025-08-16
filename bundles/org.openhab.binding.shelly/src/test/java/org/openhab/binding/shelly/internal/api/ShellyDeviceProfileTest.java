@@ -144,13 +144,13 @@ public class ShellyDeviceProfileTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideTestCasesForBuildBluServiceName")
-    void buildBluServiceName(String name, String mac, String expectedServiceName) {
+    @MethodSource("provideTestCasesForGetBluServiceName")
+    void getBluServiceName(String name, String mac, String expectedServiceName) {
         String actualServiceName = ShellyDevices.getBluServiceName(name, mac);
         assertThat(actualServiceName, is(equalTo(expectedServiceName)));
     }
 
-    private static Stream<Arguments> provideTestCasesForBuildBluServiceName() {
+    private static Stream<Arguments> provideTestCasesForGetBluServiceName() {
         return Stream.of( //
                 Arguments.of("SBBT-002C", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
                 Arguments.of("SBBT-02C", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
@@ -162,7 +162,7 @@ public class ShellyDeviceProfileTest {
     }
 
     @Test
-    void buildBluServiceNameWhenNameUnknownThrowIllegalArgumentException() {
+    void getBluServiceNameWhenNameUnknownThrowIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> {
             ShellyDevices.getBluServiceName("sbbt", "001A2B3C4D5E");
         });
