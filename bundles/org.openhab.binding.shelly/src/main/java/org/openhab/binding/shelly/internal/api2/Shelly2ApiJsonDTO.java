@@ -135,6 +135,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_LPUSH = "long_push";
     public static final String SHELLY2_EVENT_SLPUSH = "short_long_push";
     public static final String SHELLY2_EVENT_LSPUSH = "long_short_push";
+    public static final String SHELLY2_EVENT_HOLD = "hold";
 
     public static final String SHELLY2_EVENT_SLEEP = "sleep";
     public static final String SHELLY2_EVENT_CFGCHANGED = "config_changed";
@@ -1204,7 +1205,12 @@ public class Shelly2ApiJsonDTO {
     // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
     // "ts":1682877414.25}
 
-    public class Shelly2NotifyEventMessage {
+    public class Shelly2NotifyBluEvent {
+        public static class Shelly2NotifyBluEventDimmer {
+            public Integer direction;
+            public Integer steps;
+        }
+
         public String addr;
         public String name;
         public Boolean encryption;
@@ -1214,19 +1220,29 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("Battery")
         public Integer battery;
         @SerializedName("Button")
-        public Integer buttonEvent;
+        public Integer[] buttons;
         @SerializedName("Illuminance")
         public Integer illuminance;
         @SerializedName("Window")
         public Integer windowState;
-        @SerializedName("Rotation")
-        public Double rotation;
         @SerializedName("Motion")
         public Integer motionState;
         @SerializedName("Temperature")
-        public Double temperature;
+        public Double[] temperatures;
         @SerializedName("Humidity")
         public Double humidity;
+        @SerializedName("Vibration") // BLU Distance
+        public Integer vibration;
+        @SerializedName("Distance_mm") // BLU Distance
+        public Double distance;
+        @SerializedName("Channel") // BLU Remote
+        public Integer channel;
+        @SerializedName("Rotation") // BLU Remote
+        public Double[] rotations;
+        @SerializedName("Dimmer") // BLU Remote
+        public Shelly2NotifyBluEventDimmer dimmer;
+        @SerializedName("Firmware32") // BLU Remote
+        public Long firmware;
 
         public Integer rssi;
         public Integer tx_power;
@@ -1237,7 +1253,7 @@ public class Shelly2ApiJsonDTO {
         public Double ts;
         public String component;
         public String event;
-        public Shelly2NotifyEventMessage data;
+        public Shelly2NotifyBluEvent data;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")

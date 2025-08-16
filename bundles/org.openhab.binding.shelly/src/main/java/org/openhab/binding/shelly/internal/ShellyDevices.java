@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.substringBefore;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -149,10 +150,23 @@ public class ShellyDevices {
     public static final String SHELLYDT_MINI_EM = "S4EM-001PXCEU16"; // PM was renamed to EM in Gen4
 
     // Shelly BLU Series
-    public static final String SHELLYDT_BLUBUTTON = "SBBT";
-    public static final String SHELLYDT_BLUDW = "SBDW";
-    public static final String SHELLYDT_BLUMOTION = "SBMO";
-    public static final String SHELLYDT_BLUHT = "SBHT";
+    public static final String SHELLYDT_BLUCLASS_BUTTON = "SBBT";
+    public static final String SHELLYDT_BLUCLASS_HT = "SBHT";
+    public static final String SHELLYDT_BLUCLASS_DW = "SBDW";
+    public static final String SHELLYDT_BLUCLASS_MOTION = "SBMO";
+    public static final String SHELLYDT_BLUCLASS_DISTANCE = "SBDI";
+
+    public static final String SHELLYDT_BLUBUTTON1 = "SBBT-002C";
+    public static final String SHELLYDT_BLUTOUGHZB = "SBBT-102C";
+    public static final String SHELLYDT_BLUWALLSWITCH4 = "SBBT-EU5027";
+    public static final String SHELLYDT_BLUWALLSWITCH4_2 = "SBBT-EU3870";
+    public static final String SHELLYDT_BLURCBUTTON4 = "SBBT-004CUS";
+    public static final String SHELLYDT_BLUREMOTE = "SBRC-005B";
+    public static final String SHELLYDT_BLUHT = "SBHT-003C";
+    public static final String SHELLYDT_BLUHTZB = "SBHT-203C";
+    public static final String SHELLYDT_BLUDW = "SBDW-002C";
+    public static final String SHELLYDT_BLUMOTION = "SBMO-003Z";
+    public static final String SHELLYDT_BLUDISTANCE = "SBDI-003E";
 
     // Thing Type ID prefixes
     public static final String THING_TYPE_SHELLYPLUS_PREFIX = "shellyplus";
@@ -264,9 +278,14 @@ public class ShellyDevices {
 
     // Shelly Blu series
     public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON = new ThingTypeUID(BINDING_ID, "shellyblubutton");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUWALLSWITCH4 = new ThingTypeUID(BINDING_ID,
+            "shellybluwallswitch4");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLURCBUTTON4 = new ThingTypeUID(BINDING_ID, "shellyblurcbutton4");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUHT = new ThingTypeUID(BINDING_ID, "shellybluht");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUDW = new ThingTypeUID(BINDING_ID, "shellybludw");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUMOTION = new ThingTypeUID(BINDING_ID, "shellyblumotion");
-    public static final ThingTypeUID THING_TYPE_SHELLYBLUHT = new ThingTypeUID(BINDING_ID, "shellybluht");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUDISTANCE = new ThingTypeUID(BINDING_ID, "shellybludistance");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUREMOTE = new ThingTypeUID(BINDING_ID, "shellybluremote");
 
     /*
      * Thing type classes: Various logic is depending on device types/classes
@@ -298,6 +317,10 @@ public class ShellyDevices {
     // Single Button devices
     public static final Set<ThingTypeUID> GROUP_BUTTON_THING_TYPES = Set.of( //
             THING_TYPE_SHELLYBUTTON1, THING_TYPE_SHELLYBUTTON2, THING_TYPE_SHELLYBLUBUTTON);
+
+    // Multi Button Devices
+    public static final Set<ThingTypeUID> GROUP_MULTIBUTTON_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYBLUWALLSWITCH4, THING_TYPE_SHELLYBLURCBUTTON4, THING_TYPE_SHELLYBLUREMOTE);
 
     // HT Sensors
     public static final Set<ThingTypeUID> GROUP_HT_THING_TYPES = Set.of( //
@@ -335,8 +358,10 @@ public class ShellyDevices {
             THING_TYPE_SHELLYMINI_PM, THING_TYPE_SHELLYMINI_1PM, THING_TYPE_SHELLYMINI_EM);
 
     // BLU Devices
-    public static final Set<ThingTypeUID> GROUP_BLU_THING_TYPES = Set.of(THING_TYPE_SHELLYBLUBUTTON,
-            THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUHT);
+    public static final Set<ThingTypeUID> GROUP_BLU_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYBLUBUTTON, THING_TYPE_SHELLYBLUHT, THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION,
+            THING_TYPE_SHELLYBLUWALLSWITCH4, THING_TYPE_SHELLYBLURCBUTTON4, THING_TYPE_SHELLYBLUREMOTE,
+            THING_TYPE_SHELLYBLUDISTANCE);
 
     // Wall Displays
     public static final Set<ThingTypeUID> GROUP_WALLDISPLAY_THING_TYPES = Set.of(THING_TYPE_SHELLYPLUSWALLDISPLAY);
@@ -450,10 +475,22 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
 
             // BLU Series
-            Map.entry(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON),
+            Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON),
+            Map.entry(SHELLYDT_BLUTOUGHZB, THING_TYPE_SHELLYBLUBUTTON),
+            Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4),
+            Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4),
+            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
+            Map.entry(SHELLYDT_BLUHTZB, THING_TYPE_SHELLYBLUHT), //
             Map.entry(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW),
             Map.entry(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION),
-            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
+            Map.entry(SHELLYDT_BLUDISTANCE, THING_TYPE_SHELLYBLUDISTANCE),
+            Map.entry(SHELLYDT_BLUREMOTE, THING_TYPE_SHELLYBLUREMOTE),
+
+            Map.entry(SHELLYDT_BLUCLASS_BUTTON, THING_TYPE_SHELLYBLUBUTTON), //
+            Map.entry(SHELLYDT_BLUCLASS_HT, THING_TYPE_SHELLYBLUHT), //
+            Map.entry(SHELLYDT_BLUCLASS_DW, THING_TYPE_SHELLYBLUDW),
+            Map.entry(SHELLYDT_BLUCLASS_MOTION, THING_TYPE_SHELLYBLUMOTION),
+            Map.entry(SHELLYDT_BLUCLASS_DISTANCE, THING_TYPE_SHELLYBLUDISTANCE),
 
             // Wall displays
             Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
@@ -507,6 +544,9 @@ public class ShellyDevices {
                 THING_TYPE_SHELLYUNKNOWN, THING_TYPE_SHELLYPROTECTED));
     }
 
+    /*
+     * serviceName / thingType mapping
+     */
     public static final Map<String, ThingTypeUID> THING_TYPE_BY_SERVICE_NAME = Map.ofEntries(
             // Shelly Gen1
             Map.entry("shelly1", THING_TYPE_SHELLY1), //
@@ -607,12 +647,59 @@ public class ShellyDevices {
 
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON), //
+            Map.entry("shellybluwallswitch4", THING_TYPE_SHELLYBLUWALLSWITCH4), //
+            Map.entry("shellyblurcbutton4", THING_TYPE_SHELLYBLURCBUTTON4), //
+            Map.entry("shellybluht", THING_TYPE_SHELLYBLUHT), //
             Map.entry("shellybludw", THING_TYPE_SHELLYBLUDW), //
             Map.entry("shellyblumotion", THING_TYPE_SHELLYBLUMOTION), //
-            Map.entry("shellybluht", THING_TYPE_SHELLYBLUHT), //
+            Map.entry("shellybludistance", THING_TYPE_SHELLYBLUDISTANCE), //
+            Map.entry("shellybluremote", THING_TYPE_SHELLYBLUREMOTE), //
 
             // Password protected device
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED));
+
+    public static final Map<String, ThingTypeUID> BLU_THING_TYPE_BY_MODEL = Map.ofEntries( //
+            Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON), //
+            Map.entry(SHELLYDT_BLUTOUGHZB, THING_TYPE_SHELLYBLUBUTTON), //
+            Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4), //
+            Map.entry(SHELLYDT_BLUWALLSWITCH4_2, THING_TYPE_SHELLYBLUWALLSWITCH4), //
+            Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4), //
+            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
+            Map.entry(SHELLYDT_BLUHTZB, THING_TYPE_SHELLYBLUHT), //
+            Map.entry(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW), //
+            Map.entry(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION), //
+            Map.entry(SHELLYDT_BLUDISTANCE, THING_TYPE_SHELLYBLUDISTANCE), //
+            Map.entry(SHELLYDT_BLUREMOTE, THING_TYPE_SHELLYBLUREMOTE), //
+
+            // with unspecific model (string everything behind -
+            Map.entry(SHELLYDT_BLUCLASS_BUTTON, THING_TYPE_SHELLYBLUBUTTON), //
+            Map.entry(SHELLYDT_BLUCLASS_HT, THING_TYPE_SHELLYBLUHT), //
+            Map.entry(SHELLYDT_BLUCLASS_DW, THING_TYPE_SHELLYBLUDW), //
+            Map.entry(SHELLYDT_BLUCLASS_MOTION, THING_TYPE_SHELLYBLUMOTION), //
+            Map.entry(SHELLYDT_BLUCLASS_DISTANCE, THING_TYPE_SHELLYBLUDISTANCE) //
+    );
+
+    /**
+     * Generates a service name based on the provided model name and MAC address.
+     * Delimiters will be stripped from the returned MAC address.
+     *
+     * @param name Model name such as SBBT-02C or just SBDW
+     * @param mac MAC address with or without colon delimiters
+     * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
+     */
+    public static String getBluServiceName(String model, String mac) throws IllegalArgumentException {
+        String bluClass = model.contains("-") ? substringBefore(model, "-") : model;
+        ThingTypeUID uid = THING_TYPE_BY_DEVICE_TYPE.containsKey(model) ? THING_TYPE_BY_DEVICE_TYPE.get(model)
+                : THING_TYPE_BY_DEVICE_TYPE.get(bluClass);
+        if (uid != null) {
+            String serviceName = uid.getId();
+            if (!serviceName.isEmpty()) {
+                return serviceName + "-" + mac.replaceAll(":", "").toLowerCase();
+            }
+        }
+
+        throw new IllegalArgumentException("Unsupported BLU device model " + model);
+    }
 
     /*
      * Capabilities for specific thing types
@@ -626,4 +713,15 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLY3EM, 3), //
             Map.entry(THING_TYPE_SHELLYPLUS3EM63, 3), //
             Map.entry(THING_TYPE_SHELLYPRO3EM, 3));
+
+    // Number of inputs
+    public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //
+            Map.entry(THING_TYPE_SHELLYBLUBUTTON, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
+            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
+            Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2), //
+            Map.entry(THING_TYPE_SHELLYBLUDISTANCE, 1) //
+    );
 }
