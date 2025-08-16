@@ -37,10 +37,9 @@ This describes the Matter controller functionality for discovering and controlli
 ## Quick Start
 
 1. Install the Matter binding from the openHAB add-on store.
-2. Add a Matter "Controller" thing to the inbox using the default settings.
-3. Use the "Pair Matter Device" action on the controller thing to pair a device with the controller.
-4. Add the discovered device from the inbox as a new "Node" thing.
-
+1. Add a Matter "Controller" thing to the inbox using the default settings.
+1. Use the "Pair Matter Device" action on the controller thing to pair a device with the controller.
+1. Add the discovered device from the inbox as a new "Node" thing.
 
 Note: It is never necessary to remove or delete the "Controller" thing when troubleshooting issues.
 
