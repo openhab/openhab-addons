@@ -98,6 +98,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private Rooms[] homeRooms = new Rooms[0];
     private String rrHomeId = "";
     private String localKey = "";
+    private String localIP = "";
     private final byte[] nonce = new byte[16];
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
@@ -691,6 +692,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_SSID, new StringType(getNetworkInfo.result.ssid));
             updateState(CHANNEL_BSSID, new StringType(getNetworkInfo.result.bssid));
             updateState(CHANNEL_RSSI, new DecimalType(getNetworkInfo.result.rssi));
+            if (localIP.isEmpty()) {
+                localIP = getNetworkInfo.result.ip;
+            }
         }
     }
 
