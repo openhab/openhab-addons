@@ -22,6 +22,12 @@
 				(WOL) when it receives command ON on channel power. Accepted value is six groups of two hexadecimal digits,
 				separated by hyphens or colons, e.g '3c:cd:93:c2:20:e0'.</description>
 		</parameter>
+		<parameter name="broadcastAddress" type="text" required="false">
+			<label>Broadcast Address</label>
+			<description>If openHAB doesn't run in the same network as your TV, enter the IP address to send the WOL packet to.
+				Accepted value is four groups of up to 3 decimal digits, separated by dots, e.g '192.168.1.255'.</description>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="useTLS" type="boolean" required="false">
 			<label>Use TLS</label>
 			<description>Enable Transport Layer Security. This is required by latest firmware versions and should work with older
