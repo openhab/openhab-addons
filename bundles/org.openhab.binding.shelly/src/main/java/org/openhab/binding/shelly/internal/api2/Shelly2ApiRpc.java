@@ -587,163 +587,150 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onNotifyStatus(Shelly2RpcNotifyStatus message) {
+    public void onNotifyStatus(Shelly2RpcNotifyStatus message) throws ShellyApiException {
         logger.debug("{}: NotifyStatus update received: {}", thingName, gson.toJson(message));
-        try {
-            ShellyThingInterface t = thing;
-            if (t == null) {
-                logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={}, discovery={})",
-                        thingName, thingName, message.src, message.dst, discovery);
-                return;
+        ShellyThingInterface t = thing;
+        if (t == null) {
+            logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={}, discovery={})",
+                    thingName, thingName, message.src, message.dst, discovery);
+            return;
+        }
+        if (t.isStopping()) {
+            logger.debug("{}: Thing is shutting down, ignore WebSocket message", thingName);
+            return;
+        }
+        if (!t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
+            logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
+            return;
+        }
+
+        getThing().incProtMessages();
+        if (message.error != null) {
+            if (message.error.code == HttpStatus.UNAUTHORIZED_401 && !getString(message.error.message).isEmpty()) {
+                // Save nonce for notification
+                Shelly2AuthChallenge auth = gson.fromJson(message.error.message, Shelly2AuthChallenge.class);
+                if (auth != null && auth.realm == null) {
+                    logger.debug("{}: Authentication data received: {}", thingName, message.error.message);
+                    authInfo = auth;
+                }
+            } else {
+                logger.debug("{}: Error status received - {} {}", thingName, message.error.code, message.error.message);
+                incProtErrors();
             }
-            if (t.isStopping()) {
-                logger.debug("{}: Thing is shutting down, ignore WebSocket message", thingName);
-                return;
-            }
-            if (!t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
-                logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
-                return;
+        }
+
+        Shelly2NotifyStatus params = message.params;
+        if (params != null) {
+            if (getThing().getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
+                getThing().setThingOnline();
             }
 
-            getThing().incProtMessages();
-            if (message.error != null) {
-                if (message.error.code == HttpStatus.UNAUTHORIZED_401 && !getString(message.error.message).isEmpty()) {
-                    // Save nonce for notification
-                    Shelly2AuthChallenge auth = gson.fromJson(message.error.message, Shelly2AuthChallenge.class);
-                    if (auth != null && auth.realm == null) {
-                        logger.debug("{}: Authentication data received: {}", thingName, message.error.message);
-                        authInfo = auth;
-                    }
-                } else {
-                    logger.debug("{}: Error status received - {} {}", thingName, message.error.code,
-                            message.error.message);
-                    incProtErrors();
+            boolean updated = false;
+            ShellyDeviceProfile profile = getProfile();
+            ShellySettingsStatus status = profile.status;
+            if (params.sys != null) {
+                if (getBool(params.sys.restartRequired)) {
+                    logger.warn("{}: Device requires restart to activate changes", thingName);
+                }
+                status.uptime = params.sys.uptime;
+            }
+            status.temperature = SHELLY_API_INVTEMP; // mark invalid
+            updated |= fillDeviceStatus(status, message.params, true);
+            if (getDouble(status.temperature) == SHELLY_API_INVTEMP) {
+                // no device temp available
+                status.temperature = null;
+            } else {
+                if (status.tmp != null) {
+                    updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
+                            toQuantityType(getDouble(status.tmp.tC), DIGITS_NONE, SIUnits.CELSIUS));
                 }
             }
 
-            Shelly2NotifyStatus params = message.params;
-            if (params != null) {
-                if (getThing().getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
-                    getThing().setThingOnline();
-                }
-
-                boolean updated = false;
-                ShellyDeviceProfile profile = getProfile();
-                ShellySettingsStatus status = profile.status;
-                if (params.sys != null) {
-                    if (getBool(params.sys.restartRequired)) {
-                        logger.warn("{}: Device requires restart to activate changes", thingName);
-                    }
-                    status.uptime = params.sys.uptime;
-                }
-                status.temperature = SHELLY_API_INVTEMP; // mark invalid
-                updated |= fillDeviceStatus(status, message.params, true);
-                if (getDouble(status.temperature) == SHELLY_API_INVTEMP) {
-                    // no device temp available
-                    status.temperature = null;
-                } else {
-                    if (status.tmp != null) {
-                        updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
-                                toQuantityType(getDouble(status.tmp.tC), DIGITS_NONE, SIUnits.CELSIUS));
-                    }
-                }
-
-                profile.status = status;
-                if (updated) {
-                    getThing().restartWatchdog();
-                }
+            profile.status = status;
+            if (updated) {
+                getThing().restartWatchdog();
             }
-        } catch (ShellyApiException e) {
-            logger.debug("{}: Unable to process status update", thingName, e);
-            incProtErrors();
         }
     }
 
     @Override
-    public void onNotifyEvent(Shelly2RpcNotifyEvent message) {
-        try {
-            logger.debug("{}: NotifyEvent  received: {}", thingName, gson.toJson(message));
-            ShellyDeviceProfile profile = getProfile();
+    public void onNotifyEvent(Shelly2RpcNotifyEvent message) throws ShellyApiException {
+        logger.debug("{}: NotifyEvent  received: {}", thingName, gson.toJson(message));
+        ShellyDeviceProfile profile = getProfile();
 
-            getThing().incProtMessages();
-            getThing().restartWatchdog();
+        getThing().incProtMessages();
+        getThing().restartWatchdog();
 
-            for (Shelly2NotifyEvent e : message.params.events) {
-                switch (e.event) {
-                    case SHELLY2_EVENT_BTNUP:
-                    case SHELLY2_EVENT_BTNDOWN:
-                        String bgroup = getProfile().getInputGroup(e.id);
-                        updateChannel(bgroup, CHANNEL_INPUT + profile.getInputSuffix(e.id),
-                                getOnOff(SHELLY2_EVENT_BTNDOWN.equals(getString(e.event))));
+        for (Shelly2NotifyEvent e : message.params.events) {
+            switch (e.event) {
+                case SHELLY2_EVENT_BTNUP:
+                case SHELLY2_EVENT_BTNDOWN:
+                    String bgroup = getProfile().getInputGroup(e.id);
+                    updateChannel(bgroup, CHANNEL_INPUT + profile.getInputSuffix(e.id),
+                            getOnOff(SHELLY2_EVENT_BTNDOWN.equals(getString(e.event))));
+                    getThing().triggerButton(profile.getInputGroup(e.id), e.id, mapValue(MAP_INPUT_EVENT_ID, e.event));
+                    break;
+
+                case SHELLY2_EVENT_1PUSH:
+                case SHELLY2_EVENT_2PUSH:
+                case SHELLY2_EVENT_3PUSH:
+                case SHELLY2_EVENT_LPUSH:
+                case SHELLY2_EVENT_SLPUSH:
+                case SHELLY2_EVENT_LSPUSH:
+                    if (e.id < profile.numInputs) {
+                        ShellyInputState input = relayStatus.inputs.get(e.id);
+                        input.event = getString(MAP_INPUT_EVENT_TYPE.get(e.event));
+                        input.eventCount = getInteger(input.eventCount) + 1;
+                        relayStatus.inputs.set(e.id, input);
+                        profile.status.inputs.set(e.id, input);
+
+                        String group = getProfile().getInputGroup(e.id);
+                        updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(e.id),
+                                getStringType(input.event));
+                        updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(e.id),
+                                getDecimal(input.eventCount));
                         getThing().triggerButton(profile.getInputGroup(e.id), e.id,
                                 mapValue(MAP_INPUT_EVENT_ID, e.event));
-                        break;
+                    }
+                    break;
+                case SHELLY2_EVENT_CFGCHANGED:
+                    logger.debug("{}: Configuration update detected, re-initialize", thingName);
+                    getThing().requestUpdates(1, true); // refresh config
+                    break;
 
-                    case SHELLY2_EVENT_1PUSH:
-                    case SHELLY2_EVENT_2PUSH:
-                    case SHELLY2_EVENT_3PUSH:
-                    case SHELLY2_EVENT_LPUSH:
-                    case SHELLY2_EVENT_SLPUSH:
-                    case SHELLY2_EVENT_LSPUSH:
-                        if (e.id < profile.numInputs) {
-                            ShellyInputState input = relayStatus.inputs.get(e.id);
-                            input.event = getString(MAP_INPUT_EVENT_TYPE.get(e.event));
-                            input.eventCount = getInteger(input.eventCount) + 1;
-                            relayStatus.inputs.set(e.id, input);
-                            profile.status.inputs.set(e.id, input);
-
-                            String group = getProfile().getInputGroup(e.id);
-                            updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(e.id),
-                                    getStringType(input.event));
-                            updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(e.id),
-                                    getDecimal(input.eventCount));
-                            getThing().triggerButton(profile.getInputGroup(e.id), e.id,
-                                    mapValue(MAP_INPUT_EVENT_ID, e.event));
-                        }
-                        break;
-                    case SHELLY2_EVENT_CFGCHANGED:
-                        logger.debug("{}: Configuration update detected, re-initialize", thingName);
-                        getThing().requestUpdates(1, true); // refresh config
-                        break;
-
-                    case SHELLY2_EVENT_OTASTART:
-                        logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
-                        getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
-                                "offline.status-error-fwupgrade");
-                        break;
-                    case SHELLY2_EVENT_OTAPROGRESS:
-                        logger.debug("{}: Firmware update in progress: {}", thingName, getString(e.msg));
-                        break;
-                    case SHELLY2_EVENT_OTADONE:
-                        logger.debug("{}: Firmware update completed with status {}", thingName, getString(e.msg));
-                        getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
-                                "message.offline.status-error-fwcompleted");
-                        break;
-                    case SHELLY2_EVENT_RESTART:
-                        logger.debug("{}: Device was restarted: {}", thingName, getString(e.msg));
-                        getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
-                                "offline.status-error-restarted");
-                        getThing().postEvent(ALARM_TYPE_RESTARTED, true);
-                        break;
-                    case SHELLY2_EVENT_SLEEP:
-                        logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
-                        break;
-                    case SHELLY2_EVENT_WIFICONNFAILED:
-                        logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName,
-                                getInteger(e.reason));
-                        getThing().postEvent(e.event, false);
-                        break;
-                    case SHELLY2_EVENT_WIFIDISCONNECTED:
-                        logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
-                        getThing().postEvent(e.event, false);
-                        break;
-                    default:
-                        logger.debug("{}: Event {} was not handled", thingName, e.event);
-                }
+                case SHELLY2_EVENT_OTASTART:
+                    logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
+                    getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
+                            "offline.status-error-fwupgrade");
+                    break;
+                case SHELLY2_EVENT_OTAPROGRESS:
+                    logger.debug("{}: Firmware update in progress: {}", thingName, getString(e.msg));
+                    break;
+                case SHELLY2_EVENT_OTADONE:
+                    logger.debug("{}: Firmware update completed with status {}", thingName, getString(e.msg));
+                    getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
+                            "message.offline.status-error-fwcompleted");
+                    break;
+                case SHELLY2_EVENT_RESTART:
+                    logger.debug("{}: Device was restarted: {}", thingName, getString(e.msg));
+                    getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
+                            "offline.status-error-restarted");
+                    getThing().postEvent(ALARM_TYPE_RESTARTED, true);
+                    break;
+                case SHELLY2_EVENT_SLEEP:
+                    logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
+                    break;
+                case SHELLY2_EVENT_WIFICONNFAILED:
+                    logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName, getInteger(e.reason));
+                    getThing().postEvent(e.event, false);
+                    break;
+                case SHELLY2_EVENT_WIFIDISCONNECTED:
+                    logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
+                    getThing().postEvent(e.event, false);
+                    break;
+                default:
+                    logger.debug("{}: Event {} was not handled", thingName, e.event);
             }
-        } catch (ShellyApiException e) {
-            logger.debug("{}: Unable to process event", thingName, e);
-            incProtErrors();
         }
     }
 
