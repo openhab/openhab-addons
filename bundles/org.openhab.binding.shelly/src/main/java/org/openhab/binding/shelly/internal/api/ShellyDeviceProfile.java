@@ -337,9 +337,9 @@ public class ShellyDeviceProfile {
         List<ShellySettingsDimmer> dimmers = settings.dimmers;
         List<ShellySettingsRelay> relays = settings.relays;
         List<ShellySettingsRgbwLight> lights = settings.lights;
-        if (isButton) {
+        if (isButton || isMultiButton) {
             return true;
-        } else if ((isMultiButton || isIX) && inputs != null && idx < inputs.size()) {
+        } else if ((isIX || isBlu) && inputs != null && idx < inputs.size()) {
             ShellySettingsInput input = inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {

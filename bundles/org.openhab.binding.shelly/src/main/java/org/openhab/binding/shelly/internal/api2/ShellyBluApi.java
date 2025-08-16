@@ -17,8 +17,6 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -59,20 +57,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
     private final int pidCycleThreshold = 50;
-
-    private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.ofEntries( //
-            Map.entry(SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH), //
-            Map.entry(SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH), //
-            Map.entry(SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH), //
-            Map.entry(SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH), //
-            Map.entry(SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH), //
-            Map.entry(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH), //
-            Map.entry("1", SHELLY_BTNEVENT_1SHORTPUSH), //
-            Map.entry("2", SHELLY_BTNEVENT_2SHORTPUSH), //
-            Map.entry("3", SHELLY_BTNEVENT_3SHORTPUSH), //
-            Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), //
-            Map.entry("128", SHELLY_BTNEVENT_HOLDING), //
-            Map.entry("254", SHELLY_BTNEVENT_HOLDING)); // for firmware prior to 1.0.20
 
     /**
      * Regular constructor - called by Thing handler
