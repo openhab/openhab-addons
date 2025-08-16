@@ -4,7 +4,7 @@
  * Decoding of event data is based on the BTHome standard.
  * 
  * @author Markus Michels - Initial contribution
- * @author Udo Hartmann - Add suppor for decoding multi button stats
+ * @author Udo Hartmann - Add support for decoding multi button stats
  */
 
 let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT"];

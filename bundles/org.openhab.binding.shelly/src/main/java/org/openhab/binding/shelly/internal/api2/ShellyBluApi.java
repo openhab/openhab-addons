@@ -291,7 +291,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                     String group = getProfile().getInputGroup(bttnIdx);
                                     String suffix = profile.getInputSuffix(bttnIdx);
                                     // ignore HOLDING events for counter and trigger
-                                    if (!SHELLY_BTNEVENT_HOLD.equalsIgnoreCase(input.event)) {
+                                    if (!SHELLY_BTNEVENT_HOLDING.equalsIgnoreCase(input.event)) {
                                         logger.debug("{}: update to {}, pid={}", message.src, input.event, e.data.pid);
                                         t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
                                                 getStringType(input.event));
