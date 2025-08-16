@@ -168,7 +168,7 @@ Two connection types are supported:
 
 A transparent bridge between the Husdata interface and network (i.e. wifi) is used.
 
-There are many existing projects providing such functionality, such as [ser2net project page (Serial to Network Proxy)](http://ser2net.sourceforge.net/).
+There are many existing projects providing such functionality, such as [Serial to Network Proxy (ser2net)](http://ser2net.sourceforge.net/).
 
 Configuration of the TCP/IP thing:
 
