@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
@@ -84,8 +86,8 @@ final class ChannelActuatorLimitation extends ChannelHandlerTemplate {
                         VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
                 break;
             }
-            String actuatorSerial = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
+            String actuatorSerial = Objects.requireNonNullElse((String) ThingConfiguration.getValue(thisBridgeHandler,
+                    channelUID, VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER), "");
             LOGGER.trace("handleRefresh(): actuatorSerial={}", actuatorSerial);
 
             // Handle value inversion
@@ -161,8 +163,8 @@ final class ChannelActuatorLimitation extends ChannelHandlerTemplate {
                         VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
                 break;
             }
-            String actuatorSerial = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
+            String actuatorSerial = Objects.requireNonNullElse((String) ThingConfiguration.getValue(thisBridgeHandler,
+                    channelUID, VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER), "");
             LOGGER.trace("handleCommand(): actuatorSerial={}", actuatorSerial);
 
             // Handle value inversion

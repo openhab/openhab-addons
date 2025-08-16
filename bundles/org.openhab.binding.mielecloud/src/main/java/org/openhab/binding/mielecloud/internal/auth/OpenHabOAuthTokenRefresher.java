@@ -123,7 +123,7 @@ public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
             if (tokenResponse == null) {
                 return Optional.empty();
             } else {
-                return Optional.of(tokenResponse.getAccessToken());
+                return Optional.ofNullable(tokenResponse.getAccessToken());
             }
         } catch (OAuthException | org.openhab.core.auth.client.oauth2.OAuthException | IOException
                 | OAuthResponseException e) {

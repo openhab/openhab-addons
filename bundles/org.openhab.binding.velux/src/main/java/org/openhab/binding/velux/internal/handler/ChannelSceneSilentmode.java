@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
@@ -79,8 +81,9 @@ final class ChannelSceneSilentmode extends ChannelHandlerTemplate {
                 LOGGER.trace("handleCommand(): aborting processing as scene name is not set.");
                 break;
             }
-            String sceneName = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_SCENE_NAME);
+            String sceneName = Objects.requireNonNullElse((String) ThingConfiguration.getValue(thisBridgeHandler,
+                    channelUID, VeluxBindingProperties.PROPERTY_SCENE_NAME), "");
+            ;
             if (!thisBridgeHandler.bridgeParameters.scenes.getChannel().existingScenes
                     .isRegistered(new SceneName(sceneName))) {
                 LOGGER.info("handleCommand({},{}): cannot modify unknown scene: {}.", channelUID.getAsString(), command,
