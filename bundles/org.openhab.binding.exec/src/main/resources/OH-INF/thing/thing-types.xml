@@ -18,6 +18,10 @@
 			<channel id="lastexecution" typeId="lastexecution"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="command" type="text" required="true">
 				<label>Command</label>
