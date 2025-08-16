@@ -23,7 +23,7 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyBluEventData;
+import org.openhab.binding.shelly.internal.api2.ShellyBluEventDataDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -110,6 +110,10 @@ public class ShellyThingCreator {
 
     public static void addBluThing(String gateway, Shelly2NotifyBluEventData data,
             @Nullable ShellyThingTable thingTable) {
+        if (thingTable == null) {
+            throw new IllegalArgumentException("thingTable can't be null!");
+        }
+
         String model = getString(data.name);
         String bluClass = substringBefore(model, "-").toUpperCase();
         String mac = getString(data.addr).replaceAll(":", "");
@@ -133,10 +137,8 @@ public class ShellyThingCreator {
         addProperty(properties, PROPERTY_GW_DEVICE, gateway);
         addProperty(properties, CONFIG_DEVICEADDRESS, mac);
 
-        if (thingTable != null) {
-            LOGGER.debug("{}: Create thing {} for BLU device {} / {}", gateway, thingTypeUID, model, mac);
-            thingTable.discoveredResult(thingTypeUID, model, serviceName, mac, properties);
-        }
+        LOGGER.debug("{}: Create thing {} for BLU device {} / {}", gateway, thingTypeUID, model, mac);
+        thingTable.discoveredResult(thingTypeUID, model, serviceName, mac, properties);
     }
 
     private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {

@@ -166,7 +166,6 @@ public class ShellyDevices {
     public static final String THING_TYPE_SHELLYPRO_PREFIX = "shellypro";
 
     // Service name prefixes
-    public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
     public static final String SERVICE_NAME_SHELLYPLUSRANGE_PREFIX = "shellyplusrange";
     public static final String SERVICE_NAME_SHELLYPLUG_PREFIX = "shellyplug";
     public static final String SERVICE_NAME_SHELLYPLUGS_PREFIX = "shellyplugs";
