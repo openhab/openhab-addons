@@ -24,7 +24,7 @@
 		</parameter>
 		<parameter name="broadcastAddress" type="text" required="false">
 			<label>Broadcast Address</label>
-			<description>If OpenHAB doesn't run in the same network as your TV, enter the IP address to send the WOL packet to.
+			<description>If openHAB doesn't run in the same network as your TV, enter the IP address to send the WOL packet to.
 				Accepted value is four groups of up to 3 decimal digits, separated by dots, e.g '192.168.1.255'.</description>
 			<advanced>true</advanced>
 		</parameter>
