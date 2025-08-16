@@ -21,6 +21,7 @@ import static org.openhab.core.thing.ThingStatus.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -251,7 +252,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      */
     public void playURL(String urlStr) throws IOException, ReadException {
         try {
-            URL url = new URL(urlStr);
+            URL url = URI.create(urlStr).toURL();
             getApiConnection().playURL(getId(), url);
         } catch (MalformedURLException e) {
             logger.debug("Command '{}' is not a proper URL. Error: {}", urlStr, e.getMessage());
@@ -491,7 +492,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         String imageUrl = info.imageUrl;
         if (imageUrl != null && !imageUrl.isBlank()) {
             try {
-                URL url = new URL(imageUrl); // checks if String is proper URL
+                URL url = URI.create(imageUrl).toURL(); // checks if String is proper URL
                 RawType cover = HttpUtil.downloadImage(url.toString());
                 if (cover != null) {
                     updateState(CH_ID_COVER, cover);

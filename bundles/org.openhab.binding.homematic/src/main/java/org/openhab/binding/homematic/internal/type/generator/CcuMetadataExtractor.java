@@ -19,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.URL;
+import java.net.URI;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -216,7 +216,8 @@ public class CcuMetadataExtractor {
         public UrlLoader(String url, String startLine, String endLine) throws IOException {
             System.out.println("Loading file " + url);
             Boolean includeLine = null;
-            BufferedReader br = new BufferedReader(new InputStreamReader(new URL(url).openStream(), "UTF-8"));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(URI.create(url).toURL().openStream(), "UTF-8"));
 
             String line;
             while ((line = br.readLine()) != null) {

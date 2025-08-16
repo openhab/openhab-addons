@@ -15,6 +15,7 @@ package org.openhab.binding.onkyo.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
@@ -179,7 +180,7 @@ public class OnkyoAlbumArt {
 
     private byte[] downloadAlbumArt(String albumArtUrl) {
         try {
-            URL url = new URL(albumArtUrl);
+            URL url = URI.create(albumArtUrl).toURL();
             URLConnection connection = url.openConnection();
             try (InputStream inputStream = connection.getInputStream()) {
                 return inputStream.readAllBytes();

@@ -15,6 +15,8 @@ package org.openhab.binding.sonyaudio.internal.discovery;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +72,8 @@ public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 Map<String, Object> properties = getDescription(host, port, path);
                 properties.put(SonyAudioBindingConstants.HOST_PARAMETER, descriptorURL.getHost());
                 result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties).build();
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
+                logger.debug("Failed to retrieve description for device {}: {}", thingUid, e.getMessage());
                 return null;
             }
         }
@@ -118,9 +121,10 @@ public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
         return thingTypeUID;
     }
 
-    private Map<String, Object> getDescription(String host, int port, String path) throws IOException {
+    private Map<String, Object> getDescription(String host, int port, String path)
+            throws IOException, URISyntaxException {
         Map<String, Object> properties = new HashMap<>(2, 1);
-        URL url = new URL("http", host, port, path);
+        URL url = new URI("http", null, host, port, path, null, null).toURL();
         logger.debug("URL: {}", url.toString());
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()))) {
             String s;
