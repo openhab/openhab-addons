@@ -12,16 +12,21 @@
  */
 package org.openhab.binding.shelly.internal;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -31,6 +36,31 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class ShellyDevicesTest {
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForGetBluServiceName")
+    void getBluServiceName(String name, String mac, String expectedServiceName) {
+        String actualServiceName = ShellyDevices.getBluServiceName(name, mac);
+        assertThat(actualServiceName, is(equalTo(expectedServiceName)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForGetBluServiceName() {
+        return Stream.of( //
+                Arguments.of("SBBT", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
+                Arguments.of("SBBT-02C", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
+                Arguments.of("SBBT-02C-03D", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
+                Arguments.of("SBDW", "001A2B3C4D5E", "shellybludw-001a2b3c4d5e"), //
+                Arguments.of("SBMO", "001A2B3C4D5E", "shellyblumotion-001a2b3c4d5e"), //
+                Arguments.of("SBHT", "001A2B3C4D5E", "shellybluht-001a2b3c4d5e"), //
+                Arguments.of("SBHT", "00:1A:2B:3C:4D:5E", "shellybluht-001a2b3c4d5e"));
+    }
+
+    @Test
+    void getBluServiceNameWhenNameUnknownThrowIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ShellyDevices.getBluServiceName("sbbt", "001A2B3C4D5E");
+        });
+    }
+
     @Test
     void thingTypesByDeviceTypeAreSupported() {
         Set<ThingTypeUID> missingThingTypes = new HashSet<>(THING_TYPE_BY_DEVICE_TYPE.values());

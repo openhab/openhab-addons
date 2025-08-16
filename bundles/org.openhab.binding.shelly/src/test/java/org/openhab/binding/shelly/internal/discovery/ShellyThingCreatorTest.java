@@ -73,6 +73,7 @@ public class ShellyThingCreatorTest {
 
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset() {
         return Stream.of( //
+                // Shelly Gen 1
                 Arguments.of("johndoe-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNKNOWN), //
                 Arguments.of("shellyazplug-" + DEVICE_ID, SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyoutdoorsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGOUTDOORSG3, "",
@@ -105,11 +106,21 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyuni-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNI),
                 Arguments.of("shellyem-" + DEVICE_ID, "", "", THING_TYPE_SHELLYEM),
                 Arguments.of("shellyem3-" + DEVICE_ID, "", "", THING_TYPE_SHELLY3EM),
+
+                // Shelly Plus
                 Arguments.of("shellyemg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSEM),
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUS3EM63),
+
+                // Shelly Pro
                 Arguments.of("shellypro3em-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM),
                 Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM63),
-                Arguments.of("shellypro3em400-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM400) //
+                Arguments.of("shellypro3em400-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM400), //
+
+                // Shelly BLU
+                Arguments.of("shellyblubutton-" + DEVICE_ID, "", "", THING_TYPE_SHELLYBLUBUTTON), //
+                Arguments.of("shellybluht-" + DEVICE_ID, "", "", THING_TYPE_SHELLYBLUHT), //
+                Arguments.of("shellybludw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYBLUDW), //
+                Arguments.of("shellyblumotion-" + DEVICE_ID, "", "", THING_TYPE_SHELLYBLUMOTION) //
         );
     }
 
@@ -201,6 +212,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSEM, "", THING_TYPE_SHELLYPLUSEM), //
                 Arguments.of(SHELLYDT_PLUS3EM63, "", THING_TYPE_SHELLYPLUS3EM63), //
                 Arguments.of(SHELLYDT_PLUSRGBWPM, "", THING_TYPE_SHELLYPLUSRGBWPM),
+                Arguments.of(SHELLYDT_PLUSBLUGW, "", THING_TYPE_SHELLYPLUSBLUGW), //
 
                 // Plus Mini Series
                 Arguments.of(SHELLYDT_MINI_1, "", THING_TYPE_SHELLYMINI_1), //
@@ -242,11 +254,15 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO3EM400, "", THING_TYPE_SHELLYPRO3EM400), //
 
                 // BLU Series
-                Arguments.of(SHELLYDT_BLUBUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
+                Arguments.of(SHELLYDT_BLUBUTTON1, "", THING_TYPE_SHELLYBLUBUTTON), //
+                Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
                 Arguments.of(SHELLYDT_BLUDW, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of(SHELLYDT_BLUMOTION, "", THING_TYPE_SHELLYBLUMOTION), //
-                Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
-                Arguments.of(SHELLYDT_PLUSBLUGW, "", THING_TYPE_SHELLYPLUSBLUGW), //
+
+                Arguments.of(SHELLYDT_BLUCLASS_BUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
+                Arguments.of(SHELLYDT_BLUCLASS_HT, "", THING_TYPE_SHELLYBLUHT), //
+                Arguments.of(SHELLYDT_BLUCLASS_DW, "", THING_TYPE_SHELLYBLUDW), //
+                Arguments.of(SHELLYDT_BLUCLASS_MOTION, "", THING_TYPE_SHELLYBLUMOTION), //
 
                 // Wall displays
                 Arguments.of(SHELLYDT_PLUSWALLDISPLAY, "", THING_TYPE_SHELLYPLUSWALLDISPLAY));
@@ -266,29 +282,5 @@ public class ShellyThingCreatorTest {
             ThingUID expectedThingUid = new ThingUID(BINDING_ID, thingTypeId, DEVICE_ID);
             assertThat(actualThingUid, is(equalTo(expectedThingUid)));
         }
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideTestCasesForIsValidShellyServiceName")
-    void isValidShellyServiceName(String serviceName, boolean expected) {
-        assertThat("serviceName: " + serviceName, ShellyThingCreator.isValidShellyServiceName(serviceName),
-                is(expected));
-    }
-
-    private static Stream<Arguments> provideTestCasesForIsValidShellyServiceName() {
-        return Stream.of( //
-                Arguments.of("shellypmmini-123456789012", true), //
-                Arguments.of("ShellyPlusPMMini-Test", true), //
-                Arguments.of("shelly1-ABC", true), //
-                Arguments.of("ShellyOne-001", true), //
-                Arguments.of("MyShelly-001", true), //
-                Arguments.of("my-shelly", false), //
-                Arguments.of("shelly_one-001", false), //
-                Arguments.of("shelly-", false), //
-                Arguments.of("shelly 1-001", false), //
-                Arguments.of("shelly1-001!", false), //
-                Arguments.of("shell-001", false), //
-                Arguments.of("ShellyPlusPMMini", false), //
-                Arguments.of("ShellyPlusPMMini - Test", false));
     }
 }
