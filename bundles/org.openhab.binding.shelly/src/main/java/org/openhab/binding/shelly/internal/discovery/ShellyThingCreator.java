@@ -108,12 +108,7 @@ public class ShellyThingCreator {
         return THING_TYPE_BY_SERVICE_NAME.getOrDefault(type, THING_TYPE_SHELLYUNKNOWN);
     }
 
-    public static void addBluThing(String gateway, Shelly2NotifyBluEventData data,
-            @Nullable ShellyThingTable thingTable) {
-        if (thingTable == null) {
-            throw new IllegalArgumentException("thingTable can't be null!");
-        }
-
+    public static void addBluThing(String gateway, Shelly2NotifyBluEventData data, ShellyThingTable thingTable) {
         String model = getString(data.name);
         String bluClass = substringBefore(model, "-").toUpperCase();
         String mac = getString(data.addr).replaceAll(":", "");

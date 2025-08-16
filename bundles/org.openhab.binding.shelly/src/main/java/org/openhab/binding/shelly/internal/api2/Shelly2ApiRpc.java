@@ -105,7 +105,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterface, Shelly2RpctInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
-    private final @Nullable ShellyThingTable thingTable;
+    private final ShellyThingTable thingTable;
 
     protected boolean initialized = false;
     private boolean discovery = false;
@@ -135,7 +135,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public Shelly2ApiRpc(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
         super(thingName, config, httpClient);
         this.thingName = thingName;
-        this.thingTable = null;
+        this.thingTable = new ShellyThingTable(); // create empty table;
         this.discovery = true;
     }
 

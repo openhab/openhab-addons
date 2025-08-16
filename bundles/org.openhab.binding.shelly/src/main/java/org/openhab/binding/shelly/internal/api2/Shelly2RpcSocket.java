@@ -63,9 +63,10 @@ public class Shelly2RpcSocket {
     private @Nullable Session session;
     private @Nullable Shelly2RpctInterface websocketHandler;
     private WebSocketClient client = new WebSocketClient();
-    private @Nullable ShellyThingTable thingTable;
+    private final ShellyThingTable thingTable;
 
     public Shelly2RpcSocket() {
+        thingTable = new ShellyThingTable();
     }
 
     /**
@@ -75,7 +76,7 @@ public class Shelly2RpcSocket {
      * @param thingTable
      * @param deviceIp IP address for the device
      */
-    public Shelly2RpcSocket(String thingName, @Nullable ShellyThingTable thingTable, String deviceIp) {
+    public Shelly2RpcSocket(String thingName, ShellyThingTable thingTable, String deviceIp) {
         this.thingName = thingName;
         this.deviceIp = deviceIp;
         this.thingTable = thingTable;
