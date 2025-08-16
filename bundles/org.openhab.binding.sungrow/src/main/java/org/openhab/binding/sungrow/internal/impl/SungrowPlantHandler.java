@@ -14,8 +14,18 @@ package org.openhab.binding.sungrow.internal.impl;
 
 import static org.openhab.binding.sungrow.internal.SungrowBindingConstants.*;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.openhab.binding.sungrow.internal.client.operations.ApiOperationsFactory;
+import org.openhab.binding.sungrow.internal.client.operations.BasicPlantInfo;
+import org.openhab.binding.sungrow.internal.client.operations.DeviceList;
+import org.openhab.binding.sungrow.internal.client.operations.RealtimeData;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -31,7 +41,9 @@ public class SungrowPlantHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SungrowPlantHandler.class);
 
-    private ApiClient apiClient;
+    private volatile PlantConfiguration plantConfiguration = new PlantConfiguration();
+
+    private SungrowBridgeHandler sungrowBridgeHandler;
 
     public SungrowPlantHandler(Thing thing) {
         super(thing);
@@ -55,54 +67,68 @@ public class SungrowPlantHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            if (bridge.getHandler() instanceof SungrowBridgeHandler) {
-                apiClient = ((SungrowBridgeHandler) bridge.getHandler()).getApiClient();
-                System.out.println(apiClient);
-                updateStatus(ThingStatus.ONLINE);
-                return;
-            }
+        plantConfiguration = getConfigAs(PlantConfiguration.class);
+        if (!plantConfiguration.isValid()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration.");
+            return;
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        sungrowBridgeHandler = getSungrowBridgeHandler();
+        if (sungrowBridgeHandler != null) {
+            Integer interval = sungrowBridgeHandler.getConfiguration().getInterval();
+            scheduler.scheduleWithFixedDelay(this::updatePlant, interval, interval, TimeUnit.SECONDS);
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        }
+    }
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly, i.e. any network access must be done in
-        // the background initialization below.
-        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE or UNKNOWN must be set. This
-        // might already be the real thing status in case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
+    private void updatePlant() {
+        try {
+            DeviceList deviceList = ApiOperationsFactory.getDeviceList(plantConfiguration.getPlantId());
+            sungrowBridgeHandler.getSungrowClient().execute(deviceList);
 
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
+            DeviceList.Response deviceListResponse = deviceList.getResponse();
+            logger.info("Handling {} devices for plant {}", deviceListResponse.getDevices().size(),
+                    plantConfiguration.getPlantId());
+            deviceListResponse.getDevices().forEach(this::handleDevice);
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
+            queryRealtimeData(deviceListResponse);
+        } catch (IOException e) {
+            logger.error("Unable to update sungrow plant", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
 
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
+    private void handleDevice(DeviceList.Device device) {
+        try {
+            logger.debug("Handling device {} with serial {}. Type: '{}', TypeName: '{}'", device.getDeviceName(),
+                    device.getSerial(), device.getDeviceType(), device.getDeviceTypeName());
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+            BasicPlantInfo basicPlantInfo = ApiOperationsFactory.getBasicPlantInfo(device.getSerial());
+            sungrowBridgeHandler.getSungrowClient().execute(basicPlantInfo);
+
+            BasicPlantInfo.Response response = basicPlantInfo.getResponse();
+            logger.info("Installed Power: {}", response.getInstalledPower());
+        } catch (IOException e) {
+            logger.error("Unable to handle device {}", device.getDeviceName(), e);
+        }
+    }
+
+    private void queryRealtimeData(DeviceList.Response deviceListResponse) throws IOException {
+        List<String> serials = deviceListResponse.getDevices().stream().map(DeviceList.Device::getSerial)
+                .collect(Collectors.toList());
+        RealtimeData realtimeData = ApiOperationsFactory.getRealtimeData(serials);
+        sungrowBridgeHandler.getSungrowClient().execute(realtimeData);
+        System.out.println(realtimeData.getResponse());
+    }
+
+    private SungrowBridgeHandler getSungrowBridgeHandler() {
+        BridgeHandler bridgeHandler = getBridge().getHandler();
+        if (bridgeHandler instanceof SungrowBridgeHandler) {
+            return (SungrowBridgeHandler) bridgeHandler;
+        } else {
+            logger.error("Sungrow Bridge not initialized");
+            return null;
+        }
     }
 }

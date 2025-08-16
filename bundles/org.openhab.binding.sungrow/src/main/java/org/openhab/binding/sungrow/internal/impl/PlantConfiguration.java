@@ -12,22 +12,22 @@
  */
 package org.openhab.binding.sungrow.internal.impl;
 
-import org.openhab.binding.sungrow.internal.SungrowConfiguration;
-
 /**
- * Simple Client for accessing iSolarCloud API. Should be replaced by sungrow-api-client from github
- *
  * @author Christian Kemper - Initial contribution
  */
-public class ApiClient {
+public class PlantConfiguration {
 
-    private SungrowConfiguration configuration;
+    private String plantId = "";
 
-    ApiClient(SungrowConfiguration configuration) {
-        this.configuration = configuration;
+    public String getPlantId() {
+        return plantId;
     }
 
-    void initialize() {
-        System.out.println(configuration.getAppKey());
+    public void setPlantId(String plantId) {
+        this.plantId = plantId;
+    }
+
+    public boolean isValid() {
+        return plantId != null && !plantId.isEmpty();
     }
 }

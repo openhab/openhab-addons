@@ -15,25 +15,6 @@ The Binding creates a bridge for access to the API and creates a thing for each 
 - `bridge`: Access to the APIs
 - `plant`: The different Plants the user is granted.
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the Sungrow Binding
-#
-# Default secret key for the pairing of the Sungrow Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
-
 ## Thing Configuration
 
 _Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
@@ -43,11 +24,15 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ### `sample` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name      | Type      | Description                                                                                      | Default | Required | Advanced |
+|-----------|-----------|--------------------------------------------------------------------------------------------------|---------|----------|----------|
+| username  | text      | E-mail address used for the Sungrow Developer Account                                            | N/A     | yes      | no       |
+| password  | password  | Password used for the Sungrow Developer Account                                                  | N/A     | yes      | no       |
+| appKey    | password  | Appkey; provided via Sungrow Developer Portal                                                    | N/A     | yes      | no       |
+| secretKey | password  | Secret Key; provided via Sungrow Developer Portal                                                | N/A     | yes      | no       |
+| region    | selection | Region - with the region you select the iSolarCloud server (EU, AUSTRALIA, CHINA, INTERNATIONAL) | N/A     | yes      | no       |
+| hostname  | text      | Hostname - if available preconfigured hostname from region will be ignored                       | N/A     | no       | yes      |
+| interval  | integer   | Interval in seconds the API is called                                                            | 60      | no       | yes      |
 
 ## Channels
 

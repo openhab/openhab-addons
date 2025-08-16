@@ -9,11 +9,15 @@
 		<description>Bridge to the Sungrow API Server</description>
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
-				<context>network-address</context>
-				<label>Hostname</label>
-				<default>https://gateway.isolarcloud.eu</default>
-				<description>Hostname to the correct Sungrow Cloud Region</description>
+			<parameter name="username" type="text" required="true">
+				<label>E-mail Address</label>
+				<description>E-mail address used for the Sungrow Developer Account</description>
+				<context>email</context>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password used for the Sungrow Developer Account</description>
 			</parameter>
 			<parameter name="appKey" type="text" required="true">
 				<context>password</context>
@@ -25,17 +29,24 @@
 				<label>Secret Key</label>
 				<description>Secret Key; provided via Sungrow Developer Portal</description>
 			</parameter>
-			<parameter name="username" type="text" required="true">
-				<label>E-mail Address</label>
-				<description>E-mail address used for the Sungrow Developer Account</description>
-				<context>email</context>
+			<parameter name="region" type="text" required="false">
+				<limitToOptions>true</limitToOptions>
+				<label>Region</label>
+				<default>EUROPE</default>
+				<description>Region - with the region you select the iSolarCloud server</description>
+				<options>
+					<option value="EUROPE">Europe</option>
+					<option value="INTERNATIONAL">International</option>
+					<option value="AUSTRALIA">Australia</option>
+					<option value="CHINA">China</option>
+				</options>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password used for the Sungrow Developer Account</description>
+			<parameter name="hostname" type="text" required="false">
+				<label>Hostname</label>
+				<description>Hostname to the correct Sungrow Cloud Region; Overwrites the URLs from the region parameter</description>
+				<advanced>true</advanced>
 			</parameter>
-			<parameter name="interval" type="integer" unit="s" min="1">
+			<parameter name="interval" type="integer" required="false" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the API is polled in seconds</description>
 				<default>60</default>
@@ -55,6 +66,13 @@
 		<channels>
 			<channel id="channel1" typeId="sample-channel"/>
 		</channels>
+
+		<config-description>
+			<parameter name="plantId" type="text" required="true">
+				<label>Plant ID</label>
+				<description>Plant ID</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 

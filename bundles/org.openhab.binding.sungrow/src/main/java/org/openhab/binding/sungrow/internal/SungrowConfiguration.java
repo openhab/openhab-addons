@@ -13,6 +13,7 @@
 package org.openhab.binding.sungrow.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.sungrow.internal.client.SungrowClientFactory;
 
 /**
  * The {@link SungrowConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,8 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SungrowConfiguration {
 
-    private String hostname = "";
-
     private String appKey = "";
 
     private String appSecret = "";
@@ -32,11 +31,11 @@ public class SungrowConfiguration {
 
     private String password = "";
 
-    private Integer interval = 30;
+    private Integer interval = Integer.valueOf(60);
 
-    public String getHostname() {
-        return hostname;
-    }
+    private SungrowClientFactory.Region region = SungrowClientFactory.Region.EUROPE;
+
+    private String hostname = "";
 
     public String getAppKey() {
         return appKey;
@@ -56,5 +55,35 @@ public class SungrowConfiguration {
 
     public Integer getInterval() {
         return interval;
+    }
+
+    public SungrowClientFactory.Region getRegion() {
+        return region;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public boolean isValid() {
+        return appKey != null && appSecret != null && username != null && password != null && interval != null
+                && region != null;
+    }
+
+    @Override
+    public String toString() {
+        return "SungrowConfiguration{" + "appKey='" + logFormat(appKey) + '\'' + ", appSecret='" + logFormat(appSecret)
+                + '\'' + ", username='" + username + '\'' + ", password='" + logFormat(password) + '\'' + ", interval="
+                + interval + ", region=" + region + ", hostname='" + hostname + '\'' + '}';
+    }
+
+    private String logFormat(String s) {
+        if (s == null) {
+            return "N/A";
+        } else if (s.length() == 0) {
+            return "''";
+        } else {
+            return s.substring(0, s.length() / 4) + "...";
+        }
     }
 }

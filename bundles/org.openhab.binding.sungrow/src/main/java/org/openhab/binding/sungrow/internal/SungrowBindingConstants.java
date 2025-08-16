@@ -31,4 +31,6 @@ public class SungrowBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_1 = "channel1";
+
+    public static final int TIMEOUT = 30;
 }
