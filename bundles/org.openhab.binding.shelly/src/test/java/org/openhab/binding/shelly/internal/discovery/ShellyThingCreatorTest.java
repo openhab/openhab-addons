@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -101,7 +102,15 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellydw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDOORWIN),
                 Arguments.of("shellydw2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDOORWIN2),
                 Arguments.of("shellygas-" + DEVICE_ID, "", "", THING_TYPE_SHELLYGAS),
-                Arguments.of("shellyuni-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNI));
+                Arguments.of("shellyuni-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNI),
+                Arguments.of("shellyem-" + DEVICE_ID, "", "", THING_TYPE_SHELLYEM),
+                Arguments.of("shellyem3-" + DEVICE_ID, "", "", THING_TYPE_SHELLY3EM),
+                Arguments.of("shellyemg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSEM),
+                Arguments.of("shelly3em63g3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUS3EM63),
+                Arguments.of("shellypro3em-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM),
+                Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM63),
+                Arguments.of("shellypro3em400-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM400) //
+        );
     }
 
     @ParameterizedTest
@@ -208,9 +217,11 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO1, "", THING_TYPE_SHELLYPRO1), //
                 Arguments.of(SHELLYDT_PRO1_2, "", THING_TYPE_SHELLYPRO1), //
                 Arguments.of(SHELLYDT_PRO1_3, "", THING_TYPE_SHELLYPRO1), //
+                Arguments.of(SHELLYDT_PRO1UL, "", THING_TYPE_SHELLYPRO1), //
                 Arguments.of(SHELLYDT_PRO1PM, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1PM_2, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1PM_3, "", THING_TYPE_SHELLYPRO1PM), //
+                Arguments.of(SHELLYDT_PRO1PMUL, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1CB, "", THING_TYPE_SHELLYPRO1CB), //
                 Arguments.of(SHELLYDT_PRO2, "", THING_TYPE_SHELLYPRO2), //
                 Arguments.of(SHELLYDT_PRO2_2, "", THING_TYPE_SHELLYPRO2), //
@@ -222,11 +233,13 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO2PM_2, "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
                 Arguments.of(SHELLYDT_PRO2PM_3, "roller", THING_TYPE_SHELLYPRO2PM_ROLLER), //
                 Arguments.of(SHELLYDT_PRO3, "", THING_TYPE_SHELLYPRO3), //
-                Arguments.of(SHELLYDT_PROEM50, "", THING_TYPE_SHELLYPROEM50), //
-                Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
                 Arguments.of(SHELLYDT_PRO4PM, "", THING_TYPE_SHELLYPRO4PM), //
                 Arguments.of(SHELLYDT_PRO4PM_2, "", THING_TYPE_SHELLYPRO4PM), //
                 Arguments.of(SHELLYDT_4PRO, "", THING_TYPE_SHELLYPRO4PM), //
+                Arguments.of(SHELLYDT_PROEM50, "", THING_TYPE_SHELLYPROEM50), //
+                Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
+                Arguments.of(SHELLYDT_PRO3EM3CT63, "", THING_TYPE_SHELLYPRO3EM63), //
+                Arguments.of(SHELLYDT_PRO3EM400, "", THING_TYPE_SHELLYPRO3EM400), //
 
                 // BLU Series
                 Arguments.of(SHELLYDT_BLUBUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
@@ -241,10 +254,10 @@ public class ShellyThingCreatorTest {
 
     @Test
     void getThingUIDReturnsThingTypeMatchingServiceName() {
-        Set<ThingTypeUID> excludedThingTypeUids = Set.of(THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER,
-                THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLYPLUS2PM_RELAY,
-                THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPRO2, THING_TYPE_SHELLYPRO2PM_ROLLER,
-                THING_TYPE_SHELLYPRO2PM_RELAY, THING_TYPE_SHELLYRGBW2_COLOR);
+        Set<ThingTypeUID> excludedThingTypeUids = new HashSet<>();
+        excludedThingTypeUids.addAll(RELAY_THING_TYPE_BY_DEVICE_TYPE.values());
+        excludedThingTypeUids.addAll(ROLLER_THING_TYPE_BY_DEVICE_TYPE.values());
+        excludedThingTypeUids.addAll(GROUP_RGBW2_THING_TYPES);
 
         for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES.stream()
                 .filter(uid -> !excludedThingTypeUids.contains(uid)).toList()) {

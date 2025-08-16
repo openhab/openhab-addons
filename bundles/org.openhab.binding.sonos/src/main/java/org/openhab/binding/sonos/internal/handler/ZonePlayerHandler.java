@@ -613,7 +613,14 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     updateChannel(NIGHTMODE);
                     break;
                 case "DialogLevel":
-                    updateChannel(SPEECHENHANCEMENT);
+                    if (!isSpeechEnhanceEnabledStateUsable()) {
+                        updateChannel(SPEECHENHANCEMENT);
+                    }
+                    break;
+                case "SpeechEnhanceEnabled":
+                    if (isSpeechEnhanceEnabledStateUsable()) {
+                        updateChannel(SPEECHENHANCEMENT);
+                    }
                     break;
                 case LINEINCONNECTED:
                     if (SonosBindingConstants.WITH_LINEIN_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
@@ -908,7 +915,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
                 break;
             case SPEECHENHANCEMENT:
-                value = getDialogLevel();
+                value = getSpeechEnhanceEnabled();
                 if (value != null) {
                     newState = OnOffType.from(value);
                 }
@@ -2138,7 +2145,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setSpeechEnhancement(Command command) {
-        setEqualizerBooleanSetting(command, "DialogLevel");
+        setEqualizerBooleanSetting(command,
+                isSpeechEnhanceEnabledStateUsable() ? "SpeechEnhanceEnabled" : "DialogLevel");
     }
 
     private void setEqualizerBooleanSetting(Command command, String eqType) {
@@ -2169,8 +2177,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return stateMap.get("NightMode");
     }
 
-    public @Nullable String getDialogLevel() {
-        return stateMap.get("DialogLevel");
+    public @Nullable String getSpeechEnhanceEnabled() {
+        return stateMap.get(isSpeechEnhanceEnabledStateUsable() ? "SpeechEnhanceEnabled" : "DialogLevel");
+    }
+
+    private boolean isSpeechEnhanceEnabledStateUsable() {
+        return ARC_ULTRA_THING_TYPE_UID.equals(getThing().getThingTypeUID());
     }
 
     public @Nullable String getPlayMode() {
