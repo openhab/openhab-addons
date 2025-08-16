@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster.Locationdesc;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ServiceAreaCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ServiceAreaCluster.AreaInfoStruct;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ServiceAreaCluster.AreaStruct;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.core.library.types.OnOffType;
@@ -56,14 +58,11 @@ class ServiceAreaConverterTest extends BaseMatterConverterTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        ServiceAreaCluster cluster = new ServiceAreaCluster(BigInteger.ONE, 0);
         List<ServiceAreaCluster.AreaStruct> areas = new ArrayList<>();
-        ServiceAreaCluster.AreaInfoStruct info1 = cluster.new AreaInfoStruct(
-                cluster.new Locationdesc("Kitchen", null, 47), null);
-        ServiceAreaCluster.AreaInfoStruct info2 = cluster.new AreaInfoStruct(
-                cluster.new Locationdesc("Bathroom", null, 6), null);
-        areas.add(cluster.new AreaStruct(2, 0, info1));
-        areas.add(cluster.new AreaStruct(3, 0, info2));
+        AreaInfoStruct info1 = new AreaInfoStruct(new Locationdesc("Kitchen", null, 47), null);
+        AreaInfoStruct info2 = new AreaInfoStruct(new Locationdesc("Bathroom", null, 6), null);
+        areas.add(new AreaStruct(2, 0, info1));
+        areas.add(new AreaStruct(3, 0, info2));
         mockCluster.supportedAreas = areas;
         mockCluster.currentArea = 2;
         converter = new ServiceAreaConverter(mockCluster, mockHandler, 1, "Vacuum");

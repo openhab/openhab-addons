@@ -113,7 +113,7 @@ public class WaterHeaterManagementCluster extends BaseCluster {
      * This event shall be generated whenever a Boost command is accepted.
      * The corresponding structure fields within the WaterHeaterBoostInfoStruct are copied from the Boost command.
      */
-    public class BoostStarted {
+    public static class BoostStarted {
         public WaterHeaterBoostInfoStruct boostInfo; // WaterHeaterBoostInfoStruct
 
         public BoostStarted(WaterHeaterBoostInfoStruct boostInfo) {
@@ -124,12 +124,12 @@ public class WaterHeaterManagementCluster extends BaseCluster {
     /**
      * This event shall be generated whenever the BoostState transitions from Active to Inactive.
      */
-    public class BoostEnded {
+    public static class BoostEnded {
         public BoostEnded() {
         }
     }
 
-    public class WaterHeaterBoostInfoStruct {
+    public static class WaterHeaterBoostInfoStruct {
         /**
          * This field shall indicate the time period, in seconds, for which the boost state is activated.
          */

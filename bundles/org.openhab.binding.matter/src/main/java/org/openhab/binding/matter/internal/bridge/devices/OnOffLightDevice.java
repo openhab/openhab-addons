@@ -35,7 +35,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class OnOffLightDevice extends GenericDevice {
+public class OnOffLightDevice extends BaseDevice {
 
     public OnOffLightDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);

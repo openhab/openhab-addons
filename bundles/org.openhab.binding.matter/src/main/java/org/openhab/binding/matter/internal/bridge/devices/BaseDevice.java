@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.bridge.AttributeState;
+import org.openhab.binding.matter.internal.bridge.BridgedEndpoint;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
@@ -34,12 +35,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GenericDevice} is a base class for all devices that are managed by the bridge.
+ * The {@link BaseDevice} is a base class for all devices that are managed by the bridge.
  *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public abstract class GenericDevice implements StateChangeListener {
+public abstract class BaseDevice implements StateChangeListener {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected final GenericItem primaryItem;
@@ -48,7 +49,7 @@ public abstract class GenericDevice implements StateChangeListener {
     protected final MetadataRegistry metadataRegistry;
     protected boolean activated = false;
 
-    public GenericDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem primaryItem) {
+    public BaseDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem primaryItem) {
         this.metadataRegistry = metadataRegistry;
         this.client = client;
         this.primaryItem = primaryItem;
@@ -95,13 +96,17 @@ public abstract class GenericDevice implements StateChangeListener {
     public void stateUpdated(Item item, State state) {
     }
 
-    public synchronized CompletableFuture<String> registerDevice() {
+    public BridgedEndpoint activateBridgedEndpoint() {
         if (activated) {
             throw new IllegalStateException("Device already registered");
         }
         MatterDeviceOptions options = activate();
         activated = true;
-        return client.addEndpoint(deviceType(), primaryItem.getName(), options.label, primaryItem.getName(),
+        String label = primaryItem.getLabel();
+        if (label == null) {
+            label = primaryItem.getName();
+        }
+        return new BridgedEndpoint(deviceType(), primaryItem.getName(), label, primaryItem.getName(),
                 "Type " + primaryItem.getType(), String.valueOf(primaryItem.getName().hashCode()), options.clusters);
     }
 
