@@ -131,8 +131,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), // long_press
             Map.entry("5", SHELLY_BTNEVENT_LONGSHORTPUSH), // we have no long_double_press
             Map.entry("6", SHELLY_BTNEVENT_SHORTLONGPUSH), // we have no long_triple_press
-            Map.entry("128", SHELLY_BTNEVENT_HOLD), // hold_press
-            Map.entry("254", SHELLY_BTNEVENT_HOLD) // hold_press old firmware
+            Map.entry("128", SHELLY_BTNEVENT_HOLDING), // hold_press
+            Map.entry("254", SHELLY_BTNEVENT_HOLDING) // hold_press old firmware
     );
 
     protected static final Map<String, String> MAP_INPUT_EVENT_ID = Map.of(//
@@ -144,7 +144,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             SHELLY2_EVENT_LPUSH, SHELLY_EVENT_LONGPUSH, //
             SHELLY2_EVENT_LSPUSH, SHELLY_EVENT_LONG_SHORTPUSH, //
             SHELLY2_EVENT_SLPUSH, SHELLY_EVENT_SHORT_LONGTPUSH, //
-            SHELLY2_EVENT_HOLD, SHELLY_EVENT_HOLD);
+            SHELLY2_EVENT_HOLDING, SHELLY_EVENT_HOLDING);
 
     protected static final Map<String, String> MAP_INPUT_MODE = Map.of(//
             SHELLY2_RMODE_SINGLE, SHELLY_INP_MODE_ONEBUTTON, //

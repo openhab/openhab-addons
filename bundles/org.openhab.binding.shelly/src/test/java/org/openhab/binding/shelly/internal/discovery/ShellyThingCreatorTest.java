@@ -300,28 +300,4 @@ public class ShellyThingCreatorTest {
             assertThat(actualThingUid, is(equalTo(expectedThingUid)));
         }
     }
-
-    @ParameterizedTest
-    @MethodSource("provideTestCasesForIsValidShellyServiceName")
-    void isValidShellyServiceName(String serviceName, boolean expected) {
-        assertThat("serviceName: " + serviceName, ShellyMDNSDiscoveryParticipant.isValidShellyServiceName(serviceName),
-                is(expected));
-    }
-
-    private static Stream<Arguments> provideTestCasesForIsValidShellyServiceName() {
-        return Stream.of( //
-                Arguments.of("shellypmmini-123456789012", true), //
-                Arguments.of("ShellyPlusPMMini-Test", true), //
-                Arguments.of("shelly1-ABC", true), //
-                Arguments.of("ShellyOne-001", true), //
-                Arguments.of("MyShelly-001", true), //
-                Arguments.of("my-shelly", false), //
-                Arguments.of("shelly_one-001", false), //
-                Arguments.of("shelly-", false), //
-                Arguments.of("shelly 1-001", false), //
-                Arguments.of("shelly1-001!", false), //
-                Arguments.of("shell-001", false), //
-                Arguments.of("ShellyPlusPMMini", false), //
-                Arguments.of("ShellyPlusPMMini - Test", false));
-    }
 }

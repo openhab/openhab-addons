@@ -23,7 +23,7 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -108,23 +108,26 @@ public class ShellyThingCreator {
         return THING_TYPE_BY_SERVICE_NAME.getOrDefault(type, THING_TYPE_SHELLYUNKNOWN);
     }
 
-    public static void addBluThing(String gateway, Shelly2NotifyEvent e, @Nullable ShellyThingTable thingTable) {
-        String model = getString(e.data.name);
+    public static void addBluThing(String gateway, Shelly2NotifyBluEventData data,
+            @Nullable ShellyThingTable thingTable) {
+        String model = getString(data.name);
         String bluClass = substringBefore(model, "-").toUpperCase();
-        String mac = getString(e.data.addr).replaceAll(":", "");
+        String mac = getString(data.addr).replaceAll(":", "");
 
-        ThingTypeUID thingTypeUID = THING_TYPE_BY_DEVICE_TYPE.containsKey(model) ? //
-                THING_TYPE_BY_DEVICE_TYPE.get(model) : THING_TYPE_BY_DEVICE_TYPE.get(bluClass);
+        ThingTypeUID thingTypeUID = THING_TYPE_BY_DEVICE_TYPE.get(model);
+        if (thingTypeUID == null) {
+            thingTypeUID = THING_TYPE_BY_DEVICE_TYPE.get(bluClass);
+        }
         if (thingTypeUID == null) {
             LOGGER.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
             return;
         }
 
-        String serviceName = getBluServiceName(getString(e.data.name), mac);
+        String serviceName = getBluServiceName(getString(data.name), mac);
         Map<String, Object> properties = new TreeMap<>();
         addProperty(properties, PROPERTY_MODEL_ID, model);
         addProperty(properties, PROPERTY_SERVICE_NAME, serviceName);
-        addProperty(properties, PROPERTY_DEV_NAME, e.data.name);
+        addProperty(properties, PROPERTY_DEV_NAME, data.name);
         addProperty(properties, PROPERTY_DEV_TYPE, thingTypeUID.getId());
         addProperty(properties, PROPERTY_DEV_GEN, "BLU");
         addProperty(properties, PROPERTY_GW_DEVICE, gateway);

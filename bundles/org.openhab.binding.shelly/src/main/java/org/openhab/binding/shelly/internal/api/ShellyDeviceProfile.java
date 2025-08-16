@@ -231,9 +231,9 @@ public class ShellyDeviceProfile {
     }
 
     public void initializeInputs(ThingTypeUID thingTypeUID, String btnType) {
-        if (numInputs == 0 && THING_TYPE_CAP_NUM_INPUTS.containsKey(thingTypeUID)) {
-            // Initialize the tables
-            numInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUID);
+        Integer predefinedNumInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUID);
+        if (numInputs == 0 && predefinedNumInputs != null) {
+            numInputs = predefinedNumInputs;
         }
         if (numInputs > 0) {
             settings.inputs = new ArrayList<>();
