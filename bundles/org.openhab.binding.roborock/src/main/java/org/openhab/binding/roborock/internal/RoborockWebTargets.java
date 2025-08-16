@@ -163,7 +163,7 @@ public class RoborockWebTargets {
      * @throws RoborockException If authentication fails.
      */
     @Nullable
-    public Login doLogin(String baseUri, String email, String password) throws RoborockException {
+    public String doLogin(String baseUri, String email, String password) throws RoborockException {
         if (safeToken.isEmpty()) {
             logger.warn(
                     "Safe token is empty during doLogin. This might indicate getUrlByEmail was not called or failed.");
@@ -175,7 +175,7 @@ public class RoborockWebTargets {
         String payload = "?username=" + encodedUsername + "&password=" + encodedPassword + "&needtwostepauth=false";
 
         String response = invoke(baseUri + GET_TOKEN_PATH + payload, HttpMethod.POST, null, null);
-        return gson.fromJson(response, Login.class);
+        return response;
     }
 
     /**

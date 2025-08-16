@@ -109,18 +109,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         return thing.getUID();
     }
 
-    public Login doLogin() {
-        try {
-            Login login = webTargets.doLogin(baseUri, config.email, config.password);
-            if (login != null) {
-                return login;
-            }
-        } catch (RoborockException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
-        }
-        return new Login();
-    }
-
     @Nullable
     public Home getHomeDetail() {
         try {
@@ -226,16 +214,27 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             }
         } else {
             logger.debug("No available token or rriot values from sessionStorage, logging in");
-            Login loginResponse = doLogin();
-            if (loginResponse.code.equals("200")) {
-                sessionStorage.put("token", loginResponse.data.token);
-                sessionStorage.put("rriot", gson.toJson(loginResponse.data.rriot));
-                token = loginResponse.data.token;
-                rriot = loginResponse.data.rriot;
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error code " + loginResponse.code + " reported");
+            try {
+                String response = webTargets.doLogin(baseUri, config.email, config.password);
+                int code = 0;
+                if (!response.isEmpty() && JsonParser.parseString(response).getAsJsonObject().has("code")) {
+                    code = JsonParser.parseString(response).getAsJsonObject().get("code").getAsInt();
+                }
+                if (code == 200) {
+                    logger.debug("Successful login, parsing parameters");
+                    Login loginResponse = gson.fromJson(response, Login.class);
+                    sessionStorage.put("token", loginResponse.data.token);
+                    sessionStorage.put("rriot", gson.toJson(loginResponse.data.rriot));
+                    token = loginResponse.data.token;
+                    rriot = loginResponse.data.rriot;
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unsuccessful login: "
+                            + JsonParser.parseString(response).getAsJsonObject().get("msg").getAsString());
+                    return;
+                }
+            } catch (RoborockException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             }
         }
         updateStatus(ThingStatus.ONLINE);
