@@ -2847,8 +2847,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         long notificationPosition = coordinator.getQueueSize() + 1;
         logger.debug("Add notification URI {} to queue", notificationURL);
         coordinator.addURIToQueue(notificationURL.toString(), "", notificationPosition, false);
-        logger.debug("Set current URI to {}", QUEUE_URI + coordinator.getUDN() + "#0");
-        coordinator.setCurrentURI(QUEUE_URI + coordinator.getUDN() + "#0", "");
+        String queueURI = QUEUE_URI + coordinator.getUDN() + "#0";
+        logger.debug("Set current URI to {}", queueURI);
+        coordinator.setCurrentURI(queueURI, "");
         logger.debug("Set track position to {}", notificationPosition);
         coordinator.setPositionTrack(notificationPosition);
         if (!sourceStoppable) {
