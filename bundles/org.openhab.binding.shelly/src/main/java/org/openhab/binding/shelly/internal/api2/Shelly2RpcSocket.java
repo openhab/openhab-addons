@@ -294,7 +294,7 @@ public class Shelly2RpcSocket {
                 logger.debug("{}: No Rpc listener registered for device {}, skip message: {}", thingName,
                         getString(message.src), receivedMessage);
             }
-        } catch (ShellyApiException | JsonSyntaxException | IllegalArgumentException | NullPointerException e) {
+        } catch (ShellyApiException | JsonSyntaxException | IllegalArgumentException e) {
             logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
         }
     }
