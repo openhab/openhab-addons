@@ -708,7 +708,6 @@ public class ShellyDevices {
      * @param mac MAC address with or without colon delimiters
      * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
      */
-
     public static String buildBluServiceName(String model, String mac) throws IllegalArgumentException {
         String serviceName = getString(BLU_SERVICE_NAMES_BY_MODEL.get(model));
         String bluClass = model.contains("-") ? substringBefore(model, "-") : model; // e.g. SBBT-02C or just SBDW
@@ -741,5 +740,6 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
             Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
             Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2));
+            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2), //
+            Map.entry(THING_TYPE_SHELLYBLUDISTANCE, 1)); //
 }
