@@ -386,6 +386,7 @@
 /bundles/org.openhab.binding.speedtest/ @MikeTheTux
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
+/bundles/org.openhab.binding.sungrow/ @Afrouper
 /bundles/org.openhab.binding.sunsynk/ @leeC77
 /bundles/org.openhab.binding.surepetcare/ @renescherer @HerzScheisse
 /bundles/org.openhab.binding.synopanalyzer/ @clinique

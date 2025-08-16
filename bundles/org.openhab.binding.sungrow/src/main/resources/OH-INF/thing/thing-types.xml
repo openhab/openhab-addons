@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sungrow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="sungrow-bridge">
+		<label>Sungrow API Bridge</label>
+		<description>Bridge to the Sungrow API Server</description>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>E-mail Address</label>
+				<description>E-mail address used for the Sungrow Developer Account</description>
+				<context>email</context>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password used for the Sungrow Developer Account</description>
+			</parameter>
+			<parameter name="appKey" type="text" required="true">
+				<context>password</context>
+				<label>Appkey</label>
+				<description>Appkey; provided via Sungrow Developer Portal</description>
+			</parameter>
+			<parameter name="secretKey" type="text" required="true">
+				<context>password</context>
+				<label>Secret Key</label>
+				<description>Secret Key; provided via Sungrow Developer Portal</description>
+			</parameter>
+			<parameter name="region" type="text" required="false">
+				<limitToOptions>true</limitToOptions>
+				<label>Region</label>
+				<default>EUROPE</default>
+				<description>Region - with the region you select the iSolarCloud server</description>
+				<options>
+					<option value="EUROPE">Europe</option>
+					<option value="INTERNATIONAL">International</option>
+					<option value="AUSTRALIA">Australia</option>
+					<option value="CHINA">China</option>
+				</options>
+			</parameter>
+			<parameter name="hostname" type="text" required="false">
+				<label>Hostname</label>
+				<description>Hostname to the correct Sungrow Cloud Region; Overwrites the URLs from the region parameter</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="interval" type="integer" required="false" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the API is polled in seconds</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="sungrow-plant">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="sungrow-bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Sungrow Plant</label>
+		<description>Sungrow Plant as defined in iSolarCloud</description>
+
+		<channels>
+			<channel id="channel1" typeId="sample-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="plantId" type="text" required="true">
+				<label>Plant ID</label>
+				<description>Plant ID</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<channel-type id="sample-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Sample channel for Sungrow Binding</description>
+	</channel-type>
+</thing:thing-descriptions>
