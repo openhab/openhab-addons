@@ -10,11 +10,11 @@ You can find pricing information on the [documentation page](https://aws.amazon.
 
 ## Obtaining Credentials
 
-- Sign up for Amazon Web Services (AWS). [link](https://portal.aws.amazon.com/billing/signup)
+- Sign up for Amazon Web Services (AWS). See the [AWS sign up page](https://portal.aws.amazon.com/billing/signup)
 
 When you sign up for AWS, your account is automatically signed up for all services in AWS, including Amazon Polly.
 
-- Create an IAM User. [link](https://docs.aws.amazon.com/polly/latest/dg/setting-up.html)
+- Create an IAM User. See the [Amazon Polly setup guide](https://docs.aws.amazon.com/polly/latest/dg/setting-up.html)
 
 Services in AWS, such as Amazon Polly, require that you provide credentials when you access them so that the service can determine whether you have permissions to access the resources owned by that service.
 Within the AWS console, you can create access keys for your AWS account to access the Polly API.

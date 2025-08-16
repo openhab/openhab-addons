@@ -31,7 +31,7 @@ Two connection types are supported:
 A transparent bridge between the serial interface of the heat pump and network (i.e. wifi) is used.
 This way no additional wires are required between heat pump and computer, running openHAB.
 
-There are many existing project providing such functionality, i.e. [ser2net](http://ser2net.sourceforge.net/).
+There are many existing projects providing such functionality, such as [Serial to Network Proxy (ser2net)](http://ser2net.sourceforge.net/).
 
 For my setup, I used a low budget (~5€) circuit, that is integrated into the heat pump and connects to a wifi using an ESP8266 based module.
 
@@ -39,8 +39,8 @@ Board:
 
 ![board](doc/board.png)
 
-The code running on the ESP module can be found [here](https://github.com/crnjan/esp8266-bridge).
-There are other projects providing ESP firmware with similar functionality, i.e. [ESP-LINK](https://github.com/jeelabs/esp-link), but did not test with those.
+The code running on the ESP module can be found in the [esp8266-bridge repository on GitHub](https://github.com/crnjan/esp8266-bridge).
+There are other projects providing ESP firmware with similar functionality, such as the [ESP-LINK WiFi-Serial Bridge project on GitHub](https://github.com/jeelabs/esp-link), but did not test with those.
 
 Configuration of the TCP/IP thing:
 
@@ -141,7 +141,7 @@ Access: R = read only; RW = read write
 
 ## The Husdata interface
 
-The [Husdata](https://www.husdata.se/) interface bridges the often complex communication methods with a heat pump controller and provides access through a simple standard interface over RS-232.
+The [Husdata Interface](https://www.husdata.se/) bridges the often complex communication methods with a heat pump controller and provides access through a simple standard interface over RS-232.
 
 Supported heat pump models
 
@@ -168,7 +168,7 @@ Two connection types are supported:
 
 A transparent bridge between the Husdata interface and network (i.e. wifi) is used.
 
-There are many existing project providing such functionality, i.e. [ser2net](http://ser2net.sourceforge.net/).
+There are many existing projects providing such functionality, such as [Serial to Network Proxy (ser2net)](http://ser2net.sourceforge.net/).
 
 Configuration of the TCP/IP thing:
 

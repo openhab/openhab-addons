@@ -141,7 +141,7 @@ The PVR channels from Kodi will be populated during runtime into the state optio
 |-------------|---------|---------|------------------------------------------------------------------------|
 | title       | Text    | openHAB | Title of the  notification                                             |
 | displayTime | Integer | 5000    | Time the notification is shown (in ms)                                 |
-| icon        | Text    |         | Icon to use (e.g. "alarm"). One of the openHAB icons (as listed [here](https://www.openhab.org/docs/configuration/iconsets/classic/)). |
+| icon        | Text    |         | Icon to use (e.g. "alarm"). One of the openHAB icons (as listed in the [openHAB Classic iconset documentation](https://www.openhab.org/docs/configuration/iconsets/classic/)). |
 
 ## Audio Support
 
