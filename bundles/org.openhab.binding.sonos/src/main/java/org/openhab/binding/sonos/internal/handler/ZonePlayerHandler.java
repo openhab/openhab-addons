@@ -2643,8 +2643,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 ZonePlayerHandler coordinator = getCoordinatorHandler();
 
                 String currentURI = coordinator.getCurrentURI();
-                logger.debug("playNotificationSoundURI: currentURI {} metadata {}", currentURI,
-                        coordinator.getCurrentURIMetadataAsString());
+                logger.debug("playNotificationSoundURI: notificationURL {} currentURI {} metadata {}", notificationURL,
+                        currentURI, coordinator.getCurrentURIMetadataAsString());
 
                 if (isPlayingStreamOrRadio(currentURI)) {
                     handleNotifForRadioStream(currentURI, notificationURL, coordinator);
@@ -2657,13 +2657,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 } else if (isPlaylistEmpty(coordinator)) {
                     handleNotifForEmptyQueue(notificationURL, coordinator);
                 } else {
-                    logger.debug("Notification feature not yet implemented while the current media is being played");
+                    logger.warn(
+                            "Notification feature not yet implemented while the current media ({}) is playing or last played",
+                            currentURI);
                 }
                 synchronized (notificationLock) {
                     notificationLock.notify();
                 }
             } catch (IllegalStateException e) {
-                logger.debug("Cannot play notification sound ({})", e.getMessage());
+                logger.warn("Cannot play notification sound ({})", e.getMessage());
             } catch (InterruptedException e) {
                 logger.debug("Play notification sound interrupted ({})", e.getMessage());
                 Thread.currentThread().interrupt();
@@ -2730,12 +2732,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     private void handleNotifForRadioStream(@Nullable String currentStreamURI, Command notificationURL,
             ZonePlayerHandler coordinator) throws InterruptedException {
+        logger.debug("Handling notification while radio stream is playing or last played");
         String nextAction = coordinator.getTransportState();
         SonosMetaData track = coordinator.getTrackMetadata();
         SonosMetaData currentUriMetaData = coordinator.getCurrentURIMetadata();
 
         handleNotificationSound(notificationURL, coordinator);
         if (currentStreamURI != null && track != null && currentUriMetaData != null) {
+            logger.debug("Restoring URI before notification using URI {} and metadata {}", currentStreamURI,
+                    currentUriMetaData);
             coordinator.setCurrentURI(new SonosEntry("", currentUriMetaData.getTitle(), "", "", track.getAlbumArtUri(),
                     "", currentUriMetaData.getUpnpClass(), currentStreamURI));
             restoreLastTransportState(coordinator, nextAction);
@@ -2754,7 +2759,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     private void handleNotifForLineIn(@Nullable String currentLineInURI, Command notificationURL,
             ZonePlayerHandler coordinator) throws InterruptedException {
-        logger.debug("Handling notification while sound from line-in was being played");
+        logger.debug("Handling notification while line-in is playing or last played");
         String nextAction = coordinator.getTransportState();
 
         handleNotificationSound(notificationURL, coordinator);
@@ -2777,7 +2782,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     private void handleNotifForVirtualLineIn(@Nullable String currentVirtualLineInURI, Command notificationURL,
             ZonePlayerHandler coordinator) throws InterruptedException {
-        logger.debug("Handling notification while sound from virtual line-in was being played");
+        logger.debug("Handling notification while virtual line-in is playing or last played");
         String nextAction = coordinator.getTransportState();
         String currentUriMetaData = coordinator.getCurrentURIMetadataAsString();
 
@@ -2806,12 +2811,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         String trackPosition = coordinator.getRefreshedPosition();
         long currentTrackNumber = coordinator.getRefreshedCurrenTrackNr();
         logger.debug(
-                "Handling notification while playing queue: currentQueueURI {} trackPosition {} currentTrackNumber {}",
+                "Handling notification while queue is playing or last played: currentQueueURI {} trackPosition {} currentTrackNumber {}",
                 currentQueueURI, trackPosition, currentTrackNumber);
 
         handleNotificationSound(notificationURL, coordinator);
         String queueUri = QUEUE_URI + coordinator.getUDN() + "#0";
         if (queueUri.equals(currentQueueURI)) {
+            logger.debug("Restoring sound from queue track {}", currentTrackNumber);
             coordinator.setPositionTrack(currentTrackNumber);
             coordinator.setPosition(trackPosition);
             restoreLastTransportState(coordinator, nextAction);
@@ -2827,27 +2833,42 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     private void handleNotificationSound(Command notificationURL, ZonePlayerHandler coordinator)
             throws InterruptedException {
+        logger.debug("handleNotificationSound: URL {} coordinator {}", notificationURL, coordinator.getUDN());
         boolean sourceStoppable = !isPlayingOpticalLineIn(coordinator.getCurrentURI());
         String originalVolume = (isAdHocGroup() || isStandalonePlayer()) ? getVolume() : coordinator.getVolume();
         if (sourceStoppable) {
+            logger.debug("Stop current playback...");
             coordinator.stop();
             coordinator.waitForNotTransportState(STATE_PLAYING);
+            logger.debug("Current playback stopped");
+            logger.debug("Apply notification volume");
             applyNotificationSoundVolume();
         }
         long notificationPosition = coordinator.getQueueSize() + 1;
+        logger.debug("Add notification URI {} to queue", notificationURL);
         coordinator.addURIToQueue(notificationURL.toString(), "", notificationPosition, false);
-        coordinator.setCurrentURI(QUEUE_URI + coordinator.getUDN() + "#0", "");
+        String queueURI = QUEUE_URI + coordinator.getUDN() + "#0";
+        logger.debug("Set current URI to {}", queueURI);
+        coordinator.setCurrentURI(queueURI, "");
+        logger.debug("Set track position to {}", notificationPosition);
         coordinator.setPositionTrack(notificationPosition);
         if (!sourceStoppable) {
+            logger.debug("Stop current playback...");
             coordinator.stop();
             coordinator.waitForNotTransportState(STATE_PLAYING);
+            logger.debug("Current playback stopped");
+            logger.debug("Apply notification volume");
             applyNotificationSoundVolume();
         }
+        logger.debug("Start notification playback...");
         coordinator.play();
         coordinator.waitForFinishedNotification();
+        logger.debug("Notification playback ended");
         if (originalVolume != null) {
+            logger.debug("Restore original volume {}", originalVolume);
             setVolumeForGroup(DecimalType.valueOf(originalVolume));
         }
+        logger.debug("Remove notification track from queue");
         coordinator.removeRangeOfTracksFromQueue(new StringType(Long.toString(notificationPosition) + ",1"));
     }
 
@@ -2877,12 +2898,19 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     private void handleNotifForEmptyQueue(Command notificationURL, ZonePlayerHandler coordinator)
             throws InterruptedException {
+        logger.debug("Handling notification while loaded queue is empty: URL {} coordinator {}", notificationURL,
+                coordinator.getUDN());
         String originalVolume = coordinator.getVolume();
+        logger.debug("Apply notification volume");
         coordinator.applyNotificationSoundVolume();
+        logger.debug("Start notification playback...");
         coordinator.playURI(notificationURL);
         coordinator.waitForFinishedNotification();
+        logger.debug("Notification playback ended");
+        logger.debug("Remove all tracks from queue");
         coordinator.removeAllTracksFromQueue();
         if (originalVolume != null) {
+            logger.debug("Restore original volume {}", originalVolume);
             coordinator.setVolume(DecimalType.valueOf(originalVolume));
         }
     }
