@@ -151,29 +151,29 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (channelUID.getId().equals(CHANNEL_RPC) || channelUID.getId().equals(CHANNEL_COMMAND)) {
-                sendCommand(command.toString());
+                sendRPCCommand(command.toString());
                 return;
             }
             if (channelUID.getId().equals(CHANNEL_VACUUM)) {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
-                        sendCommand(COMMAND_APP_START);
+                        sendRPCCommand(COMMAND_APP_START);
                         return;
                     } else {
-                        sendCommand(COMMAND_APP_STOP);
+                        sendRPCCommand(COMMAND_APP_STOP);
                         return;
                     }
                 }
             }
             if (channelUID.getId().equals(CHANNEL_CONTROL) && command instanceof StringType) {
                 if ("vacuum".equals(command.toString())) {
-                    sendCommand(COMMAND_APP_START);
+                    sendRPCCommand(COMMAND_APP_START);
                 } else if ("spot".equals(command.toString())) {
-                    sendCommand(COMMAND_APP_SPOT);
+                    sendRPCCommand(COMMAND_APP_SPOT);
                 } else if ("pause".equals(command.toString())) {
-                    sendCommand(COMMAND_APP_PAUSE);
+                    sendRPCCommand(COMMAND_APP_PAUSE);
                 } else if ("dock".equals(command.toString())) {
-                    sendCommand(COMMAND_APP_CHARGE);
+                    sendRPCCommand(COMMAND_APP_CHARGE);
                 } else {
                     logger.info("Command {} not recognised", command.toString());
                 }
@@ -186,49 +186,49 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
 
             if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
-                sendCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
+                sendRPCCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
                 return;
             }
 
             if (channelUID.getId().equals(RobotCapabilities.WATERBOX_MODE.getChannel())) {
-                sendCommand(COMMAND_SET_WATERBOX_MODE, "[" + command.toString() + "]");
+                sendRPCCommand(COMMAND_SET_WATERBOX_MODE, "[" + command.toString() + "]");
                 return;
             }
             if (channelUID.getId().equals(RobotCapabilities.MOP_MODE.getChannel())) {
-                sendCommand(COMMAND_SET_MOP_MODE, "[" + command.toString() + "]");
+                sendRPCCommand(COMMAND_SET_MOP_MODE, "[" + command.toString() + "]");
                 return;
             }
             if (channelUID.getId().equals(RobotCapabilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
                     && !command.toString().contentEquals("-")) {
-                sendCommand(COMMAND_START_SEGMENT, "[" + command.toString() + "]");
+                sendRPCCommand(COMMAND_START_SEGMENT, "[" + command.toString() + "]");
                 updateState(RobotCapabilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
                 return;
             }
             if (channelUID.getId().equals(CHANNEL_FAN_CONTROL)) {
                 if (Integer.valueOf(command.toString()) > 0) {
-                    sendCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
+                    sendRPCCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
                 }
                 return;
             }
             if (channelUID.getId().equals(CHANNEL_CONSUMABLE_RESET)) {
-                sendCommand(COMMAND_CONSUMABLES_RESET, "[" + command.toString() + "]");
+                sendRPCCommand(COMMAND_CONSUMABLES_RESET, "[" + command.toString() + "]");
                 updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
             }
 
             if (channelUID.getId().equals(RobotCapabilities.COLLECT_DUST.getChannel()) && !command.toString().isEmpty()
                     && !command.toString().contentEquals("-")) {
-                sendCommand(COMMAND_SET_COLLECT_DUST);
+                sendRPCCommand(COMMAND_SET_COLLECT_DUST);
                 return;
             }
 
             if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_START.getChannel())
                     && !command.toString().isEmpty() && !command.toString().contentEquals("-")) {
-                sendCommand(COMMAND_SET_CLEAN_MOP_START);
+                sendRPCCommand(COMMAND_SET_CLEAN_MOP_START);
                 return;
             }
             if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_STOP.getChannel())
                     && !command.toString().isEmpty() && !command.toString().contentEquals("-")) {
-                sendCommand(COMMAND_SET_CLEAN_MOP_STOP);
+                sendRPCCommand(COMMAND_SET_CLEAN_MOP_STOP);
                 return;
             }
         } catch (UnsupportedEncodingException e) {
@@ -385,19 +385,19 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void sendAllMqttCommands() {
         try {
-            outstandingRequests.put("getStatus", sendCommand(COMMAND_GET_STATUS));
-            outstandingRequests.put("getConsumable", sendCommand(COMMAND_GET_CONSUMABLE));
-            outstandingRequests.put("getNetworkInfo", sendCommand(COMMAND_GET_NETWORK_INFO));
-            outstandingRequests.put("getCleanSummary", sendCommand(COMMAND_GET_CLEAN_SUMMARY));
-            outstandingRequests.put("getDndTimer", sendCommand(COMMAND_GET_DND_TIMER));
-            outstandingRequests.put("getRoomMapping", sendCommand(COMMAND_GET_ROOM_MAPPING));
-            outstandingRequests.put("getSegmentStatus", sendCommand(COMMAND_GET_SEGMENT_STATUS));
-            outstandingRequests.put("getMapStatus", sendCommand(COMMAND_GET_MAP_STATUS));
-            outstandingRequests.put("getLedStatus", sendCommand(COMMAND_GET_LED_STATUS));
-            outstandingRequests.put("getCarpetMode", sendCommand(COMMAND_GET_CARPET_MODE));
-            outstandingRequests.put("getFwFeatures", sendCommand(COMMAND_GET_FW_FEATURES));
-            outstandingRequests.put("getMultiMapsList", sendCommand(COMMAND_GET_MULTI_MAP_LIST));
-            outstandingRequests.put("getCustomizeCleanMode", sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
+            outstandingRequests.put("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
+            outstandingRequests.put("getConsumable", sendRPCCommand(COMMAND_GET_CONSUMABLE));
+            outstandingRequests.put("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
+            outstandingRequests.put("getCleanSummary", sendRPCCommand(COMMAND_GET_CLEAN_SUMMARY));
+            outstandingRequests.put("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
+            outstandingRequests.put("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
+            outstandingRequests.put("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
+            outstandingRequests.put("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
+            outstandingRequests.put("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
+            outstandingRequests.put("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
+            outstandingRequests.put("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
+            outstandingRequests.put("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
+            outstandingRequests.put("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
         } catch (UnsupportedEncodingException e) {
             logger.warn("Failed to send MQTT commands due to unsupported encoding: {}", e.getMessage());
         }
@@ -795,7 +795,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     lastHistoryID = lastClean;
                     try {
                         outstandingRequests.put("getCleanRecord",
-                                sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
+                                sendRPCCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
                     } catch (UnsupportedEncodingException e) {
                         // Shouldn't occur
                     }
@@ -817,7 +817,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         lastHistoryID = lastClean;
                         try {
                             outstandingRequests.put("getCleanRecord",
-                                    sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
+                                    sendRPCCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
                         } catch (UnsupportedEncodingException e) {
                             // Shouldn't occur
                         }
@@ -975,11 +975,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         hasChannelStructure = true;
     }
 
-    private int sendCommand(String method) throws UnsupportedEncodingException {
-        return sendCommand(method, "[]");
+    private int sendRPCCommand(String method) throws UnsupportedEncodingException {
+        return sendRPCCommand(method, "[]");
     }
 
-    private int sendCommand(String method, String params) throws UnsupportedEncodingException {
+    private int sendRPCCommand(String method, String params) throws UnsupportedEncodingException {
         RoborockAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
             return 0;
@@ -995,7 +995,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 methodName = outstandingRequests.entrySet().stream().filter(entry -> entry.getValue() == tempId)
                         .map(Map.Entry::getKey).findFirst().orElse(null);
             } while (methodName != null);
-            return localBridge.sendCommand(method, params, getThing().getUID().getId(), localKey, nonce, id);
+            return localBridge.sendRPCCommand(method, params, getThing().getUID().getId(), localKey, nonce, id);
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return 0;
