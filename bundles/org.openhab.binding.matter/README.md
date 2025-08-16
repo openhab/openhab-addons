@@ -373,7 +373,7 @@ Adding, modifying or removing a Matter "Controller" thing, or any Matter "Node" 
 There are two ways in which to configure the Matter bridge:
 
 1. Using the "Matter Bridge Configuration" settings page (Main UI -> Settings -> Add-on Settings -> Matter Binding) for bridge status, general configuration and pairing 3rd party clients.
-2. Adding Matter metadata tags to Groups and Items either through the Main UI or through item files.
+1. Adding Matter metadata tags to Groups and Items either through the Main UI or through item files.
 
 <img src="./doc/bridge-settings.png" alt="Bridge Settings" width="500"/>
 
