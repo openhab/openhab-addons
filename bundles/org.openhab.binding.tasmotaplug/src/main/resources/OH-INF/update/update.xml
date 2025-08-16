@@ -50,6 +50,21 @@
 				<type>tasmotaplug:energy-total-start</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<add-channel id="pulse-time">
+				<type>tasmotaplug:pulse-time</type>
+			</add-channel>
+			<add-channel id="pulse-time2">
+				<type>tasmotaplug:pulse-time</type>
+			</add-channel>
+			<add-channel id="pulse-time3">
+				<type>tasmotaplug:pulse-time</type>
+			</add-channel>
+			<add-channel id="pulse-time4">
+				<type>tasmotaplug:pulse-time</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
