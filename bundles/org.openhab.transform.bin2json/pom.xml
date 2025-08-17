@@ -18,7 +18,7 @@
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>jbbp</artifactId>
-      <version>1.4.1</version>
+      <version>3.0.1</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
