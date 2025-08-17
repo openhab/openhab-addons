@@ -8,7 +8,7 @@ You can find pricing information on [this page](https://www.ibm.com/cloud/watson
 
 Before you can use this add-on, you should create a Speech-to-Text instance in the IBM Cloud service.
 
-- Go to the following [link](https://cloud.ibm.com/catalog/services/speech-to-text) and create the instance in your desired region.
+- Go to the [IBM Watson Speech-to-Text Service](https://cloud.ibm.com/catalog/services/speech-to-text) and create the instance in your desired region.
 - After the instance is created you should be able to view its url and api key.
 
 ## Configuration

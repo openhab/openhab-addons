@@ -211,7 +211,7 @@ You can send commands to these channels from rules by sending the name of the se
 | tvaudio       |
 | phono         |
 
-A current list can be found within the HEOS CLI protocol which can be found [here](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification_2021.pdf).
+A current list can be found within the [HEOS CLI Protocol Specification 2021 PDF](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification_2021.pdf).
 
 ### Channels of Thing type 'bridge'
 

@@ -222,7 +222,7 @@ Text item=Tap1WateringPlanId
 #### Other Models
 
 Please check the [Link-Tap](https://www.link-tap.com/) website.
-Presently at this location [here](https://www.link-tap.com/#!/wireless-water-timer) is a chart that shows the features available for the products.
+Presently at this location, the [Link-Tap wireless water timer product chart](https://www.link-tap.com/#!/wireless-water-timer) shows the features available for the products.
 If a product such as the G1S is used, it will not support flow based commands or readings.
 In this case exclude the volume based Items and Sitemap entries.
 
