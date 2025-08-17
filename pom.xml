@@ -903,7 +903,7 @@ Import-Package: \\
                 </goals>
                 <configuration>
                   <workingDirectory>${project.build.directory}</workingDirectory>
-                  <arguments>install markdownlint-cli --no-save</arguments>
+                  <arguments>install markdownlint-cli@0.45.0 --no-save</arguments>
                 </configuration>
               </execution>
 
@@ -916,7 +916,7 @@ Import-Package: \\
                 <phase>verify</phase>
                 <configuration>
                   <workingDirectory>${project.build.directory}</workingDirectory>
-                  <arguments>exec -- markdownlint -c ${basedirRoot}/.github/markdownlint.yaml ../*.md ../doc/**/*.md</arguments>
+                  <arguments>exec --loglevel=info -- markdownlint -c ${basedirRoot}/.github/markdownlint.yaml ../*.md ../doc/**/*.md</arguments>
                 </configuration>
               </execution>
             </executions>
