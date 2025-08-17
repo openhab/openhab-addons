@@ -43,7 +43,8 @@ public class MelCloudBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_OPERATION_MODE = "operationMode";
-    public static final String CHANNEL_OPERATION_MODE_STRING = "operationModeString";
+    // TODO: Remove
+    // public static final String CHANNEL_OPERATION_MODE_STRING = "operationModeString";
     public static final String CHANNEL_SET_TEMPERATURE = "setTemperature";
     public static final String CHANNEL_FAN_SPEED = "fanSpeed";
     public static final String CHANNEL_VANE_HORIZONTAL = "vaneHorizontal";
@@ -67,7 +68,6 @@ public class MelCloudBindingConstants {
     public static final String CHANNEL_NEXT_COMMUNICATION = "nextCommunication";
     public static final String CHANNEL_HAS_PENDING_COMMAND = "hasPendingCommand";
     public static final String CHANNEL_OFFLINE = "offline";
-    public static final String CHANNEL_RETURN_TEMPERATURE_ZONE1 = "returnTemperatureZone2";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_MELCLOUD_ACCOUNT, THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE)

@@ -280,6 +280,24 @@
 		</state>
 	</channel-type>
 
+	<!-- TODO: Remove -->
+	<!-- <channel-type id="unitStatus-channel"> -->
+	<!-- <item-type>String</item-type> -->
+	<!-- <label>Unit status</label> -->
+	<!-- <description>Unit status</description> -->
+	<!-- <state readOnly="true"> -->
+	<!-- <options> -->
+	<!-- <option value="0">Idle</option> -->
+	<!-- <option value="1">Heat water</option> -->
+	<!-- <option value="2">Heat zones</option> -->
+	<!-- <option value="3">Cooling</option> -->
+	<!-- <option value="4">Defrost</option> -->
+	<!-- <option value="5">Stand-by</option> -->
+	<!-- <option value="6">Legionella</option> -->
+	<!-- </options> -->
+	<!-- </state> -->
+	<!-- </channel-type> -->
+
 	<channel-type id="heatPumpOperationMode-channel">
 		<item-type>String</item-type>
 		<label>Operation Mode</label>

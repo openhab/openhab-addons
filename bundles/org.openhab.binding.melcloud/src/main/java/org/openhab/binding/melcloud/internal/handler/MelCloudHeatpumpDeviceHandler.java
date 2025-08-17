@@ -13,7 +13,6 @@
 package org.openhab.binding.melcloud.internal.handler;
 
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
-import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -24,8 +23,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -141,16 +138,11 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
 
     @Nullable
     private BigDecimal convertOHValueToHPTemperature(Object command, double rounding) {
-        BigDecimal val = null;
-        if (command instanceof QuantityType) {
-            QuantityType<Temperature> quantity = new QuantityType<Temperature>(command.toString()).toUnit(CELSIUS);
-            if (quantity != null) {
-                val = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
-                // round nearest .5
-                double inverseRound = 1 / rounding;
-                double v = Math.round(val.doubleValue() * inverseRound) / inverseRound;
-                return new BigDecimal(v);
-            }
+        if (command instanceof QuantityType<?> quantityCommand) {
+            BigDecimal val = quantityCommand.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
+            double inverseRound = 1 / rounding;
+            double v = Math.round(val.doubleValue() * inverseRound) / inverseRound;
+            return new BigDecimal(v);
         }
         logger.debug("Can't convert '{}' to set temperature", command);
         return null;
@@ -261,7 +253,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
             copy.setForcedHotWaterMode(heatpumpDeviceStatus.getForcedHotWaterMode());
             copy.setHasPendingCommand(heatpumpDeviceStatus.getHasPendingCommand());
             copy.setSetHeatFlowTemperatureZone1(heatpumpDeviceStatus.getSetHeatFlowTemperatureZone1());
-            copy.setSetHeatFlowTemperatureZone1(heatpumpDeviceStatus.getSetHeatFlowTemperatureZone1());
+            copy.setSetHeatFlowTemperatureZone2(heatpumpDeviceStatus.getSetHeatFlowTemperatureZone2());
             copy.setSetCoolFlowTemperatureZone1(heatpumpDeviceStatus.getSetCoolFlowTemperatureZone1());
             copy.setSetCoolFlowTemperatureZone2(heatpumpDeviceStatus.getSetCoolFlowTemperatureZone2());
             copy.setOperationModeZone1(heatpumpDeviceStatus.getOperationModeZone1());
@@ -370,10 +362,6 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
             case CHANNEL_OPERATION_MODE:
                 updateState(MelCloudBindingConstants.CHANNEL_OPERATION_MODE,
                         new StringType(heatpumpDeviceStatus.getOperationMode().toString()));
-                break;
-            case CHANNEL_OPERATION_MODE_STRING:
-                updateState(CHANNEL_OPERATION_MODE_STRING,
-                        new StringType(operationalModes[heatpumpDeviceStatus.getOperationMode()]));
                 break;
             case CHANNEL_TANK_TARGET_WATER_TEMPERATURE:
                 updateState(CHANNEL_TANK_TARGET_WATER_TEMPERATURE,
