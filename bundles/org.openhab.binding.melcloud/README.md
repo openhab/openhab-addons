@@ -94,17 +94,25 @@ A.C. device channels
 
 Heatpump device channels
 
-| Channel             | Type               | Description                                                                | Read Only |
-|---------------------|--------------------|----------------------------------------------------------------------------|-----------|
-| power               | Switch             | Power Status of Device.                                                    | False     |
-| forcedHotWaterMode  | Switch             | If water mode is Heat Now (true) or Auto (false)                           | False     |
-| setTemperatureZone1 | Number:Temperature | Set Temperature Zone 1: Min = 10, Max = 30.                                | False     |
-| roomTemperatureZone1| Number:Temperature | Room temperature Zone 1.                                                   | True      |
-| tankWaterTemperature| Number:Temperature | Tank water temperature.                                                    | True      |
-| lastCommunication   | DateTime           | Last Communication time when MELCloud communicated to the device.          | True      |
-| nextCommunication   | DateTime           | Next communication time when MELCloud will communicate to the device.      | True      |
-| offline             | Switch             | Is device in offline state.                                                | True      |
-| hasPendingCommand   | Switch             | Device has a pending command(s).                                           | True      |
+| Channel                    | Type               | Description                                                                                                                              | Read Only |
+|----------------------------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| power                      | Switch             | Power Status of Device.                                                                                                                  | False     |
+| forcedHotWaterMode         | Switch             | If water mode is Heat Now (true) or Auto (false)                                                                                         | False     |
+| setTemperatureZone1        | Number:Temperature | Set Temperature Zone 1: Min = 10, Max = 30.                                                                                              | False     |
+| roomTemperatureZone1       | Number:Temperature | Room temperature Zone 1.                                                                                                                 | True      |
+| setTemperatureZone2        | Number:Temperature | Set Temperature Zone 2: Min = 10, Max = 30.                                                                                              | False     |
+| roomTemperatureZone2       | Number:Temperature | Room temperature Zone 2.                                                                                                                 | True      |
+| tankWaterTemperature       | Number:Temperature | Tank water temperature.                                                                                                                  | True      |
+| tankTargetWaterTemperature | Number:Temperature | Tank water target temperature for heating.                                                                                               | False     |         
+| lastCommunication          | DateTime           | Last Communication time when MELCloud communicated to the device.                                                                        | True      |
+| nextCommunication          | DateTime           | Next communication time when MELCloud will communicate to the device.                                                                    | True      |
+| offline                    | Switch             | Is device in offline state.                                                                                                              | True      |
+| hasPendingCommand          | Switch             | Device has a pending command(s).                                                                                                         | True      |
+| heatFlowTemperatureZone1   | Number:Temperature | Heat flow temperature Zone 1.                                                                                                            | True      |
+| heatFlowTemperatureZone2   | Number:Temperature | Heat flow temperature Zone 2.                                                                                                            | True      |
+| heatTemperatureModeZone1   | String             | Temperature control mode for Zone 1 (0 = "Heat thermostat", 1 = "Heat flow", 2 = "Heat curve", 3 = "Cool thermostat", 4 = "Cool flow"    | false     |
+| heatTemperatureModeZone2   | String             | Temperature control mode for Zone 2 (0 = "Heat thermostat", 1 = "Heat flow", 2 = "Heat curve", 3 = "Cool thermostat", 4 = "Cool flow"    | false     |
+| heatPumpOperationMode      | String             | Heat pump operation mode: "0" = Idle, "1" = Heat water, "2" = Heat zones, "3" = Cooling, "4" = Defrost, "5" = Stand-by, "6" = Legionella | false |
 
 ## Full Example for items configuration
 
