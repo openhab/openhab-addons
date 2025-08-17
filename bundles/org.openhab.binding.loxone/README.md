@@ -105,7 +105,7 @@ In case of connecting to Generation 2 Miniservers, it is possible to establish a
 
 It is possible to override the communication protocol by setting `webSocketType` configuration parameter. Setting it to 1 will force to always establish HTTPS connection. Setting it to 2 will force to always establish HTTP connection. Default value of 0 means the binding will determine the right protocol in the runtime.
 
-A method to enable unrestricted security policy depends on the JRE version and vendor, some examples can be found [here](https://www.petefreitag.com/item/844.cfm) and [here](https://stackoverflow.com/questions/41580489/how-to-install-unlimited-strength-jurisdiction-policy-files).
+A method to enable unrestricted security policy depends on the JRE version and vendor, some examples can be found in this [Pete Freitag blog post](https://www.petefreitag.com/blog/java-unlimited-crypto/) and this [Stack Overflow answer](https://stackoverflow.com/questions/41580489/how-to-install-unlimited-strength-jurisdiction-policy-files).
 
 ## Channels
 
