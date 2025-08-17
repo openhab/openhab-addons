@@ -37,6 +37,7 @@ updates:
       - dependency-name: "org.codehaus.mojo:*"
       - dependency-name: "*jacoco*" # code coverage tool, both tool and plugin
       - dependency-name: "*plugin*"
+      - dependency-name: "org.eclipse.jdt:ecj" # eclipse compiler
     ignore:
       - dependency-name: "com.github.jaxb-xew-plugin:jaxb-xew-plugin" # updated with core
       - dependency-name: "com.diffplug.spotless:spotless-maven-plugin" # updated together with SAT
