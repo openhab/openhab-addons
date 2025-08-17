@@ -1,11 +1,11 @@
 # tado° Binding
 
-The tado° binding integrates devices from [tado°](https://www.tado.com).
+The binding integrates tado° devices as shown in the [tado° official website](https://www.tado.com).
 
 It requires a fully functional tado° installation.
 You can then monitor and control all zone types (Heating, AC, Hot Water) as well as retrieve the HOME/AWAY status of mobile devices, and setting the HOME/AWAY status of your home.
 
-**WARNING**: This binding doesn't work together with new tado X radiator thermostats, as they are using a different API (see [here](https://app.swaggerhub.com/apis/JPlenert/TadoX/0.8.0) ).
+**WARNING**: This binding doesn't work together with new tado X radiator thermostats, as they are using a different API (see the [TadoX API Documentation on SwaggerHub](https://app.swaggerhub.com/apis/JPlenert/TadoX/0.8.0)).
 
 ## `home` Thing (the Bridge)
 
