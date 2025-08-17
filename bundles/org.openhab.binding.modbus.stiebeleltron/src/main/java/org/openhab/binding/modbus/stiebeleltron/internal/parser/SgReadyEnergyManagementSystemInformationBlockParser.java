@@ -13,7 +13,6 @@
 package org.openhab.binding.modbus.stiebeleltron.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementControl;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementControl.SgReadyEnMgmtFeatureKeys;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementSystemInformationBlock;
@@ -29,9 +28,8 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 @NonNullByDefault
 public class SgReadyEnergyManagementSystemInformationBlockParser extends AbstractBaseParser {
 
-    @SuppressWarnings("null")
     public SgReadyEnergyManagementSystemInformationBlock parse(ModbusRegisterArray raw,
-            @Nullable SgReadyEnergyManagementControl control) {
+            SgReadyEnergyManagementControl control) {
         SgReadyEnergyManagementSystemInformationBlock block = new SgReadyEnergyManagementSystemInformationBlock();
 
         if (control.featureAvailable(SgReadyEnMgmtFeatureKeys.EN_MGMT_SYS_INFO)) {

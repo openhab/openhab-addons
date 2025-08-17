@@ -80,11 +80,12 @@ import org.slf4j.LoggerFactory;
 import net.wimpi.modbus.Modbus;
 
 /**
- * The {@link Modbus.StiebelEltronHandler} is responsible for handling commands,
+ * The {@link Modbus.StiebelEltronHandlerAllWpm} is responsible for handling commands,
  * which are sent to one of the channels and for polling the modbus.
+ * It supports a WPM compatible heat pump and provides more channels and information than the first implementation.
  *
- * @author Paul Frank - Initial contribution
- * @author Thomas Burri - Extended thing handler for a WPM compatible heat pump
+ * @author Paul Frank - Initial contribution of first handler implementation
+ * @author Thomas Burri - Extended the thing handler for a WPM compatible heat pump with more channels.
  */
 @NonNullByDefault
 public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
@@ -191,7 +192,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
     /**
      * This is the control object for the system parameter block
      */
-    private volatile @Nullable SystemParameterControlAllWpm systemParameterControl = null;
+    private final SystemParameterControlAllWpm systemParameterControl = new SystemParameterControlAllWpm();
     /**
      * This is the task used to poll the device for system state
      */
@@ -199,7 +200,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
     /**
      * This is the control object for the system state block
      */
-    private volatile @Nullable SystemStateControlAllWpm systemStateControl = null;
+    private final SystemStateControlAllWpm systemStateControl = new SystemStateControlAllWpm();
     /**
      * This is the task used to poll the device for energy & runtime
      */
@@ -219,7 +220,8 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
     /**
      * This is the control object for the SG Ready Energy Management blocks
      */
-    private volatile @Nullable SgReadyEnergyManagementControl sgReadyEnMgmtControl = null;
+    private final SgReadyEnergyManagementControl sgReadyEnMgmtControl = new SgReadyEnergyManagementControl();
+
     /**
      * Communication interface to the slave endpoint we're connecting to
      */
@@ -249,7 +251,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         ModbusCommunicationInterface mycomms = StiebelEltronHandlerAllWpm.this.comms;
 
         if (myconfig == null || mycomms == null) {
-            throw new IllegalStateException("registerPollTask called without proper configuration");
+            throw new IllegalStateException("writeInt16 called without proper configuration");
         }
         // big endian byte ordering
         byte hi = (byte) (shortValue >> 8);
@@ -277,17 +279,16 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      *         and datatype 7 (100) in the stiebel eltron modbus documentation)
      */
     private short getScaledInt16Value(Command command, Integer scaleFactor) throws StiebelEltronException {
-        if (command instanceof QuantityType) {
-            QuantityType<?> c = ((QuantityType<?>) command).toUnit(CELSIUS);
+        if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * scaleFactor);
             } else {
                 throw new StiebelEltronException("Unsupported unit");
             }
         }
-        if (command instanceof DecimalType) {
-            DecimalType c = (DecimalType) command;
-            return (short) (c.doubleValue() * scaleFactor);
+        if (command instanceof DecimalType decimalCommand) {
+            return (short) (decimalCommand.doubleValue() * scaleFactor);
         }
         throw new StiebelEltronException("Unsupported command type");
     }
@@ -297,9 +298,8 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      * @return short the value of the command as short
      */
     private short getInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof DecimalType) {
-            DecimalType c = (DecimalType) command;
-            return c.shortValue();
+        if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.shortValue();
         }
         throw new StiebelEltronException("Unsupported command type");
     }
@@ -400,8 +400,18 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                         case CHANNEL_RESET:
                             short resetCmd = getInt16Value(command);
                             if (resetCmd != CHANNEL_RESET_CMD_SYSTEM_RESET) {
-                                logger.info("RESET command received with value {} - but ignored right now", resetCmd);
-                                // writeInt16(1519, resetCmd);
+                                StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
+                                if (myconfig == null) {
+                                    throw new IllegalStateException(
+                                            "handleCommand called without proper configuration");
+                                }
+                                if (myconfig.getAllowResetCmdsFlag()) {
+                                    logger.debug("RESET command received with value {}", resetCmd);
+                                    writeInt16(1519, resetCmd);
+                                } else {
+                                    logger.debug("RESET command received with value {} - but not allowed right now",
+                                            resetCmd);
+                                }
                             } else {
                                 logger.warn("Command 'Reset System' ignored!");
                             }
@@ -409,10 +419,20 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
 
                         case CHANNEL_RESTART_ISG:
                             short restartIsgCmd = getInt16Value(command);
+                            StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
+                            if (myconfig == null) {
+                                throw new IllegalStateException("handleCommand called without proper configuration");
+                            }
+
                             if (restartIsgCmd != CHANNEL_RESTART_ISG_CMD_SERVICE_KEY) {
-                                logger.info("RESTART-ISG command received with value {} - but ignored right now",
-                                        restartIsgCmd);
-                                // writeInt16(1520, restartIsgCmd);
+                                if (myconfig.getAllowResetCmdsFlag()) {
+                                    logger.warn("RESTART-ISG command received with value {}", restartIsgCmd);
+                                    writeInt16(1520, restartIsgCmd);
+                                } else {
+                                    logger.warn(
+                                            "RESTART-ISG command received with value {} - but not allowed right now",
+                                            restartIsgCmd);
+                                }
                             } else {
                                 logger.warn("Command 'Service Key' ignored!");
                             }
@@ -470,7 +490,6 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      * This method starts the operation of this handler Connect to the slave bridge
      * Start the periodic polling1
      */
-    @SuppressWarnings("null")
     private void startUp() {
         if (comms != null) {
             return;
@@ -478,46 +497,45 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
         try {
             slaveId = slaveEndpointThingHandler.getSlaveId();
-
             comms = slaveEndpointThingHandler.getCommunicationInterface();
         } catch (EndpointNotInitializedException e) {
             // this will be handled below as endpoint remains null
         }
 
         if (comms == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' not completely initialized", label));
+                    String.format("Bridge '%s' not (fully) initialized", label));
             return;
         }
 
-        if (config == null) {
-            logger.debug("Invalid comms/config/manager ref for stiebel eltron handler");
+        StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
+        if (myconfig == null) {
+            logger.warn("Invalid config ref for stiebel eltron handler");
             return;
         }
 
         if (systemInformationPoller == null) {
-            systemInformationControl = new SystemInformationControlAllWpm(config.getNrOfHps());
+            systemInformationControl = new SystemInformationControlAllWpm(myconfig.getHeatpumpCount());
             AbstractBasePoller poller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemInformationData(registers);
                 }
             };
-            int nrOfRegistersToRead = 41 + config.getNrOfHps() * 7;
+            int nrOfRegistersToRead = 41 + myconfig.getHeatpumpCount() * 7;
             poller.registerPollTask(500, nrOfRegistersToRead, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
             systemInformationPoller = poller;
         }
         if (systemParameterPoller == null) {
-            systemParameterControl = new SystemParameterControlAllWpm();
             AbstractBasePoller poller = new AbstractBasePoller() {
+
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemParameterData(registers);
@@ -527,20 +545,20 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             systemParameterPoller = poller;
         }
         if (systemStatePoller == null) {
-            systemStateControl = new SystemStateControlAllWpm();
             logger.trace("systemStateControl start Values \n: {}", systemStateControl);
+
             AbstractBasePoller poller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemStateData(registers);
                 }
             };
-            int stateBlockLength = config.getStateBlockLength();
+            int stateBlockLength = myconfig.getStateBlockLength();
             poller.registerPollTask(2500, stateBlockLength, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
             systemStatePoller = poller;
         }
         if (energyRuntimePoller == null) {
-            energyRuntimeControl = new EnergyRuntimeControlAllWpm(config.getNrOfHps());
+            energyRuntimeControl = new EnergyRuntimeControlAllWpm(myconfig.getHeatpumpCount());
             logger.trace("energyRuntimeControl start Values \n: {}", energyRuntimeControl);
             AbstractBasePoller poller = new AbstractBasePoller() {
                 @Override
@@ -548,12 +566,11 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                     handlePolledEnergyRuntimeData(registers);
                 }
             };
-            int nrOfRegistersToRead = 22 + config.getNrOfHps() * 26;
+            int nrOfRegistersToRead = 22 + myconfig.getHeatpumpCount() * 26;
             poller.registerPollTask(3500, nrOfRegistersToRead, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
             energyRuntimePoller = poller;
         }
-        if (config.getPollSgReadyFlag()) {
-            sgReadyEnMgmtControl = new SgReadyEnergyManagementControl();
+        if (myconfig.getPollSgReadyFlag()) {
             if (sgReadyEnergyManagementSettingsPoller == null) {
                 AbstractBasePoller poller = new AbstractBasePoller() {
                     @Override
@@ -671,8 +688,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
+        if (handler instanceof ModbusEndpointThingHandler slaveEndpoint) {
             return slaveEndpoint;
         } else {
             throw new IllegalStateException("Unexpected bridge handler: " + handler.toString());
@@ -709,29 +725,41 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      *
      * @param registers byte array read from the modbus slave
      */
-    @SuppressWarnings("null")
     protected void handlePolledSystemInformationData(ModbusRegisterArray registers) {
         logger.trace("System Information block received, size: {}", registers.size());
 
-        SystemInformationBlockAllWpm block = systemInformationBlockParser.parse(registers, systemInformationControl,
-                config.getNrOfHps());
+        StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
+        if (myconfig == null) {
+            logger.warn("Invalid config ref for stiebel eltron handler");
+            throw new IllegalStateException("handlePolledSystemInformationData called without proper configuration");
+        }
+
+        SystemInformationControlAllWpm mySysInfoCtrl = systemInformationControl;
+        if (mySysInfoCtrl == null) {
+            logger.error("Bad initialization - systemInformationControl is null");
+            throw new IllegalStateException("systemInformationControl is null");
+
+        }
+
+        SystemInformationBlockAllWpm block = systemInformationBlockParser.parse(registers, mySysInfoCtrl,
+                myconfig.getHeatpumpCount());
 
         logger.trace("\n {} ", block);
-        logger.trace("\n {} ", systemInformationControl);
+        logger.trace("\n {} ", mySysInfoCtrl);
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.FE7)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.FE7)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FE7_TEMPERATURE),
                     getScaled(block.temperatureFe7, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FE7_TEMPERATURE_SETPOINT),
                     getScaled(block.temperatureFe7SetPoint, 10, CELSIUS));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.FE7)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.FE7)) {
             logger.trace("FE7 not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FE7_TEMPERATURE), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FE7_TEMPERATURE_SETPOINT), UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.FE7, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.FE7, true);
         }
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.FEK)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.FEK)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FEK_TEMPERATURE),
                     getScaled(block.temperatureFek, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FEK_TEMPERATURE_SETPOINT),
@@ -740,13 +768,13 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                     getScaled(block.humidityFek, 10, PERCENT));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FEK_DEWPOINT),
                     getScaled(block.dewpointFek, 10, CELSIUS));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.FEK)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.FEK)) {
             logger.trace("FEK not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FEK_TEMPERATURE), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FEK_TEMPERATURE_SETPOINT), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FEK_HUMIDITY), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FEK_DEWPOINT), UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.FEK, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.FEK, true);
         }
 
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_OUTDOOR_TEMPERATURE),
@@ -756,16 +784,16 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HC1_TEMPERATURE_SETPOINT),
                 getScaled(block.temperatureHc1SetPoint, 10, CELSIUS));
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.HC2)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.HC2)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HC2_TEMPERATURE),
                     getScaled(block.temperatureHc2, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HC2_TEMPERATURE_SETPOINT),
                     getScaled(block.temperatureHc2SetPoint, 10, CELSIUS));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.TEMP_FLOW)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.TEMP_FLOW)) {
             logger.trace("HC2 not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HC2_TEMPERATURE), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HC2_TEMPERATURE_SETPOINT), UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.HC2, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.HC2, true);
         }
 
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HP_FLOW_TEMPERATURE),
@@ -773,23 +801,23 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_NHZ_FLOW_TEMPERATURE),
                 getScaled(block.temperatureFlowNhz, 10, CELSIUS));
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.TEMP_FLOW)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.TEMP_FLOW)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FLOW_TEMPERATURE),
                     getScaled(block.temperatureFlow, 10, CELSIUS));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.FE7)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.FE7)) {
             logger.trace("HP Flow temperature not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FLOW_TEMPERATURE), UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.TEMP_FLOW, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.TEMP_FLOW, true);
         }
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.TEMP_RETURN)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.TEMP_RETURN)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_RETURN_TEMPERATURE),
                     getScaled(block.temperatureReturn, 10, CELSIUS));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.TEMP_RETURN)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.TEMP_RETURN)) {
 
             logger.trace("HP Return temperature not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_RETURN_TEMPERATURE), UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.TEMP_RETURN, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.TEMP_RETURN, true);
         }
 
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FIXED_TEMPERATURE_SETPOINT),
@@ -813,112 +841,112 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HOTWATER_TEMPERATURE_SETPOINT),
                 getScaled(block.temperatureWaterSetPoint, 10, CELSIUS));
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.FAN_COOLING)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.FAN_COOLING)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FAN_COOLING_TEMPERATURE),
                     getScaled(block.temperatureFanCooling, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FAN_COOLING_TEMPERATURE_SETPOINT),
                     getScaled(block.temperatureFanCoolingSetPoint, 10, CELSIUS));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.FAN_COOLING)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.FAN_COOLING)) {
             logger.trace("Fan cooling not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FAN_COOLING_TEMPERATURE), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_FAN_COOLING_TEMPERATURE_SETPOINT),
                     UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.FAN_COOLING, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.FAN_COOLING, true);
         }
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.AREA_COOLING)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.AREA_COOLING)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_AREA_COOLING_TEMPERATURE),
                     getScaled(block.temperatureAreaCooling, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_AREA_COOLING_TEMPERATURE_SETPOINT),
                     getScaled(block.temperatureAreaCoolingSetPoint, 10, CELSIUS));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.AREA_COOLING)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.AREA_COOLING)) {
             logger.trace("Area cooling not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_AREA_COOLING_TEMPERATURE), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_AREA_COOLING_TEMPERATURE_SETPOINT),
                     UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.AREA_COOLING, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.AREA_COOLING, true);
         }
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.SOLAR_THERMAL)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.SOLAR_THERMAL)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOLAR_THERMAL_COLLECTOR_TEMPERATURE),
                     getScaled(block.temperatureCollectorSolar, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOLAR_THERMAL_CYLINDER_TEMPERATURE),
                     getScaled(block.temperatureCylinderSolar, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOLAR_THERMAL_RUNTIME),
                     new QuantityType<>(block.runtimeSolar, HOUR));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.SOLAR_THERMAL)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.SOLAR_THERMAL)) {
             logger.trace("Solar thermal not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOLAR_THERMAL_COLLECTOR_TEMPERATURE),
                     UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOLAR_THERMAL_CYLINDER_TEMPERATURE),
                     UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOLAR_THERMAL_RUNTIME), UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.SOLAR_THERMAL, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.SOLAR_THERMAL, true);
         }
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.EXTERNAL_HEATING)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.EXTERNAL_HEATING)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_EXT_HEAT_SOURCE_TEMPERATURE),
                     getScaled(block.temperatureExtHeatSource, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_EXT_HEAT_SOURCE_TEMPERATURE_SETPOINT),
                     getScaled(block.temperatureExtHeatSourceSetPoint, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_EXT_HEAT_SOURCE_RUNTIME),
                     new QuantityType<>(block.runtimeExtHeatSource, HOUR));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.EXTERNAL_HEATING)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.EXTERNAL_HEATING)) {
             logger.trace("External heating not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_EXT_HEAT_SOURCE_TEMPERATURE),
                     UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_EXT_HEAT_SOURCE_TEMPERATURE_SETPOINT),
                     UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_EXT_HEAT_SOURCE_RUNTIME), UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.EXTERNAL_HEATING, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.EXTERNAL_HEATING, true);
         }
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.LOWER_LIMITS)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.LOWER_LIMITS)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_LOWER_APPLICATION_LIMIT_HEATING),
                     getScaled(block.lowerHeatingLimit, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_LOWER_APPLICATION_LIMIT_HOTWATER),
                     getScaled(block.lowerWaterLimit, 10, CELSIUS));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.LOWER_LIMITS)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.LOWER_LIMITS)) {
             logger.trace("Lower limits not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_LOWER_APPLICATION_LIMIT_HEATING),
                     UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_LOWER_APPLICATION_LIMIT_HOTWATER),
                     UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.LOWER_LIMITS, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.LOWER_LIMITS, true);
         }
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.SOURCE_VALUES)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.SOURCE_VALUES)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOURCE_TEMPERATURE),
                     getScaled(block.temperatureSource, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_MIN_SOURCE_TEMPERATURE),
                     getScaled(block.temperatureSourceMin, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOURCE_PRESSURE),
                     getScaled(block.pressureSource, 100, BAR));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.SOURCE_VALUES)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.SOURCE_VALUES)) {
             logger.trace("Source values not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOURCE_TEMPERATURE), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_MIN_SOURCE_TEMPERATURE), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_SOURCE_PRESSURE), UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.SOURCE_VALUES, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.SOURCE_VALUES, true);
         }
 
-        if (systemInformationControl.featureAvailable(SysInfoFeatureKeys.HOTGAS)) {
+        if (mySysInfoCtrl.featureAvailable(SysInfoFeatureKeys.HOTGAS)) {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HOTGAS_TEMPERATURE),
                     getScaled(block.temperatureHotgas, 10, CELSIUS));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HIGH_PRESSURE),
                     getScaled(block.pressureHigh, 100, BAR));
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_LOW_PRESSURE),
                     getScaled(block.pressureLow, 100, BAR));
-        } else if (!systemInformationControl.featureReported(SysInfoFeatureKeys.HOTGAS)) {
+        } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.HOTGAS)) {
             logger.trace("Hotgas values not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HOTGAS_TEMPERATURE), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_HIGH_PRESSURE), UnDefType.UNDEF);
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_LOW_PRESSURE), UnDefType.UNDEF);
-            systemInformationControl.setFeatureReported(SysInfoFeatureKeys.HOTGAS, true);
+            mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.HOTGAS, true);
         }
 
-        for (int idx = 0; idx < config.getNrOfHps(); idx++) {
-            SysInfoHpFeature hpFeaturesObj = systemInformationControl.hpSysInfoList[idx];
+        for (int idx = 0; idx < myconfig.getHeatpumpCount(); idx++) {
+            SysInfoHpFeature hpFeaturesObj = mySysInfoCtrl.hpSysInfoList[idx];
             if (hpFeaturesObj.available(SysInfoHpFeaturelKeys.HP_TEMPERATURE_RETURN)) {
                 updateState(
                         channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM,
@@ -1012,7 +1040,6 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      *
      * @param registers byte array read from the modbus slave
      */
-    @SuppressWarnings("null")
     protected void handlePolledSystemParameterData(ModbusRegisterArray registers) {
         logger.trace("System parameter block received, size: {}", registers.size());
 
@@ -1113,9 +1140,12 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      *
      * @param registers byte array read from the modbus slave
      */
-    @SuppressWarnings("null")
     protected void handlePolledSystemStateData(ModbusRegisterArray registers) {
         logger.trace("System state block received, size: {}", registers.size());
+        StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
+        if (myconfig == null) {
+            throw new IllegalStateException("handlePolledSystemStateData called without proper configuration");
+        }
 
         SystemStateBlockAllWpm block = systemStateBlockParser.parse(registers, systemStateControl);
         logger.trace("\n {}", block);
@@ -1143,8 +1173,8 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_STATE_ALLWPM, CHANNEL_MIN_ONE_IWS_IN_DEFROSTING_MODE),
                 (block.state & 512) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
 
-        if (config.getWpmControllerId() == StiebelEltronHpV2Configuration.WPM3
-                || config.getWpmControllerId() == StiebelEltronHpV2Configuration.WPMSYSTEM) {
+        if (myconfig.getWpmControllerId() == StiebelEltronHpV2Configuration.WPM3
+                || myconfig.getWpmControllerId() == StiebelEltronHpV2Configuration.WPMSYSTEM) {
             updateState(channelUID(GROUP_SYSTEM_STATE_ALLWPM, CHANNEL_SILENT_MODE1_ACTIVE),
                     (block.operatingStatus & 1024) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
             updateState(channelUID(GROUP_SYSTEM_STATE_ALLWPM, CHANNEL_SILENT_MODE2_ACTIVE),
@@ -1152,6 +1182,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         } else if (!systemStateControl.featureReported(SystemStateFeatureKeys.SILENT_MODES)) {
             updateState(channelUID(GROUP_SYSTEM_STATE_ALLWPM, CHANNEL_SILENT_MODE1_ACTIVE), UnDefType.NULL);
             updateState(channelUID(GROUP_SYSTEM_STATE_ALLWPM, CHANNEL_SILENT_MODE2_ACTIVE), UnDefType.NULL);
+            systemStateControl.setFeatureAvailable(SystemStateFeatureKeys.SILENT_MODES, false);
             systemStateControl.setFeatureReported(SystemStateFeatureKeys.SILENT_MODES, true);
         }
 
@@ -1235,9 +1266,13 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
     @SuppressWarnings("null")
     protected void handlePolledEnergyRuntimeData(ModbusRegisterArray registers) {
         logger.trace("Energy block received, size: {}", registers.size());
+        StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
+        if (myconfig == null) {
+            throw new IllegalStateException("handlePolledEnergyRuntimeData called without proper configuration");
+        }
 
         EnergyRuntimeBlockAllWpm energyRuntimeBlock = energyRuntimeBlockParser.parse(registers, energyRuntimeControl,
-                config.getNrOfHps());
+                myconfig.getHeatpumpCount());
 
         logger.trace("\n {}", energyRuntimeBlock);
         logger.trace("\n {}", energyRuntimeControl);
@@ -1303,7 +1338,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             energyRuntimeControl.setFeatureReported(EnergyRuntimeFeatureKeys.COMMON_COOLING_RUNTIME, true);
         }
 
-        for (int idx = 0; idx < config.getNrOfHps(); idx++) {
+        for (int idx = 0; idx < myconfig.getHeatpumpCount(); idx++) {
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_PRODUCTION_HEAT_TODAY_FORMAT, idx + 1)),
@@ -1417,7 +1452,6 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      *
      * @param registers byte array read from the modbus slave
      */
-    @SuppressWarnings("null")
     protected void handlePolledSgReadyEnergyManagementSettingsData(ModbusRegisterArray registers) {
         logger.trace("SG Ready Energy Management Settings block received, size: {}", registers.size());
 
@@ -1468,9 +1502,13 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      *
      * @param registers byte array read from the modbus slave
      */
-    @SuppressWarnings("null")
     protected void handlePolledSgReadyEnergyManagementSystemInformationData(ModbusRegisterArray registers) {
         logger.trace("SG Ready Energy Management Settings block received, size: {}", registers.size());
+        StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
+        if (myconfig == null) {
+            throw new IllegalStateException(
+                    "handlePolledSgReadyEnergyManagementSystemInformationData called without proper configuration");
+        }
 
         SgReadyEnergyManagementSystemInformationBlock block = sgReadyEnergyManagementSystemInformationBlockParser
                 .parse(registers, sgReadyEnMgmtControl);
@@ -1487,11 +1525,11 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                     new DecimalType(block.sgReadyControllerIdentification));
             // If the SgReady System Information Registers are available and the configured
             // WPM ControllerID doesn't match, the one from the WPM is applied
-            if (config.getWpmControllerId() != block.sgReadyControllerIdentification) {
+            if (myconfig.getWpmControllerId() != block.sgReadyControllerIdentification) {
                 int newWpmCtrlId = block.sgReadyControllerIdentification;
                 logger.info("Updating configured WPM Controller ID from '{}' to '{}' (read from SG Ready register)!",
-                        config.getWpmControllerId(), newWpmCtrlId);
-                config.setWpmControllerId(block.sgReadyControllerIdentification);
+                        myconfig.getWpmControllerId(), newWpmCtrlId);
+                myconfig.setWpmControllerId(block.sgReadyControllerIdentification);
             }
         } else if (!sgReadyEnMgmtControl.featureReported(SgReadyEnMgmtFeatureKeys.EN_MGMT_SYS_INFO)) {
             logger.info("SG Ready Energy Management system information not available");

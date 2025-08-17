@@ -13,7 +13,6 @@
 package org.openhab.binding.modbus.stiebeleltron.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyRuntimeBlockAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyRuntimeControlAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyRuntimeControlAllWpm.EnergyRuntimeFeatureKeys;
@@ -30,10 +29,9 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 @NonNullByDefault
 public class EnergyRuntimeBlockAllWpmParser extends AbstractBaseParser {
 
-    @SuppressWarnings("null")
-    public EnergyRuntimeBlockAllWpm parse(ModbusRegisterArray raw, @Nullable EnergyRuntimeControlAllWpm control,
-            int nrOfHps) {
-        EnergyRuntimeBlockAllWpm block = new EnergyRuntimeBlockAllWpm(nrOfHps);
+    public EnergyRuntimeBlockAllWpm parse(ModbusRegisterArray raw, EnergyRuntimeControlAllWpm control,
+            int heatpumpCount) {
+        EnergyRuntimeBlockAllWpm block = new EnergyRuntimeBlockAllWpm(heatpumpCount);
 
         // Common Production
         block.productionHeatToday = extractUInt16(raw, 0, (short) 0);
@@ -76,7 +74,7 @@ public class EnergyRuntimeBlockAllWpmParser extends AbstractBaseParser {
             }
         }
 
-        for (int idx = 0; idx < nrOfHps; idx++) {
+        for (int idx = 0; idx < heatpumpCount; idx++) {
             block.heatPumps[idx].productionHeatToday = extractUInt16(raw, 22 + 26 * idx, (short) 0);
             block.heatPumps[idx].productionHeatTotalLow = extractUInt16(raw, 23 + 26 * idx, (short) 0);
             block.heatPumps[idx].productionHeatTotalHigh = extractUInt16(raw, 24 + 26 * idx, (short) 0);

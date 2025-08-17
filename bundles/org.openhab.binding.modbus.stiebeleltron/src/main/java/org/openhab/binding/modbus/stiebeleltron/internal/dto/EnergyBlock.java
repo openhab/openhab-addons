@@ -40,4 +40,20 @@ public class EnergyBlock {
 
     public int productionNhzHotwaterTotalLow;
     public int productionNhzHotwaterTotalHigh;
+
+    @Override
+    public String toString() {
+        return "EnergyBlock {\n" + "  productionHeatToday=" + productionHeatToday + "\n,  productionHeatTotalLow="
+                + productionHeatTotalLow + "\n,  productionHeatTotalHigh=" + productionHeatTotalHigh
+                + "\n,  productionWaterToday=" + productionWaterToday + "\n,  productionWaterTotalLow="
+                + productionWaterTotalLow + "\n,  productionWaterTotalHigh=" + productionWaterTotalHigh
+                + "\n,  consumptionHeatToday=" + consumptionHeatToday + "\n,  consumptionHeatTotalLow="
+                + consumptionHeatTotalLow + "\n,  consumptionHeatTotalHigh=" + consumptionHeatTotalHigh
+                + "\n,  consumptionWaterToday=" + consumptionWaterToday + "\n,  consumptionWaterTotalLow="
+                + consumptionWaterTotalLow + "\n,  consumptionWaterTotalHigh=" + consumptionWaterTotalHigh
+                + "\n,  productionNhzHeatingTotalLow=" + productionNhzHeatingTotalLow
+                + "\n,  productionNhzHeatingTotalHigh=" + productionNhzHeatingTotalHigh
+                + "\n,  productionNhzHotwaterTotalLow=" + productionNhzHotwaterTotalLow
+                + "\n,  productionNhzHotwaterTotalHigh=" + productionNhzHotwaterTotalHigh + "\n}";
+    }
 }

@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * which are sent to one of the channels and for polling the modbus.
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Fixed Eclipse warning
  */
 @NonNullByDefault
 public class StiebelEltronHandler extends BaseThingHandler {
@@ -218,8 +219,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *         the stiebel eltron modbus documentation)
      */
     private short getScaledInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof QuantityType) {
-            QuantityType<?> c = ((QuantityType<?>) command).toUnit(CELSIUS);
+        if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * 10);
             } else {

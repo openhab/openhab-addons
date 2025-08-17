@@ -13,7 +13,6 @@
 package org.openhab.binding.modbus.stiebeleltron.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBlockAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterControlAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterControlAllWpm.SysParamFeatureKeys;
@@ -28,8 +27,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 @NonNullByDefault
 public class SystemParameterBlockAllWpmParser extends AbstractBaseParser {
 
-    @SuppressWarnings("null")
-    public SystemParameterBlockAllWpm parse(ModbusRegisterArray raw, @Nullable SystemParameterControlAllWpm control) {
+    public SystemParameterBlockAllWpm parse(ModbusRegisterArray raw, SystemParameterControlAllWpm control) {
         SystemParameterBlockAllWpm block = new SystemParameterBlockAllWpm();
 
         block.operationMode = extractUInt16(raw, 0, 0);

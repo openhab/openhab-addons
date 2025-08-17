@@ -41,11 +41,8 @@ public class StiebelEltronBindingConstants {
     public static final String GROUP_ENERGY_INFO = "energyInformation";
 
     public static final String GROUP_SYSTEM_INFORMATION_ALLWPM = "systemInformationAllWpm";
-
     public static final String GROUP_SYSTEM_PARAMETER_ALLWPM = "systemParameterAllWpm";
-
     public static final String GROUP_SYSTEM_STATE_ALLWPM = "systemStateAllWpm";
-
     public static final String GROUP_ENERGY_RUNTIME_INFO_ALLWPM = "energyRuntimeInformationAllWpm";
 
     public static final String GROUP_SG_READY_ENERGY_MANAGEMENT_SETTINGS = "sgReadyEnergyManagementSettings";

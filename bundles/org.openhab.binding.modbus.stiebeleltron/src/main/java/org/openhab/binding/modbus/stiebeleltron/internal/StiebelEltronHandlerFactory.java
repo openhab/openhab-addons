@@ -14,7 +14,6 @@ package org.openhab.binding.modbus.stiebeleltron.internal;
 
 import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,13 +41,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.stiebeleltron", service = ThingHandlerFactory.class)
 public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
 
-    @SuppressWarnings("serial")
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>() {
-        {
-            add(THING_TYPE_HEATPUMP);
-            add(THING_TYPE_STIEBELELTRON_HEATPUMP_ALLWPM);
-        }
-    };
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HEATPUMP,
+            THING_TYPE_STIEBELELTRON_HEATPUMP_ALLWPM);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

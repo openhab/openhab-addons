@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="system-information">
-		<label>@text/channel-group-type.modbus.system-information.label</label>
+		<label>System Information</label>
 		<channels>
 			<channel id="fek-temperature" typeId="fek-temperature-type"/>
 			<channel id="fek-temperature-setpoint" typeId="fek-temperature-setpoint-type"/>
@@ -23,8 +23,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="system-information-allwpm">
-		<label>@text/channel-group-type.modbus.system-information-allwpm.label</label>
-		<description>@text/channel-group-type.modbus.system-information-allwpm.description</description>
+		<label>System Information</label>
+		<description>System Information and Values (read-only channels)</description>
 		<channels>
 			<channel id="fe7-temperature" typeId="fe7-temperature-type"/>
 			<channel id="fe7-temperature-setpoint" typeId="fe7-temperature-setpoint-type"/>
@@ -113,7 +113,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="system-parameter">
-		<label>@text/channel-group-type.modbus.system-parameter.label</label>
+		<label>System Parameters</label>
 		<channels>
 			<channel id="operation-mode" typeId="operation-mode-type"/>
 			<channel id="comfort-temperature-heating" typeId="comfort-temperature-heating-type"/>
@@ -124,8 +124,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="system-parameter-allwpm">
-		<label>@text/channel-group-type.modbus.system-parameter-allwpm.label</label>
-		<description>@text/channel-group-type.modbus.system-parameter-allwpm.description</description>
+		<label>System Parameters</label>
+		<description>System Parameters (read-write channels)</description>
 		<channels>
 			<channel id="operating-mode" typeId="operating-mode-type"/>
 			<channel id="hc1-comfort-temperature" typeId="hc1-comfort-temperature-type"/> <!-- same as "comfort-temperature-heating" -->
@@ -152,7 +152,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="system-state">
-		<label>@text/channel-group-type.modbus.system-state.label</label>
+		<label>System State</label>
 		<channels>
 			<channel id="is-heating" typeId="is-heating-type"/>
 			<channel id="is-heating-water" typeId="is-heating-water-type"/>
@@ -163,8 +163,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="system-state-allwpm">
-		<label>@text/channel-group-type.modbus.system-state-allwpm.label</label>
-		<description>@text/channel-group-type.modbus.system-state-allwpm.description</description>
+		<label>System State</label>
+		<description>System State (read-only channels)</description>
 		<channels>
 			<channel id="hc1-pump-active" typeId="hc1-pump-active-type"/>         <!-- same as "is-pumping" -->
 			<channel id="hc2-pump-active" typeId="hc2-pump-active-type"/>
@@ -201,7 +201,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="energy-information">
-		<label>@text/channel-group-type.modbus.energy-information.label</label>
+		<label>Energy Information</label>
 		<channels>
 			<channel id="production-heat-today" typeId="production-heat-today-type"/>
 			<channel id="production-heat-total" typeId="production-heat-total-type"/>
@@ -215,8 +215,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="energy-runtime-information-allwpm">
-		<label>@text/channel-group-type.modbus.energy-runtime-information-allwpm.label</label>
-		<description>@text/channel-group-type.modbus.energy-runtime-information-allwpm.description</description>
+		<label>Energy/Runtime Info</label>
+		<description>nergy and Runtime Information (read-only channels)</description>
 		<channels>
 			<channel id="production-heat-today" typeId="production-heat-today-type"/>
 			<channel id="production-heat-total" typeId="production-heat-total-type"/>
@@ -358,16 +358,16 @@
 	</channel-group-type>
 
 	<channel-group-type id="sg-ready-energy-management-settings">
-		<label>@text/channel-group-type.modbus.sg-ready-energy-management-settings.label</label>
-		<description>@text/channel-group-type.modbus.sg-ready-energy-management-settings.description</description>
+		<label>SGReady EM Settings</label>
+		<description>SG Ready - Energy Management Settings (read-write channels)</description>
 		<channels>
 			<channel id="sg-ready-on-off-switch" typeId="sg-ready-on-off-switch-type"/>
 			<channel id="sg-ready-input-lines" typeId="sg-ready-input-lines-type"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="sg-ready-energy-management-system-information">
-		<label>@text/channel-group-type.modbus.sg-ready-energy-management-system-information.label</label>
-		<description>@text/channel-group-type.modbus.sg-ready-energy-management-system-information.description</description>
+		<label>SGReady EM SysInfo</label>
+		<description>SG Ready - Energy Management System Information (read-only channels)</description>
 		<channels>
 			<channel id="sg-ready-operating-state" typeId="sg-ready-operating-state-type"/>
 			<channel id="sg-ready-controller-identification" typeId="sg-ready-controller-identification-type"/>

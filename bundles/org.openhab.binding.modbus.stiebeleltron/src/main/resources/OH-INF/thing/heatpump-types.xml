@@ -9,8 +9,8 @@
 			<bridge-type-ref id="tcp"/>
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
-		<label>@text/thing-type.modbus.heatpump.label</label>
-		<description>@text/thing-type.modbus.heatpump.description</description>
+		<label>Stiebel Eltron Heat Pump</label>
+		<description>A Stiebel Eltron Heat Pump connected through modbus to an ISG</description>
 
 		<channel-groups>
 			<channel-group id="systemState" typeId="system-state"/>

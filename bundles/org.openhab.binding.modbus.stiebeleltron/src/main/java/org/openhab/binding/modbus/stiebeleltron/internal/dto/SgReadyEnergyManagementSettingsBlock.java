@@ -23,4 +23,10 @@ public class SgReadyEnergyManagementSettingsBlock {
     public int sgReadyOnOffSwitch;
     public int sgReadyInput1;
     public int sgReadyInput2;
+
+    @Override
+    public String toString() {
+        return "SgReadyEnergyManagementSettingsBlock {" + "\n  sgReadyOnOffSwitch=" + sgReadyOnOffSwitch
+                + ",\n  sgReadyInput1=" + sgReadyInput1 + ",\n  sgReadyInput2=" + sgReadyInput2 + "\n}";
+    }
 }

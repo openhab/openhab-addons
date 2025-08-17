@@ -76,14 +76,14 @@ public class EnergyRuntimeControlAllWpm {
 
     public EnergyRuntimeHpFeature hpEgRtList[];
 
-    public EnergyRuntimeControlAllWpm(int nrOfHps) {
+    public EnergyRuntimeControlAllWpm(int heatpumpCount) {
         for (int i = 0; i < EnergyRuntimeFeatureKeys.values().length; i++) {
             featureAvailable[i] = true;
             featureReported[i] = false;
         }
 
-        hpEgRtList = new EnergyRuntimeHpFeature[nrOfHps];
-        for (int i = 0; i < nrOfHps; i++) {
+        hpEgRtList = new EnergyRuntimeHpFeature[heatpumpCount];
+        for (int i = 0; i < heatpumpCount; i++) {
             hpEgRtList[i] = new EnergyRuntimeHpFeature();
         }
     }
@@ -92,21 +92,45 @@ public class EnergyRuntimeControlAllWpm {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Energy Runtime Control { ");
-        sb.append("\nfeatureAvailable=").append(java.util.Arrays.toString(featureAvailable)).append(", ");
-        sb.append("\nfeatureReported=").append(java.util.Arrays.toString(featureReported)).append(", ");
-        sb.append("\nhpEgRtList=[");
-        for (int i = 0; i < hpEgRtList.length; i++) {
-            sb.append("\nHpFeature ").append(i).append(": { ");
-            sb.append("featureAvailable=").append(java.util.Arrays.toString(hpEgRtList[i].featureAvailable))
-                    .append(", ");
-            sb.append(" / featureReported=").append(java.util.Arrays.toString(hpEgRtList[i].featureReported));
-            sb.append(" }");
-            if (i < hpEgRtList.length - 1) {
+        sb.append("\n  featureAvailable=[");
+        for (int i = 0; i < featureAvailable.length; i++) {
+            sb.append(EnergyRuntimeFeatureKeys.values()[i]).append("=").append(featureAvailable[i]);
+            if (i < featureAvailable.length - 1) {
                 sb.append(", ");
             }
         }
-        sb.append("]");
-        sb.append(" }");
+        sb.append("]\n  featureReported=[");
+        for (int i = 0; i < featureReported.length; i++) {
+            sb.append(EnergyRuntimeFeatureKeys.values()[i]).append("=").append(featureReported[i]);
+            if (i < featureReported.length - 1) {
+                sb.append(", ");
+            }
+        }
+
+        sb.append("]\n  hpEgRtList=[");
+        for (int i = 0; i < hpEgRtList.length; i++) {
+            EnergyRuntimeHpFeature hpEgRt = hpEgRtList[i];
+            sb.append("\n    hp").append(i + 1).append(" {");
+            sb.append("\n      featureAvailable=[");
+            for (int j = 0; j < hpEgRt.featureAvailable.length; j++) {
+                sb.append(EnergyRuntimeHpFeatureKeys.values()[j]).append("=").append(hpEgRt.featureAvailable[j]);
+                if (j < hpEgRt.featureAvailable.length - 1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append("]\n      featureReported=[");
+            for (int j = 0; j < hpEgRt.featureReported.length; j++) {
+                sb.append(EnergyRuntimeHpFeatureKeys.values()[j]).append("=").append(hpEgRt.featureReported[j]);
+                if (j < hpEgRt.featureReported.length - 1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append("]\n    }");
+            if (i < hpEgRtList.length - 1) {
+                sb.append(",");
+            }
+        }
+        sb.append("\n  ]\n}");
         return sb.toString();
     }
 }

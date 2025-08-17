@@ -9,6 +9,7 @@ ISG web (English)
 About the ISG plus (only German, French and Italian)
 <https://www.stiebel-eltron.ch/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/servicewelt-und-isg.html>
 <https://www.stiebel-eltron.ch/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/isg-plus/isg-plus.html>
+SG Ready (Smart Grid) functions only supported with ISG plus version.
 
 Note about the new ISG version "*ISG connect*": it is unknown, if this binding supports it.
 
@@ -25,9 +26,9 @@ Note, that the things will show up under the Modbus binding.
 The first thing *Stiebel Eltron Heat Pump* and its channel IDs have been kept for compatibility reasons.
 It's recommended to switch to the second thing *Stiebel Eltron Heat Pump (WPM compatible)* as it supports the retrieval of much more information from a compatible heat pump controller (WPM).
 Supported controllers are WPMsystem, WPM3 and WPM3i.
-If the SG Ready polling is enabled using configuration parameter *pollSgReady*, the controller id is retrieved and visible in the appropriate channel.
+If the SG  Ready (Smart Grid Ready) polling is enabled using configuration parameter *pollSgReady*, the controller id is retrieved and visible in the appropriate channel.
 If the id is known, it can be set in the configuration parameter *wpmControllerId*.
-The binding code works without correct controller id as it checks the retrieved values and sets unavailable channels fix to NULL.
+The binding functions without the correct controller id as it checks the retrieved values and sets unavailable channels fix to NULL.
 
 ## Discovery
 
@@ -43,7 +44,7 @@ Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ]
 
 The things in this extension will use the selected bridge to connect to the device.
 
-The following configuration parameters are valid for the <i>stiebeleltron-heatpump-allwpm</i> thing:
+The following configuration parameters are valid for the `stiebeleltron-heatpump-allwpm` thing:
 
 | Parameter | Type    | Required | Default if omitted | Description                                                                |
 | --------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------- |
@@ -51,12 +52,12 @@ The following configuration parameters are valid for the <i>stiebeleltron-heatpu
 | maxTries  | integer | no       | 3                  | Number of retries before giving up reading from this thing                 |
 
 
-| Parameter         | Type    | Required | Default if omitted | Description                                                          |
-| ----------------- | ------- | -------- | ------------------ | -------------------------------------------------------------------- |
-| stateBlockLength  | integer | no       | 3                  | Number of retries before giving up reading from this thing           |
-| nrOfHps           | integer | no       | 0                  | Number of heat pumps in a WPMsystem compatible heat pump             |
-| wpmControllerId   | integer | no       | WMP3               | Default WPM controller id (WPM3 = 390, WPM3I = 391, WPMsystem = 449) |
-| pollSgReady       | boolean | no       | false              | NFlag to enable polling of the SG Ready registers                    |
+| Parameter       | Type    | Required | Default if omitted | Description                                                                          |
+| --------------- | ------- | -------- | ------------------ | ------------------------------------------------------------------------------------ |
+| allowResetCmds  | boolean | no       | false              | Flag to enable execution of supported reset commands (use with care; see note below) |
+| heatpumpCount   | integer | no       | 0                  | Number of heat pumps in a WPMsystem or WPM3 based environment                        |
+| wpmControllerId | integer | no       | WMP3               | Default WPM controller id (WPM3 = 390, WPM3I = 391, WPMsystem = 449)                 |
+| pollSgReady     | boolean | no       | false              | Flag to enable polling of the SG Ready registers of the WPM                          |
 
 A typcial bridge and thing setup would look like this:
 
@@ -85,9 +86,7 @@ This groups contain general state information about the heat pump.
 | is-pumping       | Contact   | true      | OPEN in case the heat pump is currently in pumping mode       |
 | is-summer        | Contact   | true      | OPEN in case the heat pump is currently in summer mode        |
 
-
-
-#### Channels supported by thing *Stiebel Eltron Heat Pump (WPM compatible)*
+#### Channels supported by `stiebeleltron-heatpump-allwpm`
 
 Note: The column WPM is for WPMsystem.
 
@@ -125,7 +124,6 @@ Note: The column WPM is for WPMsystem.
 | defrost-initiated              | Number    | true      | Defrost Initiated: 0=OFF, 1=INITIATED                                  |  x  |  x   |       |
 | active-error                   | Number    | true      | Active Error Number                                                    |  x  |  x   |   x   |
 
-
 ### System Parameters Group
 
 This group contains system paramters of the heat pump.
@@ -141,7 +139,7 @@ This group contains system paramters of the heat pump.
 | comfort-temperature-water   | Number:Temperature | false     | The current hot water comfort temperature                                                        |
 | eco-temperature-water       | Number:Temperature | false     | The current hot water eco temperature                                                            |
 
-#### Channels supported by thing *Stiebel Eltron Heat Pump (WPM compatible)*
+#### Channels supported by `stiebeleltron-heatpump-allwpm`
 
 Note: The column WPM is for WPMsystem.
 
@@ -176,7 +174,6 @@ Note: The column WPM is for WPMsystem.
 Channel 'reset': The binding only accepts commands 2 and 3 - command 1 (system reset) is ignored to prevent factory reset by accident.
 Channel 'restart-isg': The binding only accepts command 1 - command 2 (service key) is ignored as impact of command is not known to developer.
 
-
 ### System Information Group
 
 This group contains general operational information about the device.
@@ -198,7 +195,7 @@ This group contains general operational information about the device.
 | water-temperature          | Number:Temperature   | true      | The current water temperature                         |
 | water-temperature-setpoint | Number:Temperature   | true      | The current water temperature setpoint                |
 
-#### Channels supported by thing *Stiebel Eltron Heat Pump (WPM compatible)*
+#### Channels supported by `stiebeleltron-heatpump-allwpm`
 
 Note: The column WPM is for WPMsystem.
 
@@ -255,7 +252,6 @@ Note: The column WPM is for WPMsystem.
 #### Note
 The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration paramaeter *nrOfHps*.
 
-
 ### Energy Information Group
 
 This group contains information about the energy consumption and delivery of the heat pump.
@@ -273,12 +269,11 @@ This group contains information about the energy consumption and delivery of the
 | consumption-water-today            | Number:Energy | true      | The power consumption for water heating today          |
 | consumption-water-total            | Number:Energy | true      | The power consumption for water heating in total       |
 
-
 ### Energy und Runtime Information Group
 
 This group contains information about the energy consumption and delivery of the heat pump as well as the runtime of compressor and electric reheating stages for heating, cooling and hot water production.
 
-#### Channels supported by thing *Stiebel Eltron Heat Pump (WPM compatible)*
+#### Channels supported by `stiebeleltron-heatpump-allwpm`
 
 Note: The column WPM is for WPMsystem.
 
@@ -321,7 +316,6 @@ Note: The column WPM is for WPMsystem.
 #### Note
 The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration paramaeter *nrOfHps*.
 
-
 ### SG Ready - Energy Management Settings
 The following channels are only available for the thing *Stiebel Eltron Heat Pump (WPM compatible)*
 
@@ -329,7 +323,6 @@ The following channels are only available for the thing *Stiebel Eltron Heat Pum
 | -----------------------| ----------| --------- | -----------------------|
 | sg-ready-on-off-switch | Number    | false     | SG Ready On/Off Switch |
 | sg-ready-input-lines   | Number    | false     | SG Ready Input Lines   |
-
 
 ### SG Ready - Energy Management System Information
 The following channels are only available for the thing *Stiebel Eltron Heat Pump (WPM compatible)*
@@ -339,7 +332,6 @@ The following channels are only available for the thing *Stiebel Eltron Heat Pum
 | sg-ready-operating-state           | Number    | true      | SG Ready Operating State           |
 | sg-ready-controller-identification | Number    | true      | SG Ready Controller Identification |
 
-
 ## Full Example for the thing *Stiebel Eltron Heat Pump*
 
 ### Thing Configuration
@@ -348,6 +340,7 @@ The following channels are only available for the thing *Stiebel Eltron Heat Pum
 Bridge modbus:tcp:bridge "Stiebel Modbus TCP"[ host="hostname|ip", port=502, id=1 ]
 Thing modbus:heatpump:stiebelEltron "StiebelEltron" (modbus:tcp:bridge) @"Room" [ ]
 ```
+
 #### Note
 If using the notation with braces, the thing UID gets automatically a bridge label inbetween (like modbus:heatpump:bridge:stiebelEltron).
 Therefore, the notation without braces is used.
@@ -390,7 +383,6 @@ Number:Energy stiebel_eltron_consumption_heat_total  "Heating power consumption 
 Number:Energy stiebel_eltron_consumption_heat_today  "Heating power consumption today [%.0f kWh]"        { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_heat_today" }
 Number:Energy stiebel_eltron_consumption_water_today "Water heating power consumption today  [%.0f kWh]" { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_today" }
 Number:Energy stiebel_eltron_consumption_water_total "Water heating power consumption total [%.3f MWh]"  {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_total"}
-
 ```
 
 ### Sitemap Configuration
@@ -437,13 +429,10 @@ Text label="Heat pump" icon="temperature" {
   Default item=stiebel_eltron_production_water_today icon="water"
   Default item=stiebel_eltron_production_water_total icon="water"
  }
-
 }
-
 ```
 
-
-## Full Example for the thing *Stiebel Eltron Heat Pump (WPM compatible)*
+## Full Example for `stiebeleltron-heatpump-allwpm`
 
 ### Thing Configuration
 

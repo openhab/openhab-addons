@@ -65,43 +65,43 @@ public class SystemInformationControlAllWpm {
     }
 
     public class SysInfoHpFeature {
-        public boolean available[] = new boolean[SysInfoHpFeaturelKeys.values().length];
-        public boolean reported[] = new boolean[SysInfoHpFeaturelKeys.values().length];
+        public boolean featureAvailable[] = new boolean[SysInfoHpFeaturelKeys.values().length];
+        public boolean featureReported[] = new boolean[SysInfoHpFeaturelKeys.values().length];
 
         public boolean available(SysInfoHpFeaturelKeys key) {
-            return available[key.ordinal()];
+            return featureAvailable[key.ordinal()];
         }
 
         public boolean setAvailable(SysInfoHpFeaturelKeys key, boolean available) {
-            return this.available[key.ordinal()] = available;
+            return this.featureAvailable[key.ordinal()] = available;
         }
 
         public boolean reported(SysInfoHpFeaturelKeys key) {
-            return reported[key.ordinal()];
+            return featureReported[key.ordinal()];
         }
 
         public boolean setReported(SysInfoHpFeaturelKeys key, boolean reported) {
-            return this.reported[key.ordinal()] = reported;
+            return this.featureReported[key.ordinal()] = reported;
         }
 
         public SysInfoHpFeature() {
             for (SysInfoHpFeaturelKeys key : SysInfoHpFeaturelKeys.values()) {
-                available[key.ordinal()] = true;
-                reported[key.ordinal()] = false;
+                featureAvailable[key.ordinal()] = true;
+                featureReported[key.ordinal()] = false;
             }
         }
     }
 
     public SysInfoHpFeature hpSysInfoList[];
 
-    public SystemInformationControlAllWpm(int nrOfHps) {
+    public SystemInformationControlAllWpm(int heatpumpCount) {
         for (int i = 0; i < SysInfoFeatureKeys.values().length; i++) {
             featureAvailable[i] = true;
             featureReported[i] = false;
         }
 
-        hpSysInfoList = new SysInfoHpFeature[nrOfHps];
-        for (int i = 0; i < nrOfHps; i++) {
+        hpSysInfoList = new SysInfoHpFeature[heatpumpCount];
+        for (int i = 0; i < heatpumpCount; i++) {
             hpSysInfoList[i] = new SysInfoHpFeature();
         }
     }
@@ -110,25 +110,41 @@ public class SystemInformationControlAllWpm {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("System Information Control {");
-        sb.append("\n  featureAvailable: ");
+        sb.append("\n  featureAvailable=[");
         for (int i = 0; i < featureAvailable.length; i++) {
-            sb.append(SysInfoFeatureKeys.values()[i]).append("=").append(featureAvailable[i]).append(", ");
-        }
-        sb.append("\n  featureReported: ");
-        for (int i = 0; i < featureReported.length; i++) {
-            sb.append(SysInfoFeatureKeys.values()[i]).append("=").append(featureReported[i]).append(", ");
-        }
-        sb.append("\n  hpSysInfoList: [");
-        for (int i = 0; i < hpSysInfoList.length; i++) {
-            sb.append("\n    HP ").append(i).append(": {");
-            for (SysInfoHpFeaturelKeys key : SysInfoHpFeaturelKeys.values()) {
-                sb.append("\n      ").append(key).append(" {available=").append(hpSysInfoList[i].available(key))
-                        .append(", reported=").append(hpSysInfoList[i].reported(key)).append("},");
+            sb.append(SysInfoFeatureKeys.values()[i]).append("=").append(featureAvailable[i]);
+            if (i < featureAvailable.length - 1) {
+                sb.append(", ");
             }
-            sb.append("\n    },");
         }
-        sb.append("\n  ]");
-        sb.append("\n}");
+        sb.append("]\n  featureReported=[");
+        for (int i = 0; i < featureReported.length; i++) {
+            sb.append(SysInfoFeatureKeys.values()[i]).append("=").append(featureReported[i]);
+            if (i < featureReported.length - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]\n  hpSysInfoList {");
+        for (int i = 0; i < hpSysInfoList.length; i++) {
+            SysInfoHpFeature hpSysInfo = hpSysInfoList[i];
+            sb.append("\n    hp").append(i + 1).append(" {");
+            sb.append("\n      featureAvailable=[");
+            for (int j = 0; j < hpSysInfo.featureAvailable.length; j++) {
+                sb.append(SysInfoHpFeaturelKeys.values()[j]).append("=").append(hpSysInfo.featureAvailable[j]);
+                if (j < hpSysInfo.featureAvailable.length - 1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append("]\n    featureReported=[");
+            for (int j = 0; j < hpSysInfo.featureReported.length; j++) {
+                sb.append(SysInfoHpFeaturelKeys.values()[j]).append("=").append(hpSysInfo.featureReported[j]);
+                if (j < hpSysInfo.featureReported.length - 1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append("]\n    },");
+        }
+        sb.append("\n  }\n}");
         return sb.toString();
     }
 }

@@ -77,7 +77,7 @@ public class SystemStateControlAllWpm {
                 sb.append(", ");
             }
         }
-        sb.append("]}");
+        sb.append("]\n}");
         return sb.toString();
     }
 }

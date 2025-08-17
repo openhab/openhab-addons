@@ -33,4 +33,15 @@ public class SystemInformationBlock {
     public short temperatureSource;
     public short temperatureWater;
     public short temperatureWaterSetPoint;
+
+    @Override
+    public String toString() {
+        return "SystemInformationBlock {\n" + "  temperatureFek=" + temperatureFek + ",\n  temperatureFekSetPoint="
+                + temperatureFekSetPoint + ",\n  humidityFek=" + humidityFek + ",\n  dewpointFek=" + dewpointFek
+                + ",\n  temperatureOutdoor=" + temperatureOutdoor + ",\n  temperatureHc1=" + temperatureHc1
+                + ",\n  temperatureHc1SetPoint=" + temperatureHc1SetPoint + ",\n  temperatureSupply="
+                + temperatureSupply + ",\n  temperatureReturn=" + temperatureReturn + ",\n  temperatureSource="
+                + temperatureSource + ",\n  temperatureWater=" + temperatureWater + ",\n  temperatureWaterSetPoint="
+                + temperatureWaterSetPoint + "}";
+    }
 }

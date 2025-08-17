@@ -58,21 +58,21 @@ public class SystemParameterControlAllWpm {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("System Parameter Control {");
-        sb.append("\nfeatureAvailable=[");
+        sb.append("\n  featureAvailable=[");
         for (int i = 0; i < featureAvailable.length; i++) {
             sb.append(SysParamFeatureKeys.values()[i]).append("=").append(featureAvailable[i]);
             if (i < featureAvailable.length - 1) {
                 sb.append(", ");
             }
         }
-        sb.append("]\nfeatureReported=[");
+        sb.append("]\n  featureReported=[");
         for (int i = 0; i < featureReported.length; i++) {
             sb.append(SysParamFeatureKeys.values()[i]).append("=").append(featureReported[i]);
             if (i < featureReported.length - 1) {
                 sb.append(", ");
             }
         }
-        sb.append("]}");
+        sb.append("]\n}");
         return sb.toString();
     }
 }

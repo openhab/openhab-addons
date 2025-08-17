@@ -57,17 +57,22 @@ public class SgReadyEnergyManagementControl {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("SgReadyEnergyManagementControl:\n");
-        sb.append("featureAvailable:\n");
+        sb.append("SgReadyEnergyManagementControl {");
+        sb.append("\n  featureAvailable=[");
         for (int i = 0; i < featureAvailable.length; i++) {
-            sb.append("  ").append(SgReadyEnMgmtFeatureKeys.values()[i]).append(": ").append(featureAvailable[i])
-                    .append("\n");
+            sb.append(SgReadyEnMgmtFeatureKeys.values()[i]).append("=").append(featureAvailable[i]);
+            if (i < featureAvailable.length - 1) {
+                sb.append(", ");
+            }
         }
-        sb.append("featureReported:\n");
+        sb.append("]\n  featureReported=[");
         for (int i = 0; i < featureReported.length; i++) {
-            sb.append("  ").append(SgReadyEnMgmtFeatureKeys.values()[i]).append(": ").append(featureReported[i])
-                    .append("\n");
+            sb.append(SgReadyEnMgmtFeatureKeys.values()[i]).append("=").append(featureReported[i]);
+            if (i < featureAvailable.length - 1) {
+                sb.append(", ");
+            }
         }
+        sb.append("]\n}");
         return sb.toString();
     }
 }

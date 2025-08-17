@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link StiebelEltronHpV2Configuration} class contains configuration parameters for Stiebel Eltron Heat Pump V2
- * 
+ *
  * @author Thomas Burri - Added additional configuration items for new WPM compatible heat pumps
  */
 @NonNullByDefault
@@ -26,14 +26,19 @@ public class StiebelEltronHpV2Configuration extends StiebelEltronConfiguration {
     public static final int WPMSYSTEM = 449;
 
     /**
-     * Length of the state block in registers to read from bus
+     * Length of the state block in registers to read from bus (for future use)
      */
     private int stateBlockLength = 7;
 
     /**
+     * Flag to enable execution of supported reset commands
+     */
+    private boolean allowResetCmds = false;
+
+    /**
      * Number of heat pumps in a WPMsystem or WPM3 based environment.
      */
-    private int nrOfHps = 0;
+    private int heatpumpCount = 0;
 
     /**
      * Default WPM controller id (WPM3 = 390, WPM3I = 391, WPMsystem = 449)
@@ -60,17 +65,31 @@ public class StiebelEltronHpV2Configuration extends StiebelEltronConfiguration {
     }
 
     /**
+     * Gets the flag if execution of reset commands is enabled
+     */
+    public boolean getAllowResetCmdsFlag() {
+        return allowResetCmds;
+    }
+
+    /**
+     * Sets the flag if execution of reset commands is enabled
+     */
+    public void setAllowResetCmdsFlag(boolean allowResetCmds) {
+        this.allowResetCmds = allowResetCmds;
+    }
+
+    /**
      * Gets the number of heat pumps (only used with WMPsytem and WPM3 heat pumps)
      */
-    public int getNrOfHps() {
-        return nrOfHps;
+    public int getHeatpumpCount() {
+        return heatpumpCount;
     }
 
     /**
      * Sets the number of heat pumps (only used with WMPsytem and WPM3 heat pumps)
      */
-    public void setSetNrOfHps(int nrOfHps) {
-        this.nrOfHps = nrOfHps;
+    public void setSetHeatpumpCount(int heatpumpCount) {
+        this.heatpumpCount = heatpumpCount;
     }
 
     /**
