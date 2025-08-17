@@ -65,13 +65,11 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     private static final long EFFECTIVE_FLAG_TEMPERATURE_ZONE1 = 0x200000080L;
     private static final long EFFECTIVE_FLAG_TEMPERATURE_ZONE2 = 0x800000200L;
     private static final long EFFECTIVE_FLAG_HOTWATER = 65536L;
-    // TOOD: Set the flags properly
+    // TOOD: Confirm that the flags are properly defined
     private static final long EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE1 = 281475043819552L;
     private static final long EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE2 = 0L;
     private static final long EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE1 = 0x08L;
     private static final long EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE2 = 0x10L;
-    private static final long EFFECTIVE_FLAG_COOL_FLOW_TEMPERATURE_ZONE1 = 0L;
-    private static final long EFFECTIVE_FLAG_COOL_FLOW_TEMPERATURE_ZONE2 = 0L;
     private static final long EFFECTIVE_FLAG_TARGET_TANK_TEMPERATURE = 0x1000000000020L;
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudHeatpumpDeviceHandler.class);
@@ -79,9 +77,6 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     private @Nullable MelCloudAccountHandler melCloudHandler;
     private @Nullable HeatpumpDeviceStatus heatpumpDeviceStatus;
     private @Nullable ScheduledFuture<?> refreshTask;
-
-    private final String[] operationalModes = { "Idle", "Heat water", "Heat zones", "Cooling", "Defrost", "Stand-by",
-            "Legionella" };
 
     public MelCloudHeatpumpDeviceHandler(Thing thing) {
         super(thing);
@@ -204,7 +199,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
             case CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE2:
                 BigDecimal heatFlowTemperatureZone2 = this.convertOHValueToHPTemperature(command, 1);
                 if (heatFlowTemperatureZone2 != null) {
-                    cmdtoSend.setSetHeatFlowTemperatureZone1(heatFlowTemperatureZone2.doubleValue());
+                    cmdtoSend.setSetHeatFlowTemperatureZone2(heatFlowTemperatureZone2.doubleValue());
                     cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE2);
                 }
                 break;
@@ -341,19 +336,17 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
             case CHANNEL_OFFLINE:
                 updateState(CHANNEL_OFFLINE, OnOffType.from(heatpumpDeviceStatus.getOffline()));
                 break;
-
-            // Added by alessio
             case CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE1:
                 updateState(CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE1,
                         new DecimalType(heatpumpDeviceStatus.getSetHeatFlowTemperatureZone1()));
                 break;
             case CHANNEL_HEAT_TEMPERATURE_MODE_ZONE1:
                 updateState(CHANNEL_HEAT_TEMPERATURE_MODE_ZONE1,
-                        new StringType(heatpumpDeviceStatus.getOperationModeZone1().toString()));
+                        new DecimalType(heatpumpDeviceStatus.getOperationModeZone1()));
                 break;
             case CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE2:
                 updateState(CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE2,
-                        new DecimalType(heatpumpDeviceStatus.getSetHeatFlowTemperatureZone2()));
+                        new DecimalType(heatpumpDeviceStatus.getOperationModeZone1()));
                 break;
             case CHANNEL_HEAT_TEMPERATURE_MODE_ZONE2:
                 updateState(CHANNEL_HEAT_TEMPERATURE_MODE_ZONE2,

@@ -10,7 +10,8 @@
 		</supported-bridge-type-refs>
 		<label>Heatpump Device</label>
 		<description>Heatpump device</description>
-		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
+        <semantic-equipment-tag>HeatPump</semantic-equipment-tag>
+
 		<channels>
 			<channel id="power" typeId="power-channel"/>
 			<channel id="tankWaterTemperature" typeId="tankWaterTemperature-channel"/>
@@ -26,7 +27,6 @@
 			<channel id="heatTemperatureModeZone1" typeId="heatTemperatureModeZone1-channel"/>
 			<channel id="heatTemperatureModeZone2" typeId="heatTemperatureModeZone2-channel"/>
 			<channel id="operationMode" typeId="heatPumpOperationMode-channel"/>
-			<channel id="operationModeString" typeId="heatPumpOperationModeString-channel"/>
 			<channel id="offline" typeId="offline-channel"/>
 			<channel id="lastCommunication" typeId="lastCommunication-channel"/>
 			<channel id="nextCommunication" typeId="nextCommunication-channel"/>
