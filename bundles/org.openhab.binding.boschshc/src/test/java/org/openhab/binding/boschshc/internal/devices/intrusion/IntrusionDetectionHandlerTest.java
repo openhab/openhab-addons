@@ -25,10 +25,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.AbstractBoschSHCHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.services.intrusion.actions.arm.dto.ArmActionRequest;
@@ -49,6 +51,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
+@ExtendWith(MockitoExtension.class)
 class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<IntrusionDetectionHandler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<ArmActionRequest> armActionRequestCaptor;

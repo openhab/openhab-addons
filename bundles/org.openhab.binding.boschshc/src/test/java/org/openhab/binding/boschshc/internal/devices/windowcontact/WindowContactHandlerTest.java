@@ -16,6 +16,8 @@ import static org.mockito.Mockito.verify;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.library.types.OpenClosedType;
@@ -32,6 +34,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
+@ExtendWith(MockitoExtension.class)
 class WindowContactHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<WindowContactHandler> {
 
     @Override
