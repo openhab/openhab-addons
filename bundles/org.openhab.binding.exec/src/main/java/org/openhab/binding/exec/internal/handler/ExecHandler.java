@@ -18,6 +18,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -25,10 +29,12 @@ import java.util.Date;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -83,6 +89,7 @@ public class ExecHandler extends BaseThingHandler {
     public static final String COMMAND = "command";
     public static final String TRANSFORM = "transform";
     public static final String AUTORUN = "autorun";
+    public static final String CHARSET = "charset";
 
     private ExecutorService executor;
     private @Nullable ScheduledFuture<?> scheduledTask;
@@ -173,17 +180,21 @@ public class ExecHandler extends BaseThingHandler {
             timeOut = ((BigDecimal) getConfig().get(TIME_OUT)).intValue() * 1000;
         }
 
+        Charset charset = null;
+        String charsetValue = (String) getConfig().get(CHARSET);
+        if (charsetValue != null && !charsetValue.isBlank()) {
+            try {
+                charset = Charset.forName(charsetValue);
+            } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+                logger.warn("Invalid or unsupported character encoding '{}', falling back to UTF-8", charsetValue);
+            }
+        }
+        if (charset == null) {
+            charset = StandardCharsets.UTF_8;
+        }
+
         if (commandLine != null && !commandLine.isEmpty()) {
             updateState(RUN, OnOffType.ON);
-
-            // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
-            // Runtime.Exec(), on Mac OS X (Yosemite and El Capitan), there seems to be a lock race condition
-            // randomly appearing (on UNIXProcess) *when* one tries to gobble up the stdout and sterr output of the
-            // subprocess in separate threads. It seems to be common "wisdom" to do that in separate threads, but
-            // only when keeping everything between .exec() and .waitfor() in the same thread, this lock race
-            // condition seems to go away. This approach of not reading the outputs in separate threads *might* be a
-            // problem for external commands that generate a lot of output, but this will be dependent on the limits
-            // of the underlying operating system.
 
             Date date = Calendar.getInstance().getTime();
             try {
@@ -198,6 +209,8 @@ public class ExecHandler extends BaseThingHandler {
                         commandLine, date, lastInput, e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
+                updateState(STDOUT, new StringType());
+                updateState(STDERR, new StringType(e.getMessage()));
                 return;
             }
 
@@ -211,6 +224,8 @@ public class ExecHandler extends BaseThingHandler {
                     logger.warn("An exception occurred while splitting '{}' : '{}'", commandLine, e.getMessage());
                     updateState(RUN, OnOffType.OFF);
                     updateState(OUTPUT, new StringType(e.getMessage()));
+                    updateState(STDOUT, new StringType());
+                    updateState(STDERR, new StringType(e.getMessage()));
                     return;
                 }
             } else {
@@ -236,6 +251,8 @@ public class ExecHandler extends BaseThingHandler {
                         logger.warn("OS {} not supported, please manually split commands!", getOperatingSystemName());
                         updateState(RUN, OnOffType.OFF);
                         updateState(OUTPUT, new StringType("OS not supported, please manually split commands!"));
+                        updateState(STDOUT, new StringType());
+                        updateState(STDERR, new StringType("OS not supported, please manually split commands!"));
                         return;
                 }
             }
@@ -255,13 +272,19 @@ public class ExecHandler extends BaseThingHandler {
                         e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
+                updateState(STDOUT, new StringType());
+                updateState(STDERR, new StringType(e.getMessage()));
                 return;
             }
 
             StringBuilder outputBuilder = new StringBuilder();
             StringBuilder errorBuilder = new StringBuilder();
 
-            try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+            TextOutputConsumer errConsumer = new TextOutputConsumer();
+            Future<List<String>> stdErrFuture = errConsumer.consume(proc.getErrorStream(), charset,
+                    Thread.currentThread().getName() + "-stderr-consumer");
+
+            try (InputStreamReader isr = new InputStreamReader(proc.getInputStream(), charset);
                     BufferedReader br = new BufferedReader(isr)) {
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -270,18 +293,6 @@ public class ExecHandler extends BaseThingHandler {
                 }
             } catch (IOException e) {
                 logger.warn("An exception occurred while reading the stdout when executing '{}' : '{}'", commandLine,
-                        e.getMessage());
-            }
-
-            try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                    BufferedReader br = new BufferedReader(isr)) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    errorBuilder.append(line).append("\n");
-                    logger.debug("Exec [{}]: '{}'", "ERROR", line);
-                }
-            } catch (IOException e) {
-                logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'", commandLine,
                         e.getMessage());
             }
 
@@ -298,8 +309,34 @@ public class ExecHandler extends BaseThingHandler {
                 proc.destroyForcibly();
             }
 
+            try {
+                List<String> stdErr = stdErrFuture.get(timeOut, TimeUnit.MILLISECONDS);
+                for (String line : stdErr) {
+                    errorBuilder.append(line).append("\n");
+                    logger.debug("Exec [{}]: '{}'", "ERROR", line);
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while waiting for process ('{}') stderr content", commandLine);
+            } catch (TimeoutException e) {
+                logger.warn("Timed out while waiting for process ('{}') stderr content", commandLine);
+            } catch (ExecutionException e) {
+                Throwable cause = e.getCause();
+                logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'", commandLine,
+                        cause != null ? cause.getMessage() : e.getMessage());
+            }
+
             updateState(RUN, OnOffType.OFF);
             updateState(EXIT, new DecimalType(proc.exitValue()));
+
+            ChannelTransformation transformation = channelTransformation;
+            String transformedStdout = Objects.requireNonNull(StringUtils.chomp(outputBuilder.toString()));
+            String transformedStderr = Objects.requireNonNull(StringUtils.chomp(errorBuilder.toString()));
+            if (transformation != null) {
+                transformedStdout = transformation.apply(transformedStdout).orElse(transformedStdout);
+                transformedStderr = transformation.apply(transformedStderr).orElse(transformedStderr);
+            }
+            updateState(STDOUT, new StringType(transformedStdout));
+            updateState(STDERR, new StringType(transformedStderr));
 
             outputBuilder.append(errorBuilder.toString());
 
@@ -307,8 +344,8 @@ public class ExecHandler extends BaseThingHandler {
 
             String transformedResponse = Objects.requireNonNull(StringUtils.chomp(outputBuilder.toString()));
 
-            if (channelTransformation != null) {
-                transformedResponse = channelTransformation.apply(transformedResponse).orElse(transformedResponse);
+            if (transformation != null) {
+                transformedResponse = transformation.apply(transformedResponse).orElse(transformedResponse);
             }
 
             updateState(OUTPUT, new StringType(transformedResponse));
@@ -347,6 +384,8 @@ public class ExecHandler extends BaseThingHandler {
                 logger.warn("An exception occurred while splitting '{}' : '{}'", commandLine, e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
+                updateState(STDOUT, new StringType());
+                updateState(STDERR, new StringType(e.getMessage()));
                 return new String[] {};
             }
         }
