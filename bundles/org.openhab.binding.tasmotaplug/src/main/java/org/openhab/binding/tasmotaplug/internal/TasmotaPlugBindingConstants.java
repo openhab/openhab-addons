@@ -13,6 +13,7 @@
 package org.openhab.binding.tasmotaplug.internal;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,6 +49,10 @@ public class TasmotaPlugBindingConstants {
     public static final String POWER2 = "power2";
     public static final String POWER3 = "power3";
     public static final String POWER4 = "power4";
+    public static final String PULSE_TIME = "pulse-time";
+    public static final String PULSE_TIME2 = "pulse-time2";
+    public static final String PULSE_TIME3 = "pulse-time3";
+    public static final String PULSE_TIME4 = "pulse-time4";
     public static final String VOLTAGE = "voltage";
     public static final String CURRENT = "current";
     public static final String WATTS = "watts";
@@ -63,4 +68,9 @@ public class TasmotaPlugBindingConstants {
     public static final List<String> CONTROL_CHANNEL_IDS = List.of(POWER, POWER2, POWER3, POWER4);
     public static final List<String> ENERGY_CHANNEL_IDS = List.of(VOLTAGE, CURRENT, WATTS, VOLT_AMPERE,
             VOLT_AMPERE_REACTIVE, POWER_FACTOR, ENERGY_TODAY, ENERGY_YESTERDAY, ENERGY_TOTAL, ENERGY_TOTAL_START);
+
+    // Map of the channel ids to tasmota command strings
+    public static final Map<String, String> COMMAND_MAP = Map.of(POWER, "Power", POWER2, "Power2", "POWER3", "Power3",
+            POWER4, "Power4", PULSE_TIME, "PulseTime", PULSE_TIME2, "PulseTime2", PULSE_TIME3, "PulseTime3",
+            PULSE_TIME4, "PulseTime4");
 }
