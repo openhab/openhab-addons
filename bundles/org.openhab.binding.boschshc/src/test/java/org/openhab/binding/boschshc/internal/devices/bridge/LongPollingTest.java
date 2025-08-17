@@ -211,7 +211,7 @@ class LongPollingTest {
 
     private @NonNullByDefault({}) LongPolling fixture;
 
-    private @NonNullByDefault({}) BoschHttpClient httpClient;
+    private @Mock @NonNullByDefault({}) BoschHttpClient httpClient;
 
     private @Mock @NonNullByDefault({}) Consumer<@NonNull LongPollResult> longPollHandler;
 
@@ -220,12 +220,10 @@ class LongPollingTest {
     @BeforeEach
     void beforeEach() {
         fixture = new LongPolling(new SameThreadExecutorService(), longPollHandler, failureHandler);
-        httpClient = mock(BoschHttpClient.class);
     }
 
     @Test
     void start() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        // when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);
