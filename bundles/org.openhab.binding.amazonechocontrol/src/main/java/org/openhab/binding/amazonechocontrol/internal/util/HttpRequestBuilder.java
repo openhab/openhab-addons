@@ -15,7 +15,6 @@ package org.openhab.binding.amazonechocontrol.internal.util;
 import static org.eclipse.jetty.http.HttpHeader.*;
 import static org.eclipse.jetty.http.HttpMethod.*;
 import static org.eclipse.jetty.http.HttpStatus.*;
-import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.MimeTypes.Type.APPLICATION_JSON_UTF_8;
 import static org.eclipse.jetty.http.MimeTypes.Type.FORM_ENCODED;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.API_VERSION;
@@ -259,7 +258,7 @@ public class HttpRequestBuilder {
                 try {
                     String contentType = response.headers.get(CONTENT_TYPE);
                     if (contentType == null) {
-                        throw new JsonParseException("Response Content-Type is not JSON: " + contentType);
+                        throw new JsonParseException("Response Content-Type header is missing");
                     }
                     T returnValue = gson.fromJson(response.content(), returnType);
                     // gson.fromJson is non-null if json is non-null and not empty

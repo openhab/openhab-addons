@@ -727,7 +727,10 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         newJsonIdSmartHomeDeviceMapping.put(id, smartHomeDevice);
                     }
                 }
-                // searchSmartHomeDevicesRecursive(jsonObject, smartHomeDevices);
+                // TODO previously `searchSmartHomeDevicesRecursive` was called here. Due to changes in the JSON
+                // structure, this may need to be re-implemented.
+                // JsonSmartHomeDevice are now directly accessible from the response, JsonSmartHomeGroups.SmartHomeGroup
+                // seem to be missing
 
                 jsonIdSmartHomeDeviceMapping = newJsonIdSmartHomeDeviceMapping;
 
