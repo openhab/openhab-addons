@@ -1263,7 +1263,6 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      *
      * @param registers byte array read from the modbus slave
      */
-    @SuppressWarnings("null")
     protected void handlePolledEnergyRuntimeData(ModbusRegisterArray registers) {
         logger.trace("Energy block received, size: {}", registers.size());
         StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
@@ -1271,7 +1270,12 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             throw new IllegalStateException("handlePolledEnergyRuntimeData called without proper configuration");
         }
 
-        EnergyRuntimeBlockAllWpm energyRuntimeBlock = energyRuntimeBlockParser.parse(registers, energyRuntimeControl,
+        EnergyRuntimeControlAllWpm localErRtCtr = energyRuntimeControl;
+        if (localErRtCtr == null) {
+            logger.error("handlePolledEnergyRuntimeData - energyRuntimeControl not set; should not happen!");
+            return;
+        }
+        EnergyRuntimeBlockAllWpm energyRuntimeBlock = energyRuntimeBlockParser.parse(registers, localErRtCtr,
                 myconfig.getHeatpumpCount());
 
         logger.trace("\n {}", energyRuntimeBlock);

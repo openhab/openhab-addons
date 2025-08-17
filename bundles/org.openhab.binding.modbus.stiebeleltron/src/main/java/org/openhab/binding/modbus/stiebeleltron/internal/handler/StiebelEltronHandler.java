@@ -343,7 +343,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
         }
 
         if (comms == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' not completely initialized", label));
