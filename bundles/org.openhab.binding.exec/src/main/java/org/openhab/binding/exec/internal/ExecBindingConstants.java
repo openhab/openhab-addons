@@ -30,6 +30,8 @@ public class ExecBindingConstants {
 
     // List of all Channel ids
     public static final String OUTPUT = "output";
+    public static final String STDOUT = "stdout";
+    public static final String STDERR = "stderr";
     public static final String INPUT = "input";
     public static final String EXIT = "exit";
     public static final String RUN = "run";
