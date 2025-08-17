@@ -46,9 +46,9 @@ Add 100 to desired interval in seconds, e.g., PulseTime 113 = 13 seconds and Pul
 | power3               | Switch                   | Turns the smart plug relay #3 ON or OFF             |
 | power4               | Switch                   | Turns the smart plug relay #4 ON or OFF             |
 | pulse-time           | Number                   | Set PulseTime for relay #1 in 0.1 second increments |
-| pulse-time2          | Number                   | Set PulseTime for relay #1 in 0.1 second increments |
-| pulse-time3          | Number                   | Set PulseTime for relay #1 in 0.1 second increments |
-| pulse-time4          | Number                   | Set PulseTime for relay #1 in 0.1 second increments |
+| pulse-time2          | Number                   | Set PulseTime for relay #2 in 0.1 second increments |
+| pulse-time3          | Number                   | Set PulseTime for relay #3 in 0.1 second increments |
+| pulse-time4          | Number                   | Set PulseTime for relay #4 in 0.1 second increments |
 | voltage              | Number:ElectricPotential | Channel for output voltage measurement              |
 | current              | Number:ElectricCurrent   | Channel for output current measurement              |
 | watts                | Number:Power             | Channel for output power measurement                |
