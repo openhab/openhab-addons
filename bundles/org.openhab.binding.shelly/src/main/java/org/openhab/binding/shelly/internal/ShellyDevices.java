@@ -87,7 +87,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSSHUTTER = "S3SH-0A2P4EU";
     public static final String SHELLYDT_PLUSPLUGS = "SNPL-00112EU";
     public static final String SHELLYDT_PLUSPLUGS_2 = "SNPL-10112EU";
-    public static final String SHELLYDT_PLUSPLUGSG3 = "S3PL-00112EU"; // Shelly Plug-S G3, Shelly AZ Plug
+    public static final String SHELLYDT_PLUSPLUGSG3 = "S3PL-00112EU"; // Shelly Plug-S G3
     public static final String SHELLYDT_PLUSPLUGSAZ = "S3PL-10112EU"; // Shelly AZ Plug
     public static final String SHELLYDT_PLUSPLUGOUTDOORSG3 = "S3PL-20112EU";
     public static final String SHELLYDT_PLUSPLUGIT = "SNPL-00110IT";
