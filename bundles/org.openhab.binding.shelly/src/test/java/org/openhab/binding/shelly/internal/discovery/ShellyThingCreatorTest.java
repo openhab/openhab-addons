@@ -74,7 +74,7 @@ public class ShellyThingCreatorTest {
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset() {
         return Stream.of( //
                 Arguments.of("johndoe-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNKNOWN), //
-                Arguments.of("shellyplugsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of("shellyazplug-" + DEVICE_ID, SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyplugsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGSAZ, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyoutdoorsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGOUTDOORSG3, "",
                         THING_TYPE_SHELLYPLUSPLUGS), //
