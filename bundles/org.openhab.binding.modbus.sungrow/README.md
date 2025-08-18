@@ -53,7 +53,7 @@ You just have to select the configured bridge and optional configure the polling
 | Name          | Type    | Description                                                                                                                                          | Default | Required | Advanced |
 |---------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
 | pollInterval  | integer | Interval the device is polled in ms.                                                                                                                 | 5000    | yes      | no       |
-| maxTries      | integer | Specifies how many times the binding should retry reading data if a read attempt fails. <br/>Set to `1` to disable retries and use a single attempt. | 3 |yes|no|
+| maxTries      | integer | Specifies how many times the binding should retry reading data if a read attempt fails. <br/>Set to `1` to disable retries and use a single attempt. | 3       | yes      | no       |
 
 ## Channels
 
