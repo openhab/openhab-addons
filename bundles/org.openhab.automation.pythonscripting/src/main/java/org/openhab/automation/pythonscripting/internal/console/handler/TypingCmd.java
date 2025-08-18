@@ -91,33 +91,31 @@ public class TypingCmd {
     public void dumpInit(String path, Map<String, ClassContainer> fileContainerMap) throws IOException {
         File root = new File(path);
         File[] list = root.listFiles();
-        if (list == null) {
-            return;
-        }
-
-        ArrayList<File> files = new ArrayList<File>();
-        for (File f : list) {
-            if (f.isDirectory()) {
-                dumpInit(f.getAbsolutePath(), fileContainerMap);
-            } else {
-                files.add(f);
-            }
-        }
-
-        if (!files.isEmpty()) {
-            StringBuilder initBody = new StringBuilder();
-            // List<String> modules = new ArrayList<String>();
-            for (File file : files) {
-                if (file.toString().endsWith("__init__.py")) {
-                    continue;
+        if (list != null) {
+            ArrayList<File> files = new ArrayList<File>();
+            for (File f : list) {
+                if (f.isDirectory()) {
+                    dumpInit(f.getAbsolutePath(), fileContainerMap);
+                } else {
+                    files.add(f);
                 }
-                ClassContainer container = fileContainerMap.get(file.toString());
-                initBody.append("from .__" + container.getPythonClassName().toLowerCase() + "__ import "
-                        + container.getPythonClassName() + "\n");
             }
 
-            String packageUrl = path.replace(".", PATH_SEPARATOR) + "/__init__.py";
-            dumpContentToFile(initBody.toString(), Paths.get(packageUrl));
+            if (!files.isEmpty()) {
+                StringBuilder initBody = new StringBuilder();
+                // List<String> modules = new ArrayList<String>();
+                for (File file : files) {
+                    if (file.toString().endsWith("__init__.py")) {
+                        continue;
+                    }
+                    ClassContainer container = fileContainerMap.get(file.toString());
+                    initBody.append("from .__" + container.getPythonClassName().toLowerCase() + "__ import "
+                            + container.getPythonClassName() + "\n");
+                }
+
+                String packageUrl = path.replace(".", PATH_SEPARATOR) + "/__init__.py";
+                dumpContentToFile(initBody.toString(), Paths.get(packageUrl));
+            }
         }
     }
 
