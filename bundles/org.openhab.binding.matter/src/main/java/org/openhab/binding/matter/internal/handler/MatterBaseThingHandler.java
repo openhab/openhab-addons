@@ -439,7 +439,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
             }
         }
         cluster = root.clusters.get(GeneralDiagnosticsCluster.CLUSTER_NAME);
-        if (cluster != null && cluster instanceof GeneralDiagnosticsCluster generalCluster) {
+        if (cluster instanceof GeneralDiagnosticsCluster generalCluster && generalCluster.networkInterfaces != null) {
             List<String> allIpv6Addresses = new ArrayList<>();
             List<String> allIpv4Addresses = new ArrayList<>();
             for (NetworkInterface ni : generalCluster.networkInterfaces) {
@@ -464,9 +464,6 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
                         GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES + "-ipv4",
                         String.join(",", allIpv4Addresses));
             }
-            // todo remove this after cleanup
-            getThing().setProperty("ipv6Address", null);
-            getThing().setProperty("ipv4Address", null);
         }
     }
 

@@ -45,7 +45,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class FanDevice extends GenericDevice {
+public class FanDevice extends BaseDevice {
     private final Map<String, GenericItem> itemMap = new HashMap<>();
     private final Map<String, String> attributeToItemNameMap = new HashMap<>();
     private final FanModeMapper fanModeMapper = new FanModeMapper();

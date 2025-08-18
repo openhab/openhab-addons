@@ -62,7 +62,7 @@ public {{#if id}}{{else}}abstract {{/if}}class {{asUpperCamelCase name}}Cluster 
     * {{details}}
     */
 {{/if}}
-     public class {{asUpperCamelCase name}} {
+     public static class {{asUpperCamelCase name}} {
 {{#each children}}
 {{#if details}}
         /**
