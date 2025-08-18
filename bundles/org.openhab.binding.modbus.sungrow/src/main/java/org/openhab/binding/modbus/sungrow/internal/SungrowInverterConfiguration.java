@@ -23,4 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SungrowInverterConfiguration {
 
     public int pollInterval;
+    public int maxTries;
 }
