@@ -229,6 +229,25 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
+    public void testNode39ChannelsCreation() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(39);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+
+        ChannelUID channelid = new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual");
+
+        try {
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback, times(4)).stateUpdated(any(), any());
+            verify(callback).stateUpdated(eq(channelid), eq(new PercentType(98)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
     public void testNode44ChannelsCreation() {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(44);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);

@@ -86,4 +86,6 @@ public class BindingConstants {
     public static final String HEX = "hex";
     public static final String COLOR_TEMP_CHANNEL_COMMAND_CLASS_NAME = "Color Switch";
     public static final String COLOR_TEMP_CHANNEL_PROPERTY_NAME = "colorTemperature";
+
+    public static final String VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER = "rollershutter";
 }

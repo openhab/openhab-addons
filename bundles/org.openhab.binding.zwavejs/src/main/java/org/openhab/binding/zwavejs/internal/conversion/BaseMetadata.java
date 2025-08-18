@@ -308,11 +308,28 @@ public abstract class BaseMetadata {
                 return handleSwitchType(value, inverted);
             case CoreItemFactory.COLOR:
                 return handleColorType(value);
+            case CoreItemFactory.ROLLERSHUTTER:
+                return handleRollershutterType(value, inverted);
             case CoreItemFactory.STRING:
                 return StringType.valueOf(Objects.requireNonNull(value).toString());
             default:
                 logger.warn("Node {}, unexpected item type: {}, please file a bug report", nodeId, itemType);
                 return UnDefType.UNDEF;
+        }
+    }
+
+    private @Nullable State handleRollershutterType(Object value, boolean inverted) {
+        if (value instanceof Number numberValue) {
+            try {
+                return new PercentType(inverted ? 100 - numberValue.intValue() : numberValue.intValue());
+            } catch (IllegalArgumentException e) {
+                logger.warn("Node {}, invalid PercentType value provided: {}", nodeId, numberValue);
+                return UnDefType.UNDEF;
+            }
+        } else {
+            logger.warn("Node {}, unexpected value type for rollershutter: {}, please file a bug report", nodeId,
+                    value.getClass().getName());
+            return UnDefType.UNDEF;
         }
     }
 
@@ -485,6 +502,9 @@ public abstract class BaseMetadata {
 
         switch (type) {
             case NUMBER:
+                if (VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER.equals(commandClassName)) {
+                    return CoreItemFactory.ROLLERSHUTTER;
+                }
                 Unit<?> unit = this.unit;
                 if (unit != null) {
                     String dimension = UnitUtils.getDimensionName(unit);
@@ -495,7 +515,6 @@ public abstract class BaseMetadata {
                     }
                     return CoreItemFactory.NUMBER + ":" + dimension;
                 }
-
                 return CoreItemFactory.NUMBER;
             case BOOLEAN:
                 // switch (or contact ?)
@@ -534,6 +553,9 @@ public abstract class BaseMetadata {
                 pattern = "%1d %%";
                 break;
             case CoreItemFactory.COLOR:
+                break;
+            case CoreItemFactory.ROLLERSHUTTER:
+                pattern = "%1d %%";
                 break;
             case CoreItemFactory.STRING:
             case CoreItemFactory.SWITCH:

@@ -33,6 +33,7 @@ import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSChannelTypeInMemmoryProvider;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
@@ -240,6 +241,25 @@ public class ZwaveJSTypeGeneratorTest {
         Channel channel = getChannel("store_4.json", 25, "binary-switch-value-1");
 
         assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+    }
+
+    @Test
+    public void testGenCTNode39RollerShutterType() throws IOException {
+        Channel channel = getChannel("store_4.json", 39, "rollershutter-virtual");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:rollershutter-virtual", channel.getUID().getAsString());
+        assertEquals("Roller Shutter", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+
+        assertNotNull(type);
+        assertEquals(CoreItemFactory.ROLLERSHUTTER, type.getItemType());
     }
 
     @Test

@@ -33,6 +33,7 @@ import org.openhab.binding.zwavejs.internal.api.dto.MetadataType;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.config.ColorCapability;
+import org.openhab.binding.zwavejs.internal.config.RollerShutterCapability;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSChannelConfiguration;
 import org.openhab.binding.zwavejs.internal.conversion.ChannelMetadata;
 import org.openhab.binding.zwavejs.internal.conversion.ConfigMetadata;
@@ -151,6 +152,10 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                 }
             }
         }
+
+        mapRollerShutterCapabilities(result);
+
+        addRollerShutterChannels(thingUID, node, result);
 
         // cross link the ColorCapability dimmer channels to Dimmer type channels withing the same endpoint
         mapDimmerChannelsToColorCapabilities(result);
@@ -624,6 +629,51 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         return builder;
     }
 
+    private void addRollerShutterChannels(ThingUID thingUID, Node node, ZwaveJSTypeGeneratorResult result) {
+        result.rollerShutterCapabilities.forEach((endPoint, rollerShutterCapability) -> {
+            Value value = new Value();
+            // populate minimum required fields; the system channel type provides the rest
+            value.endpoint = endPoint;
+            value.commandClass = -1;
+            value.commandClassName = VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER;
+            value.propertyKey = "virtual";
+            value.property = "virtual";
+            value.metadata = new Metadata();
+            value.metadata.type = MetadataType.NUMBER;
+            value.metadata.writeable = true;
+            value.metadata.label = "Roller Shutter";
+            value.metadata.description = "Roller Shutter that accepts UP/DOWN/STOP and NUMBER commands";
+            value.metadata.readable = true;
+            value.value = 0;
+
+            ChannelMetadata details = new ChannelMetadata(node.nodeId, value);
+
+            logger.trace("Node {} building channel with Id: {}", details.nodeId, details.id);
+            logger.trace(" >> {}", details);
+
+            ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
+            ChannelType type = getOrGenerate(channelTypeUID, details);
+            if (type == null) {
+                return;
+            }
+            Configuration config = buildChannelConfiguration(details);
+
+            Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, details.id), CoreItemFactory.ROLLERSHUTTER)
+                    .withType(type.getUID()) //
+                    .withDefaultTags(type.getTags()) //
+                    .withKind(type.getKind()) //
+                    .withLabel(type.getLabel()) //
+                    .withDescription(Objects.requireNonNull(type.getDescription())) //
+                    .withAutoUpdatePolicy(type.getAutoUpdatePolicy()) //
+                    .withConfiguration(config) //
+                    .build();
+
+            result.channels.put(details.id, channel);
+            result.values.put(details.id,
+                    Objects.requireNonNull(result.values.get(rollerShutterCapability.dimmerChannel.getId())));
+        });
+    }
+
     /**
      * Iterates over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link ColorCapability} to find endpoints which
      * support color temperature, and if found, adds a respective color temperature channel to the
@@ -672,6 +722,47 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             result.channels.put(details.id, channel);
             colorCapability.colorTempChannel = channel.getUID();
         });
+    }
+
+    /**
+     * Iterates over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link Channel} to detect RollerShutter
+     * capabilities.
+     * A RollerShutter capability is identified if an endpoint has a Dimmer channel, a Switch (level up) channel, and a
+     * Switch (level down) channel.
+     *
+     * @param result ZwaveJSTypeGeneratorResult that provides the inputs and receives the results
+     */
+    private void mapRollerShutterCapabilities(ZwaveJSTypeGeneratorResult result) {
+        // Categorize channels by endpoint and type
+        result.channels.values().stream().filter(c -> CoreItemFactory.DIMMER.equals(c.getAcceptedItemType())) //
+                .forEach(channel -> {
+                    ZwaveJSChannelConfiguration config = channel.getConfiguration()
+                            .as(ZwaveJSChannelConfiguration.class);
+                    int endpoint = config.endpoint;
+                    // create single array as mutable container, regarding the lambda
+                    ChannelUID[] upChannel = new ChannelUID[1];
+                    ChannelUID[] downChannel = new ChannelUID[1];
+                    // get other channels of type switch within the same endpoint
+                    result.channels.values().stream()
+                            .filter(otherChannel -> CoreItemFactory.SWITCH.equals(otherChannel.getAcceptedItemType())) //
+                            .filter(otherChannel -> {
+                                ZwaveJSChannelConfiguration configSwitch = otherChannel.getConfiguration()
+                                        .as(ZwaveJSChannelConfiguration.class);
+                                return configSwitch.endpoint == endpoint;
+                            }).forEach(otherChannel -> {
+                                String channelId = otherChannel.getUID().getId().toLowerCase();
+                                if (channelId.contains("up") || channelId.contains("open")) {
+                                    upChannel[0] = otherChannel.getUID();
+                                } else if (channelId.contains("down") || channelId.contains("closed")) {
+                                    downChannel[0] = otherChannel.getUID();
+                                }
+                            });
+                    if (upChannel[0] != null && downChannel[0] != null) {
+                        RollerShutterCapability capability = new RollerShutterCapability(endpoint, channel.getUID(),
+                                upChannel[0], downChannel[0]);
+                        result.rollerShutterCapabilities.put(endpoint, capability);
+                    }
+                });
     }
 
     /**
