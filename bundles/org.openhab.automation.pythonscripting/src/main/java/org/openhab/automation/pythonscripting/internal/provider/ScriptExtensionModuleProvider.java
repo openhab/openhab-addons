@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.pythonscripting.internal.wrapper;
+package org.openhab.automation.pythonscripting.internal.provider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,5 +94,9 @@ public class ScriptExtensionModuleProvider {
 
     public void put(String key, Object value) {
         this.globals.put(key, value);
+    }
+
+    public static interface ModuleLocator {
+        Map<String, Object> locateModule(String name, List<String> fromlist);
     }
 }
