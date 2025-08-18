@@ -5,16 +5,34 @@ While cloud mode is theoretically possible, it is not supported by the addon dev
 
 ## Local Mode
 
-The printer parameters can be found in the config file of Bambu Studio. Under Windows go to
-```
-C:\Users\<your-username>\AppData\Roaming\bambustudio\
-```
-and open the file BambuStudio.conf. There you will find something like
-```
-    "access_code": {
-        "00ABCDEFG123456": "12345678"
-```
-Here 00ABCDEFG123456 is the serial number and 12345678 is the access code. Enter both in the corresponding fields. Enter the ip/hostname of your printer and bblp as username. Select your printer model under Series. The rest can be left with the default values for now.
+1. **Find your printer credentials**
+   On **Windows**, open the Bambu Studio configuration file:
+
+   ```json
+      "access_code": {
+      "00ABCDEFG123456": "12345678"
+   }
+   ```
+
+   Look for a section like:
+
+   ```json
+      "access_code": {
+      "00ABCDEFG123456": "12345678"
+   }
+   ```
+
+* `00ABCDEFG123456` → Serial number
+* `12345678` → Access code
+
+2. **Enter the details in openHAB**
+
+   - **Serial number** → Enter the serial number from the config file
+   - **Access code** → Enter the access code from the config file
+   - **IP / Hostname** → Enter your printer’s network address
+   - **Username** → `bblp`
+   - **Series** → Select your printer model
+   - **Other settings** → Leave defaults for now
 
 ## Cloud Mode
 
