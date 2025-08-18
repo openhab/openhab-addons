@@ -427,7 +427,7 @@ public class Websocket extends RestApi {
         state = WebsocketState.DISCONNECTED;
         pingPongMap.clear();
         if (throwable != null) {
-            logger.info("Websocket onClosedSession exception: {} - try to resume login", throwable.getMessage());
+            logger.debug("Websocket onClosedSession exception: {} - try to resume login", throwable.getMessage());
             accountHandler.handleWebsocketError(throwable);
             accountHandler.authorize();
         }

@@ -25,7 +25,7 @@ Bridge needs configuration in order to connect properly to your Mercedes Me acco
 
 | Name              | Type    | Description                                 | Default                   | Required |
 |-------------------|---------|---------------------------------------------|---------------------------|----------|
-| email             | text    | EMail address for MercedesMe account        | N/A                       | yes      |
+| email             | text    | Email address for MercedesMe account        | N/A                       | yes      |
 | password          | text    | Password for MercedesMe account             | N/A                       | yes      |
 | pin               | text    | Mercedes Me Smartphone App PIN              | N/A                       | no       |
 | region            | text    | Your region                                 | EU                        | yes      |
