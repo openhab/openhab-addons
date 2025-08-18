@@ -352,7 +352,7 @@ public class DoorLockCluster extends BaseCluster {
      * The door lock server provides several alarms which can be sent when there is a critical state on the door lock.
      * The alarms available for the door lock server are listed in AlarmCodeEnum.
      */
-    public class DoorLockAlarm {
+    public static class DoorLockAlarm {
         /**
          * This field shall indicate the alarm code of the event that has happened.
          */
@@ -366,7 +366,7 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * The door lock server sends out a DoorStateChange event when the door lock door state changes.
      */
-    public class DoorStateChange {
+    public static class DoorStateChange {
         /**
          * This field shall indicate the new door state for this door event.
          */
@@ -395,7 +395,7 @@ public class DoorLockCluster extends BaseCluster {
      * ◦ shall generate a LockOperation event of LockOperationType Unlatch when it is actuated from the outside.
      * ◦ may generate a LockOperation event of LockOperationType Unlatch when it is actuated from the inside.
      */
-    public class LockOperation {
+    public static class LockOperation {
         /**
          * This field shall indicate the type of the lock operation that was performed.
          */
@@ -442,7 +442,7 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * The door lock server sends out a LockOperationError event when a lock operation fails for various reasons.
      */
-    public class LockOperationError {
+    public static class LockOperationError {
         /**
          * This field shall indicate the type of the lock operation that was performed.
          */
@@ -495,7 +495,7 @@ public class DoorLockCluster extends BaseCluster {
      * The door lock server sends out a LockUserChange event when a lock user, schedule, or credential change has
      * occurred.
      */
-    public class LockUserChange {
+    public static class LockUserChange {
         /**
          * This field shall indicate the lock data type that was changed.
          */
@@ -551,7 +551,7 @@ public class DoorLockCluster extends BaseCluster {
      * This struct shall indicate the credential types and their corresponding indices (if any) for the event or user
      * record.
      */
-    public class CredentialStruct {
+    public static class CredentialStruct {
         /**
          * This field shall indicate the credential field used to authorize the lock operation.
          */

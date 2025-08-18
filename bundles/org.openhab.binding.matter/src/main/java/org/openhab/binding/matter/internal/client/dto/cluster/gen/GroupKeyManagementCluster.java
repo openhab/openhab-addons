@@ -71,7 +71,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
     public Integer maxGroupKeysPerFabric; // 3 uint16 R V
 
     // Structs
-    public class GroupKeyMapStruct {
+    public static class GroupKeyMapStruct {
         /**
          * This field uniquely identifies the group within the scope of the given Fabric.
          */
@@ -91,7 +91,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
         }
     }
 
-    public class GroupKeySetStruct {
+    public static class GroupKeySetStruct {
         /**
          * This field shall provide the fabric-unique index for the associated group key set, as specified in Section
          * 4.17.3.5.1, “Group Key Set ID”.
@@ -161,7 +161,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
         }
     }
 
-    public class GroupInfoMapStruct {
+    public static class GroupInfoMapStruct {
         /**
          * This field uniquely identifies the group within the scope of the given Fabric.
          */
