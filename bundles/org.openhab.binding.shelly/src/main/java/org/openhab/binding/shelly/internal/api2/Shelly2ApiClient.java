@@ -772,6 +772,21 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         ds.timerDuration = getDuration(value.timerStartedAt, value.timerDuration);
         status.dimmers.set(value.id, ds);
 
+        if (status.emeters != null) {
+            ShellySettingsEMeter emeter = status.emeters.get(value.id);
+            emeter.isValid = true;
+            if (value.voltage != null) {
+                emeter.voltage = value.voltage;
+            }
+            if (value.current != null) {
+                emeter.current = value.current;
+            }
+            if (value.apower != null) {
+                emeter.power = value.apower;
+            }
+            status.emeters.set(value.id, emeter);
+        }
+
         updateDeviceInnerTemp(status, value.temperature);
 
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;

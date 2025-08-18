@@ -283,6 +283,14 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_STATUS;
         } else if (isRoller) {
             return numRelays <= 2 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
+        } else if (isDimmer && settings.dimmers != null) {
+            int numDimmer = settings.dimmers.size();
+            if (numDimmer <= 1) {
+                return CHANNEL_GROUP_RELAY_CONTROL;
+            }
+
+            int numChannels = numInputs / numDimmer; // Device has more than 1 dimmer
+            return CHANNEL_GROUP_RELAY_CONTROL + (1 + (i / numChannels));
         } else {
             // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
@@ -293,10 +301,13 @@ public class ShellyDeviceProfile {
         int idx = i + 1; // channel names are 1-based
         if (isRGBW2 || isIX) {
             return ""; // RGBW2 has only 1 channel
-        } else if (isRoller || isDimmer) {
+        } else if (isRoller) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
             // Dimmer has up to 2 inputs to control light
             return String.valueOf(idx);
+        } else if (isDimmer && settings.dimmers != null) {
+            int numDimmer = settings.dimmers.size();
+            return String.valueOf(numDimmer <= 1 ? idx : (i % numDimmer) + 1);
         } else if (hasRelays) {
             return numRelays == 1 && numInputs >= 2 ? String.valueOf(idx) : "";
         }
