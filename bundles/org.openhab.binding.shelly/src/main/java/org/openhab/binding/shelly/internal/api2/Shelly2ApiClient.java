@@ -76,6 +76,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusTemp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
@@ -770,6 +771,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         ds.hasTimer = value.timerStartedAt != null;
         ds.timerDuration = getDuration(value.timerStartedAt, value.timerDuration);
         status.dimmers.set(value.id, ds);
+
+        updateDeviceInnerTemp(status, value.temperature);
+
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
     }
 
@@ -795,6 +799,21 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         status.lights.set(value.id, ds);
         return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
+    }
+
+    private void updateDeviceInnerTemp(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusTemp temperature) {
+        if (temperature != null && temperature.tC != null) {
+            if (status.tmp == null) {
+                status.tmp = new ShellySensorTmp();
+            }
+            status.tmp.isValid = true;
+            status.tmp.tC = temperature.tC;
+            status.tmp.tF = temperature.tF;
+            status.tmp.units = "C";
+            if (status.temperature == null || temperature.tC > status.temperature) {
+                status.temperature = status.tmp.tC;
+            }
+        }
     }
 
     protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Double timerDuration) {

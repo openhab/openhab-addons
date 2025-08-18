@@ -106,8 +106,17 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyuni-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNI),
                 Arguments.of("shellyem-" + DEVICE_ID, "", "", THING_TYPE_SHELLYEM),
                 Arguments.of("shellyem3-" + DEVICE_ID, "", "", THING_TYPE_SHELLY3EM),
+
+                // SHelly Plus
                 Arguments.of("shellyemg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSEM),
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUS3EM63),
+                Arguments.of("shellydimmerg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER),
+                Arguments.of("shellyplus010v-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER10V),
+                Arguments.of("shelly0110dimg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER10V),
+                Arguments.of("Shellyddimmerg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDALIDIMMER),
+                Arguments.of("shellypluswdus-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMERUS),
+
+                // Shelly Pro
                 Arguments.of("shellypro3em-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM),
                 Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM63),
                 Arguments.of("shellypro3em400-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM400),

@@ -612,6 +612,7 @@ public class Shelly2ApiJsonDTO {
             public Double timerStartedAt;
             @SerializedName("timer_duration")
             public Double timerDuration;
+            public Shelly2DeviceStatusTemp temperature;
             public Shelly2Energy aenergy;
             public Double apower;
             public Double current;

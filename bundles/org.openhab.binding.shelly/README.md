@@ -101,7 +101,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusstrip      | Shelly Plus Power Strip 4                                | S4PL-00416EU                                                              |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                                                    |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                                                |
-| shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW                                                 |
+| shellyplus10v        | Shelly Plus Dimmer 0-10V (Gen 2) or 0/1-10V (Gen 3)      | SNDM-00100WW, SNGW-0A11WW010, S3DM-0010WW                                 |
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |

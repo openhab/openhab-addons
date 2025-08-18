@@ -322,8 +322,8 @@ public class ShellyChannelDefinitions {
             // Only some devices report the internal device temp
             boolean hasTemp = !profile.isLight
                     && (status.temperature != null || (status.tmp != null && !profile.isSensor));
-            if (hasTemp && profile.isGen2 && (profile.numMeters > 0 && !profile.hasRelays)) // Shely Plus PM Mini
-            {
+            if (hasTemp && profile.isGen2 && (!profile.isDimmer && profile.numMeters > 0 && !profile.hasRelays)) {
+                // Shely Plus PM Mini
                 hasTemp = false;
             }
             addChannel(thing, add, hasTemp, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
