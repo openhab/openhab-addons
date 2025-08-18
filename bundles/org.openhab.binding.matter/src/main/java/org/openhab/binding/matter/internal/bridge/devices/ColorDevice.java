@@ -43,7 +43,7 @@ import org.openhab.core.util.ColorUtil;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class ColorDevice extends GenericDevice {
+public class ColorDevice extends BaseDevice {
     // how long to wait (max) for the device to turn on before updating the HSB values
     private static final int ONOFF_DELAY_MILLIS = 500;
     // the onFuture is used to wait for the device to turn on before updating the HSB values

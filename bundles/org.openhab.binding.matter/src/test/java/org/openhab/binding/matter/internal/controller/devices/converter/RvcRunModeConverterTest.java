@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcRunModeCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcRunModeCluster.ModeOptionStruct;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.core.library.types.DecimalType;
@@ -55,9 +56,9 @@ class RvcRunModeConverterTest extends BaseMatterConverterTest {
         super.setUp();
         // prepare supported modes
         List<RvcRunModeCluster.ModeOptionStruct> modes = new ArrayList<>();
-        modes.add(mockCluster.new ModeOptionStruct("Idle", 0, null));
-        modes.add(mockCluster.new ModeOptionStruct("Cleaning", 1, null));
-        modes.add(mockCluster.new ModeOptionStruct("Mapping", 2, null));
+        modes.add(new ModeOptionStruct("Idle", 0, null));
+        modes.add(new ModeOptionStruct("Cleaning", 1, null));
+        modes.add(new ModeOptionStruct("Mapping", 2, null));
         mockCluster.supportedModes = modes;
         mockCluster.currentMode = 0;
         converter = new RvcRunModeConverter(mockCluster, mockHandler, 1, "Vacuum");

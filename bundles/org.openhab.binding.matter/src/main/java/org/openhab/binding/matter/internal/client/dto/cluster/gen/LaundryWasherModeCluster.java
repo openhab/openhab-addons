@@ -81,7 +81,7 @@ public class LaundryWasherModeCluster extends BaseCluster {
     /**
      * A Mode Tag is meant to be interpreted by the client for the purpose the cluster serves.
      */
-    public class ModeTagStruct {
+    public static class ModeTagStruct {
         /**
          * If the MfgCode field exists, the Value field shall be in the manufacturer-specific value range (see Section
          * 1.10.8, “Mode Namespace”).
@@ -108,7 +108,7 @@ public class LaundryWasherModeCluster extends BaseCluster {
      * The table below lists the changes relative to the Mode Base cluster for the fields of the ModeOptionStruct type.
      * A blank field indicates no change.
      */
-    public class ModeOptionStruct {
+    public static class ModeOptionStruct {
         public String label;
         public String mode;
         public String modeTags;
