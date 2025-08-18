@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * ContextOutput implementation
+ * ContextInput implementation
  *
  * @author Holger Hees - Initial contribution
  */
