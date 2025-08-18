@@ -139,7 +139,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
     /**
      * This structure provides some constant values that may be of use to all commissioners.
      */
-    public class BasicCommissioningInfo {
+    public static class BasicCommissioningInfo {
         /**
          * This field shall contain a conservative initial duration (in seconds) to set in the FailSafe for the
          * commissioning flow to complete successfully. This may vary depending on the speed or sleepiness of the

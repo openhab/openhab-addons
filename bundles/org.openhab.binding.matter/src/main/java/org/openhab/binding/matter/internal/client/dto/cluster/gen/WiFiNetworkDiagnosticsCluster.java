@@ -113,7 +113,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
      * The Disconnection Event shall indicate that a Node’s Wi-Fi connection has been disconnected as a result of
      * de-authenticated or dis-association and indicates the reason.
      */
-    public class Disconnection {
+    public static class Disconnection {
         /**
          * This field shall contain the Reason Code field value for the Disassociation or Deauthentication event that
          * caused the disconnection and the value shall align with Table 9-49 &quot;Reason codes&quot; of IEEE
@@ -131,7 +131,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
      * point, but is unable to successfully associate or authenticate, after exhausting all internal retries of its
      * supplicant.
      */
-    public class AssociationFailure {
+    public static class AssociationFailure {
         /**
          * The Status field shall be set to a value from the AssociationFailureCauseEnum.
          */
@@ -158,7 +158,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
      * Connected, in this context, shall mean that a Node acting as a Wi-Fi station is successfully associated to a
      * Wi-Fi Access Point.
      */
-    public class ConnectionStatus {
+    public static class ConnectionStatus {
         public ConnectionStatusEnum connectionStatus; // ConnectionStatusEnum
 
         public ConnectionStatus(ConnectionStatusEnum connectionStatus) {
