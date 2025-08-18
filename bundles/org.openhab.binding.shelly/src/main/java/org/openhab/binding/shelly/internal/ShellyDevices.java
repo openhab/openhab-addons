@@ -102,6 +102,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSUNI = "SNSN-0043X";
     public static final String SHELLYDT_PLUSDIMMERUS = "SNDM-0013US";
     public static final String SHELLYDT_PLUSDIMMERG3 = "S3DM-0A101WWL";
+    public static final String SHELLYDT_PLUSDIMMERG4 = "S4DM-0A101WWL";
     public static final String SHELLYDT_PLUSDIMMER10V = "SNDM-00100WW"; // Gen2: 0-10V
     public static final String SHELLYDT_PLUSDIMMER10V_2 = "SNGW-0A11WW010";
     public static final String SHELLYDT_PLUSDIMMER0110VG3 = "S3DM-0010WW"; // Gen3; 0-1/10V
@@ -423,6 +424,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUSDIMMER10V_2, THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry(SHELLYDT_PLUSDIMMER0110VG3, THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry(SHELLYDT_PLUSDIMMERG3, THING_TYPE_SHELLYPLUSDIMMER),
+            Map.entry(SHELLYDT_PLUSDIMMERG4, THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry(SHELLYDT_PLUSDIMMERDALIG3, THING_TYPE_SHELLYPLUSDALIDIMMER),
             Map.entry(SHELLYDT_PLUSRGBWPM, THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry(SHELLYDT_PLUSEM, THING_TYPE_SHELLYPLUSEM),
@@ -582,6 +584,7 @@ public class ShellyDevices {
             Map.entry("shellyplusuni", THING_TYPE_SHELLYPLUSUNI),
             Map.entry("shellyplusdimmer", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellydimmerg3", THING_TYPE_SHELLYPLUSDIMMER),
+            Map.entry("shellydimmerg4", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyplusdalidimmer", THING_TYPE_SHELLYPLUSDALIDIMMER),
             Map.entry("shellyddimmerg3", THING_TYPE_SHELLYPLUSDALIDIMMER),
             Map.entry("shellyplus10v", THING_TYPE_SHELLYPLUSDIMMER10V),

@@ -111,6 +111,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyemg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSEM),
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUS3EM63),
                 Arguments.of("shellydimmerg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER),
+                Arguments.of("shellydimmerg4-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER),
                 Arguments.of("shellyplus010v-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER10V),
                 Arguments.of("shelly0110dimg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER10V),
                 Arguments.of("Shellyddimmerg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDALIDIMMER),
@@ -208,6 +209,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSSMOKE, "", THING_TYPE_SHELLYPLUSSMOKE), //
                 Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYPLUSUNI), //
                 Arguments.of(SHELLYDT_PLUSDIMMERG3, "", THING_TYPE_SHELLYPLUSDIMMER), //
+                Arguments.of(SHELLYDT_PLUSDIMMERG4, "", THING_TYPE_SHELLYPLUSDIMMER), //
                 Arguments.of(SHELLYDT_PLUSDIMMERDALIG3, "", THING_TYPE_SHELLYPLUSDALIDIMMER), //
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS), //
                 Arguments.of(SHELLYDT_PLUSDIMMER10V, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
