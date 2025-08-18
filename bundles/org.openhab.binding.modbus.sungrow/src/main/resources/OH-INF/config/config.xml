@@ -13,7 +13,9 @@
 		<parameter name="maxTries" type="integer" min="1">
 			<label>Maximum Tries When Reading</label>
 			<default>3</default>
-			<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			<description>Specifies how many times the binding should retry reading data if a read attempt fails.
+				Set to `1` to
+				disable retries and use a single attempt.</description>
 		</parameter>
 	</config-description>
 
