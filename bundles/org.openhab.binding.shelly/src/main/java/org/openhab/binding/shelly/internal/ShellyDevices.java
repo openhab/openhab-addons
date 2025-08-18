@@ -581,6 +581,7 @@ public class ShellyDevices {
             Map.entry("shellydimmerg3", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyplusdimmer", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyplus10v", THING_TYPE_SHELLYPLUSDIMMER10V),
+            Map.entry("shellyplusdalidimmer", THING_TYPE_SHELLYPLUSDALIDIMMER),
             Map.entry("Shellyddimmerg3", THING_TYPE_SHELLYPLUSDALIDIMMER),
             Map.entry("shellypluswdus", THING_TYPE_SHELLYPLUSDIMMERUS),
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
@@ -622,7 +623,9 @@ public class ShellyDevices {
             Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63),
             Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400),
             Map.entry("shellyprodimmer1pm", THING_TYPE_SHELLYPRODIMMER1PM),
-            Map.entry("shellyprodimmer2pm", THING_TYPE_SHELLYPRODIMMER1PM),
+            Map.entry("shellyprodm1pm", THING_TYPE_SHELLYPRODIMMER1PM),
+            Map.entry("shellyprodimmer2pm", THING_TYPE_SHELLYPRODIMMER2PM),
+            Map.entry("shellyprodm2pm", THING_TYPE_SHELLYPRODIMMER2PM),
             Map.entry("shellyprodimmer10v", THING_TYPE_SHELLYPRODIMMER10V),
             Map.entry("Shellypro0110pm", THING_TYPE_SHELLYPRODIMMER10V),
 

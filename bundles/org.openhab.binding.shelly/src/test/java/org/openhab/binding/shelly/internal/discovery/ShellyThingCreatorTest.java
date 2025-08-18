@@ -110,7 +110,9 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUS3EM63),
                 Arguments.of("shellypro3em-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM),
                 Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM63),
-                Arguments.of("shellypro3em400-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM400) //
+                Arguments.of("shellypro3em400-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM400),
+                Arguments.of("shellyprodm1pm-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRODIMMER1PM),
+                Arguments.of("shellyprodm2pm-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRODIMMER2PM) //
         );
     }
 
