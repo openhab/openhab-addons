@@ -32,7 +32,6 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
@@ -166,8 +165,7 @@ public class VehicleHandler extends BaseThingHandler {
                 throw new IllegalStateException("BridgeHandler is null");
             }
         } else {
-            String textKey = Constants.STATUS_TEXT_PREFIX + "vehicle" + Constants.STATUS_BRIDGE_MISSING;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, textKey);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_BRIDGE_MISSING);
         }
     }
 
@@ -197,22 +195,16 @@ public class VehicleHandler extends BaseThingHandler {
         logger.trace("Received command {} {} for {}", command.getClass(), command, channelUID);
 
         if (command instanceof RefreshType) {
-            if (MB_KEY_FEATURE_CAPABILITIES.equals(channelUID.getIdWithoutGroup())
-                    || MB_KEY_COMMAND_CAPABILITIES.equals(channelUID.getIdWithoutGroup())) {
-                accountHandler.ifPresent(ah -> {
-                    ah.getVehicleCapabilities(config.get().vin);
-                });
-            } else {
-                // deliver from event storage
-                ChannelStateMap csm = eventStorage.get(channelUID.getId());
-                if (csm != null) {
-                    updateChannel(csm);
-                }
+            // deliver from event storage
+            ChannelStateMap csm = eventStorage.get(channelUID.getId());
+            if (csm != null) {
+                updateChannel(csm);
             }
             // ensure unit update
             unitStorage.remove(channelUID.getIdWithoutGroup());
             return;
         }
+
         var crBuilder = CommandRequest.newBuilder().setVin(config.get().vin).setRequestId(UUID.randomUUID().toString());
         String group = channelUID.getGroupId();
         String channel = channelUID.getIdWithoutGroup();
@@ -976,7 +968,7 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * Check if Websocket shall be kept alive
          */
-        accountHandler.get().keepAlive(ignitionState == 4 || chargingState);
+        accountHandler.get().keepAlive(config.get().vin, ignitionState == 4 || chargingState);
     }
 
     /**
@@ -1074,37 +1066,6 @@ public class VehicleHandler extends BaseThingHandler {
                         consumptionUnitFuel);
                 updateChannel(csmFuel);
                 break;
-        }
-    }
-
-    @Override
-    public void updateStatus(ThingStatus ts, ThingStatusDetail tsd, @Nullable String details) {
-        super.updateStatus(ts, tsd, details);
-    }
-
-    @Override
-    public void updateStatus(ThingStatus ts) {
-        if (ThingStatus.ONLINE.equals(ts) && !ThingStatus.ONLINE.equals(thing.getStatus())) {
-            if (accountHandler.isPresent()) {
-                accountHandler.get().getVehicleCapabilities(config.get().vin);
-            }
-        }
-        super.updateStatus(ts);
-    }
-
-    public void setFeatureCapabilities(@Nullable String capabilities) {
-        if (capabilities != null) {
-            ChannelStateMap csm = new ChannelStateMap(MB_KEY_FEATURE_CAPABILITIES, GROUP_VEHICLE,
-                    StringType.valueOf(capabilities));
-            updateChannel(csm);
-        }
-    }
-
-    public void setCommandCapabilities(@Nullable String capabilities) {
-        if (capabilities != null) {
-            ChannelStateMap csm = new ChannelStateMap(MB_KEY_COMMAND_CAPABILITIES, GROUP_VEHICLE,
-                    StringType.valueOf(capabilities));
-            updateChannel(csm);
         }
     }
 
