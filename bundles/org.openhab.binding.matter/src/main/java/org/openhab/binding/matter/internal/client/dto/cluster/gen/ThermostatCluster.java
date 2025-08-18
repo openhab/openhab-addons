@@ -629,7 +629,7 @@ public class ThermostatCluster extends BaseCluster {
     public Integer setpointHoldExpiryTimestamp; // 82 epoch-s R V
 
     // Structs
-    public class PresetStruct {
+    public static class PresetStruct {
         /**
          * This field shall indicate a device generated identifier for this preset. It shall be unique on the device,
          * and shall NOT be reused after the associated preset has been deleted.
@@ -674,7 +674,7 @@ public class ThermostatCluster extends BaseCluster {
         }
     }
 
-    public class PresetTypeStruct {
+    public static class PresetTypeStruct {
         /**
          * This field shall specify a PresetScenarioEnum value supported by this thermostat.
          */
@@ -699,7 +699,7 @@ public class ThermostatCluster extends BaseCluster {
     /**
      * This represents a single transition in a Thermostat schedule
      */
-    public class WeeklyScheduleTransitionStruct {
+    public static class WeeklyScheduleTransitionStruct {
         /**
          * This field shall represent the start time of the schedule transition during the associated day. The time will
          * be represented by a 16 bits unsigned integer to designate the minutes since midnight. For example, 6am will
@@ -722,7 +722,7 @@ public class ThermostatCluster extends BaseCluster {
         }
     }
 
-    public class ScheduleStruct {
+    public static class ScheduleStruct {
         /**
          * This field shall indicate a device generated identifier for this schedule. It shall be unique on the device,
          * and shall NOT be reused after the associated schedule has been deleted.
@@ -821,7 +821,7 @@ public class ThermostatCluster extends BaseCluster {
      * • The SystemMode field is provided and has the value Cool or Auto, or the SystemMode field on the parent
      * ScheduleStruct has the value Cool or Auto
      */
-    public class ScheduleTransitionStruct {
+    public static class ScheduleTransitionStruct {
         /**
          * This field shall specify a bitmask of days of the week that the transition applies to. The Vacation bit shall
          * NOT be set; vacation schedules shall be set via the vacation preset.
@@ -866,7 +866,7 @@ public class ThermostatCluster extends BaseCluster {
         }
     }
 
-    public class ScheduleTypeStruct {
+    public static class ScheduleTypeStruct {
         /**
          * This field shall specify a SystemModeEnum supported by this thermostat for Schedules. The only valid values
          * for this field shall be Auto, Heat, and Cool.

@@ -40,7 +40,7 @@ public class ProxyConfigurationCluster extends BaseCluster {
     public List<ConfigurationStruct> configurationList; // 0 list RW
 
     // Structs
-    public class ConfigurationStruct {
+    public static class ConfigurationStruct {
         /**
          * This field shall be set to true to indicate to the proxy that it shall proxy all nodes. When true, the
          * SourceList attribute is ignored.

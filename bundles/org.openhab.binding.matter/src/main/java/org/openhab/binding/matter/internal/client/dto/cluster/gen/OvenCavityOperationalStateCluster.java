@@ -105,7 +105,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
      * also set the OperationalState attribute to Error, indicating an error condition.
      * This event shall contain the following fields:
      */
-    public class OperationalError {
+    public static class OperationalError {
         public ErrorStateStruct errorState; // ErrorStateStruct
 
         public OperationalError(ErrorStateStruct errorState) {
@@ -122,7 +122,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
      * in the device operation cycles.
      * This event shall contain the following fields:
      */
-    public class OperationCompletion {
+    public static class OperationCompletion {
         /**
          * This field provides an indication of the state at the end of the operation. This field shall have a value
          * from the ErrorStateEnum set. A value of NoError indicates success, that is, no error has been detected.
@@ -152,7 +152,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
     /**
      * The OperationalStateStruct is used to indicate a possible state of the device.
      */
-    public class OperationalStateStruct {
+    public static class OperationalStateStruct {
         /**
          * This shall be populated with a value from the OperationalStateEnum.
          */
@@ -170,7 +170,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
         }
     }
 
-    public class ErrorStateStruct {
+    public static class ErrorStateStruct {
         /**
          * This shall be populated with a value from the ErrorStateEnum.
          */

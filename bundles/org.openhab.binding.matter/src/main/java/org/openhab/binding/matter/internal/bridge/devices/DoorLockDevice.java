@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class DoorLockDevice extends GenericDevice {
+public class DoorLockDevice extends BaseDevice {
 
     public DoorLockDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);

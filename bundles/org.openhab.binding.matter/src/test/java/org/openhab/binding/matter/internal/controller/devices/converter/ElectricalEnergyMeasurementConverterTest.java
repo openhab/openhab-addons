@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalEnergyMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalEnergyMeasurementCluster.EnergyMeasurementStruct;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.core.library.types.QuantityType;
@@ -73,7 +74,7 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
         message.path = new Path();
         message.path.attributeName = "cumulativeEnergyImported";
 
-        ElectricalEnergyMeasurementCluster.EnergyMeasurementStruct energyMeasurement = mockCluster.new EnergyMeasurementStruct(
+        ElectricalEnergyMeasurementCluster.EnergyMeasurementStruct energyMeasurement = new EnergyMeasurementStruct(
                 BigInteger.valueOf(1000), null, null, null, null);
         message.value = energyMeasurement;
 
@@ -85,7 +86,7 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testInitState() {
-        ElectricalEnergyMeasurementCluster.EnergyMeasurementStruct measurement = mockCluster.new EnergyMeasurementStruct(
+        ElectricalEnergyMeasurementCluster.EnergyMeasurementStruct measurement = new EnergyMeasurementStruct(
                 BigInteger.valueOf(1000), null, null, null, null);
 
         mockCluster.cumulativeEnergyImported = measurement;

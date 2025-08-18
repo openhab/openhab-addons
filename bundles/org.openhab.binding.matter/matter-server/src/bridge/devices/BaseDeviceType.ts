@@ -1,18 +1,14 @@
-import { ActionContext, Endpoint, Logger } from "@matter/main";
-import { FixedLabelServer, LevelControlServer, OnOffServer } from "@matter/main/behaviors";
-import { LevelControl, OnOff } from "@matter/main/clusters";
-import { TypeFromPartialBitSchema } from "@matter/main/types";
+import { Endpoint, Logger } from "@matter/main";
+import { FixedLabelServer } from "@matter/main/behaviors";
 import { BridgedDeviceBasicInformationServer } from "@matter/node/behaviors/bridged-device-basic-information";
-import { BridgeEvent, BridgeEventType, EventType } from "../../MessageTypes";
 import { BridgeController } from "../BridgeController";
 
 const logger = Logger.get("GenericDevice");
-const OnOffType = OnOffServer.with(OnOff.Feature.Lighting);
 
 /**
  * This is the base class for all matter device types.
  */
-export abstract class GenericDeviceType {
+export abstract class BaseDeviceType {
     protected updateLocks = new Set<string>();
     endpoint: Endpoint;
 
@@ -29,15 +25,32 @@ export abstract class GenericDeviceType {
         this.productLabel = this.#truncateString(productLabel);
         this.productName = this.#truncateString(productName);
         this.serialNumber = this.#truncateString(serialNumber);
-        this.endpoint = this.createEndpoint(this.#generateAttributes(this.defaultClusterValues(), attributeMap));
+        this.endpoint = this.createEndpoint(
+            this.#generateAttributes(this.defaultClusterValues(attributeMap), attributeMap),
+        );
         logger.debug(
             `New Device: label: ${this.nodeLabel} name: ${this.productName} product label: ${this.productLabel} serial: ${this.serialNumber}`,
         );
     }
 
-    abstract defaultClusterValues(): Record<string, any>;
+    /**
+     * This method is used to generate the default cluster values for the device.
+     * @param userValues - The user provided values for the device, which will override the default values returned here. Useful if cluster need to be included or excluded based on user values.
+     * @returns The default cluster values for the device that will be used as a base for the user provided values to override.
+     */
+    abstract defaultClusterValues(userValues: Record<string, any>): Record<string, any>;
+
+    /**
+     * This method is used to create the endpoint for the device.
+     * @param clusterValues - The cluster values for the device.
+     * @returns The endpoint for the device.
+     */
     abstract createEndpoint(clusterValues: Record<string, any>): Endpoint;
 
+    /**
+     * This method is used to update the states for the device.
+     * @param states - The states to update for the device.
+     */
     public async updateStates(states: { clusterName: string; attributeName: string; state: any }[]) {
         const args = {} as { [key: string]: any };
         states.forEach(state => {
@@ -48,37 +61,6 @@ export abstract class GenericDeviceType {
         });
         logger.debug(`Updating states: ${JSON.stringify(args)}`);
         await this.endpoint.set(args);
-    }
-
-    protected attributeChanged(
-        clusterName: string,
-        attributeName: string,
-        attributeValue: any,
-        context?: ActionContext,
-    ) {
-        // if the context is undefined or the context is offline, do not send the event as this was openHAB initiated (prevents loopback)
-        if (context === undefined || context.offline === true) {
-            return;
-        }
-        this.sendBridgeEvent(clusterName, attributeName, attributeValue);
-    }
-
-    protected sendBridgeEvent(clusterName: string, attributeName: string, attributeValue: any) {
-        const be: BridgeEvent = {
-            type: BridgeEventType.AttributeChanged,
-            data: {
-                endpointId: this.endpoint.id,
-                clusterName: clusterName,
-                attributeName: attributeName,
-                data: attributeValue,
-            },
-        };
-        this.sendEvent(EventType.BridgeEvent, be);
-    }
-
-    protected sendEvent(eventName: string, data: any) {
-        logger.debug(`Sending event: ${eventName} with data: ${data}`);
-        this.bridgeController.ws.sendEvent(eventName, data);
     }
 
     protected endPointDefaults() {
@@ -94,42 +76,7 @@ export abstract class GenericDeviceType {
         };
     }
 
-    //note that these overrides assume openHAB will be sending the state back when changed as we will not set it here prematurely
-    //other wise we would want to call super.on() and so on (same for level control or any other cluster behavior)to set local state
-
-    protected createOnOffServer(setLocally: boolean = false): typeof OnOffType {
-        const parent = this;
-        return class extends OnOffType {
-            override async on() {
-                parent.sendBridgeEvent("onOff", "onOff", true);
-                if (setLocally) {
-                    await super.on();
-                }
-            }
-            override async off() {
-                parent.sendBridgeEvent("onOff", "onOff", false);
-                if (setLocally) {
-                    await super.off();
-                }
-            }
-        };
-    }
-
-    protected createLevelControlServer(): typeof LevelControlServer {
-        const parent = this;
-        return class extends LevelControlServer {
-            override async moveToLevelLogic(
-                level: number,
-                transitionTime: number | null,
-                withOnOff: boolean,
-                options: TypeFromPartialBitSchema<typeof LevelControl.Options>,
-            ) {
-                parent.sendBridgeEvent("levelControl", "currentLevel", level);
-            }
-        };
-    }
-
-    protected defaultClusterServers() {
+    protected get baseClusterServers() {
         return [BridgedDeviceBasicInformationServer, FixedLabelServer];
     }
 

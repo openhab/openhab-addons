@@ -51,7 +51,7 @@ public class EcosystemInformationCluster extends BaseCluster {
     public List<EcosystemLocationStruct> locationDirectory; // 1 list R F M
 
     // Structs
-    public class EcosystemDeviceStruct {
+    public static class EcosystemDeviceStruct {
         /**
          * This field shall indicate the device’s name, which is provided externally if the user consents. (For example,
          * provided by the user in an ecosystem specific interface.)
@@ -110,7 +110,7 @@ public class EcosystemInformationCluster extends BaseCluster {
         }
     }
 
-    public class EcosystemLocationStruct {
+    public static class EcosystemLocationStruct {
         /**
          * This field shall indicate a unique identifier for a specific Ecosystem Information Cluster server instance
          * representing the location independent of its LocationDescriptor field.

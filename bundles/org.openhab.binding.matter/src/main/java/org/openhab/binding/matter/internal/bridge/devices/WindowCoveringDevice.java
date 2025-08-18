@@ -13,7 +13,6 @@
 package org.openhab.binding.matter.internal.bridge.devices;
 
 import java.util.AbstractMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -48,10 +47,12 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class WindowCoveringDevice extends GenericDevice {
-    private ScheduledExecutorService operationalStateScheduler = Executors.newSingleThreadScheduledExecutor();
-    private @Nullable ScheduledFuture<?> operationalStateTimer = null;
-    private @Nullable Integer lastTargetPercent = null;
+public class WindowCoveringDevice extends BaseDevice {
+    private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private @Nullable ScheduledFuture<?> movementFinishedTimer = null;
+    private @Nullable Integer lastTargetPercent;
+    private int lastCurrentPercent;
+    private boolean invert = false;
 
     public WindowCoveringDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);
@@ -67,10 +68,19 @@ public class WindowCoveringDevice extends GenericDevice {
         primaryItem.addStateChangeListener(this);
         MetaDataMapping primaryMetadata = metaDataMapping(primaryItem);
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
-        attributeMap.put(
-                WindowCoveringCluster.CLUSTER_PREFIX + "."
-                        + WindowCoveringCluster.ATTRIBUTE_CURRENT_POSITION_LIFT_PERCENT100THS,
-                itemStateToPercent(primaryItem.getState()) * 100);
+        Metadata primaryItemMetadata = this.primaryItemMetadata;
+        if (primaryItemMetadata != null) {
+            Object invertObject = primaryItemMetadata.getConfiguration().get("invert");
+            if (invertObject instanceof Boolean invertValue) {
+                invert = invertValue;
+            }
+        }
+        lastCurrentPercent = itemStateToPercent(primaryItem.getState());
+        int percent100ths = lastCurrentPercent * 100;
+        attributeMap.put(WindowCoveringCluster.CLUSTER_PREFIX + "."
+                + WindowCoveringCluster.ATTRIBUTE_CURRENT_POSITION_LIFT_PERCENT100THS, percent100ths);
+        attributeMap.put(WindowCoveringCluster.CLUSTER_PREFIX + "."
+                + WindowCoveringCluster.ATTRIBUTE_TARGET_POSITION_LIFT_PERCENT100THS, percent100ths);
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
     }
 
@@ -85,43 +95,36 @@ public class WindowCoveringDevice extends GenericDevice {
         switch (attributeName) {
             case WindowCoveringCluster.ATTRIBUTE_TARGET_POSITION_LIFT_PERCENT100THS:
                 PercentType percentType = new PercentType((int) ((Double) data / 100));
-                lastTargetPercent = percentType.intValue();
-                int currentPercent = itemStateToPercent(primaryItem.getState());
-                if (currentPercent >= 0) {
-                    updateOperationalStatus(currentPercent);
-                }
-                // do logic to sen op state
-                boolean open = percentType.intValue() == 0;
+                int targetPercent = percentType.intValue();
                 Metadata primaryItemMetadata = this.primaryItemMetadata;
-                String key = open ? "OPEN" : "CLOSED";
                 if (primaryItem instanceof GroupItem groupItem) {
                     groupItem.send(percentType);
                 } else if (primaryItem instanceof DimmerItem dimmerItem) {
                     dimmerItem.send(percentType);
                 } else if (primaryItem instanceof RollershutterItem rollerShutterItem) {
-                    if (percentType.intValue() == 100) {
+                    if (targetPercent == 100) {
                         rollerShutterItem.send(UpDownType.DOWN);
-                    } else if (percentType.intValue() == 0) {
+                    } else if (targetPercent == 0) {
                         rollerShutterItem.send(UpDownType.UP);
                     } else {
                         rollerShutterItem.send(percentType);
                     }
                 } else if (primaryItem instanceof SwitchItem switchItem) {
-                    boolean invert = false;
-                    if (primaryItemMetadata != null) {
-                        Object invertObject = primaryItemMetadata.getConfiguration().getOrDefault("invert", false);
-                        if (invertObject instanceof Boolean invertValue) {
-                            invert = invertValue;
-                        }
+                    // anything > 0 is considered partially open and ON , otherwise completely open and OFF (unless
+                    // invert is true)
+                    boolean isOn = targetPercent > 0;
+                    if (invert) {
+                        isOn = !isOn;
                     }
-                    switchItem.send(OnOffType.from(invert ? open ? "ON" : "OFF" : open ? "OFF" : "ON"));
+                    switchItem.send(isOn ? OnOffType.ON : OnOffType.OFF);
                 } else if (primaryItem instanceof StringItem stringItem) {
-                    Object value = key;
+                    Object value = targetPercent == 0 ? "OPEN" : "CLOSED";
                     if (primaryItemMetadata != null) {
-                        value = primaryItemMetadata.getConfiguration().getOrDefault(key, key);
+                        value = primaryItemMetadata.getConfiguration().getOrDefault(value, value);
                     }
                     stringItem.send(new StringType(value.toString()));
                 }
+                lastTargetPercent = targetPercent;
                 break;
             case WindowCoveringCluster.ATTRIBUTE_OPERATIONAL_STATUS:
                 if (data instanceof AbstractMap treeMap) {
@@ -132,9 +135,6 @@ public class WindowCoveringDevice extends GenericDevice {
                                 && primaryItem instanceof RollershutterItem rollerShutterItem) {
                             rollerShutterItem.send(StopMoveType.STOP);
                             cancelTimer();
-                            lastTargetPercent = null;
-                            // will send stop back
-                            updateOperationalStatus(0);
                         }
                     }
                 }
@@ -146,20 +146,30 @@ public class WindowCoveringDevice extends GenericDevice {
 
     @Override
     public void updateState(Item item, State state) {
-        int localPercent = itemStateToPercent(state);
-        if (localPercent >= 0) {
-            try {
+        int currentPercent = itemStateToPercent(state);
+        try {
+            // check if this is matter initiated or openHAB initiated, if openHAB we will fake the target position so
+            // operation direction is correct
+            if (lastTargetPercent == null && currentPercent != lastCurrentPercent) {
+                // either 0/OPEN or 100/CLOSED, if the value was not updated, we ignore it (probably should not happen)
+                int targetPercent = currentPercent < lastCurrentPercent ? 0 : 100;
                 setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
-                        WindowCoveringCluster.ATTRIBUTE_CURRENT_POSITION_LIFT_PERCENT100THS, localPercent * 100).get();
-            } catch (InterruptedException | ExecutionException e) {
-                logger.debug("Could not set state", e);
-                return;
+                        WindowCoveringCluster.ATTRIBUTE_TARGET_POSITION_LIFT_PERCENT100THS, targetPercent * 100).get();
+                lastTargetPercent = targetPercent;
             }
-            cancelTimer();
-            final Integer lp = localPercent;
-            this.operationalStateTimer = operationalStateScheduler.schedule(() -> updateOperationalStatus(lp), 1000,
-                    TimeUnit.MILLISECONDS);
+            setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
+                    WindowCoveringCluster.ATTRIBUTE_CURRENT_POSITION_LIFT_PERCENT100THS, currentPercent * 100).get();
+        } catch (InterruptedException | ExecutionException e) {
+            logger.debug("Could not set state", e);
+            return;
         }
+        lastCurrentPercent = currentPercent;
+        // Once we have stopped moving we reset the matter target state, currently there is not a
+        // uniform way to detect this, so we wait 5 seconds of no updates. Setting this too early/late will not have
+        // negative effects, but it looks better in UIs if we wait a bit.
+        cancelTimer();
+        this.movementFinishedTimer = scheduler.schedule(() -> finishMovement(currentPercent), 5000,
+                TimeUnit.MILLISECONDS);
     }
 
     private int itemStateToPercent(State state) {
@@ -169,17 +179,11 @@ public class WindowCoveringDevice extends GenericDevice {
         } else if (state instanceof OpenClosedType openClosedType) {
             localPercent = openClosedType == OpenClosedType.OPEN ? 0 : 100;
         } else if (state instanceof OnOffType onOffType) {
-            Metadata primaryItemMetadata = this.primaryItemMetadata;
-            boolean invert = false;
-            if (primaryItemMetadata != null) {
-                logger.debug("primaryItemMetadata: {}", primaryItemMetadata);
-                Object invertObject = primaryItemMetadata.getConfiguration().getOrDefault("invert", false);
-                if (invertObject instanceof Boolean invertValue) {
-                    logger.debug("invertObject: {}", invertObject);
-                    invert = invertValue;
-                }
+            boolean isOn = onOffType == OnOffType.ON;
+            if (invert) {
+                isOn = !isOn;
             }
-            localPercent = invert ? onOffType == OnOffType.ON ? 0 : 100 : onOffType == OnOffType.ON ? 100 : 0;
+            localPercent = isOn ? 100 : 0;
         } else if (state instanceof StringType stringType) {
             Metadata primaryItemMetadata = this.primaryItemMetadata;
             if (primaryItemMetadata != null) {
@@ -197,29 +201,21 @@ public class WindowCoveringDevice extends GenericDevice {
         return localPercent;
     }
 
-    private void updateOperationalStatus(Integer localPercent) {
-        Integer lastTargetPercent = this.lastTargetPercent;
-        WindowCoveringCluster.MovementStatus status = WindowCoveringCluster.MovementStatus.STOPPED;
-        if (lastTargetPercent != null) {
-            if (lastTargetPercent < localPercent) {
-                status = WindowCoveringCluster.MovementStatus.CLOSING;
-            } else if (lastTargetPercent > localPercent) {
-                status = WindowCoveringCluster.MovementStatus.OPENING;
-            } else {
-                this.lastTargetPercent = null;
-            }
+    private void finishMovement(final Integer currentPercent) {
+        try {
+            setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
+                    WindowCoveringCluster.ATTRIBUTE_TARGET_POSITION_LIFT_PERCENT100THS, currentPercent * 100).get();
+            lastTargetPercent = null;
+        } catch (InterruptedException | ExecutionException e) {
+            logger.debug("Could not set target state", e);
         }
-        AbstractMap<String, Object> t = new LinkedHashMap<String, Object>();
-        t.put("global", status.getValue());
-        t.put("lift", status.getValue());
-        setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX, WindowCoveringCluster.ATTRIBUTE_OPERATIONAL_STATUS, t);
     }
 
     private void cancelTimer() {
-        ScheduledFuture<?> operationalStateTimer = this.operationalStateTimer;
-        if (operationalStateTimer != null) {
-            operationalStateTimer.cancel(true);
+        ScheduledFuture<?> targetStateTimer = this.movementFinishedTimer;
+        if (targetStateTimer != null) {
+            targetStateTimer.cancel(true);
         }
-        this.operationalStateTimer = null;
+        this.movementFinishedTimer = null;
     }
 }

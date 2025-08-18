@@ -30,7 +30,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class ContactSensorDevice extends GenericDevice {
+public class ContactSensorDevice extends BaseDevice {
 
     public ContactSensorDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);

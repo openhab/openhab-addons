@@ -126,7 +126,7 @@ public class IcdManagementCluster extends BaseCluster {
     public Integer maximumCheckInBackoff; // 9 uint32 R V
 
     // Structs
-    public class MonitoringRegistrationStruct {
+    public static class MonitoringRegistrationStruct {
         /**
          * This field shall indicate the NodeID of the Node to which Check-In messages will be sent when the
          * MonitoredSubject is not subscribed.

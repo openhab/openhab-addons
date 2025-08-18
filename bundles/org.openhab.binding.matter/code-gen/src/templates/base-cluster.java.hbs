@@ -101,7 +101,7 @@ import com.google.gson.Gson;
 {{#if (isFirstElement @index)}}
     //Structs
 {{/if}}
-     public class {{asUpperCamelCase name}} {
+     public static class {{asUpperCamelCase name}} {
 {{#each children}}
         public {{{asUpperCamelCase mappedType}}} {{asLowerCamelCase name}}; // {{type}}
 {{/each}}

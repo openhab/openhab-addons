@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.binding.matter.internal.client.MatterErrorCode;
 import org.openhab.binding.matter.internal.client.MatterRequestException;
+import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.handler.ControllerHandler;
 import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -89,6 +90,25 @@ public class MatterControllerActions implements ThingActions {
                 }
                 return handler.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_PAIRING_FAILED,
                         e.getLocalizedMessage());
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA, description = MatterBindingConstants.THING_ACTION_DESC_CONTROLLER_GET_DEBUG_NODE_DATA)
+    public @Nullable @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA_RESULT, type = "java.lang.String") }) String getDebugNodeData() {
+        ControllerHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    return client.getAllDataForAllNodes().get();
+                } catch (InterruptedException | ExecutionException e) {
+                    return handler.getTranslation(
+                            MatterBindingConstants.THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA_FAILED,
+                            e.getLocalizedMessage());
+                }
             }
         }
         return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);

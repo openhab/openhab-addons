@@ -53,7 +53,7 @@ public class AudioOutputCluster extends BaseCluster {
     /**
      * This contains information about an output.
      */
-    public class OutputInfoStruct {
+    public static class OutputInfoStruct {
         /**
          * This field shall indicate the unique index into the list of outputs.
          */

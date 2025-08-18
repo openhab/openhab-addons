@@ -13,7 +13,6 @@
 package org.openhab.binding.matter.internal.bridge;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,10 +32,15 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class MatterBridgeClient extends MatterWebsocketClient {
 
-    public CompletableFuture<String> addEndpoint(String deviceType, String id, String nodeLabel, String productName,
-            String productLabel, String serialNumber, Map<String, Map<String, Object>> attributeMap) {
-        CompletableFuture<JsonElement> future = sendMessage("bridge", "addEndpoint",
-                new Object[] { deviceType, id, nodeLabel, productName, productLabel, serialNumber, attributeMap });
+    /**
+     * Add an endpoint to the bridge.
+     * 
+     * @param be the bridged endpoint
+     * @return a future that completes when the endpoint is added
+     */
+    public CompletableFuture<String> addEndpoint(BridgedEndpoint be) {
+        CompletableFuture<JsonElement> future = sendMessage("bridge", "addEndpoint", new Object[] { be.deviceType,
+                be.id, be.nodeLabel, be.productName, be.productLabel, be.serialNumber, be.attributeMap });
         return future.thenApply(obj -> obj.toString());
     }
 

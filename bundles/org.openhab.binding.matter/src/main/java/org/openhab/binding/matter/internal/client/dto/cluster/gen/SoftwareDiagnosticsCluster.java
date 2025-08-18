@@ -65,7 +65,7 @@ public class SoftwareDiagnosticsCluster extends BaseCluster {
     /**
      * The SoftwareFault Event shall be generated when a software fault takes place on the Node.
      */
-    public class SoftwareFault {
+    public static class SoftwareFault {
         /**
          * The ID field shall be set to the ID of the software thread in which the last software fault occurred.
          */
@@ -89,7 +89,7 @@ public class SoftwareDiagnosticsCluster extends BaseCluster {
         }
     }
 
-    public class ThreadMetricsStruct {
+    public static class ThreadMetricsStruct {
         /**
          * The Id field shall be a server-assigned per-thread unique ID that is constant for the duration of the thread.
          * Efforts SHOULD be made to avoid reusing ID values when possible.

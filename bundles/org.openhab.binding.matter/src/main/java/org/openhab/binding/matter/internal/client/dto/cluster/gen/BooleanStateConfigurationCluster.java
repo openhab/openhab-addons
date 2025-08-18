@@ -110,7 +110,7 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
      * If several alarm modes change state at the same time, a single event combining multiple changes may be emitted
      * instead of multiple events each representing a single change.
      */
-    public class AlarmsStateChanged {
+    public static class AlarmsStateChanged {
         /**
          * This field shall indicate the state of active alarm modes, as indicated by the AlarmsActive attribute, at the
          * time the event was generated.
@@ -131,7 +131,7 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
     /**
      * This event shall be generated when the device registers or clears a fault.
      */
-    public class SensorFault {
+    public static class SensorFault {
         /**
          * This field shall indicate the value of the SensorFault attribute, at the time this event is generated.
          */

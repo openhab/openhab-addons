@@ -29,7 +29,7 @@ import org.openhab.core.items.MetadataRegistry;
  */
 @NonNullByDefault
 public class DeviceRegistry {
-    private static final Map<String, Class<? extends GenericDevice>> DEVICE_TYPES = new HashMap<>();
+    private static final Map<String, Class<? extends BaseDevice>> DEVICE_TYPES = new HashMap<>();
 
     static {
         registerDevice("OnOffLight", OnOffLightDevice.class);
@@ -44,20 +44,21 @@ public class DeviceRegistry {
         registerDevice("ContactSensor", ContactSensorDevice.class);
         registerDevice("ColorLight", ColorDevice.class);
         registerDevice("Fan", FanDevice.class);
+        registerDevice("ModeSelect", ModeSelectDevice.class);
     }
 
-    private static void registerDevice(String deviceType, Class<? extends GenericDevice> device) {
+    private static void registerDevice(String deviceType, Class<? extends BaseDevice> device) {
         DEVICE_TYPES.put(deviceType, device);
     }
 
-    public static @Nullable GenericDevice createDevice(String deviceType, MetadataRegistry metadataRegistry,
+    public static @Nullable BaseDevice createDevice(String deviceType, MetadataRegistry metadataRegistry,
             MatterBridgeClient client, GenericItem item) {
-        Class<? extends GenericDevice> clazz = DEVICE_TYPES.get(deviceType);
+        Class<? extends BaseDevice> clazz = DEVICE_TYPES.get(deviceType);
         if (clazz != null) {
             try {
                 Class<?>[] constructorParameterTypes = new Class<?>[] { MetadataRegistry.class,
                         MatterBridgeClient.class, GenericItem.class };
-                Constructor<? extends GenericDevice> constructor = clazz.getConstructor(constructorParameterTypes);
+                Constructor<? extends BaseDevice> constructor = clazz.getConstructor(constructorParameterTypes);
                 return constructor.newInstance(metadataRegistry, client, item);
             } catch (Exception e) {
                 // ignore

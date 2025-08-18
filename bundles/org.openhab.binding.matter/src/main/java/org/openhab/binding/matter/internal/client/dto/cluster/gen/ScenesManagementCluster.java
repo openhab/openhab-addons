@@ -62,7 +62,7 @@ public class ScenesManagementCluster extends BaseCluster {
     public List<SceneInfoStruct> fabricSceneInfo; // 2 list R F V
 
     // Structs
-    public class SceneInfoStruct {
+    public static class SceneInfoStruct {
         /**
          * This field shall indicate the number of scenes currently used in the server’s Scene Table on the endpoint
          * where the Scenes Management cluster appears.
@@ -115,7 +115,7 @@ public class ScenesManagementCluster extends BaseCluster {
     /**
      * This data type indicates a combination of an identifier and the value of an attribute.
      */
-    public class AttributeValuePairStruct {
+    public static class AttributeValuePairStruct {
         /**
          * This field shall be present for all instances in a given ExtensionFieldSetStruct.
          * Which Value* field is used shall be determined based on the data type of the attribute indicated by
@@ -189,7 +189,7 @@ public class ScenesManagementCluster extends BaseCluster {
     /**
      * This data type indicates for a given cluster a set of attributes and their values.
      */
-    public class ExtensionFieldSetStruct {
+    public static class ExtensionFieldSetStruct {
         /**
          * This field shall indicate the cluster-id of the cluster whose attributes are in the AttributeValueList field.
          */
@@ -216,7 +216,7 @@ public class ScenesManagementCluster extends BaseCluster {
      * are illustrated below. An ExtensionFieldSetStruct may be present for each Scenes-supporting cluster implemented
      * on the same endpoint.
      */
-    public class LogicalSceneTable {
+    public static class LogicalSceneTable {
         /**
          * This field is the group identifier for which this scene applies, or 0 if the scene is not associated with a
          * group.
