@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.pythonscripting.internal.graal;
+package org.openhab.automation.pythonscripting.internal.scriptengine.graal;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -21,6 +21,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
 
 /***
@@ -38,55 +39,24 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     private ScriptContext scriptContext;
     private ScriptEngine scriptEngine;
 
+    private boolean isClosed = false;
+
     GraalPythonBindings(Context.Builder contextBuilder, ScriptContext scriptContext, ScriptEngine scriptEngine) {
         this.contextBuilder = contextBuilder;
         this.scriptContext = scriptContext;
         this.scriptEngine = scriptEngine;
     }
 
-    GraalPythonBindings(Context context, ScriptContext scriptContext, ScriptEngine scriptEngine) {
-        this.context = context;
-        this.scriptContext = scriptContext;
-        this.scriptEngine = scriptEngine;
-
-        initGlobal();
-    }
-
-    private void requireContext() {
-        if (context == null) {
-            context = GraalPythonScriptEngine.createDefaultContext(contextBuilder, scriptContext);
-
-            initGlobal();
-        }
-    }
-
-    private void initGlobal() {
-        this.global = new HashMap<>();
-
+    public Context getContext() {
         requireContext();
-
-        context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("__engine__", scriptEngine);
-        if (scriptContext != null) {
-            context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("__context__", scriptContext);
-        }
+        return context;
     }
 
     @Override
     public Object put(String key, Object v) {
         requireContext();
-
         context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember(key, v);
         return global.put(key, v);
-    }
-
-    @Override
-    public void clear() {
-        if (context != null) {
-            Value binding = context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID);
-            for (var entry : global.entrySet()) {
-                binding.removeMember(entry.getKey());
-            }
-        }
     }
 
     @Override
@@ -104,9 +74,14 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
         return prev;
     }
 
-    public Context getContext() {
-        requireContext();
-        return context;
+    @Override
+    public void clear() {
+        if (context != null) {
+            Value binding = context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID);
+            for (var entry : global.entrySet()) {
+                binding.removeMember(entry.getKey());
+            }
+        }
     }
 
     @Override
@@ -115,14 +90,38 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
         return global.entrySet();
     }
 
+    /**
+     * Closes the current context and makes it unusable.
+     *
+     * Error happens in guest language will throw an {@link PolyglotException}.
+     * Operations performed after closing will throw an {@link IllegalStateException}.
+     */
     @Override
-    public void close() {
+    public void close() throws PolyglotException, IllegalStateException {
         if (context != null) {
-            context.close();
+            context.close(true);
+            // context = null;
+            // global = null;
         }
+        isClosed = true;
     }
 
-    void updateEngineScriptContext(ScriptContext scriptContext) {
-        this.scriptContext = scriptContext;
+    public boolean isClosed() {
+        return isClosed;
+    }
+
+    private void requireContext() {
+        if (context == null) {
+            if (isClosed) {
+                throw new IllegalStateException("Context already closed");
+            }
+            context = contextBuilder.build();
+            global = new HashMap<>();
+
+            context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("__engine__", scriptEngine);
+            if (scriptContext != null) {
+                context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("__context__", scriptContext);
+            }
+        }
     }
 }

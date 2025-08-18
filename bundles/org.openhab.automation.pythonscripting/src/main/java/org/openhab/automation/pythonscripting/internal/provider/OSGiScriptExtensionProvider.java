@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.pythonscripting.internal.scope;
+package org.openhab.automation.pythonscripting.internal.provider;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.automation.module.script.ScriptExtensionProvider;
