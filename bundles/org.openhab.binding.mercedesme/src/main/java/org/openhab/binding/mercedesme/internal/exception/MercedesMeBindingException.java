@@ -10,23 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercedesme.internal.config;
-
-import static org.openhab.binding.mercedesme.internal.Constants.NOT_SET;
+package org.openhab.binding.mercedesme.internal.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link AccountConfiguration} for Account Bridge
+ * The {@link MercedesMeBindingException} is thrown if anything occurs which prevents the binding to operate
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class AccountConfiguration {
+public class MercedesMeBindingException extends Exception {
 
-    public String email = NOT_SET;
-    public String password = NOT_SET;
-    public String region = NOT_SET;
-    public String pin = NOT_SET;
-    public int refreshInterval = 15;
+    private static final long serialVersionUID = 6675357782577233939L;
+
+    public MercedesMeBindingException(String message) {
+        super(message);
+    }
 }

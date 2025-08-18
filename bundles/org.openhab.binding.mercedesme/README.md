@@ -2,17 +2,6 @@
 
 This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Smartphone App.
 
-## Installation Instructions
-
-First time users shall follow the following sequence
-
-1. Setup and configure [Bridge](#bridge-configuration)
-1. [Discovery](#discovery) shall find now vehicles associated to your account
-1. Add your vehicle from discovery and [configure](#thing-configuration) it with correct VIN
-1. Connect your desired items in UI or [text-configuration](#full-example)
-1. Optional: you can [Discover your Vehicle](#discover-your-vehicle) more deeply
-1. In case of problems check [Troubleshooting](#troubleshooting) section
-
 ## Supported Things
 
 | Type            | ID            | Description                                     |
@@ -26,7 +15,7 @@ First time users shall follow the following sequence
 
 The Mercedes Me binding is based on the API of the Smartphone App.
 You have an account which is associated to one or more vehicles.
-Setup the Mercedes Me Account Bridge with your email address.
+Setup the Mercedes Me Account Bridge with your email address and password.
 After successful authorization your associated vehicles are found automatically.
 There's no manual discovery!
 
@@ -34,20 +23,13 @@ There's no manual discovery!
 
 Bridge needs configuration in order to connect properly to your Mercedes Me account.
 
-| Name            | Type    | Description                               | Default                 | Required |
-|-----------------|---------|-------------------------------------------|-------------------------|----------|
-| email           | text    | Mercedes Me registered email Address      | N/A                     | yes      |
-| refreshToken    | text    | Refresh Token from MB Token Requester app | takeover previous token | yes      |
-| pin             | text    | Mercedes Me Smartphone App PIN            | N/A                     | no       |
-| region          | text    | Your region                               | EU                      | yes      |
-| refreshInterval | integer | API refresh interval                      | 15                      | yes      |
-
-`refreshToken` is needed to get access to your Mercedes Me account.
-Users already running this binding can stay on default value `takeover previous token`.
-New users need to generate `refreshToken` with [MB Token Requester app]( https://github.com/ReneNulschDE/mbapi2020/wiki/How%E2%80%90to:-create-the-access-and-refresh-token ).
-It simulates the Mercedes Me application _only_ for authorization process on your computer, _not_ your openHAB system!
-The generated _refresh token_ has to be pasted into the bridge configuration.
-The generated _token_ can be ignored!
+| Name              | Type    | Description                                 | Default                   | Required |
+|-------------------|---------|---------------------------------------------|---------------------------|----------|
+| email             | text    | Email address for MercedesMe account        | N/A                       | yes      |
+| password          | text    | Password for MercedesMe account             | N/A                       | yes      |
+| pin               | text    | Mercedes Me Smartphone App PIN              | N/A                       | no       |
+| region            | text    | Your region                                 | EU                        | yes      |
+| refreshInterval   | integer | API refresh interval                        | 15                        | yes      |
 
 Set `region` to your location
 
