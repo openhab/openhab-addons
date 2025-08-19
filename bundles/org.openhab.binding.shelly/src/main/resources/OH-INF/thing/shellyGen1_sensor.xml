@@ -623,6 +623,17 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="sensorDistance">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorDistance.label</label>
+		<description>@text/channel-type.shelly.sensorDistance.description</description>
+		<category>Distance</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
 	<channel-type id="senseKey">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.senseKey.label</label>
