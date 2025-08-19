@@ -1406,7 +1406,7 @@ public class Connection {
     public List<MusicProviderTO> getMusicProviders() {
         try {
             return requestBuilder.get(getAlexaServer() + "/api/behaviors/entities?skillId=amzn1.ask.1p.music")
-                    .withHeader("Routines-Version", "1.1.218665").syncSend(MusicProviderTO.LIST_TYPE_TOKEN);
+                    .withHeader("Routines-Version", "3.0.264101").syncSend(MusicProviderTO.LIST_TYPE_TOKEN);
         } catch (ConnectionException e) {
             logger.warn("Failed to get music providers: {}", e.getMessage());
         }
