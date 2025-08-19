@@ -60,9 +60,70 @@ including all examples above, much more detailed.
 
 ### Configuration
 
-Check via Web UI => Settings / Add-on Settings / Python Scripting
+Web based config dialog can be found via Web UI => Settings / Add-on Settings / Python Scripting
 
 ![Pythonscripting configuration](doc/pythonscripting_configuration.png)
+
+Additionally, you can configure the Add-on via a config file `/openhab/services/pythonscripting.cfg` like below.
+
+```
+# Use scope and import wrapper
+#
+# This enables a scope module and and import wrapper.
+# An scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code>
+# Additionally you can run an import like <code>from org.openhab.core import OpenHAB</code>
+#
+#org.openhab.automation.pythonscripting:scopeEnabled = true
+
+# Install openHAB Python helper module (requires scope module)
+#
+# Install openHAB Python helper module to support helper classes like rule, logger, Registry, Timer etc...
+# If disabled, the openHAB python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
+#
+#org.openhab.automation.pythonscripting:helperEnabled = true
+
+# Inject scope and helper objects into rules (requires helper modules)
+#
+# This injects the scope and helper Registry and logger into rules.
+#
+# 2 => Auto injection enabled only for UI and Transformation scripts (preferred)
+# 1 => Auto injection enabled for all scripts
+# 0 => Disable auto injection and use 'import' statements instead
+#
+#org.openhab.automation.pythonscripting:injectionEnabled = 2
+
+# Enables native modules (requires a manually configured venv)
+#
+# Native modules are sometimes necessary for pip modules which depends on native libraries.
+#
+#org.openhab.automation.pythonscripting:nativeModules = false
+
+# Enable dependency tracking
+#
+# Dependency tracking allows your scripts to automatically reload when one of its dependencies is updated.
+# You may want to disable dependency tracking if you plan on editing or updating a shared library, but don't want all
+# your scripts to reload until you can test it.
+#
+#org.openhab.automation.pythonscripting:dependencyTrackingEnabled = true
+
+# Cache compiled openHAB Python modules (.pyc files)
+#
+# Cache the openHAB python modules for improved startup performance.<br>
+# Disable this option will result in a slower startup performance, because scripts have to be recompiled on every startup.
+#
+#org.openhab.automation.pythonscripting:cachingEnabled = true
+
+# Enable jython emulation
+#
+# This enables Jython emulation in GraalPy. It is strongly recommended to update code to GraalPy and Python 3 as the emulation can have performance degradation.
+# For tips and instructions, please refer to <a href="https://www.graalvm.org/latest/reference-manual/python/Modern-Python-on-JVM">Jython Migration Guide</a>.
+#
+#org.openhab.automation.pythonscripting:jythonEmulation = false
+```
+
+::: tip Configuration note
+If you use the marketplace version of this Add-on, it is neccessary to use the config file. OpenHAB has a bug which prevents the web based config dialog to work correctly for `kar` file based Add-ons.
+:::
 
 ### Console
 
