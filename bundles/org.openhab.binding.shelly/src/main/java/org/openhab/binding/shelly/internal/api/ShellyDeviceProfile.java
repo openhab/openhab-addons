@@ -237,15 +237,15 @@ public class ShellyDeviceProfile {
             numInputs = predefinedNumInputs;
         }
         if (numInputs > 0) {
-            settings.inputs = new ArrayList<>();
+            ShellySettingsInput inputSetting = btnType.isEmpty() ? //
+                    new ShellySettingsInput() : new ShellySettingsInput(btnType);
             status.inputs = new ArrayList<>();
+            ArrayList<ShellySettingsInput> inputs = new ArrayList<>();
             for (int i = 0; i < numInputs; i++) {
-                if (settings.inputs != null) {
-                    settings.inputs
-                            .add(btnType.isEmpty() ? new ShellySettingsInput() : new ShellySettingsInput(btnType));
-                }
+                inputs.add(inputSetting);
                 status.inputs.add(new ShellyInputState(i));
             }
+            settings.inputs = inputs;
         }
     }
 

@@ -137,9 +137,11 @@ public class Shelly2RpcSocket {
      */
     @OnWebSocketConnect
     public void onConnect(Session session) {
+        Shelly2RpctInterface handler = websocketHandler;
+
         try {
             if (session.getRemoteAddress() == null) {
-                logger.debug("{}: Invalid inbound WebSocket connect", thingName);
+                logger.debug("{}: Invalid inbound WebSocket connect (invalid remote ip)", thingName);
                 session.close(StatusCode.ABNORMAL, "Invalid remote IP");
                 return;
             }
@@ -148,29 +150,21 @@ public class Shelly2RpcSocket {
                 // This is the inbound event web socket
                 deviceIp = session.getRemoteAddress().getAddress().getHostAddress();
             }
-            Shelly2RpctInterface websocketHandler = this.websocketHandler;
-            if (websocketHandler == null) {
-                ShellyThingTable thingTable = this.thingTable;
-                if (thingTable != null) {
-                    ShellyThingInterface thing = thingTable.getThing(deviceIp);
-                    Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
-                    websocketHandler = this.websocketHandler = api.getRpcHandler();
-                }
-            }
-            connectLatch.countDown();
 
+            if (handler == null) {
+                ShellyThingInterface thing = thingTable.getThing(deviceIp);
+                Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
+                handler = api.getRpcHandler();
+                websocketHandler = handler;
+            }
+
+            connectLatch.countDown();
             logger.debug("{}: WebSocket connected {}<-{}, Idle Timeout={}", thingName, session.getLocalAddress(),
                     session.getRemoteAddress(), session.getIdleTimeout());
-            if (websocketHandler != null) {
-                websocketHandler.onConnect(deviceIp, true);
-                return;
-            }
+            handler.onConnect(deviceIp, true);
         } catch (IllegalArgumentException e) { // unknown thing
-            // debug is below
-        }
-
-        if (websocketHandler == null && thingTable != null) {
-            logger.debug("Rpc: Unable to handle connection from {} (unknown/disabled thing), closing socket", deviceIp);
+            logger.debug("{}: Rpc: Unable to handle connection from {} (unknown/disabled thing), closing socket",
+                    thingName, deviceIp);
             session.close(StatusCode.SHUTDOWN, "Thing not active");
         }
     }
@@ -264,7 +258,7 @@ public class Shelly2RpcSocket {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
                                     String address = getString(e.blu != null ? e.blu.addr : "").replace(":", "");
                                     ShellyThingTable thingTable = this.thingTable;
-                                    if (thingTable != null && thingTable.findThing(address) != null) {
+                                    if (thingTable.findThing(address) != null) {
                                         // known device
                                         ShellyThingInterface thing = thingTable.getThing(address);
                                         Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();

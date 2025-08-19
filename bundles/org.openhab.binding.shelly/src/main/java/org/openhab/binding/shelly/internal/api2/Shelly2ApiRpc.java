@@ -290,7 +290,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         if (profile.settings.inputs != null) {
             relayStatus.inputs = new ArrayList<>();
-            for (int i = 0; i < profile.settings.inputs.size(); i++) {
+            for (int i = 0; i < profile.numInputs; i++) {
                 relayStatus.inputs.add(new ShellyInputState(0));
             }
         }
@@ -580,10 +580,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void onConnect(String deviceIp, boolean connected) {
         ShellyThingTable thingTable = this.thingTable;
-        if (thing == null && thingTable != null) {
-            thing = thingTable.getThing(deviceIp);
-            logger.debug("{}: Get thing from thingTable", thingName);
-        }
+        thing = thingTable.getThing(deviceIp);
+        logger.debug("{}: Get thing from thingTable", thingName);
     }
 
     @Override
