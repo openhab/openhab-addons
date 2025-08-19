@@ -517,6 +517,14 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STEPS,
                         getDecimal(sdata.steps.doubleValue()));
             }
+            if (sdata.distance != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE, toQuantityType(
+                        getInteger(sdata.concentration.ppm).doubleValue() * 1000, DIGITS_DISTANCE, SIUnits.METRE));
+            }
+            if (sdata.sensor != null && sdata.sensor.vibration != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
+                        OnOffType.from(sdata.sensor.vibration));
+            }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
             if ((profile.settings.externalPower != null) || (sdata.charger != null)) {
