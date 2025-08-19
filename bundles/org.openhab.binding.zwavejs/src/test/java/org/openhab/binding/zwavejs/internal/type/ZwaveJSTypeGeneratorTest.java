@@ -237,6 +237,27 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testGenCTNode21RollerShutterTypeForOpenClose() throws IOException {
+        // Test detection of Roller Shutter type based on Open/Close Switch channels.
+        // Channel identifiers may vary depending on device configuration.
+        Channel channel = getChannel("store_4.json", 21, "rollershutter-virtual");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:rollershutter-virtual", channel.getUID().getAsString());
+        assertEquals("Roller Shutter", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+
+        assertNotNull(type);
+        assertEquals(CoreItemFactory.ROLLERSHUTTER, type.getItemType());
+    }
+
+    @Test
     public void testGenCTNode25WriteProperty() throws IOException {
         Channel channel = getChannel("store_4.json", 25, "binary-switch-value-1");
 
@@ -244,7 +265,9 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
-    public void testGenCTNode39RollerShutterType() throws IOException {
+    public void testGenCTNode39RollerShutterTypeForOnOff() throws IOException {
+        // Test detection of Roller Shutter type based on On/Off Switch channels.
+        // Channel identifiers may vary depending on device configuration.
         Channel channel = getChannel("store_4.json", 39, "rollershutter-virtual");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
                 null);
@@ -280,6 +303,27 @@ public class ZwaveJSTypeGeneratorTest {
 
         assertNotNull(type);
         assertEquals("Color", type.getItemType());
+    }
+
+    @Test
+    public void testGenCTNode60RollerShutterTypeForUpDown() throws IOException {
+        // Test detection of Roller Shutter type based on Up/Down Switch channels.
+        // Channel identifiers may vary depending on device configuration.
+        Channel channel = getChannel("store_4.json", 60, "rollershutter-virtual-1");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:rollershutter-virtual-1", channel.getUID().getAsString());
+        assertEquals("EP1 Roller Shutter", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+
+        assertNotNull(type);
+        assertEquals(CoreItemFactory.ROLLERSHUTTER, type.getItemType());
     }
 
     @Test
@@ -326,7 +370,7 @@ public class ZwaveJSTypeGeneratorTest {
             channels.putAll(results.channels);
         }
 
-        assertEquals(43, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(44, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
         assertTrue(channels.containsKey("color-switch-color-temperature"));
     }
 }

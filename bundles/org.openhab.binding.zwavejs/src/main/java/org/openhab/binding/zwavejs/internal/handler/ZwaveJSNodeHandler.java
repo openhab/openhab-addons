@@ -197,7 +197,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             zwaveCommand.value = handleQuantityTypeCommand(channelConfig, quantityCommand);
         } else if (command instanceof PercentType percentTypeCommand) {
             if (rollerShutterCapability != null && isRollerShutterChannelCmd) {
-                channel = Objects.requireNonNull(getThing().getChannel(rollerShutterCapability.dimmerChannel));
+                logger.debug("Node {}: Overriding channel to roller shutter dimmer channel {}", config.id,
+                        rollerShutterCapability.dimmerChannel);
+                scheduler.submit(() -> handleCommand(rollerShutterCapability.dimmerChannel, percentTypeCommand));
+                return;
             }
             zwaveCommand.value = handlePercentTypeCommand(channel, colorCap, isColorChannelCmd, isColorTempChannelCmd,
                     percentTypeCommand);
@@ -242,7 +245,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     private void handleStopCommand(ZwaveJSBridgeHandler handler, RollerShutterCapability rollerShutterCapability) {
         // We have to send two commands because we do not know if the roller shutter is moving up or down
-
         scheduler.submit(() -> handleCommand(rollerShutterCapability.upChannel, OnOffType.OFF));
         scheduler.submit(() -> handleCommand(rollerShutterCapability.downChannel, OnOffType.OFF));
     }
@@ -254,8 +256,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             throw new UnsupportedOperationException(upDownCommand.toString() + " is currently not supported");
         }
 
-        boolean isUpCommand = UpDownType.UP.equals(upDownCommand) && !channelConfig.inverted
-                || UpDownType.DOWN.equals(upDownCommand) && channelConfig.inverted;
+        boolean isUpCommand = (UpDownType.UP.equals(upDownCommand) && !channelConfig.inverted)
+                || (UpDownType.DOWN.equals(upDownCommand) && channelConfig.inverted);
         ZwaveJSChannelConfiguration targetChannelConfig = getConfigurationByChannelUID(
                 isUpCommand ? rollerShutterCapability.upChannel : rollerShutterCapability.downChannel);
         zwaveCommand = new NodeSetValueCommand(config.id, targetChannelConfig);

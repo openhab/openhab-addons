@@ -97,6 +97,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Time", Property.DURATION);
     }
 
+    private static final List<String> ROLLER_SHUTTER_KEYWORDS = List.of("shutter", "blind", "curtain", "shade",
+            "awning", "venetian", "drape");
+
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSTypeGeneratorImpl.class);
     private final ThingRegistry thingRegistry;
     private final ZwaveJSChannelTypeProvider channelTypeProvider;
@@ -153,9 +156,13 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             }
         }
 
-        mapRollerShutterCapabilities(result);
-
-        addRollerShutterChannels(thingUID, node, result);
+        // Skip adding RollerShutter channels for devices with color capabilities.
+        // This prevents creating unnecessary RollerShutter channels for each color.
+        if (result.colorCapabilities.isEmpty()) {
+            mapRollerShutterCapabilities(result, node.label,
+                    node.deviceConfig != null ? node.deviceConfig.description : null);
+            addRollerShutterChannels(thingUID, node, result);
+        }
 
         // cross link the ColorCapability dimmer channels to Dimmer type channels withing the same endpoint
         mapDimmerChannelsToColorCapabilities(result);
@@ -398,30 +405,49 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     }
 
     /**
-     * Helper method for setSemanticTags(). Matches information in the {@link ChannelMetadata} against the given
-     * keywords.
+     * Matches the given list of keywords against the label and description of the provided
+     * {@link ChannelMetadata}. This method delegates the matching logic to the overloaded
+     * {@link #match(List, String, String)} method.
      *
      * @param keyWords the list of keywords to match
-     * @param details the channel metadata to check
-     * @return true if any keyword matches, false otherwise
+     * @param metadata the channel metadata containing the label and description to match against
+     * @return {@code true} if the keywords match the label or description, {@code false} otherwise
      */
-    private static boolean match(List<String> keyWords, ChannelMetadata details) {
-        List<String> sourceTexts = details.description instanceof String description
-                ? List.of(details.label, description)
-                : List.of(details.label);
+    private static boolean match(List<String> keyWords, ChannelMetadata metadata) {
+        return match(keyWords, metadata.label, metadata.description);
+    }
+
+    /**
+     * Checks if any of the given keywords match the provided label or description.
+     * A match is determined if:
+     * - The keyword is contained within the label or description (case-insensitive).
+     * - The label or description ends with the keyword (ignoring trailing whitespace).
+     * - The label or description starts with the keyword (ignoring leading whitespace).
+     *
+     * @param keyWords A list of keywords to search for.
+     * @param label The label to check against the keywords.
+     * @param description An optional description to check against the keywords. Can be null.
+     * @return {@code true} if any keyword matches the label or description, {@code false} otherwise.
+     */
+    private static boolean match(List<String> keyWords, @Nullable String label, @Nullable String description) {
+        if ((label == null || label.isBlank()) && (description == null || description.isBlank())
+                || keyWords.isEmpty()) {
+            return false;
+        }
+        label = label != null ? label.toLowerCase() : "";
+        description = description != null ? description.toLowerCase() : "";
         for (String keyWord : keyWords) {
             String keyWordLowercase = keyWord.toLowerCase();
-            for (String sourceText : sourceTexts) {
-                String sourceTextLowercase = sourceText.toLowerCase();
-                if (sourceTextLowercase.contains(keyWordLowercase)) {
-                    return true;
-                }
-                if (sourceTextLowercase.endsWith(keyWordLowercase.stripTrailing())) {
-                    return true;
-                }
-                if (sourceTextLowercase.startsWith(keyWordLowercase.stripLeading())) {
-                    return true;
-                }
+            if (label.contains(keyWordLowercase) || description.contains(keyWordLowercase)) {
+                return true;
+            }
+            if (label.endsWith(keyWordLowercase.stripTrailing())
+                    || description.endsWith(keyWordLowercase.stripTrailing())) {
+                return true;
+            }
+            if (label.startsWith(keyWordLowercase.stripLeading())
+                    || description.startsWith(keyWordLowercase.stripLeading())) {
+                return true;
             }
         }
         return false;
@@ -669,8 +695,10 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     .build();
 
             result.channels.put(details.id, channel);
-            result.values.put(details.id,
-                    Objects.requireNonNull(result.values.get(rollerShutterCapability.dimmerChannel.getId())));
+            Object dimmerValue = result.values.get(rollerShutterCapability.dimmerChannel.getId());
+            if (dimmerValue != null) {
+                result.values.put(details.id, dimmerValue);
+            }
         });
     }
 
@@ -727,12 +755,16 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     /**
      * Iterates over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link Channel} to detect RollerShutter
      * capabilities.
-     * A RollerShutter capability is identified if an endpoint has a Dimmer channel, a Switch (level up) channel, and a
-     * Switch (level down) channel.
+     * This method identifies channels of type "Dimmer" and associates them with corresponding "Switch" channels
+     * (e.g., "up", "down", "open", "close", "on", "off") within the same endpoint to define roller shutter
+     * capabilities.
      *
-     * @param result ZwaveJSTypeGeneratorResult that provides the inputs and receives the results
+     * @param result The {@link ZwaveJSTypeGeneratorResult} containing the channels to be processed.
+     * @param nodeLabel The label of the node, used for matching keywords related to roller shutters.
+     * @param nodeDescription An optional description of the node, used for additional keyword matching.
      */
-    private void mapRollerShutterCapabilities(ZwaveJSTypeGeneratorResult result) {
+    private void mapRollerShutterCapabilities(ZwaveJSTypeGeneratorResult result, String nodeLabel,
+            @Nullable String nodeDescription) {
         // Categorize channels by endpoint and type
         result.channels.values().stream().filter(c -> CoreItemFactory.DIMMER.equals(c.getAcceptedItemType())) //
                 .forEach(channel -> {
@@ -750,10 +782,16 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                                         .as(ZwaveJSChannelConfiguration.class);
                                 return configSwitch.endpoint == endpoint;
                             }).forEach(otherChannel -> {
+                                if (upChannel[0] != null && downChannel[0] != null) {
+                                    return;
+                                }
                                 String channelId = otherChannel.getUID().getId().toLowerCase();
-                                if (channelId.contains("up") || channelId.contains("open")) {
+                                if (channelId.contains("up") || channelId.contains("open") || (channelId.contains("on")
+                                        && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription))) {
                                     upChannel[0] = otherChannel.getUID();
-                                } else if (channelId.contains("down") || channelId.contains("closed")) {
+                                } else if (channelId.contains("down") || channelId.contains("close")
+                                        || (channelId.contains("off")
+                                                && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription))) {
                                     downChannel[0] = otherChannel.getUID();
                                 }
                             });
