@@ -35,9 +35,9 @@
 			<default>true</default>
 		</parameter>
 		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="2" groupName="environment">
-			<label>Inject scope and helper objects into UI based rules (requires helper modules)</label>
+			<label>Inject scope and helper objects into rules (requires helper modules)</label>
 			<description><![CDATA[
-			This injects the scope module and core helper Registry and logger into UI based rules.
+			This injects the scope and helper Registry and logger into rules.
 			]]></description>
 			<options>
 				<option value="2">Auto injection enabled only for UI and Transformation scripts (preferred)</option>
