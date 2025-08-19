@@ -168,7 +168,8 @@ public class ShellyDeviceProfile {
         }
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(device.numRollers);
-        numInputs = settings.inputs != null ? settings.inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
+        List<ShellySettingsInput> inputs = settings.inputs;
+        numInputs = inputs != null ? inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
         numMeters = !isEMeter ? getInteger(device.numMeters) : getInteger(device.numEMeters);
@@ -239,7 +240,10 @@ public class ShellyDeviceProfile {
             settings.inputs = new ArrayList<>();
             status.inputs = new ArrayList<>();
             for (int i = 0; i < numInputs; i++) {
-                settings.inputs.add(btnType.isEmpty() ? new ShellySettingsInput() : new ShellySettingsInput(btnType));
+                if (settings.inputs != null) {
+                    settings.inputs
+                            .add(btnType.isEmpty() ? new ShellySettingsInput() : new ShellySettingsInput(btnType));
+                }
                 status.inputs.add(new ShellyInputState(i));
             }
         }

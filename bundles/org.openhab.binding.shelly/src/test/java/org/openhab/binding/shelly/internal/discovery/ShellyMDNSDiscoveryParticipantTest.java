@@ -26,7 +26,6 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Tests for {@link ShellyMDNSDiscoveryParticipantTest}.
  *
  * @author Jacob Laursen - Initial contribution
- * @author extended
  */
 @NonNullByDefault
 public class ShellyMDNSDiscoveryParticipantTest {

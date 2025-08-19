@@ -55,7 +55,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private boolean connected = false; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
-    private final int PID_CYCLE_TRESHHOLD = 50;
+    private static final int PID_CYCLE_TRESHHOLD = 50;
 
     /**
      * Regular constructor - called by Thing handler
@@ -286,7 +286,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             for (int bttnIdx = 0; bttnIdx < e.blu.buttons.length; bttnIdx++) {
                                 if (e.blu.buttons[bttnIdx] != 0) {
                                     ShellyInputState input = deviceStatus.inputs.get(bttnIdx);
-                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE, e.blu.buttons[bttnIdx].toString());
+                                    input.event = mapValue(MAP_BLU_INPUT_EVENT_TYPE, e.blu.buttons[bttnIdx].toString());
 
                                     String group = getProfile().getInputGroup(bttnIdx);
                                     String suffix = profile.getInputSuffix(bttnIdx);
