@@ -139,4 +139,26 @@ public class ShellyThingCreator {
     private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
         properties.put(key, value != null ? value : "");
     }
+
+    /**
+     * Generates a service name based on the provided model name and MAC address.
+     * Delimiters will be stripped from the returned MAC address.
+     *
+     * @param name Model name such as SBBT-02C or just SBDW
+     * @param mac MAC address with or without colon delimiters
+     * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
+     */
+    private static String getBluServiceName(String model, String mac) throws IllegalArgumentException {
+        String bluClass = model.contains("-") ? substringBefore(model, "-") : model;
+        ThingTypeUID uid = THING_TYPE_BY_DEVICE_TYPE.containsKey(model) ? THING_TYPE_BY_DEVICE_TYPE.get(model)
+                : THING_TYPE_BY_DEVICE_TYPE.get(bluClass);
+        if (uid != null) {
+            String serviceName = uid.getId();
+            if (!serviceName.isEmpty()) {
+                return serviceName + "-" + mac.replaceAll(":", "").toLowerCase();
+            }
+        }
+
+        throw new IllegalArgumentException("Unsupported BLU device model " + model);
+    }
 }
