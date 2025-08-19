@@ -1275,6 +1275,10 @@
 		<label>Light Level</label>
 		<description>Increase/decrease the light level</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1283,6 +1287,10 @@
 		<label>Shade Level</label>
 		<description>Raise/lower the shade level</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1291,6 +1299,10 @@
 		<label>Blind Level</label>
 		<description>Raise/lower the blind level</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1299,6 +1311,10 @@
 		<label>Blind Tilt</label>
 		<description>Tilt the blinds up/down</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state min="0" max="50" pattern="%d %%"/>
 	</channel-type>
 
@@ -1307,6 +1323,10 @@
 		<label>Switch State</label>
 		<description>On/off status of the switch</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="occupiedState">
@@ -1314,12 +1334,20 @@
 		<label>Occupied State</label>
 		<description>Occupancy status</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fanControl">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="OFF">Off</option>
@@ -1335,6 +1363,10 @@
 		<item-type>String</item-type>
 		<label>Occupancy State</label>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OCCUPIED">Occupied</option>
@@ -1406,6 +1438,10 @@
 		<label>Sunrise/Sunset</label>
 		<description>Today's sunrise/sunset time</description>
 		<category>Schedule</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1529,6 +1565,10 @@
 		<label>Zone Intensity</label>
 		<description>Specifies the intensity of the zone</description>
 		<category>Zone</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100"/>
 	</channel-type>
 

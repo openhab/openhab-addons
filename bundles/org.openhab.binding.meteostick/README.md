@@ -70,7 +70,7 @@ Set mode to one of the following depending on your device and region:
 | rain-raw            | Number                | Raw rain counter from the tipping spoon sensor  |
 | rain-currenthour    | Number:Length         | The rainfall in the last 60 minutes             |
 | rain-lasthour       | Number:Length         | The rainfall in the previous hour               |
-| rain-today          | Number:Length         | Accumulated rainfall for today
+| rain-today          | Number:Length         | Accumulated rainfall for today |
 | solar-power         | Number                | Solar power from the sensor station             |
 | signal-strength     | Number                | Received signal strength                        |
 | low-battery         | Switch                | Low battery warning                             |
@@ -161,7 +161,7 @@ then
   'dewptf' ->           dewptf,
   'tempf' ->            DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('°F').doubleValue,
   'rainin' ->           DavisVantageVueRainCurrentHour.getStateAs(QuantityType).toUnit('in').doubleValue,
-  'dailyrainin' ->	DavisVantageVueRainToday.getStateAs(QuantityType).toUnit('in').doubleValue,
+  'dailyrainin' ->    DavisVantageVueRainToday.getStateAs(QuantityType).toUnit('in').doubleValue,
   'baromin' ->          MeteoStickPressure.getStateAs(QuantityType).toUnit('inHg').doubleValue,
   'softwaretype' ->     'openHAB 2.4')
 

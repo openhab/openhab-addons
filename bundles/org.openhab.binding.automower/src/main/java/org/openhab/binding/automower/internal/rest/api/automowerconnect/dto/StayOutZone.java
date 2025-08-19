@@ -40,7 +40,7 @@ public class StayOutZone {
         return enabled;
     }
 
-    public void setEnabed(Boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 }

@@ -58,7 +58,7 @@ public class ModeSelectCluster extends BaseCluster {
      * standard namespace, and therefore, no standard semantic tags are provided in this cluster instance. Each standard
      * namespace and corresponding values and value meanings shall be defined in another document.
      */
-    public StandardNamespace standardNamespace; // 1 enum16 R V
+    public Integer standardNamespace; // 1 namespace R V
     /**
      * This attribute is the list of supported modes that may be selected for the CurrentMode attribute. Each item in
      * this list represents a unique mode as indicated by the Mode field of the ModeOptionStruct. Each entry in this
@@ -88,12 +88,12 @@ public class ModeSelectCluster extends BaseCluster {
      * The value of this field shall match the Mode field of one of the entries in the SupportedModes attribute.
      */
     public Integer onMode; // 5 uint8 RW VO
-    // Structs
 
+    // Structs
     /**
      * A Semantic Tag is meant to be interpreted by the client for the purpose the cluster serves.
      */
-    public class SemanticTagStruct {
+    public static class SemanticTagStruct {
         /**
          * This field shall indicate a manufacturer code (Vendor ID), and the Value field shall indicate a semantic tag
          * defined by the manufacturer. Each manufacturer code supports a single namespace of values. The same
@@ -117,7 +117,7 @@ public class ModeSelectCluster extends BaseCluster {
     /**
      * This is a struct representing a possible mode of the server.
      */
-    public class ModeOptionStruct {
+    public static class ModeOptionStruct {
         /**
          * This field is readable text that describes the mode option that can be used by a client to indicate to the
          * user what this option means. This field is meant to be readable and understandable by the user.
@@ -145,35 +145,6 @@ public class ModeSelectCluster extends BaseCluster {
             this.label = label;
             this.mode = mode;
             this.semanticTags = semanticTags;
-        }
-    }
-
-    // Enums
-    /**
-     * This attribute, when not null, shall indicate a single standard namespace for any standard semantic tag value
-     * supported in this or any other cluster instance with the same value of this attribute. A null value indicates no
-     * standard namespace, and therefore, no standard semantic tags are provided in this cluster instance. Each standard
-     * namespace and corresponding values and value meanings shall be defined in another document.
-     */
-    public enum StandardNamespace implements MatterEnum {
-        DEFAULT(0, "Default");
-
-        public final Integer value;
-        public final String label;
-
-        private StandardNamespace(Integer value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-
-        @Override
-        public Integer getValue() {
-            return value;
-        }
-
-        @Override
-        public String getLabel() {
-            return label;
         }
     }
 

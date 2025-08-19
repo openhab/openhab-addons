@@ -696,7 +696,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     /**
      * Get the Gson instance for use in tests
      */
-    Gson getGson() {
+    public Gson getGson() {
         return gson;
     }
 }

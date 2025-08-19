@@ -9,6 +9,10 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power status of device</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hasPendingCommand-channel">
@@ -29,6 +33,10 @@
 		<item-type>DateTime</item-type>
 		<label>Last Communication</label>
 		<description>Last communication time between device and MELCloud</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -36,6 +44,10 @@
 		<item-type>DateTime</item-type>
 		<label>Next Communication</label>
 		<description>Next communication time between device and MELCloud</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -44,6 +56,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Operation mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="1">Heat</option>
@@ -59,6 +75,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature</label>
 		<description>Set temperature</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="10" max="40" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -66,6 +86,10 @@
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<description>Fan speed</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Auto</option>
@@ -82,6 +106,10 @@
 		<item-type>String</item-type>
 		<label>Vane Horizontal</label>
 		<description>Vane horizontal</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Auto</option>
@@ -99,6 +127,10 @@
 		<item-type>String</item-type>
 		<label>Vane Vertical</label>
 		<description>Vane vertical</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Auto</option>
@@ -116,6 +148,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Room Temperature</label>
 		<description>Room temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -124,6 +160,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Tank Temperature</label>
 		<description>Temperature of water i</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -131,12 +171,20 @@
 		<item-type>Switch</item-type>
 		<label>Forced Hot Water Mode</label>
 		<description>If water mode is Heat Now (true) or Auto (false)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="roomTemperatureZone1-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Room Temperature Zone 1</label>
 		<description>Room temperature for zone 1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -144,6 +192,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature Zone 1</label>
 		<description>Set temperature for zone 1</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="10" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 

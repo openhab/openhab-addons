@@ -7,7 +7,7 @@
 The binding supports `bridge-api2`, `device`, `room`, and `zone` thing types.
 The `bridge-api2` thing type represents the Hue Bridge which is the server for all other things.
 The `device` thing type represents a piece of physical equipment in the home.
-Such `device` things may contain either a *light*, a *button*, or (one or more) *sensors*.
+Such `device` things may contain either a _light_, a _button_, or (one or more) _sensors_.
 Lights can be of any type from a simple on/off light, through dimmable monochrome lights, to full colour dimmable lights.
 Buttons are devices having one or more push buttons.
 Sensors can be (for example) light level sensors, temperature sensors, or motion sensors.
@@ -108,7 +108,7 @@ Device things support some of the following channels:
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
 
-The channels `color-xy-only`, `dimming-only` and `on-off-only` are *advanced* channels - see [below](#advanced-channels-for-devices-rooms-and-zones) for more details.
+The channels `color-xy-only`, `dimming-only` and `on-off-only` are _advanced_ channels - see [below](#advanced-channels-for-devices-rooms-and-zones) for more details.
 
 The `effect` channel is an amalgamation of 'normal' and 'timed' effects.
 To activate a 'normal' effect, the binding sends a single command to activate the respective effect.
@@ -228,7 +228,7 @@ hueActions.dynamicCommand("scene", new StringType("SceneName"), new Long(20000))
 
 ## Full Example
 
-### demo.things:
+### demo.things
 
 ```java
 Bridge hue:bridge-api2:g24 "Philips Hue Hub" @ "Home" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
@@ -239,7 +239,7 @@ Bridge hue:bridge-api2:g24 "Philips Hue Hub" @ "Home" [ipAddress="192.168.1.234"
 }
 ```
 
-### demo.items:
+### demo.items
 
 ```java
 Color Living_Room_Standard_Lamp_Left_Colour "Living Room Standard Lamp Left Colour" {channel="hue:device:g24:11111111-2222-3333-4444-555555555555:color"}
@@ -250,7 +250,7 @@ String Kitchen_Wallplate_Switch_Last_Event "Kitchen Wallplate Switch Last Event"
 Switch Kitchen_Wallplate_Switch_Battery_Low_Alarm "Kitchen Wallplate Switch Battery Low Alarm" {channel="hue:device:g24:11111111-2222-3333-4444-666666666666:battery-low"}
 ```
 
-### demo.sitemap:
+### demo.sitemap
 
 ```perl
 sitemap demo label="Hue" {

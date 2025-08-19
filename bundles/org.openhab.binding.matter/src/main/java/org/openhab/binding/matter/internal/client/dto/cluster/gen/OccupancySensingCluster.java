@@ -125,12 +125,12 @@ public class OccupancySensingCluster extends BaseCluster {
      * PhysicalContactUnoccupiedToOccupiedDelay, before the PhysicalContact sensor changes to its occupied state.
      */
     public Integer physicalContactUnoccupiedToOccupiedThreshold; // 50 uint8 RW VM
-    // Structs
 
+    // Structs
     /**
      * If this event is supported, it shall be generated when the Occupancy attribute changes.
      */
-    public class OccupancyChanged {
+    public static class OccupancyChanged {
         /**
          * This field shall indicate the new value of the Occupancy attribute.
          */
@@ -144,7 +144,7 @@ public class OccupancySensingCluster extends BaseCluster {
     /**
      * This structure provides information on the server’s supported values for the HoldTime attribute.
      */
-    public class HoldTimeLimitsStruct {
+    public static class HoldTimeLimitsStruct {
         /**
          * This field shall specify the minimum value of the server’s supported value for the HoldTime attribute, in
          * seconds.

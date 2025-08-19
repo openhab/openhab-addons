@@ -39,12 +39,12 @@ public class BooleanStateCluster extends BaseCluster {
      * For example, in a Contact Sensor device type, FALSE&#x3D;open or no contact, TRUE&#x3D;closed or contact.
      */
     public Boolean stateValue; // 0 bool R V
-    // Structs
 
+    // Structs
     /**
      * If this event is supported, it shall be generated when the StateValue attribute changes.
      */
-    public class StateChange {
+    public static class StateChange {
         /**
          * This field shall indicate the new value of the StateValue attribute.
          */

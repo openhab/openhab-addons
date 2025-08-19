@@ -61,12 +61,18 @@ public class InsteonChannelConfiguration {
         return s;
     }
 
-    public static InsteonChannelConfiguration copyOf(InsteonChannelConfiguration original, int onLevel,
-            RampRate rampRate) {
+    /**
+     * Creates a copy of this configuration
+     *
+     * @param defaultOnLevel default on level value
+     * @param defaultRampRate default ramp rate value
+     * @return a new configuration instance
+     */
+    public InsteonChannelConfiguration copy(int defaultOnLevel, RampRate defaultRampRate) {
         InsteonChannelConfiguration config = new InsteonChannelConfiguration();
-        config.group = original.group;
-        config.onLevel = original.onLevel != -1 ? original.onLevel : onLevel;
-        config.rampRate = original.rampRate != -1 ? original.rampRate : rampRate.getTimeInSeconds();
+        config.group = group;
+        config.onLevel = onLevel != -1 ? onLevel : defaultOnLevel;
+        config.rampRate = rampRate != -1 ? rampRate : defaultRampRate.getTimeInSeconds();
         config.original = false;
         return config;
     }

@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -262,19 +263,19 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
         url = JABLOTRON_API_URL + "accessTokenGet.json";
         urlParameters = "{ \"force-renew\": true }";
-        JablotronAccessTokenResponse token_response = sendJsonMessage(url, urlParameters,
+        JablotronAccessTokenResponse tokenResponse = sendJsonMessage(url, urlParameters,
                 JablotronAccessTokenResponse.class, false);
 
-        if (token_response == null) {
+        if (tokenResponse == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Null get access token response");
             return;
         }
 
-        if (token_response.getHttpCode() != 200) {
+        if (tokenResponse.getHttpCode() != 200) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Get access token http error: " + response.getHttpCode());
         } else {
-            accessToken = token_response.getData().getAccessToken();
+            accessToken = tokenResponse.getData().getAccessToken();
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -366,69 +367,53 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable JablotronHistoryDataEvent parseEventHistoryResponse(String response) {
         JablotronHistoryDataEvent event = new JablotronHistoryDataEvent();
-        JsonObject jsonObject;
 
         try {
-            jsonObject = JsonParser.parseString(response).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
+            JsonElement node = getJsonElement(jsonObject, "data", "forEndUser", "events", "events", "edges", 0, "node");
+
+            if (node != null && node.isJsonObject()) {
+                event.setIconType(getJsonString(node, "icon"));
+                event.setEventText(getJsonString(node, "name", "translation"));
+                event.setDate(getJsonString(node, "occurredAt"));
+
+                JsonElement subject = getJsonElement(node, "subjects", 0, "defaultName");
+                event.setSectionName(getJsonString(subject, "translation"));
+
+                JsonElement invoker = getJsonElement(node, "invokers", 0, "defaultName");
+                event.setInvokerName(getJsonString(invoker, "translation"));
+            } else {
+                logger.debug("No valid node found in the response");
+            }
         } catch (JsonSyntaxException ex) {
             logger.debug("Invalid JSON received: {}", response);
             return null;
         }
 
-        JsonObject data = jsonObject.has("data") ? jsonObject.getAsJsonObject("data") : null;
-        JsonObject forEndUser = (data != null && data.has("forEndUser")) ? data.getAsJsonObject("forEndUser") : null;
-        JsonObject events = (forEndUser != null && forEndUser.has("events")) ? forEndUser.getAsJsonObject("events")
-                : null;
-        JsonObject eventsInner = (events != null && events.has("events")) ? events.getAsJsonObject("events") : null;
-        JsonArray edges = (eventsInner != null && eventsInner.has("edges")) ? eventsInner.getAsJsonArray("edges")
-                : null;
-
-        if (edges != null && !edges.isEmpty()) {
-            JsonObject edge = edges.get(0).isJsonNull() ? null : edges.get(0).getAsJsonObject();
-
-            if (edge != null) {
-                JsonObject node = edge.has("node") ? edge.getAsJsonObject("node") : null;
-
-                if (node != null) {
-                    JsonArray invokers = node.has("invokers") ? node.getAsJsonArray("invokers") : null;
-                    JsonArray subjects = node.has("subjects") ? node.getAsJsonArray("subjects") : null;
-
-                    JsonObject invoker = (invokers != null && !invokers.isEmpty() && !invokers.get(0).isJsonNull())
-                            ? invokers.get(0).getAsJsonObject()
-                            : null;
-                    JsonObject subject = (subjects != null && !subjects.isEmpty() && !subjects.get(0).isJsonNull())
-                            ? subjects.get(0).getAsJsonObject()
-                            : null;
-
-                    event.setIconType(
-                            node.has("icon") && !node.get("icon").isJsonNull() ? node.get("icon").getAsString() : "");
-                    event.setEventText(node.has("name") && node.getAsJsonObject("name").has("translation")
-                            && !node.getAsJsonObject("name").get("translation").isJsonNull()
-                                    ? node.getAsJsonObject("name").get("translation").getAsString()
-                                    : "");
-                    event.setDate(node.has("occurredAt") && !node.get("occurredAt").isJsonNull()
-                            ? node.get("occurredAt").getAsString()
-                            : "");
-
-                    if (subject != null && subject.has("defaultName")
-                            && subject.getAsJsonObject("defaultName").has("translation")) {
-                        event.setSectionName(!subject.getAsJsonObject("defaultName").get("translation").isJsonNull()
-                                ? subject.getAsJsonObject("defaultName").get("translation").getAsString()
-                                : "");
-                    }
-
-                    if (invoker != null && invoker.has("defaultName")
-                            && invoker.getAsJsonObject("defaultName").has("translation")) {
-                        event.setInvokerName(!invoker.getAsJsonObject("defaultName").get("translation").isJsonNull()
-                                ? invoker.getAsJsonObject("defaultName").get("translation").getAsString()
-                                : "");
-                    }
-                }
-            }
-        } else {
-            logger.debug("JSON edges member is null or empty");
-        }
         return event;
+    }
+
+    private @Nullable JsonElement getJsonElement(@Nullable JsonElement jsonElement, Object... keys) {
+        for (Object key : keys) {
+            if (jsonElement == null || jsonElement.isJsonNull()) {
+                return null;
+            }
+            if (key instanceof String) {
+                JsonObject jsonObject = jsonElement.isJsonObject() ? jsonElement.getAsJsonObject() : null;
+                jsonElement = (jsonObject != null && jsonObject.has((String) key)) ? jsonObject.get((String) key)
+                        : null;
+            } else if (key instanceof Integer) {
+                JsonArray jsonArray = jsonElement.isJsonArray() ? jsonElement.getAsJsonArray() : null;
+                jsonElement = (jsonArray != null && jsonArray.size() > (int) key
+                        && !jsonArray.get((int) key).isJsonNull()) ? jsonArray.get((int) key).getAsJsonObject() : null;
+            }
+        }
+        return jsonElement;
+    }
+
+    private String getJsonString(@Nullable JsonElement jsonObject, Object... keys) {
+        JsonElement targetElement = getJsonElement(jsonObject, keys);
+        return (targetElement != null && !targetElement.isJsonNull()) ? targetElement.getAsString() : "";
     }
 
     protected @Nullable JablotronDataUpdateResponse sendGetStatusRequest(Thing th) {

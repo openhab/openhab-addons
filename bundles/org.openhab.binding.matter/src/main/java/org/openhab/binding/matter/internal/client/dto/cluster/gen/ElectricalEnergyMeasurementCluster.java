@@ -97,14 +97,14 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
      * Indicates when cumulative measurements were most recently zero.
      */
     public CumulativeEnergyResetStruct cumulativeEnergyReset; // 5 CumulativeEnergyResetStruct R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when the server takes a snapshot of the cumulative energy imported by the server,
      * exported from the server, or both, but not more frequently than the rate mentioned in the description above of
      * the related attribute.
      */
-    public class CumulativeEnergyMeasured {
+    public static class CumulativeEnergyMeasured {
         /**
          * This field shall be the value of CumulativeEnergyImported attribute at the timestamp indicated in its
          * EndTimestamp field, EndSystime field, or both.
@@ -127,7 +127,7 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
      * This event shall be generated when the server reaches the end of a reporting period for imported energy, exported
      * energy, or both.
      */
-    public class PeriodicEnergyMeasured {
+    public static class PeriodicEnergyMeasured {
         /**
          * This field shall be the value of PeriodicEnergyImported attribute at the timestamp indicated in its
          * EndTimestamp field, EndSystime field, or both.
@@ -153,7 +153,7 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
      * Such a server may also include the systime fields to indicate how many seconds had passed since boot for a given
      * timestamp; this allows for client-side resolution of UTC time for previous reports that only included systime.
      */
-    public class EnergyMeasurementStruct {
+    public static class EnergyMeasurementStruct {
         /**
          * This field shall be the reported energy.
          * If the EnergyMeasurementStruct represents cumulative energy, then this shall represent the cumulative energy
@@ -218,7 +218,7 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
      * This struct shall represent the times at which cumulative measurements were last zero, either due to
      * initialization of the device, or an internal reset of the cumulative value.
      */
-    public class CumulativeEnergyResetStruct {
+    public static class CumulativeEnergyResetStruct {
         /**
          * This field shall indicate the timestamp in UTC when the value of the Energy field on the
          * CumulativeEnergyImported attribute was most recently zero.

@@ -3,6 +3,37 @@
 This addon supports connecting with BambuLab 3D printers in local mode.
 While cloud mode is theoretically possible, it is not supported by the addon developers.
 
+## Local Mode
+
+1. **Find your printer credentials**
+   On **Windows**, open the Bambu Studio configuration file:
+
+   ```json
+      "access_code": {
+      "00ABCDEFG123456": "12345678"
+   }
+   ```
+
+   Look for a section like:
+
+   ```json
+      "access_code": {
+      "00ABCDEFG123456": "12345678"
+   }
+   ```
+
+* `00ABCDEFG123456` → Serial number
+* `12345678` → Access code
+
+2. **Enter the details in openHAB**
+
+   - **Serial number** → Enter the serial number from the config file
+   - **Access code** → Enter the access code from the config file
+   - **IP / Hostname** → Enter your printer’s network address
+   - **Username** → `bblp`
+   - **Series** → Select your printer model
+   - **Other settings** → Leave defaults for now
+
 ## Cloud Mode
 
 Cloud mode is possible but not officially supported by the addon developers.
@@ -11,8 +42,8 @@ To use cloud mode, follow these steps:
 
 ### Find Username
 
-Log in to Maker World and visit [my-preferences](https://makerworld.com/api/v1/design-user-service/my/preference) to retrieve a JSON response containing your data. 
-The relevant field is `uid`, which represents the unique ID of your account. 
+Log in to Maker World and visit [my-preferences](https://makerworld.com/api/v1/design-user-service/my/preference) to retrieve a JSON response containing your data.
+The relevant field is `uid`, which represents the unique ID of your account.
 Use this value as the `username` in the configuration (advanced field) with the prefix `u_`.
 
 ### Access Token
@@ -20,7 +51,7 @@ Use this value as the `username` in the configuration (advanced field) with the 
 To obtain an access token, follow these steps:
 
 1. Log in using your email and password.
-2. Confirm the login using a token received via email.
+1. Confirm the login using a token received via email.
 
 #### Step 1: Login with Email and Password
 
@@ -147,7 +178,7 @@ end
 ### `refreshChannels`
 
 Reports the complete status of the printer.
-This is unnecessary for the X1 series since it already transmits the full object each time. 
+This is unnecessary for the X1 series since it already transmits the full object each time.
 However, the P1 series only sends the values that have been updated compared to the previous report.
 As a rule of thumb, refrain from executing this command at intervals less than 5 minutes on the P1P, as it may cause lag due to its hardware limitations.
 
@@ -155,17 +186,17 @@ As a rule of thumb, refrain from executing this command at intervals less than 5
 
 The `sendCommand` method expects a string command in the format:
 
-```
+```text
 CommandType:Parameter1:Parameter2:...
 ```
 
-#### Possible Commands:
+#### Possible Commands
 
 | Command Type         | Parameters                                                                                                                               | Description                                                                                       |
 |----------------------|------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
 | `Pushing`            | `version(int)`,`pushTarget(int)` (optional)                                                                                              | Sends a push command.                                                                             |
 | `Print`              | `START` / `STOP` / `PAUSE`                                                                                                               | Controls the print job.                                                                           |
-| `ChangeFilament`     | `target(int)`,`currentTemperature(int))`,`targetTemperature(int)`                                                                        | Changes filament using.                                                                           |
+| `ChangeFilament`     | `target(int)`,`currentTemperature(int))`,`targetTemperature(int)`                                                                        | Changes filament using AMS.                                                                       |
 | `AmsUserSetting`     | `amsId(int)`,`startupReadOption(boolean)`,`trayReadOption(boolean)`                                                                      | Sets AMS user settings.                                                                           |
 | `AmsFilamentSetting` | `amsId(int)`,`trayId(int)`,`trayInfoIdx(string)`,`trayColor(string)`,`nozzleTempMin(int)`,`nozzleTempMax(int)`,`trayType(string)`        | Configures filament settings.                                                                     |
 | `AmsControl`         | `RESUME` / `RESET` / `PAUSE`                                                                                                             | Sends an AMS control command.                                                                     |

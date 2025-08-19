@@ -260,13 +260,13 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
      * shall NOT delay marking this attribute as ready for report for longer than 60 seconds.
      */
     public BigInteger neutralCurrent; // 18 amperage-mA R V
-    // Structs
 
+    // Structs
     /**
      * If supported, this event shall be generated at the end of a measurement period. The start and end times for
      * measurement periods shall be determined by the server, and may represent overlapping periods.
      */
-    public class MeasurementPeriodRanges {
+    public static class MeasurementPeriodRanges {
         /**
          * This shall indicate the value of the Ranges attribute at the time of event generation.
          */
@@ -287,7 +287,7 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
      * since boot for a given timestamp; this allows for client-side resolution of UTC time for previous reports that
      * only included systime.
      */
-    public class MeasurementRangeStruct {
+    public static class MeasurementRangeStruct {
         /**
          * This field shall be the type of measurement for the range provided.
          */
@@ -368,7 +368,7 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
         }
     }
 
-    public class HarmonicMeasurementStruct {
+    public static class HarmonicMeasurementStruct {
         /**
          * This field shall be the order of the harmonic being measured. Typically this is an odd number, but servers
          * may choose to report even harmonics.

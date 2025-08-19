@@ -108,9 +108,9 @@ The `dp2` parameter identifies the ON/OFF switch that is usually available on di
 The `reversed` parameter changes the direction of the scale (e.g. 0 becomes 100, 100 becomes 0).
 It defaults to `false`.
 
-### Type `number`
+### Type `number/quantity`
 
-The `number` channel has two additional mandatory parameters `min` and `max`.
+The `number` and `quantity` channels have two additional mandatory parameters `min` and `max`.
 The `min` and `max` parameters define the range allowed (e.g. 0-86400 for turn-off "countdown").
 
 ### Type `string`
@@ -122,29 +122,28 @@ It contains a comma-separated list of command options for this channel (e.g. `wh
 
 IR code types:
 
-+ `Tuya DIY-mode` - use study codes from real remotes.
+- `Tuya DIY-mode` - use study codes from real remotes.
 
-   Make a virtual remote control in DIY, learn virtual buttons.
+  Make a virtual remote control in DIY, learn virtual buttons.
 
-+ `Tuya Codes Library (check Advanced options)` - use codes from templates library.
+- `Tuya Codes Library (check Advanced options)` - use codes from templates library.
 
-   Make a virtual remote control from pre-defined type of devices.
+  Make a virtual remote control from pre-defined type of devices.
 
-   Select Advanced checkbox to configure other parameters:
-   + `irCode` - Decoding parameter
-   + `irSendDelay` - used as `Send delay` parameter
-   + `irCodeType` - used as `type library` parameter
+  Select Advanced checkbox to configure other parameters:
+  - `irCode` - Decoding parameter
+  - `irSendDelay` - used as `Send delay` parameter
+  - `irCodeType` - used as `type library` parameter
 
-+ `NEC` - IR Code in NEC format
-+ `Samsung` - IR Code in Samsung format.
+- `NEC` - IR Code in NEC format
+- `Samsung` - IR Code in Samsung format.
 
 **Additional options:**
 
-* `Active Listening` - Device will be always in learning mode.
+- `Active Listening` - Device will be always in learning mode.
   After send command with key code device stays in the learning mode
-* `DP Study Key` - **Advanced**. DP number for study key. Uses for receive key code in learning mode. Change it own your
+- `DP Study Key` - **Advanced**. DP number for study key. Uses for receive key code in learning mode. Change it own your
   risk.
-
 
 If linked item received a command with `Key Code` (Code Library Parameter) then device sends appropriate key code.
 

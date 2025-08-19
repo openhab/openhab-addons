@@ -39,12 +39,12 @@ public class ValidProxiesCluster extends BaseCluster {
      * List of valid proxies that can proxy this Node. Each entry in this list is fabric-scoped.
      */
     public List<ValidProxyStruct> validProxyList; // 0 list RW
-    // Structs
 
+    // Structs
     /**
      * Encapsulates the Node ID of a Valid Proxy.
      */
-    public class ValidProxyStruct {
+    public static class ValidProxyStruct {
         public BigInteger nodeId; // node-id
 
         public ValidProxyStruct(BigInteger nodeId) {

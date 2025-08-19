@@ -78,7 +78,7 @@ To wire it up to HomeKit, you might specify the following:
 
 opengarage.items
 
-```
+```java
 Group  gOpenGarage                      "OpenGarage Door"                                              {homekit="GarageDoorOpener"}
 Switch OpenGarage_TargetState "Target state" (gOpenGarage) {homekit="GarageDoorOpener.TargetDoorState", channel="opengarage:opengarage:deadbeef:status-switch"}
 String OpenGarage_CurrentState "Current state" (gOpenGarage) {homekit="GarageDoorOpener.CurrentDoorState", channel="opengarage:opengarage:deadbeef:status-text"}

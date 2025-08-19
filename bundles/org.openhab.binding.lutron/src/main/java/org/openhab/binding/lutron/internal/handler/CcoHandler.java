@@ -82,10 +82,10 @@ public class CcoHandler extends LutronHandler {
         if (outputType == null) {
             String oType = (String) getThing().getConfiguration().get(CCO_TYPE);
 
-            if (oType == null || oType == CCO_TYPE_PULSED) {
+            if (oType == null || CCO_TYPE_PULSED.equals(oType)) {
                 logger.debug("Setting CCO type Pulsed for device {}.", integrationId);
                 outputType = CcoOutputType.PULSED;
-            } else if (oType == CCO_TYPE_MAINTAINED) {
+            } else if (CCO_TYPE_MAINTAINED.equals(oType)) {
                 logger.debug("Setting CCO type Maintained for device {}.", integrationId);
                 outputType = CcoOutputType.MAINTAINED;
             } else {
@@ -96,13 +96,13 @@ public class CcoHandler extends LutronHandler {
 
         // If output type pulsed, determine pulse length
         if (outputType == CcoOutputType.PULSED) {
-            Number defaultPulse = (Number) getThing().getConfiguration().get(DEFAULT_PULSE);
+            Number configuredPulse = (Number) getThing().getConfiguration().get(DEFAULT_PULSE);
 
-            if (defaultPulse != null) {
-                double dp = defaultPulse.doubleValue();
+            if (configuredPulse != null) {
+                double dp = configuredPulse.doubleValue();
                 if (dp >= 0 && dp <= 99.0) {
-                    defaultPulse = dp;
-                    logger.debug("Pulse length set to {} seconds for device {}.", defaultPulse, integrationId);
+                    this.defaultPulse = dp;
+                    logger.debug("Pulse length set to {} seconds for device {}.", this.defaultPulse, integrationId);
                 } else {
                     logger.warn("Invalid pulse length value set. Using default for device {}.", integrationId);
                 }

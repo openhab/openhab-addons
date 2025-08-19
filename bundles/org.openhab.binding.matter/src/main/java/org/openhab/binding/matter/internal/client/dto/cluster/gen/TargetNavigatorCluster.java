@@ -51,13 +51,13 @@ public class TargetNavigatorCluster extends BaseCluster {
      * objects in the TargetList attribute.
      */
     public Integer currentTarget; // 1 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when there is a change in either the active target or the list of available targets
      * or both.
      */
-    public class TargetUpdated {
+    public static class TargetUpdated {
         public List<TargetInfoStruct> targetList; // list
         public Integer currentTarget; // uint8
         public OctetString data; // octstr
@@ -72,7 +72,7 @@ public class TargetNavigatorCluster extends BaseCluster {
     /**
      * This indicates an object describing the navigable target.
      */
-    public class TargetInfoStruct {
+    public static class TargetInfoStruct {
         /**
          * This field shall contain an unique id within the TargetList.
          */

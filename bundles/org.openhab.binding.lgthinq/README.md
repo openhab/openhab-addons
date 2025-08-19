@@ -1,10 +1,10 @@
 # LG ThinQ Binding
 
-This binding was developed to integrate the LG ThinQ API with openHAB. 
+This binding was developed to integrate the LG ThinQ API with openHAB.
 
 ## Supported Things
 
-This binding support several devices from the LG ThinQ Devices V1 & V2 line. 
+This binding support several devices from the LG ThinQ Devices V1 & V2 line.
 All devices require a configured Bridge.
 See the table bellow:
 
@@ -21,7 +21,7 @@ See the table bellow:
 
 ## `bridge` Thing
 
-This binding has a Bridge responsible for discovering and registering LG Things. 
+This binding has a Bridge responsible for discovering and registering LG Things.
 Thus, adding the Bridge (LGThinq GW Bridge) is the first step in configuring this Binding.
 The following parameters are available to configure the Bridge and to link to your LG Account as well:
 
@@ -33,13 +33,13 @@ The following parameters are available to configure the Bridge and to link to yo
 | manualCountry      | Manual User Country        | The acronym for the country (UK, US, BR, etc)                                                                                                                                                                               |                                                                                                                 |
 | username           | LG User name               | The LG user's account (normally an email)                                                                                                                                                                                   |                                                                                                                 |
 | password           | LG Password                | The LG user's password                                                                                                                                                                                                      |                                                                                                                 |
-| pollingIntervalSec | Polling Discovery Interval | It the time (in seconds) that the bridge wait to try to fetch de devices registered to the user's account and, if find some new device, will show available to link. Please, choose some long time greater than 300 seconds |
+| pollingIntervalSec | Polling Discovery Interval | It is the time (in seconds) that the bridge waits to try to fetch the devices registered to the user's account and, if it finds some new device, will show it as available to link. Please, choose a long time greater than 300 seconds. |                                                                                                                 |
 | alternativeServer  | Alt Gateway Server         | Only used if you have some proxy to the LG API Server or for Mock Tests                                                                                                                                                     |                                                                                                                 |
 
 ## Discovery
 
-This Binding has auto-discovery for the supported LG Thinq devices. 
-Once LG Thinq Bridge has been added, LG Thinq devices linked to your account will be automatically discovered and displayed in the openHAB Inbox. 
+This Binding has auto-discovery for the supported LG Thinq devices.
+Once LG Thinq Bridge has been added, LG Thinq devices linked to your account will be automatically discovered and displayed in the openHAB Inbox.
 
 ## Thing Configuration
 
@@ -87,7 +87,7 @@ Most, but not all, LG ThinQ Air Conditioners support the following channels:
 
 LG ThinQ Heat Pump supports the following channels
 
-#### Dashboard Channels
+#### Heat Pump Channels
 
 | channel #           | channel             | type               | description                                                                                               |
 |---------------------|---------------------|--------------------|-----------------------------------------------------------------------------------------------------------|
@@ -99,7 +99,7 @@ LG ThinQ Heat Pump supports the following channels
 | power               | Power               | Switch             | Define the device's Current Power state.                                                                  |
 | air-water-switch    | Air/Water Switch    | Switch             | Switch the heat pump operation between Air or Water                                                       |
 
-#### More Information Channel
+#### Heat Pump More Information Channel
 
 | channel #            | channel                        | type                 | description                                                                  |
 |----------------------|--------------------------------|----------------------|------------------------------------------------------------------------------|
@@ -110,7 +110,7 @@ LG ThinQ Heat Pump supports the following channels
 
 LG ThinQ Washer Machine supports the following channels
 
-#### Dashboard Channels
+#### Washer Machine Dashboard Channels
 
 | channel #          | channel           | type       | description                                                                                                |
 |--------------------|-------------------|------------|------------------------------------------------------------------------------------------------------------|
@@ -119,15 +119,15 @@ LG ThinQ Washer Machine supports the following channels
 | process-state      | Process State     | String     | States of the running cycle                                                                                |
 | course             | Course            | String     | Course set up to work                                                                                      |
 | temperature-level  | Temperature Level | String     | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.)                                     |
-| door-lock          | Door Lock         | Switch     | Display if the Door is Locked.                                                                             | 
+| door-lock          | Door Lock         | Switch     | Display if the Door is Locked.                                                                             |
 | rinse              | Rinse             | String     | The Rinse set program                                                                                      |
 | spin               | Spin              | String     | The Spin set option                                                                                        |
-| delay-time         | Delay Time        | String     | Delay time programmed to start the cycle                                                                   | 
-| remain-time        | Remaining Time    | String     | Remaining time to finish the course                                                                        | 
+| delay-time         | Delay Time        | String     | Delay time programmed to start the cycle                                                                   |
+| remain-time        | Remaining Time    | String     | Remaining time to finish the course                                                                        |
 | stand-by           | Stand By Mode     | Switch     | If the Washer is in stand-by-mode                                                                          |
 | rs-flag            | Remote Start      | Switch     | If the Washer is in remote start mode waiting to be remotely started                                       |
 
-#### Remote Start Option
+#### Washer Machine Remote Start Option
 
 This Channel Group is only available if the Washer is configured to Remote Start
 
@@ -143,7 +143,7 @@ This Channel Group is only available if the Washer is configured to Remote Start
 
 LG ThinQ Dryer Machine supports the following channels
 
-#### Dashboard Channels
+#### Dryer Machine Dashboard Channels
 
 | channel #          | channel           | type    | description                                                            |
 |--------------------|-------------------|---------|------------------------------------------------------------------------|
@@ -154,12 +154,12 @@ LG ThinQ Dryer Machine supports the following channels
 | temperature-level  | Temperature Level | String  | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.) |
 | child-lock         | Child Lock        | Switch  | Display if the Door is Locked.                                         |
 | dry-level          | Dry Level Course  | String  | Dry level set to work in the course                                    |
-| delay-time         | Delay Time        | String  | Delay time programmed to start the cycle                               | 
-| remain-time        | Remaining Time    | String  | Remaining time to finish the course                                    | 
+| delay-time         | Delay Time        | String  | Delay time programmed to start the cycle                               |
+| remain-time        | Remaining Time    | String  | Remaining time to finish the course                                    |
 | stand-by           | Stand By Mode     | Switch  | If the Washer is in stand-by-mode                                      |
 | rs-flag            | Remote Start      | Switch  | If the Washer is in remote start mode waiting to be remotely started   |
 
-#### Remote Start Option
+#### Dryer Machine Remote Start Option
 
 This Channel Group is only available if the Dryer is configured to Remote Start
 
@@ -170,14 +170,14 @@ This Channel Group is only available if the Dryer is configured to Remote Start
 
 ### Dryer/Washer Tower
 
-LG ThinQ Dryer/Washer is recognized as 2 different things: Dryer & Washer machines. 
+LG ThinQ Dryer/Washer is recognized as 2 different things: Dryer & Washer machines.
 Thus, for this device, follow the paragraph's for Dryer Machine and Washer Machine
 
 ### Refrigerator
 
 LG ThinQ Refrigerator supports the following channels
 
-#### Dashboard Channels
+#### Refrigerator Dashboard Channels
 
 | channel #            | channel                       | type               | description                                                                    |
 |----------------------|-------------------------------|--------------------|--------------------------------------------------------------------------------|
@@ -187,9 +187,9 @@ LG ThinQ Refrigerator supports the following channels
 | temp-unit            | Temp. Unit                    | String             | Temperature Unit (°C/F). Supports command to change the unit                   |
 | express-mode      | Express Freeze                | Switch             | Channel to change the express freeze function (ON/OFF/Rapid)                   |
 | express-cool-mode | Express Cool                  | Switch             | Channel to switch ON/OFF express cool function                                 |
-| eco-friendly-mode | Vacation                      | Switch             | Channel to switch ON/OFF Vacation function (unit will work in eco mode)        | 
+| eco-friendly-mode | Vacation                      | Switch             | Channel to switch ON/OFF Vacation function (unit will work in eco mode)        |
 
-#### More Information
+#### Refrigerator More Information
 
 This Channel Group is reports useful information data for the device:
 
@@ -212,7 +212,7 @@ Bridge lgthinq:bridge:MyLGThinqBridge [ username="user@registered.com", password
 }
 ```
 
-Until now, there is no way to easily obtain the values of ac-model-url, device-id, platform-type and model-id. So, if you really need 
+Until now, there is no way to easily obtain the values of ac-model-url, device-id, platform-type and model-id. So, if you really need
 to configure the LGThinq thing textually, I suggest you to first add it with the UI discovery process through the LG Thinq Bridge, then after, copy
 these properties from the thing created and complete the textual configuration.
 

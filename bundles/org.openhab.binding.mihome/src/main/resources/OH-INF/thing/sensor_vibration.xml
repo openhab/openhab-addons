@@ -43,6 +43,10 @@
 	<channel-type id="tiltAngle">
 		<item-type>Number</item-type>
 		<label>Tilt Angle</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state step="1" pattern="%d deg" readOnly="true">
 		</state>
 	</channel-type>

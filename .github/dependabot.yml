@@ -1,0 +1,46 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+
+version: 2
+
+# this would enable querying all packages from our repo first,
+# disabled for now as we do not want to use it. Kept for reference.
+#registries:
+#  openhab-jfrog:
+#    type: "maven-repository"
+#    url: "https://openhab.jfrog.io/artifactory/libs-all/"
+
+updates:
+  - package-ecosystem: "github-actions" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 15
+    labels:
+      - dependencies
+    groups:
+      jacoco:
+        patterns:
+          - "*jacoco*"
+    allow:
+      - dependency-name: "org.apache.maven.plugins:*"
+      - dependency-name: "org.codehaus.mojo:*"
+      - dependency-name: "*jacoco*" # code coverage tool, both tool and plugin
+      - dependency-name: "*plugin*"
+      - dependency-name: "org.eclipse.jdt:ecj" # eclipse compiler
+    ignore:
+      - dependency-name: "com.github.jaxb-xew-plugin:jaxb-xew-plugin" # updated with core
+      - dependency-name: "com.diffplug.spotless:spotless-maven-plugin" # updated together with SAT
+      - dependency-name: "*graalvm*" # do not touch graalvm related stuff
+      - dependency-name: "org.openapitools:openapi*" # updated togeter with openapi generator
+      - dependency-name: "org.apache.openjpa:openjpa*" # should be done with openjpa upgrades"

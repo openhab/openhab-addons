@@ -79,12 +79,12 @@ public class ApplicationBasicCluster extends BaseCluster {
      * This attribute is a list of vendor IDs. Each entry is a vendor-id.
      */
     public List<Integer> allowedVendorList; // 7 list R A
-    // Structs
 
+    // Structs
     /**
      * This indicates a global identifier for an Application given a catalog.
      */
-    public class ApplicationStruct {
+    public static class ApplicationStruct {
         /**
          * This field shall indicate the Connectivity Standards Alliance issued vendor ID for the catalog. The DIAL
          * registry shall use value 0x0000.

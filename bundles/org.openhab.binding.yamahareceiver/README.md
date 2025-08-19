@@ -42,7 +42,7 @@ Configuration parameters for Bridge `yamahaAV`:
 | `albumUrl`        | no       | embedded image URL | When the album image is not provided by the Yamaha input source, you can specify the default image URL to apply                                      |
 | `inputMapping`    | no       | "" (empty string)  | Some Yamaha models return different input values on status update than required in the change input commands. See [below](#input-values) for details |
 
-Configruation parameters for Thing `zone`:
+Configuration parameters for Thing `zone`:
 
 | Parameter                    | Required | Default | Description                                                                |
 |------------------------------|----------|---------|----------------------------------------------------------------------------|

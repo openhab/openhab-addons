@@ -74,6 +74,6 @@ public class InsteonLegacyDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void removeAllResults() {
-        removeOlderResults(Instant.now().toEpochMilli(), handler.getThing().getUID());
+        removeOlderResults(Instant.now(), handler.getThing().getUID());
     }
 }

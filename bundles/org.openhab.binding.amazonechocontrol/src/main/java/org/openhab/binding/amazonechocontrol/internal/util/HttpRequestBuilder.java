@@ -15,7 +15,6 @@ package org.openhab.binding.amazonechocontrol.internal.util;
 import static org.eclipse.jetty.http.HttpHeader.*;
 import static org.eclipse.jetty.http.HttpMethod.*;
 import static org.eclipse.jetty.http.HttpStatus.*;
-import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.MimeTypes.Type.APPLICATION_JSON_UTF_8;
 import static org.eclipse.jetty.http.MimeTypes.Type.FORM_ENCODED;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.API_VERSION;
@@ -256,20 +255,22 @@ public class HttpRequestBuilder {
                 if (returnType.getRawType().equals(HttpRequestBuilder.HttpResponse.class)) {
                     return (T) response;
                 }
-                String contentType = response.headers.get(CONTENT_TYPE);
-                if (!contentType.startsWith(MediaType.APPLICATION_JSON)) {
-                    logger.debug("JSON conversion to {} was requested but the response has a Content-Type {}",
-                            returnType.getType().getTypeName(), contentType);
-                }
                 try {
+                    String contentType = response.headers.get(CONTENT_TYPE);
+                    if (contentType == null) {
+                        throw new JsonParseException("Response Content-Type header is missing");
+                    }
                     T returnValue = gson.fromJson(response.content(), returnType);
                     // gson.fromJson is non-null if json is non-null and not empty
                     if (returnValue == null) {
+                        if (!contentType.startsWith(MediaType.APPLICATION_JSON)) {
+                            throw new JsonParseException("Response Content-Type is not JSON: " + contentType);
+                        }
                         throw new JsonParseException("Empty result");
                     }
                     return returnValue;
                 } catch (JsonParseException e) {
-                    logger.warn("Parsing json failed: {}", isJson, e);
+                    logger.warn("Parsing json failed, exception: {}", e.getMessage());
                     throw e;
                 }
             });
@@ -420,10 +421,12 @@ public class HttpRequestBuilder {
     public record HttpResponse(int statusCode, HttpFields headers, String content) {
         @Override
         public boolean equals(@Nullable Object o) {
-            if (this == o)
+            if (this == o) {
                 return true;
-            if (o == null || getClass() != o.getClass())
+            }
+            if (o == null || getClass() != o.getClass()) {
                 return false;
+            }
             HttpResponse response = (HttpResponse) o;
             return statusCode == response.statusCode && Objects.equals(headers, response.headers)
                     && Objects.equals(content, response.content);

@@ -48,12 +48,12 @@ public class AudioOutputCluster extends BaseCluster {
      * This attribute contains the value of the index field of the currently selected OutputInfoStruct.
      */
     public Integer currentOutput; // 1 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This contains information about an output.
      */
-    public class OutputInfoStruct {
+    public static class OutputInfoStruct {
         /**
          * This field shall indicate the unique index into the list of outputs.
          */

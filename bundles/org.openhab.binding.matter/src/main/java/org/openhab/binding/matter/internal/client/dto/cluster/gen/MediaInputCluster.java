@@ -48,12 +48,12 @@ public class MediaInputCluster extends BaseCluster {
      * This attribute shall contain the value of the index field of the currently selected InputInfoStruct.
      */
     public Integer currentInput; // 1 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This contains information about an input.
      */
-    public class InputInfoStruct {
+    public static class InputInfoStruct {
         /**
          * This field shall indicate the unique index into the list of Inputs.
          */

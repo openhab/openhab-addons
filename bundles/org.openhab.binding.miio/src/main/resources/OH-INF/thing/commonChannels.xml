@@ -18,18 +18,34 @@
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Generic Color Channel</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Generic Contact Channel</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>Generic DateTime Channel</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Generic Dimmer Channel</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="image">
 		<item-type>Image</item-type>
@@ -38,18 +54,33 @@
 	<channel-type id="location">
 		<item-type>Location</item-type>
 		<label>Generic Location Channel</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Generic Number Channel</label>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Generic Player Channel</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Generic Rollershutter Channel</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="string">
 		<item-type>String</item-type>
@@ -58,6 +89,10 @@
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Generic Switch Channel</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Network channels -->
@@ -74,6 +109,10 @@
 	<channel-type id="rssi" advanced="true">
 		<item-type>Number</item-type>
 		<label>RSSI</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="life" advanced="true">
@@ -94,6 +133,10 @@
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power On/Off</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -20,6 +20,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,8 +31,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
-import org.openhab.binding.matter.internal.bridge.devices.GenericDevice.MatterDeviceOptions;
+import org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MatterDeviceOptions;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
@@ -142,11 +145,15 @@ class DimmableLightDeviceTest {
     @Test
     void testUpdateStateWithPercent() {
         dimmerDevice.updateState(dimmerItem, new PercentType(100));
-        verify(client).setEndpointState(any(), eq("onOff"), eq("onOff"), eq(true));
-        verify(client).setEndpointState(any(), eq("levelControl"), eq("currentLevel"), eq(254));
+        List<AttributeState> expectedStates = new ArrayList<>();
+        expectedStates.add(new AttributeState("onOff", "onOff", true));
+        expectedStates.add(new AttributeState("levelControl", "currentLevel", 254));
+        verify(client).setEndpointStates(any(), eq(expectedStates));
 
         dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
-        verify(client).setEndpointState(any(), eq("onOff"), eq("onOff"), eq(false));
+        expectedStates.clear();
+        expectedStates.add(new AttributeState("onOff", "onOff", false));
+        verify(client).setEndpointStates(any(), eq(expectedStates));
     }
 
     @Test

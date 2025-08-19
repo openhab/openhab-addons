@@ -144,12 +144,12 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * For example, Thread 1.3.0 would have ThreadVersion set to 4.
      */
     public Integer threadVersion; // 10 uint16 R V
-    // Structs
 
+    // Structs
     /**
      * NetworkInfoStruct struct describes an existing network configuration, as provided in the Networks attribute.
      */
-    public class NetworkInfoStruct {
+    public static class NetworkInfoStruct {
         /**
          * Every network is uniquely identified (for purposes of commissioning) by a NetworkID mapping to the following
          * technology-specific properties:
@@ -184,7 +184,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * WiFiInterfaceScanResultStruct represents a single Wi-Fi network scan result.
      */
-    public class WiFiInterfaceScanResultStruct {
+    public static class WiFiInterfaceScanResultStruct {
         public WiFiSecurityBitmap security; // WiFiSecurityBitmap
         public OctetString ssid; // octstr
         public OctetString bssid; // octstr
@@ -213,7 +213,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * ThreadInterfaceScanResultStruct represents a single Thread network scan result.
      */
-    public class ThreadInterfaceScanResultStruct {
+    public static class ThreadInterfaceScanResultStruct {
         public Integer panId; // uint16
         public BigInteger extendedPanId; // uint64
         public String networkName; // string

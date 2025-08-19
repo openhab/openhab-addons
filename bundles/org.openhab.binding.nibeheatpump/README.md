@@ -62,16 +62,15 @@ An Arduino-based solution has been tested with Arduino uno + RS485 and Ethernet 
 [PRODINo ESP32 Ethernet v1](https://kmpelectronics.eu/products/prodino-esp32-ethernet-v1/) and [ProDiNo Ethernet V2](https://kmpelectronics.eu/products/prodino-ethernet-v2/) boards are also supported.
 PRODINo boards have built-in Ethernet and RS-485 ports.
 
-Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
+The Arduino code for NibeGW is available in the [NibeGW Arduino directory of the openHAB add-ons GitHub repository](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
 
-Arduino code can be build via Arduino IDE.
-For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software).
-NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by editing the code files.
+Arduino code can be built via the [Arduino IDE software](https://www.arduino.cc/en/Main/Software).
+NibeGW configuration (such as IP addresses, ports, etc) can be adapted directly by editing the code files.
 PRODINo ESP32 Ethernet v1 also supports dynamic configuration and OTA updates via Wi-Fi access point.
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 
-C code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
+The C code for NibeGW on Raspberry Pi is available in the [NibeGW Arduino directory of the openHAB add-ons GitHub repository](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
 
 To build the C code use:
 
@@ -1904,6 +1903,7 @@ This binding currently supports following channels for F1x55 pump models:
 ### SMO40
 
 To keep this documentation light, all parameters are documented in the NIBE ModbusManager except of:
+
 | Channel Type ID | Item Type | Min | Max | Type    | Description                                           | Values |
 | --------------- | --------- | --- | --- | ------- | ----------------------------------------------------- | ------ |
 | 45780           | Number    | 0   | 120 | Setting | Silent Mode Frequency 1 (defined in the service-menu) |        |

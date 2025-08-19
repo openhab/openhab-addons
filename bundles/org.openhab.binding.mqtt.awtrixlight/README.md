@@ -75,7 +75,7 @@ The button events can be used by rules to change the displayed app or perform an
 | `low-battery`     | Switch               | R          | Low battery warning: Will be switched ON as soon as the battery level drops below the lowBatteryThreshold set for the bridge.                                                                                                                                                         |
 | `lux`             | Number:Illuminance   | R          | Ambient light level: Ambient light level in lux as measured by the built-in light sensor.                                                                                                                                                                                             |
 | `rssi`            | Number:Dimensionless | R          | WiFi signal strength (RSSI): WiFi signal strength (RSSI) in dBm.                                                                                                                                                                                                                      |
-| `rtttl`           | String               | W          | Play RTTTL ringtone: Play a ringtone specified in RTTTL format (see https://de.wikipedia.org/wiki/Ring_Tones_Text_Transfer_Language)                                                                                                                                                  |
+| `rtttl`           | String               | W          | Play RTTTL ringtone: Play a ringtone specified in RTTTL format (see <https://de.wikipedia.org/wiki/Ring_Tones_Text_Transfer_Language>)                                                                                                                                                  |
 | `screen`          | String               | R          | Screen image: Allows you to mirror the screen image from the clock. The screen image will be updated automatically when the app changes but can be updated manually by sending a RefreshType command to the channel.                                                                  |
 | `sound`           | String               | W          | Play sound file: The sound file must be available on the clock device in the MELODIES folder. Save a file with a valid RTTTL string (e.g. melody.txt) in this folder and play it by sending a String command to the channel with the filename without file extension (e.g. "melody"). |
 | `temperature`     | Number:Temperature   | R          | Device temperature: Temperature in °C as measured by the built-in temperature sensor. For the Ulanzi clock values are usually very inaccurate.                                                                                                                                        |
@@ -92,10 +92,10 @@ The button events can be used by rules to change the displayed app or perform an
 | `center`              | Switch               | RW         | Center short text horizontally and disable scrolling.                                                                                                                                                                              |
 | `color`               | Color                | RW         | Text, bar or line chart color.                                                                                                                                                                                                     |
 | `duration`            | Number:Time          | RW         | Display duration in seconds.                                                                                                                                                                                                       |
-| `effect`              | String               | RW         | Display effect (see https://blueforcer.github.io/awtrix3/#/effects for possible values).                                                                                                                                           |
+| `effect`              | String               | RW         | Display effect (see <https://blueforcer.github.io/awtrix3/#/effects> for possible values).                                                                                                                                           |
 | `effect-blend`        | Switch               | RW         | Enable smoother effect transitions. Only to be used with effect.                                                                                                                                                                   |
-| `effect-palette`      | String               | RW         | Color palette for effects (see https://blueforcer.github.io/awtrix3/#/effects for possible values and how to create custom palettes). Only to be used with effect.                                                                 |
-| `effect-speed`        | Number:Dimensionless | RW         | Effect animation speed: Higher means faster (see https://blueforcer.github.io/awtrix3/#/effects). Only to be used with effect.                                                                                                     |
+| `effect-palette`      | String               | RW         | Color palette for effects (see <https://blueforcer.github.io/awtrix3/#/effects> for possible values and how to create custom palettes). Only to be used with effect.                                                                 |
+| `effect-speed`        | Number:Dimensionless | RW         | Effect animation speed: Higher means faster (see <https://blueforcer.github.io/awtrix3/#/effects>). Only to be used with effect.                                                                                                     |
 | `fade`                | Number:Time          | RW         | Fade text: Fades the text in and out in the specified interval. Ignored if gradientColor or rainbow are set.                                                                                                                       |
 | `gradient-color`      | Color                | RW         | Secondary color for gradient effects. Use color for setting the primary color.                                                                                                                                                     |
 | `icon`                | String               | RW         | Icon name to display: Install icons on the clock device first.                                                                                                                                                                     |
@@ -115,7 +115,7 @@ The button events can be used by rules to change the displayed app or perform an
 | `text-offset`         | Number:Dimensionless | RW         | Text offset position: Horizontal offset of the text in pixels.                                                                                                                                                                     |
 | `top-text`            | String               | RW         | Draws the text on the top of the display.                                                                                                                                                                                          |
 
-\* Cannot be used with notification Actions (see section Actions) 
+\* Cannot be used with notification Actions (see section Actions)
 
 ## Actions
 
@@ -283,11 +283,17 @@ The following actions are supported:
 
 ```java
 Bridge mqtt:broker:myBroker [ host="localhost", port=1883 ]
-Bridge mqtt:awtrix-clock:myBroker:myAwtrix "Living Room Display" (mqtt:broker:myBroker) [ basetopic="awtrix", appLockTimeout=10, lowBatteryThreshold=25 ] {
-    Thing awtrix-app clock "Clock App" [ appname="clock", useButtons=true ]
-    Thing awtrix-app weather "Weather App" [ appname="weather" ]
-    Thing awtrix-app calendar "Calendar App" [ appname="calendar" ]
-    Thing awtrix-app custom "Custom App" [ appname="custom" ]
+{
+    // .. Other things on your MQTT network
+
+    Bridge mqtt:awtrix-clock:myBroker:myAwtrix "Living Room Display" (mqtt:broker:myBroker) [ basetopic="awtrix", appLockTimeout=10, lowBatteryThreshold=25 ] {
+
+        // These do not (!) represent native Awtrix apps. Native apps cannot be controlled by this binding
+        Thing awtrix-app myClock "Clock App" [ appname="clock", useButtons=true ]
+        Thing awtrix-app myWeather "Weather App" [ appname="weather" ]
+        Thing awtrix-app myCalendar "Calendar App" [ appname="calendar" ]
+        Thing awtrix-app myCustom "Custom App" [ appname="custom" ]
+    }
 }
 ```
 
@@ -303,9 +309,9 @@ Switch Display_Sound "Sound" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myA
 Switch Display_AutoBrightness "Auto Brightness" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:autoBrightness" }
 Number:Temperature Display_Temperature "Temperature [%.1f °C]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:temperature" }
 Number:Dimensionless Display_Humidity "Humidity [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:humidity" }
-Number Display_Battery "Battery Level [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:batteryLevel" }
+Number Display_Battery "Battery Level [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:battery-level" }
 Switch Display_LowBattery "Low Battery" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:lowBattery" }
-Number:Dimensionless Display_WiFi "WiFi Signal [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:rssi" }
+Number:Power Display_WiFi "WiFi Signal [%d dBm]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:rssi", unit="dBm" }
 String Display_CurrentApp "Active App [%s]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:app" }
 
 // Clock App items

@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class HumiditySensorDevice extends GenericDevice {
+public class HumiditySensorDevice extends BaseDevice {
     private static final BigDecimal HUMIDITY_MULTIPLIER = new BigDecimal(100);
 
     public HumiditySensorDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
@@ -71,7 +71,7 @@ public class HumiditySensorDevice extends GenericDevice {
                 RelativeHumidityMeasurementCluster.ATTRIBUTE_MEASURED_VALUE, toMatterValue(state));
     }
 
-    private int toMatterValue(@Nullable State humidity) {
+    public static int toMatterValue(@Nullable State humidity) {
         BigDecimal value = new BigDecimal(0);
         if (humidity instanceof QuantityType quantityType) {
             value = quantityType.toBigDecimal();

@@ -112,8 +112,8 @@ public class AccessControlCluster extends BaseCluster {
      * restrictions.
      */
     public List<AccessRestrictionEntryStruct> arl; // 6 list R F V
-    // Structs
 
+    // Structs
     /**
      * The cluster shall generate AccessControlEntryChanged events whenever its ACL attribute data is changed by an
      * Administrator.
@@ -121,7 +121,7 @@ public class AccessControlCluster extends BaseCluster {
      * • Each changed entry shall generate an event with ChangeType Changed.
      * • Each removed entry shall generate an event with ChangeType Removed.
      */
-    public class AccessControlEntryChanged {
+    public static class AccessControlEntryChanged {
         /**
          * The Node ID of the Administrator that made the change, if the change occurred via a CASE session.
          * Exactly one of AdminNodeID and AdminPasscodeID shall be set, depending on whether the change occurred via a
@@ -164,7 +164,7 @@ public class AccessControlCluster extends BaseCluster {
      * • Each changed extension shall generate an event with ChangeType Changed.
      * • Each removed extension shall generate an event with ChangeType Removed.
      */
-    public class AccessControlExtensionChanged {
+    public static class AccessControlExtensionChanged {
         /**
          * The Node ID of the Administrator that made the change, if the change occurred via a CASE session.
          * Exactly one of AdminNodeID and AdminPasscodeID shall be set, depending on whether the change occurred via a
@@ -206,7 +206,7 @@ public class AccessControlCluster extends BaseCluster {
      * ReviewFabricRestrictions command, this event may include additional steps that the client may present to the user
      * in order to help the user locate the user interface for the Managed Device feature.
      */
-    public class FabricRestrictionReviewUpdate {
+    public static class FabricRestrictionReviewUpdate {
         /**
          * This field shall indicate the Token that can be used to correlate a ReviewFabricRestrictionsResponse with a
          * FabricRestrictionReviewUpdate event.
@@ -341,7 +341,7 @@ public class AccessControlCluster extends BaseCluster {
         }
     }
 
-    public class AccessControlTargetStruct {
+    public static class AccessControlTargetStruct {
         public Integer cluster; // cluster-id
         public Integer endpoint; // endpoint-no
         public Integer deviceType; // devtype-id
@@ -353,7 +353,7 @@ public class AccessControlCluster extends BaseCluster {
         }
     }
 
-    public class AccessControlEntryStruct {
+    public static class AccessControlEntryStruct {
         /**
          * The privilege field shall specify the level of privilege granted by this Access Control Entry.
          * Each privilege builds upon its predecessor, expanding the set of actions that can be performed upon a Node.
@@ -423,7 +423,7 @@ public class AccessControlCluster extends BaseCluster {
         }
     }
 
-    public class AccessControlExtensionStruct {
+    public static class AccessControlExtensionStruct {
         /**
          * This field may be used by manufacturers to store arbitrary TLV-encoded data related to a fabric’s Access
          * Control Entries.
@@ -445,7 +445,7 @@ public class AccessControlCluster extends BaseCluster {
      * This structure describes an access restriction that would be applied to a specific data model element on a given
      * endpoint/cluster pair (see AccessRestrictionEntryStruct).
      */
-    public class AccessRestrictionStruct {
+    public static class AccessRestrictionStruct {
         /**
          * This field shall indicate the type of restriction, for example, AttributeAccessForbidden.
          */
@@ -471,7 +471,7 @@ public class AccessControlCluster extends BaseCluster {
     /**
      * This structure describes a current access restriction on the fabric.
      */
-    public class AccessRestrictionEntryStruct {
+    public static class AccessRestrictionEntryStruct {
         /**
          * This field shall indicate the endpoint having associated access restrictions scoped to the associated fabric
          * of the list containing the entry.
@@ -502,7 +502,7 @@ public class AccessControlCluster extends BaseCluster {
     /**
      * This structure describes a current access restriction when there is no accessing fabric.
      */
-    public class CommissioningAccessRestrictionEntryStruct {
+    public static class CommissioningAccessRestrictionEntryStruct {
         /**
          * This field shall indicate the endpoint having associated access restrictions scoped to the associated fabric
          * of the list containing the entry.

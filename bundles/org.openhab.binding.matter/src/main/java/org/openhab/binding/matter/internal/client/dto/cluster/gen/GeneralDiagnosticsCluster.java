@@ -116,13 +116,13 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * and take appropriate action (e.g. warn the user and/or offer to remove all fabrics on the Node).
      */
     public Boolean testEventTriggersEnabled; // 8 bool R V
-    // Structs
 
+    // Structs
     /**
      * The HardwareFaultChange Event shall indicate a change in the set of hardware faults currently detected by the
      * Node.
      */
-    public class HardwareFaultChange {
+    public static class HardwareFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per HardwareFaultEnum.
          */
@@ -141,7 +141,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     /**
      * The RadioFaultChange Event shall indicate a change in the set of radio faults currently detected by the Node.
      */
-    public class RadioFaultChange {
+    public static class RadioFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per RadioFaultEnum.
          */
@@ -160,7 +160,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     /**
      * The NetworkFaultChange Event shall indicate a change in the set of network faults currently detected by the Node.
      */
-    public class NetworkFaultChange {
+    public static class NetworkFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per NetworkFaultEnum.
          */
@@ -179,7 +179,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     /**
      * The BootReason Event shall indicate the reason that caused the device to start-up.
      */
-    public class BootReason {
+    public static class BootReason {
         /**
          * This field shall contain the reason for this BootReason event.
          */
@@ -194,7 +194,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * This structure describes a network interface supported by the Node, as provided in the NetworkInterfaces
      * attribute.
      */
-    public class NetworkInterface {
+    public static class NetworkInterface {
         /**
          * This field shall indicate a human-readable (displayable) name for the network interface, that is different
          * from all other interfaces.

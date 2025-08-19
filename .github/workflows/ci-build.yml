@@ -19,7 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         java: [ '21' ]
-        maven: [ '3.9.10' ]
         os: [ 'ubuntu-24.04' ]
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -28,11 +27,11 @@ jobs:
     steps:
       - name: Checkout
         if: github.head_ref == ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Checkout merge
         if: github.head_ref != ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: refs/pull/${{github.event.pull_request.number}}/merge
 
@@ -51,12 +50,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
-
-      # pinning to SHA to mitigate possible supply chain attacks
-      - name: Set up Maven ${{ matrix.maven }}
-        uses: stCarolas/setup-maven@d6af6abeda15e98926a57b5aa970a96bb37f97d1 # v5
-        with:
-          maven-version: ${{ matrix.maven }}
 
       - name: Register Problem Matchers
         if: ${{ matrix.java == '21' }}

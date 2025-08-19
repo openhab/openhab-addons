@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.AirQualityCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BooleanStateCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ColorControlCluster;
@@ -71,6 +72,7 @@ public class ConverterRegistry {
         ConverterRegistry.registerConverter(WiFiNetworkDiagnosticsCluster.CLUSTER_ID,
                 WiFiNetworkDiagnosticsConverter.class);
         ConverterRegistry.registerConverter(DoorLockCluster.CLUSTER_ID, DoorLockConverter.class);
+        ConverterRegistry.registerConverter(AirQualityCluster.CLUSTER_ID, AirQualityConverter.class);
         ConverterRegistry.registerConverter(ElectricalPowerMeasurementCluster.CLUSTER_ID,
                 ElectricalPowerMeasurementConverter.class);
         ConverterRegistry.registerConverter(ElectricalEnergyMeasurementCluster.CLUSTER_ID,
@@ -79,6 +81,19 @@ public class ConverterRegistry {
                 ThreadNetworkDiagnosticsConverter.class);
         ConverterRegistry.registerConverter(ThreadBorderRouterManagementCluster.CLUSTER_ID,
                 ThreadBorderRouterManagementConverter.class);
+        // Robotic Vacuum Cleaner converters
+        ConverterRegistry.registerConverter(
+                org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcRunModeCluster.CLUSTER_ID,
+                RvcRunModeConverter.class);
+        ConverterRegistry.registerConverter(
+                org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcCleanModeCluster.CLUSTER_ID,
+                RvcCleanModeConverter.class);
+        ConverterRegistry.registerConverter(
+                org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcOperationalStateCluster.CLUSTER_ID,
+                RvcOperationalStateConverter.class);
+        ConverterRegistry.registerConverter(
+                org.openhab.binding.matter.internal.client.dto.cluster.gen.ServiceAreaCluster.CLUSTER_ID,
+                ServiceAreaConverter.class);
     }
 
     public static void registerConverter(Integer clusterId,

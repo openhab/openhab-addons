@@ -14,7 +14,6 @@ package org.openhab.binding.insteon.internal.device.database;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,9 +83,21 @@ public class ModemDB {
         }
     }
 
+    private ModemDBEntry getOrAddEntry(InsteonAddress address) {
+        synchronized (dbes) {
+            return Objects.requireNonNull(dbes.computeIfAbsent(address, a -> new ModemDBEntry(a, this)));
+        }
+    }
+
     public boolean hasEntry(InsteonAddress address) {
         synchronized (dbes) {
             return dbes.containsKey(address);
+        }
+    }
+
+    private void deleteEntry(InsteonAddress address) {
+        synchronized (dbes) {
+            dbes.remove(address);
         }
     }
 
@@ -131,11 +142,11 @@ public class ModemDB {
     }
 
     private int getRecordIndex(InsteonAddress address, int group, boolean isController) {
-        return getRecords(address, group, isController).findFirst().map(this::getRecordIndex).orElse(-1);
+        return getRecords(address, group, isController).mapToInt(this::getRecordIndex).findFirst().orElse(-1);
     }
 
     private int getRecordIndex(InsteonAddress address, int group) {
-        return getRecords(address, group, null).findFirst().map(this::getRecordIndex).orElse(-1);
+        return getRecords(address, group, null).mapToInt(this::getRecordIndex).findFirst().orElse(-1);
     }
 
     public boolean hasRecord(@Nullable InsteonAddress address, @Nullable Integer group,
@@ -164,7 +175,7 @@ public class ModemDB {
     }
 
     private int getChangeIndex(InsteonAddress address, int group, boolean isController) {
-        return getChanges(address, group, isController).findFirst().map(this::getChangeIndex).orElse(-1);
+        return getChanges(address, group, isController).mapToInt(this::getChangeIndex).findFirst().orElse(-1);
     }
 
     public @Nullable ModemDBChange pollNextChange() {
@@ -213,7 +224,6 @@ public class ModemDB {
      * Loads the modem db
      */
     public void load() {
-        clear();
         getDatabaseManager().read(modem, 0L);
     }
 
@@ -235,10 +245,12 @@ public class ModemDB {
      */
     public void addRecord(ModemDBRecord record) {
         InsteonAddress address = record.getAddress();
-        ModemDBEntry dbe = getEntry(address);
-        if (dbe == null) {
-            dbe = new ModemDBEntry(address, this);
-            dbes.put(address, dbe);
+        ModemDBEntry dbe = getOrAddEntry(address);
+
+        int index = getRecordIndex(record);
+        if (index != -1) {
+            logger.trace("duplicate record: {}", record);
+            return;
         }
 
         synchronized (records) {
@@ -271,7 +283,7 @@ public class ModemDB {
         }
 
         if (!dbe.hasRecords()) {
-            dbes.remove(address);
+            deleteEntry(address);
         } else if (record.isController()) {
             dbe.removeControllerGroup(record.getGroup());
         } else if (record.isResponder()) {
@@ -509,11 +521,12 @@ public class ModemDB {
      */
     private void logEntries() {
         if (logger.isDebugEnabled()) {
-            if (getEntries().isEmpty()) {
+            List<ModemDBEntry> dbes = getEntries();
+            if (dbes.isEmpty()) {
                 logger.debug("modem database is empty");
             } else {
                 logger.debug("modem database has {} entries:", dbes.size());
-                getEntries().stream().map(String::valueOf).forEach(logger::debug);
+                dbes.stream().map(String::valueOf).forEach(logger::debug);
                 if (logger.isTraceEnabled()) {
                     logger.trace("---------------- start of modem link records ----------------");
                     getRecords().stream().map(String::valueOf).forEach(logger::trace);
@@ -561,7 +574,6 @@ public class ModemDB {
      */
     public void recordsLoaded() {
         logEntries();
-        setIsComplete(true);
         setDefaultControllerGroup();
     }
 
@@ -569,10 +581,19 @@ public class ModemDB {
      * Sets the default controller group
      */
     private void setDefaultControllerGroup() {
+        int maxSize = 0;
+        int defaultControllerGroup = 0;
         // Set the default controller group to the one with the most related devices
-        defaultControllerGroup = DEFAULT_CONTROLLER_GROUPS.stream()
-                .max(Comparator.comparingInt(group -> getRelatedDevices(group).size())).orElse(0);
+        for (int group : DEFAULT_CONTROLLER_GROUPS) {
+            int size = getRelatedDevices(group).size();
+            if (size > maxSize) {
+                maxSize = size;
+                defaultControllerGroup = group;
+            }
+        }
+
         logger.debug("set default controller group to {}", defaultControllerGroup);
+        this.defaultControllerGroup = defaultControllerGroup;
     }
 
     /**
@@ -592,16 +613,9 @@ public class ModemDB {
      * @param productData the product data to set
      */
     public void setProductData(InsteonAddress address, ProductData productData) {
-        ModemDBEntry dbe = getEntry(address);
-        if (dbe == null) {
-            dbe = new ModemDBEntry(address, this);
-            dbes.put(address, dbe);
-        }
-
+        ModemDBEntry dbe = getOrAddEntry(address);
         dbe.setProductData(productData);
-
         modem.databaseProductDataUpdated(address, productData);
-
         logger.trace("set product data for {} as {}", address, productData);
     }
 

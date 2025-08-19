@@ -88,14 +88,14 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * reads, since a given Fabric may be referenced by a different Fabric Index locally on a remote Node.
      */
     public Integer currentFabricIndex; // 5 fabric-idx R V
-    // Structs
 
+    // Structs
     /**
      * This encodes a fabric sensitive NOC chain, underpinning a commissioned Operational Identity for a given Node.
      * Note that the Trusted Root CA Certificate is not included in this structure. The roots are available in the
      * TrustedRootCertificates attribute of the Node Operational Credentials cluster.
      */
-    public class NOCStruct {
+    public static class NOCStruct {
         /**
          * This field shall contain the NOC for the struct’s associated fabric, encoded using Matter Certificate
          * Encoding.
@@ -118,7 +118,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
     /**
      * This structure encodes a Fabric Reference for a fabric within which a given Node is currently commissioned.
      */
-    public class FabricDescriptorStruct {
+    public static class FabricDescriptorStruct {
         /**
          * This field shall contain the public key for the trusted root that scopes the fabric referenced by FabricIndex
          * and its associated operational credential (see Section 6.4.5.3, “Trusted Root CA Certificates”). The format

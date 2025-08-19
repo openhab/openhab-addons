@@ -38,9 +38,9 @@ public class ProxyConfigurationCluster extends BaseCluster {
      * List of proxy configurations. There shall NOT be multiple entries in this list for the same fabric.
      */
     public List<ConfigurationStruct> configurationList; // 0 list RW
-    // Structs
 
-    public class ConfigurationStruct {
+    // Structs
+    public static class ConfigurationStruct {
         /**
          * This field shall be set to true to indicate to the proxy that it shall proxy all nodes. When true, the
          * SourceList attribute is ignored.

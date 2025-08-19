@@ -7,120 +7,212 @@
 	<channel-type id="ac-average-voltage-to-n-type">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Average Line To Neutral AC Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ac-average-voltage-to-next-type">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Average Line To Line AC Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-real-power-type">
 		<item-type>Number:Power</item-type>
 		<label>Total Real Power Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-real-power-type">
 		<item-type>Number:Power</item-type>
 		<label>AC Real Power Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-apparent-power-type">
 		<item-type>Number:Power</item-type>
 		<label>Total Apparent Power Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-reactive-power-type">
 		<item-type>Number:Power</item-type>
 		<label>Total Reactive Power Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-average-power-factor-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Average AC Power Factor</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-total-exported-real-energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Real Energy Exported</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-exported-real-energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>Real Energy Exported</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-imported-real-energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Real Energy Imported</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-imported-real-energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>Real Energy Imported</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-total-exported-apparent-energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Apparent Energy Exported</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-exported-apparent-energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>Apparent Energy Exported</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-imported-apparent-energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Apparent Energy Imported</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-imported-apparent-energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>Apparent Energy Imported</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-total-imported-reactive-energy-q1-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Reactive Energy Imported Quadrant 1</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-imported-reactive-energy-q1-type">
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Energy Imported Quadrant 1</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-imported-reactive-energy-q2-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Reactive Energy Imported Quadrant 2</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-imported-reactive-energy-q2-type">
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Energy Imported Quadrant 2</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-total-exported-reactive-energy-q3-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Reactive Energy Exported Quadrant 3</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-exported-reactive-energy-q3-type">
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Energy Exported Quadrant 3</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-exported-reactive-energy-q4-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Reactive Energy Exported Quadrant 4</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-exported-reactive-energy-q4-type">
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Energy Exported Quadrant 4</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

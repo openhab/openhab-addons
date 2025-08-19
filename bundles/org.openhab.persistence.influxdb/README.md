@@ -15,7 +15,7 @@ There also are nice tools on the web for visualizing InfluxDB time series, such 
 
 Some example entries for an item with the name "speedtest" without any further configuration would look like this:
 
-```
+```flux
     > Query using Influx DB 2.0 syntax for 1.0 is different
     > from(bucket: "default")
         |> range(start: -30d)
@@ -42,7 +42,7 @@ Attention: The file-based configuration overrides the UI configuration.
 | Property        | Default               | Required | Description                                                                                                                                               |
 | --------------- | --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | version         | V1                    | No       | InfluxDB database version V1 for 1.X and V2 for 2.x                                                                                                       |
-| url             | http://127.0.0.1:8086 | No       | database URL                                                                                                                                              |
+| url             | <http://127.0.0.1:8086> | No       | database URL                                                                                                                                              |
 | user            | openhab               | No       | name of the database user, e.g. `openhab`                                                                                                                 |
 | password        |                       | No(\*)   | password of the database user you choose                                                                                                                  |
 | token           |                       | No(\*)   | token to authenticate the database (only for V2) [Intructions about how to create one](https://v2.docs.influxdata.com/v2.0/security/tokens/create-token/) |
@@ -81,12 +81,14 @@ You can also set the `influxdb` metadata using the UI. From each item configurat
 
 `Metadata` → `Add Metadata` → `Enter Custom Namespace` → Enter `influxdb` as namespace name → And enter your desired item name in value field. i.e.:
 
-    value: temperature
-    config: {}
+```yaml
+value: temperature
+config: {}
+```
 
 This will end up with one measurement named temperature and four different series inside:
 
-```
+```influx
 temperature,item=tempLivingRoom,floor=groundfloor
 temperature,item=tempKitchen,floor=groundfloor
 temperature,item=tempBedRoom,floor=firstfloor
@@ -95,7 +97,7 @@ temperature,item=tempBath,floor=firstfloor
 
 You can now easily select all temperatures of the firstfloor or the average temperature of the groundfloor.
 
-*Warning:* Do **not** override the tag `item` within the metadata. This tag is used internally by openHAB and changing it will lead to problems querying the persisted datapoints.
+_Warning:_ Do **not** override the tag `item` within the metadata. This tag is used internally by openHAB and changing it will lead to problems querying the persisted datapoints.
 
 #### Extended automatic tagging
 

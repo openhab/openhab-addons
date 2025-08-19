@@ -78,6 +78,11 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     }
 
     @Override
+    public boolean isOnline() {
+        return getThing().getStatus() == ThingStatus.ONLINE;
+    }
+
+    @Override
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel {} linked", channelUID);
 
@@ -145,9 +150,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("channel {} received command {}", channelUID, command);
 
-        ThingStatus status = getThing().getStatus();
-        if (status != ThingStatus.ONLINE) {
-            logger.debug("thing {} not ready to handle commands, it will be ignored", getThing().getUID());
+        if (!isOnline()) {
+            logger.debug("thing {} not online, ignoring command", getThing().getUID());
             return;
         }
 

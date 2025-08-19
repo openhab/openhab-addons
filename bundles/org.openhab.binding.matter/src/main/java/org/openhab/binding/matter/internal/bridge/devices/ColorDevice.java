@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.matter.internal.bridge.devices;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ColorControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
@@ -40,7 +43,7 @@ import org.openhab.core.util.ColorUtil;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class ColorDevice extends GenericDevice {
+public class ColorDevice extends BaseDevice {
     // how long to wait (max) for the device to turn on before updating the HSB values
     private static final int ONOFF_DELAY_MILLIS = 500;
     // the onFuture is used to wait for the device to turn on before updating the HSB values
@@ -130,20 +133,22 @@ public class ColorDevice extends GenericDevice {
     @Override
     public void updateState(Item item, State state) {
         if (state instanceof HSBType hsb) {
+            List<AttributeState> states = new ArrayList<>();
             if (hsb.getBrightness().intValue() == 0) {
-                setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, false);
+                states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, false));
             } else {
                 // since we are on, complete the future
                 completeOnFuture();
                 lastB = null; // reset the cached brightness
-                setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, true);
-                setEndpointState(LevelControlCluster.CLUSTER_PREFIX, LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
-                        toBrightness(hsb.getBrightness()));
+                states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, true));
+                states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
+                        LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, toBrightness(hsb.getBrightness())));
             }
-            setEndpointState(ColorControlCluster.CLUSTER_PREFIX, ColorControlCluster.ATTRIBUTE_CURRENT_HUE,
-                    toHue(hsb.getHue()));
-            setEndpointState(ColorControlCluster.CLUSTER_PREFIX, ColorControlCluster.ATTRIBUTE_CURRENT_SATURATION,
-                    toSaturation(hsb.getSaturation()));
+            states.add(new AttributeState(ColorControlCluster.CLUSTER_PREFIX, ColorControlCluster.ATTRIBUTE_CURRENT_HUE,
+                    toHue(hsb.getHue())));
+            states.add(new AttributeState(ColorControlCluster.CLUSTER_PREFIX,
+                    ColorControlCluster.ATTRIBUTE_CURRENT_SATURATION, toSaturation(hsb.getSaturation())));
+            setEndpointStates(states);
         }
     }
 

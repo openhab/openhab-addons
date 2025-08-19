@@ -13,9 +13,9 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_CAP_NUM_METERS;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
@@ -93,6 +93,7 @@ import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,7 +166,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice devInfo)
+    public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
         ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
 
@@ -267,10 +268,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         // Pro 3EM has 3 meters
         // Pro 2 has 2 relays, but no meters
         // Mini PM has 1 meter, but no relay
-        if (thingType.equals(THING_TYPE_SHELLYPRO2_RELAY_STR)) {
-            profile.numMeters = 0;
-        } else if (thingType.equals(THING_TYPE_SHELLYPRO3EM_STR)) {
-            profile.numMeters = 3;
+        Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
+        if (numMeters != null) {
+            profile.numMeters = numMeters;
         } else if (dc.pm10 != null) {
             profile.numMeters = 1;
         } else if (dc.em0 != null) {
@@ -1243,7 +1243,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException {
+    public void sendIRKey(String keyCode) throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
 

@@ -159,8 +159,8 @@ public class TimeSynchronizationCluster extends BaseCluster {
      * may include domain names. If this is False, the Address for a DefaultNTP shall be an IPv6 address.
      */
     public Boolean supportsDnsResolve; // 12 bool R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when the node stops applying the current DSTOffset and there are no entries in the
      * list with a larger ValidStarting time, indicating the need to possibly get new DST data. This event shall also be
@@ -171,7 +171,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
      * update SHOULD NOT be generated more often than once per hour.
      * There is no data for this event.
      */
-    public class DstTableEmpty {
+    public static class DstTableEmpty {
         public DstTableEmpty() {
         }
     }
@@ -179,7 +179,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
     /**
      * This event shall be generated when the node starts or stops applying a DST offset.
      */
-    public class DstStatus {
+    public static class DstStatus {
         /**
          * Indicates whether the current DST offset is being applied (i.e, daylight savings time is applied, as opposed
          * to standard time).
@@ -195,7 +195,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
      * This event shall be generated when the node changes its time zone offset or name. It shall NOT be sent for DST
      * changes that are not accompanied by a time zone change.
      */
-    public class TimeZoneStatus {
+    public static class TimeZoneStatus {
         /**
          * Current time zone offset from UTC in seconds.
          */
@@ -216,7 +216,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
      * This event shall be generated if the node has not generated a TimeFailure event in the last hour, and the node is
      * unable to get a time from any source. This event SHOULD NOT be generated more often than once per hour.
      */
-    public class TimeFailure {
+    public static class TimeFailure {
         public TimeFailure() {
         }
     }
@@ -229,12 +229,12 @@ public class TimeSynchronizationCluster extends BaseCluster {
      * the specified peer cannot be reached. MissingTrustedTimeSource events corresponding to a time update SHOULD NOT
      * be generated more often than once per hour.
      */
-    public class MissingTrustedTimeSource {
+    public static class MissingTrustedTimeSource {
         public MissingTrustedTimeSource() {
         }
     }
 
-    public class TrustedTimeSourceStruct {
+    public static class TrustedTimeSourceStruct {
         /**
          * The Fabric Index associated with the Fabric of the client which last set the value of the trusted time source
          * node.
@@ -256,7 +256,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
         }
     }
 
-    public class FabricScopedTrustedTimeSourceStruct {
+    public static class FabricScopedTrustedTimeSourceStruct {
         /**
          * Node ID of the trusted time source node on the Fabric of the issuer.
          */
@@ -274,7 +274,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
         }
     }
 
-    public class TimeZoneStruct {
+    public static class TimeZoneStruct {
         /**
          * The time zone offset from UTC in seconds.
          */
@@ -298,7 +298,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
         }
     }
 
-    public class DSTOffsetStruct {
+    public static class DSTOffsetStruct {
         /**
          * The DST offset in seconds. Normally this is in the range of 0 to 3600 seconds (1 hour), but this field will
          * accept any values in the int32 range to accommodate potential future legislation that does not fit with these

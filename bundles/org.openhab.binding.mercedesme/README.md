@@ -2,17 +2,6 @@
 
 This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Smartphone App.
 
-## Installation Instructions
-
-First time users shall follow the following sequence
-
-1. Setup and configure [Bridge](#bridge-configuration)
-2. [Discovery](#discovery) shall find now vehicles associated to your account
-3. Add your vehicle from discovery and [configure](#thing-configuration) it with correct VIN
-4. Connect your desired items in UI or [text-configuration](#full-example)
-5. Optional: you can [Discover your Vehicle](#discover-your-vehicle) more deeply
-6. In case of problems check [Troubleshooting](#troubleshooting) section
-
 ## Supported Things
 
 | Type            | ID            | Description                                     |
@@ -26,7 +15,7 @@ First time users shall follow the following sequence
 
 The Mercedes Me binding is based on the API of the Smartphone App.
 You have an account which is associated to one or more vehicles.
-Setup the Mercedes Me Account Bridge with your email address.
+Setup the Mercedes Me Account Bridge with your email address and password.
 After successful authorization your associated vehicles are found automatically.
 There's no manual discovery!
 
@@ -36,18 +25,11 @@ Bridge needs configuration in order to connect properly to your Mercedes Me acco
 
 | Name              | Type    | Description                                 | Default                   | Required |
 |-------------------|---------|---------------------------------------------|---------------------------|----------|
-| email             | text    | Mercedes Me registered email Address        | N/A                       | yes      |
-| refreshToken      | text    | Refresh Token from MB Token Requester app   | takeover previous token   | yes      |
+| email             | text    | Email address for MercedesMe account        | N/A                       | yes      |
+| password          | text    | Password for MercedesMe account             | N/A                       | yes      |
 | pin               | text    | Mercedes Me Smartphone App PIN              | N/A                       | no       |
 | region            | text    | Your region                                 | EU                        | yes      |
 | refreshInterval   | integer | API refresh interval                        | 15                        | yes      |
-
-`refreshToken` is needed to get access to your Mercedes Me account.
-Users already running this binding can stay on default value `takeover previous token`.
-New users need to generate `refreshToken` with [MB Token Requester app]( https://github.com/ReneNulschDE/mbapi2020/wiki/How%E2%80%90to:-create-the-access-and-refresh-token ).
-It simulates the Mercedes Me application *only for authorization process* on your computer, **not your openHAB system!**
-The generated *refresh token* has to be pasted into the bridge configuration.
-The generated *token* can be ignored!
 
 Set `region` to your location
 
@@ -57,7 +39,7 @@ Set `region` to your location
 - `CN` : China
 
 Set `pin` to your Mercedes Me App PIN.
-Parameter is *not required*.
+Parameter is _not required_.
 Note `pin` is needed for some commands which are affecting **vehicle safety**.
 Commands like _unlock doors_ will result into an _unsafe state_: your vehicle is unlocked and is accessible to everybody.
 
@@ -383,7 +365,7 @@ States and controls are depending on your vehicle capabilities.
 | coolant-fluid       | Switch               |  Coolant Fluid Low Warning      |     | X      | X          |
 | engine              | Switch               |  Engine Warning                 |     | X      | X          |
 | tires-rdk           | Number               |  Tire Pressure Warnings         | X   | X      | X          |
-| service-days        | Number               |  Next Service in *x* days       | X   | X      | X          |
+| service-days        | Number               |  Next Service in _x_ days       | X   | X      | X          |
 
 #### Starter Battery Mapping
 
@@ -554,7 +536,7 @@ In your Mercedes Me App front page
 - Last Entry `Settings`
 - First Entry `Units`
 
-<img src="./doc/ElectricConsumptionUnits.png" width="300" height="300"/>
+<img src="./doc/ElectricConsumptionUnits.png" alt="Electric Consumption Units" width="300" height="300"/>
 
 #### Trip Duration
 
@@ -576,10 +558,10 @@ All channels `read-only`
 
 The Mercedes ECO Score is aimed to improve your driving behavior.
 
-- Acceleration Score: smooth acceleration e.g. use *eco driving setting*
-- Coasting Score: ideally use only *recuperation* instead of brake
-- Constant Score: drive at constant speed e.g. use *cruise control*
-- Bonus Range: assumed bonus range vs. a *very sportive driver*
+- Acceleration Score: smooth acceleration e.g. use _eco driving setting_
+- Coasting Score: ideally use only _recuperation_ instead of brake
+- Constant Score: drive at constant speed e.g. use _cruise control_
+- Bonus Range: assumed bonus range vs. a _very sportive driver_
 
 ### Position
 
@@ -721,7 +703,7 @@ This POI can be used as navigation destination.
 | street      | String        | POI street name         |           |
 | postalCode  | String        | POI postal code         |           |
 
-**Example Eiffel Tower**
+#### Example Eiffel Tower
 
 Required information
 
@@ -744,7 +726,7 @@ During discovery the capabilities of your vehicle are identified.
 They are stored in `Vehicle Properties` as shown below.
 You can check in beforehand if features like _Charge Program Configuration_ or _HVAC Configuration_ are supported or not.
 
-<img src="./doc/OH-capabilities.png" width="500" height="280"/>
+<img src="./doc/OH-capabilities.png" alt="Screenshot showing vehicle capabilities in openHAB" width="500" height="280"/>
 
 If you want to dive deeper see [Troubleshooting](#troubleshooting) `feature-capabilities` and `command-capabilities` to evaluate the exact capabilities.
 
@@ -878,4 +860,3 @@ rule "Send POI"
         mercedesmeActions.sendPoi(title,lat,lon)
 end
 ```
-

@@ -64,8 +64,8 @@ public class ActionsCluster extends BaseCluster {
      * with ActionID 0x3039.
      */
     public String setupUrl; // 2 string R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when there is a change in the State of an ActionID during the execution of an
      * action and the most recent command using that ActionID used an InvokeID data field.
@@ -75,7 +75,7 @@ public class ActionsCluster extends BaseCluster {
      * • one when the transition starts (NewState&#x3D;Active)
      * • one when the transition completed (NewState&#x3D;Inactive)
      */
-    public class StateChanged {
+    public static class StateChanged {
         /**
          * This field shall be set to the ActionID of the action which has changed state.
          */
@@ -114,7 +114,7 @@ public class ActionsCluster extends BaseCluster {
      * interrupts the transition
      * • StateChanged (InvokeID&#x3D;2, NewState&#x3D;Inactive) upon the execution of the action for the second command
      */
-    public class ActionFailed {
+    public static class ActionFailed {
         /**
          * This field shall be set to the ActionID of the action which encountered an error.
          */
@@ -144,7 +144,7 @@ public class ActionsCluster extends BaseCluster {
     /**
      * This data type holds the details of a single action, and contains the data fields below.
      */
-    public class ActionStruct {
+    public static class ActionStruct {
         /**
          * This field shall provide an unique identifier used to identify an action.
          */
@@ -192,7 +192,7 @@ public class ActionsCluster extends BaseCluster {
      * This data type holds the details of a single endpoint list, which relates to a set of endpoints that have some
      * logical relation, and contains the data fields below.
      */
-    public class EndpointListStruct {
+    public static class EndpointListStruct {
         /**
          * This field shall provide an unique identifier used to identify the endpoint list.
          */

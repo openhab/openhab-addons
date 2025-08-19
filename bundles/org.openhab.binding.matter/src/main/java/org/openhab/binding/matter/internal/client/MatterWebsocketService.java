@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,26 +59,26 @@ public class MatterWebsocketService {
     private static final int STARTUP_DELAY_SECONDS = 5;
     // Timeout for shutting down the node process
     private static final int SHUTDOWN_TIMEOUT_SECONDS = 3;
+    // Delay before retrying to start the node process if it fails
+    private static final int STARTUP_RETRY_DELAY_SECONDS = 30;
     private final List<NodeProcessListener> processListeners = new ArrayList<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(4);
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool("matter.MatterWebsocketService");
+    private final NodeJSRuntimeManager nodeManager;
     private @Nullable ScheduledFuture<?> notifyFuture;
     private @Nullable ScheduledFuture<?> restartFuture;
-    // The path to the Node.js executable (node or node.exe)
-    private final String nodePath;
     // The Node.js process running the matter.js script
     private @Nullable Process nodeProcess;
     // The state of the service, STARTING, READY, SHUTTING_DOWN
     private ServiceState state = ServiceState.STARTING;
     // the port the node process is listening on
     private int port;
+    private AtomicBoolean restarting = new AtomicBoolean(false);
 
     @Activate
     public MatterWebsocketService(final @Reference HttpClientFactory httpClientFactory) throws IOException {
-        NodeJSRuntimeManager nodeManager = new NodeJSRuntimeManager(httpClientFactory.getCommonHttpClient());
-        String nodePath = nodeManager.getNodePath();
-        this.nodePath = nodePath;
+        nodeManager = new NodeJSRuntimeManager(httpClientFactory.getCommonHttpClient());
         scheduledStart(0);
     }
 
@@ -141,13 +142,8 @@ public class MatterWebsocketService {
         }
     }
 
-    private boolean isRestarting() {
-        ScheduledFuture<?> restartFuture = this.restartFuture;
-        return restartFuture != null && !restartFuture.isDone();
-    }
-
     private synchronized void scheduledStart(int delay) {
-        if (isRestarting()) {
+        if (!restarting.compareAndSet(false, true)) {
             logger.debug("Restart already scheduled, skipping");
             return;
         }
@@ -155,14 +151,21 @@ public class MatterWebsocketService {
         restartFuture = scheduler.schedule(() -> {
             try {
                 port = runNodeWithResource(MATTER_JS_PATH);
+                restarting.set(false);
             } catch (IOException e) {
-                logger.warn("Failed to restart the Matter Node process", e);
+                restarting.set(false);
+                if (state != ServiceState.SHUTTING_DOWN) {
+                    logger.warn("Failed to start the Matter Node process, retrying in {} seconds",
+                            STARTUP_RETRY_DELAY_SECONDS);
+                    scheduledStart(STARTUP_RETRY_DELAY_SECONDS);
+                }
             }
         }, delay, TimeUnit.SECONDS);
     }
 
     private int runNodeWithResource(String resourcePath, String... additionalArgs) throws IOException {
         state = ServiceState.STARTING;
+        String nodePath = nodeManager.getNodePath();
         Path scriptPath = extractResourceToTempFile(resourcePath);
 
         port = findAvailablePort();

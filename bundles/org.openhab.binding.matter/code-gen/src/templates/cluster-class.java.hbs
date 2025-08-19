@@ -54,6 +54,7 @@ public {{#if id}}{{else}}abstract {{/if}}class {{asUpperCamelCase name}}Cluster 
 {{/each}}
 {{#each structs}}
 {{#if (isFirstElement @index)}}
+
     //Structs
 {{/if}}
 {{#if details}}
@@ -61,14 +62,14 @@ public {{#if id}}{{else}}abstract {{/if}}class {{asUpperCamelCase name}}Cluster 
     * {{details}}
     */
 {{/if}}
-     public class {{asUpperCamelCase name}} {
+     public static class {{asUpperCamelCase name}} {
 {{#each children}}
 {{#if details}}
         /**
         * {{details}}
         */
 {{/if}}
-        public {{{mappedType}}} {{asLowerCamelCase name}}; // {{type}}
+        public {{{mappedType}}} {{asLowerCamelCase name}}; {{#if type}}// {{type}}{{/if}}
 {{/each}}
         public {{asUpperCamelCase name}}({{#each children}}{{{mappedType}}} {{asLowerCamelCase name}}{{#unless (isLastElement @index ../children.length)}}, {{/unless}}{{/each}}) {
 {{#each children}}

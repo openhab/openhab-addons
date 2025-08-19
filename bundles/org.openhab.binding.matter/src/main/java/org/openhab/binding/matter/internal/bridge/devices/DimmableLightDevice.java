@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.matter.internal.bridge.devices;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
@@ -37,7 +40,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class DimmableLightDevice extends GenericDevice {
+public class DimmableLightDevice extends BaseDevice {
 
     private State lastOnOffState = OnOffType.OFF;
 
@@ -87,24 +90,30 @@ public class DimmableLightDevice extends GenericDevice {
 
     @Override
     public void updateState(Item item, State state) {
+        List<AttributeState> states = new ArrayList<>();
         if (state instanceof HSBType hsb) {
-            setEndpointState(LevelControlCluster.CLUSTER_PREFIX, LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
-                    ValueUtils.percentToLevel(hsb.getBrightness()));
-            setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
-                    hsb.getBrightness().intValue() > 0);
+            states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
+                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, ValueUtils.percentToLevel(hsb.getBrightness())));
+            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
+                    hsb.getBrightness().intValue() > 0));
             lastOnOffState = hsb.getBrightness().intValue() > 0 ? OnOffType.ON : OnOffType.OFF;
         } else if (state instanceof PercentType percentType) {
-            setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, percentType.intValue() > 0);
+            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
+                    percentType.intValue() > 0));
             if (percentType.intValue() > 0) {
-                setEndpointState(LevelControlCluster.CLUSTER_PREFIX, LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
-                        ValueUtils.percentToLevel(percentType));
+                states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
+                        LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, ValueUtils.percentToLevel(percentType)));
                 lastOnOffState = OnOffType.ON;
             } else {
                 lastOnOffState = OnOffType.OFF;
             }
         } else if (state instanceof OnOffType onOffType) {
-            setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, onOffType == OnOffType.ON);
+            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
+                    onOffType == OnOffType.ON));
             lastOnOffState = onOffType;
+        }
+        if (!states.isEmpty()) {
+            setEndpointStates(states);
         }
     }
 

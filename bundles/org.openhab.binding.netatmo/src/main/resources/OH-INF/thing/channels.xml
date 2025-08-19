@@ -177,7 +177,7 @@
 		<description>State of the floodlight (On/Off/Auto)</description>
 		<category>Lightbulb</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state pattern="%s">

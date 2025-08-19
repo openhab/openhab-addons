@@ -12,7 +12,7 @@ Siemens have a complete set of controller references under the name "Siemens Alb
 Here is a picture of such device.
 You can also find this device in other types of heating systems: boiler or solar based.
 
-![](doc/Albatros.jpg)
+![Siemens Albatros Controller](doc/Albatros.jpg)
 
 You will find some information about the OZW672.01 gateway on the Siemens web site:
 

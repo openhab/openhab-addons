@@ -6,36 +6,64 @@
 	<channel-type id="front-left">
 		<item-type>Contact</item-type>
 		<label>Door Front Left</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="front-right">
 		<item-type>Contact</item-type>
 		<label>Door Front Right</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-left">
 		<item-type>Contact</item-type>
 		<label>Door Rear Left</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-right">
 		<item-type>Contact</item-type>
 		<label>Door Rear Right</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="deck-lid">
 		<item-type>Contact</item-type>
 		<label>Deck Lid</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="engine-hood">
 		<item-type>Contact</item-type>
 		<label>Engine Hood</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rooftop">
 		<item-type>Number</item-type>
 		<label>Roof top</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Unlocked</option>
@@ -47,6 +75,10 @@
 	<channel-type id="sunroof">
 		<item-type>Number</item-type>
 		<label>Sun Roof</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Closed</option>
@@ -70,11 +102,19 @@
 	<channel-type id="sunroof-front-blind">
 		<item-type>Number</item-type>
 		<label>Sun Roof Front Blind</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sunroof-rear-blind">
 		<item-type>Number</item-type>
 		<label>Sun Roof Rear Blind</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

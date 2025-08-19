@@ -35,6 +35,7 @@
 		<description>Contact state information of this zone.</description>
 		<category>Contact</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
