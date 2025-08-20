@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
+import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -80,6 +82,9 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     static final String BASE_TOPIC = "homeassistant";
     static final String BIRTH_TOPIC = "homeassistant/status";
     static final String ONLINE_STATUS = "online";
+
+    private static final ThreadLocal<CharsetDecoder> UTF8_DECODER = ThreadLocal
+            .withInitial(() -> StandardCharsets.UTF_8.newDecoder());
 
     @NonNullByDefault({})
     protected MqttChannelTypeProvider typeProvider;
@@ -207,14 +212,22 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
     private DiscoveryResult buildResult(String thingID, ThingUID thingUID, String thingName, HaID haID,
             Map<String, Object> properties, ThingUID bridgeUID) {
-        // Work on a local copy of components first
-        Set<HaID> componentsUnordered = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
-        List<HaID> components = new ArrayList<>(componentsUnordered);
-        components.add(haID);
-        components.sort(Comparator.comparing(HaID::toString));
+        // Use a TreeSet to keep components sorted automatically
+        Set<HaID> componentsSet = componentsPerThingID.computeIfAbsent(thingID,
+                key -> new TreeSet<>(Comparator.comparing(HaID::toString)));
 
-        List<String> topics = components.stream().map(HaID::toShortTopic).collect(Collectors.toList());
+        componentsSet.add(haID);
 
+        // Reuse ArrayList but only allocate once per call
+        List<HaID> components = new ArrayList<>(componentsSet);
+
+        // Convert components to short topics
+        List<String> topics = new ArrayList<>(components.size());
+        for (HaID component : components) {
+            topics.add(component.toShortTopic());
+        }
+
+        // Append handler configuration
         HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics);
         properties = handlerConfig.appendToProperties(properties);
 
