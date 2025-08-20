@@ -14,7 +14,6 @@ package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -71,8 +70,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private HomeAssistantConfiguration configuration;
     protected final Map<String, Set<HaID>> componentsPerThingID = new HashMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new HashMap<>();
-    protected final Map<String, DiscoveryResult> results = new HashMap<>();
     protected final Map<String, DiscoveryResult> allResults = new HashMap<>();
+    private final Set<ThingUID> dirtyResults = new HashSet<>();
     private final Object discoveryStateLock = new Object();
 
     private @Nullable ScheduledFuture<?> future;
@@ -217,6 +216,28 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         }
     }
 
+    /**
+     * Builds a {@link DiscoveryResult} for a given Thing. Responsibilities of this method:
+     * <ul>
+     *   <li>Maintain a consistent, ordered set of components ({@link HaID}) per Thing ID.
+     *       A {@link TreeSet} is used to guarantee stable ordering of components.</li>
+     *   <li>Convert components into a list of "short topics", which are passed into the
+     *       {@link HandlerConfiguration} for handler initialization.</li>
+     *   <li>Assemble a new {@link DiscoveryResult} with the given properties, label,
+     *       and bridge reference.</li>
+     * </ul>
+     * Ordering note: this method is the only place where the ordered list of components
+     * and topics is constructed. Callers (such as {@code applyResult}) must treat the
+     * returned {@link DiscoveryResult} as authoritative for ordering.
+     *
+     * @param thingID    the stable ID of the discovered Thing
+     * @param thingUID   the unique identifier for the Thing
+     * @param thingName  human-readable label for the Thing
+     * @param haID       the Home Assistant component identifier for this discovery event
+     * @param properties current Thing properties, to be extended with handler configuration
+     * @param bridgeUID  UID of the bridge Thing (MQTT broker)
+     * @return a complete and ordered {@link DiscoveryResult} representing the Thing
+     */
     private DiscoveryResult buildResult(String thingID, ThingUID thingUID, String thingName, HaID haID,
             Map<String, Object> properties, ThingUID bridgeUID) {
         // Use a TreeSet to keep components sorted automatically
@@ -242,24 +263,25 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
                 .withBridge(bridgeUID).withLabel(thingName).build();
     }
 
+    /**
+     * Stores the newly built DiscoveryResult and marks it dirty.
+     */
     private void applyResult(String thingID, HaID haID, DiscoveryResult result) {
-        // Mutations only — must be under discoveryStateLock
-        Set<HaID> componentsUnordered = componentsPerThingID.computeIfAbsent(thingID, key -> new HashSet<>());
-        componentsUnordered.add(haID);
-
-        results.put(result.getThingUID().toString(), result);
         allResults.put(result.getThingUID().toString(), result);
+        dirtyResults.add(result.getThingUID());
     }
 
     protected void publishResults() {
-        Collection<DiscoveryResult> localResults;
-
+        Set<ThingUID> toPublish = new HashSet<>();
         synchronized (discoveryStateLock) {
-            localResults = new ArrayList<>(results.values());
-            results.clear();
+            toPublish.addAll(dirtyResults);
+            dirtyResults.clear();
         }
-        for (DiscoveryResult result : localResults) {
-            thingDiscovered(result);
+        for (ThingUID uid : toPublish) {
+            DiscoveryResult result = allResults.get(uid.toString());
+            if (result != null) {
+                thingDiscovered(result);
+            }
         }
     }
 
@@ -292,8 +314,9 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             existingThing = allResults.get(thingUID.toString());
 
             if (removedLastComponent) {
+                componentsPerThingID.remove(thingID);
                 allResults.remove(thingUID.toString());
-                results.remove(thingUID.toString());
+                dirtyResults.remove(thingUID);
                 thingRemoved(thingUID);
             }
         }
