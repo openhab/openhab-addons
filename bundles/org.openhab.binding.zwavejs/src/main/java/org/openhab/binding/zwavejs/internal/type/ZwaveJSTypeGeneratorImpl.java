@@ -786,11 +786,12 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                                     return;
                                 }
                                 String channelId = otherChannel.getUID().getId().toLowerCase();
-                                if (channelId.contains("up") || channelId.contains("open") || (channelId.contains("on")
-                                        && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription))) {
+                                if (channelId.contains("-up") || channelId.contains("-open")
+                                        || (channelId.contains("-on")
+                                                && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription))) {
                                     upChannel[0] = otherChannel.getUID();
-                                } else if (channelId.contains("down") || channelId.contains("close")
-                                        || (channelId.contains("off")
+                                } else if (channelId.contains("-down") || channelId.contains("-close")
+                                        || (channelId.contains("-off")
                                                 && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription))) {
                                     downChannel[0] = otherChannel.getUID();
                                 }

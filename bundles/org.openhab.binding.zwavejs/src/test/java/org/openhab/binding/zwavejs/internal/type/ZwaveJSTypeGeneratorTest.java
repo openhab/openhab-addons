@@ -327,6 +327,18 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testNode60RollerShutterChannelDetection() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 60);
+
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), true);
+
+        assertEquals("multilevel-switch-value-1", results.rollerShutterCapabilities.get(1).dimmerChannel.getId());
+        assertEquals("multilevel-switch-up-1", results.rollerShutterCapabilities.get(1).upChannel.getId());
+        assertEquals("multilevel-switch-down-1", results.rollerShutterCapabilities.get(1).downChannel.getId());
+    }
+
+    @Test
     public void testGenCTNode74HumidityInvalidUnit() throws IOException {
         Channel channel = getChannel("store_4.json", 74, "multilevel-sensor-humidity");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
