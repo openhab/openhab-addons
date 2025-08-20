@@ -23,9 +23,9 @@
 			</parameter>
 
 			<parameter name="baudrate" type="integer" required="true" groupName="port">
-				<context>serial-port</context>
 				<label>Baud Rate</label>
-				<description>Set the serial port baud rate</description>
+				<description>Set the serial port baud rate. The selected baud rate must match the configuration of your CUL stick
+					for reliable device communication.</description>
 				<default>38400</default>
 				<limitToOptions>true</limitToOptions>
 				<options>

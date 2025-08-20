@@ -179,8 +179,17 @@ public class SomfyCULHandler extends BaseThingHandler {
      */
     private long getNewAddressForShutter() throws IOException {
         File directory = propertyFile.getParentFile();
+        if (directory == null) {
+            throw new IOException("Cannot access parent directory for property files");
+        }
+
+        File[] files = directory.listFiles();
+        if (files == null) {
+            throw new IOException("Cannot list files in directory: " + directory.getAbsolutePath());
+        }
+
         long maxAddress = 0;
-        for (File file : directory.listFiles()) {
+        for (File file : files) {
             String extension = null;
             // Get file extension
             if (file.getName().contains(".")) {
@@ -188,14 +197,17 @@ public class SomfyCULHandler extends BaseThingHandler {
             }
             if (extension != null && "properties".equals(extension) && !file.equals(propertyFile)) {
                 logger.info("Parsing properties from file {}", file);
-                FileReader fileReader = new FileReader(file);
                 Properties other = new Properties();
-                other.load(fileReader);
-                long currentAddress = Long.decode("0x" + other.getProperty("address"));
-                if (currentAddress > maxAddress) {
-                    maxAddress = currentAddress;
+                try (FileReader fileReader = new FileReader(file)) {
+                    other.load(fileReader);
+                    String addressStr = other.getProperty("address");
+                    if (addressStr != null) {
+                        long currentAddress = Long.decode("0x" + addressStr);
+                        if (currentAddress > maxAddress) {
+                            maxAddress = currentAddress;
+                        }
+                    }
                 }
-                fileReader.close();
             }
         }
         logger.info("Current max address is {}", maxAddress);

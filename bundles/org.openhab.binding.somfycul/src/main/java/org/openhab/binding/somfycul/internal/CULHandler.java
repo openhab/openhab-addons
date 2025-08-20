@@ -91,24 +91,32 @@ public class CULHandler extends BaseBridgeHandler {
      * @return true, if the message has been transmitted successfully, otherwise false.
      */
     protected synchronized boolean writeString(final String msg) {
-        logger.debug("Trying to write '{}' to serial port {}", msg, portId.getName());
+        final SerialPortIdentifier localPortId = portId;
+        final OutputStream localOutputStream = outputStream;
 
-        // TODO Check for status of bridge
+        if (localPortId == null || localOutputStream == null) {
+            logger.warn("Cannot write to serial port - port or stream not initialized");
+            return false;
+        }
+
+        logger.debug("Trying to write '{}' to serial port {}", msg, localPortId.getName());
+
         final long earliestNextExecution = lastCommandTime + 100;
         while (earliestNextExecution > System.currentTimeMillis()) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
                 return false;
             }
         }
         try {
-            outputStream.write((msg + "\n").getBytes());
-            outputStream.flush();
+            localOutputStream.write((msg + "\n").getBytes());
+            localOutputStream.flush();
             lastCommandTime = System.currentTimeMillis();
             return true;
         } catch (IOException e) {
-            logger.error("Error writing '{}' to serial port {}: {}", msg, portId.getName(), e.getMessage());
+            logger.error("Error writing '{}' to serial port {}: {}", msg, localPortId.getName(), e.getMessage());
         }
         return false;
     }
@@ -119,8 +127,8 @@ public class CULHandler extends BaseBridgeHandler {
         CULConfiguration config = getConfigAs(CULConfiguration.class);
         if (validConfiguration(config)) {
             String port = config.port;
-            portId = serialPortManager.getIdentifier(port);
-            if (portId == null) {
+            SerialPortIdentifier localPortId = serialPortManager.getIdentifier(port);
+            if (localPortId == null) {
                 String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
                         .collect(Collectors.joining(System.lineSeparator()));
                 String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s",
@@ -128,15 +136,24 @@ public class CULHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
                 return;
             }
+            portId = localPortId;
             logger.info("got port: {}", config.port);
+
             try {
-                serialPort = portId.open("openHAB", 2000);
+                SerialPort localSerialPort = localPortId.open("openHAB", 2000);
                 // set port parameters
-                serialPort.setSerialPortParams(config.baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                int baudRate = config.baudrate;
+                localSerialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
-                inputStream = serialPort.getInputStream();
-                outputStream = serialPort.getOutputStream();
-                // TODO: Check version of CUL
+
+                InputStream localInputStream = localSerialPort.getInputStream();
+                OutputStream localOutputStream = localSerialPort.getOutputStream();
+
+                // Only set instance variables after successful initialization
+                serialPort = localSerialPort;
+                inputStream = localInputStream;
+                outputStream = localOutputStream;
+
                 updateStatus(ThingStatus.ONLINE);
                 logger.debug("Finished initializing!");
             } catch (IOException e) {
@@ -155,7 +172,7 @@ public class CULHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "somfycul configuration missing");
             return false;
         }
-        if (config.port.isEmpty() || config.baudrate == 0) {
+        if (config.port.isEmpty() || config.baudrate <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "somfycul port or baudrate not specified");
             return false;
@@ -166,28 +183,38 @@ public class CULHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        if (serialPort != null) {
-            serialPort.removeEventListener();
-        }
-        if (outputStream != null) {
+
+        // Store references to avoid NPE if they're nulled during disposal
+        final SerialPort localSerialPort = serialPort;
+        final OutputStream localOutputStream = outputStream;
+        final InputStream localInputStream = inputStream;
+
+        // Close resources in reverse order of acquisition
+        if (localOutputStream != null) {
             try {
-                outputStream.close();
+                localOutputStream.close();
             } catch (IOException e) {
                 logger.debug("Error while closing the output stream: {}", e.getMessage());
             }
         }
-        if (inputStream != null) {
+
+        if (localInputStream != null) {
             try {
-                inputStream.close();
+                localInputStream.close();
             } catch (IOException e) {
                 logger.debug("Error while closing the input stream: {}", e.getMessage());
             }
         }
-        if (serialPort != null) {
-            serialPort.close();
+
+        if (localSerialPort != null) {
+            localSerialPort.removeEventListener();
+            localSerialPort.close();
         }
+
+        // Clear all references
         outputStream = null;
         inputStream = null;
         serialPort = null;
+        portId = null;
     }
 }
