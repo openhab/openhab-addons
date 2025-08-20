@@ -21,8 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
@@ -51,6 +53,7 @@ import org.openhab.binding.tibber.internal.config.TibberConfiguration;
 import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
 import org.openhab.binding.tibber.internal.websocket.TibberWebsocket;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.CurrencyUnits;
@@ -63,6 +66,9 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -84,6 +90,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Stian Kjoglum - Initial contribution
  * @author Bernd Weymann - Use common HttpClient, rework of Nullable fields
+ * @author Bernd Weymann - Rework initialization
  */
 @NonNullByDefault
 public class TibberHandler extends BaseThingHandler {
@@ -206,52 +213,128 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     private void doInitialize() {
-        Request currencyRequest = getRequest();
+        if (isDisposed) {
+            logger.trace("doInitialize rejected due to disposed thing");
+            return;
+        }
+        Request initializeRequest = getRequest();
         String body = String.format(QUERY_CONTAINER,
                 String.format(getTemplate(CURRENCY_QUERY_RESOURCE_PATH), tibberConfig.homeid));
         logger.trace("Query with body {}", body);
-        currencyRequest.content(new StringContentProvider(body, "utf-8"));
+        initializeRequest.content(new StringContentProvider(body, "utf-8"));
         try {
-            ContentResponse cr = currencyRequest.send();
+            ContentResponse cr = initializeRequest.send();
             int responseStatus = cr.getStatus();
-            String currencyResponse = cr.getContentAsString();
-            logger.trace("doInitialze response {} - {}", responseStatus, currencyResponse);
+            String initialResponse = cr.getContentAsString();
+            logger.trace("doInitialze response {} - {}", responseStatus, initialResponse);
             if (responseStatus == HttpStatus.OK_200) {
-                JsonObject jsonResponse = (JsonObject) JsonParser.parseString(currencyResponse);
-                JsonObject currency = Utils.getJsonObject(jsonResponse, CURRENCY_QUERY_JSON_PATH);
-                if (!currency.isEmpty()) {
-                    updateStatus(ThingStatus.ONLINE);
-
-                    // check if currency is supported
-                    String currencyCode = currency.get("currency").getAsString();
-                    Unit<?> unit = CurrencyUnits.getInstance().getUnit(currencyCode);
-                    if (unit != null) {
-                        currencyUnit = currencyCode;
-                        logger.trace("Currency is set to {}", unit.getSymbol());
+                JsonObject jsonResponse = (JsonObject) JsonParser.parseString(initialResponse);
+                if (jsonResponse.has("errors")) {
+                    // case: error
+                    // if response is ok_200 and an error occurs homeid or token is wrong so raise configuration error
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/status.initial-call-failed  [\"" + responseStatus + " - " + initialResponse + "\"]");
+                } else {
+                    JsonObject initalJson = Utils.getJsonObject(jsonResponse, INITIAL_QUERY_JSON_PATH);
+                    if (initalJson.isEmpty()) {
+                        // case: unknown
+                        // initial call successful without error, but desired data is not available
+                        // declare communication error with response to resolve issue
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/status.initial-call-failed  [\"" + responseStatus + " - " + initialResponse
+                                        + "\"]");
                     } else {
-                        logger.trace("Currency {} is unknown, falling back to DecimalType", currencyCode);
+                        if (initalJson.get("currentSubscription").isJsonNull()) {
+                            // case: no Tibber customer
+                            // if currentSubscription is null but homeid and token are correct then the user is not a
+                            // Tibber customer BUT if he has a Tibber Pulse hardware user can retrieve live values.
+                            // https://community.openhab.org/t/tibber-oh5/164158/52
+                            // remove price and cost channels
+                            managePriceChannels(false);
+                            updateStatus(ThingStatus.ONLINE);
+                            logger.info("No currency found in response: {}", initialResponse);
+                            // create websocket and watchdog
+                            webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
+                            watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
+                        } else {
+                            JsonObject currentJson = Utils.getJsonObject(jsonResponse, CURRENCY_QUERY_JSON_PATH);
+                            if (!currentJson.isEmpty()) {
+                                // case: regular user
+                                // user can get all data and add channels if necessary
+                                managePriceChannels(true);
+                                updateStatus(ThingStatus.ONLINE);
+
+                                // check if currency is supported
+                                String currencyCode = currentJson.get("currency").getAsString();
+                                Unit<?> unit = CurrencyUnits.getInstance().getUnit(currencyCode);
+                                if (unit != null) {
+                                    currencyUnit = currencyCode;
+                                    logger.trace("Currency is set to {}", unit.getSymbol());
+                                } else {
+                                    logger.trace("Currency {} is unknown, falling back to DecimalType", currencyCode);
+                                }
+
+                                // create websocket and watchdog
+                                webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
+                                watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
+
+                                // start cron update for new spot prices
+                                scheduler.schedule(this::updateSpotPrices, 0, TimeUnit.MINUTES);
+                                int hour = tibberConfig.updateHour;
+                                String cronHour = (hour < 0) ? "*" : String.valueOf(hour);
+                                cronDaily = cron.schedule(this::updateSpotPrices,
+                                        String.format(CRON_DAILY_AT, cronHour));
+                            } else {
+                                // case: unknown
+                                // if subscription is fine but current priceInfo cannot be obtained there's another
+                                // error
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "@text/status.initial-call-failed  [\"" + responseStatus + " - "
+                                                + initialResponse + "\"]");
+                            }
+                        }
                     }
-
-                    // create websocket and watchdog
-                    webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
-                    watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
-
-                    // start cron update for new spot prices
-                    scheduler.schedule(this::updateSpotPrices, 0, TimeUnit.MINUTES);
-                    int hour = tibberConfig.updateHour;
-                    String cronHour = (hour < 0) ? "*" : String.valueOf(hour);
-                    cronDaily = cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, cronHour));
-                    return;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/status.initial-call-failed  [\"" + responseStatus + " - " + currencyResponse + "\"]");
+                        "@text/status.initial-call-failed  [\"" + responseStatus + " - " + initialResponse + "\"]");
+                // in case of non ok_200 response schedule retry
+                scheduler.schedule(this::doInitialize, 60, TimeUnit.SECONDS);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.initial-call-failed  [\"" + e.getMessage() + "\"]");
+            // in case of exception schedule retry
+            scheduler.schedule(this::doInitialize, 60, TimeUnit.SECONDS);
         }
-        watchdog = scheduler.schedule(this::doInitialize, 1, TimeUnit.MINUTES);
+    }
+
+    protected void managePriceChannels(boolean add) {
+        boolean hasPriceChannels = thing
+                .getChannel(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE)) != null;
+        logger.trace("Add? {}. Has spot price channel? {}", add, hasPriceChannels);
+        if ((add && hasPriceChannels) || (!add && !hasPriceChannels)) {
+            // don't add channel if already available OR remove channel if not available
+            logger.trace("Nothing to do");
+            return;
+        }
+        // Collect channels to add/remove
+        List<Channel> channels = new ArrayList<>();
+        PRICE_COST_CHANNELS.forEach((channelId, channelType) -> {
+            Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), CoreItemFactory.NUMBER)
+                    .withType(new ChannelTypeUID(BINDING_ID, channelType)).build();
+            logger.trace("Add/Remove channel {} ", channel.getUID().getAsString());
+            channels.add(channel);
+        });
+        // update thing with / without channels
+        ThingBuilder thingBuilder = editThing();
+        if (add) {
+            channels.forEach(channel -> {
+                updateThing(thingBuilder.withChannel(channel).build());
+            });
+        } else {
+            updateThing(thingBuilder.withoutChannels(channels).build());
+        }
     }
 
     private void watchdog() {
@@ -411,9 +494,9 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     private boolean isRealtimeEnabled() {
-        Boolean realtimeEnabled = this.realtimeEnabled;
-        if (realtimeEnabled != null) {
-            return realtimeEnabled.booleanValue();
+        Boolean localRealtimeEanbaled = realtimeEnabled;
+        if (localRealtimeEanbaled != null) {
+            return localRealtimeEanbaled.booleanValue();
         } else {
             Request realtimeRequest = getRequest();
             String body = String.format(QUERY_CONTAINER,
@@ -429,8 +512,9 @@ public class TibberHandler extends BaseThingHandler {
                 JsonObject featuresObject = Utils.getJsonObject(object, REALTIME_FEATURE_JSON_PATH);
                 if (!featuresObject.isEmpty()) {
                     String rtEnabled = featuresObject.get("realTimeConsumptionEnabled").toString();
-                    this.realtimeEnabled = realtimeEnabled = Boolean.valueOf(rtEnabled);
-                    return realtimeEnabled.booleanValue();
+                    localRealtimeEanbaled = Boolean.valueOf(rtEnabled);
+                    realtimeEnabled = localRealtimeEanbaled;
+                    return localRealtimeEanbaled.booleanValue();
                 }
             } catch (JsonSyntaxException | InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("Realtime feature query failed {}", e.getMessage());
