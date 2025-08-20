@@ -148,7 +148,7 @@ public class ShellyThingCreator {
      * @param mac MAC address with or without colon delimiters
      * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
      */
-    private static String getBluServiceName(String model, String mac) throws IllegalArgumentException {
+    public static String getBluServiceName(String model, String mac) throws IllegalArgumentException {
         String bluClass = model.contains("-") ? substringBefore(model, "-") : model;
         ThingTypeUID uid = THING_TYPE_BY_DEVICE_TYPE.containsKey(model) ? THING_TYPE_BY_DEVICE_TYPE.get(model)
                 : THING_TYPE_BY_DEVICE_TYPE.get(bluClass);

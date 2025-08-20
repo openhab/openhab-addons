@@ -13,9 +13,9 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.getBluServiceName;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.getBluServiceName;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -286,7 +286,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             for (int bttnIdx = 0; bttnIdx < e.blu.buttons.length; bttnIdx++) {
                                 if (e.blu.buttons[bttnIdx] != 0) {
                                     ShellyInputState input = deviceStatus.inputs.get(bttnIdx);
-                                    input.event = mapValue(MAP_BLU_INPUT_EVENT_TYPE, e.blu.buttons[bttnIdx].toString());
+                                    input.event = MAP_BLU_INPUT_EVENT_TYPE.getOrDefault(e.blu.buttons[bttnIdx], "");
 
                                     String group = getProfile().getInputGroup(bttnIdx);
                                     String suffix = profile.getInputSuffix(bttnIdx);

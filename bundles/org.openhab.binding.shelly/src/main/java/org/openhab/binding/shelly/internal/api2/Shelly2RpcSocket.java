@@ -44,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * @author Markus Michels - Initial contribution
@@ -288,7 +287,7 @@ public class Shelly2RpcSocket {
                 logger.debug("{}: No Rpc listener registered for device {}, skip message: {}", thingName,
                         getString(message.src), receivedMessage);
             }
-        } catch (ShellyApiException | JsonSyntaxException | IllegalArgumentException e) {
+        } catch (ShellyApiException | IllegalArgumentException e) {
             logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
         }
     }
