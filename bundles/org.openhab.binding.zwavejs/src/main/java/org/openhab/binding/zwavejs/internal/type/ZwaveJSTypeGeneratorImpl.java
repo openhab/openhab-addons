@@ -771,7 +771,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     ZwaveJSChannelConfiguration config = channel.getConfiguration()
                             .as(ZwaveJSChannelConfiguration.class);
                     int endpoint = config.endpoint;
-                    // create single array as mutable container, regarding the lambda
+                    // create single array as mutable container for the lambda
                     ChannelUID[] upChannel = new ChannelUID[1];
                     ChannelUID[] downChannel = new ChannelUID[1];
                     // get other channels of type switch within the same endpoint
