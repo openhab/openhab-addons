@@ -219,23 +219,23 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     /**
      * Builds a {@link DiscoveryResult} for a given Thing. Responsibilities of this method:
      * <ul>
-     *   <li>Maintain a consistent, ordered set of components ({@link HaID}) per Thing ID.
-     *       A {@link TreeSet} is used to guarantee stable ordering of components.</li>
-     *   <li>Convert components into a list of "short topics", which are passed into the
-     *       {@link HandlerConfiguration} for handler initialization.</li>
-     *   <li>Assemble a new {@link DiscoveryResult} with the given properties, label,
-     *       and bridge reference.</li>
+     * <li>Maintain a consistent, ordered set of components ({@link HaID}) per Thing ID.
+     * A {@link TreeSet} is used to guarantee stable ordering of components.</li>
+     * <li>Convert components into a list of "short topics", which are passed into the
+     * {@link HandlerConfiguration} for handler initialization.</li>
+     * <li>Assemble a new {@link DiscoveryResult} with the given properties, label,
+     * and bridge reference.</li>
      * </ul>
      * Ordering note: this method is the only place where the ordered list of components
      * and topics is constructed. Callers (such as {@code applyResult}) must treat the
      * returned {@link DiscoveryResult} as authoritative for ordering.
      *
-     * @param thingID    the stable ID of the discovered Thing
-     * @param thingUID   the unique identifier for the Thing
-     * @param thingName  human-readable label for the Thing
-     * @param haID       the Home Assistant component identifier for this discovery event
+     * @param thingID the stable ID of the discovered Thing
+     * @param thingUID the unique identifier for the Thing
+     * @param thingName human-readable label for the Thing
+     * @param haID the Home Assistant component identifier for this discovery event
      * @param properties current Thing properties, to be extended with handler configuration
-     * @param bridgeUID  UID of the bridge Thing (MQTT broker)
+     * @param bridgeUID UID of the bridge Thing (MQTT broker)
      * @return a complete and ordered {@link DiscoveryResult} representing the Thing
      */
     private DiscoveryResult buildResult(String thingID, ThingUID thingUID, String thingName, HaID haID,
