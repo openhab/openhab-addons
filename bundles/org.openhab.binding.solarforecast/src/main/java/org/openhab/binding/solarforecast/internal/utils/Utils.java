@@ -184,7 +184,6 @@ public class Utils {
      * @param service the persistence service to query
      * @return the total energy produced in kWh, empty if the item unit is not power or energy
      */
-    @SuppressWarnings("unchecked")
     public static Optional<Double> getEnergyTillNow(String calculationItemName, QueryablePersistenceService service) {
         ZonedDateTime beginPeriodDT = ZonedDateTime.now(Utils.getClock()).truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime endPeriodDT = ZonedDateTime.now(Utils.getClock());
@@ -202,8 +201,8 @@ public class Utils {
         }
         State calculationState = historicItems.iterator().next().getState();
         if (calculationState instanceof QuantityType<?> qs) {
-            QuantityType<Power> powerStateConverted = (QuantityType<Power>) qs.toInvertibleUnit(KILOWATT_UNIT);
-            QuantityType<Energy> energyState = (QuantityType<Energy>) qs.toInvertibleUnit(Units.KILOWATT_HOUR);
+            QuantityType<?> powerStateConverted = qs.toInvertibleUnit(KILOWATT_UNIT);
+            QuantityType<?> energyState = qs.toInvertibleUnit(Units.KILOWATT_HOUR);
             if (powerStateConverted != null) {
                 LOGGER.debug("Item {} unit {} matches power", calculationItemName, qs.getUnit());
                 return Optional.of(powerCalculationTillNow(historicItems));
@@ -224,15 +223,13 @@ public class Utils {
      * @param historicItems the iterable of historic items containing energy states
      * @return the total energy produced in kWh, 0 if unit doesn't match
      */
-    @SuppressWarnings("unchecked")
     private static double energyCalculationTillNow(Iterable<HistoricItem> historicItems) {
         double total = 0;
         Instant lastTimeStamp = Instant.MIN;
         for (HistoricItem historicItem : historicItems) {
             State energyState = historicItem.getState();
             if (energyState instanceof QuantityType<?> qs) {
-                QuantityType<Energy> energyStateConverted = (QuantityType<Energy>) qs
-                        .toInvertibleUnit(Units.KILOWATT_HOUR);
+                QuantityType<?> energyStateConverted = qs.toInvertibleUnit(Units.KILOWATT_HOUR);
                 if (energyStateConverted != null) {
                     total = energyStateConverted.doubleValue();
                     lastTimeStamp = historicItem.getTimestamp().toInstant();
