@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: AmpliPi Binding</name>
 
   <properties>
-    <cxf-version>3.6.5</cxf-version>
+    <cxf-version>3.6.8</cxf-version>
   </properties>
 
   <build>
