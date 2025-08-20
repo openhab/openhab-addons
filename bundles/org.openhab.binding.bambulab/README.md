@@ -3,6 +3,37 @@
 This addon supports connecting with BambuLab 3D printers in local mode.
 While cloud mode is theoretically possible, it is not supported by the addon developers.
 
+## Local Mode
+
+1. **Find your printer credentials**
+   On **Windows**, open the Bambu Studio configuration file:
+
+   ```json
+      "access_code": {
+      "00ABCDEFG123456": "12345678"
+   }
+   ```
+
+   Look for a section like:
+
+   ```json
+      "access_code": {
+      "00ABCDEFG123456": "12345678"
+   }
+   ```
+
+* `00ABCDEFG123456` → Serial number
+* `12345678` → Access code
+
+2. **Enter the details in openHAB**
+
+   - **Serial number** → Enter the serial number from the config file
+   - **Access code** → Enter the access code from the config file
+   - **IP / Hostname** → Enter your printer’s network address
+   - **Username** → `bblp`
+   - **Series** → Select your printer model
+   - **Other settings** → Leave defaults for now
+
 ## Cloud Mode
 
 Cloud mode is possible but not officially supported by the addon developers.

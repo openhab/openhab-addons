@@ -53,7 +53,7 @@ public class MediaInputCluster extends BaseCluster {
     /**
      * This contains information about an input.
      */
-    public class InputInfoStruct {
+    public static class InputInfoStruct {
         /**
          * This field shall indicate the unique index into the list of Inputs.
          */

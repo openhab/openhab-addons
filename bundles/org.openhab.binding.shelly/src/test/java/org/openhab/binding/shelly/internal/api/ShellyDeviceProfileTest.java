@@ -104,6 +104,12 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSI4DC, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSEM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS3EM63, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, true, false), //
 
                 // Shelly Mini series
                 Arguments.of(THING_TYPE_SHELLYMINI_1, true, false), //
@@ -128,12 +134,9 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPRO3EM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPROEM50, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO4PM, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM63, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM400, true, false), //
 
                 Arguments.of(THING_TYPE_SHELLYPROTECTED, false, false), // password protected device
                 Arguments.of(THING_TYPE_SHELLYUNKNOWN, false, false)); // unknown device

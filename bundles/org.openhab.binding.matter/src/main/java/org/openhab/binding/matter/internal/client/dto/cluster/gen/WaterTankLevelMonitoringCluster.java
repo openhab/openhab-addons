@@ -76,7 +76,7 @@ public class WaterTankLevelMonitoringCluster extends BaseCluster {
     /**
      * Indicates the product identifier that can be used as a replacement for the resource.
      */
-    public class ReplacementProductStruct {
+    public static class ReplacementProductStruct {
         public ProductIdentifierTypeEnum productIdentifierType; // ProductIdentifierTypeEnum
         public String productIdentifierValue; // string
 

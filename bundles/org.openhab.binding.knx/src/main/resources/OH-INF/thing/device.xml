@@ -130,7 +130,7 @@
 		<label>Contact</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Contact Items</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>OpenState</tag>
 		</tags>
 		<config-description-ref uri="channel-type:knx:single"/>
@@ -152,8 +152,8 @@
 		<label>Number</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Number Items</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
@@ -163,7 +163,7 @@
 		<description>Control a number item (i.e. the status is not owned by KNX)</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
@@ -174,7 +174,7 @@
 		<label>String</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with String Items</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<config-description-ref uri="channel-type:knx:single"/>
@@ -196,7 +196,7 @@
 		<label>DateTime</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with DateTime Items</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<config-description-ref uri="channel-type:knx:single"/>
