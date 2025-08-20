@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
-import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,9 +81,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     static final String BASE_TOPIC = "homeassistant";
     static final String BIRTH_TOPIC = "homeassistant/status";
     static final String ONLINE_STATUS = "online";
-
-    private static final ThreadLocal<CharsetDecoder> UTF8_DECODER = ThreadLocal
-            .withInitial(() -> StandardCharsets.UTF_8.newDecoder());
+    private volatile long lastEventTime = 0;
+    private final static long DISCOVERY_TIMEOUT_MS = 2000;
 
     @NonNullByDefault({})
     protected MqttChannelTypeProvider typeProvider;
@@ -137,7 +135,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     @Override
     public void receivedMessage(ThingUID bridgeUID, MqttBrokerConnection connection, String topic, byte[] payload) {
         resetTimeout();
-
         // For HomeAssistant we need to subscribe to a wildcard topic, because topics can either be:
         // homeassistant/<component>/<node_id>/<object_id>/config OR
         // homeassistant/<component>/<object_id>/config.
@@ -201,13 +198,23 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     }
 
     private void resetPublishTimer() {
-        // Reset the found-component timer.
-        // We will collect components for the thing label description for another 2 seconds.
-        final ScheduledFuture<?> future = this.future;
-        if (future != null) {
-            future.cancel(false);
+        lastEventTime = System.currentTimeMillis();
+        if (future == null || future.isDone()) {
+            future = scheduler.schedule(this::checkAndPublish, DISCOVERY_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
-        this.future = scheduler.schedule(this::publishResults, 2, TimeUnit.SECONDS);
+    }
+
+    private void checkAndPublish() {
+        long now = System.currentTimeMillis();
+        long elapsed = now - lastEventTime;
+
+        if (elapsed >= DISCOVERY_TIMEOUT_MS) {
+            publishResults(); // process the accumulated results
+            future = null; // allow new scheduling
+        } else {
+            // reschedule only for the remaining time
+            future = scheduler.schedule(this::checkAndPublish, DISCOVERY_TIMEOUT_MS - elapsed, TimeUnit.MILLISECONDS);
+        }
     }
 
     private DiscoveryResult buildResult(String thingID, ThingUID thingUID, String thingName, HaID haID,
