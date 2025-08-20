@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.zwavejs.internal.config;
 
+import static org.openhab.binding.zwavejs.internal.BindingConstants.VIRTUAL_ROLLERSHUTTER_CHANNEL_ID;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 
@@ -23,6 +25,7 @@ import org.openhab.core.thing.ChannelUID;
 @NonNullByDefault
 public class RollerShutterCapability {
     public Integer endpoint;
+    public String rollerShutterChannelId;
     public ChannelUID dimmerChannel;
     public ChannelUID upChannel;
     public ChannelUID downChannel;
@@ -30,6 +33,7 @@ public class RollerShutterCapability {
     public RollerShutterCapability(Integer endpoint, ChannelUID dimmerChannel, ChannelUID upChannel,
             ChannelUID downChannel) {
         this.endpoint = endpoint;
+        this.rollerShutterChannelId = VIRTUAL_ROLLERSHUTTER_CHANNEL_ID + (endpoint == 0 ? "" : "-" + endpoint);
         this.dimmerChannel = dimmerChannel;
         this.upChannel = upChannel;
         this.downChannel = downChannel;

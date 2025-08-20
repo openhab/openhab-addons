@@ -88,4 +88,7 @@ public class BindingConstants {
     public static final String COLOR_TEMP_CHANNEL_PROPERTY_NAME = "colorTemperature";
 
     public static final String VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER = "rollershutter";
+    public static final String VIRTUAL_ROLLERSHUTTER_PROPERTY = "virtual";
+    public static final String VIRTUAL_ROLLERSHUTTER_CHANNEL_ID = String.format("%s-%s",
+            VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER, VIRTUAL_ROLLERSHUTTER_PROPERTY);
 }

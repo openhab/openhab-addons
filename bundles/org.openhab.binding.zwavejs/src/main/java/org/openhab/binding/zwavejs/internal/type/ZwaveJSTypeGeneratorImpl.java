@@ -662,8 +662,8 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             value.endpoint = endPoint;
             value.commandClass = -1;
             value.commandClassName = VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER;
-            value.propertyKey = "virtual";
-            value.property = "virtual";
+            value.propertyKey = VIRTUAL_ROLLERSHUTTER_PROPERTY;
+            value.property = VIRTUAL_ROLLERSHUTTER_PROPERTY;
             value.metadata = new Metadata();
             value.metadata.type = MetadataType.NUMBER;
             value.metadata.writeable = true;

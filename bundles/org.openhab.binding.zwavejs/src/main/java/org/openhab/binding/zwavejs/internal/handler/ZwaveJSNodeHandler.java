@@ -186,7 +186,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         RollerShutterCapability rollerShutterCapability = rollerShutterCapabilities.get(channelConfig.endpoint);
         boolean isRollerShutterChannelCmd = rollerShutterCapability != null
-                && channelUID.getId().contains(VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER + "-virtual");
+                && channelUID.getId().equals(rollerShutterCapability.rollerShutterChannelId);
 
         if (command instanceof OnOffType onOffCommand) {
             zwaveCommand.value = handleOnOffTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
@@ -462,11 +462,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         if (metadata.isIgnoredCommandClass(event.args.commandClassName) || !isLinked(metadata.id)) {
             return true;
         }
-
-        logger.trace("Getting the configuration for linked channel {}", metadata.id);
-        Channel channel = thing.getChannel(metadata.id);
+        String channelId = metadata.id;
+        logger.trace("Getting the configuration for linked channel {}", channelId);
+        Channel channel = thing.getChannel(channelId);
         if (channel == null) {
-            logger.debug("Node {}. Channel {} not found, ignoring event", config.id, metadata.id);
+            logger.debug("Node {}. Channel {} not found, ignoring event", config.id, channelId);
             return false;
         }
 
@@ -481,13 +481,27 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         // Handle color and color temperature state updates
         ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
-        state = handleColorUpdate(colorCap, state, channel, channelConfig);
-        state = handleColorTemperatureUpdate(colorCap, state, channel, channelConfig);
+        if (colorCap != null) {
+            state = handleColorUpdate(colorCap, state, channel, channelConfig);
+            state = handleColorTemperatureUpdate(colorCap, state, channel, channelConfig);
+        }
+
+        RollerShutterCapability rollerShutterCapability = rollerShutterCapabilities.get(channelConfig.endpoint);
+        if (rollerShutterCapability != null && (channelId.equals(rollerShutterCapability.dimmerChannel.getId())
+                || channelId.equals(rollerShutterCapability.upChannel.getId())
+                || channelId.equals(rollerShutterCapability.downChannel.getId()))) {
+            try {
+                updateState(rollerShutterCapability.rollerShutterChannelId, state);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Node {}. Error updating state for channel {} with value {}:{}. {}", event.nodeId,
+                        channelId, state.getClass().getSimpleName(), state.toFullString(), e.getMessage());
+            }
+        }
 
         try {
-            updateState(metadata.id, state);
+            updateState(channelId, state);
         } catch (IllegalArgumentException e) {
-            logger.warn("Node {}. Error updating state for channel {} with value {}:{}. {}", event.nodeId, metadata.id,
+            logger.warn("Node {}. Error updating state for channel {} with value {}:{}. {}", event.nodeId, channelId,
                     state.getClass().getSimpleName(), state.toFullString(), e.getMessage());
         }
 

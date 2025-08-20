@@ -268,6 +268,50 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
+    public void testNode60RollerShutterAndDimmerEventUpdate() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(60);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+
+        EventMessage eventMessage = DataUtil.fromJson("event_node_60_dimmer.json", EventMessage.class);
+        handler.onNodeStateChanged(eventMessage.event);
+
+        ChannelUID channelIdDimmer = new ChannelUID("zwavejs:test-bridge:test-thing:multilevel-switch-value-1");
+        ChannelUID channelIdRollerShutter = new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual-1");
+        try {
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback, times(1)).stateUpdated(eq(channelIdDimmer), eq(new PercentType(52)));
+            verify(callback, times(1)).stateUpdated(eq(channelIdRollerShutter), eq(new PercentType(52)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNode60RollerShutterAndSwitchEventUpdate() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(60);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+
+        EventMessage eventMessage = DataUtil.fromJson("event_node_60_switch.json", EventMessage.class);
+        handler.onNodeStateChanged(eventMessage.event);
+
+        ChannelUID channelIdSwitch = new ChannelUID("zwavejs:test-bridge:test-thing:multilevel-switch-down-1");
+        ChannelUID channelIdRollerShutter = new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual-1");
+        try {
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback, times(1)).stateUpdated(eq(channelIdSwitch), eq(OnOffType.ON));
+            verify(callback, times(1)).stateUpdated(eq(channelIdRollerShutter), eq(OnOffType.ON));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
     public void testNode78ChannelsCreation() {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(78);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
