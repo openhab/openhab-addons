@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -73,6 +72,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     protected final Map<String, ThingUID> thingIDPerTopic = new HashMap<>();
     protected final Map<String, DiscoveryResult> results = new HashMap<>();
     protected final Map<String, DiscoveryResult> allResults = new HashMap<>();
+    private final Object discoveryStateLock = new Object();
 
     private @Nullable ScheduledFuture<?> future;
     private final HomeAssistantPythonBridge python;
@@ -155,14 +155,17 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             final String thingID = config.getThingId(haID.objectID);
             final ThingUID thingUID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, bridgeUID, thingID);
 
-            synchronized (results) {
+            // Build properties and DiscoveryResult outside the lock
+            Map<String, Object> properties = new HashMap<>();
+            properties = config.appendToProperties(properties);
+            properties.put("deviceId", thingID);
+
+            DiscoveryResult result = buildResult(thingID, thingUID, config.getThingName(), haID, properties, bridgeUID);
+
+            // Now only mutate shared state under the lock
+            synchronized (discoveryStateLock) {
                 thingIDPerTopic.put(topic, thingUID);
-
-                Map<String, Object> properties = new HashMap<>();
-                properties = config.appendToProperties(properties);
-                properties.put("deviceId", thingID);
-
-                buildResult(thingID, thingUID, config.getThingName(), haID, properties, bridgeUID);
+                applyResult(thingID, haID, result);
             }
         } catch (ConfigurationException e) {
             logger.warn("HomeAssistant discover error: invalid configuration of thing {} component {}: {}",
@@ -202,40 +205,36 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         this.future = scheduler.schedule(this::publishResults, 2, TimeUnit.SECONDS);
     }
 
-    private void buildResult(String thingID, ThingUID thingUID, String thingName, HaID haID,
+    private DiscoveryResult buildResult(String thingID, ThingUID thingUID, String thingName, HaID haID,
             Map<String, Object> properties, ThingUID bridgeUID) {
-        // We need to keep track of already found component topics for a specific thing
-        final List<HaID> components;
-        {
-            Set<HaID> componentsUnordered = componentsPerThingID.computeIfAbsent(thingID, key -> new HashSet<>());
+        // Work on a local copy of components first
+        Set<HaID> componentsUnordered = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
+        List<HaID> components = new ArrayList<>(componentsUnordered);
+        components.add(haID);
+        components.sort(Comparator.comparing(HaID::toString));
 
-            // Invariant. For compiler, computeIfAbsent above returns always
-            // non-null
-            Objects.requireNonNull(componentsUnordered);
-            componentsUnordered.add(haID);
-
-            components = componentsUnordered.stream().collect(Collectors.toList());
-            // We sort the components for consistent jsondb serialization order of 'topics' thing property
-            // Sorting key is HaID::toString, i.e. using the full topic string
-            components.sort(Comparator.comparing(HaID::toString));
-        }
-
-        final List<String> topics = components.stream().map(HaID::toShortTopic).collect(Collectors.toList());
+        List<String> topics = components.stream().map(HaID::toShortTopic).collect(Collectors.toList());
 
         HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics);
         properties = handlerConfig.appendToProperties(properties);
 
-        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withRepresentationProperty("deviceId").withBridge(bridgeUID).withLabel(thingName).build();
-        // Because we need the new properties map with the updated "components" list
-        results.put(thingUID.toString(), result);
-        allResults.put(thingUID.toString(), result);
+        return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withRepresentationProperty("deviceId")
+                .withBridge(bridgeUID).withLabel(thingName).build();
+    }
+
+    private void applyResult(String thingID, HaID haID, DiscoveryResult result) {
+        // Mutations only — must be under discoveryStateLock
+        Set<HaID> componentsUnordered = componentsPerThingID.computeIfAbsent(thingID, key -> new HashSet<>());
+        componentsUnordered.add(haID);
+
+        results.put(result.getThingUID().toString(), result);
+        allResults.put(result.getThingUID().toString(), result);
     }
 
     protected void publishResults() {
         Collection<DiscoveryResult> localResults;
 
-        synchronized (results) {
+        synchronized (discoveryStateLock) {
             localResults = new ArrayList<>(results.values());
             results.clear();
         }
@@ -249,32 +248,53 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         if (!topic.endsWith("/config")) {
             return;
         }
-        synchronized (results) {
-            ThingUID thingUID = thingIDPerTopic.remove(topic);
-            if (thingUID != null) {
-                final String thingID = thingUID.getId();
+        ThingUID thingUID;
+        HaID haID = new HaID(topic);
+        String thingID;
 
-                HaID haID = new HaID(topic);
+        // Step 1: remove the topic mapping (under lock)
+        synchronized (discoveryStateLock) {
+            thingUID = thingIDPerTopic.remove(topic);
+        }
+        if (thingUID == null) {
+            return;
+        }
 
-                Set<HaID> components = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
-                components.remove(haID);
-                if (components.isEmpty()) {
-                    allResults.remove(thingUID.toString());
-                    results.remove(thingUID.toString());
-                    thingRemoved(thingUID);
-                } else {
-                    resetPublishTimer();
+        thingID = thingUID.getId();
 
-                    DiscoveryResult existingThing = allResults.get(thingUID.toString());
-                    if (existingThing == null) {
-                        logger.warn("Could not find discovery result for removed component {}; this is a bug",
-                                thingUID);
-                        return;
-                    }
-                    Map<String, Object> properties = new HashMap<>(existingThing.getProperties());
-                    buildResult(thingID, thingUID, existingThing.getLabel(), haID, properties, bridgeUID);
-                }
+        // Step 2: decide what to do about components (under lock)
+        boolean removedLastComponent;
+        DiscoveryResult existingThing;
+        synchronized (discoveryStateLock) {
+            Set<HaID> components = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
+            components.remove(haID);
+            removedLastComponent = components.isEmpty();
+            existingThing = allResults.get(thingUID.toString());
+
+            if (removedLastComponent) {
+                allResults.remove(thingUID.toString());
+                results.remove(thingUID.toString());
+                thingRemoved(thingUID);
             }
+        }
+
+        if (removedLastComponent) {
+            return;
+        }
+
+        // Step 3: heavy work outside lock
+        if (existingThing == null) {
+            logger.warn("Could not find discovery result for removed component {}; this is a bug", thingUID);
+            return;
+        }
+
+        resetPublishTimer();
+        Map<String, Object> properties = new HashMap<>(existingThing.getProperties());
+        DiscoveryResult result = buildResult(thingID, thingUID, existingThing.getLabel(), haID, properties, bridgeUID);
+
+        // Step 4: commit new result under lock
+        synchronized (discoveryStateLock) {
+            applyResult(thingID, haID, result);
         }
     }
 }
