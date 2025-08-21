@@ -166,7 +166,7 @@ public class SomfyCULHandler extends BaseThingHandler {
                 logger.info("Read properties from file {}", propertyFile);
             }
         } catch (IOException e) {
-            logger.error("Error occured on writing the property file.", e);
+            logger.error("Error occurred on writing the property file.", e);
         }
         return p;
     }
