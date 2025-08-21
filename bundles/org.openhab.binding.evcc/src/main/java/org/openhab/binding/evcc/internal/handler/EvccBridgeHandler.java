@@ -129,9 +129,8 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
                     .header(HttpHeader.ACCEPT, "application/json").send();
 
             if (response.getStatus() == 200) {
-                String responseString = response.getContentAsString();
                 @Nullable
-                JsonObject returnValue = gson.fromJson(responseString, JsonObject.class);
+                JsonObject returnValue = gson.fromJson(response.getContentAsString(), JsonObject.class);
                 if (returnValue != null && !(returnValue.isEmpty() || returnValue.isJsonNull())) {
                     updateStatus(ThingStatus.ONLINE);
                     JsonObject result = returnValue.has("result") ? returnValue.getAsJsonObject("result") : returnValue;

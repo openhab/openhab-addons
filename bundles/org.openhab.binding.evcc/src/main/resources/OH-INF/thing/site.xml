@@ -195,50 +195,6 @@
 		<description>Indicates whether green power is available for loadpoints</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="site-grid-current-1">
-		<item-type unitHint="W">Number:ElectricCurrent</item-type>
-		<label>Grid Current 1</label>
-		<description>Grid phase 1 current</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="site-grid-current-2">
-		<item-type unitHint="W">Number:ElectricCurrent</item-type>
-		<label>Grid Current 2</label>
-		<description>Grid phase 2 current</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="site-grid-current-3">
-		<item-type unitHint="W">Number:ElectricCurrent</item-type>
-		<label>Grid Current 3</label>
-		<description>Grid phase 3 current</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="site-grid-energy">
-		<item-type unitHint="W">Number:Energy</item-type>
-		<label>Grid Energy</label>
-		<description>Consumed energy from the grid</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
 	<channel-type id="site-grid-power">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Grid Power</label>
