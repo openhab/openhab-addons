@@ -129,7 +129,9 @@ public class CULHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Start initializing!");
         CULConfiguration config = getConfigAs(CULConfiguration.class);
-        if (validConfiguration(config)) {
+        if (!validConfiguration(config)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "somfycul configuration missing or invalid");
+        } else {
             String port = config.port;
             SerialPortIdentifier localPortId = serialPortManager.getIdentifier(port);
             if (localPortId == null) {
@@ -172,12 +174,11 @@ public class CULHandler extends BaseBridgeHandler {
 
     private boolean validConfiguration(@Nullable CULConfiguration config) {
         if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "somfycul configuration missing");
+            logger.debug("somfycul configuration missing");
             return false;
         }
         if (config.port.isEmpty() || config.baudrate <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "somfycul port or baudrate not specified");
+            logger.debug("somfycul port or baudrate not specified");
             return false;
         }
         return true;
