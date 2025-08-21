@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>SomfyCUL Binding</name>
 	<description>This is the binding for SomfyCUL.</description>
+	<connection>local</connection>
 
 </addon:addon>

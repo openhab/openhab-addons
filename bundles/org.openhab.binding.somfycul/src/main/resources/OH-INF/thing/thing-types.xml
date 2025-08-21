@@ -55,12 +55,20 @@
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
 		<description>Device control (UP, DOWN, MY/STOP)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="program">
 		<item-type>Switch</item-type>
 		<label>Program</label>
 		<description>Device program</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
