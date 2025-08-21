@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -78,7 +77,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Storage<String> storage;
     private final HttpClient httpClient;
 
-    private Optional<ScheduledFuture<?>> refreshScheduler = Optional.empty();
+    private @Nullable ScheduledFuture<?> refreshScheduler;
     private List<PushMessage> eventQueue = new ArrayList<>();
     private boolean updateRunning = false;
 
@@ -148,12 +147,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             logger.debug("AccountHandler is disposed, skipping scheduleRefresh");
             return;
         }
-        refreshScheduler.ifPresent(job -> {
-            job.cancel(false);
-        });
+        if (refreshScheduler != null) {
+            refreshScheduler.cancel(false);
+        }
         Instant nextSchedule = Instant.now().plus(delayInSeconds, ChronoUnit.SECONDS);
         logger.trace("Next schedule at {}", nextSchedule);
-        refreshScheduler = Optional.of(scheduler.schedule(this::refresh, delayInSeconds, TimeUnit.SECONDS));
+        refreshScheduler = scheduler.schedule(this::refresh, delayInSeconds, TimeUnit.SECONDS);
     }
 
     public void authorize() {
@@ -201,10 +200,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void dispose() {
         disposed = true;
-        refreshScheduler.ifPresent(schedule -> {
-            schedule.cancel(false);
-        });
-        refreshScheduler = Optional.empty();
+        if (refreshScheduler != null) {
+            refreshScheduler.cancel(false);
+        }
+        refreshScheduler = null;
         eventQueue.clear();
         api.websocketDispose(true);
     }
