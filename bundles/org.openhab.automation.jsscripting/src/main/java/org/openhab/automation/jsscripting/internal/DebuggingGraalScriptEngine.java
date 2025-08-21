@@ -72,12 +72,20 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
         // OPS4J Pax Logging holds a reference to the exception, which causes the OpenhabGraalJSScriptEngine to not be
         // removed from heap by garbage collection and causing a memory leak.
         // Therefore, don't pass the exceptions itself to the logger, but only their message!
-        if (cause instanceof IllegalArgumentException) {
-            logger.error("Failed to execute script: {}", stringifyThrowable(cause));
-        } else if (cause instanceof PolyglotException) {
-            logger.error("Failed to execute script: {}", stringifyThrowable(cause));
+        if (cause instanceof IllegalArgumentException || cause instanceof PolyglotException) {
+            String strT = stringifyThrowable(cause);
+            logger.error("Failed to execute script: {}", strT);
         }
         return e;
+    }
+
+    @Override
+    public void close() {
+        try {
+            super.close();
+        } catch (Exception e) {
+            logger.warn("Ignorable exception during close: {}", stringifyThrowable(e));
+        }
     }
 
     private String stringifyThrowable(Throwable throwable) {
@@ -105,10 +113,9 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
             identifier = fileName.toString().replaceAll("^.*[/\\\\]", "");
         } else if (ruleUID != null) {
             identifier = ruleUID.toString();
-        } else if (ohEngineIdentifier != null) {
-            if (ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
-                identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
-            }
+        } else if (ohEngineIdentifier != null
+                && ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
+            identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
         }
 
         logger = LoggerFactory.getLogger("org.openhab.automation.script.javascript." + identifier);
