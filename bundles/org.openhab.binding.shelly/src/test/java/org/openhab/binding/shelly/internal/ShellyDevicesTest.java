@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -39,7 +40,7 @@ public class ShellyDevicesTest {
     @ParameterizedTest
     @MethodSource("provideTestCasesForGetBluServiceName")
     void getBluServiceName(String name, String mac, String expectedServiceName) {
-        String actualServiceName = ShellyDevices.getBluServiceName(name, mac);
+        String actualServiceName = ShellyThingCreator.getBluServiceName(name, mac);
         assertThat(actualServiceName, is(equalTo(expectedServiceName)));
     }
 
@@ -57,7 +58,7 @@ public class ShellyDevicesTest {
     @Test
     void getBluServiceNameWhenNameUnknownThrowIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            ShellyDevices.getBluServiceName("sbbt", "001A2B3C4D5E");
+            ShellyThingCreator.getBluServiceName("sbbt", "001A2B3C4D5E");
         });
     }
 
