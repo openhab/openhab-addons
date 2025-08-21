@@ -73,8 +73,8 @@ public class SomfyCULHandler extends BaseThingHandler {
         logger.debug("channelUID: {}, command: {}", channelUID, command);
         SomfyCommand somfyCommand = null;
         if (channelUID.getId().equals(POSITION)) {
-            if (command instanceof UpDownType) {
-                switch ((UpDownType) command) {
+            if (command instanceof UpDownType upDownCommand) {
+                switch (upDownCommand) {
                     case UP:
                         somfyCommand = SomfyCommand.UP;
                         break;
@@ -82,8 +82,8 @@ public class SomfyCULHandler extends BaseThingHandler {
                         somfyCommand = SomfyCommand.DOWN;
                         break;
                 }
-            } else if (command instanceof StopMoveType) {
-                switch ((StopMoveType) command) {
+            } else if (command instanceof StopMoveType stopMoveCommand) {
+                switch (stopMoveCommand) {
                     case STOP:
                         somfyCommand = SomfyCommand.MY;
                         break;
