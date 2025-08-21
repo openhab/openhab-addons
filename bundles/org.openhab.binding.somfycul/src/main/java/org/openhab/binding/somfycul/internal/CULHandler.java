@@ -159,7 +159,6 @@ public class CULHandler extends BaseBridgeHandler {
                 outputStream = localOutputStream;
 
                 updateStatus(ThingStatus.ONLINE);
-                logger.debug("Finished initializing!");
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "IO Error: " + e.getMessage());
             } catch (PortInUseException e) {
