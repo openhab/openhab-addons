@@ -15,5 +15,5 @@ This is useful when latencies in the system prevent very small movements and wil
 
 The profile can be used with text based configurations too. The parameters are configured like:
 ```java
-Rollershutter <itemName> { channel="<channelUID>"[profile="transform:ROLLERSHUTTERPOSITION", uptime=<uptime>, downtime=<downtime>, precision=<minimun percent movement>]}
+Rollershutter <itemName> { channel="<channelUID>"[profile="transform:ROLLERSHUTTERPOSITION", uptime=<uptime>, downtime=<downtime>, precision=<minimum percent movement>]}
 ```
