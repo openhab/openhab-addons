@@ -6,7 +6,7 @@
 
 	<!-- The CUL stick as bridge -->
 	<bridge-type id="culdevice">
-		<label>CUL stick</label>
+		<label>CUL Stick</label>
 		<description>The CUL stick controlling the Somfy RTS devices.</description>
 		<config-description>
 			<parameter-group name="port">
