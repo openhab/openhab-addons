@@ -14,6 +14,8 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.JSON_MEMBER_LOADPOINTS;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -30,6 +32,9 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccHeatingHandler extends EvccLoadpointHandler {
 
+    private static final String[] TEMPERATURE_CHANNEL_IDS = { "loadpoint-effective-limit-temperature",
+            "loadpoint-limit-temperature", "loadpoint-vehicle-temperature" };
+
     public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
     }
@@ -42,8 +47,8 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String id = channelUID.getId();
-        // Replace the generated key with the original one to get the correct
-        if (id.contains("Temperature")) {
+        if (Arrays.asList(TEMPERATURE_CHANNEL_IDS).contains(id)) {
+            // Replace the generated key with the original one to get the correct
             String thingKey = getThingKey(id.replace("Temperature", "Soc"));
             channelUID = new ChannelUID(getThing().getUID(), thingKey);
         }
