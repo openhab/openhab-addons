@@ -745,39 +745,4 @@
 			</options>
 		</state>
 	</channel-type>
-
-	<!-- Heating relevant channels -->
-	<channel-type id="loadpoint-effective-limit-temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Effective Charging Limit Temperature</label>
-		<description>Effective Temperature until which the heating device will be charged</description>
-		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="loadpoint-limit-temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature Limit</label>
-		<description>Temperature to which the heating device is charged</description>
-		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%"/>
-	</channel-type>
-	<channel-type id="loadpoint-vehicle-temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Current temperature of the heating device</description>
-		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
 </thing:thing-descriptions>

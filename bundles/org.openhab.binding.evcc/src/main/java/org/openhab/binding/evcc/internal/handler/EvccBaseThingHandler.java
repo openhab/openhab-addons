@@ -244,7 +244,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 key += "Price";
             }
         }
-        return (props.get("type") + "-" + Utils.sanitizeChannelID(key));
+        String type = "heating".equals(props.get("type")) ? "loadpoint" : props.get("type");
+        return (type + "-" + Utils.sanitizeChannelID(key));
     }
 
     @Override
