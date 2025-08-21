@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- The CUL stick as bridge -->
-	<bridge-type id="culdevice">
+	<bridge-type id="cul-device">
 		<label>CUL Stick</label>
 		<description>The CUL stick controlling the Somfy RTS devices.</description>
 		<config-description>
@@ -40,9 +40,9 @@
 	</bridge-type>
 
 	<!-- A Somfy RTS thing -->
-	<thing-type id="somfydevice">
+	<thing-type id="somfy-device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="culdevice"/>
+			<bridge-type-ref id="cul-device"/>
 		</supported-bridge-type-refs>
 		<label>Somfy RTS rollershutter</label>
 		<description>Somfy RTS Roller Shutter</description>

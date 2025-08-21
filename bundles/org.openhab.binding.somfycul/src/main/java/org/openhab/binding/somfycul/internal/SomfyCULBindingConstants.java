@@ -30,12 +30,12 @@ public class SomfyCULBindingConstants {
     /**
      * CUL stick
      */
-    public static final ThingTypeUID CUL_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "culdevice");
+    public static final ThingTypeUID CUL_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "cul-device");
 
     /**
      * Somfy RTS device (e.g. rollershutter)
      */
-    public static final ThingTypeUID SOMFY_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "somfydevice");
+    public static final ThingTypeUID SOMFY_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "somfy-device");
 
     // List of all Channel ids
     /**
