@@ -44,8 +44,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="cul-device"/>
 		</supported-bridge-type-refs>
-		<label>Somfy RTS rollershutter</label>
-		<description>Somfy RTS Roller Shutter</description>
+		<label>Somfy RTS Rollershutter</label>
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="program" typeId="program"/>
