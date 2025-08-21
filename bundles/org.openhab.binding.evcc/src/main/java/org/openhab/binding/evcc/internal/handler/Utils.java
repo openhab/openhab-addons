@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.TreeMap;
 
 import javax.measure.Unit;
 
@@ -31,6 +32,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link Utils} provides utility methods
@@ -121,5 +125,52 @@ public class Utils {
             return new int[] { 0, 0, 0 };
         }
         return Arrays.stream(input.split("\\.")).mapToInt(Integer::parseInt).toArray();
+    }
+
+    /**
+     * Recursively sorts all JsonObjects in-place by their keys in alphabetical order.
+     *
+     * This method modifies the original JsonElement structure directly.
+     * It traverses through all nested JsonObjects and JsonArrays, and for each JsonObject,
+     * it reorders its keys alphabetically using a TreeMap.
+     *
+     * @param element The JsonElement to be sorted. Can be a JsonObject, JsonArray, or primitive.
+     */
+    public static void sortJsonInPlace(JsonElement element) {
+        if (element.isJsonObject()) {
+            JsonObject obj = element.getAsJsonObject();
+
+            // Collect and sort entries by key
+            TreeMap<String, JsonElement> sortedMap = new TreeMap<>();
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+                sortJsonInPlace(entry.getValue()); // Recursively sort child elements
+                sortedMap.put(entry.getKey(), entry.getValue());
+            }
+
+            // Clear and reinsert sorted entries
+            obj.entrySet().clear();
+            for (Map.Entry<String, JsonElement> entry : sortedMap.entrySet()) {
+                obj.add(entry.getKey(), entry.getValue());
+            }
+
+        } else if (element.isJsonArray()) {
+            for (JsonElement item : element.getAsJsonArray()) {
+                sortJsonInPlace(item); // Recursively sort array elements
+            }
+        }
+        // Primitive values remain unchanged
+    }
+
+    /**
+     * Capitalizes the first character of a string.
+     *
+     * @param input The input string.
+     * @return The string with the first character in uppercase.
+     */
+    public static String capitalizeFirstLetter(String input) {
+        if (input.isEmpty()) {
+            return input;
+        }
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
 }

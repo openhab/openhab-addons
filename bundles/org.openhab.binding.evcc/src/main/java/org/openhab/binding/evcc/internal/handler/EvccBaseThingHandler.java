@@ -89,6 +89,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     protected void commonInitialize(JsonObject state) {
+        Utils.sortJsonInPlace(state);
         ThingBuilder builder = editThing();
 
         for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : state.entrySet()) {
@@ -244,7 +245,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 key += "Price";
             }
         }
-        return (props.get("type") + "-" + Utils.sanitizeChannelID(key));
+        String type = "heating".equals(props.get("type")) ? "loadpoint" : props.get("type");
+        return (type + "-" + Utils.sanitizeChannelID(key));
     }
 
     @Override
@@ -253,6 +255,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             return;
         }
 
+        Utils.sortJsonInPlace(state);
         for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : state.entrySet()) {
             String key = entry.getKey();
             JsonElement value = entry.getValue();

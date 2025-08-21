@@ -29,6 +29,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -59,6 +60,10 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
+            }
+
+            if (this instanceof EvccHeatingHandler heating) {
+                heating.updateJSON(stateOpt.getAsJsonObject());
             }
 
             JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
@@ -107,7 +112,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         super.updateFromEvccState(state);
     }
 
-    public void modifyJSON(JsonObject state) {
+    private void modifyJSON(JsonObject state) {
         // This is for backward compatibility with older evcc versions
         if (state.has("chargeCurrent")) {
             state.addProperty("offeredCurrent", state.get("chargeCurrent").getAsDouble());
@@ -115,12 +120,23 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         }
         if (state.has("vehiclePresent")) {
             state.add("connected", state.get("vehiclePresent"));
+            state.remove("vehiclePresent");
         }
         if (state.has("enabled")) {
             state.add("charging", state.get("enabled"));
+            state.remove("enabled");
         }
         if (state.has("phases")) {
             state.add("phasesConfigured", state.get("phases"));
+            state.remove("phases");
+        }
+        if (state.has("chargeCurrents")) {
+            int phase = 1;
+            for (JsonElement current : state.getAsJsonArray("chargeCurrents")) {
+                state.add("phase-" + phase, current);
+                phase++;
+            }
+            state.remove("chargeCurrents");
         }
     }
 

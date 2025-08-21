@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.JSON_MEMBER_LOADPOINTS;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.types.Command;
 
 import com.google.gson.JsonObject;
 
@@ -36,7 +40,36 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
     }
 
     @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        String id = channelUID.getId();
+        // Replace the generated key with the original one to get the correct
+        if (id.contains("Temperature")) {
+            String thingKey = getThingKey(id.replace("Temperature", "Soc"));
+            channelUID = new ChannelUID(getThing().getUID(), thingKey);
+        }
+        super.handleCommand(channelUID, command);
+    }
+
+    @Override
     public void updateFromEvccState(JsonObject state) {
+        updateJSON(state);
         super.updateFromEvccState(state);
+    }
+
+    protected void updateJSON(JsonObject state) {
+        JsonObject heatingState = state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
+        if (heatingState.has("vehicleLimitSoc")) {
+            heatingState.addProperty("vehicleLimitTemperature", heatingState.get("vehicleLimitSoc").getAsDouble());
+            heatingState.remove("vehicleLimitSoc");
+        }
+        if (heatingState.has("effectiveLimitSoc")) {
+            heatingState.add("effectiveLimitTemperature", heatingState.get("effectiveLimitSoc"));
+            heatingState.remove("effectiveLimitSoc");
+        }
+        if (heatingState.has("vehicleSoc")) {
+            heatingState.add("vehicleTemperature", heatingState.get("vehicleSoc"));
+            heatingState.remove("vehicleSoc");
+        }
+        state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).set(index, heatingState); // Update the IDs in the original JSON
     }
 }

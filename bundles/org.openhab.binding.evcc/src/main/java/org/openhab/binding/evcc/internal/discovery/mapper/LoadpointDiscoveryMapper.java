@@ -56,7 +56,7 @@ public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
             properties.put(PROPERTY_INDEX, i);
             properties.put(PROPERTY_TITLE, title);
 
-            if (lp.has(title) && lp.get("chargerFeatureHeating").getAsBoolean()) {
+            if (lp.get("chargerFeatureHeating").getAsBoolean()) {
                 uid = new ThingUID(EvccBindingConstants.THING_TYPE_HEATING, bridgeHandler.getThing().getUID(),
                         Utils.sanitizeName(title));
                 properties.put(PROPERTY_TYPE, PROPERTY_TYPE_HEATING);
