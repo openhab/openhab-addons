@@ -465,18 +465,28 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         // Handle channel state updates
         ChannelMetadata metadata = new ChannelMetadata(getId(), event);
-        if (metadata.isIgnoredCommandClass(event.args.commandClassName) || !isLinked(metadata.id)) {
+        if (metadata.isIgnoredCommandClass(event.args.commandClassName)) {
             return true;
         }
         String channelId = metadata.id;
-        logger.trace("Getting the configuration for linked channel {}", channelId);
-        Channel channel = thing.getChannel(channelId);
+        logger.trace("Getting the configuration for linked channel {}", metadata.id);
+        Channel channel = thing.getChannel(metadata.id);
         if (channel == null) {
             logger.debug("Node {}. Channel {} not found, ignoring event", config.id, channelId);
             return false;
         }
 
         ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
+
+        RollerShutterCapability rollerShutterCapability = rollerShutterCapabilities.get(channelConfig.endpoint);
+        boolean isRollerShutterRelatedCommand = (rollerShutterCapability != null
+                && (channelId.equals(rollerShutterCapability.dimmerChannel.getId())
+                        || channelId.equals(rollerShutterCapability.upChannel.getId())
+                        || channelId.equals(rollerShutterCapability.downChannel.getId())));
+
+        if (!isRollerShutterRelatedCommand && !isLinked(channelId)) {
+            return true;
+        }
 
         State state = metadata.setState(event.args.newValue, Objects.requireNonNull(channel.getAcceptedItemType()),
                 channelConfig.incomingUnit, channelConfig.inverted);
@@ -492,10 +502,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             state = handleColorTemperatureUpdate(colorCap, state, channel, channelConfig);
         }
 
-        RollerShutterCapability rollerShutterCapability = rollerShutterCapabilities.get(channelConfig.endpoint);
-        if (rollerShutterCapability != null && (channelId.equals(rollerShutterCapability.dimmerChannel.getId())
-                || channelId.equals(rollerShutterCapability.upChannel.getId())
-                || channelId.equals(rollerShutterCapability.downChannel.getId()))) {
+        if (isRollerShutterRelatedCommand) {
             try {
                 updateState(rollerShutterCapability.rollerShutterChannelId, state);
             } catch (IllegalArgumentException e) {
