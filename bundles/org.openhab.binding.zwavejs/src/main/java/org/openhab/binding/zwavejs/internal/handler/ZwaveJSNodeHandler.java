@@ -171,8 +171,16 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
+
+        RollerShutterCapability rollerShutterCapability = rollerShutterCapabilities.get(channelConfig.endpoint);
+        boolean isRollerShutterChannelCmd = rollerShutterCapability != null
+                && channelUID.getId().equals(rollerShutterCapability.rollerShutterChannelId);
+
         // Handle RefreshType
         if (command instanceof RefreshType) {
+            if (isRollerShutterChannelCmd) {
+                channelConfig = getConfigurationByChannelUID(rollerShutterCapability.dimmerChannel);
+            }
             NodeGetValueCommand zwaveCommand = new NodeGetValueCommand(config.id, channelConfig);
             handler.sendCommand(zwaveCommand);
             return;
@@ -183,10 +191,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
         boolean isColorChannelCmd = colorCap != null && colorCap.colorChannels.contains(channelUID);
         boolean isColorTempChannelCmd = colorCap != null && channelUID.equals(colorCap.colorTempChannel);
-
-        RollerShutterCapability rollerShutterCapability = rollerShutterCapabilities.get(channelConfig.endpoint);
-        boolean isRollerShutterChannelCmd = rollerShutterCapability != null
-                && channelUID.getId().equals(rollerShutterCapability.rollerShutterChannelId);
 
         if (command instanceof OnOffType onOffCommand) {
             zwaveCommand.value = handleOnOffTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
