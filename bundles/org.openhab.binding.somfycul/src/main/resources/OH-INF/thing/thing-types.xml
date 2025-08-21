@@ -7,7 +7,7 @@
 	<!-- The CUL stick as bridge -->
 	<bridge-type id="cul-device">
 		<label>CUL Stick</label>
-		<description>The CUL stick controlling the Somfy RTS devices.</description>
+		<description>The CUL stick controlling the Somfy RTS devices</description>
 		<config-description>
 			<parameter-group name="port">
 				<context>communication</context>
@@ -45,6 +45,7 @@
 			<bridge-type-ref id="cul-device"/>
 		</supported-bridge-type-refs>
 		<label>Somfy RTS Rollershutter</label>
+		<description>The Somfy RTS Rollershutter device controlled by the CUL stick</description>
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="program" typeId="program"/>

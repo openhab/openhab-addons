@@ -130,7 +130,8 @@ public class CULHandler extends BaseBridgeHandler {
         logger.debug("Start initializing!");
         CULConfiguration config = getConfigAs(CULConfiguration.class);
         if (!validConfiguration(config)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "somfycul configuration missing or invalid");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "somfycul configuration missing or invalid");
         } else {
             String port = config.port;
             SerialPortIdentifier localPortId = serialPortManager.getIdentifier(port);
