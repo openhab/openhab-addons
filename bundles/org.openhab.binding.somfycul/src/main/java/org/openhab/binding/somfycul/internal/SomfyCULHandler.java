@@ -124,7 +124,7 @@ public class SomfyCULHandler extends BaseThingHandler {
                     try {
                         p.store(new FileWriter(propertyFile), "Last command: " + somfyCommand);
                     } catch (IOException e) {
-                        logger.error("Error occured on writing the property file.", e);
+                        logger.error("Error occurred on writing the property file.", e);
                     }
                 }
             }
