@@ -134,9 +134,7 @@ public class SomfyCULHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
         updateStatus(ThingStatus.ONLINE);
-        logger.debug("Finished initializing!");
     }
 
     /**
