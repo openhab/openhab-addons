@@ -97,9 +97,9 @@ public class EcovacsBindingConstants {
             new StateOptionEntry<>(CleanMode.SCENE_CLEAN, "sceneClean", DeviceCapability.SCENARIO_CLEANING),
             new StateOptionEntry<>(CleanMode.PAUSE, "pause"), //
             new StateOptionEntry<>(CleanMode.STOP, "stop"), //
-            new StateOptionEntry<>(CleanMode.AUTO_EMPTY, "autoEmpty"),
+            new StateOptionEntry<>(CleanMode.EMPTYING, "emptying"), //
             new StateOptionEntry<>(CleanMode.WASHING, "washing"), //
-            new StateOptionEntry<>(CleanMode.DRYING, "drying"),
+            new StateOptionEntry<>(CleanMode.DRYING, "drying"), //
             new StateOptionEntry<>(CleanMode.RETURNING, "returning"));
 
     public static final StateOptionMapping<MoppingWaterAmount> WATER_AMOUNT_MAPPING = StateOptionMapping.of(

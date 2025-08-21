@@ -93,7 +93,7 @@ In case a particular channel is not supported by a given device (see remarks), i
 Remarks:
 
 - [1] See [section below](#command-channel-actions)
-- [2] Possible states: `cleaning`, `pause`, `stop`, `autoEmpty`, `drying`, `washing`, `returning` and `charging` (where `autoEmpty`, `drying` and `washing` are only available on newer models with auto empty station)
+- [2] Possible states: `cleaning`, `pause`, `stop`, `emptying`, `drying`, `washing`, `returning` and `charging` (where `emptying`, `drying` and `washing` are only available on newer models with auto empty station)
 - [3] Possible states: `auto`, `edge`, `spot`, `spotArea`, `customArea`, `singleRoom`, and `sceneClean` (some of which depend on device capabilities)
 - [4] Current cleaning status is only valid if the device is currently cleaning
 - [5] Only valid for `spot`, `spotArea`, `customArea`, and `sceneClean` cleaning modes; value can be used for `spotArea`, `customArea`, or `sceneClean` commands (see below)
