@@ -105,7 +105,10 @@ public class CULHandler extends BaseBridgeHandler {
         final long earliestNextExecution = lastCommandTime + 100;
         while (earliestNextExecution > System.currentTimeMillis()) {
             try {
-                Thread.sleep(100);
+        final long earliestNextExecution = lastCommandTime + COMMAND_DELAY_MS;
+        while (earliestNextExecution > System.currentTimeMillis()) {
+            try {
+                Thread.sleep(COMMAND_DELAY_MS);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 return false;
