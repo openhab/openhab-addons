@@ -48,7 +48,6 @@ public class SomfyCULHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SomfyCULHandler.class);
 
     // private @Nullable SomfyCULConfiguration config;
-
     private File propertyFile;
     private Properties p;
 
