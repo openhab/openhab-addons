@@ -63,12 +63,17 @@ public class ShellyComponents {
     public static boolean updateDeviceStatus(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
 
-        if (!profile.gateway.isEmpty()) {
-            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
-        }
         if (!thingHandler.areChannelsCreated()) {
             thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createDeviceChannels(thingHandler.getThing(),
                     thingHandler.getProfile(), status));
+        }
+
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ADDON_FIRMWARE,
+                getStringType(profile.addonFirmware));
+
+        if (!profile.gateway.isEmpty()) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
         }
 
         if (getLong(status.uptime) > 10) {
@@ -516,6 +521,10 @@ public class ShellyComponents {
                         getStringType(sdata.direction));
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STEPS,
                         getDecimal(sdata.steps.doubleValue()));
+            }
+            if (sdata.channel != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL,
+                        getDecimal(sdata.channel));
             }
             if (sdata.distance != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE, toQuantityType(
