@@ -76,7 +76,8 @@ public class CULHandler extends BaseBridgeHandler {
      * @return
      */
     public boolean executeCULCommand(Thing somfyDevice, SomfyCommand somfyCommand, String rollingCode, String adress) {
-        String culCommand = "Ys" + "A1" + somfyCommand.getActionKey() + "0" + rollingCode + adress;
+    public boolean executeCULCommand(Thing somfyDevice, SomfyCommand somfyCommand, String rollingCode, String address) {
+        String culCommand = "Ys" + "A1" + somfyCommand.getActionKey() + "0" + rollingCode + address;
         logger.info("Send message {} for thing {}", culCommand, somfyDevice.getLabel());
         return writeString(culCommand);
     }
