@@ -46,6 +46,8 @@ public class CULHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CULHandler.class);
 
+    private static final int COMMAND_DELAY_MS = 100;
+
     private long lastCommandTime = 0;
 
     @Nullable
@@ -72,13 +74,14 @@ public class CULHandler extends BaseBridgeHandler {
      * Executes the given {@link SomfyCommand} for the given {@link Thing} (RTS Device).
      *
      * @param somfyDevice the RTS Device which is the receiver of the command.
-     * @param somfyCommand
-     * @return
+     * @param somfyCommand the command to execute
+     * @param rollingCode the current rolling code for the device
+     * @param address the device address
+     * @return true if the command was successfully transmitted to the CUL device, false otherwise
      */
-    public boolean executeCULCommand(Thing somfyDevice, SomfyCommand somfyCommand, String rollingCode, String adress) {
     public boolean executeCULCommand(Thing somfyDevice, SomfyCommand somfyCommand, String rollingCode, String address) {
         String culCommand = "Ys" + "A1" + somfyCommand.getActionKey() + "0" + rollingCode + address;
-        logger.info("Send message {} for thing {}", culCommand, somfyDevice.getLabel());
+        logger.debug("Send message {} for thing {}", culCommand, somfyDevice.getLabel());
         return writeString(culCommand);
     }
 
@@ -102,9 +105,6 @@ public class CULHandler extends BaseBridgeHandler {
 
         logger.debug("Trying to write '{}' to serial port {}", msg, localPortId.getName());
 
-        final long earliestNextExecution = lastCommandTime + 100;
-        while (earliestNextExecution > System.currentTimeMillis()) {
-            try {
         final long earliestNextExecution = lastCommandTime + COMMAND_DELAY_MS;
         while (earliestNextExecution > System.currentTimeMillis()) {
             try {
@@ -141,7 +141,7 @@ public class CULHandler extends BaseBridgeHandler {
                 return;
             }
             portId = localPortId;
-            logger.info("got port: {}", config.port);
+            logger.debug("got port: {}", config.port);
 
             try {
                 SerialPort localSerialPort = localPortId.open("openHAB", 2000);

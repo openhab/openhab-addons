@@ -71,7 +71,7 @@ public class SomfyCULHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("channelUID: {}, command: {}", channelUID, command);
+        logger.debug("channelUID: {}, command: {}", channelUID, command);
         SomfyCommand somfyCommand = null;
         if (channelUID.getId().equals(POSITION)) {
             if (command instanceof UpDownType) {
@@ -113,8 +113,7 @@ public class SomfyCULHandler extends BaseThingHandler {
                 if (executedSuccessfully && command instanceof State) {
                     updateState(channelUID, (State) command);
 
-                    String rollingCodeStr = String.valueOf(p.getProperty("rollingCode"));
-                    long newRollingCode = Long.decode("0x" + rollingCodeStr) + 1;
+                    long newRollingCode = Long.decode("0x" + rollingCode) + 1;
                     String newRollingCodeStr = String.format("%04X", newRollingCode);
                     p.setProperty("rollingCode", newRollingCodeStr);
                     logger.debug("Updated rolling code to {}", newRollingCodeStr);
@@ -157,12 +156,12 @@ public class SomfyCULHandler extends BaseThingHandler {
                 p.setProperty("address", String.format("%06X", getNewAddressForShutter()));
                 p.store(fileWriter, "Initialized fields");
                 fileWriter.close();
-                logger.info("Created new property file {}", propertyFile);
+                logger.debug("Created new property file {}", propertyFile);
             } else {
                 FileReader fileReader = new FileReader(propertyFile);
                 p.load(fileReader);
                 fileReader.close();
-                logger.info("Read properties from file {}", propertyFile);
+                logger.debug("Read properties from file {}", propertyFile);
             }
         } catch (IOException e) {
             logger.error("Error occurred on writing the property file.", e);
@@ -195,7 +194,7 @@ public class SomfyCULHandler extends BaseThingHandler {
                 extension = file.getName().substring(file.getName().lastIndexOf(".") + 1);
             }
             if (extension != null && "properties".equals(extension) && !file.equals(propertyFile)) {
-                logger.info("Parsing properties from file {}", file);
+                logger.debug("Parsing properties from file {}", file);
                 Properties other = new Properties();
                 try (FileReader fileReader = new FileReader(file)) {
                     other.load(fileReader);
@@ -209,7 +208,7 @@ public class SomfyCULHandler extends BaseThingHandler {
                 }
             }
         }
-        logger.info("Current max address is {}", maxAddress);
+        logger.debug("Current max address is {}", maxAddress);
         return maxAddress + 1;
     }
 }
