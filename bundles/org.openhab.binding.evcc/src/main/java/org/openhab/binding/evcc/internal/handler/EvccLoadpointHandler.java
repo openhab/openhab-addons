@@ -61,6 +61,10 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
                 return;
             }
 
+            if (this instanceof EvccHeatingHandler heating) {
+                heating.updateJSON(stateOpt.getAsJsonObject());
+            }
+
             JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
 
             modifyJSON(state);
@@ -107,7 +111,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         super.updateFromEvccState(state);
     }
 
-    public void modifyJSON(JsonObject state) {
+    private void modifyJSON(JsonObject state) {
         // This is for backward compatibility with older evcc versions
         if (state.has("chargeCurrent")) {
             state.addProperty("offeredCurrent", state.get("chargeCurrent").getAsDouble());
