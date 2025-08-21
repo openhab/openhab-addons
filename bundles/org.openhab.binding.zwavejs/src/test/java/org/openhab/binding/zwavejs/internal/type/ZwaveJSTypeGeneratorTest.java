@@ -333,9 +333,12 @@ public class ZwaveJSTypeGeneratorTest {
         ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
                 .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), true);
 
-        assertEquals("multilevel-switch-value-1", results.rollerShutterCapabilities.get(1).dimmerChannel.getId());
-        assertEquals("multilevel-switch-up-1", results.rollerShutterCapabilities.get(1).upChannel.getId());
-        assertEquals("multilevel-switch-down-1", results.rollerShutterCapabilities.get(1).downChannel.getId());
+        assertEquals("multilevel-switch-value-1",
+                Objects.requireNonNull(results.rollerShutterCapabilities.get(1)).dimmerChannel.getId());
+        assertEquals("multilevel-switch-up-1",
+                Objects.requireNonNull(results.rollerShutterCapabilities.get(1)).upChannel.getId());
+        assertEquals("multilevel-switch-down-1",
+                Objects.requireNonNull(results.rollerShutterCapabilities.get(1)).downChannel.getId());
     }
 
     @Test

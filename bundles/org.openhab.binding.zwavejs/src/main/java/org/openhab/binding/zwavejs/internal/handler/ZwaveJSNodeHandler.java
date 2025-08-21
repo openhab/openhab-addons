@@ -179,6 +179,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         // Handle RefreshType
         if (command instanceof RefreshType) {
             if (isRollerShutterChannelCmd) {
+                logger.debug("Node {}: Overriding channel to roller shutter dimmer channel {}", config.id,
+                        Objects.requireNonNull(rollerShutterCapability).dimmerChannel);
                 channelConfig = getConfigurationByChannelUID(rollerShutterCapability.dimmerChannel);
             }
             NodeGetValueCommand zwaveCommand = new NodeGetValueCommand(config.id, channelConfig);
@@ -396,7 +398,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         });
     }
 
-    private @Nullable ZwaveJSBridgeHandler getBridgeHandler() {
+    public @Nullable ZwaveJSBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.trace("Node {}. Prevented initialisation as bridge is null", config.id);
