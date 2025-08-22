@@ -96,8 +96,8 @@ public class Eclipse {
     }
 
     public void set(EclipseKind eclipseKind, Calendar eclipseDate, @Nullable Position position) {
-        entries.put(eclipseKind,
-                new SimpleEntry<>(eclipseDate, position != null ? position.getElevationAsDouble() : null));
+        entries.put(eclipseKind, new SimpleEntry<Calendar, @Nullable Double>(eclipseDate,
+                position != null ? position.getElevationAsDouble() : null));
     }
 
     public void setElevations(AstroThingHandler astroHandler, TimeZoneProvider timeZoneProvider) {
