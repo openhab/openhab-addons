@@ -94,7 +94,6 @@
       <artifactId>org.graalvm.sdk.word</artifactId>
       <version>${graalpy.version}</version>
     </dependency>
-
   </dependencies>
 
   <build>
