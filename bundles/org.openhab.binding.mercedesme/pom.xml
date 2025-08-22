@@ -29,6 +29,12 @@
       <version>4.27.5</version>
       <scope>compile</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java-util -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+      <version>4.27.5</version>
+    </dependency>
   </dependencies>
 
   <build>
