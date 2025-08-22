@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.core.thing.Bridge;
@@ -90,6 +91,7 @@ public class ServerHandler extends BaseBridgeHandler {
         return () -> {
             try {
                 if (this.configurationExists()) {
+
                     this.stopTasks();
                     this.startTasks();
                 } else {
@@ -117,9 +119,12 @@ public class ServerHandler extends BaseBridgeHandler {
 
         this.logger.trace("startTasks - [{}, delay: {}s, interval: {}s]", taskId, delay, interval);
 
+        Configuration config = this.getConfigAs(Configuration.class);
+        this.apiClient.authenticateWithToken(config.token);
+
         switch (taskId) {
             case TASKS.CONNECT -> {
-                task = new ConnectionTask(this.apiClient, instance -> this.handleConnection(instance),
+                task = new ConnectionTask(this.apiClient, systemInfo -> this.handleConnection(systemInfo),
                         this.exceptionHandler);
                 break;
             }
@@ -137,27 +142,27 @@ public class ServerHandler extends BaseBridgeHandler {
         return (configuration.token.trim() != "");
     }
 
-    private Object handleConnection(ApiClient instance) {
+    private Object handleConnection(SystemInfo systemInfo) {
         try {
-            // Get public system information from the Jellyfin server
-            var systemApi = new org.openhab.binding.jellyfin.internal.api.generated.current.SystemApi(instance);
-            var publicSystemInfo = systemApi.getPublicSystemInfo();
-
             // Log all available server information at INFO level
             logger.info("Jellyfin Server Information:");
-            logger.info("  Server Name: {}", publicSystemInfo.getServerName());
-            logger.info("  Local Address: {}", publicSystemInfo.getLocalAddress());
-            logger.info("  Version: {}", publicSystemInfo.getVersion());
-            logger.info("  Product Name: {}", publicSystemInfo.getProductName());
+            logger.info("  Server Name: {}", systemInfo.getServerName());
+            logger.info("  Local Address: {}", systemInfo.getLocalAddress());
+            logger.info("  Version: {}", systemInfo.getVersion());
+            logger.info("  Product Name: {}", systemInfo.getProductName());
             // Note: getOperatingSystem() is deprecated but still available for logging
             @SuppressWarnings("deprecation")
-            String operatingSystem = publicSystemInfo.getOperatingSystem();
+            String operatingSystem = systemInfo.getOperatingSystem();
             logger.info("  Operating System: {}", operatingSystem);
-            logger.info("  Server ID: {}", publicSystemInfo.getId());
-            logger.info("  Startup Wizard Completed: {}", publicSystemInfo.getStartupWizardCompleted());
 
+            logger.info("  Server ID: {}", systemInfo.getId());
+            logger.info("  Startup Wizard Completed: {}", systemInfo.getStartupWizardCompleted());
+            logger.info("  Web Socket Port: {}", systemInfo.getWebSocketPortNumber());
+
+            ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+            this.getThing().setStatusInfo(statusInfo);
         } catch (Exception e) {
-            logger.warn("Failed to retrieve public system information: {}", e.getMessage(), e);
+            logger.warn("Failed to process system information: {}", e.getMessage(), e);
         }
         return null;
     }

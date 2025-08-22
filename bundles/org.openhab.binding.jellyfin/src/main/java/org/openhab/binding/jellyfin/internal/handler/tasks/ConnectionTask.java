@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
 /**
@@ -24,11 +25,11 @@ import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 @NonNullByDefault
 public class ConnectionTask implements Runnable {
 
-    private final Consumer<ApiClient> acceptedHandler;
+    private final Consumer<SystemInfo> acceptedHandler;
     private final ExceptionHandlerType exceptionHandler;
     private final ApiClient client;
 
-    public ConnectionTask(ApiClient client, Consumer<ApiClient> connectionHandler,
+    public ConnectionTask(ApiClient client, Consumer<SystemInfo> connectionHandler,
             ExceptionHandlerType exceptionHandler) {
 
         this.acceptedHandler = connectionHandler;
@@ -40,7 +41,10 @@ public class ConnectionTask implements Runnable {
     @Override
     public void run() {
         try {
-            this.acceptedHandler.accept(client);
+            var systemApi = new org.openhab.binding.jellyfin.internal.api.generated.current.SystemApi(client);
+            var systemInfo = systemApi.getSystemInfo();
+
+            this.acceptedHandler.accept(systemInfo);
         } catch (Exception e) {
             this.exceptionHandler.handle(e);
         }
