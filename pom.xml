@@ -73,10 +73,11 @@
     <jackson.version>2.19.2</jackson.version>
     <jna.version>5.17.0</jna.version>
     <karaf.version>4.4.8</karaf.version>
-    <netty.version>4.1.118.Final</netty.version>
+    <netty.version>4.1.124.Final</netty.version>
     <okhttp3.version>4.12.0</okhttp3.version>
     <okio.version>3.9.0</okio.version>
     <gson.version>2.11.0</gson.version>
+    <graalpy.version>24.2.1</graalpy.version>
     <kotlin.version>1.9.23</kotlin.version>
     <sat.version>0.17.0</sat.version>
     <slf4j.version>2.0.12</slf4j.version>
