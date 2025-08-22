@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
