@@ -240,7 +240,7 @@ public class ShellyDeviceProfile {
             ShellySettingsInput inputSetting = btnType.isEmpty() ? //
                     new ShellySettingsInput() : new ShellySettingsInput(btnType);
             status.inputs = new ArrayList<>();
-            ArrayList<ShellySettingsInput> inputs = new ArrayList<>();
+            ArrayList<@Nullable ShellySettingsInput> inputs = new ArrayList<>();
             for (int i = 0; i < numInputs; i++) {
                 inputs.add(inputSetting);
                 status.inputs.add(new ShellyInputState(i));

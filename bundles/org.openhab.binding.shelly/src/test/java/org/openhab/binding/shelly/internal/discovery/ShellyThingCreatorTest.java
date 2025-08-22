@@ -294,4 +294,29 @@ public class ShellyThingCreatorTest {
             assertThat(actualThingUid, is(equalTo(expectedThingUid)));
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForGetBluServiceName")
+    void getBluServiceName(String name, String mac, String expectedServiceName) {
+        String actualServiceName = ShellyThingCreator.getBluServiceName(name, mac);
+        assertThat(actualServiceName, is(equalTo(expectedServiceName)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForGetBluServiceName() {
+        return Stream.of( //
+                Arguments.of("SBBT", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
+                Arguments.of("SBBT-02C", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
+                Arguments.of("SBBT-02C-03D", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
+                Arguments.of("SBDW", "001A2B3C4D5E", "shellybludw-001a2b3c4d5e"), //
+                Arguments.of("SBMO", "001A2B3C4D5E", "shellyblumotion-001a2b3c4d5e"), //
+                Arguments.of("SBHT", "001A2B3C4D5E", "shellybluht-001a2b3c4d5e"), //
+                Arguments.of("SBHT", "00:1A:2B:3C:4D:5E", "shellybluht-001a2b3c4d5e"));
+    }
+
+    @Test
+    void getBluServiceNameWhenNameUnknownThrowIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ShellyThingCreator.getBluServiceName("sbbt", "001A2B3C4D5E");
+        });
+    }
 }
