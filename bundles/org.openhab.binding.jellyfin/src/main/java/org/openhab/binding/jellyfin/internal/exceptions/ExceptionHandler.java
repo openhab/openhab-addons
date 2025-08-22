@@ -27,5 +27,6 @@ public class ExceptionHandler implements org.openhab.binding.jellyfin.internal.t
 
     @Override
     public void handle(Exception exception) {
+        exception.printStackTrace();
     }
 }

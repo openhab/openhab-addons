@@ -17,4 +17,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ApiClient extends org.openhab.binding.jellyfin.internal.api.generated.ApiClient {
 
+    /**
+     * Sets the API token for authenticating with the Jellyfin server.
+     * This will add an Authorization header to all outgoing requests.
+     *
+     * @param token The API token to use for authentication.
+     */
+    public void authenticateWithToken(String token) {
+        setRequestInterceptor(builder -> {
+            builder.header("Authorization", "MediaBrowser Token=" + token);
+        });
+    }
 }
