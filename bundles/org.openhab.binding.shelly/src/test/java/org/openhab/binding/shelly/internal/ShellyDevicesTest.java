@@ -15,19 +15,13 @@ package org.openhab.binding.shelly.internal;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
