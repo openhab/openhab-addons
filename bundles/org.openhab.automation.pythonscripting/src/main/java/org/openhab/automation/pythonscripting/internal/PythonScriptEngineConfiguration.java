@@ -165,7 +165,7 @@ public class PythonScriptEngineConfiguration {
      * Update configuration
      *
      * @param config Configuration parameters to apply to ScriptEngine
-     * @param intitial
+     * @param initial
      */
     public void modified(Map<String, Object> config, ScriptEngineFactory factory) {
         boolean oldScopeEnabled = configuration.scopeEnabled;
@@ -498,7 +498,7 @@ public class PythonScriptEngineConfiguration {
     /**
      * Unwraps the cause of an exception, if it has one.
      *
-     * Since a user cares about the _Ruby_ stack trace of the throwable, not
+     * Since a user cares about the _Python_ stack trace of the throwable, not
      * the details of where openHAB called it.
      */
     private static Throwable unwrap(Throwable e) {
