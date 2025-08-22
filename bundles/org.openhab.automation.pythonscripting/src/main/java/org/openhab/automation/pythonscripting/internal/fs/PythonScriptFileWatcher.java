@@ -58,10 +58,4 @@ public class PythonScriptFileWatcher extends AbstractScriptFileWatcher {
         }
         return Optional.empty();
     }
-
-    // Overriding to make it public, so it can be used in {@link JRubyConsoleCommandExtension}
-    @Override
-    public Path getWatchPath() {
-        return super.getWatchPath();
-    }
 }
