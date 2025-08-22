@@ -18,7 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 
 /**
- * A class encapsulating the roller shutter capability of a roller shutter endpoint
+ * A class encapsulating the roller shutter capability of a roller shutter
+ * endpoint
  *
  * @author Leo Siepel - Initial contribution
  */
@@ -29,6 +30,41 @@ public class RollerShutterCapability {
     public ChannelUID dimmerChannel;
     public ChannelUID upChannel;
     public ChannelUID downChannel;
+    public int cachedPosition = 0;
+    public boolean isMovingUp = false;
+    public boolean isMovingDown = false;
+
+    public boolean isMoving() {
+        return isMovingUp || isMovingDown;
+    }
+
+    public void setDirectionUp(boolean isMovingUp) {
+        this.isMovingUp = isMovingUp;
+        if (isMovingUp) {
+            this.isMovingDown = false;
+        }
+    }
+
+    public void setDirectionDown(boolean isMovingDown) {
+        this.isMovingDown = isMovingDown;
+        if (isMovingDown) {
+            this.isMovingUp = false;
+        }
+    }
+
+    public void setDirection(boolean isMovingUp, boolean isMovingDown) {
+        this.isMovingUp = isMovingUp;
+        this.isMovingDown = isMovingDown;
+    }
+
+    public void setPosition(int position) {
+        if (position == cachedPosition) {
+            return;
+        }
+        this.cachedPosition = position;
+        this.isMovingUp = position < cachedPosition;
+        this.isMovingDown = position > cachedPosition;
+    }
 
     public RollerShutterCapability(Integer endpoint, ChannelUID dimmerChannel, ChannelUID upChannel,
             ChannelUID downChannel) {

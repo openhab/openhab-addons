@@ -31,6 +31,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -290,12 +291,12 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testNode60RollerShutterAndSwitchEventUpdate() throws IOException {
+    public void testNode60RollerShutterAndSwitchDownEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(60);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
 
-        EventMessage eventMessage = DataUtil.fromJson("event_node_60_switch.json", EventMessage.class);
+        EventMessage eventMessage = DataUtil.fromJson("event_node_60_switch_down.json", EventMessage.class);
         handler.onNodeStateChanged(eventMessage.event);
 
         ChannelUID channelIdSwitch = new ChannelUID("zwavejs:test-bridge:test-thing:multilevel-switch-down-1");
@@ -305,7 +306,29 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
             verify(callback, times(1)).stateUpdated(eq(channelIdSwitch), eq(OnOffType.ON));
-            verify(callback, times(1)).stateUpdated(eq(channelIdRollerShutter), eq(OnOffType.ON));
+            verify(callback, times(1)).stateUpdated(eq(channelIdRollerShutter), eq(UpDownType.DOWN));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNode60RollerShutterAndSwitchUpEventUpdate() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(60);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+
+        EventMessage eventMessage = DataUtil.fromJson("event_node_60_switch_up.json", EventMessage.class);
+        handler.onNodeStateChanged(eventMessage.event);
+
+        ChannelUID channelIdSwitch = new ChannelUID("zwavejs:test-bridge:test-thing:multilevel-switch-up-1");
+        ChannelUID channelIdRollerShutter = new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual-1");
+        try {
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback, times(1)).stateUpdated(eq(channelIdSwitch), eq(OnOffType.ON));
+            verify(callback, times(1)).stateUpdated(eq(channelIdRollerShutter), eq(UpDownType.UP));
         } finally {
             handler.dispose();
         }

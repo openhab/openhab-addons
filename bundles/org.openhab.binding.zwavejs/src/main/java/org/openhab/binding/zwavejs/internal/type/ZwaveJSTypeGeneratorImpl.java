@@ -334,6 +334,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         parts.append(details.unitSymbol);
         parts.append(details.writable);
         parts.append(details.isAdvanced);
+        parts.append(details.isInvertible());
         StateDescriptionFragment statePattern = details.statePattern;
         if (statePattern != null) {
             parts.append(statePattern.hashCode());
