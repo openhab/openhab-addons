@@ -98,7 +98,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     }
 
     private static final List<String> ROLLER_SHUTTER_KEYWORDS = List.of("shutter", "blind", "curtain", "shade",
-            "awning", "venetian", "drape", "roller", "screen", "covering");
+            "awning", "venetian", "drape", "roller", "screen", "covering", "rts");
 
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSTypeGeneratorImpl.class);
     private final ThingRegistry thingRegistry;
