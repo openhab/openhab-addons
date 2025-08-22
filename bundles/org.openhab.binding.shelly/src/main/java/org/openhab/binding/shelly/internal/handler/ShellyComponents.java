@@ -527,8 +527,8 @@ public class ShellyComponents {
                         getDecimal(sdata.channel));
             }
             if (sdata.distance != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE, toQuantityType(
-                        getInteger(sdata.concentration.ppm).doubleValue() * 1000, DIGITS_DISTANCE, SIUnits.METRE));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE,
+                        toQuantityType(getDouble(sdata.distance * 1000.0), DIGITS_DISTANCE, SIUnits.METRE));
             }
             if (sdata.sensor != null && sdata.sensor.vibration != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
