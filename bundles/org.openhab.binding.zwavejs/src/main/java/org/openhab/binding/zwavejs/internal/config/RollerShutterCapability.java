@@ -30,12 +30,20 @@ public class RollerShutterCapability {
     public ChannelUID dimmerChannel;
     public ChannelUID upChannel;
     public ChannelUID downChannel;
-    public int cachedPosition = 0;
-    public boolean isMovingUp = false;
-    public boolean isMovingDown = false;
+    private int cachedPosition = 0;
+    private boolean isMovingUp = false;
+    private boolean isMovingDown = false;
 
     public boolean isMoving() {
         return isMovingUp || isMovingDown;
+    }
+
+    public boolean isMovingUp() {
+        return isMovingUp;
+    }
+
+    public boolean isMovingDown() {
+        return isMovingDown;
     }
 
     public void setDirectionUp(boolean isMovingUp) {

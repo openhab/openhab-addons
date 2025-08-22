@@ -105,6 +105,21 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         this.typeGenerator = typeGenerator;
     }
 
+    private ZwaveJSChannelConfiguration getChannelConfiguration(@Nullable Channel channel) {
+        if (channel == null) {
+            return new ZwaveJSChannelConfiguration();
+        }
+        return channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
+    }
+
+    private @Nullable ZwaveJSChannelConfiguration getChannelConfiguration(ChannelUID uid) {
+        Channel channel = getThing().getChannel(uid);
+        if (channel != null) {
+            return getChannelConfiguration(channel);
+        }
+        return null;
+    }
+
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
             throws ConfigValidationException {
@@ -142,8 +157,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             Object newValue = configurationParameter.getValue();
 
             if (result.channels.containsKey(key)) {
-                ZwaveJSChannelConfiguration channelConfig = Objects.requireNonNull(result.channels.get(key))
-                        .getConfiguration().as(ZwaveJSChannelConfiguration.class);
+                ZwaveJSChannelConfiguration channelConfig = getChannelConfiguration(result.channels.get(key));
                 NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
                 zwaveCommand.value = newValue;
                 handler.sendCommand(zwaveCommand);
@@ -170,18 +184,17 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return;
         }
 
-        ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
+        ZwaveJSChannelConfiguration channelConfig = getChannelConfiguration(channel);
 
         RollerShutterCapability rollerShutterCapability = rollerShutterCapabilities.get(channelConfig.endpoint);
-        boolean isRollerShutterChannelCmd = rollerShutterCapability != null
-                && channelUID.getId().equals(rollerShutterCapability.rollerShutterChannelId);
 
         // Handle RefreshType
         if (command instanceof RefreshType) {
-            if (isRollerShutterChannelCmd) {
+            if (rollerShutterCapability != null
+                    && channelUID.getId().equals(rollerShutterCapability.rollerShutterChannelId)) {
                 logger.debug("Node {}: Overriding channel to roller shutter dimmer channel {}", config.id,
                         Objects.requireNonNull(rollerShutterCapability).dimmerChannel);
-                channelConfig = getConfigurationByChannelUID(rollerShutterCapability.dimmerChannel);
+                channelConfig = getChannelConfiguration(rollerShutterCapability.dimmerChannel);
             }
             NodeGetValueCommand zwaveCommand = new NodeGetValueCommand(config.id, channelConfig);
             handler.sendCommand(zwaveCommand);
@@ -191,25 +204,24 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
 
         ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
-        boolean isColorChannelCmd = colorCap != null && colorCap.colorChannels.contains(channelUID);
-        boolean isColorTempChannelCmd = colorCap != null && channelUID.equals(colorCap.colorTempChannel);
 
         if (command instanceof OnOffType onOffCommand) {
-            zwaveCommand.value = handleOnOffTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
-                    onOffCommand);
+            zwaveCommand.value = handleOnOffTypeCommand(channelConfig.inverted, channel, colorCap,
+                    rollerShutterCapability, onOffCommand);
         } else if (command instanceof HSBType hsbTypeCommand) {
-            zwaveCommand.value = handleHSBTypeCommand(channel, colorCap, isColorChannelCmd, hsbTypeCommand);
+            zwaveCommand.value = handleHSBTypeCommand(channel, colorCap, hsbTypeCommand);
         } else if (command instanceof QuantityType<?> quantityCommand) {
             zwaveCommand.value = handleQuantityTypeCommand(channelConfig, quantityCommand);
         } else if (command instanceof PercentType percentTypeCommand) {
-            if (rollerShutterCapability != null && isRollerShutterChannelCmd) {
+            if (rollerShutterCapability != null
+                    && channelUID.getId().equals(rollerShutterCapability.rollerShutterChannelId)) {
                 logger.debug("Node {}: Overriding channel to roller shutter dimmer channel {}", config.id,
                         rollerShutterCapability.dimmerChannel);
                 handleCommand(rollerShutterCapability.dimmerChannel, percentTypeCommand);
                 return;
             }
-            zwaveCommand.value = handlePercentTypeCommand(channel, colorCap, isColorChannelCmd, isColorTempChannelCmd,
-                    channelConfig.endpoint, percentTypeCommand);
+            zwaveCommand.value = handlePercentTypeCommand(channel, colorCap, channelConfig.endpoint,
+                    percentTypeCommand);
         } else if (command instanceof DecimalType decimalCommand) {
             zwaveCommand.value = decimalCommand.doubleValue();
         } else if (command instanceof DateTimeType dateTimeCommand) {
@@ -229,18 +241,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             throw new UnsupportedOperationException(
                     rewindFastforwardCommand.toString() + " is currently not supported");
         } else if (command instanceof StopMoveType stopMoveCommand) {
-            if (!isRollerShutterChannelCmd || StopMoveType.MOVE.equals(stopMoveCommand)) {
-                throw new UnsupportedOperationException(stopMoveCommand.toString() + " is currently not supported");
-            }
-            handleStopCommand(handler, Objects.requireNonNull(rollerShutterCapability));
+            handleStopCommand(channel, rollerShutterCapability, stopMoveCommand);
+            return;
         } else if (command instanceof StringListType stringListCommand) {
             throw new UnsupportedOperationException(stringListCommand.toString() + " is currently not supported");
         } else if (command instanceof UpDownType upDownCommand) {
-            if (!isRollerShutterChannelCmd) {
-                throw new UnsupportedOperationException(upDownCommand.toString() + " is currently not supported");
-            }
-            zwaveCommand = handleUpDownCommand(channelConfig, Objects.requireNonNull(rollerShutterCapability),
-                    upDownCommand);
+            zwaveCommand = handleUpDownCommand(channelConfig, rollerShutterCapability, upDownCommand);
         } else if (command instanceof StringType stringCommand) {
             zwaveCommand.value = stringCommand.toString();
         }
@@ -249,13 +255,19 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
     }
 
-    private void handleStopCommand(ZwaveJSBridgeHandler handler, RollerShutterCapability rollerShutterCapability) {
-        if (rollerShutterCapability.isMovingUp) {
-            rollerShutterCapability.isMovingUp = false;
-            handleCommand(rollerShutterCapability.upChannel, OnOffType.OFF);
-        } else if (rollerShutterCapability.isMovingDown) {
-            rollerShutterCapability.isMovingDown = false;
-            handleCommand(rollerShutterCapability.downChannel, OnOffType.OFF);
+    private void handleStopCommand(Channel channel, @Nullable RollerShutterCapability rollerShutterCapability,
+            StopMoveType stopMoveCommand) {
+        if (rollerShutterCapability == null
+                || !channel.getUID().getId().equals(rollerShutterCapability.rollerShutterChannelId)
+                || StopMoveType.MOVE.equals(stopMoveCommand)) {
+            throw new UnsupportedOperationException(stopMoveCommand + " is currently not supported");
+        }
+
+        ChannelUID targetChannel = rollerShutterCapability.isMovingUp() ? rollerShutterCapability.upChannel
+                : rollerShutterCapability.isMovingDown() ? rollerShutterCapability.downChannel : null;
+
+        if (targetChannel != null) {
+            handleCommand(targetChannel, OnOffType.OFF);
         }
     }
 
@@ -268,7 +280,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         boolean isUpCommand = (UpDownType.UP.equals(upDownCommand) && !channelConfig.inverted)
                 || (UpDownType.DOWN.equals(upDownCommand) && channelConfig.inverted);
-        ZwaveJSChannelConfiguration targetChannelConfig = getConfigurationByChannelUID(
+        ZwaveJSChannelConfiguration targetChannelConfig = getChannelConfiguration(
                 isUpCommand ? rollerShutterCapability.upChannel : rollerShutterCapability.downChannel);
         zwaveCommand = new NodeSetValueCommand(config.id, targetChannelConfig);
         zwaveCommand.value = true;
@@ -276,76 +288,83 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         return zwaveCommand;
     }
 
-    private @Nullable ZwaveJSChannelConfiguration getConfigurationByChannelUID(ChannelUID uid) {
-        Channel channel = getThing().getChannel(uid);
-        if (channel != null) {
-            return channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
-        }
-        return null;
-    }
-
-    private @Nullable Object handleOnOffTypeCommand(ZwaveJSChannelConfiguration channelConfig, Channel channel,
-            @Nullable ColorCapability colorCap, boolean isColorChannelCommand, OnOffType onOffCommand) {
+    private @Nullable Object handleOnOffTypeCommand(boolean isInverted, Channel channel,
+            @Nullable ColorCapability colorCapability, @Nullable RollerShutterCapability rollerShutterCapability,
+            OnOffType onOffCommand) {
         // If this is a color channel, delegate to percent type logic (0% or 100%)
-        if (isColorChannelCommand) {
-            PercentType percent = (OnOffType.OFF == onOffCommand) ? PercentType.ZERO : PercentType.HUNDRED;
-            return handlePercentTypeCommand(channel, colorCap, true, false, channelConfig.endpoint, percent);
+        if (colorCapability != null) {
+            PercentType percent = switch (onOffCommand) {
+                case OFF -> PercentType.ZERO;
+                case ON -> PercentType.HUNDRED;
+            };
+            return handlePercentTypeCommand(channel, colorCapability, -1, percent);
         }
 
-        // For dimmer channels, ON is mapped to 255, which means restore to the last brightness.
-        if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType())) {
-            return (OnOffType.ON == onOffCommand) ? 255 : 0;
+        if (rollerShutterCapability != null
+                && channel.getUID().equals(rollerShutterCapability.rollerShutterChannelId)) {
+            // For dimmer channels, ON is mapped to 255, which means restore to the last value.
+            if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType())) {
+                return switch (onOffCommand) {
+                    case ON -> 255;
+                    case OFF -> 0;
+                };
+            }
         }
 
         // For other types, handle inversion if needed.
-        return (onOffCommand == (channelConfig.inverted ? OnOffType.OFF : OnOffType.ON));
+        return switch (onOffCommand) {
+            case ON -> !isInverted;
+            case OFF -> isInverted;
+        };
     }
 
     private @Nullable Object handlePercentTypeCommand(Channel channel, @Nullable ColorCapability colorCap,
-            boolean isColorChannelCmd, boolean isColorTempChannelCmd, int rollerShutterEndpoint,
-            PercentType percentTypeCommand) {
-        if (isColorChannelCmd && colorCap != null) {
-            HSBType hsb = new HSBType(colorCap.cachedColor.getHue(), colorCap.cachedColor.getSaturation(),
-                    percentTypeCommand);
-            return handleHSBTypeCommand(channel, colorCap, true, hsb);
+            int rollerShutterEndpoint, PercentType percentTypeCommand) {
+        if (colorCap != null && colorCap.colorChannels.contains(channel.getUID())) {
+            // Color channel: delegate to HSB handler
+            return handleHSBTypeCommand(channel, colorCap, new HSBType(colorCap.cachedColor.getHue(),
+                    colorCap.cachedColor.getSaturation(), percentTypeCommand));
         }
 
         RollerShutterCapability rollerShutterCapability = rollerShutterCapabilities.get(rollerShutterEndpoint);
-        boolean isRollerShutterRelatedCommand = (rollerShutterCapability != null
-                && channel.getUID().getId().equals(rollerShutterCapability.dimmerChannel.getId()));
+        boolean isRollerShutterRelatedCommand = rollerShutterCapability != null
+                && channel.getUID().getId().equals(rollerShutterCapability.dimmerChannel.getId());
 
-        if (isColorTempChannelCmd && colorCap != null) {
+        if (colorCap != null && channel.getUID().equals(colorCap.colorTempChannel)) {
             int byteValue = Math.max(0, Math.min(255, percentTypeCommand.intValue() * 255 / 100));
             if (colorCap.warmWhiteChannel instanceof ChannelUID warmWhiteChannel) {
-                DecimalType warm = new DecimalType(byteValue);
-                scheduler.submit(() -> handleCommand(warmWhiteChannel, warm));
+                scheduler.submit(() -> handleCommand(warmWhiteChannel, new DecimalType(byteValue)));
             }
             if (colorCap.coldWhiteChannel instanceof ChannelUID coldWhiteChannel) {
-                DecimalType cold = new DecimalType(255 - byteValue);
-                scheduler.submit(() -> handleCommand(coldWhiteChannel, cold));
+                scheduler.submit(() -> handleCommand(coldWhiteChannel, new DecimalType(255 - byteValue)));
             }
             return null;
-        } else if (isRollerShutterRelatedCommand && rollerShutterCapability != null) {
+        }
+
+        if (isRollerShutterRelatedCommand && rollerShutterCapability != null) {
             rollerShutterCapability.setPosition(percentTypeCommand.intValue());
         }
 
-        // For non-color channels, handle inversion and the dimmer 100% edge case.
+        // For non-color channels:
         int value = percentTypeCommand.intValue();
-        ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
+        ZwaveJSChannelConfiguration channelConfig = getChannelConfiguration(channel);
+
+        // Apply inversion if needed (invert value for inverted channels)
         if (channelConfig.inverted) {
             value = 100 - value;
         }
 
-        // For dimmers, 100% is represented as 99 (zero based value).
+        // For dimmer item types, 100% is mapped to 99 (Z-Wave convention / zero based value)
         if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType()) && value == 100) {
-            value = 99;
+            return 99;
         }
         return value;
     }
 
     private @Nullable Object handleHSBTypeCommand(Channel channel, @Nullable ColorCapability colorCap,
-            boolean isColorChannelCommand, HSBType hsbTypeCommand) {
-        if (isColorChannelCommand && colorCap != null) {
+            HSBType hsbTypeCommand) {
+        boolean isColorChannelCommand = colorCap != null && colorCap.colorChannels.contains(channel.getUID());
+        if (colorCap != null && isColorChannelCommand) {
             colorCap.cachedColor = hsbTypeCommand;
         }
 
@@ -382,15 +401,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             QuantityType<?> quantityCommand) {
         Unit<?> unit = UnitUtils.parseUnit(channelConfig.incomingUnit);
         if (unit == null) {
-            logger.warn("Could not parse '{}' as a unit, this is a bug.", channelConfig.incomingUnit);
+            logger.warn("Invalid unit '{}', unable to process.", channelConfig.incomingUnit);
             return null;
         }
 
-        Double value = Objects.requireNonNull(quantityCommand.toUnit(unit)).doubleValue();
-        if (channelConfig.factor != 1.0) {
-            value = value / channelConfig.factor;
-        }
-        return value;
+        return Objects.requireNonNull(quantityCommand.toUnit(unit)).doubleValue() / channelConfig.factor;
     }
 
     @Override

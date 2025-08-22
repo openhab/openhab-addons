@@ -98,7 +98,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     }
 
     private static final List<String> ROLLER_SHUTTER_KEYWORDS = List.of("shutter", "blind", "curtain", "shade",
-            "awning", "venetian", "drape");
+            "awning", "venetian", "drape", "roller", "screen", "covering");
 
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSTypeGeneratorImpl.class);
     private final ThingRegistry thingRegistry;
@@ -787,13 +787,13 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                                     return;
                                 }
                                 String channelId = otherChannel.getUID().getId().toLowerCase();
-                                if (channelId.contains("-up") || channelId.contains("-open")
-                                        || (channelId.contains("-on")
-                                                && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription))) {
+                                if ((channelId.contains("-up") || channelId.contains("-open")
+                                        || channelId.contains("-on"))
+                                        && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription)) {
                                     upChannel[0] = otherChannel.getUID();
-                                } else if (channelId.contains("-down") || channelId.contains("-close")
-                                        || (channelId.contains("-off")
-                                                && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription))) {
+                                } else if ((channelId.contains("-down") || channelId.contains("-close")
+                                        || channelId.contains("-off"))
+                                        && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription)) {
                                     downChannel[0] = otherChannel.getUID();
                                 }
                             });
