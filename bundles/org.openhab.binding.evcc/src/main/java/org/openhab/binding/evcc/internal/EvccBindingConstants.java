@@ -75,4 +75,5 @@ public class EvccBindingConstants {
     public static final String NUMBER_TIME = CoreItemFactory.NUMBER + ":Time";
     public static final String NUMBER_LENGTH = CoreItemFactory.NUMBER + ":Length";
     public static final String NUMBER_ENERGY_PRICE = CoreItemFactory.NUMBER + ":EnergyPrice";
+    public static final String NUMBER_TEMPERATURE = CoreItemFactory.NUMBER + ":Temperature";
 }
