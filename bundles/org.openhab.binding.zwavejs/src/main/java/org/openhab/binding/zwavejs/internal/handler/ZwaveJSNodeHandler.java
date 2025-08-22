@@ -301,7 +301,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         if (rollerShutterCapability != null
-                && channel.getUID().equals(rollerShutterCapability.rollerShutterChannelId)) {
+                && channel.getUID().getId().equals(rollerShutterCapability.rollerShutterChannelId)) {
             // For dimmer channels, ON is mapped to 255, which means restore to the last value.
             if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType())) {
                 return switch (onOffCommand) {
