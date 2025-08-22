@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
@@ -229,6 +231,24 @@ public class ShellyDeviceProfile {
                                                                    // sleep mode)
     }
 
+    public void initializeInputs(ThingTypeUID thingTypeUID, String btnType) {
+        Integer predefinedNumInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUID);
+        if (numInputs == 0 && predefinedNumInputs != null) {
+            numInputs = predefinedNumInputs;
+        }
+        if (numInputs > 0) {
+            ShellySettingsInput inputSetting = btnType.isEmpty() ? //
+                    new ShellySettingsInput() : new ShellySettingsInput(btnType);
+            status.inputs = new ArrayList<>();
+            ArrayList<@Nullable ShellySettingsInput> inputs = new ArrayList<>();
+            for (int i = 0; i < numInputs; i++) {
+                inputs.add(inputSetting);
+                status.inputs.add(new ShellyInputState(i));
+            }
+            settings.inputs = inputs;
+        }
+    }
+
     public void updateFromStatus(ShellySettingsStatus status) {
         if (hasRelays) {
             // Dimmer-2 doesn't report inputs under /settings, only on /status, we need to update that info after init
@@ -418,24 +438,5 @@ public class ShellyDeviceProfile {
 
         // If device is not yet intialized or the enabled property is missing we assume that CoIoT is enabled
         return true;
-    }
-
-    /**
-     * Generates a service name based on the provided model name and MAC address.
-     * Delimiters will be stripped from the returned MAC address.
-     *
-     * @param name Model name such as SBBT-02C or just SBDW
-     * @param mac MAC address with or without colon delimiters
-     * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
-     */
-    public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
-        String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
-        return SERVICE_NAME_SHELLYBLU_PREFIX + switch (model) {
-            case SHELLYDT_BLUBUTTON -> "button";
-            case SHELLYDT_BLUDW -> "dw";
-            case SHELLYDT_BLUMOTION -> "motion";
-            case SHELLYDT_BLUHT -> "ht";
-            default -> throw new IllegalArgumentException("Unsupported BLU device model " + model);
-        } + "-" + mac.replaceAll(":", "").toLowerCase();
     }
 }

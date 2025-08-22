@@ -18,6 +18,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConf
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
+import org.openhab.binding.shelly.internal.api2.ShellyBluEventDataDTO.Shelly2NotifyBluEventData;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -135,6 +136,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_LPUSH = "long_push";
     public static final String SHELLY2_EVENT_SLPUSH = "short_long_push";
     public static final String SHELLY2_EVENT_LSPUSH = "long_short_push";
+    public static final String SHELLY2_EVENT_HOLDING = "hold";
 
     public static final String SHELLY2_EVENT_SLEEP = "sleep";
     public static final String SHELLY2_EVENT_CFGCHANGED = "config_changed";
@@ -1189,55 +1191,13 @@ public class Shelly2ApiJsonDTO {
         public String authType;
     }
 
-    // BTHome samples
-    // BLU Button 1
-    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
-    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
-    // {"component":"script:2", "id":2, "event":"oh-blu.data",
-    // "data":{"encryption":false,"BTHome_version":2,"pid":205,"Battery":100,"Button":1,"addr":"b4:35:22:fd:b3:81","rssi":-68},
-    // "ts":1682877399.22}
-    //
-    // BLU Door Window
-    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
-    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
-    // {"component":"script:2", "id":2, "event":"oh-blu.data",
-    // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
-    // "ts":1682877414.25}
-
-    public class Shelly2NotifyEventMessage {
-        public String addr;
-        public String name;
-        public Boolean encryption;
-        @SerializedName("BTHome_version")
-        public Integer bthVersion;
-        public Integer pid;
-        @SerializedName("Battery")
-        public Integer battery;
-        @SerializedName("Button")
-        public Integer buttonEvent;
-        @SerializedName("Illuminance")
-        public Integer illuminance;
-        @SerializedName("Window")
-        public Integer windowState;
-        @SerializedName("Rotation")
-        public Double rotation;
-        @SerializedName("Motion")
-        public Integer motionState;
-        @SerializedName("Temperature")
-        public Double temperature;
-        @SerializedName("Humidity")
-        public Double humidity;
-
-        public Integer rssi;
-        public Integer tx_power;
-    }
-
     public class Shelly2NotifyEvent {
         public Integer id;
         public Double ts;
         public String component;
         public String event;
-        public Shelly2NotifyEventMessage data;
+        @SerializedName("data")
+        public Shelly2NotifyBluEventData blu;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")

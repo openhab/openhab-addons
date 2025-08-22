@@ -150,17 +150,21 @@ public class ShellyDevices {
     public static final String SHELLYDT_MINI_EM = "S4EM-001PXCEU16"; // PM was renamed to EM in Gen4
 
     // Shelly BLU Series
-    public static final String SHELLYDT_BLUBUTTON = "SBBT";
-    public static final String SHELLYDT_BLUDW = "SBDW";
-    public static final String SHELLYDT_BLUMOTION = "SBMO";
-    public static final String SHELLYDT_BLUHT = "SBHT";
+    public static final String SHELLYDT_BLUCLASS_BUTTON = "SBBT";
+    public static final String SHELLYDT_BLUCLASS_HT = "SBHT";
+    public static final String SHELLYDT_BLUCLASS_DW = "SBDW";
+    public static final String SHELLYDT_BLUCLASS_MOTION = "SBMO";
+
+    public static final String SHELLYDT_BLUBUTTON1 = "SBBT-002C";
+    public static final String SHELLYDT_BLUHT = "SBHT-003C";
+    public static final String SHELLYDT_BLUDW = "SBDW-002C";
+    public static final String SHELLYDT_BLUMOTION = "SBMO-003Z";
 
     // Thing Type ID prefixes
     public static final String THING_TYPE_SHELLYPLUS_PREFIX = "shellyplus";
     public static final String THING_TYPE_SHELLYPRO_PREFIX = "shellypro";
 
     // Service name prefixes
-    public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
     public static final String SERVICE_NAME_SHELLYPLUSRANGE_PREFIX = "shellyplusrange";
     public static final String SERVICE_NAME_SHELLYPLUG_PREFIX = "shellyplug";
     public static final String SERVICE_NAME_SHELLYPLUGS_PREFIX = "shellyplugs";
@@ -452,10 +456,15 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
 
             // BLU Series
-            Map.entry(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON),
+            Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON),
+            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
             Map.entry(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW),
             Map.entry(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION),
-            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
+
+            Map.entry(SHELLYDT_BLUCLASS_BUTTON, THING_TYPE_SHELLYBLUBUTTON), //
+            Map.entry(SHELLYDT_BLUCLASS_HT, THING_TYPE_SHELLYBLUHT), //
+            Map.entry(SHELLYDT_BLUCLASS_DW, THING_TYPE_SHELLYBLUDW),
+            Map.entry(SHELLYDT_BLUCLASS_MOTION, THING_TYPE_SHELLYBLUMOTION),
 
             // Wall displays
             Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
@@ -509,6 +518,9 @@ public class ShellyDevices {
                 THING_TYPE_SHELLYUNKNOWN, THING_TYPE_SHELLYPROTECTED));
     }
 
+    /*
+     * serviceName / thingType mapping
+     */
     public static final Map<String, ThingTypeUID> THING_TYPE_BY_SERVICE_NAME = Map.ofEntries(
             // Shelly Gen1
             Map.entry("shelly1", THING_TYPE_SHELLY1), //
@@ -628,4 +640,10 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLY3EM, 3), //
             Map.entry(THING_TYPE_SHELLYPLUS3EM63, 3), //
             Map.entry(THING_TYPE_SHELLYPRO3EM, 3));
+
+    // Number of inputs
+    public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //
+            Map.entry(THING_TYPE_SHELLYBLUBUTTON, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUDW, 1));
 }
