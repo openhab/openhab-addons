@@ -195,7 +195,7 @@
 		<description>Indicates whether green power is available for loadpoints</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="site-grid-current-1">
+	<channel-type id="site-grid-current-l1">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Grid Current 1</label>
 		<description>Grid phase 1 current</description>
@@ -206,7 +206,7 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="site-grid-current-2">
+	<channel-type id="site-grid-current-l2">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Grid Current 2</label>
 		<description>Grid phase 2 current</description>
@@ -217,7 +217,7 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="site-grid-current-3">
+	<channel-type id="site-grid-current-l3">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Grid Current 3</label>
 		<description>Grid phase 3 current</description>

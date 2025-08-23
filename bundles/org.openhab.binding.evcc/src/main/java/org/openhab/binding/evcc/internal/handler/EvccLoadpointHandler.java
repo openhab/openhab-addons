@@ -123,7 +123,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
                 if (oldKey.equals("chargeCurrents")) {
                     int phase = 1;
                     for (JsonElement current : state.getAsJsonArray(oldKey)) {
-                        state.add("phase-" + phase, current);
+                        state.add("chargeCurrentL" + phase, current);
                         phase++;
                     }
                 } else {
