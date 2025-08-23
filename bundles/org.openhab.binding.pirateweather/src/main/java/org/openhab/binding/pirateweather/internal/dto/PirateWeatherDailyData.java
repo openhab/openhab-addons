@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.pirateweather.internal.model;
+package org.openhab.binding.pirateweather.internal.dto;
 
 import java.util.List;
 

@@ -42,11 +42,11 @@ import org.openhab.binding.pirateweather.internal.config.PirateWeatherWeatherAnd
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherCommunicationException;
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConfigurationException;
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConnection;
-import org.openhab.binding.pirateweather.internal.model.PirateWeatherCurrentlyData;
-import org.openhab.binding.pirateweather.internal.model.PirateWeatherDailyData.DailyData;
-import org.openhab.binding.pirateweather.internal.model.PirateWeatherHourlyData.HourlyData;
-import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData;
-import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData.AlertsData;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherCurrentlyData;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherDailyData.DailyData;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherHourlyData.HourlyData;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherJsonWeatherData;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherJsonWeatherData.AlertsData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
