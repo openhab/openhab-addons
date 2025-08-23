@@ -35,7 +35,7 @@ public class HideBroadcastNotificationByReferenceIdActionHandler extends BaseHid
     }
 
     @Override
-    public @Nullable Map<String, Object> execute(Map<String, Object> context) {
+    public @Nullable Map<String, @Nullable Object> execute(Map<String, Object> context) {
         cloudService.hideBroadcastNotificationByReferenceId(referenceId);
         return null;
     }
