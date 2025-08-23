@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sungrow.internal.impl.SungrowBridgeHandler;
+import org.openhab.binding.sungrow.internal.impl.SungrowDeviceHandler;
 import org.openhab.binding.sungrow.internal.impl.SungrowPlantHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -62,6 +63,8 @@ public class SungrowHandlerFactory extends BaseThingHandlerFactory {
             return new SungrowPlantHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new SungrowBridgeHandler((Bridge) thing, httpFactory.getCommonHttpClient());
+        } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
+            return new SungrowDeviceHandler(thing);
         } else {
             return null;
         }

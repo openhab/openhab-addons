@@ -12,16 +12,12 @@
  */
 package org.openhab.binding.sungrow.internal.impl;
 
-import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.sungrow.internal.SungrowBindingConstants;
 import org.openhab.binding.sungrow.internal.SungrowConfiguration;
-import org.openhab.binding.sungrow.internal.client.SungrowClient;
-import org.openhab.binding.sungrow.internal.client.SungrowClientFactory;
-import org.openhab.binding.sungrow.internal.client.operations.ApiOperationsFactory;
-import org.openhab.binding.sungrow.internal.client.operations.PlantList;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -32,6 +28,10 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.afrouper.server.sungrow.api.SungrowClient;
+import de.afrouper.server.sungrow.api.SungrowClientFactory;
+import de.afrouper.server.sungrow.api.dto.*;
 
 /**
  * The {@link SungrowBridgeHandler} is responsible for creating Plant Things which
@@ -71,8 +71,8 @@ public class SungrowBridgeHandler extends BaseBridgeHandler {
             if (configuration.getHostname() != null && !configuration.getHostname().isEmpty()) {
                 baseUrl = new URI(configuration.getHostname());
             }
-            sungrowClient = SungrowClientFactory.createSungrowClient(commonHttpClient, baseUrl,
-                    configuration.getAppKey(), configuration.getAppSecret());
+            sungrowClient = SungrowClientFactory.createSungrowClient(baseUrl, configuration.getAppKey(),
+                    configuration.getAppSecret(), Duration.ofSeconds(10), Duration.ofSeconds(30));
             scheduler.execute(this::createPlants);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
@@ -104,34 +104,56 @@ public class SungrowBridgeHandler extends BaseBridgeHandler {
             sungrowClient.login(configuration.getUsername(), configuration.getPassword());
             updateStatus(ThingStatus.ONLINE);
 
-            PlantList plantList = ApiOperationsFactory.getPlantList();
-            sungrowClient.execute(plantList);
-            plantList.getResponse().getPlants().forEach(this::handlePlants);
-        } catch (IOException e) {
+            PlantList plants = sungrowClient.getPlants();
+            plants.plants().forEach(this::handlePlants);
+        } catch (SungrowApiException e) {
             logger.error("Failed to create Plants.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
         }
     }
 
-    private void handlePlants(PlantList.Plant plant) {
+    private void handlePlants(Plant plant) {
         logger.debug("Create Handler for plant: {}", plant);
         ThingUID thingUID = new ThingUID(SungrowBindingConstants.THING_TYPE_PLANT.getBindingId(), getThing().getUID(),
-                plant.getPlantId());
+                plant.plantId());
 
         if (thingRegistry.get(thingUID) != null) {
             logger.warn("Plant Thing with UID {} already exists. Skipping creation.", thingUID);
             return;
         }
 
-        Configuration configuration = new Configuration();
-        configuration.put("plantId", plant.getPlantId());
+        Configuration plantConfiguration = new Configuration();
+        plantConfiguration.put("plant", plant);
 
         Thing plantThing = ThingBuilder.create(SungrowBindingConstants.THING_TYPE_PLANT, thingUID)
-                .withBridge(getThing().getUID()).withLabel(plant.getPlantName()).withConfiguration(configuration)
+                .withBridge(getThing().getUID()).withLabel(plant.plantName()).withConfiguration(plantConfiguration)
                 .build();
 
         thingRegistry.add(plantThing);
+
+        DeviceList devices = sungrowClient.getDevices(plant.plantId());
+        devices.devices().forEach(this::addDeviceThing);
+
         logger.info("Successfully registered new Plant Thing: {}", thingUID);
+    }
+
+    private void addDeviceThing(Device device) {
+        ThingUID thingUID = new ThingUID(SungrowBindingConstants.THING_TYPE_DEVICE.getBindingId(), getThing().getUID(),
+                device.plantDeviceId());
+
+        if (thingRegistry.get(thingUID) != null) {
+            logger.warn("Device Thing with UID {} already exists. Skipping creation.", thingUID);
+            return;
+        }
+
+        Configuration deviceConfiguration = new Configuration();
+        deviceConfiguration.put("device", device);
+
+        Thing plantThing = ThingBuilder.create(SungrowBindingConstants.THING_TYPE_DEVICE, thingUID)
+                .withBridge(getThing().getUID()).withLabel(device.deviceName()).withConfiguration(deviceConfiguration)
+                .build();
+
+        thingRegistry.add(plantThing);
     }
 
     private ThingRegistry fetchThingRegistry() {

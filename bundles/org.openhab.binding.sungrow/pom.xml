@@ -14,4 +14,23 @@
 
   <name>openHAB Add-ons :: Bundles :: sungrow Binding</name>
 
+  <properties>
+    <bnd.importpackage>com.google.gson.*;resolution:="optional"</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.github.afrouper</groupId>
+      <artifactId>sungrow-api-client</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.13.1</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
 </project>

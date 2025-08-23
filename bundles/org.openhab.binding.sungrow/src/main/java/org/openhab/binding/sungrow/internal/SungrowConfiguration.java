@@ -13,7 +13,8 @@
 package org.openhab.binding.sungrow.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sungrow.internal.client.SungrowClientFactory;
+
+import de.afrouper.server.sungrow.api.SungrowClientFactory;
 
 /**
  * The {@link SungrowConfiguration} class contains fields mapping thing configuration parameters.

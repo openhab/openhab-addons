@@ -14,7 +14,12 @@ package org.openhab.binding.sungrow.internal.impl;
 
 import static org.openhab.binding.sungrow.internal.SungrowBindingConstants.CHANNEL_1;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -27,24 +32,26 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.afrouper.server.sungrow.api.dto.BasicPlantInfo;
-import de.afrouper.server.sungrow.api.dto.SungrowApiException;
+import de.afrouper.server.sungrow.api.dto.*;
 
 /**
- * The {@link SungrowPlantHandler} is responsible for handling commands, which are
+ * The {@link SungrowDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Christian Kemper - Initial contribution
  */
-public class SungrowPlantHandler extends BaseThingHandler {
+public class SungrowDeviceHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SungrowPlantHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SungrowDeviceHandler.class);
 
-    private volatile PlantConfiguration plantConfiguration = new PlantConfiguration();
+    private volatile DeviceConfiguration deviceConfiguration = new DeviceConfiguration();
 
     private SungrowBridgeHandler sungrowBridgeHandler;
 
-    public SungrowPlantHandler(Thing thing) {
+    DevicePointInfoList openPointInfo;
+    List<String> devicePointIds;
+
+    public SungrowDeviceHandler(Thing thing) {
         super(thing);
     }
 
@@ -55,38 +62,59 @@ public class SungrowPlantHandler extends BaseThingHandler {
                 // TODO: handle data refresh
             }
 
+            // TODO: handle command
+
+            // Note: if communication with thing fails for some reason,
+            // indicate that by setting the status with detail information:
+            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            // "Could not control device at IP address x.x.x.x");
         }
     }
 
     @Override
     public void initialize() {
-        plantConfiguration = getConfigAs(PlantConfiguration.class);
-        if (!plantConfiguration.isValid()) {
+        deviceConfiguration = getConfigAs(DeviceConfiguration.class);
+        if (!deviceConfiguration.isValid()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration.");
             return;
         }
         sungrowBridgeHandler = getSungrowBridgeHandler();
-
         if (sungrowBridgeHandler != null) {
             Integer interval = sungrowBridgeHandler.getConfiguration().getInterval();
-            scheduler.scheduleWithFixedDelay(this::updatePlant, interval, interval, TimeUnit.SECONDS);
+            scheduler.scheduleWithFixedDelay(this::updateDevice, interval, interval, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
-    private void updatePlant() {
+    private void readPoints() {
+        Device device = deviceConfiguration.getDevice();
+        openPointInfo = getSungrowBridgeHandler().getSungrowClient().getOpenPointInfo(device.deviceType(),
+                device.deviceModelId());
+        devicePointIds = openPointInfo.devicePointInfoList().stream().filter(Objects::nonNull)
+                .map(DevicePointInfo::pointId).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    private void updateDevice() {
         try {
-            BasicPlantInfo basicPlantInfo = sungrowBridgeHandler.getSungrowClient()
-                    .getBasicPlantInfo(plantConfiguration.getPlant().plantId());
-
-            // ToDo Update channel
-
+            Device device = deviceConfiguration.getDevice();
+            DevicePointList devicePointList = getSungrowBridgeHandler().getSungrowClient().getDeviceRealTimeData(
+                    device.deviceType(), Collections.singletonList(device.plantDeviceId()), devicePointIds);
+            devicePointList.devicePointList().stream().map(DevicePoint::pointIds).filter(Objects::nonNull)
+                    .forEach(e -> handlePoints(e, openPointInfo));
         } catch (SungrowApiException e) {
             logger.error("Unable to update sungrow plant", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+    }
+
+    private void handlePoints(Map<String, String> dataPoints, DevicePointInfoList openPointInfo) {
+        dataPoints.forEach((key, value) -> {
+            DevicePointInfo pointInfo = openPointInfo.getDevicePointInfo(key.substring(1));
+            logger.debug("{}: {} {}", pointInfo.pointName(), value, pointInfo.showUnit());
+            // ToDo: Update Channels
+        });
     }
 
     private SungrowBridgeHandler getSungrowBridgeHandler() {

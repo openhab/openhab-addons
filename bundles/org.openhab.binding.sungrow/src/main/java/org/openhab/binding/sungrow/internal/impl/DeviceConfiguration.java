@@ -10,13 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sungrow.internal.client.dto;
+package org.openhab.binding.sungrow.internal.impl;
+
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.afrouper.server.sungrow.api.dto.Device;
 
 /**
  * @author Christian Kemper - Initial contribution
  */
-public class UnitValuePair {
+public class DeviceConfiguration {
 
-    private String unit;
-    private String value;
+    @Nullable
+    private Device device;
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+    }
+
+    public boolean isValid() {
+        return device != null;
+    }
 }

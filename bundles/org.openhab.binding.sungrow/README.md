@@ -17,10 +17,8 @@ The Binding creates a bridge for access to the API and creates a thing for each 
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The Bridge need some configuration parameters which are available from the developer portal
+of sungrow. The Plant does not need to be configured.
 
 ### `sample` Thing Configuration
 
@@ -36,9 +34,8 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The Channels from the Plant are genereted depending on the devices you have configured in your
+plant. The Plant can be configured via normal iSolarCloud Portal or with the app.
 
 | Channel | Type   | Read/Write | Description                 |
 |---------|--------|------------|-----------------------------|

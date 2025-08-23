@@ -12,22 +12,27 @@
  */
 package org.openhab.binding.sungrow.internal.impl;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.afrouper.server.sungrow.api.dto.Plant;
+
 /**
  * @author Christian Kemper - Initial contribution
  */
 public class PlantConfiguration {
 
-    private String plantId = "";
+    @Nullable
+    private Plant plant;
 
-    public String getPlantId() {
-        return plantId;
+    public Plant getPlant() {
+        return plant;
     }
 
-    public void setPlantId(String plantId) {
-        this.plantId = plantId;
+    public void setPlant(Plant plant) {
+        this.plant = plant;
     }
 
     public boolean isValid() {
-        return plantId != null && !plantId.isEmpty();
+        return plant != null;
     }
 }
