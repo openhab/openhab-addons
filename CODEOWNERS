@@ -309,6 +309,7 @@
 /bundles/org.openhab.binding.pihole/ @magx2
 /bundles/org.openhab.binding.pilight/ @stefanroellin @niklasdoerfler
 /bundles/org.openhab.binding.pioneeravr/ @Stratehm
+/bundles/org.openhab.binding.pirateweather/ @computergeek1507
 /bundles/org.openhab.binding.pixometer/ @Confectrician
 /bundles/org.openhab.binding.pjlinkdevice/ @nils
 /bundles/org.openhab.binding.playstation/ @FluBBaOfWard
