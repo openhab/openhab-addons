@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.pirateweather.internal.model;
+package org.openhab.binding.pirateweather.internal.dto;
 
 /**
  * The {@link PirateWeatherCurrentlyData} is the Java class used to map the JSON response to an Pirate Weather request.
