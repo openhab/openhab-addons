@@ -1101,7 +1101,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (value.id == null) {
             value.id = id;
         }
-        // return channelUpdate ? ShellyComponents.updateLoraStatus(getThing(), value) : false;
         return getProfile().settings.loraDetected ? ShellyComponents.updateLoraStatus(getThing(), value) : false;
     }
 
