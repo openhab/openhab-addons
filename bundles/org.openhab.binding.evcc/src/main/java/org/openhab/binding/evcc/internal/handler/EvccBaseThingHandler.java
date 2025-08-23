@@ -221,6 +221,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             case NUMBER_TIME:
                 updateState(channelUID, QuantityType.valueOf(value.getAsDouble() + " s"));
                 break;
+            case NUMBER_TEMPERATURE:
+                updateState(channelUID, QuantityType.valueOf(value.getAsDouble() + " " + itemTypeUnit.unitHint));
+                break;
             case CoreItemFactory.DATETIME:
                 updateState(channelUID, new DateTimeType(value.getAsString()));
                 break;
