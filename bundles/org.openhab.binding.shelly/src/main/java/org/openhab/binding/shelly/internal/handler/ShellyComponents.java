@@ -69,8 +69,6 @@ public class ShellyComponents {
         }
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
-        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ADDON_FIRMWARE,
-                getStringType(profile.addonFirmware));
 
         if (!profile.gateway.isEmpty()) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));

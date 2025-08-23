@@ -201,8 +201,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             for (Shelly2NotifyEvent e : message.params.events) {
                 String event = getString(e.event);
                 if (event.startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                    logger.debug("{}: BLU event {} received from address {}, pid={}, data={}", thingName, event,
-                            getString(e.data.addr), getInteger(e.data.pid), getString(e.data.packet));
+                    logger.debug("{}: BLU event {} received from address {}, pid={}, packet={} ({})", thingName, event,
+                            getString(e.data.addr), getInteger(e.data.pid), getString(e.data.packet), e);
                     if (e.data.pid != null) {
                         int pid = e.data.pid;
                         if (lastPid != -1 && pid < (lastPid - pidCycleThreshold)) {
@@ -285,8 +285,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             if (e.data.dimmer.direction != null) {
                                 sensorData.direction = e.data.dimmer.direction == 1 ? "up" : "down";
                             }
-                            if (e.data.dimmer.steps != null) {
-                                sensorData.steps = 1 + getInteger(e.data.dimmer.steps); // 0-based
+                            if (e.data.dimmer.steps != null && e.data.dimmer.steps != 0) {
+                                sensorData.steps = getInteger(e.data.dimmer.steps); // 0-based
                             }
                         }
                         if (e.data.channel != null) { // BLU Remote

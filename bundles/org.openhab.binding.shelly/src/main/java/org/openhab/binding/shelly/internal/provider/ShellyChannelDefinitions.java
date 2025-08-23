@@ -147,7 +147,6 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE, "deviceFirmware", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ADDON_FIRMWARE, "addonFirmware", ITEMT_STRING))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -327,7 +326,6 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> add = new LinkedHashMap<>();
 
         addChannel(thing, add, !profile.fwVersion.isEmpty() || profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE);
-        addChannel(thing, add, !profile.addonFirmware.isEmpty(), CHGR_DEVST, CHANNEL_DEVST_ADDON_FIRMWARE);
 
         addChannel(thing, add, profile.settings.name != null, CHGR_DEVST, CHANNEL_DEVST_NAME);
         addChannel(thing, add, !profile.gateway.isEmpty() || profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_GATEWAY);
