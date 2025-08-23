@@ -251,13 +251,12 @@ public class Shelly2RpcSocket {
                         return;
                     case SHELLYRPC_METHOD_NOTIFYEVENT:
                         if (receivedMessage.contains("lora:")) {
-                            // The LoRa add-on does not report the data in the structured event format, but raw data
-                            // string
-                            // modify JSON to avoid an exception, because data is a String and not a structure
-                            receivedMessage = eventMessage.replace("\"data\":\"", "\"info\":\"");
+                            // The LoRa add-on doesn't report the data in the structured event format, but raw data
+                            // string modify JSON to avoid an exception, because data is a String and not a structure
+                            // Non-LoRa event, uses standard formal
+                            receivedMessage = eventMessage.replace("\"data\":\"", "\"lora\":\"");
                         }
 
-                        // Non-LoRa event, use standard formal
                         Shelly2RpcNotifyEvent events = fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class);
                         events.src = message.src;
                         if (events.params == null || events.params.events == null) {
@@ -277,7 +276,7 @@ public class Shelly2RpcSocket {
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            ShellyThingCreator.addBluThing(message.src, e.blu, thingTable);
+                                            ShellyThingCreator.addBluThing(getString(message.src), e.blu, thingTable);
                                         } else {
                                             logger.debug(
                                                     "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",

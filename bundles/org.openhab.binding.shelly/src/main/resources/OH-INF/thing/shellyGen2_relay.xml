@@ -627,13 +627,13 @@
 		<description>@text/channel-group-type.shelly.loraAddon.description</description>
 	</channel-group-type>
 
-    <channel-type id="loraRxData">
-        <item-type>String</item-type>
-        <label>@text/channel-type.shelly.loraRxData.label</label>
-        <description>@text/channel-type.shelly.loraRxData.description</description>
-        <state readOnly="true">
-        </state>
-    </channel-type>
+	<channel-type id="loraRxData">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.loraRxData.label</label>
+		<description>@text/channel-type.shelly.loraRxData.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 
 	<channel-type id="loraRxDataRaw" advanced="true">
 		<item-type>String</item-type>
@@ -643,13 +643,13 @@
 		</state>
 	</channel-type>
 
-    <channel-type id="loraRxBytes">
-        <item-type>Number</item-type>
-        <label>@text/channel-type.shelly.loraRxBytes.label</label>
-        <description>@text/channel-type.shelly.loraRxBytes.description</description>
-        <state readOnly="true">
-        </state>
-    </channel-type>
+	<channel-type id="loraRxBytes">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.loraRxBytes.label</label>
+		<description>@text/channel-type.shelly.loraRxBytes.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 
 	<channel-type id="loraTxData">
 		<item-type>String</item-type>
@@ -657,11 +657,11 @@
 		<description>@text/channel-type.shelly.loraTxData.description</description>
 	</channel-type>
 
-    <channel-type id="loraTxDataRaw" advanced="true">
-        <item-type>String</item-type>
-        <label>@text/channel-type.shelly.loraTxDataRaw.label</label>
-        <description>@text/channel-type.shelly.loraTxDataRaw.description</description>
-    </channel-type>
+	<channel-type id="loraTxDataRaw" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.loraTxDataRaw.label</label>
+		<description>@text/channel-type.shelly.loraTxDataRaw.description</description>
+	</channel-type>
 
 	<channel-type id="loraTxBytes">
 		<item-type>Number</item-type>
