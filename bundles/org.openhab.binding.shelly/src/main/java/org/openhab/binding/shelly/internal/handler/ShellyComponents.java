@@ -470,11 +470,9 @@ public class ShellyComponents {
                             getStringType(sdata.lux.illumination));
                 }
             }
-            if (sdata.accel != null) {
-                if (sdata.accel.tilt != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
-                            toQuantityType(getDouble(sdata.accel.tilt.doubleValue()), DIGITS_NONE, Units.DEGREE_ANGLE));
-                }
+            if (sdata.accel != null && sdata.accel.tilt != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
+                        toQuantityType(getDouble(sdata.accel.tilt.doubleValue()), DIGITS_NONE, Units.DEGREE_ANGLE));
             }
             if (sdata.flood != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -575,7 +573,9 @@ public class ShellyComponents {
         }
 
         // Update Add-On channeös
-        if (status.extTemperature != null) {
+        if (status.extTemperature != null)
+
+        {
             // Shelly 1/1PM support up to 3 external sensors
             // for whatever reason those are not represented as an array, but 3 elements
             updated |= updateTempChannel(status.extTemperature.sensor1, thingHandler, CHANNEL_ESENSOR_TEMP1);

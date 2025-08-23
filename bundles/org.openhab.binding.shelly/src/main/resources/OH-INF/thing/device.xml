@@ -154,6 +154,7 @@
 			</options>
 		</state>
 	</channel-type>
+
 	<channel-type id="deviceFirmware" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.deviceFirmware.label</label>
