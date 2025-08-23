@@ -161,13 +161,4 @@
 		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
-
-	<channel-type id="addonFirmware" advanced="true">
-		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.addonFirmware.label</label>
-		<description>@text/channel-type.shelly.addonFirmware.description</description>
-		<state pattern="%s" readOnly="true">
-		</state>
-	</channel-type>
-
 </thing:thing-descriptions>
