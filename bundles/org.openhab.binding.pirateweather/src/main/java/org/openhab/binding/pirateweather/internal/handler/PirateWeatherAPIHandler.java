@@ -126,7 +126,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            scheduler.schedule(this::updateThings, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
+           updateThings();
         } else {
             logger.debug("The Pirate Weather binding is a read-only binding and cannot handle command '{}'.", command);
         }

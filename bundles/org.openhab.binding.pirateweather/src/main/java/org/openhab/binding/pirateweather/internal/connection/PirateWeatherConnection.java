@@ -33,7 +33,7 @@ import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.pirateweather.internal.config.PirateWeatherAPIConfiguration;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
-import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherJsonWeatherData;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.library.types.PointType;
 import org.slf4j.Logger;
