@@ -17,8 +17,30 @@ Basically all devices connected to Daikin Onecta cloud could be connected with t
 
 ## Discovery
 
-The onecta binding supports auto-discovery of all devices. 
-When the bridge is added and connected, it will automatically discover and add onecta devices to the openHAB system. 
+Please take the following steps prior to using the binding. 
+Create a Onecta cloud account in the Onecta app for [Android](https://play.google.com/store/apps/details?id=com.daikineurope.online.controller&hl=en_US) or [iOS](https://apps.apple.com/de/app/onecta/id1474811586?l=en) (if not already done).
+Afterwards, pair your Daikin units in the Onecta App.
+
+There is no auto discovery for the Onecta cloud account. 
+The account is paired using OAuth2 with your Onecta login and the developer credentials obtained from the Onecta Developer Portal. 
+To pair the account go to the binding's configuration UI at https://<your openHAB address>/onecta. For a standard openHABian Pi installation the address is https://openhabianpi:8443/onecta or https://pi-adres:8443/onecta. 
+Note that your browser will file a warning that the certificate is self-signed. 
+This is fine and you can safely continue. 
+It is NOT possible to use an unsecured connection (http://) for pairing.<br>
+Allowed pairing formats are:
+- https://<your-domain>/onecta
+- https://<your-local-ip>:<your-port>/onecta (standaard port 8443)
+- https://home.myopenhab.org/onecta
+- https://openhabianpi:8443/onecta 
+
+It is **not** allowed to use localhost (Onecta will not accept this)
+- https://localhost:8443
+
+Once a Onecta account is paired, all supported appliances are automatically discovered as individual things and placed in the inbox. 
+They can then be paired with your favorite management UI. 
+As an alternative, the binding configuration UI provides a things-file template per paired account that can be used to pair the appliances.
+
+For a detailed walk through the account configuration, see [Account Configuration Example](#account-configuration-example).
 
 ## Account Bridge Configuration
 
@@ -295,6 +317,55 @@ Number:Temperature  SuctionTemp           "Suction temperature [%.1f °C]"      
 ```
 
 
-## Any custom content here!
+## Account Configuration Example
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+The best way to perform the following steps is in an incognito browser to prevent historical settings and accounts from causing problems.
+
+The configuration UI is accessible at `https://<your openHAB address>/onecta`.
+See [Discovery](#discovery) for a detailed description of how to open the configuration UI in a browser.
+
+When first opening the configuration UI no account will be paired.
+
+![Empty Account Overview](doc/CloudBindingConfigEmpty.png)
+
+We strongly recommend to use a secure connection for pairing, details on this topic can also be found in the [Discovery](#discovery) section.
+Click `Pair Account` to start the pairing process.
+If not already done, go to the [Miele Developer Portal](https://www.miele.com/f/com/en/register_api.aspx), register there and wait for the confirmation e-mail.
+Obtain your client ID and client secret according to the instructions presented there.
+Once you obtained your client ID and client secret continue pairing by filling in your client ID, client secret, bridge ID and an e-mail address that you wish to use for identifying the account.
+You may choose any bridge ID you like as long as you only use letters, numbers, underscores and dashes.
+The e-mail address does not need to match the e-mail address used for your Miele Cloud Account.
+If you need to change the e-mail address later then you will need to authorize the account again.
+
+![Pair Account](doc/pair-account.png)
+
+A click on `Pair Account` will take you to the Miele cloud service login form where you need to log in with the same account as you used for the Miele@mobile app.
+
+![Miele Login Form](doc/miele-login.png)
+
+When this is the first time you pair an account, you will need to allow openHAB to access your account.
+
+When everything worked, you are presented with a page stating that pairing was successful.
+Select the locale which should be used to display localized texts in openHAB channels.
+From here, you have two options:
+Either let the binding automatically configure a bridge instance or copy the presented things-file template to a things-file and return to the overview page.
+
+![Pairing Successful](doc/pairing-success.png)
+
+Once the bridge instance is `ONLINE`, you can either pair things for all appliances via your favorite management UI or use a things-file.
+The account overview provides a things-file template that is shown when you expand the account.
+This can serve as a starting point for your own things-file.
+
+![Account Overview With Bridge](doc/account-overview-with-bridge.png)
+
+## Rule Ideas
+
+Here are some ideas on what could be done with this binding. You have more ideas or even an example? Great! Feel free to contribute!
+
+- Notify yourself of a finished dishwasher, tumble dryer, washer dryer or washing machine, e.g. by changing the lighting
+- Control the supercooler / superfreezer of your freezer, fridge or fridge-freezer combination with a voice assistant
+- Notify yourself when the oven has finished pre-heating
+
+## Acknowledgements
+
+The development of this binding was initiated and sponsored by Miele & Cie. KG.
