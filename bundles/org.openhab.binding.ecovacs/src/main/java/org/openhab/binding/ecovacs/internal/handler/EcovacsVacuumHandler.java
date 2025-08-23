@@ -676,7 +676,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             // charging in that case. The same applies for models with pad washing/drying station, as those states imply
             // the device being charging.
             if (cleanMode != CleanMode.RETURNING && cleanMode != CleanMode.WASHING && cleanMode != CleanMode.DRYING
-                    && cleanMode != CleanMode.AUTO_EMPTY) {
+                    && cleanMode != CleanMode.EMPTYING) {
                 return "charging";
             }
         }
