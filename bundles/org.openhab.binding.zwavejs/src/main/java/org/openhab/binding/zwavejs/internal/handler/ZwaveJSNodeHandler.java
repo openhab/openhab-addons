@@ -292,7 +292,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             @Nullable ColorCapability colorCapability, @Nullable RollerShutterCapability rollerShutterCapability,
             OnOffType onOffCommand) {
         // If this is a color channel, delegate to percent type logic (0% or 100%)
-        if (colorCapability != null) {
+        if (colorCapability != null && colorCapability.colorChannels.contains(channel.getUID())) {
             PercentType percent = switch (onOffCommand) {
                 case OFF -> PercentType.ZERO;
                 case ON -> PercentType.HUNDRED;
