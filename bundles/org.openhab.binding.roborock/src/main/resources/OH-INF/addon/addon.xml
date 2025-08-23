@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Roborock Binding</name>
 	<description>This is the binding for Roborock robot vacuum cleaners.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
