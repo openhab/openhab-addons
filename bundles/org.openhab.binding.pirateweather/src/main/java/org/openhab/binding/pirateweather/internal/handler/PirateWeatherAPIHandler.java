@@ -86,7 +86,8 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
             return;
         }
         String language = config.language;
-        if (language != null && !language.isBlank() && !PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
+        if (language != null && !language.isBlank()
+                && !PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-language");
             return;
@@ -100,15 +101,15 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
             }
         }
 
-            updateStatus(ThingStatus.UNKNOWN);
-            connection = new PirateWeatherConnection(this, httpClient);
+        updateStatus(ThingStatus.UNKNOWN);
+        connection = new PirateWeatherConnection(this, httpClient);
 
-            ScheduledFuture<?> localRefreshJob = refreshJob;
-            if (localRefreshJob == null || localRefreshJob.isCancelled()) {
-                logger.debug("Start refresh job at interval {} min.", refreshInterval);
-                refreshJob = scheduler.scheduleWithFixedDelay(this::updateThings, INITIAL_DELAY_IN_SECONDS,
-                        TimeUnit.MINUTES.toSeconds(refreshInterval), TimeUnit.SECONDS);
-            }
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob == null || localRefreshJob.isCancelled()) {
+            logger.debug("Start refresh job at interval {} min.", refreshInterval);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::updateThings, INITIAL_DELAY_IN_SECONDS,
+                    TimeUnit.MINUTES.toSeconds(refreshInterval), TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -126,7 +127,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-           updateThings();
+            updateThings();
         } else {
             logger.debug("The Pirate Weather binding is a read-only binding and cannot handle command '{}'.", command);
         }
