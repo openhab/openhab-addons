@@ -83,7 +83,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
         if (refreshInterval < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-refreshInterval");
-            configValid = false;
+            return;
         }
         String language = config.language;
         if (language != null && !language.isBlank() && !PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
