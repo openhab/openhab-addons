@@ -98,8 +98,8 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Contact Device -->
-	<thing-type id="contact">
+	<!-- Contact Sensor Device -->
+	<thing-type id="contact-sensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
@@ -124,6 +124,68 @@
 				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds</description>
 				<default>30</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Motion Sensor Device -->
+	<thing-type id="motion-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>Motion Sensor</label>
+		<description>Sbus motion sensor device (9-in-1 devices)</description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the Sbus device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds (0 = listen-only mode for broadcast messages)</description>
+				<default>0</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Lux Sensor Device -->
+	<thing-type id="lux-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>Lux Sensor</label>
+		<description>Sbus light level sensor device (9-in-1 devices)</description>
+		<semantic-equipment-tag>LightSensor</semantic-equipment-tag>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the Sbus device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds (0 = listen-only mode for broadcast messages)</description>
+				<default>0</default>
 				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
@@ -260,5 +322,28 @@
 		</config-description>
 	</channel-type>
 
+	<channel-type id="motion-channel">
+		<item-type>Switch</item-type>
+		<label>Motion Detection</label>
+		<description>Motion detection state (ON=motion detected, OFF=no motion)</description>
+		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lux-channel">
+		<item-type>Number</item-type>
+		<label>Light Level</label>
+		<description>Light level in LUX units</description>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f lux"/>
+	</channel-type>
 
 </thing:thing-descriptions>
