@@ -130,7 +130,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         if (config.location == null || config.location.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
-            configValid = false;
+            return;
         }
 
         try {
@@ -140,26 +140,26 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-parsing-location");
             location = null;
-            configValid = false;
+            return;
         }
 
         int newForecastHours = config.forecastHours;
         if (newForecastHours < 0 || newForecastHours > 48) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-hours");
-            configValid = false;
+            return;
         }
         int newForecastDays = config.forecastDays;
         if (newForecastDays < 0 || newForecastDays > 8) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-days");
-            configValid = false;
+            return;
         }
         int newNumberOfAlerts = config.numberOfAlerts;
         if (newNumberOfAlerts < 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-alerts");
-            configValid = false;
+            return;
         }
 
         if (configValid) {
