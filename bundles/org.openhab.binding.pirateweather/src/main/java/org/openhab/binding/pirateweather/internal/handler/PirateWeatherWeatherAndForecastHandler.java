@@ -125,8 +125,11 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         logger.debug("Initialize PirateWeatherWeatherAndForecastHandler handler '{}'.", getThing().getUID());
         PirateWeatherWeatherAndForecastConfiguration config = getConfigAs(
                 PirateWeatherWeatherAndForecastConfiguration.class);
-
-        boolean configValid = true;
+        if (config == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-missing-config");
+            return;
+        }
         if (config.location == null || config.location.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
@@ -162,86 +165,84 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
             return;
         }
 
-        if (configValid) {
-            logger.debug("Rebuilding thing '{}'.", getThing().getUID());
-            List<Channel> toBeAddedChannels = new ArrayList<>();
-            List<Channel> toBeRemovedChannels = new ArrayList<>();
-            if (forecastHours != newForecastHours) {
-                logger.debug("Rebuilding hourly forecast channel groups.");
-                if (forecastHours > newForecastHours) {
-                    for (int i = newForecastHours + 1; i <= forecastHours; ++i) {
-                        toBeRemovedChannels.addAll(removeChannelsOfGroup(
-                                CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i)));
-                    }
-                } else {
-                    for (int i = forecastHours + 1; i <= newForecastHours; ++i) {
-                        toBeAddedChannels.addAll(createChannelsForGroup(
-                                CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i),
-                                CHANNEL_GROUP_TYPE_HOURLY_FORECAST));
-                    }
+        logger.debug("Rebuilding thing '{}'.", getThing().getUID());
+        List<Channel> toBeAddedChannels = new ArrayList<>();
+        List<Channel> toBeRemovedChannels = new ArrayList<>();
+        if (forecastHours != newForecastHours) {
+            logger.debug("Rebuilding hourly forecast channel groups.");
+            if (forecastHours > newForecastHours) {
+                for (int i = newForecastHours + 1; i <= forecastHours; ++i) {
+                    toBeRemovedChannels.addAll(removeChannelsOfGroup(
+                            CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i)));
                 }
-                forecastHours = newForecastHours;
-            }
-            if (forecastDays != newForecastDays) {
-                logger.debug("Rebuilding daily forecast channel groups.");
-                if (forecastDays > newForecastDays) {
-                    if (newForecastDays < 1) {
-                        toBeRemovedChannels.addAll(removeChannelsOfGroup(CHANNEL_GROUP_FORECAST_TODAY));
-                    }
-                    if (newForecastDays < 2) {
-                        toBeRemovedChannels.addAll(removeChannelsOfGroup(CHANNEL_GROUP_FORECAST_TOMORROW));
-                    }
-                    for (int i = newForecastDays; i < forecastDays; ++i) {
-                        toBeRemovedChannels.addAll(
-                                removeChannelsOfGroup(CHANNEL_GROUP_DAILY_FORECAST_PREFIX + Integer.toString(i)));
-                    }
-                } else {
-                    if (forecastDays == 0 && newForecastDays > 0) {
-                        toBeAddedChannels.addAll(createChannelsForGroup(CHANNEL_GROUP_FORECAST_TODAY,
-                                CHANNEL_GROUP_TYPE_DAILY_FORECAST));
-                    }
-                    if (forecastDays <= 1 && newForecastDays > 1) {
-                        toBeAddedChannels.addAll(createChannelsForGroup(CHANNEL_GROUP_FORECAST_TOMORROW,
-                                CHANNEL_GROUP_TYPE_DAILY_FORECAST));
-                    }
-                    for (int i = (forecastDays < 2) ? 2 : forecastDays; i < newForecastDays; ++i) {
-                        toBeAddedChannels.addAll(
-                                createChannelsForGroup(CHANNEL_GROUP_DAILY_FORECAST_PREFIX + Integer.toString(i),
-                                        CHANNEL_GROUP_TYPE_DAILY_FORECAST));
-                    }
+            } else {
+                for (int i = forecastHours + 1; i <= newForecastHours; ++i) {
+                    toBeAddedChannels.addAll(createChannelsForGroup(
+                            CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i),
+                            CHANNEL_GROUP_TYPE_HOURLY_FORECAST));
                 }
-                forecastDays = newForecastDays;
             }
-            if (numberOfAlerts != newNumberOfAlerts) {
-                logger.debug("Rebuilding alerts channel groups.");
-                if (numberOfAlerts > newNumberOfAlerts) {
-                    for (int i = newNumberOfAlerts + 1; i <= numberOfAlerts; ++i) {
-                        toBeRemovedChannels
-                                .addAll(removeChannelsOfGroup(CHANNEL_GROUP_ALERTS_PREFIX + Integer.toString(i)));
-                    }
-                } else {
-                    for (int i = numberOfAlerts + 1; i <= newNumberOfAlerts; ++i) {
-                        toBeAddedChannels.addAll(createChannelsForGroup(
-                                CHANNEL_GROUP_ALERTS_PREFIX + Integer.toString(i), CHANNEL_GROUP_TYPE_ALERTS));
-                    }
-                }
-                numberOfAlerts = newNumberOfAlerts;
-            }
-            ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
-            for (Channel channel : toBeAddedChannels) {
-                builder.withChannel(channel);
-            }
-            updateThing(builder.build());
-
-            Channel sunriseTriggerChannel = getThing().getChannel(TRIGGER_SUNRISE);
-            sunriseTriggerChannelConfig = (sunriseTriggerChannel == null) ? null
-                    : sunriseTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
-            Channel sunsetTriggerChannel = getThing().getChannel(TRIGGER_SUNSET);
-            sunsetTriggerChannelConfig = (sunsetTriggerChannel == null) ? null
-                    : sunsetTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
-
-            updateStatus(ThingStatus.UNKNOWN);
+            forecastHours = newForecastHours;
         }
+        if (forecastDays != newForecastDays) {
+            logger.debug("Rebuilding daily forecast channel groups.");
+            if (forecastDays > newForecastDays) {
+                if (newForecastDays < 1) {
+                    toBeRemovedChannels.addAll(removeChannelsOfGroup(CHANNEL_GROUP_FORECAST_TODAY));
+                }
+                if (newForecastDays < 2) {
+                    toBeRemovedChannels.addAll(removeChannelsOfGroup(CHANNEL_GROUP_FORECAST_TOMORROW));
+                }
+                for (int i = newForecastDays; i < forecastDays; ++i) {
+                    toBeRemovedChannels
+                            .addAll(removeChannelsOfGroup(CHANNEL_GROUP_DAILY_FORECAST_PREFIX + Integer.toString(i)));
+                }
+            } else {
+                if (forecastDays == 0 && newForecastDays > 0) {
+                    toBeAddedChannels.addAll(
+                            createChannelsForGroup(CHANNEL_GROUP_FORECAST_TODAY, CHANNEL_GROUP_TYPE_DAILY_FORECAST));
+                }
+                if (forecastDays <= 1 && newForecastDays > 1) {
+                    toBeAddedChannels.addAll(
+                            createChannelsForGroup(CHANNEL_GROUP_FORECAST_TOMORROW, CHANNEL_GROUP_TYPE_DAILY_FORECAST));
+                }
+                for (int i = (forecastDays < 2) ? 2 : forecastDays; i < newForecastDays; ++i) {
+                    toBeAddedChannels
+                            .addAll(createChannelsForGroup(CHANNEL_GROUP_DAILY_FORECAST_PREFIX + Integer.toString(i),
+                                    CHANNEL_GROUP_TYPE_DAILY_FORECAST));
+                }
+            }
+            forecastDays = newForecastDays;
+        }
+        if (numberOfAlerts != newNumberOfAlerts) {
+            logger.debug("Rebuilding alerts channel groups.");
+            if (numberOfAlerts > newNumberOfAlerts) {
+                for (int i = newNumberOfAlerts + 1; i <= numberOfAlerts; ++i) {
+                    toBeRemovedChannels
+                            .addAll(removeChannelsOfGroup(CHANNEL_GROUP_ALERTS_PREFIX + Integer.toString(i)));
+                }
+            } else {
+                for (int i = numberOfAlerts + 1; i <= newNumberOfAlerts; ++i) {
+                    toBeAddedChannels.addAll(createChannelsForGroup(CHANNEL_GROUP_ALERTS_PREFIX + Integer.toString(i),
+                            CHANNEL_GROUP_TYPE_ALERTS));
+                }
+            }
+            numberOfAlerts = newNumberOfAlerts;
+        }
+        ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
+        for (Channel channel : toBeAddedChannels) {
+            builder.withChannel(channel);
+        }
+        updateThing(builder.build());
+
+        Channel sunriseTriggerChannel = getThing().getChannel(TRIGGER_SUNRISE);
+        sunriseTriggerChannelConfig = (sunriseTriggerChannel == null) ? null
+                : sunriseTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
+        Channel sunsetTriggerChannel = getThing().getChannel(TRIGGER_SUNSET);
+        sunsetTriggerChannelConfig = (sunsetTriggerChannel == null) ? null
+                : sunsetTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
+
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -341,6 +342,14 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
             return true;
         } catch (JsonSyntaxException e) {
             logger.debug("JsonSyntaxException occurred during execution: {}", e.getLocalizedMessage(), e);
+            return false;
+        } catch (PirateWeatherCommunicationException e) {
+            logger.debug("PirateWeatherCommunicationException occurred during execution: {}", e.getLocalizedMessage(),
+                    e);
+            return false;
+        } catch (PirateWeatherConfigurationException e) {
+            logger.debug("PirateWeatherConfigurationException occurred during execution: {}", e.getLocalizedMessage(),
+                    e);
             return false;
         }
     }

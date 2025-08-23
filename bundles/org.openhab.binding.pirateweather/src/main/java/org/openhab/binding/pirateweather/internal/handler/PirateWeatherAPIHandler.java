@@ -15,6 +15,7 @@ package org.openhab.binding.pirateweather.internal.handler;
 import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -73,7 +74,6 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
         logger.debug("Initialize Pirate Weather API handler '{}'.", getThing().getUID());
         config = getConfigAs(PirateWeatherAPIConfiguration.class);
 
-        boolean configValid = true;
         if (config.apikey == null || config.apikey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");
@@ -160,9 +160,13 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     private void updateThings() {
         ThingStatus status = ThingStatus.OFFLINE;
         for (Thing thing : getThing().getThings()) {
-            if (ThingStatus.ONLINE
-                    .equals(updateThing((PirateWeatherWeatherAndForecastHandler) thing.getHandler(), thing))) {
-                status = ThingStatus.ONLINE;
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof PirateWeatherWeatherAndForecastHandler) {
+                if (ThingStatus.ONLINE.equals(updateThing((PirateWeatherWeatherAndForecastHandler) handler, thing))) {
+                    status = ThingStatus.ONLINE;
+                }
+            } else {
+                logger.warn("Cannot update weather data of thing '{}' as location handler is null.", thing.getUID());
             }
         }
         updateStatus(status);
@@ -170,7 +174,8 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
 
     private ThingStatus updateThing(@Nullable PirateWeatherWeatherAndForecastHandler handler, Thing thing) {
         if (handler != null && connection != null) {
-            handler.updateData(connection);
+            PirateWeatherConnection safeConnection = Objects.requireNonNull(connection);
+            handler.updateData(safeConnection);
             return thing.getStatus();
         } else {
             logger.warn("Cannot update weather data of thing '{}' as location handler is null.", thing.getUID());
