@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.zwavejs.internal.config.ColorCapability;
-import org.openhab.binding.zwavejs.internal.config.RollerShutterCapability;
+import org.openhab.binding.zwavejs.internal.type.capabilities.ColorCapability;
+import org.openhab.binding.zwavejs.internal.type.capabilities.RollerShutterCapability;
 import org.openhab.core.thing.Channel;
 
 /**
