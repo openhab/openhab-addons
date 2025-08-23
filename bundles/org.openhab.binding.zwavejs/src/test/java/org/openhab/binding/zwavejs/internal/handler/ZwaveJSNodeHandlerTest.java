@@ -23,7 +23,10 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openhab.binding.zwavejs.internal.DataUtil;
+import org.openhab.binding.zwavejs.internal.api.dto.commands.BaseCommand;
+import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSNodeHandlerMock;
 import org.openhab.core.config.core.Configuration;
@@ -31,6 +34,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -387,5 +391,104 @@ public class ZwaveJSNodeHandlerTest {
         } finally {
             handler.dispose();
         }
+    }
+
+    private ZwaveJSNodeHandlerMock arrangeHandleCommandTest(int nodeId) {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(nodeId);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock nodeHandler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        ZwaveJSBridgeHandler bridgeHandler = nodeHandler.getBridgeHandler();
+        ZwaveJSBridgeHandler spyBridgeHandler = spy(bridgeHandler);
+
+        doReturn(bridgeHandler).when(nodeHandler).getBridgeHandler();
+
+        return nodeHandler;
+    }
+
+    private <T extends BaseCommand> T captureCommand(ZwaveJSNodeHandler nodeHandler, Class<? extends T> clazz) {
+        ArgumentCaptor<T> captor = ArgumentCaptor.forClass(clazz);
+        verify(nodeHandler.getBridgeHandler(), atLeastOnce()).sendCommand(captor.capture());
+        return captor.getValue();
+    }
+
+    @Test
+    public void testRollershutterCommandOn() {
+        // Arrange
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(39);
+
+        // Act
+        nodeHandler.handleCommand(new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual"), OnOffType.ON);
+
+        // Assert: verify sendCommand was called with the expected NodeSetValueCommand
+        verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeSetValueCommand.class));
+
+        NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
+
+        assertEquals(39, sendCommand.nodeId);
+        assertEquals(true, sendCommand.value);
+    }
+
+    @Test
+    public void testRollershutterCommandUp() {
+        // Arrange
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(39);
+
+        // Act
+        nodeHandler.handleCommand(new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual"),
+                UpDownType.UP);
+
+        // Assert: verify sendCommand was called with the expected NodeSetValueCommand
+        verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeSetValueCommand.class));
+
+        NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
+
+        assertEquals(39, sendCommand.nodeId);
+        assertEquals(38, sendCommand.valueId.commandClass);
+        assertEquals("On", sendCommand.valueId.property);
+        assertEquals(true, sendCommand.value);
+    }
+
+    @Test
+    public void testRollershutterCommand44() {
+        // Arrange
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(39);
+
+        // Act
+        nodeHandler.handleCommand(new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual"),
+                PercentType.valueOf("44"));
+
+        // Assert: verify sendCommand was called with the expected NodeSetValueCommand
+        verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeSetValueCommand.class));
+
+        NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
+
+        assertEquals(39, sendCommand.nodeId);
+        assertEquals(38, sendCommand.valueId.commandClass);
+        assertEquals("targetValue", sendCommand.valueId.property);
+        assertEquals(44, sendCommand.value);
+    }
+
+    @Test
+    public void testRollershutterCommandStop() {
+        // Arrange
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(39);
+
+        // Act
+        nodeHandler.handleCommand(new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual"),
+                UpDownType.UP);
+        nodeHandler.handleCommand(new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual"),
+                StopMoveType.STOP);
+
+        // Assert: verify sendCommand was called with the expected NodeSetValueCommand
+        verify(nodeHandler.getBridgeHandler(), times(2)).sendCommand(any(NodeSetValueCommand.class));
+
+        NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
+
+        assertEquals(39, sendCommand.nodeId);
+        assertEquals(38, sendCommand.valueId.commandClass);
+        assertEquals("On", sendCommand.valueId.property);
+        assertEquals(false, sendCommand.value);
     }
 }
