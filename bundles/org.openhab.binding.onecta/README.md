@@ -330,20 +330,23 @@ When first opening the configuration UI no account will be paired.
 
 We strongly recommend to use a secure connection for pairing, details on this topic can also be found in the [Discovery](#discovery) section.
 Click `Pair Account` to start the pairing process.
-If not already done, go to the [Miele Developer Portal](https://www.miele.com/f/com/en/register_api.aspx), register there and wait for the confirmation e-mail.
-Obtain your client ID and client secret according to the instructions presented there.
-Once you obtained your client ID and client secret continue pairing by filling in your client ID, client secret, bridge ID and an e-mail address that you wish to use for identifying the account.
-You may choose any bridge ID you like as long as you only use letters, numbers, underscores and dashes.
-The e-mail address does not need to match the e-mail address used for your Miele Cloud Account.
-If you need to change the e-mail address later then you will need to authorize the account again.
+If not already done, go to the [Daikin Developer Portal](https://developer.cloud.daikineurope.com/login), register there and wait for the confirmation e-mail.
+Obtain your client ID and client secret according to the instructions presented there. (**Open the Daikin Developer portal in a incognito browser.**)
 
-![Pair Account](doc/pair-account.png)
+Once you obtained your client ID and client secret continue pairing by filling in your client ID, client secret and Redirect URI.
+<br>**Important** : 
+- The redirect URI must be set to `https://<your openHAB address>/onecta/result`.
+- It has to be https, otherwise the pairing will fail.
+- Localhost is not supported, you have to use the actual hostname of your openHAB installation.
+![img.png](doc/CloudBindingSettings.png)
 
-A click on `Pair Account` will take you to the Miele cloud service login form where you need to log in with the same account as you used for the Miele@mobile app.
+  
 
-![Miele Login Form](doc/miele-login.png)
+A click on `Pair Account` will take you to the Daikin cloud service login form where you need to log in with the same account as you used for the Onecta@mobile app.
 
+![Onecta Login Form](doc/onecta-login.png)
 When this is the first time you pair an account, you will need to allow openHAB to access your account.
+![Onecta Permissions](doc/onecta-permision.png)
 
 When everything worked, you are presented with a page stating that pairing was successful.
 Select the locale which should be used to display localized texts in openHAB channels.
@@ -351,21 +354,12 @@ From here, you have two options:
 Either let the binding automatically configure a bridge instance or copy the presented things-file template to a things-file and return to the overview page.
 
 ![Pairing Successful](doc/pairing-success.png)
-
 Once the bridge instance is `ONLINE`, you can either pair things for all appliances via your favorite management UI or use a things-file.
 The account overview provides a things-file template that is shown when you expand the account.
 This can serve as a starting point for your own things-file.
+In the properties of the Onecta account thing, you can also find the available units and their details of your system. 
+Sometimes you need to Disable and then re-Enable the account thing to see the updated list of units.
 
 ![Account Overview With Bridge](doc/account-overview-with-bridge.png)
 
-## Rule Ideas
 
-Here are some ideas on what could be done with this binding. You have more ideas or even an example? Great! Feel free to contribute!
-
-- Notify yourself of a finished dishwasher, tumble dryer, washer dryer or washing machine, e.g. by changing the lighting
-- Control the supercooler / superfreezer of your freezer, fridge or fridge-freezer combination with a voice assistant
-- Notify yourself when the oven has finished pre-heating
-
-## Acknowledgements
-
-The development of this binding was initiated and sponsored by Miele & Cie. KG.
