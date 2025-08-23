@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
 
 import com.google.gson.annotations.SerializedName;
@@ -599,6 +600,15 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2DeviceStatus {
+        public static class Shelly2DeviceStatusSysAvlUpdate {
+            public static class Shelly2DeviceStatusSysUpdate {
+                public String version;
+            }
+
+            public Shelly2DeviceStatusSysUpdate stable;
+            public Shelly2DeviceStatusSysUpdate beta;
+        }
+
         public class Shelly2InputCounts {
             public Integer total;
             @SerializedName("by_minute")
@@ -630,19 +640,6 @@ public class Shelly2ApiJsonDTO {
             public Double timerStartedAt;
             @SerializedName("timer_duration")
             public Double timerDuration;
-        }
-
-        public static class Shelly2DeviceStatusb {
-            public Integer id;
-            @SerializedName("bytes_recd")
-            public Long rxBytes;
-            @SerializedName("bytes_sent")
-            public Long txBytes;
-            @SerializedName("send_fails")
-            public Long txErrors;
-            @SerializedName("air_time_hr_ms")
-            public Long airtime;
-            public String fw;
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -902,15 +899,6 @@ public class Shelly2ApiJsonDTO {
         }
 
         public class Shelly2DeviceStatusSys {
-            public class Shelly2DeviceStatusSysAvlUpdate {
-                public class Shelly2DeviceStatusSysUpdate {
-                    public String version;
-                }
-
-                public Shelly2DeviceStatusSysUpdate stable;
-                public Shelly2DeviceStatusSysUpdate beta;
-            }
-
             public class Shelly2DeviceStatusWakeup {
                 public String boot;
                 public String cause;
@@ -1201,7 +1189,10 @@ public class Shelly2ApiJsonDTO {
         public Long txErrors;
         @SerializedName("air_time_hr_ms")
         public Long airtime;
+        @SerializedName("fw_version")
         public String fw;
+        @SerializedName("available_updates")
+        public Shelly2DeviceStatusSysAvlUpdate availableUpdates;
     }
 
     public static class Shelly2RpcNotifyStatus {
@@ -1271,7 +1262,7 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("Battery")
         public Integer battery;
         @SerializedName("Button")
-        public Integer[] buttonEvent;
+        public Integer[] buttons;
         @SerializedName("Illuminance")
         public Integer illuminance;
         @SerializedName("Window")
@@ -1281,9 +1272,11 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("Motion")
         public Integer motionState;
         @SerializedName("Temperature")
-        public Double temperature;
+        public Double[] temperatures;
         @SerializedName("Humidity")
         public Double humidity;
+        @SerializedName("Firmware32")
+        public Long firmware;
         public Integer rssi;
         public Integer tx_power;
     }
@@ -1305,13 +1298,13 @@ public class Shelly2ApiJsonDTO {
         public String component;
         public String name;
         public String event;
-        public Object data;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")
         public Integer cfgRev;
 
         // BLU
+        @SerializedName("data")
         public Shelly2NotifyBluEventData blu;
 
         // LoRa
