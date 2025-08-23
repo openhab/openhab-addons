@@ -89,6 +89,9 @@ public class PirateWeatherChannelConfiguration {
                     int minutes = Integer.parseInt(splittedConfigTime[1]);
                     return Duration.ofMinutes(minutes).plusHours(hour).toMinutes();
                 }
+            } catch (NumberFormatException ex) {
+                logger.warn("Cannot parse channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
+                        time);
             } catch (Exception ex) {
                 logger.warn("Cannot parse channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
                         time);
