@@ -308,7 +308,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     }
 
     /**
-     * Updates Dark Sky data for this location.
+     * Updates Pirate Weather data for this location.
      *
      * @param connection {@link PirateWeatherConnection} instance
      */
@@ -326,10 +326,10 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     }
 
     /**
-     * Requests the data from Dark Sky API.
+     * Requests the data from Pirate Weather API.
      *
      * @param connection {@link PirateWeatherConnection} instance
-     * @return true, if the request for the Dark Sky data was successful
+     * @return true, if the request for the Pirate Weather data was successful
      * @throws PirateWeatherCommunicationException
      * @throws PirateWeatherConfigurationException
      */
@@ -346,7 +346,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     }
 
     /**
-     * Updates all channels of this handler from the latest Dark Sky data retrieved.
+     * Updates all channels of this handler from the latest Pirate Weather data retrieved.
      */
     private void updateChannels() {
         for (Channel channel : getThing().getChannels()) {
@@ -359,7 +359,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     }
 
     /**
-     * Updates the channel with the given UID from the latest Dark Sky data retrieved.
+     * Updates the channel with the given UID from the latest Pirate Weather data retrieved.
      *
      * @param channelUID UID of the channel
      */
@@ -400,7 +400,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     }
 
     /**
-     * Update the channel from the last Dark Sky data retrieved.
+     * Update the channel from the last Pirate Weather data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
      */
@@ -485,7 +485,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     }
 
     /**
-     * Update the channel from the last Dark Sky data retrieved.
+     * Update the channel from the last Pirate Weather data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
      * @param count
