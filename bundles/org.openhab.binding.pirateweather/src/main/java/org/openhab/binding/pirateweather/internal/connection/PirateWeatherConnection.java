@@ -130,11 +130,25 @@ public class PirateWeatherConnection {
         }
     }
 
-    private @Nullable String getResponseFromCache(String url) {
-        return cache.putIfAbsentAndGet(url, () -> getResponse(url));
+    private @Nullable String getResponseFromCache(String url)
+            throws PirateWeatherConfigurationException, PirateWeatherCommunicationException {
+        return cache.putIfAbsentAndGet(url, () -> {
+            try {
+                return getResponse(url);
+            } catch (PirateWeatherConfigurationException e) {
+                // Log and handle the exception
+                logger.error("Error fetching response from cache: {}", e.getMessage());
+                return "";
+            } catch (PirateWeatherCommunicationException e) {
+                // Log and handle the exception
+                logger.error("Error fetching response from cache: {}", e.getMessage());
+                return "";
+            }
+        });
     }
 
-    private String getResponse(String url) {
+    private String getResponse(String url)
+            throws PirateWeatherConfigurationException, PirateWeatherCommunicationException {
         try {
             logger.trace("Pirate Weather request: URL = '{}'", uglifyApikey(url));
             ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(10, TimeUnit.SECONDS)
@@ -164,6 +178,9 @@ public class PirateWeatherConnection {
                 throw new PirateWeatherCommunicationException(e);
             }
         } catch (InterruptedException | TimeoutException e) {
+            logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new PirateWeatherCommunicationException(e);
+        } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
             throw new PirateWeatherCommunicationException(e);
         }
