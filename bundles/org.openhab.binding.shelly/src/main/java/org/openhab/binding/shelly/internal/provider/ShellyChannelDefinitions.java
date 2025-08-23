@@ -322,8 +322,8 @@ public class ShellyChannelDefinitions {
             // Only some devices report the internal device temp
             boolean hasTemp = !profile.isLight
                     && (status.temperature != null || (status.tmp != null && !profile.isSensor));
-            if (hasTemp && profile.isGen2 && (profile.numMeters > 0 && !profile.hasRelays)) // Shely Plus PM Mini
-            {
+            if (hasTemp && profile.isGen2 && (!profile.isDimmer && profile.numMeters > 0 && !profile.hasRelays)) {
+                // Shely Plus PM Mini
                 hasTemp = false;
             }
             addChannel(thing, add, hasTemp, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
@@ -563,11 +563,9 @@ public class ShellyChannelDefinitions {
             addChannel(thing, newChannels, sdata.sensor.vibration != null, CHANNEL_GROUP_SENSOR,
                     CHANNEL_SENSOR_VIBRATION);
         }
-
         // Create tilt for DW/DW2, for BLU DW create channel even tilt is currently not reported
         if (sdata.accel != null || (profile.isBlu && profile.isDW && sdata.lux != null)) {
-            addChannel(thing, newChannels, sdata.lux != null || sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR,
-                    CHANNEL_SENSOR_TILT);
+            addChannel(thing, newChannels, sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT);
         }
 
         // Gas

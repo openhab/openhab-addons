@@ -101,12 +101,12 @@ See section [Discovery](#discovery) for details.
 | shellyplusstrip      | Shelly Plus Power Strip 4                                | S4PL-00416EU                                                              |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                                                    |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                                                |
-| shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW                                                 |
+| shellyplus10v        | Shelly Plus Dimmer 0-10V (Gen 2) or 0/1-10V (Gen 3)      | SNDM-00100WW, SNGW-0A11WW010, S3DM-0010WW                                 |
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
-| shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
+| shellyplusdimmer     | Shelly Plus Dimmer                                       | S3DM-0A101WWL, S4DM-0A101WWL                                              |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
@@ -123,20 +123,24 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly Pro Series (Generation 2+3)
 
-| thing-type          | Model                                                    | Vendor ID                                      |
-| ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
-| shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
-| shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
-| shellypro1cb        | Shelly Pro 1 Circuit Breaker with 1x relay + volt meter  | SPCB-01VENEU                                   |
-| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
-| shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
-| shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
-| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
-| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU       |
-| shellyproem50       | Shelly Pro EM-50 - 2 channel, single phase energy meter  | SPEM-002CEBEU50                                |
-| shellypro3em        | Shelly Pro 3EM - 3-phase energy meter                    | SPEM-003CEBEU, SPEM-003CEBEU120                |
-| shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter| SPEM-003CEBEU63                                |
-| shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                | SPEM-003CEBEU400                               |
+| thing-type            | Model                                                       | Vendor ID                                      |
+| --------------------- | ----------------------------------------------------------- | ---------------------------------------------- |
+| shellypro1            | Shelly Pro 1 with 1x relay                                  | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
+| shellypro1pm          | Shelly Pro 1 PM with 1x relay + power meter                 | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
+| shellypro1cb          | Shelly Pro 1 Circuit Breaker with 1x relay + volt meter     | SPCB-01VENEU                                   |
+| shellypro2-relay      | Shelly Pro 2 with 2x relay, relay mode                      | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
+| shellypro2pm-relay    | Shelly Pro 2 PM with 2x relay + power meter, relay mode     | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
+| shellypro2pm-roller   | Shelly Pro 2 PM with 2x relay + power meter, roller mode    | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
+| shellypro3            | Shelly Pro 3 with 3x relay (dry contacts)                   | SPSW-003XE16EU                                 |
+| shellypro4pm          | Shelly Pro 4 PM with 4x relay + power meter                 | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU       |
+| shellyproem50         | Shelly Pro EM-50 - 2 channel, single phase energy meter     | SPEM-002CEBEU50                                |
+| shellypro3em          | Shelly Pro 3EM - 3-phase energy meter                       | SPEM-003CEBEU, SPEM-003CEBEU120                |
+| shellypro3em3ct63     | Shelly Pro 3EM-3CT63 - single or three-phase energy meter   | SPEM-003CEBEU63                                |
+| shellypro3em400       | Shelly Pro 3EM-400 - 3-phase energy meter                   | SPEM-003CEBEU400                               |
+| shellyproprodimmer1pm | Shelly Pro 1PM - Smart dimmer with power monitoring         | SPDM-001PE01EU                                 |
+| shellyproprodimmer2pm | Shelly Pro 1PM - Dual channel smart dimmer with power meter | SPDM-002PE01EU                                 |
+| shellyproprodimmer10v | Shelly Pro 0/1-10VPM - Manage 0/1-10V dimming drivers       | SPCC-001PE10EU                                 |
+
 
 ### Shelly BLU
 
@@ -448,7 +452,6 @@ The following trigger types are sent:
 | LONG_PRESSED       | The button was pressed for a longer time (lastEvent=L)              |
 | SHORT_LONG_PRESSED | A short followed by a long button push (lastEvent=SL)               |
 | LONG_SHORT_PRESSED | A long followed by a short button push (lastEvent=LS)               |
-| HOLDING            | Button held for at least 3 sec                                      |
 
 Check the channel definitions for the various devices to see if the device supports those events.
 You could use the Shelly App to set the timing for those events.
@@ -1490,6 +1493,36 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 |       | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                                |
+
+### Shelly Plus EM (thing-type: shellyemmini)
+
+| Group  | Channel       | Type     | read-only | Description                                                                       |
+| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
+| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
 
 ### Shelly Plus EM (thing-type: shellyemmini)
 
