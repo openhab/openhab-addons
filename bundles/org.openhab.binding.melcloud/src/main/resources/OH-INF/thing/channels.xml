@@ -167,16 +167,16 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-    <channel-type id="tankTargetWaterTemperature-channel">
-        <item-type>Number:Temperature</item-type>
-        <label>Tank target temperature</label>
-        <description>Setpoint temperature of water</description>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
-        <state min="20" max="65" step="1" pattern="%.0f %unit%"/>
-    </channel-type>
+	<channel-type id="tankTargetWaterTemperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Tank target temperature</label>
+		<description>Setpoint temperature of water</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="20" max="65" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
 
 	<channel-type id="forcedHotWaterMode-channel">
 		<item-type>Switch</item-type>
@@ -214,10 +214,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Room Temperature Zone 2</label>
 		<description>Room temperature for zone 2</description>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -232,10 +232,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Heat flow temperature for zone 1</label>
 		<description>Set temperature for water flow for zone 1</description>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="20" max="65" step="1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -243,10 +243,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Heat flow temperature for zone 2</label>
 		<description>Set temperature for water flow for zone 2</description>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="20" max="65" step="1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 

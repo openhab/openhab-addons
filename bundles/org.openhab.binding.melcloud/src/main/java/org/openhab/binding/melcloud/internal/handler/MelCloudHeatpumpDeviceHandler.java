@@ -163,69 +163,69 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        HeatpumpDeviceStatus cmdtoSend = getHeatpumpDeviceStatusCopy(heatpumpDeviceStatus);
-        cmdtoSend.setEffectiveFlags(0L);
+        HeatpumpDeviceStatus commandToSend = getHeatpumpDeviceStatusCopy(heatpumpDeviceStatus);
+        commandToSend.setEffectiveFlags(0L);
 
         switch (channelUID.getId()) {
             case CHANNEL_POWER:
-                cmdtoSend.setPower(command == OnOffType.ON);
-                cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_POWER);
+                commandToSend.setPower(command == OnOffType.ON);
+                commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_POWER);
                 break;
             case CHANNEL_SET_TEMPERATURE_ZONE1:
                 BigDecimal v = this.convertOHValueToHPTemperature(command, 0.5);
                 if (v != null) {
-                    cmdtoSend.setSetTemperatureZone1(v.doubleValue());
-                    cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE_ZONE1);
+                    commandToSend.setSetTemperatureZone1(v.doubleValue());
+                    commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE_ZONE1);
                 }
                 break;
             case CHANNEL_SET_TEMPERATURE_ZONE2:
                 BigDecimal zone2Temperature = this.convertOHValueToHPTemperature(command, 0.5);
                 if (zone2Temperature != null) {
-                    cmdtoSend.setSetTemperatureZone2(zone2Temperature.doubleValue());
-                    cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE_ZONE2);
+                    commandToSend.setSetTemperatureZone2(zone2Temperature.doubleValue());
+                    commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE_ZONE2);
                 }
                 break;
             case CHANNEL_FORCED_HOTWATERMODE:
-                cmdtoSend.setForcedHotWaterMode(command == OnOffType.ON);
-                cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_HOTWATER);
+                commandToSend.setForcedHotWaterMode(command == OnOffType.ON);
+                commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_HOTWATER);
                 break;
             case CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE1:
                 BigDecimal heatFlowTemperatureZone1 = this.convertOHValueToHPTemperature(command, 1);
                 if (heatFlowTemperatureZone1 != null) {
-                    cmdtoSend.setSetHeatFlowTemperatureZone1(heatFlowTemperatureZone1.doubleValue());
-                    cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE1);
+                    commandToSend.setSetHeatFlowTemperatureZone1(heatFlowTemperatureZone1.doubleValue());
+                    commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE1);
                 }
                 break;
             case CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE2:
                 BigDecimal heatFlowTemperatureZone2 = this.convertOHValueToHPTemperature(command, 1);
                 if (heatFlowTemperatureZone2 != null) {
-                    cmdtoSend.setSetHeatFlowTemperatureZone2(heatFlowTemperatureZone2.doubleValue());
-                    cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE2);
+                    commandToSend.setSetHeatFlowTemperatureZone2(heatFlowTemperatureZone2.doubleValue());
+                    commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE2);
                 }
                 break;
             case CHANNEL_HEAT_TEMPERATURE_MODE_ZONE1:
-                cmdtoSend.setOperationModeZone1(Integer.parseInt(command.toString()));
-                cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE1);
+                commandToSend.setOperationModeZone1(Integer.parseInt(command.toString()));
+                commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE1);
                 break;
             case CHANNEL_HEAT_TEMPERATURE_MODE_ZONE2:
-                cmdtoSend.setOperationModeZone2(Integer.parseInt(command.toString()));
-                cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE2);
+                commandToSend.setOperationModeZone2(Integer.parseInt(command.toString()));
+                commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE2);
                 break;
             case CHANNEL_TANK_TARGET_WATER_TEMPERATURE:
                 BigDecimal tankWaterTemperature = this.convertOHValueToHPTemperature(command, 1);
                 if (tankWaterTemperature != null) {
-                    cmdtoSend.setSetTankWaterTemperature(tankWaterTemperature.doubleValue());
-                    cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_TARGET_TANK_TEMPERATURE);
+                    commandToSend.setSetTankWaterTemperature(tankWaterTemperature.doubleValue());
+                    commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_TARGET_TANK_TEMPERATURE);
                 }
             default:
                 logger.debug("Read-only or unknown channel {}, skipping update", channelUID);
         }
 
-        if (cmdtoSend.getEffectiveFlags() > 0) {
-            cmdtoSend.setHasPendingCommand(true);
-            cmdtoSend.setDeviceID(config.deviceID);
+        if (commandToSend.getEffectiveFlags() > 0) {
+            commandToSend.setHasPendingCommand(true);
+            commandToSend.setDeviceID(config.deviceID);
             try {
-                HeatpumpDeviceStatus newHeatpumpDeviceStatus = melCloudHandler.sendHeatpumpDeviceStatus(cmdtoSend);
+                HeatpumpDeviceStatus newHeatpumpDeviceStatus = melCloudHandler.sendHeatpumpDeviceStatus(commandToSend);
                 updateChannels(newHeatpumpDeviceStatus);
             } catch (MelCloudLoginException e) {
                 logger.warn("Command '{}' to channel '{}' failed due to login error, reason {}. ", command, channelUID,
