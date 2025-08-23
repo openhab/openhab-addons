@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: sungrow Binding</name>
 
   <properties>
-    <bnd.importpackage>com.google.gson.*;resolution:="optional"</bnd.importpackage>
+    <bnd.importpackage>com.google.gson.*;resolution:="optional",com.google.errorprone.*;resolution:="optional"</bnd.importpackage>
   </properties>
 
   <dependencies>
