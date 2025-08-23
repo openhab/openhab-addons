@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Mike Major - Initial contribution
  */
 @NonNullByDefault
-public class SerialBridgeConfiguration {
+public class SerialBridgeConfiguration extends CommonBridgeConfiguration {
     /**
      * Serial port name
      */
@@ -47,14 +47,10 @@ public class SerialBridgeConfiguration {
      */
     public String stopBits = "1";
 
-    /**
-     * Charset
-     */
-    public @Nullable String charset;
-
     @Override
     public String toString() {
         return "SerialBridgeConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudRate + ", Databits="
-                + dataBits + ", Parity=" + parity + ", Stopbits=" + stopBits + ", charset=" + charset + "]";
+                + dataBits + ", Parity=" + parity + ", Stopbits=" + stopBits + ", charset=" + charset + ", eolPattern="
+                + eolPattern + "]";
     }
 }
