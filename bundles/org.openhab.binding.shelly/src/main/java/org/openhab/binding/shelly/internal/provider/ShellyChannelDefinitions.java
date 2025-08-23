@@ -148,6 +148,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE, "deviceFirmware", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ADDONFW, "deviceAddonFirmware", ITEMT_STRING))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -340,6 +341,7 @@ public class ShellyChannelDefinitions {
 
         addChannel(thing, add, profile.settings.name != null, CHGR_DEVST, CHANNEL_DEVST_NAME);
         addChannel(thing, add, !profile.gateway.isEmpty() || profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_GATEWAY);
+        addChannel(thing, add, !profile.addOnFw.isEmpty(), CHGR_DEVST, CHANNEL_DEVST_ADDONFW);
 
         if (!profile.isSensor && !profile.isIX
                 && ((status.temperature != null && getDouble(status.temperature) != SHELLY_API_INVTEMP)

@@ -74,9 +74,11 @@ public class ShellyComponents {
         }
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
-
         if (!profile.gateway.isEmpty()) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
+        }
+        if (!profile.addOnFw.isEmpty()) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ADDONFW, getStringType(profile.addOnFw));
         }
 
         if (getLong(status.uptime) > 10) {
@@ -700,6 +702,7 @@ public class ShellyComponents {
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXERRORS,
                     getDecimal(status.txErrors));
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_AIRTIME, getDecimal(status.airtime));
+            profile.addOnFw = getString(status.fw);
         }
 
         return updated;

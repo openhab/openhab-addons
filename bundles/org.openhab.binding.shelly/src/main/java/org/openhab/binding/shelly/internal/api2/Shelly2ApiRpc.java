@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,7 +75,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
@@ -762,7 +764,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     break;
                 case SHELLY2_EVENT_LORADATA:
                     logger.debug("{}: LoRa data received, payload = {}", thingName, e.lora);
-                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(e.lora));
+                    if (e.lora != null) {
+                        String rxData = new String(Base64.getDecoder().decode(e.lora.getBytes(StandardCharsets.UTF_8)));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(e.lora));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(rxData));
+                    }
                     updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.rssi));
                     updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.snr));
                     getThing().postEvent(SHELLY2_EVENT_LORADATA.toUpperCase(), false);

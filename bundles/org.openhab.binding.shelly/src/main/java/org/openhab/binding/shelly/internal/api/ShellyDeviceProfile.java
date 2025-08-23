@@ -77,6 +77,7 @@ public class ShellyDeviceProfile {
     public String hwBatchId = "";
     public String fwVersion = "";
     public String fwDate = "";
+    public String addOnFw = "";
 
     public boolean hasRelays = false; // true if it has at least 1 power meter
     public int numRelays = 0; // number of relays/outputs
