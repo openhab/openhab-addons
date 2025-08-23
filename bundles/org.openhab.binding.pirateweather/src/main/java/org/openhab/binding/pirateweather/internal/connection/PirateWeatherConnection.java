@@ -170,6 +170,6 @@ public class PirateWeatherConnection {
     }
 
     private String uglifyApikey(String url) {
-        return url.replaceAll("(appid=)+\\w+", "appid=*****");
+        return url.replaceAll("(?<=forecast/)[^/]+", "*****");
     }
 }
