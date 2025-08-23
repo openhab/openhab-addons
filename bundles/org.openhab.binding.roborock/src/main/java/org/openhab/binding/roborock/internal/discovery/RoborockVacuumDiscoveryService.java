@@ -14,7 +14,10 @@ package org.openhab.binding.roborock.internal.discovery;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,8 +45,41 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
 
     private final Logger logger = LoggerFactory.getLogger(RoborockVacuumDiscoveryService.class);
 
+    private @Nullable ScheduledFuture<?> discoveryJob;
+
     public RoborockVacuumDiscoveryService() {
-        super(RoborockAccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5, false);
+        super(RoborockAccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5);
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        removeOlderResults(getTimestampOfLastScan());
+        super.stopScan();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now());
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start Roborock background discovery.");
+        ScheduledFuture<?> job = this.discoveryJob;
+        if (job == null || job.isCancelled()) {
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 1, 30, TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop Roborock background discovery");
+        ScheduledFuture<?> job = this.discoveryJob;
+        if (job != null) {
+            job.cancel(true);
+            discoveryJob = null;
+        }
     }
 
     @Nullable
@@ -54,11 +90,6 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
     @Nullable
     protected HomeData getHomeData(String rrHomeID) {
         return thingHandler.getHomeData(rrHomeID);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
     }
 
     private void discover() {

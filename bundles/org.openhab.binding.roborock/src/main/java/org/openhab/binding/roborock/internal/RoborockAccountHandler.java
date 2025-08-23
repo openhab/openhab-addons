@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.discovery.RoborockVacuumDiscoveryService;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -90,6 +92,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private final SecureRandom secureRandom = new SecureRandom();
     private String mqttUser = "";
     protected final Map<String, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
+    private final ExpiringCache<Home> homeCache = new ExpiringCache<>(Duration.ofMinutes(10), this::refreshHome);
 
     private final Gson gson = new Gson();
 
@@ -111,6 +114,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     @Nullable
     public Home getHomeDetail() {
+        return homeCache.getValue();
+    }
+
+    @Nullable
+    public Home refreshHome() {
         try {
             return webTargets.getHomeDetail(baseUri, token);
         } catch (RoborockException e) {
