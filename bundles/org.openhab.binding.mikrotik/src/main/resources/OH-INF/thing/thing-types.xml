@@ -83,6 +83,10 @@
 			<channel id="rxDrops" typeId="rxDrops"/>
 			<channel id="txErrors" typeId="txErrors"/>
 			<channel id="rxErrors" typeId="rxErrors"/>
+			<!-- ethernet POE channels -->
+			<channel id="poeOutState" typeId="poeOutState"/>
+			<channel id="poeOutStatus" typeId="poeOutStatus"/>
+			<channel id="poeOutPower" typeId="poeOutPower"/>
 			<!-- ethernet interface channels -->
 			<channel id="defaultName" typeId="defaultName"/>
 			<channel id="rate" typeId="ethernetRate"/>
@@ -93,13 +97,19 @@
 			<!-- ppp & vpn interface channels -->
 			<channel id="upSince" typeId="upSince"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>name</representation-property>
+
 		<config-description>
 			<parameter name="name" type="text" required="true">
 				<label>Interface Name</label>
 				<description>RouterOS Interface name (i.e. ether1)</description>
 			</parameter>
 		</config-description>
+
 	</thing-type>
 
 	<thing-type id="wifiRegistration">
@@ -353,6 +363,54 @@
 		<label>Receiving Errors</label>
 		<description>Amount of errors during receiving</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="poeOutState" advanced="true">
+		<item-type>String</item-type>
+		<label>PoE Out State</label>
+		<description>Defines the PoE-Out state of the port, allowing control over various power delivery modes</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="auto-on">Auto On</option>
+				<option value="forced-on">Forced On</option>
+				<option value="off">Off</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="poeOutStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>PoE Out Status</label>
+		<description>Shows current PoE-Out status on port</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="powered-on">Powered On</option>
+				<option value="waiting-for-load">Waiting for load</option>
+				<option value="short-circuit">Short Circuit</option>
+				<option value="overload">Overload</option>
+				<option value="voltage-too-low">Voltage too low</option>
+				<option value="current-too-low">Current too low</option>
+				<option value="off">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="poeOutPower" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>PoE Out Consumption</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="defaultName" advanced="true">
