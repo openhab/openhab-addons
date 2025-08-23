@@ -56,7 +56,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link Shelly1CoapHandler} handles the CoIoT/CoAP registration and events.
@@ -233,8 +232,16 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     case COIOT_OPTION_GLOBAL_DEVID:
                         devId = opt.getStringValue();
                         String sVersion = substringAfterLast(devId, "#");
-                        int iVersion = Integer.parseInt(sVersion);
-                        if (coiotBound && (coiotVers != iVersion)) {
+                        int iVersion;
+                        try {
+                            iVersion = Integer.parseInt(sVersion);
+                        } catch (NumberFormatException e) {
+                            logger.debug("{}: Unable to parse version in CoIoT message: {}", thingName, devId);
+                            resetSerial();
+                            thingHandler.incProtErrors();
+                            return;
+                        }
+                        if (coiotBound && coiotVers != iVersion) {
                             logger.debug("{}: CoIoT versopm has changed from {} to {}, maybe the firmware was upgraded",
                                     thingName, coiotVers, iVersion);
                             thingHandler.reinitializeThing();
@@ -304,7 +311,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
                 updatesRequested = true;
             }
-        } catch (JsonSyntaxException | IllegalArgumentException | NullPointerException e) {
+        } catch (Exception e) {
             logger.debug("{}: Unable to process CoIoT Message for payload={}", thingName, payload, e);
             resetSerial();
             thingHandler.incProtErrors();
@@ -323,54 +330,44 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     private void handleDeviceDescription(String devId, String payload) throws ShellyApiException {
         logger.debug("{}: CoIoT Device Description for {}: {}", thingName, devId, payload);
 
-        try {
-            boolean valid = true;
+        boolean valid = true;
 
-            // Decode Json
-            CoIotDevDescription descr = fromJson(gson, payload, CoIotDevDescription.class);
-            for (int i = 0; i < descr.blk.size(); i++) {
-                CoIotDescrBlk blk = descr.blk.get(i);
-                logger.debug("{}:    id={}: {}", thingName, blk.id, blk.desc);
-                if (!blkMap.containsKey(blk.id)) {
-                    blkMap.put(blk.id, blk);
-                } else {
-                    blkMap.replace(blk.id, blk);
-                }
-                if ((blk.type != null) && !blk.type.isEmpty()) {
-                    // in fact it is a sen entry - that's vioaling the Spec
-                    logger.trace("{}:    fix: auto-create sensor definition for id {}/{}!", thingName, blk.id,
-                            blk.desc);
-                    CoIotDescrSen sen = new CoIotDescrSen();
-                    sen.id = blk.id;
-                    sen.desc = blk.desc;
-                    sen.type = blk.type;
-                    sen.range = blk.range;
-                    sen.links = blk.links;
-                    valid &= addSensor(sen);
-                }
+        // Decode Json
+        CoIotDevDescription descr = fromJson(gson, payload, CoIotDevDescription.class);
+        for (CoIotDescrBlk blk : descr.blk) {
+            logger.debug("{}:    id={}: {}", thingName, blk.id, blk.desc);
+            blkMap.put(blk.id, blk);
+            if ((blk.type != null) && !blk.type.isEmpty()) {
+                // in fact it is a sen entry - that's vioaling the Spec
+                logger.trace("{}:    fix: auto-create sensor definition for id {}/{}!", thingName, blk.id, blk.desc);
+                CoIotDescrSen sen = new CoIotDescrSen();
+                sen.id = blk.id;
+                sen.desc = blk.desc;
+                sen.type = blk.type;
+                sen.range = blk.range;
+                sen.links = blk.links;
+                valid &= addSensor(sen);
             }
-
-            // Save to thing properties
-            thingHandler.updateProperties(PROPERTY_COAP_DESCR, payload);
-
-            logger.debug("{}: Adding {} sensor definitions", thingName, descr.sen.size());
-            if (descr.sen != null) {
-                for (int i = 0; i < descr.sen.size(); i++) {
-                    valid &= addSensor(descr.sen.get(i));
-                }
-            }
-            if (!valid) {
-                logger.debug("{}: WARNING: Incompatible device description detected for CoIoT version {}!", thingName,
-                        coiot.getVersion());
-                return;
-            }
-
-            coiot.completeMissingSensorDefinition(sensorMap); // fix incomplete format
-        } catch (JsonSyntaxException e) {
-            logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload, e);
         }
+
+        // Save to thing properties
+        thingHandler.updateProperties(PROPERTY_COAP_DESCR, payload);
+
+        if (descr.sen != null) {
+            logger.debug("{}: Adding {} sensor definitions", thingName, descr.sen.size());
+
+            for (CoIotDescrSen sen : descr.sen) {
+                valid &= addSensor(sen);
+            }
+        }
+
+        if (!valid) {
+            logger.debug("{}: WARNING: Incompatible device description detected for CoIoT version {}!", thingName,
+                    coiot.getVersion());
+            return;
+        }
+
+        coiot.completeMissingSensorDefinition(sensorMap); // fix incomplete format
     }
 
     /**
@@ -392,17 +389,8 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             return false;
         }
 
-        try {
-            CoIotDescrSen fixed = coiot.fixDescription(sen, blkMap);
-            if (!sensorMap.containsKey(fixed.id)) {
-                sensorMap.put(sen.id, fixed);
-            } else {
-                sensorMap.replace(sen.id, fixed);
-            }
-        } catch (NullPointerException | IllegalArgumentException e) { // depending on firmware release the CoAP device
-                                                                      // description is buggy
-            logger.debug("{}: Unable to decode sensor definition -> skip", thingName, e);
-        }
+        CoIotDescrSen fixed = coiot.fixDescription(sen, blkMap);
+        sensorMap.put(sen.id, fixed);
 
         return true;
     }
@@ -449,36 +437,28 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
         ShellyColorUtils col = new ShellyColorUtils();
-        for (int i = 0; i < sensorUpdates.size(); i++) {
-            try {
-                CoIotSensor s = sensorUpdates.get(i);
-                CoIotDescrSen sen = sensorMap.get(s.id);
-                if (sen == null) {
-                    logger.debug("{}: Unable to sensor definition for id={}, payload={}", thingName, s.id, payload);
-                    continue;
-                }
-                // find matching sensor definition from device description, use the Link ID as index
-                CoIotDescrBlk element = null;
-                sen = coiot.fixDescription(sen, blkMap);
-                element = blkMap.get(sen.links);
-                if (element == null) {
-                    logger.debug("{}: Unable to find BLK for link {} from sen.id={}, payload={}", thingName, sen.links,
-                            sen.id, payload);
-                    continue;
-                }
-                logger.trace("{}:  Sensor value[{}]: id={}, Value={} ({}, Type={}, Range={}, Link={}: {})", thingName,
-                        i, s.id, getString(s.valueStr).isEmpty() ? s.value : s.valueStr, sen.desc, sen.type, sen.range,
-                        sen.links, element.desc);
+        for (CoIotSensor s : sensorUpdates) {
+            CoIotDescrSen sen = sensorMap.get(s.id);
+            if (sen == null) {
+                logger.debug("{}: Unable to find sensor definition for id={}, payload={}", thingName, s.id, payload);
+                continue;
+            }
+            // find matching sensor definition from device description, use the Link ID as index
+            CoIotDescrBlk element = null;
+            sen = coiot.fixDescription(sen, blkMap);
+            element = blkMap.get(sen.links);
+            if (element == null) {
+                logger.debug("{}: Unable to find BLK for link {} from sen.id={}, payload={}", thingName, sen.links,
+                        sen.id, payload);
+                continue;
+            }
+            logger.trace("{}:  Sensor value: id={}, Value={} ({}, Type={}, Range={}, Link={}: {})", thingName, s.id,
+                    getString(s.valueStr).isEmpty() ? s.value : s.valueStr, sen.desc, sen.type, sen.range, sen.links,
+                    element.desc);
 
-                if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, col)) {
-                    logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
-                            sen.id, sen.type, sen.desc, s.value, payload);
-                }
-            } catch (NullPointerException | IllegalArgumentException e) {
-                // even the processing of one value failed we continue with the next one (sometimes this is caused by
-                // buggy formats provided by the device
-                logger.debug("{}: Unable to process data from sensor[{}], devId={}, payload={}", thingName, i, devId,
-                        payload, e);
+            if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, col)) {
+                logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
+                        sen.id, sen.type, sen.desc, s.value, payload);
             }
         }
 
