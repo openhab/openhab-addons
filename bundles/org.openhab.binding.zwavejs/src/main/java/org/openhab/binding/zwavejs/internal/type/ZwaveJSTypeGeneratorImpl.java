@@ -57,7 +57,9 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
+import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -159,8 +161,18 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         // Skip adding RollerShutter channels for devices with color capabilities.
         // This prevents creating unnecessary RollerShutter channels for each color.
         if (result.colorCapabilities.isEmpty()) {
+            // Map roller shutter capabilities based on node label and description
             mapRollerShutterCapabilities(result, node.label,
                     node.deviceConfig != null ? node.deviceConfig.description : null);
+
+            // Mark roller shutter-related channels as advanced
+            result.rollerShutterCapabilities.values().forEach(cap -> {
+                result.channels.computeIfPresent(cap.dimmerChannel.getId(), (id, channel) -> markAdvanced(channel));
+                result.channels.computeIfPresent(cap.upChannel.getId(), (id, channel) -> markAdvanced(channel));
+                result.channels.computeIfPresent(cap.downChannel.getId(), (id, channel) -> markAdvanced(channel));
+            });
+
+            // Add roller shutter channels to the result
             addRollerShutterChannels(thingUID, node, result);
         }
 
@@ -204,6 +216,39 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         }
 
         return parameterBuilder.build();
+    }
+
+    private Channel markAdvanced(Channel channel) {
+        ChannelType originalChannelType = Objects.requireNonNull(
+                channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null),
+                "Original ChannelType must not be null");
+
+        ChannelTypeUID advancedChannelTypeUID = new ChannelTypeUID(originalChannelType.getUID().getBindingId(),
+                originalChannelType.getUID().getId() + "_advanced");
+
+        ChannelType channelType = channelTypeProvider.getChannelType(advancedChannelTypeUID, null);
+        if (channelType == null) {
+            StateChannelTypeBuilder builder = ChannelTypeBuilder.state(advancedChannelTypeUID,
+                    originalChannelType.getLabel(),
+                    Objects.requireNonNull(originalChannelType.getItemType(), "ItemType must not be null"));
+            if (originalChannelType.getDescription() instanceof String description) {
+                builder.withDescription(description);
+            }
+            if (originalChannelType.getState() instanceof StateDescription stateDescription) {
+                builder.withStateDescriptionFragment(StateDescriptionFragmentBuilder.create(stateDescription).build());
+            }
+            if (originalChannelType.getUnitHint() != null) {
+                builder.withUnitHint(originalChannelType.getUnitHint());
+            }
+            if (originalChannelType.getConfigDescriptionURI() instanceof URI uri) {
+                builder.withConfigDescriptionURI(uri);
+            }
+            builder.withTags(originalChannelType.getTags());
+            channelType = builder.isAdvanced(true).build();
+
+            channelTypeProvider.addChannelType(channelType);
+        }
+        return ChannelBuilder.create(channel).withType(advancedChannelTypeUID).build();
     }
 
     private Map<String, Channel> createChannel(ThingUID thingUID, ZwaveJSTypeGeneratorResult result,
