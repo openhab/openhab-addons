@@ -101,7 +101,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             if (entry.getKey().equals("currents")) {
                 int phase = 1;
                 for (JsonElement value : entry.getValue().getAsJsonArray()) {
-                    state.add("gridCurrent-" + phase, value);
+                    state.add("gridCurrentL" + phase, value);
                     phase++;
                 }
             } else {
