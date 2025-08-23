@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
@@ -240,7 +239,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
      * @return fixed Sensor description (sen)
      */
     @Override
-    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
+    public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
         // Shelly1: reports null descr+type "Switch" -> map to S
         // Shelly1PM: reports null descr+type "Overtemp" -> map to O
         // Shelly1PM: reports null descr+type "W" -> add description
@@ -251,11 +250,11 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
         // Shelly Sense: Motion is reported with Desc "battery", but type "H" instead of "B"
         // Shelly Bulb: Colors are coded with Type="Red" etc. rather than Type="S" and color as Descr
         // Shelly RGBW2 is reporting Brightness, Power, VSwitch for each channel, but all with L=0
-        if (sen == null) {
-            throw new IllegalArgumentException("sen should not be null!");
-        }
         if (sen.desc == null) {
             sen.desc = "";
+        }
+        if (sen.type == null) {
+            sen.type = "";
         }
         String desc = sen.desc.toLowerCase();
 
