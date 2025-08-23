@@ -10,7 +10,9 @@ The binding supports various device types including RGB/RGBW controllers, temper
 - `rgbw` - RGB/RGBW Controllers for color and brightness control
 - `temperature` - Temperature Sensors for monitoring environmental conditions
 - `switch` - Switch Controllers for basic on/off and dimming control
-- `contact` - Contact Sensors for monitoring open/closed states
+- `contact-sensor` - Contact Sensors for monitoring open/closed states
+- `motion-sensor` - Motion Sensors for detecting movement (9-in-1 devices)
+- `lux-sensor` - Light Level Sensors for monitoring illuminance (LUX values)
 
 ## Discovery
 
@@ -34,13 +36,17 @@ The Sbus Bridge has the following configuration parameters:
 | host    | text    | IP address of the Sbus device (typically broadcast)  | N/A     | yes      | no        |
 | port    | integer | UDP port number                                      | 6000    | no       | no        |
 
-### RGBW Controller, Contact, Switch, Temperature Configuration
+### Device Configuration
+
+All device types (RGBW Controller, Contact Sensor, Switch, Temperature, Motion Sensor, Lux Sensor) share the same configuration parameters:
 
 | Name    | Type    | Description                                          | Default | Required | Advanced |
 |:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| subnetId| integer | Subnet ID the RGBW controller is part of             | N/A     | yes      | no        |
-| id      | integer | Device ID of the RGBW controller                     | N/A     | yes      | no        |
-| refresh | integer | Refresh interval in seconds                          | 30      | no       | yes       |
+| subnetId| integer | Subnet ID the device is part of                     | N/A     | yes      | no        |
+| id      | integer | Device ID                                            | N/A     | yes      | no        |
+| refresh | integer | Refresh interval in seconds (0 = listen-only mode)  | 30      | no       | yes       |
+
+**Note:** Setting `refresh=0` enables listen-only mode for all device types. In this mode, handlers only process asynchronous broadcast messages without actively polling the devices. This is particularly useful for Motion Sensor and Lux Sensor devices that broadcast status updates (0x02CA) from 9-in-1 devices.
 
 ## Channels
 
@@ -78,6 +84,18 @@ The color channel of RGBW controllers supports these additional parameters:
 |:--------|:--------|:----------:|:----------------------------------------------------------|
 | contact | Contact | R          | Contact state (OPEN/CLOSED)                               |
 
+### Motion Sensor Channels
+
+| Channel | Type   | Read/Write | Description                                               |
+|:--------|:-------|:----------:|:----------------------------------------------------------|
+| motion  | Switch | R          | Motion detection state (ON=motion detected, OFF=no motion) |
+
+### Lux Sensor Channels
+
+| Channel | Type   | Read/Write | Description                                               |
+|:--------|:-------|:----------:|:----------------------------------------------------------|
+| lux     | Number | R          | Light level in LUX units                                  |
+
 ## Full Example
 
 ### Thing Configuration
@@ -108,9 +126,19 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000 ] {
             Type paired-channel : third_switch [ channelNumber=3, pairedChannelNumber=4 ]
     }
     
-    Thing contact contact1 [ id=80, refresh=30 ] {
+    Thing contact-sensor contact1 [ id=80, refresh=30 ] {
         Channels:
             Type contact-channel : contact [ channelNumber=1 ]
+    }
+    
+    Thing motion-sensor motion1 [ id=85, refresh=0 ] {
+        Channels:
+            Type motion-channel : motion
+    }
+    
+    Thing lux-sensor lux1 [ id=85, refresh=0 ] {
+        Channels:
+            Type lux-channel : lux
     }
 }
 ```
@@ -133,7 +161,13 @@ Color   rgbwColor    "Color"        <colorwheel> (gLight)   ["Control", "Light"]
 Switch  rgbwPower    "Power"        <switch>     (gLight)   ["Switch", "Light"]     { channel="sbus:rgbw:mybridge:colorctrl:power" }
 
 // Contact Sensor
-Contact Door_Contact "Door [%s]" <door> { channel="sbus:contact:mybridge:contact1:contact" }
+Contact Door_Contact "Door [%s]" <door> { channel="sbus:contact-sensor:mybridge:contact1:contact" }
+
+// Motion Sensor (listen-only mode)
+Switch Motion_Sensor "Motion [%s]" <motion> { channel="sbus:motion-sensor:mybridge:motion1:motion" }
+
+// Lux Sensor (listen-only mode)
+Number Lux_Sensor "Light Level [%.0f lux]" <sun> { channel="sbus:lux-sensor:mybridge:lux1:lux" }
 ```
 
 ### Sitemap Configuration
