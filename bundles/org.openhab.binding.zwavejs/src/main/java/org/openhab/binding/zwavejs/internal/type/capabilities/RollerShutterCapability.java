@@ -46,6 +46,13 @@ public class RollerShutterCapability {
         return isMovingDown;
     }
 
+    /**
+     * Sets the direction of the roller shutter to up. Optionally apply inversion before calling this method
+     * 
+     * @param isMovingUp true if the roller shutter is moving up, false otherwise.
+     *            If set to true, the down direction will automatically
+     *            be set to false.
+     */
     public void setDirectionUp(boolean isMovingUp) {
         this.isMovingUp = isMovingUp;
         if (isMovingUp) {
@@ -53,6 +60,12 @@ public class RollerShutterCapability {
         }
     }
 
+    /**
+     * Sets the direction of the roller shutter to down. Optionally apply inversion before calling this method
+     * 
+     * @param isMovingDown true if the roller shutter is moving down, false otherwise.
+     *            When set to true, the direction up flag will be automatically set to false.
+     */
     public void setDirectionDown(boolean isMovingDown) {
         this.isMovingDown = isMovingDown;
         if (isMovingDown) {
@@ -60,18 +73,32 @@ public class RollerShutterCapability {
         }
     }
 
+    /**
+     * Sets the direction of the roller shutter movement. Optionally apply inversion before calling this method.
+     *
+     * @param isMovingUp {@code true} if the roller shutter is moving up, {@code false} otherwise.
+     * @param isMovingDown {@code true} if the roller shutter is moving down, {@code false} otherwise.
+     */
     public void setDirection(boolean isMovingUp, boolean isMovingDown) {
         this.isMovingUp = isMovingUp;
         this.isMovingDown = isMovingDown;
     }
 
-    public void setPosition(int position) {
+    /**
+     * Sets the position of the roller shutter. Raw value, not inverted.
+     * 
+     * @param position
+     * @param isUpDownInverted
+     */
+    public void setPosition(int position, boolean isUpDownInverted) {
         if (position == cachedPosition) {
+            this.isMovingUp = false;
+            this.isMovingDown = false;
             return;
         }
+        this.isMovingUp = isUpDownInverted ? position > cachedPosition : position < cachedPosition;
+        this.isMovingDown = isUpDownInverted ? position < cachedPosition : position > cachedPosition;
         this.cachedPosition = position;
-        this.isMovingUp = position < cachedPosition;
-        this.isMovingDown = position > cachedPosition;
     }
 
     public RollerShutterCapability(Integer endpoint, ChannelUID dimmerChannel, ChannelUID upChannel,

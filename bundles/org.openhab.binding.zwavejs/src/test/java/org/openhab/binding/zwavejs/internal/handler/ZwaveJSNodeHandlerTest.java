@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.zwavejs.internal.DataUtil;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.BaseCommand;
+import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeGetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSNodeHandlerMock;
@@ -177,7 +178,8 @@ public class ZwaveJSNodeHandlerTest {
     public void testNode7PowerEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
 
         EventMessage eventMessage = DataUtil.fromJson("event_node_7_power.json", EventMessage.class);
         handler.onNodeStateChanged(eventMessage.event);
@@ -197,7 +199,8 @@ public class ZwaveJSNodeHandlerTest {
     public void testNode25SwitchEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(25);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
 
         EventMessage eventMessage = DataUtil.fromJson("event_node_25_switch.json", EventMessage.class);
         handler.onNodeStateChanged(eventMessage.event);
@@ -217,7 +220,8 @@ public class ZwaveJSNodeHandlerTest {
     public void testNode25EventNodeRemoved() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(25);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
 
         EventMessage eventMessage = DataUtil.fromJson("event_controller_node_removed.json", EventMessage.class);
         handler.onNodeRemoved(eventMessage.event);
@@ -276,7 +280,8 @@ public class ZwaveJSNodeHandlerTest {
     public void testNode60RollerShutterAndDimmerEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(60);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
 
         EventMessage eventMessage = DataUtil.fromJson("event_node_60_dimmer.json", EventMessage.class);
         handler.onNodeStateChanged(eventMessage.event);
@@ -298,7 +303,8 @@ public class ZwaveJSNodeHandlerTest {
     public void testNode60RollerShutterAndSwitchDownEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(60);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
 
         EventMessage eventMessage = DataUtil.fromJson("event_node_60_switch_down.json", EventMessage.class);
         handler.onNodeStateChanged(eventMessage.event);
@@ -320,7 +326,8 @@ public class ZwaveJSNodeHandlerTest {
     public void testNode60RollerShutterAndSwitchUpEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(60);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json");
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
 
         EventMessage eventMessage = DataUtil.fromJson("event_node_60_switch_up.json", EventMessage.class);
         handler.onNodeStateChanged(eventMessage.event);
@@ -426,8 +433,11 @@ public class ZwaveJSNodeHandlerTest {
 
         NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
 
+        // dimmer = 255
         assertEquals(39, sendCommand.nodeId);
-        assertEquals(true, sendCommand.value);
+        assertEquals(38, sendCommand.valueId.commandClass);
+        assertEquals("targetValue", sendCommand.valueId.property);
+        assertEquals(99, sendCommand.value);
     }
 
     @Test
@@ -490,5 +500,68 @@ public class ZwaveJSNodeHandlerTest {
         assertEquals(38, sendCommand.valueId.commandClass);
         assertEquals("On", sendCommand.valueId.property);
         assertEquals(false, sendCommand.value);
+    }
+
+    @Test
+    public void testHandleCommand_NonExistingChannel() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        try {
+            // Use a channel UID that does not exist
+            ChannelUID nonExisting = new ChannelUID("zwavejs:test-bridge:test-thing:non-existing-channel");
+            handler.handleCommand(nonExisting, OnOffType.ON);
+            // Should not throw, should not call sendCommand
+            verify(handler.getBridgeHandler(), never()).sendCommand(any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testHandleCommand_RefreshType() {
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
+
+        try {
+            Channel channel = nodeHandler.getThing().getChannels().get(0);
+            nodeHandler.handleCommand(channel.getUID(), org.openhab.core.types.RefreshType.REFRESH);
+            // Should call sendCommand once
+            verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeGetValueCommand.class));
+        } finally {
+            nodeHandler.dispose();
+        }
+    }
+
+    @Test
+    public void testHandleCommand_OnOffType() {
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
+
+        try {
+            Channel channel = nodeHandler.getThing().getChannels().stream()
+                    .filter(c -> "multilevel-switch-value-1".equals(c.getUID().getId())).findFirst().orElse(null);
+            assertNotNull(channel);
+            nodeHandler.handleCommand(channel.getUID(), OnOffType.ON);
+            // Should call sendCommand once
+            verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeSetValueCommand.class));
+        } finally {
+            nodeHandler.dispose();
+        }
+    }
+
+    @Test
+    public void testHandleCommand_QuantityType() {
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
+
+        try {
+            Channel channel = nodeHandler.getThing().getChannels().stream()
+                    .filter(c -> "meter-value-66049-1".equals(c.getUID().getId())).findFirst().orElse(null);
+            assertNotNull(channel);
+            nodeHandler.handleCommand(channel.getUID(), new QuantityType<>(5.0, Units.WATT));
+            // Should call sendCommand once
+            verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeSetValueCommand.class));
+        } finally {
+            nodeHandler.dispose();
+        }
     }
 }

@@ -49,7 +49,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="channel-type:zwavejs:invertible-channel">
+	<config-description uri="channel-type:zwavejs:rollershutter-channel">
 		<parameter name="incomingUnit" type="text">
 			<label>Incoming Unit</label>
 			<advanced>true</advanced>
@@ -94,7 +94,12 @@
 		</parameter>
 		<parameter name="inverted" type="boolean">
 			<label>Inverted</label>
-			<description>When True the value will be inverted for OpenClose, OnOff and Percentage types.</description>
+			<description>When True the position of the RollerShutter will be inverted.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="isUpDownInverted" type="boolean">
+			<label>Up/Down Inverted</label>
+			<description>When True the Up/Down commands will be inverted.</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
