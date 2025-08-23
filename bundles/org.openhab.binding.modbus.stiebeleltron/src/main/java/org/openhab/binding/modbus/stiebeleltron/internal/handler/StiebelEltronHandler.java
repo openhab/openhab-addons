@@ -299,10 +299,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
                     return;
                 }
-                String cls = error.getClass().getName();
-                String msg = error.getMessage();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Error with: %s: %s", cls, msg));
+                String statusMsg = String.format("@text/offline.com-error [ \"%s\", \"%s\" ]",
+                        error.getClass().getName(), error.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
             }
         }
     }
@@ -330,7 +329,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
             return;
         }
 
@@ -345,7 +344,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
         if (comms == null) {
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' not completely initialized", label));
+                    String.format("@text/offline.bridge-not-initialized [ \"%s\" ]", label));
             return;
         }
 
@@ -646,10 +645,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
-        String msg = failure.getCause().getMessage();
-        String cls = failure.getCause().getClass().getName();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error with read: %s: %s", cls, msg));
+        String statusMsg = String.format("@text/offline.com-error-read [ \"%s\", \"%s\" ]",
+                failure.getCause().getMessage(), failure.getCause().getClass().getName());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**
@@ -660,10 +658,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
-        String msg = failure.getCause().getMessage();
-        String cls = failure.getCause().getClass().getName();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error with write: %s: %s", cls, msg));
+        String statusMsg = String.format("@text/offline.com-error-write [ \"%s\", \"%s\" ]",
+                failure.getCause().getMessage(), failure.getCause().getClass().getName());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**
