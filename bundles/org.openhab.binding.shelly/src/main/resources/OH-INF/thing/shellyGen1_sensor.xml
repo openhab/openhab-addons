@@ -596,11 +596,6 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.sensorRotation.label</label>
 		<description>@text/channel-type.shelly.sensorRotation.description</description>
-		<category>Tilt</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Tilt</tag>
-		</tags>
 		<state readOnly="true" pattern="%0.2f %unit%"/>
 	</channel-type>
 
@@ -612,7 +607,7 @@
 	</channel-type>
 
 	<channel-type id="sensorDirection">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorDirection.label</label>
 		<description>@text/channel-type.shelly.sensorDirection.description</description>
 		<state pattern="%s" readOnly="true">

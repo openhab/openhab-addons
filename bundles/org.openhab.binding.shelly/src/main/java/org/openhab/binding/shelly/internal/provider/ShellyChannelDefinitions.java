@@ -475,8 +475,7 @@ public class ShellyChannelDefinitions {
                         (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {
                     ShellyInputState input = status.inputs.get(i);
-                    addChannel(thing, add, input.event != null && !profile.isDW, group,
-                            CHANNEL_STATUS_EVENTTYPE + suffix);
+                    addChannel(thing, add, input.event != null, group, CHANNEL_STATUS_EVENTTYPE + suffix);
                     addChannel(thing, add, input.eventCount != null, group, CHANNEL_STATUS_EVENTCOUNT + suffix);
                 }
             }
@@ -600,7 +599,7 @@ public class ShellyChannelDefinitions {
         }
 
         // Sense
-        addChannel(thing, newChannels, profile.isSense, CHANNEL_GROUP_CONTROL, CHANNEL_SENSE_KEY);
+        addChannel(thing, newChannels, profile.isSense, CHANNEL_GROUP_SENSOR, CHANNEL_SENSE_KEY);
 
         // BLU Remote
         if (profile.isRemote) {

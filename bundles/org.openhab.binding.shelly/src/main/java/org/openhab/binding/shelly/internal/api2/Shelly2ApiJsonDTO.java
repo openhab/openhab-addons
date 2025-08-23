@@ -1255,7 +1255,7 @@ public class Shelly2ApiJsonDTO {
         public String component;
         public String event;
         @SerializedName("data")
-        public Shelly2NotifyBluEventData data;
+        public Shelly2NotifyBluEventData blu;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")

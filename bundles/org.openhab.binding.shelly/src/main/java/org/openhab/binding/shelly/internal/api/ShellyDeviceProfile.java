@@ -169,7 +169,8 @@ public class ShellyDeviceProfile {
         }
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(device.numRollers);
-        numInputs = settings.inputs != null ? settings.inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
+        List<ShellySettingsInput> inputs = settings.inputs;
+        numInputs = inputs != null ? inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
         numMeters = !isEMeter ? getInteger(device.numMeters) : getInteger(device.numEMeters);
