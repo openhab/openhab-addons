@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
-import org.openhab.binding.shelly.internal.api2.ShellyBluEventDataDTO.Shelly2NotifyBluEventData;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -59,6 +59,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RGBW_STATUS = "RGBW.GetStatus";
     public static final String SHELLYRPC_METHOD_RGBW_SET = "RGBW.Set";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
+    public static final String SHELLYRPC_METHOD_LORA_SENDDATA = "LoRa.SendBytes";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFILISTAPCLIENTS = "WiFi.ListAPClients";
@@ -152,6 +153,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
     public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
     public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
+
+    // LoRa
+    public static final String SHELLY2_EVENT_LORADATA = "lora_received";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -455,6 +459,18 @@ public class Shelly2ApiJsonDTO {
             public String powerLed;
         }
 
+        public class Shelly2DeviceConfigLora {
+            public Integer id;
+            public Long freq;
+            public Integer bw;
+            public Integer dr;
+            public Integer cr;
+            public Integer plen;
+            public Integer txp;
+            @SerializedName("rx_enable")
+            public Boolean rxEnabled;
+        }
+
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -532,6 +548,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
+
+            @SerializedName("lora:100")
+            public Shelly2DeviceConfigLora lora100;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -581,6 +600,15 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2DeviceStatus {
+        public static class Shelly2DeviceStatusSysAvlUpdate {
+            public static class Shelly2DeviceStatusSysUpdate {
+                public String version;
+            }
+
+            public Shelly2DeviceStatusSysUpdate stable;
+            public Shelly2DeviceStatusSysUpdate beta;
+        }
+
         public class Shelly2InputCounts {
             public Integer total;
             @SerializedName("by_minute")
@@ -865,18 +893,12 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+
+            @SerializedName("lora:100")
+            public Shelly2DeviceStatusLora lora100;
         }
 
         public class Shelly2DeviceStatusSys {
-            public class Shelly2DeviceStatusSysAvlUpdate {
-                public class Shelly2DeviceStatusSysUpdate {
-                    public String version;
-                }
-
-                public Shelly2DeviceStatusSysUpdate stable;
-                public Shelly2DeviceStatusSysUpdate beta;
-            }
-
             public class Shelly2DeviceStatusWakeup {
                 public String boot;
                 public String cause;
@@ -1061,6 +1083,9 @@ public class Shelly2ApiJsonDTO {
             // Script
             public String name;
 
+            // LoRa.SendBytes
+            public String data;
+
             public Shelly2RpcRequestParams withConfig() {
                 config = new Shelly2ConfigParms();
                 return this;
@@ -1089,6 +1114,11 @@ public class Shelly2ApiJsonDTO {
 
         public Shelly2RpcRequest withName(String name) {
             params.name = name;
+            return this;
+        }
+
+        public Shelly2RpcRequest withData(String data) {
+            params.data = data;
             return this;
         }
     }
@@ -1149,6 +1179,22 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
+    public static class Shelly2DeviceStatusLora {
+        public Integer id;
+        @SerializedName("bytes_recd")
+        public Long rxBytes;
+        @SerializedName("bytes_sent")
+        public Long txBytes;
+        @SerializedName("send_fails")
+        public Long txErrors;
+        @SerializedName("air_time_hr_ms")
+        public Long airtime;
+        @SerializedName("fw_version")
+        public String fw;
+        @SerializedName("available_updates")
+        public Shelly2DeviceStatusSysAvlUpdate availableUpdates;
+    }
+
     public static class Shelly2RpcNotifyStatus {
         public static class Shelly2NotifyStatus extends Shelly2DeviceStatusResult {
             public Double ts;
@@ -1191,17 +1237,81 @@ public class Shelly2ApiJsonDTO {
         public String authType;
     }
 
+    // BTHome samples
+    // BLU Button 1
+    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
+    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
+    // {"component":"script:2", "id":2, "event":"oh-blu.data",
+    // "data":{"encryption":false,"BTHome_version":2,"pid":205,"Battery":100,"Button":1,"addr":"b4:35:22:fd:b3:81","rssi":-68},
+    // "ts":1682877399.22}
+    //
+    // BLU Door Window
+    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
+    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
+    // {"component":"script:2", "id":2, "event":"oh-blu.data",
+    // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
+    // "ts":1682877414.25}
+
+    public class Shelly2NotifyBluEventData {
+        public String addr;
+        public String name;
+        public Boolean encryption;
+        @SerializedName("BTHome_version")
+        public Integer bthVersion;
+        public Integer pid;
+        @SerializedName("Battery")
+        public Integer battery;
+        @SerializedName("Button")
+        public Integer[] buttons;
+        @SerializedName("Illuminance")
+        public Integer illuminance;
+        @SerializedName("Window")
+        public Integer windowState;
+        @SerializedName("Rotation")
+        public Double rotation;
+        @SerializedName("Motion")
+        public Integer motionState;
+        @SerializedName("Temperature")
+        public Double[] temperatures;
+        @SerializedName("Humidity")
+        public Double humidity;
+        @SerializedName("Firmware32")
+        public Long firmware;
+        public Integer rssi;
+        public Integer tx_power;
+    }
+
+    public static class ShellyNotifyLoraEvent {
+        public String component;
+        public Integer id;
+        public String event;
+        public Double ts;
+        public String data;
+        public Integer rssi;
+        public Integer snr;
+        public Long tsu;
+    }
+
     public class Shelly2NotifyEvent {
         public Integer id;
         public Double ts;
         public String component;
+        public String name;
         public String event;
-        @SerializedName("data")
-        public Shelly2NotifyBluEventData blu;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")
         public Integer cfgRev;
+
+        // BLU
+        @SerializedName("data")
+        public Shelly2NotifyBluEventData blu;
+
+        // LoRa
+        String lora;
+        Integer rssi;
+        Integer snr;
+        Long tsu;
     }
 
     public class Shelly2NotifyEventData {
