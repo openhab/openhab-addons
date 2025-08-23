@@ -89,6 +89,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     protected void commonInitialize(JsonObject state) {
+        Utils.sortJsonInPlace(state);
         ThingBuilder builder = editThing();
 
         for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : state.entrySet()) {
@@ -257,6 +258,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             return;
         }
 
+        Utils.sortJsonInPlace(state);
         for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : state.entrySet()) {
             String key = entry.getKey();
             JsonElement value = entry.getValue();

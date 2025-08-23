@@ -29,6 +29,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -40,6 +41,11 @@ import com.google.gson.JsonObject;
 public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccLoadpointHandler.class);
+
+    // JSON keys that need a special treatment, in example for backwards compatibility
+    private static final Map<String, String> JSON_KEYS = Map.ofEntries(Map.entry("chargeCurrent", "offeredCurrent"),
+            Map.entry("vehiclePresent", "connected"), Map.entry("enabled", "charging"),
+            Map.entry("phases", "phasesConfigured"), Map.entry("chargeCurrents", ""));
     protected final int index;
     private int[] version = {};
 
@@ -76,7 +82,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
             String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
-            // Backwardscompatibility for phasesConfigured
+            // Backwards compatibility for phasesConfigured
             if ("configuredPhases".equals(datapoint) && version[0] == 0 && version[1] < 200) {
                 datapoint = "phases";
             }
@@ -112,20 +118,20 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     }
 
     private void modifyJSON(JsonObject state) {
-        // This is for backward compatibility with older evcc versions
-        if (state.has("chargeCurrent")) {
-            state.addProperty("offeredCurrent", state.get("chargeCurrent").getAsDouble());
-            state.remove("chargeCurrent");
-        }
-        if (state.has("vehiclePresent")) {
-            state.add("connected", state.get("vehiclePresent"));
-        }
-        if (state.has("enabled")) {
-            state.add("charging", state.get("enabled"));
-        }
-        if (state.has("phases")) {
-            state.add("phasesConfigured", state.get("phases"));
-        }
+        JSON_KEYS.forEach((oldKey, newKey) -> {
+            if (state.has(oldKey)) {
+                if (oldKey.equals("chargeCurrents")) {
+                    int phase = 1;
+                    for (JsonElement current : state.getAsJsonArray(oldKey)) {
+                        state.add("phase-" + phase, current);
+                        phase++;
+                    }
+                } else {
+                    state.add(newKey, state.get(oldKey));
+                }
+                state.remove(oldKey);
+            }
+        });
     }
 
     @Override
