@@ -58,7 +58,7 @@
 	</channel-type>
 	<channel-type id="loadpoint-vehicle-temperature">
 		<item-type unitHint="°C">Number:Temperature</item-type>
-		<label>Temperature</label>
+		<label>Device Temperature</label>
 		<description>Current temperature of the heating device</description>
 		<category>Temperature</category>
 		<tags>
