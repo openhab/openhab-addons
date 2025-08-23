@@ -31,10 +31,13 @@ import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandle
 public class PirateWeatherAPIConfiguration {
 
     // supported languages (see https://pirateweather.net/dev/docs#forecast-request)
-    public static final Set<String> SUPPORTED_LANGUAGES = Collections.unmodifiableSet(Stream.of("ar", "az", "be", "bg",
-            "bn", "bs", "ca", "cs", "da", "de", "el", "en", "eo", "es", "et", "fi", "fr", "he", "hi", "hr", "hu", "id",
-            "is", "it", "ja", "ka", "kn", "ko", "kw", "lv", "mr", "nb", "nl", "no", "pa", "pl", "pt", "ro", "ru", "sk",
-            "sl", "sr", "sv", "ta", "te", "tet", "tr", "uk", "x-pig-latin", "zh", "zh-tw").collect(Collectors.toSet()));
+    public static final Set<String> SUPPORTED_LANGUAGES = Collections
+            .unmodifiableSet(Stream
+                    .of("ar", "az", "be", "bg", "bn", "bs", "ca", "cs", "cy", "da", "de", "el", "en", "eo", "es", "et",
+                            "fa", "fi", "fr", "ga", "gd", "he", "hi", "hr", "hu", "id", "is", "it", "ja", "ka", "kn",
+                            "ko", "kw", "lv", "ml", "mr", "nl", "no", "pa", "pl", "pt", "ro", "ru", "sk", "sl", "sr",
+                            "sv", "ta", "te", "tet", "tr", "uk", "ur", "vi", "x-pig-latin", "zh", "zh-tw")
+                    .collect(Collectors.toSet()));
 
     public @Nullable String apikey;
     public int refreshInterval = 60;
