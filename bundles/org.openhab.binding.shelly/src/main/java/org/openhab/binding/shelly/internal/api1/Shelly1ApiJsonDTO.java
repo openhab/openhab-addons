@@ -82,6 +82,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_EVENT_TRIPLE_SHORTPUSH = "triple_shortpush";
     public static final String SHELLY_EVENT_SHORT_LONGTPUSH = "shortpush_longpush";
     public static final String SHELLY_EVENT_LONG_SHORTPUSH = "longpush_shortpush";
+    public static final String SHELLY_EVENT_HOLDING = "holding";
 
     // Dimmer
     public static final String SHELLY_EVENT_BTN1_ON = "btn1_on";
@@ -243,6 +244,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_BTNEVENT_LONGPUSH = "L";
     public static final String SHELLY_BTNEVENT_SHORTLONGPUSH = "SL";
     public static final String SHELLY_BTNEVENT_LONGSHORTPUSH = "LS";
+    public static final String SHELLY_BTNEVENT_HOLDING = "H";
 
     public static final String SHELLY_TEMP_CELSIUS = "C";
     public static final String SHELLY_TEMP_FAHRENHEIT = "F";
@@ -453,6 +455,7 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsRoller {
+        public Integer id;
         public Double maxtime;
         @SerializedName("maxtime_open")
         public Double maxtimeOpen;
@@ -523,6 +526,15 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellyInputState {
+        public ShellyInputState() {
+        }
+
+        public ShellyInputState(int id) {
+            input = id;
+            event = "";
+            eventCount = 0;
+        }
+
         public Integer input;
 
         // Shelly Button
@@ -552,6 +564,7 @@ public class Shelly1ApiJsonDTO {
 
         public Double pf; // 3EM
         public Double current; // 3EM
+        public Double frequency; // Gen4
     }
 
     public static class ShellyEMNCurrentSettings {
@@ -816,6 +829,13 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsInput {
+        public ShellySettingsInput() {
+        }
+
+        public ShellySettingsInput(String btnType) {
+            this.btnType = btnType;
+        }
+
         @SerializedName("btn_type")
         public String btnType;
     }
@@ -1329,6 +1349,8 @@ public class Shelly1ApiJsonDTO {
             case SHELLY_BTNEVENT_LONGSHORTPUSH:
             case SHELLY_EVENT_LONG_SHORTPUSH:
                 return "LONG_SHORT_PRESSED";
+            case SHELLY_EVENT_HOLDING:
+                return SHELLY_EVENT_HOLDING;
             default:
                 return "";
         }

@@ -19,6 +19,10 @@
 	<channel-type id="type-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Generic Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -31,6 +35,10 @@
 	<channel-type id="type-electric-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Generic Current</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -43,18 +51,30 @@
 	<channel-type id="type-frequency">
 		<item-type>Number:Frequency</item-type>
 		<label>Generic Frequency</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Generic Energy</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-pressure" advanced="true">
 		<item-type>Number:Pressure</item-type>
 		<label>Generic Pressure</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -67,6 +87,10 @@
 	<channel-type id="type-on-off">
 		<item-type>Number</item-type>
 		<label>Generic OnOff</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>

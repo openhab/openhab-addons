@@ -46,6 +46,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>@text/positionChannelLabel</label>
 		<description>@text/positionChannelDescription</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

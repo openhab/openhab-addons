@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.discovery;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
 
@@ -64,7 +65,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ServiceRegistration<?> discoveryService;
 
     public ShellyBasicDiscoveryService(BundleContext bundleContext, ShellyThingTable thingTable) {
-        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
+        super(SUPPORTED_THING_TYPES, TIMEOUT);
         this.bundleContext = bundleContext;
         this.thingTable = thingTable;
     }
@@ -83,7 +84,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
 
     public void discoveredResult(ThingTypeUID tuid, String model, String serviceName, String address,
             Map<String, Object> properties) {
-        ThingUID uid = ShellyThingCreator.getThingUIDForUnknown(serviceName, model, "");
+        ThingUID uid = ShellyThingCreator.getThingUID(serviceName, model, "");
         logger.debug("Adding discovered thing with id {}", uid.toString());
         properties.put(PROPERTY_MAC_ADDRESS, address);
         String thingLabel = "Shelly BLU " + model + " (" + serviceName + ")";
@@ -131,20 +132,16 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             api.initialize();
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
-            model = devInfo.type;
+            model = getString(devInfo.type);
             auth = getBool(devInfo.auth);
-            if (name.isEmpty() || name.startsWith("shellyplusrange")) {
+            if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
                 name = devInfo.hostname;
-            }
-            if (devInfo.name != null) {
-                deviceName = getString(devInfo.name);
             }
 
             thingType = substringBeforeLast(name, "-");
-            profile = api.getDeviceProfile(thingType, devInfo);
-            api.close();
-            deviceName = profile.name;
             mode = devInfo.mode;
+            profile = api.getDeviceProfile(ShellyThingCreator.getThingTypeUID(name, model, mode), devInfo);
+            deviceName = profile.name;
             properties = ShellyBaseHandler.fillDeviceProperties(profile);
 
             // get thing type from device name

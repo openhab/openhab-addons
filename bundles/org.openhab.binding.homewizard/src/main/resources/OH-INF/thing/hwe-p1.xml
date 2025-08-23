@@ -136,6 +136,10 @@
 			frequently as the data in the other channels, the gas_timestamp channel provides the time stamp of the most recent
 			update.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="p1-gas-timestamp">

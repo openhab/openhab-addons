@@ -204,6 +204,10 @@
 		<label>Mode</label>
 		<description>Thermostat Mode</description>
 		<category>Number</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Manual</option>
@@ -220,6 +224,10 @@
 		<label>CO2</label>
 		<description>CO2 value for Qbus</description>
 		<category>CO2</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollershutter">
@@ -227,6 +235,10 @@
 		<label>Rollershutter</label>
 		<description>Rollershutter Control for Qbus</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="slats">
@@ -234,6 +246,10 @@
 		<label>Slatcontrol</label>
 		<description>Slatcontrol for Qbus</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

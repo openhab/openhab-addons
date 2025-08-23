@@ -31,10 +31,11 @@
 			<channel id="nem-time" typeId="nem-time"/>
 			<channel id="spike" typeId="spike"/>
 			<channel id="renewables" typeId="renewables"/>
+			<channel id="estimate" typeId="estimate"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -45,12 +46,6 @@
 			<parameter name="nmi" type="text">
 				<label>NMI</label>
 				<description>NMI for your address (Optional)</description>
-			</parameter>
-			<parameter name="refresh" type="integer" min="60" unit="s">
-				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in seconds</description>
-				<default>60</default>
-				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
@@ -97,6 +92,12 @@
 			<tag>Status</tag>
 			<tag>Energy</tag>
 		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="estimate">
+		<item-type>Switch</item-type>
+		<label>Estimated Price?</label>
+		<description>Report if the current price is an estimate (on), or a finalised price (off) from AEMO</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

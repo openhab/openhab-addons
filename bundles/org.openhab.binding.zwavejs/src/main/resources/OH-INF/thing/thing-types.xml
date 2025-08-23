@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwavejs"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+
+		<label>Z-Wave JS Gateway</label>
+		<description>The Z-Wave JS server that acts as a bridge to the Z-Wave network</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<representation-property>hostname</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of Z-Wave JS server</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Port the remote Z-Wave JS server listens on</description>
+				<default>3000</default>
+			</parameter>
+			<parameter name="configurationChannels" type="boolean" required="true">
+				<label>Configuration As Channels</label>
+				<description>When set to `true`, the Z-Wave CommandClass "Configuration" is exposed in openHAB as channels instead
+					of Thing configuration. This allows you to modify the configuration in rules, such as changing codes for locks.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxMessageSize" type="integer" required="true" min="1048576" max="33554432" step="262144">
+				<label>Maximum Message Size</label>
+				<description>The maximum size of the message (in bytes) that the ZWave-JS server can send</description>
+				<default>16777216</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="node" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Z-Wave node</label>
+		<description>A Z-Wave node provided by Zwave JS</description>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="integer" min="1" max="255" readOnly="true" required="true">
+				<label>ID</label>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

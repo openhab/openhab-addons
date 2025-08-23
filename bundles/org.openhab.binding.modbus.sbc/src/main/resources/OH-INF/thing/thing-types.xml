@@ -51,30 +51,50 @@
 	<channel-type id="total_energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Total</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="partial_energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Counter Resettable</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="feeding_back_energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Feeding Back</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Effective Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Effective Current</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -82,6 +102,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Effective Active Power</label>
 		<description>Negative numbers mean feeding back</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -89,6 +113,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Effective Reactive Power</label>
 		<description>Negative numbers mean feeding back</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 

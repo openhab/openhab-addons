@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.matter.internal.bridge;
 
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,17 +32,42 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class MatterBridgeClient extends MatterWebsocketClient {
 
-    public CompletableFuture<String> addEndpoint(String deviceType, String id, String nodeLabel, String productName,
-            String productLabel, String serialNumber, Map<String, Map<String, Object>> attributeMap) {
-        CompletableFuture<JsonElement> future = sendMessage("bridge", "addEndpoint",
-                new Object[] { deviceType, id, nodeLabel, productName, productLabel, serialNumber, attributeMap });
+    /**
+     * Add an endpoint to the bridge.
+     * 
+     * @param be the bridged endpoint
+     * @return a future that completes when the endpoint is added
+     */
+    public CompletableFuture<String> addEndpoint(BridgedEndpoint be) {
+        CompletableFuture<JsonElement> future = sendMessage("bridge", "addEndpoint", new Object[] { be.deviceType,
+                be.id, be.nodeLabel, be.productName, be.productLabel, be.serialNumber, be.attributeMap });
         return future.thenApply(obj -> obj.toString());
     }
 
+    /**
+     * Set the state of an attribute of the endpoint.
+     * 
+     * @param endpointId the endpoint id
+     * @param clusterName the cluster name
+     * @param attributeName the attribute name
+     * @param state the state
+     * @return a future that completes when the state is set
+     */
     public CompletableFuture<Void> setEndpointState(String endpointId, String clusterName, String attributeName,
             Object state) {
-        CompletableFuture<JsonElement> future = sendMessage("bridge", "setEndpointState",
-                new Object[] { endpointId, clusterName, attributeName, state });
+        return setEndpointStates(endpointId, List.of(new AttributeState(clusterName, attributeName, state)));
+    }
+
+    /**
+     * Set the states of the endpoint in a single transaction.
+     * 
+     * @param endpointId the endpoint id
+     * @param states the states to set
+     * @return a future that completes when the states are set
+     */
+    public CompletableFuture<Void> setEndpointStates(String endpointId, List<AttributeState> states) {
+        CompletableFuture<JsonElement> future = sendMessage("bridge", "setEndpointStates",
+                new Object[] { endpointId, states });
         return future.thenAccept(obj -> {
             // Do nothing, just to complete the future
         });

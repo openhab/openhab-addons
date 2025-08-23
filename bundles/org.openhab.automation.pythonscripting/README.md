@@ -57,7 +57,6 @@ class Test:
 ::: tip Note
 By default, the scope, Registry and logger is automatically imported for UI based rules
 :::
- 
 
 ## `PY` Transformation
 
@@ -74,8 +73,8 @@ Use Python Scripting as script transformation by:
    "String has " + str(len(input)) + " characters"
    ```
 
-   or 
-   
+   or
+
    ```python
    def calc(input):
        if input is None:
@@ -85,8 +84,8 @@ Use Python Scripting as script transformation by:
    calc(input)
    ```
 
-2. Using `PY(<scriptname>.py):%s` as Item state transformation.
-3. Passing parameters is also possible by using a URL like syntax: `PY(<scriptname>.py?arg=value)`.
+1. Using `PY(<scriptname>.py):%s` as Item state transformation.
+1. Passing parameters is also possible by using a URL like syntax: `PY(<scriptname>.py?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
 
 Simple transformations can also be given as an inline script: `PY(|...)`, e.g. `PY(|"String has " + str(len(input)) + "characters")`.
@@ -96,7 +95,7 @@ It should start with the `|` character, quotes within the script may need to be 
 By default, the scope, Registry and logger is automatically imported for `PY` Transformation scripts
 :::
 
-## Examples 
+## Examples
 
 ### Simple rule
 
@@ -139,7 +138,7 @@ class Test4:
         if Registry.getItem("Item2").postUpdateIfDifferent(scope.OFF):
             self.logger.info("Item2 was updated")
 ```
- 
+
 ### Query thing status info
 
 ```python
@@ -189,7 +188,7 @@ print("error message", file=sys.stderr)
 
 ```
 
-2. using the logging module. Here you get a logging object, already initialized with the prefix "org.openhab.automation.pythonscripting"
+1. using the logging module. Here you get a logging object, already initialized with the prefix "org.openhab.automation.pythonscripting"
 
 ```python
 from openhab import logging
@@ -199,7 +198,7 @@ logging.info("info message")
 logging.error("error message")
 ```
 
-3. using the rule based logging module. Here you get a logging object, already initialized with the prefix "org.openhab.automation.pythonscripting.<RuleClassName>"
+1. using the rule based logging module. Here you get a logging object, already initialized with the prefix "org.openhab.automation.pythonscripting.\<RuleClassName>"
 
 ```python
 from openhab import rule
@@ -215,7 +214,7 @@ class Test:
 
 ### decorator @rule
 
-The decorator will register the decorated class as a rule. 
+The decorator will register the decorated class as a rule.
 It will wrap and extend the class with the following functionalities
 
 - Register the class or function as a rule
@@ -237,7 +236,7 @@ class Test:
         self.logger.info("Rule 3 was triggered")
 ```
 
-```
+```text
 2025-01-09 09:35:11.002 [INFO ] [tomation.pythonscripting.demo1.Test2] - Rule executed in    0.1 ms [Item: Item1]
 2025-01-09 09:35:15.472 [INFO ] [tomation.pythonscripting.demo1.Test1] - Rule executed in    0.1 ms [Other: TimerEvent]
 ```
@@ -343,7 +342,6 @@ from scope import osgi
 
 Additionally you can import all Java classes from 'org.openhab' package like
 
-
 ```python
 from org.openhab.core import OpenHAB
 
@@ -376,7 +374,7 @@ print(str(OpenHAB.getVersion()))
 | Things                   | see [openHAB Things API](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/things) |                                                                        |
 | Transformation           | see [openHAB Transformation API](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/transformation) |                                                             |
 | Voice                    | see [openHAB Voice API](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/voice)      |                                                                          |
-| NotificationAction       |                                                                                       | e.g. NotificationAction.sendNotification("test@test.org", "Window is open")                         |
+| NotificationAction       |                                                                                       | e.g. NotificationAction.sendNotification("test\@test.org", "Window is open")                         |
 
 ### module openhab.triggers
 
@@ -398,7 +396,7 @@ print(str(OpenHAB.getVersion()))
 | TimeOfDayTrigger         | TimeOfDayTrigger(time, trigger_name=None)                                             |                                                                                                     |
 | DateTimeTrigger          | DateTimeTrigger(cron_expression, trigger_name=None)                                   |                                                                                                     |
 | PWMTrigger               | PWMTrigger(cron_expression, trigger_name=None)                                        |                                                                                                     |
-| GenericEventTrigger      | GenericEventTrigger(event_source, event_types, event_topic="*/*", trigger_name=None)  |                                                                                                     |
+| GenericEventTrigger      | GenericEventTrigger(event_source, event_types, event_topic="\*/\*", trigger_name=None)  |                                                                                                     |
 | ItemEventTrigger         | ItemEventTrigger(event_types, item_name=None, trigger_name=None)                      |                                                                                                     |
 | ThingEventTrigger        | ThingEventTrigger(event_types, thing_uid=None, trigger_name=None)                     |                                                                                                     |
 |                          |                                                                                       |                                                                                                     |
@@ -409,7 +407,7 @@ print(str(OpenHAB.getVersion()))
 
 ## Classes
 
-### class Registry 
+### class Registry
 
 | Function                 | Usage                                                                                 | Return Value                                                                                        |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -424,8 +422,7 @@ print(str(OpenHAB.getVersion()))
 | addItem                  | addItem(item_config)                                                                  | [Item](#class-item) or [GroupItem](#class-groupitem)                                                |
 | safeItemName             | safeItemName(item_name)                                                               |                                                 |
 
-
-### class Item 
+### class Item
 
 Item is a wrapper around [openHAB Item](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) with additional functionality.
 
@@ -439,11 +436,11 @@ Item is a wrapper around [openHAB Item](https://www.openhab.org/javadoc/latest/o
 | getSemantic              | getSemantic()                                                                         | [ItemSemantic](#class-itemsemantic)                                                                 |
 | <...>                    | see [openHAB Item API](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) |                                                                                                |
 
-### class GroupItem 
+### class GroupItem
 
 GroupItem is an extended [Item](#class-item) which wraps results from getAllMembers & getMembers into [Items](#class-item)
 
-### class ItemPersistence 
+### class ItemPersistence
 
 ItemPersistence is a wrapper around [openHAB PersistenceExtensions](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions). The parameters 'item' and 'serviceId', as part of the Wrapped Java API, are not needed, because they are inserted automatically.
 
@@ -453,7 +450,7 @@ ItemPersistence is a wrapper around [openHAB PersistenceExtensions](https://www.
 | getStableState           | getStableState(time_slot, end_time = None)                                            | Average calculation which takes into account the values depending on their duration                 |
 | <...>                    | see [openHAB PersistenceExtensions API](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |                                             |
 
-### class ItemSemantic 
+### class ItemSemantic
 
 ItemSemantic is a wrapper around [openHAB Semantics](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/semantics). The parameters 'item', as part of the Wrapped Java API, is not needed because it is inserted automatically.
 
@@ -461,23 +458,23 @@ ItemSemantic is a wrapper around [openHAB Semantics](https://www.openhab.org/jav
 | ------------------------ | ------------------------------------------------------------------------------------- |
 | <...>                    | see [openHAB Semantics API](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/semantics) |
 
-### class Thing 
+### class Thing
 
-Thing is a wrapper around [openHAB Thing](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing). 
+Thing is a wrapper around [openHAB Thing](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing).
 
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
 | <...>                    | see [openHAB Thing API](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing) |
 
-### class Channel 
+### class Channel
 
-Channel is a wrapper around [openHAB Channel](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/type/channelgrouptype). 
+Channel is a wrapper around [openHAB Channel](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/type/channelgrouptype).
 
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
 | <...>                    | see [openHAB Channel API](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/type/channelgrouptype) |
 
-### class Timer 
+### class Timer
 
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -578,7 +575,7 @@ The folder "conf/automation/python/" must be writeable by openHAB.
 
 #### Failed to inject import wrapper
 
-The reading the Python source file "conf/automation/python/lib/openhab/__wrapper__.py" failed.
+The reading the Python source file "conf/automation/python/lib/openhab/\_\_wrapper\_\_py" failed.
 
 This could either a permission/owner problem or a problem during deployment of the helper libs.
 You should check that this file exists and it is readable by openHAB.
@@ -586,4 +583,4 @@ You should also check your logs for a message related to the helper lib deployme
 
 ### Limitations
 
-- GraalPy can't handle arguments in constructors of Java objects. Means you can't instantiate a Java object in Python with a parameter. https://github.com/oracle/graalpython/issues/367
+- GraalPy can't handle arguments in constructors of Java objects. Means you can't instantiate a Java object in Python with a parameter. <https://github.com/oracle/graalpython/issues/367>

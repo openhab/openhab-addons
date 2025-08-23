@@ -10,11 +10,17 @@
 
 		<channels>
 			<channel id="output" typeId="output"/>
+			<channel id="stdout" typeId="stdout"/>
+			<channel id="stderr" typeId="stderr"/>
 			<channel id="input" typeId="input"/>
 			<channel id="exit" typeId="exit"/>
 			<channel id="run" typeId="run"/>
 			<channel id="lastexecution" typeId="lastexecution"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="command" type="text" required="true">
@@ -43,6 +49,12 @@
 				<description>When true, the command will execute each time the state of the input channel changes</description>
 				<default>false</default>
 			</parameter>
+			<parameter name="charset" type="text" required="false">
+				<label>Character Encoding</label>
+				<description>The character encoding to use for process output. Any string valid for Java's Charset.forName() can be
+					used. If blank, UTF-8 will be used.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -51,6 +63,18 @@
 		<item-type>String</item-type>
 		<label>Output</label>
 		<description>Output of the last execution of the command</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="stdout">
+		<item-type>String</item-type>
+		<label>Standard Out</label>
+		<description>The stdout output of the last execution of the command</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="stderr">
+		<item-type>String</item-type>
+		<label>Standard Error</label>
+		<description>The stderr output of the last execution of the command</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="input">
@@ -69,7 +93,7 @@
 		<item-type>Switch</item-type>
 		<label>Running</label>
 		<description>Send ON to execute the command and the current state tells whether it is running or not</description>
-		<state readOnly="true"></state>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="lastexecution">
 		<item-type>DateTime</item-type>

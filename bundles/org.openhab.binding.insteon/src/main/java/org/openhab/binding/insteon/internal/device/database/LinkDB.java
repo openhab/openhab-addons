@@ -250,7 +250,7 @@ public class LinkDB {
      * @return first available record location if found, otherwise the next lowest record or change location
      */
     public int getNextAvailableLocation() {
-        return getRecords().stream().filter(LinkDBRecord::isAvailable).map(LinkDBRecord::getLocation).findFirst()
+        return getRecords().stream().filter(LinkDBRecord::isAvailable).mapToInt(LinkDBRecord::getLocation).findFirst()
                 .orElse(Math.min(getLastRecordLocation(), getLastChangeLocation() - LinkDBRecord.SIZE));
     }
 
@@ -298,13 +298,12 @@ public class LinkDB {
      */
     public void load(long delay) {
         DatabaseManager dbm = getDatabaseManager();
-        if (!device.isAwake() || !device.isResponding()) {
-            logger.debug("deferring load link db for {}, device is not awake or responding", device.getAddress());
+        if (!device.isAwake() || !device.isOnline()) {
+            logger.debug("deferring load link db for {}, device is not awake or online", device.getAddress());
             setReload(true);
         } else if (dbm == null) {
             logger.debug("unable to load link db for {}, database manager not available", device.getAddress());
         } else {
-            clear();
             setStatus(DatabaseStatus.LOADING);
             dbm.read(device, delay);
         }
@@ -327,8 +326,8 @@ public class LinkDB {
         if (getChanges().isEmpty()) {
             logger.debug("no changes to update link db for {}", device.getAddress());
             setUpdate(false);
-        } else if (!device.isAwake() || !device.isResponding()) {
-            logger.debug("deferring update link db for {}, device is not awake or responding", device.getAddress());
+        } else if (!device.isAwake() || !device.isOnline()) {
+            logger.debug("deferring update link db for {}, device is not awake or online", device.getAddress());
             setUpdate(true);
         } else if (dbm == null) {
             logger.debug("unable to update link db for {}, database manager not available", device.getAddress());
@@ -349,7 +348,7 @@ public class LinkDB {
             // move last record if overwritten by a different record
             if (prevRecord != null && prevRecord.isLast() && !prevRecord.equals(record)) {
                 int location = prevRecord.getLocation() - LinkDBRecord.SIZE;
-                records.put(location, LinkDBRecord.withNewLocation(location, prevRecord));
+                records.put(location, prevRecord.withNewLocation(location));
                 if (logger.isTraceEnabled()) {
                     logger.trace("moved last record for {} to location {}", device.getAddress(),
                             HexUtils.getHexString(location));

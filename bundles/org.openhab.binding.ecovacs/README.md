@@ -16,6 +16,7 @@ At this point, the following devices are fully supported and verified to be work
 - Deebot OZMO 950
 - Deebot OZMO Slim 10/11
 - Deebot N8 series
+- Deebot T30 OMNI
 
 The following devices will likely work because they are using similar protocols as the above ones:
 
@@ -92,33 +93,34 @@ In case a particular channel is not supported by a given device (see remarks), i
 Remarks:
 
 - [1] See [section below](#command-channel-actions)
-- [2] Possible states: 'cleaning', 'pause', 'stop', 'drying', 'washing', 'returning' and 'charging' (where 'drying' and 'washing' are only available on newer models with auto empty station)
-- [3] Possible states: 'auto', 'edge', 'spot', 'spotArea', 'customArea', 'singleRoom' (some of which depend on device capabilities)
+- [2] Possible states: `cleaning`, `pause`, `stop`, `emptying`, `drying`, `washing`, `returning` and `charging` (where `emptying`, `drying` and `washing` are only available on newer models with auto empty station)
+- [3] Possible states: `auto`, `edge`, `spot`, `spotArea`, `customArea`, `singleRoom`, and `sceneClean` (some of which depend on device capabilities)
 - [4] Current cleaning status is only valid if the device is currently cleaning
-- [5] Only valid for 'spot', 'spotArea' and 'customArea' cleaning modes; value can be used for 'spotArea' and 'customArea' commands (see below)
+- [5] Only valid for `spot`, `spotArea`, `customArea`, and `sceneClean` cleaning modes; value can be used for `spotArea`, `customArea`, or `sceneClean` commands (see below)
 - [6] Only present if device has a mopping system
 - [7] Only present on newer generation devices (Deebot OZMO 950 and newer)
 - [8] Only present if device has a main brush
 - [9] Only present on newer generation devices (Deebot N8/T8 or newer)
-- [10] Only present if device has a dustbin auto empty station; supports both on/off command (to turn on/off the setting) and the string 'trigger' (to trigger immediate auto empty)
-- [11] Only present if device can control power level. Possible values vary by device: 'normal' and 'high' are always supported, 'silent' and 'higher' are supported for some models
+- [10] Only present if device has a dustbin auto empty station; supports both on/off command (to turn on/off the setting) and the string `trigger` (to trigger immediate auto empty)
+- [11] Only present if device can control power level. Possible values vary by device: `normal` and `high` are always supported, `silent` and `higher` are supported for some models
 - [12] Only present if device supports True Detect 3D
 - [13] Only present if device has voice reporting
-- [14] Only present if device has a mopping system. Possible values include 'low', 'medium', 'high' and 'veryhigh'
+- [14] Only present if device has a mopping system. Possible values include `low`, `medium`, `high` and `veryhigh`
 
 ## Command Channel Actions
 
 The following actions are supported by the `command` channel:
 
-| Name         | Action                                    | Remarks                                              |
-|--------------|-------------------------------------------|------------------------------------------------------|
-| `clean`      | Start cleaning in automatic mode.         |                                                      |
-| `spotArea`   | Start cleaning specific rooms.            | <ul><li>Only if supported by device, which can be recognized by `spotArea` being present in the list of possible states of the `current-cleaning-mode` channel.</li><li>Format: `spotArea:<room IDs>`, where `room IDs` is a semicolon separated list of room letters as shown in Ecovacs' app, so a valid command could e.g. be `spotArea:A;D;E`.</li><li>If you want to run 2 clean passes, amend `:x2` to the command, e.g. `spotArea:A;C;B:x2`.</li></ul> |
-| `customArea` | Start cleaning specific areas.            | <ul><li>Only if supported by device, which can be recognized by `customArea` being present in the list of possible states of the `current-cleaning-mode` channel.</li><li>Format: `customArea:<x1>;<y1>;<x2>;<y2>`, where the parameters are coordinates (in mm) relative to the map.</li><li>The coordinates can be obtained from the `current-cleaning-spot-definition` channel when starting a custom area run from the app.</li><li>If you want to run 2 clean passes, amend `:x2` to the command, e.g. `customArea:100;100;1000;1000:x2`.</li></ul> |
-| `pause`      | Pause cleaning if it's currently active.  | If the device is idle, the command is ignored.       |
-| `resume`     | Resume cleaning if it's currently paused. | If the device is not paused, the command is ignored. |
-| `stop`       | Stop cleaning immediately.                |                                                      |
-| `charge`     | Send device to charging station.          |                                                      |
+| Name         | Action                                      | Remarks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+|--------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `clean`      | Start cleaning in automatic mode.           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `spotArea`   | Start cleaning specific rooms.              | <ul><li>Only if supported by device, which can be recognized by `spotArea` being present in the list of possible states of the `current-cleaning-mode` channel.</li><li>Format: `spotArea:<room IDs>`, where `room IDs` is a semicolon separated list of room letters as shown in Ecovacs' app, so a valid command could e.g. be `spotArea:A;D;E`.</li><li>If you want to run 2 clean passes, append `:x2` to the command, e.g. `spotArea:A;C;B:x2`.</li></ul>                                                                                            |
+| `customArea` | Start cleaning specific areas.              | <ul><li>Only if supported by device, which can be recognized by `customArea` being present in the list of possible states of the `current-cleaning-mode` channel.</li><li>Format: `customArea:<x1>;<y1>;<x2>;<y2>`, where the parameters are coordinates (in mm) relative to the map.</li><li>The coordinates can be obtained from the `current-cleaning-spot-definition` channel when starting a custom area run from the app.</li><li>If you want to run 2 clean passes, append `:x2` to the command, e.g. `customArea:100;100;1000;1000:x2`.</li></ul> |
+| `sceneClean` | Start cleaning using a predefined scenario. | <ul><li>Only if supported by device, which can be recognized by `sceneClean` being present in the list of possible states of the `current-cleaning-mode` channel.</li><li>Format: `sceneClean:<scenarioId>`. The `scenarioID` can be obtained from the `current-cleaning-spot-definition` channel when starting a scenario run from the app. Example: `sceneClean:5318`.</li></ul>                                                                                                                                                                        |
+| `pause`      | Pause cleaning if it's currently active.    | If the device is idle, the command is ignored.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `resume`     | Resume cleaning if it's currently paused.   | If the device is not paused, the command is ignored.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `stop`       | Stop cleaning immediately.                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `charge`     | Send device to charging station.            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ## Rule actions
 
@@ -146,7 +148,7 @@ Supported sound types include:
 
 For special use cases, there is also a `playSoundWithId(int soundId)` method, where you can pass the numeric ID of the sound to play.
 The exact meaning of the number depends on the specific device; you'll need to experiment with different numbers to see how the number-to-sound mapping looks like.
-For reference, a list for the Deebot 900 can be found [here](https://github.com/bmartin5692/sucks/blob/D901/protocol.md#user-content-sounds).
+For reference, a list for the Deebot 900 can be found in the [Deebot 900 protocol documentation on GitHub](https://github.com/bmartin5692/sucks/blob/D901/protocol.md#user-content-sounds).
 
 ## File Based Configuration
 
@@ -177,11 +179,11 @@ Bridge ecovacs:ecovacsapi:ecovacsapi [ email="your.email@provider.com", password
 
 When encountering an unsupported model during discovery, the binding creates a log message like this one:
 
-```
+```text
 2023-04-21 12:02:39.607 [INFO ] [acs.internal.api.impl.EcovacsApiImpl] - Found unsupported device DEEBOT N8 PRO CARE (class s1f8g7, company eco-ng), ignoring.
 ```
 
-In such a case, please [create an issue on GitHub](https://github.com/openhab/openhab-addons/issues), listing the contents of the log line.
+In such a case, please [create an issue in the openHAB Add-ons GitHub repository](https://github.com/openhab/openhab-addons/issues), listing the contents of the log line.
 In addition to that, if the model is similar to an already supported one, you can try to add the support yourself (until getting an updated binding).
 For doing so, you can follow the following steps:
 
@@ -189,4 +191,3 @@ For doing so, you can follow the following steps:
 - create a file named `custom_device_descs.json`, whose format of that file is the same as [the built-in device list](https://raw.githubusercontent.com/openhab/openhab-addons/main/bundles/org.openhab.binding.ecovacs/src/main/resources/devices/supported_device_list.json)
 - for a model that is very similar to an existing one, create an entry with `modelName`, `deviceClass` (from the log line) and `deviceClassLink` (`deviceClass` of the similar model)
 - for other models, you can also try experimenting with creating a full entry, but it's likely that the binding code will need to be updated in that case
-

@@ -1,6 +1,6 @@
 # Teslascope Binding
 
-This binding integrates [Tesla Electrical Vehicles](https://www.tesla.com).
+This binding integrates [Tesla Electric Vehicles](https://www.tesla.com).
 The integration happens through the [Teslascope](https://www.teslascope.com) API.
 
 ## Supported Things
@@ -10,14 +10,27 @@ Each vehicle is represented by its own `vehicle` Thing.
 
 ## Discovery
 
-Auto-discovery is not currently supported.
+After (manually) adding a Teslascope Account bridge, registered vehicles will be auto discovered.
 
-## Thing Configuration
+## `account` Bridge Configuration
 
-As a minimum, the apiKey and publicID are needed:
+Account configuration is necessary.
+The easiest way to do this is from the UI.
+Just add a new thing, select the Teslascope binding, then Teslascope Account Binding Thing, and enter the apiKey from the Teslascope website.
+
+As a minimum, the apiKey is needed:
+
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | apiKey          | N/A           | Yes      | No       | apiKey provided by Teslascope                                                        |
+| refreshInterval | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
+
+## `vehicle` Thing Configuration
+
+As a minimum, the publicID is needed:
+
+| Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
+|-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | publicID        | N/A           | Yes      | No       | Vehicle Public ID listed in Teslascope                                               |
 | refreshInterval | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
 
@@ -30,7 +43,7 @@ All vehicles support a huge number of channels - the following list shows the st
 | auto-conditioning   | Switch               | Auto Conditioning   | Turns on auto-conditioning (a/c or heating)                                                 |
 | battery-level       | Number:Dimensionless | Battery Level       | State of the battery in %                                                                   |
 | charging-state      | String               | Charging State      | “Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”                    |
-| charge-port         | Switch               | Charge Port         | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed) | 
+| charge-port         | Switch               | Charge Port         | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed) |
 | climate             | Switch               | Climate             | Climate status indicator                                                                    |
 | door-lock           | Switch               | Door Lock           | Lock or unlock the car                                                                      |
 | inside-temp         | Number:Temperature   | Inside Temperature  | Indicates the inside temperature of the vehicle                                             |
@@ -54,7 +67,7 @@ Additionally, these advanced channels are available (not all are available on al
 | charge                      | Switch                   | Charge                        | Start (ON) or stop (OFF) charging                                                                        |
 | charge-amps                 | Number:ElectricCurrent   | Charger Current               | Current actually delivered by the charger                                                                |
 | charge-current-request      | Number:ElectricCurrent   | Charger Current Requested     | Current requested from the charger                                                                       |
-| charge-current-request-max  | Number:ElectricCurrent   | Max Charger Current Supported | Maximuum current supported by the charger                                                                |
+| charge-current-request-max  | Number:ElectricCurrent   | Max Charger Current Supported | Maximum current supported by the charger                                                                 |
 | charge-energy-added         | Number:Energy            | Charge Energy Added           | Energy added, in kWh, during the last charging session                                                   |
 | charge-limit-soc            | Number:Dimensionless     | Charge Limit SOC              | Current charging limit of the vehicle, in %                                                              |
 | charge-limit-soc-min        | Number:Dimensionless     | Charge Limit SOC Min          | Minimum charging limit of the vehicle, in %                                                              |
@@ -117,14 +130,16 @@ Additionally, these advanced channels are available (not all are available on al
 | tpms-soft-warning-rr        | Switch                   | Tyre Pressure Soft Warning RR | Tyre Pressure Soft Warning Rear Right                                                                    |
 | usable-battery-level        | Number                   | Usable Battery Level          | Indicates the % of battery that can be used for vehicle functions like driving                           |
 | valet-mode                  | Switch                   | Valet Mode                    | Enable or disable Valet Mode                                                                             |
-| wiper-blade-heater          | Switch                   | Wiperblade Heater             | Indicates if the wiperblade heater is switched on                                                        |
+| wiper-blade-heater          | Switch                   | Wiper Blade Heater            | Indicates if the wiper blade heater is switched on                                                       |
 
 ## Full Example
 
 ### `demo.things` Example
 
 ```java
-teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
+Bridge teslascope:account:account [ apiKey="xxxx" ] {
+    teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
+}
 ```
 
 ### `example.items` Example

@@ -54,7 +54,7 @@ This `stationId` can be found by using the following link:
 
 ### Thing properties
 
-Once created, at first execution, the station's properties will be filled with informations gathered from the web service :
+Once created, at first execution, the station's properties will be filled with information gathered from the web service:
 
 - Nearest measuring station location
 - Measuring station ID
@@ -88,7 +88,7 @@ The AirQuality information that is retrieved for a given is available as these c
 ### Pollutants Channels Group
 
 For each pollutant (PM25, PM10, O3, NO2, CO, SO2) , depending upon availability of the station,
-you will be provided with the following informations
+you will be provided with the following information.
 
 | Channel ID      | Item Type            | Description                                  |
 |-----------------|----------------------|----------------------------------------------|
@@ -96,7 +96,7 @@ you will be provided with the following informations
 | index           | Number               | AQI Index of the single pollutant            |
 | alert-level     | Number               | Alert level associate to the index           |
 
-(*) The alert level is described by a color :
+(*) The alert level is described by a color:
 
 | Code | Color  | Description                    |
 |------|--------|--------------------------------|

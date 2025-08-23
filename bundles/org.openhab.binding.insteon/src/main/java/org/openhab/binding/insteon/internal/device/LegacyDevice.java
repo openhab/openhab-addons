@@ -375,7 +375,7 @@ public class LegacyDevice {
      *
      * @param msg message to be sent
      * @param feature device feature that sent this message (so we can associate the response message with it)
-     * @param delay time (in milliseconds) to delay before enqueuing message
+     * @param delay delay (in milliseconds) before enqueuing message
      */
     public void enqueueDelayedMessage(Msg msg, LegacyDeviceFeature feature, long delay) {
         long now = System.currentTimeMillis();
@@ -519,7 +519,7 @@ public class LegacyDevice {
 
         @Override
         public int compareTo(QEntry qe) {
-            return (int) (expirationTime - qe.expirationTime);
+            return Long.compare(expirationTime, qe.expirationTime);
         }
     }
 }

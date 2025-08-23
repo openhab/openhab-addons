@@ -180,12 +180,20 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.colorMode.label</label>
 		<description>@text/channel-type.shelly.colorMode.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="colorFull">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.colorFull.label</label>
 		<description>@text/channel-type.shelly.colorFull.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="red">@text/channel-type.shelly.colorFull.state.option.red</option>
@@ -222,6 +230,10 @@
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.shelly.colorWhite.label</label>
 		<description>@text/channel-type.shelly.colorWhite.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 		<state min="0" max="255" step="1" readOnly="false"></state>
 	</channel-type>
 
@@ -236,6 +248,10 @@
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.shelly.whiteTemp.label</label>
 		<description>@text/channel-type.shelly.whiteTemp.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 		<state min="3000" max="6500" step="10" readOnly="false"></state>
 	</channel-type>
 
@@ -244,6 +260,10 @@
 		<label>@text/channel-type.shelly.whiteBrightness.label</label>
 		<description>@text/channel-type.shelly.whiteBrightness.description</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" step="1" readOnly="false"></state>
 	</channel-type>
 

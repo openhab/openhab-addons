@@ -230,6 +230,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `autoWhiteLED`              | Switch | RW         | When ON this sets a cameras visible white LED to automatically turn on or off.                                                                                                                                                                                                                                                     |
 | `carAlarm`                  | Switch | RW         | When a car is detected the switch will turn ON.                                                                                                                                                                                                                                                                                    |
 | `cellMotionAlarm`           | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
+| `createSnapshots` | Switch | RW | This control can be used to manually start and stop using your openHAB CPU to create snapshots from a RTSP source with FFmpeg. |
 | `doorBell`                  | Switch | R          | Doorbird only, will reflect the status of the doorbell button.                                                                                                                                                                                                                                                                     |
 | `enableAudioAlarm`          | Switch | RW         | Allows the audio alarm to be turned ON or OFF.                                                                                                                                                                                                                                                                                     |
 | `enableEmail`               | Switch | RW         | Allows the email features to be turned ON or OFF.                                                                                                                                                                                                                                                                                  |
@@ -283,7 +284,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `tooBlurryAlarm`            | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
 | `tooBrightAlarm`            | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
 | `tooDarkAlarm`              | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
-| `pollImage`                 | Switch | RW         | This control can be used to manually start and stop using your CPU to create snapshots from a RTSP source. If you have a snapshot URL setup in the binding, only then can this control can be used to update the Image channel.                                                                                                    |
+| `pollImage`                 | Switch | RW         | This control can be used to start and stop updating the Image channel.                                                                                                    |
 | `whiteLED`                  | Dimmer | RW         | Turn the visible white LED ON or OFF and if supported dim from 0-100%.                                                                                                                                                                                                                                                             |
 | `zoom`                      | Dimmer | RW         | Works with ONVIF cameras that can be moved.                                                                                                                                                                                                                                                                                        |
 | `acceptedCardNumber`        | String | R          | This channel shows the last accepted access card number that opened the door. The channel doesn't show rejected/unauthorized cards.                                                                                                                                                                                                |
@@ -612,7 +613,7 @@ Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
 There are two ways to cast a camera.
 
 1. openHAB Cloud Connector and using metadata/tags.
-2. Chromecast Bindings `playuri` channel.
+1. Chromecast Bindings `playuri` channel.
 
 The first method once setup allows you to ask "OK Google show X camera", or "OK Google show X camera on Y display".
 By optionally naming the display that you wish to use, it can be cast directly to your Chromecast (connected to your TV) by speaking to a Google Nest Mini.
@@ -704,7 +705,7 @@ end
 
 ## How To Reboot Camera
 
-```
+```java
 rule "Reboot Camera At 12:00 AM"
 when
     Time cron "0 0 0 ? *"

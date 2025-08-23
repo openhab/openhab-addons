@@ -83,7 +83,7 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
     public void dispose() {
         super.dispose();
         thingHandler.unregisterDiscoveryService();
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getBridgeUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getBridgeUID());
     }
 
     /**

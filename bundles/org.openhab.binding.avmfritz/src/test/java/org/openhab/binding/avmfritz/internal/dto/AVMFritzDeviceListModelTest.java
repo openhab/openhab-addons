@@ -142,8 +142,21 @@ public class AVMFritzDeviceListModelTest {
                         <interfaces>512,513</interfaces>
                     </etsiunitinfo>
                 </device>\
+                <device identifier="XXXXX-XXXXXXX-X" id="23" functionbitmask="130" fwversion="03.65" manufacturer="AVM" productname="FRITZ!Smart Energy 250">
+                    <present>1</present>
+                    <txbusy>0</txbusy>
+                    <name>FRITZ!Smart Energy 250 #8</name>
+                    <battery>90</battery>
+                    <batterylow>0</batterylow>
+                    <powermeter>
+                        <voltage>0</voltage>
+                        <power>532000</power>
+                        <energy>5921</energy>
+                    </powermeter>
+                </device>
             </devicelist>\
                 """;
+
         //@formatter:on
         XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
         Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
@@ -153,7 +166,7 @@ public class AVMFritzDeviceListModelTest {
     @Test
     public void validateDeviceListModel() {
         assertNotNull(devices);
-        assertEquals(18, devices.getDevicelist().size());
+        assertEquals(19, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -289,6 +302,46 @@ public class AVMFritzDeviceListModelTest {
         assertNull(device.getHkr());
 
         assertNull(device.getLevelControlModel());
+    }
+
+    @Test
+    public void validateSmartEnergy250() {
+        Optional<AVMFritzBaseModel> optionalDevice = findModel("FRITZ!Smart Energy 250");
+        assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
+
+        DeviceModel device = (DeviceModel) optionalDevice.get();
+        assertEquals("FRITZ!Smart Energy 250", device.getProductName());
+        assertEquals("XXXXX-XXXXXXX-X", device.getIdentifier());
+        assertEquals("23", device.getDeviceId());
+        assertEquals("03.65", device.getFirmwareVersion());
+        assertEquals("AVM", device.getManufacturer());
+
+        assertEquals(1, device.getPresent());
+        assertEquals("FRITZ!Smart Energy 250 #8", device.getName());
+        assertTrue(device.isPowermeter());
+
+        assertFalse(device.isHANFUNButton());
+        assertFalse(device.isHANFUNAlarmSensor());
+        assertFalse(device.isButton());
+        assertFalse(device.isHeatingThermostat());
+        assertFalse(device.isTemperatureSensor());
+        assertFalse(device.isSwitchableOutlet());
+        assertFalse(device.isDectRepeater());
+        assertFalse(device.hasMicrophone());
+        assertFalse(device.isHANFUNUnit());
+        assertFalse(device.isHANFUNOnOff());
+        assertFalse(device.isHANFUNBlinds());
+        assertFalse(device.isHumiditySensor());
+
+        assertEquals(new BigDecimal("90"), device.getBattery());
+        assertEquals(BatteryModel.BATTERY_OFF, device.getBatterylow());
+
+        PowerMeterModel powerMeter = device.getPowermeter();
+        assertNotNull(powerMeter);
+        assertEquals(new BigDecimal("0.000"), powerMeter.getVoltage());
+        assertEquals(new BigDecimal("532.000"), powerMeter.getPower());
+        assertEquals(new BigDecimal("5921"), powerMeter.getEnergy());
     }
 
     @Test

@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.matter.internal.bridge.devices;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.FanControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
@@ -42,7 +45,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class FanDevice extends GenericDevice {
+public class FanDevice extends BaseDevice {
     private final Map<String, GenericItem> itemMap = new HashMap<>();
     private final Map<String, String> attributeToItemNameMap = new HashMap<>();
     private final FanModeMapper fanModeMapper = new FanModeMapper();
@@ -236,6 +239,7 @@ public class FanDevice extends GenericDevice {
 
     @Override
     public void updateState(Item item, State state) {
+        List<AttributeState> states = new ArrayList<>();
         attributeToItemNameMap.forEach((attribute, itemUid) -> {
             if (itemUid.equals(item.getUID())) {
                 String[] pair = attribute.split("\\.");
@@ -249,8 +253,9 @@ public class FanDevice extends GenericDevice {
                     case FanControlCluster.ATTRIBUTE_PERCENT_SETTING:
                         if (state instanceof PercentType percentType) {
                             int speed = percentType.intValue();
-                            setEndpointState(clusterName, attributeName, speed);
-                            setEndpointState(clusterName, FanControlCluster.ATTRIBUTE_PERCENT_CURRENT, speed);
+                            states.add(new AttributeState(clusterName, attributeName, speed));
+                            states.add(new AttributeState(clusterName, FanControlCluster.ATTRIBUTE_PERCENT_CURRENT,
+                                    speed));
                             lastSpeed = speed;
                         }
                         break;
@@ -258,12 +263,12 @@ public class FanDevice extends GenericDevice {
                         if (state instanceof OnOffType onOffType) {
                             int mode = onOffType == OnOffType.ON ? FanControlCluster.FanModeEnum.ON.value
                                     : FanControlCluster.FanModeEnum.OFF.value;
-                            setEndpointState(clusterName, attributeName, mode);
+                            states.add(new AttributeState(clusterName, attributeName, mode));
                             lastMode = mode;
                         } else {
                             try {
                                 int mode = fanModeMapper.fromCustomValue(state.toString()).value;
-                                setEndpointState(clusterName, attributeName, mode);
+                                states.add(new AttributeState(clusterName, attributeName, mode));
                                 lastMode = mode;
                             } catch (FanModeMappingException e) {
                                 logger.debug("Could not convert {} to matter value", state.toString());
@@ -272,7 +277,7 @@ public class FanDevice extends GenericDevice {
                         break;
                     case OnOffCluster.ATTRIBUTE_ON_OFF:
                         if (state instanceof OnOffType onOffType) {
-                            setEndpointState(clusterName, attributeName, onOffType == OnOffType.ON);
+                            states.add(new AttributeState(clusterName, attributeName, onOffType == OnOffType.ON));
                             lastOnOff = onOffType;
                         }
                         break;
@@ -281,7 +286,8 @@ public class FanDevice extends GenericDevice {
                 }
             }
         });
-        sendMissingAttributes();
+        states.addAll(generateMissingAttributes());
+        setEndpointStates(states);
     }
 
     /**
@@ -320,7 +326,8 @@ public class FanDevice extends GenericDevice {
         return attributeMap;
     }
 
-    private void sendMissingAttributes() {
+    private List<AttributeState> generateMissingAttributes() {
+        List<AttributeState> states = new ArrayList<>();
         updateMissingAttributes().forEach((attribute, value) -> {
             String[] pair = attribute.split("\\.");
             if (pair.length != 2) {
@@ -329,8 +336,9 @@ public class FanDevice extends GenericDevice {
             }
             String clusterName = pair[0];
             String attributeName = pair[1];
-            setEndpointState(clusterName, attributeName, value);
+            states.add(new AttributeState(clusterName, attributeName, value));
         });
+        return states;
     }
 
     private @Nullable GenericItem itemForAttribute(String clusterName, String attributeName) {

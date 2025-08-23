@@ -30,11 +30,11 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class LockTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "lock/0x0000000000000000_lock_zigbee2mqtt";
 
-    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -111,7 +111,6 @@ public class LockTests extends AbstractComponentTests {
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.ON);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testNoStateTopicIsOptimistic() throws InterruptedException {
         // @formatter:off
@@ -163,7 +162,6 @@ public class LockTests extends AbstractComponentTests {
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.ON);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testOpennable() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -198,7 +196,6 @@ public class LockTests extends AbstractComponentTests {
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.OFF);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testNonOptimistic() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """

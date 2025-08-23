@@ -18,19 +18,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.exec.internal.ExecWhitelistWatchService;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -43,8 +52,6 @@ import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.StringUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +65,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ExecHandler extends BaseThingHandler {
+
+    private static final String EXEC_HANDLER_THREADPOOL_NAME = "execBinding";
+
     /**
      * Use this to separate between command and parameter, and also between parameters.
      */
@@ -72,16 +82,17 @@ public class ExecHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
 
-    private final BundleContext bundleContext;
-
     // List of Configurations constants
     public static final String INTERVAL = "interval";
     public static final String TIME_OUT = "timeout";
     public static final String COMMAND = "command";
     public static final String TRANSFORM = "transform";
     public static final String AUTORUN = "autorun";
+    public static final String CHARSET = "charset";
 
-    private @Nullable ScheduledFuture<?> executionJob;
+    private ExecutorService executor;
+    private @Nullable ScheduledFuture<?> scheduledTask;
+    private volatile @Nullable Future<?> lastTriggeredTask;
     private @Nullable String lastInput;
 
     private static Runtime rt = Runtime.getRuntime();
@@ -90,8 +101,8 @@ public class ExecHandler extends BaseThingHandler {
 
     public ExecHandler(Thing thing, ExecWhitelistWatchService execWhitelistWatchService) {
         super(thing);
-        this.bundleContext = FrameworkUtil.getBundle(ExecHandler.class).getBundleContext();
         this.execWhitelistWatchService = execWhitelistWatchService;
+        this.executor = ThreadPoolManager.getPool(EXEC_HANDLER_THREADPOOL_NAME);
     }
 
     @Override
@@ -102,7 +113,7 @@ public class ExecHandler extends BaseThingHandler {
             if (channelUID.getId().equals(RUN)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        scheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
+                        executor.execute(this::execute);
                     }
                 }
             } else if (channelUID.getId().equals(INPUT)) {
@@ -113,7 +124,7 @@ public class ExecHandler extends BaseThingHandler {
                         if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN))) {
                             logger.trace("Executing command '{}' after a change of the input channel to '{}'",
                                     getConfig().get(COMMAND), lastInput);
-                            scheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
+                            executor.execute(this::execute);
                         }
                     }
                 }
@@ -125,10 +136,12 @@ public class ExecHandler extends BaseThingHandler {
     public void initialize() {
         channelTransformation = new ChannelTransformation((List<String>) getConfig().get(TRANSFORM));
 
-        if (executionJob == null || executionJob.isCancelled()) {
+        ScheduledFuture<?> task = scheduledTask;
+        if (task == null || task.isCancelled()) {
             if ((getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
                 int pollingInterval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
-                executionJob = scheduler.scheduleWithFixedDelay(this::execute, 0, pollingInterval, TimeUnit.SECONDS);
+                scheduledTask = scheduler.scheduleWithFixedDelay(this::triggerExecution, 0, pollingInterval,
+                        TimeUnit.SECONDS);
             }
         }
 
@@ -137,11 +150,21 @@ public class ExecHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (executionJob != null && !executionJob.isCancelled()) {
-            executionJob.cancel(true);
-            executionJob = null;
+        Future<?> task = scheduledTask;
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
+            scheduledTask = null;
+        }
+        task = lastTriggeredTask;
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
+            lastTriggeredTask = null;
         }
         channelTransformation = null;
+    }
+
+    private void triggerExecution() {
+        lastTriggeredTask = executor.submit(this::execute);
     }
 
     public void execute() {
@@ -156,17 +179,21 @@ public class ExecHandler extends BaseThingHandler {
             timeOut = ((BigDecimal) getConfig().get(TIME_OUT)).intValue() * 1000;
         }
 
+        Charset charset = null;
+        String charsetValue = (String) getConfig().get(CHARSET);
+        if (charsetValue != null && !charsetValue.isBlank()) {
+            try {
+                charset = Charset.forName(charsetValue);
+            } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+                logger.warn("Invalid or unsupported character encoding '{}', falling back to UTF-8", charsetValue);
+            }
+        }
+        if (charset == null) {
+            charset = StandardCharsets.UTF_8;
+        }
+
         if (commandLine != null && !commandLine.isEmpty()) {
             updateState(RUN, OnOffType.ON);
-
-            // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
-            // Runtime.Exec(), on Mac OS X (Yosemite and El Capitan), there seems to be a lock race condition
-            // randomly appearing (on UNIXProcess) *when* one tries to gobble up the stdout and sterr output of the
-            // subprocess in separate threads. It seems to be common "wisdom" to do that in separate threads, but
-            // only when keeping everything between .exec() and .waitfor() in the same thread, this lock race
-            // condition seems to go away. This approach of not reading the outputs in separate threads *might* be a
-            // problem for external commands that generate a lot of output, but this will be dependent on the limits
-            // of the underlying operating system.
 
             Date date = Calendar.getInstance().getTime();
             try {
@@ -181,6 +208,8 @@ public class ExecHandler extends BaseThingHandler {
                         commandLine, date, lastInput, e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
+                updateState(STDOUT, new StringType());
+                updateState(STDERR, new StringType(e.getMessage()));
                 return;
             }
 
@@ -194,6 +223,8 @@ public class ExecHandler extends BaseThingHandler {
                     logger.warn("An exception occurred while splitting '{}' : '{}'", commandLine, e.getMessage());
                     updateState(RUN, OnOffType.OFF);
                     updateState(OUTPUT, new StringType(e.getMessage()));
+                    updateState(STDOUT, new StringType());
+                    updateState(STDERR, new StringType(e.getMessage()));
                     return;
                 }
             } else {
@@ -219,6 +250,8 @@ public class ExecHandler extends BaseThingHandler {
                         logger.warn("OS {} not supported, please manually split commands!", getOperatingSystemName());
                         updateState(RUN, OnOffType.OFF);
                         updateState(OUTPUT, new StringType("OS not supported, please manually split commands!"));
+                        updateState(STDOUT, new StringType());
+                        updateState(STDERR, new StringType("OS not supported, please manually split commands!"));
                         return;
                 }
             }
@@ -238,13 +271,19 @@ public class ExecHandler extends BaseThingHandler {
                         e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
+                updateState(STDOUT, new StringType());
+                updateState(STDERR, new StringType(e.getMessage()));
                 return;
             }
 
             StringBuilder outputBuilder = new StringBuilder();
             StringBuilder errorBuilder = new StringBuilder();
 
-            try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+            TextOutputConsumer errConsumer = new TextOutputConsumer();
+            Future<List<String>> stdErrFuture = errConsumer.consume(proc.getErrorStream(), charset,
+                    Thread.currentThread().getName() + "-stderr-consumer");
+
+            try (InputStreamReader isr = new InputStreamReader(proc.getInputStream(), charset);
                     BufferedReader br = new BufferedReader(isr)) {
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -253,18 +292,6 @@ public class ExecHandler extends BaseThingHandler {
                 }
             } catch (IOException e) {
                 logger.warn("An exception occurred while reading the stdout when executing '{}' : '{}'", commandLine,
-                        e.getMessage());
-            }
-
-            try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                    BufferedReader br = new BufferedReader(isr)) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    errorBuilder.append(line).append("\n");
-                    logger.debug("Exec [{}]: '{}'", "ERROR", line);
-                }
-            } catch (IOException e) {
-                logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'", commandLine,
                         e.getMessage());
             }
 
@@ -281,8 +308,34 @@ public class ExecHandler extends BaseThingHandler {
                 proc.destroyForcibly();
             }
 
+            try {
+                List<String> stdErr = stdErrFuture.get(timeOut, TimeUnit.MILLISECONDS);
+                for (String line : stdErr) {
+                    errorBuilder.append(line).append("\n");
+                    logger.debug("Exec [{}]: '{}'", "ERROR", line);
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while waiting for process ('{}') stderr content", commandLine);
+            } catch (TimeoutException e) {
+                logger.warn("Timed out while waiting for process ('{}') stderr content", commandLine);
+            } catch (ExecutionException e) {
+                Throwable cause = e.getCause();
+                logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'", commandLine,
+                        cause != null ? cause.getMessage() : e.getMessage());
+            }
+
             updateState(RUN, OnOffType.OFF);
             updateState(EXIT, new DecimalType(proc.exitValue()));
+
+            ChannelTransformation transformation = channelTransformation;
+            String transformedStdout = Objects.requireNonNull(StringUtils.chomp(outputBuilder.toString()));
+            String transformedStderr = Objects.requireNonNull(StringUtils.chomp(errorBuilder.toString()));
+            if (transformation != null) {
+                transformedStdout = transformation.apply(transformedStdout).orElse(transformedStdout);
+                transformedStderr = transformation.apply(transformedStderr).orElse(transformedStderr);
+            }
+            updateState(STDOUT, new StringType(transformedStdout));
+            updateState(STDERR, new StringType(transformedStderr));
 
             outputBuilder.append(errorBuilder.toString());
 
@@ -290,8 +343,8 @@ public class ExecHandler extends BaseThingHandler {
 
             String transformedResponse = Objects.requireNonNull(StringUtils.chomp(outputBuilder.toString()));
 
-            if (channelTransformation != null) {
-                transformedResponse = channelTransformation.apply(transformedResponse).orElse(transformedResponse);
+            if (transformation != null) {
+                transformedResponse = transformation.apply(transformedResponse).orElse(transformedResponse);
             }
 
             updateState(OUTPUT, new StringType(transformedResponse));
@@ -328,6 +381,8 @@ public class ExecHandler extends BaseThingHandler {
                 logger.warn("An exception occurred while splitting '{}' : '{}'", commandLine, e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
+                updateState(STDOUT, new StringType());
+                updateState(STDERR, new StringType(e.getMessage()));
                 return new String[] {};
             }
         }
@@ -353,7 +408,12 @@ public class ExecHandler extends BaseThingHandler {
 
     public static OS getOperatingSystemType() {
         if (os == OS.NOT_SET) {
-            String operSys = System.getProperty("os.name").toLowerCase();
+            String operSys = System.getProperty("os.name");
+            if (operSys == null) {
+                os = OS.UNKNOWN;
+                return os;
+            }
+            operSys = operSys.toLowerCase();
             if (operSys.contains("win")) {
                 os = OS.WINDOWS;
             } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {

@@ -15,7 +15,7 @@
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Brightness</tag>
 		</tags>
 	</channel-type>
 
@@ -27,7 +27,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -56,6 +56,10 @@
 		<label>Background Color</label>
 		<description>The color channel allows to control the color of a light.</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="nightlight">

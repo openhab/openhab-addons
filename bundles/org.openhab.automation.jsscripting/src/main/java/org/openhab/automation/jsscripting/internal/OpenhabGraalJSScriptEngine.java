@@ -13,6 +13,7 @@
 package org.openhab.automation.jsscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
+import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,6 +54,7 @@ import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChanne
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
+import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.QuantityType;
@@ -137,24 +139,24 @@ public class OpenhabGraalJSScriptEngine
     /** {@link Lock} synchronization of multi-thread access */
     private final Lock lock = new ReentrantLock();
     private final JSRuntimeFeatures jsRuntimeFeatures;
+    private final LifecycleTracker lifecycleTracker = new LifecycleTracker();
+    private final GraalJSScriptEngineConfiguration configuration;
 
     // these fields start as null because they are populated on first use
     private @Nullable Consumer<String> scriptDependencyListener;
-    private String engineIdentifier; // this field is very helpful for debugging, please do not remove it
+    private String engineIdentifier = "<uninitialized>";
 
     private boolean initialized = false;
-    private final boolean injectionEnabled;
-    private final boolean injectionCachingEnabled;
+    private boolean closed = false;
 
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine(boolean injectionEnabled, boolean injectionCachingEnabled,
+    public OpenhabGraalJSScriptEngine(GraalJSScriptEngineConfiguration configuration,
             JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
-        this.injectionEnabled = injectionEnabled;
-        this.injectionCachingEnabled = injectionCachingEnabled;
+        this.configuration = configuration;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
         delegate = GraalJSScriptEngine.create(ENGINE, Context.newBuilder("js") //
@@ -163,9 +165,12 @@ public class OpenhabGraalJSScriptEngine
                             @Override
                             public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options,
                                     FileAttribute<?>... attrs) throws IOException {
-                                Consumer<String> localScriptDependencyListener = scriptDependencyListener;
-                                if (localScriptDependencyListener != null) {
-                                    localScriptDependencyListener.accept(path.toString());
+                                if (configuration.isDependencyTrackingEnabled()
+                                        && path.startsWith(GraalJSScriptEngineFactory.JS_LIB_PATH)) {
+                                    Consumer<String> localScriptDependencyListener = scriptDependencyListener;
+                                    if (localScriptDependencyListener != null) {
+                                        localScriptDependencyListener.accept(path.toString());
+                                    }
                                 }
 
                                 if (path.toString().endsWith(".js")) {
@@ -244,10 +249,10 @@ public class OpenhabGraalJSScriptEngine
     protected void beforeInvocation() {
         super.beforeInvocation();
 
-        logger.debug("Initializing GraalJS script engine...");
+        logger.debug("Initializing GraalJS script engine '{}' ...", engineIdentifier);
 
         lock.lock();
-        logger.debug("Lock acquired before invocation.");
+        logger.debug("Lock acquired before invocation for engine '{}'.", engineIdentifier);
 
         if (initialized) {
             return;
@@ -275,12 +280,13 @@ public class OpenhabGraalJSScriptEngine
                 .getAttribute(CONTEXT_KEY_DEPENDENCY_LISTENER);
         if (localScriptDependencyListener == null) {
             logger.warn(
-                    "Failed to retrieve script script dependency listener from engine bindings. Script dependency tracking will be disabled.");
+                    "Failed to retrieve script dependency listener from engine bindings. Script dependency tracking will be disabled for engine '{}'.",
+                    engineIdentifier);
         }
         scriptDependencyListener = localScriptDependencyListener;
 
         ScriptExtensionModuleProvider scriptExtensionModuleProvider = new ScriptExtensionModuleProvider(
-                scriptExtensionAccessor, lock);
+                scriptExtensionAccessor, lock, lifecycleTracker);
 
         // Wrap the "require" function to also allow loading modules from the ScriptExtensionModuleProvider
         Function<Function<Object[], Object>, Function<String, Object>> wrapRequireFn = originalRequireFn -> moduleName -> scriptExtensionModuleProvider
@@ -291,34 +297,47 @@ public class OpenhabGraalJSScriptEngine
 
         // Injections into the JS runtime
         jsRuntimeFeatures.getFeatures().forEach((key, obj) -> {
-            logger.debug("Injecting {} into the JS runtime...", key);
+            logger.debug("Injecting {} into the context of engine '{}' ...", key, engineIdentifier);
             delegate.put(key, obj);
         });
 
         initialized = true;
 
         try {
-            logger.debug("Evaluating cached global script...");
+            logger.debug("Evaluating cached global script for engine '{}' ...", engineIdentifier);
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
-            if (this.injectionEnabled) {
-                if (this.injectionCachingEnabled) {
-                    logger.debug("Evaluating cached openhab-js injection...");
+
+            if (configuration.isInjection(GraalJSScriptEngineConfiguration.INJECTION_ENABLED_FOR_ALL_SCRIPTS)
+                    || (isUiBasedScript() && configuration.isInjection(
+                            GraalJSScriptEngineConfiguration.INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY))) {
+                if (configuration.isInjectionCachingEnabled()) {
+                    logger.debug("Evaluating cached openhab-js injection for engine '{}' ...", engineIdentifier);
                     delegate.getPolyglotContext().eval(OPENHAB_JS_SOURCE);
                 } else {
-                    logger.debug("Evaluating openhab-js injection from the file system...");
+                    logger.debug("Evaluating openhab-js injection from the file system for engine '{}' ...",
+                            engineIdentifier);
                     eval(OPENHAB_JS_INJECTION_CODE);
                 }
             }
-            logger.debug("Successfully initialized GraalJS script engine.");
+            logger.debug("Successfully initialized GraalJS script engine '{}'.", engineIdentifier);
         } catch (ScriptException e) {
             logger.error("Could not inject global script", e);
         }
     }
 
     @Override
+    protected String onScript(String script) {
+        if (isUiBasedScript() && configuration.isWrapperEnabled()) {
+            logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
+            return "(function() {" + System.lineSeparator() + script + System.lineSeparator() + "})()";
+        }
+        return super.onScript(script);
+    }
+
+    @Override
     protected Object afterInvocation(Object obj) {
         lock.unlock();
-        logger.debug("Lock released after invocation.");
+        logger.debug("Lock released after invocation for engine '{}'.", engineIdentifier);
         return super.afterInvocation(obj);
     }
 
@@ -329,8 +348,41 @@ public class OpenhabGraalJSScriptEngine
     }
 
     @Override
-    public void close() {
-        jsRuntimeFeatures.close();
+    public void close() throws Exception {
+        if (closed) {
+            logger.debug("Engine '{}' is already disposed and closed.", engineIdentifier);
+            return;
+        }
+
+        lock.lock();
+        try {
+            try {
+                jsRuntimeFeatures.close();
+                this.lifecycleTracker.dispose();
+            } finally {
+                logger.debug("Engine '{}' disposed.", engineIdentifier);
+                super.close();
+                logger.debug("Engine '{}' closed.", engineIdentifier);
+            }
+        } finally {
+            closed = true;
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Tests if the current script is a UI-based script, i.e. it is neither loaded from a file nor a transformation.
+     * 
+     * @return true if the script is UI-based, false otherwise
+     */
+    private boolean isUiBasedScript() {
+        ScriptContext ctx = delegate.getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return false;
+        }
+        return ctx.getAttribute("javax.script.filename") == null
+                && !engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
     }
 
     /**
@@ -371,7 +423,7 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public void lock() {
         lock.lock();
-        logger.debug("Lock acquired.");
+        logger.debug("Lock acquired for engine '{}'.", engineIdentifier);
     }
 
     @Override
@@ -392,7 +444,7 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public void unlock() {
         lock.unlock();
-        logger.debug("Lock released.");
+        logger.debug("Lock released for engine '{}'.", engineIdentifier);
     }
 
     @Override

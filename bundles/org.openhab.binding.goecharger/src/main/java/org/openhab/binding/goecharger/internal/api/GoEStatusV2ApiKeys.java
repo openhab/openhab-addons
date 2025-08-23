@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.goecharger.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * <a href="https://github.com/goecharger/go-eCharger-API-v2/blob/main/apikeys-en.md">go-e Charger API keys</a>
  *
  * @author Stefan Fussenegger - Initial contribution
  */
+@NonNullByDefault
 public final class GoEStatusV2ApiKeys {
 
     /**

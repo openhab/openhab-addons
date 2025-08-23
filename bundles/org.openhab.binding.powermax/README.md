@@ -136,7 +136,7 @@ Usage: openhab:powermax <bridgeUID> info_setup - information on setup
 Usage: openhab:powermax <bridgeUID> download_setup - download setup
 ```
 
-The command `info_setup` displays in the console informations about your current panel setup.
+The command `info_setup` displays in the console information about your current panel setup.
 The command `download_setup` will trigger a new download of the panel setup.
 
 Here is an example of command you can run: `openhab:powermax powermax:serial:home info_setup`.

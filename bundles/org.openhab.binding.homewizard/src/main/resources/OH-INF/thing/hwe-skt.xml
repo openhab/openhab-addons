@@ -50,6 +50,10 @@
 		<description>
 			This channel provides access to the power switch of the Energy Socket.
 		</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="skt-power-lock" advanced="true">

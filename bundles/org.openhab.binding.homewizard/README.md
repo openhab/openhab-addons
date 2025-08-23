@@ -7,7 +7,7 @@ The HomeWizard binding provides access to several HomeWizard devices by using th
 There are two important points of attention:
 
 1. For API v1, the local API of each device must be enabled and a fixed address must be configured for the devices.
-2. For API v2, a bearer token needs to be obtained from the device. See https://api-documentation.homewizard.com/ for instructions how to obtain a token.
+1. For API v2, a bearer token needs to be obtained from the device. See <https://api-documentation.homewizard.com/> for instructions how to obtain a token.
 
 ### Local API v1
 
@@ -17,7 +17,7 @@ On this page enable the local API.
 
 ### Local API v2
 
-This version is still in beta. Currently hwe-p1 and hwe-bat are supported. 
+This version is still in beta. Currently hwe-p1 and hwe-bat are supported.
 
 ### Fixed Address
 
@@ -39,8 +39,6 @@ The binding offers Things, providing access to all the supported HomeWizard devi
 | p1_wifi_meter | Wi-Fi P1 Meter      | [Deprecated] Reads total and current energy usage and total gas usage.                              |
 | energy_socket | Wi-Fi Energy Socket | [Deprecated] Reads total and current energy usage. Controls power switch, lock and ring brightness. |
 | watermeter    | Wi-Fi Watermeter    | [Deprecated] Reads total and current water usage.                                                   |
-
-
 
 ## Discovery
 

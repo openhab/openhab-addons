@@ -91,7 +91,7 @@ public class TradfriDiscoveryService extends AbstractThingHandlerDiscoveryServic
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
         thingHandler.unregisterDeviceUpdateListener(this);
     }
 

@@ -176,7 +176,6 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         if (payload == null) {
             return false;
         } else {
-
             if ("".equals(payload.getProductType())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device returned empty data");
                 return false;

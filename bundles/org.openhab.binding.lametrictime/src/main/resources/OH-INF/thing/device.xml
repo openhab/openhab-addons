@@ -42,6 +42,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Display Brightness</label>
 		<description>Adjust the brightness of the display</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
@@ -62,12 +66,20 @@
 		<label>Volume</label>
 		<description>Adjust the volume of the speaker</description>
 		<category>soundvolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="bluetoothActiveType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Bluetooth</label>
 		<description>Switch Bluetooth on/off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="appType">

@@ -7,7 +7,7 @@ It uses ASCII commands send over a TCP connection on port 61408.
 Please note that the CP750 only accepts up to 20 simultaneous connection and will discard the oldest connection if a 21st connection is established.
 So be sure to grateful shutdown each connection using the client's close() method, or it's AutoCloseable functionality.
 
-This binding wraps the CP750 Java library from https://github.com/Cybso/cp750-java/.
+This binding wraps the CP750 Java library from <https://github.com/Cybso/cp750-java/>.
 
 This project is NOT affiliated with, funded, or in any way associated with Dolby Laboratories, Inc.
 

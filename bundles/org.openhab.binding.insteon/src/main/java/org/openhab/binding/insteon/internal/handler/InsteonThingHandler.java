@@ -59,6 +59,13 @@ public interface InsteonThingHandler extends ThingHandler {
     public Map<String, String> getChannelsInfo();
 
     /**
+     * Returns if the thing status is online
+     *
+     * @return true if the thing status is online
+     */
+    public boolean isOnline();
+
+    /**
      * Updates a channel state
      *
      * @param channelUID the channel uid

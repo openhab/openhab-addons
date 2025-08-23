@@ -246,6 +246,10 @@
 		<item-type>Contact</item-type>
 		<label>@text/channel-type.shelly.sensorContact.label</label>
 		<description>@text/channel-type.shelly.sensorContact.description</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="OPEN">@text/channel-type.shelly.sensorContact.state.option.OPEN</option>
@@ -272,6 +276,9 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.alarmState.label</label>
 		<description>@text/channel-type.shelly.alarmState.description</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="unknown">@text/channel-type.shelly.alarmState.state.option.unknown</option>
@@ -295,6 +302,7 @@
 				<option value="L">@text/channel-type.shelly.lastEvent.state.option.L</option>
 				<option value="SL">@text/channel-type.shelly.lastEvent.state.option.SL</option>
 				<option value="LS">@text/channel-type.shelly.lastEvent.state.option.LS</option>
+				<option value="H">@text/channel-type.shelly.lastEvent.state.option.H</option>
 			</options>
 		</state>
 	</channel-type>
@@ -337,6 +345,10 @@
 		<label>@text/channel-type.shelly.sensorFlood.label</label>
 		<description>@text/channel-type.shelly.sensorFlood.description</description>
 		<category>Water</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -346,6 +358,10 @@
 		<label>@text/channel-type.shelly.sensorSmoke.label</label>
 		<description>@text/channel-type.shelly.sensorSmoke.description</description>
 		<category>Smoke</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -360,6 +376,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>@text/channel-type.shelly.sensorLux.label</label>
 		<description>@text/channel-type.shelly.sensorLux.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
@@ -384,6 +404,7 @@
 		<description>@text/channel-type.shelly.motionTimestamp.description</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true">
@@ -406,7 +427,7 @@
 		<category>Motion</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Presence</tag>
+			<tag>Motion</tag>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -417,6 +438,10 @@
 		<label>@text/channel-type.shelly.sensorVibration.label</label>
 		<description>@text/channel-type.shelly.sensorVibration.description</description>
 		<category>Flow</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Vibration</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -426,6 +451,10 @@
 		<label>@text/channel-type.shelly.sensorTilt.label</label>
 		<description>@text/channel-type.shelly.sensorTilt.description</description>
 		<category>Tilt</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
@@ -437,7 +466,7 @@
 		<category>Gas</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<tag>ParticulateMatter</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f ppm">
 		</state>
@@ -447,6 +476,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.shelly.sensorADC.label</label>
 		<description>@text/channel-type.shelly.sensorADC.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -456,6 +489,10 @@
 		<label>@text/channel-type.shelly.sensorPosition.label</label>
 		<description>@text/channel-type.shelly.sensorPosition.description</description>
 		<category>RadiatorControl</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %unit%"></state>
 	</channel-type>
 
@@ -530,9 +567,6 @@
 		<label>@text/channel-type.shelly.sensorExtAnalogInput.label</label>
 		<description>@text/channel-type.shelly.sensorExtAnalogInput.description</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
