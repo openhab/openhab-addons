@@ -81,7 +81,8 @@ public class ShellyApiResult {
     }
 
     public boolean isNotCalibrtated() {
-        return getHttpResponse().contains(SHELLY_APIERR_NOT_CALIBRATED);
+        String result = getHttpResponse();
+        return result.contains(SHELLY_APIERR_NOT_CALIBRATED) || result.contains(SHELLY2_APIERR_NOT_CALIBRATED);
     }
 
     private void fillFromResponse(@Nullable ContentResponse contentResponse) {
