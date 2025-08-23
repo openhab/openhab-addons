@@ -160,13 +160,9 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     private void updateThings() {
         ThingStatus status = ThingStatus.OFFLINE;
         for (Thing thing : getThing().getThings()) {
-            ThingHandler handler = thing.getHandler();
-            if (handler instanceof PirateWeatherWeatherAndForecastHandler) {
-                if (ThingStatus.ONLINE.equals(updateThing((PirateWeatherWeatherAndForecastHandler) handler, thing))) {
-                    status = ThingStatus.ONLINE;
-                }
-            } else {
-                logger.warn("Cannot update weather data of thing '{}' as location handler is null.", thing.getUID());
+            if (ThingStatus.ONLINE
+                    .equals(updateThing((PirateWeatherWeatherAndForecastHandler) thing.getHandler(), thing))) {
+                status = ThingStatus.ONLINE;
             }
         }
         updateStatus(status);

@@ -125,12 +125,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         logger.debug("Initialize PirateWeatherWeatherAndForecastHandler handler '{}'.", getThing().getUID());
         PirateWeatherWeatherAndForecastConfiguration config = getConfigAs(
                 PirateWeatherWeatherAndForecastConfiguration.class);
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-config");
-            return;
-        }
-        if (config.location == null || config.location.isBlank()) {
+        if (config.location.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
             return;
