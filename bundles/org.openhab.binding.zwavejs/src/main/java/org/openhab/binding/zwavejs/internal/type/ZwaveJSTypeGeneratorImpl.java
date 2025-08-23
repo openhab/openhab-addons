@@ -83,7 +83,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
-    private static final Object CHANNEL_TYPE_VERSION = "5"; // when static configuration is changed, the version must be
+    private static final Object CHANNEL_TYPE_VERSION = "6"; // when static configuration is changed, the version must be
                                                             // changed as well to force new channel type generation
     private static final Map<String, SemanticTag> ITEM_TYPES_TO_PROPERTY_TAGS = new HashMap<>();
     static {
@@ -420,7 +420,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             builder.withUnitHint(details.unitSymbol);
         }
 
-        if (details.isInvertible()) {
+        if (details.itemType.equals(CoreItemFactory.ROLLERSHUTTER)) {
+            builder.withConfigDescriptionURI(URI.create("channel-type:zwavejs:rollershutter-channel"));
+        } else if (details.isInvertible()) {
             builder.withConfigDescriptionURI(URI.create("channel-type:zwavejs:invertible-channel"));
         } else {
             builder.withConfigDescriptionURI(URI.create("channel-type:zwavejs:base-channel"));
