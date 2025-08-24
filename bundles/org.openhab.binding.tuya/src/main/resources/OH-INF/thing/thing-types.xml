@@ -51,6 +51,7 @@
 					<option value="https://openapi.tuyaeu.com">Central Europe</option>
 					<option value="https://openapi-weaz.tuyaeu.com">Western Europe (Azure/MS)</option>
 					<option value="https://openapi.tuyain.com">India</option>
+					<option value="https://openapi-sg.iotbing.com">Singapore</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>
