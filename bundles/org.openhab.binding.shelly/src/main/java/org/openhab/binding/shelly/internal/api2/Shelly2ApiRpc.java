@@ -112,6 +112,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket();
     private @Nullable Shelly2AuthChallenge authInfo;
 
+    private static int MAX_SCRIPT_ID = 10;
+
     /**
      * Regular constructor - called by Thing handler
      *
@@ -434,7 +436,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     startScript(ourId, false);
                     enableScript(script, ourId, false);
                     deleteScript(ourId);
-                    logger.debug("{}: Script {} was disabledd, id={}", thingName, script, ourId);
+                    logger.debug("{}: Script {} was disabled, id={}", thingName, script, ourId);
                 }
                 return;
             }
@@ -494,7 +496,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 if (ourId == -1) {
                     // find free script id
                     ourId = 0;
-                    while (++ourId < 10 && testScriptId(scriptList, ourId)) {
+                    for (ourId = 1; ourId < MAX_SCRIPT_ID && testScriptId(scriptList, ourId); ourId++) {
                     }
                 }
                 if (ourId < 10) {
