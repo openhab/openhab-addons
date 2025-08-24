@@ -162,8 +162,10 @@ public class Shelly2RpcSocket {
                     session.getRemoteAddress(), session.getIdleTimeout());
             handler.onConnect(deviceIp, true);
         } catch (IllegalArgumentException e) { // unknown thing
-            logger.debug("{}: Rpc: Unable to handle connection from {} (unknown/disabled thing), closing socket",
-                    thingName, deviceIp);
+            if (handler == null) { // we had a session already
+                logger.debug("{}:RPC Connection error for {} (unknown/disabled thing? - {}), closing socket", thingName,
+                        deviceIp, e.getMessage());
+            }
             session.close(StatusCode.SHUTDOWN, "Thing not active");
         }
     }
