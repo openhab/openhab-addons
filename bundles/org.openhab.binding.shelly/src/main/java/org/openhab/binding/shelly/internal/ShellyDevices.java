@@ -155,12 +155,11 @@ public class ShellyDevices {
     public static final String SHELLYDT_BLUCLASS_DW = "SBDW";
     public static final String SHELLYDT_BLUCLASS_MOTION = "SBMO";
     public static final String SHELLYDT_BLUCLASS_DISTANCE = "SBDI";
+    public static final String SHELLYDT_BLUCLASS_REMOTE = "SBRC";
 
     public static final String SHELLYDT_BLUBUTTON1 = "SBBT-002C";
     public static final String SHELLYDT_BLUTOUGHZB = "SBBT-102C";
     public static final String SHELLYDT_BLUWALLSWITCH4 = "SBBT-004CEU";
-    public static final String SHELLYDT_BLUWALLSWITCH4_2 = "SBBT-EU5027"; // older fw
-    public static final String SHELLYDT_BLUWALLSWITCH4_3 = "SBBT-EU3870"; // older fw
     public static final String SHELLYDT_BLURCBUTTON4 = "SBBT-004CUS";
     public static final String SHELLYDT_BLUHT = "SBHT-003C";
     public static final String SHELLYDT_BLUHTZB = "SBHT-203C";
@@ -480,8 +479,6 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON1),
             Map.entry(SHELLYDT_BLUTOUGHZB, THING_TYPE_SHELLYBLUBUTTON1),
             Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4),
-            Map.entry(SHELLYDT_BLUWALLSWITCH4_2, THING_TYPE_SHELLYBLUWALLSWITCH4),
-            Map.entry(SHELLYDT_BLUWALLSWITCH4_3, THING_TYPE_SHELLYBLUWALLSWITCH4),
             Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4),
             Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
             Map.entry(SHELLYDT_BLUHTZB, THING_TYPE_SHELLYBLUHT), //
@@ -495,6 +492,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUCLASS_DW, THING_TYPE_SHELLYBLUDW),
             Map.entry(SHELLYDT_BLUCLASS_MOTION, THING_TYPE_SHELLYBLUMOTION),
             Map.entry(SHELLYDT_BLUCLASS_DISTANCE, THING_TYPE_SHELLYBLUDISTANCE),
+            Map.entry(SHELLYDT_BLUCLASS_REMOTE, THING_TYPE_SHELLYBLUREMOTE),
 
             // Wall displays
             Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
@@ -682,6 +680,5 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
             Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
             Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUDISTANCE, 2), //
             Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2));
 }
