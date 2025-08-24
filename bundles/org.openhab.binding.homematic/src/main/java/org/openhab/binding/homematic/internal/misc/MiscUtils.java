@@ -32,7 +32,7 @@ public class MiscUtils {
         }
         String cleanedText = text.replaceAll("[^A-Za-z0-9_-]", replaceChar);
         if (!text.equals(cleanedText)) {
-            LOGGER.info("{} '{}' contains invalid characters, new {} '{}'", textType, text, textType, cleanedText);
+            LOGGER.debug("{} '{}' contains invalid characters, new {} '{}'", textType, text, textType, cleanedText);
         }
         return cleanedText;
     }
