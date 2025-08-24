@@ -406,7 +406,7 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
 
     @Override
     public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
-        return super.fixDescription(sen, blkMap);
+        return sen;
     }
 
     private static final String ID_4101_DESCR = "{ \"I\":4101, \"T\":\"P\", \"D\":\"power\",  \"U\": \"W\",    \"R\":\"0/3500\", \"L\": 1}";
