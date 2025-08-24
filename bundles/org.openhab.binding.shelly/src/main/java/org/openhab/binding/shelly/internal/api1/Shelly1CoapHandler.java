@@ -237,7 +237,6 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                             iVersion = Integer.parseInt(sVersion);
                         } catch (NumberFormatException e) {
                             logger.debug("{}: Unable to parse version in CoIoT message: {}", thingName, devId);
-                            resetSerial();
                             thingHandler.incProtErrors();
                             return;
                         }
