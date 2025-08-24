@@ -66,6 +66,8 @@ Channels in the `zwavejs` binding support an **inversion** configuration option.
   - `inverted`: Reverses the logical state, similar to the above.
   - `isUpdownInverted`: Independently inverts the up and down directions.
 
+**note:** Without any inversion, the binding regards 100% as fully open (up position) and 0% is fully closed (down position).
+
 ## Full Example
 
 ### `demo.things` Example
