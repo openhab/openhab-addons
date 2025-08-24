@@ -36,6 +36,8 @@ public class AutomowerBindingConstants {
 
     // generic thing types
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "automower");
+    public static final ThingTypeUID THING_TYPE_STAYOUTZONE = new ThingTypeUID(BINDING_ID, "stayoutzone");
+    public static final ThingTypeUID THING_TYPE_WORKAREA = new ThingTypeUID(BINDING_ID, "workarea");
 
     // List of all status Channel ids
     public static final String GROUP_STATUS = "status#";
@@ -168,6 +170,8 @@ public class AutomowerBindingConstants {
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
+    public static final String AUTOMOWER_STAYOUTZONE_ID = "stayoutzoneId";
+    public static final String AUTOMOWER_WORKAREA_ID = "workareaId";
     public static final String AUTOMOWER_NAME = "mowerName";
     public static final String AUTOMOWER_MODEL = "mowerModel";
     public static final String AUTOMOWER_SERIAL_NUMBER = "mowerSerialNumber";

@@ -83,6 +83,46 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Automower StayoutZone Type -->
+	<thing-type id="stayoutzone" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Automower® StayoutZone</label>
+		<description>An automatic lawn mower stay-out zone</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="stayoutzone" typeId="stayoutZonesType"/>
+		</channel-groups>
+
+		<properties>
+			<property name="mowerId">N/A</property>
+			<property name="stayoutzoneId">N/A</property>
+		</properties>
+	</thing-type>
+
+	<!-- WorkArea Thing Type -->
+	<thing-type id="workarea" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Automower® WorkArea</label>
+		<description>An automatic lawn mower work-area</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="workarea" typeId="workAreasType"/>
+		</channel-groups>
+
+		<properties>
+			<property name="mowerId">N/A</property>
+			<property name="workareaId">N/A</property>
+		</properties>
+	</thing-type>
+
 	<channel-group-type id="statusType">
 		<label>Status</label>
 		<channels>

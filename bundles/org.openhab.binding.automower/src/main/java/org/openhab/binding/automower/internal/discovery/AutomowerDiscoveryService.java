@@ -13,6 +13,8 @@
 package org.openhab.binding.automower.internal.discovery;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_AUTOMOWER;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_STAYOUTZONE;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_WORKAREA;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,8 @@ import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.StayOutZone;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.WorkArea;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -82,6 +86,45 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                         .build();
 
                 thingDiscovered(discoveryResult);
+
+                for (StayOutZone stayOutZone : mower.getAttributes().getStayOutZones().getZones()) {
+                    ThingTypeUID zoneThingTypeUID = THING_TYPE_STAYOUTZONE;
+                    ThingUID zoneThingUid = new ThingUID(THING_TYPE_STAYOUTZONE, bridgeUID, stayOutZone.getId());
+
+                    Map<String, Object> stayoutZoneProperties = new HashMap<>();
+                    stayoutZoneProperties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
+                    stayoutZoneProperties.put(AutomowerBindingConstants.AUTOMOWER_STAYOUTZONE_ID, stayOutZone.getId());
+
+                    DiscoveryResult stayoutZoneDiscoveryResult = DiscoveryResultBuilder.create(zoneThingUid)
+                            .withThingType(zoneThingTypeUID).withProperties(stayoutZoneProperties).withBridge(bridgeUID)
+                            .withRepresentationProperty(AutomowerBindingConstants.AUTOMOWER_STAYOUTZONE_ID)
+                            .withLabel(mower.getAttributes().getSystem().getName() + " (Automower "
+                                    + mower.getAttributes().getSystem().getModel() + ") - StayOutZone "
+                                    + stayOutZone.getName())
+                            .build();
+
+                    thingDiscovered(stayoutZoneDiscoveryResult);
+                }
+
+                for (WorkArea workArea : mower.getAttributes().getWorkAreas()) {
+                    ThingTypeUID areaThingTypeUID = THING_TYPE_WORKAREA;
+                    ThingUID areaThingUid = new ThingUID(THING_TYPE_WORKAREA, bridgeUID,
+                            String.valueOf(workArea.getWorkAreaId()));
+
+                    Map<String, Object> areaProperties = new HashMap<>();
+                    areaProperties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
+                    areaProperties.put(AutomowerBindingConstants.AUTOMOWER_WORKAREA_ID, workArea.getWorkAreaId());
+
+                    DiscoveryResult areaDiscoveryResult = DiscoveryResultBuilder.create(areaThingUid)
+                            .withThingType(areaThingTypeUID).withProperties(areaProperties).withBridge(bridgeUID)
+                            .withRepresentationProperty(AutomowerBindingConstants.AUTOMOWER_WORKAREA_ID)
+                            .withLabel(mower.getAttributes().getSystem().getName() + " (Automower "
+                                    + mower.getAttributes().getSystem().getModel() + ") - WorkArea "
+                                    + String.valueOf(workArea.getWorkAreaId()))
+                            .build();
+
+                    thingDiscovered(areaDiscoveryResult);
+                }
             }
         });
     }
