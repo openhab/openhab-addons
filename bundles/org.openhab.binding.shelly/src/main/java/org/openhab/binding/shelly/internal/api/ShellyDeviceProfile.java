@@ -316,9 +316,9 @@ public class ShellyDeviceProfile {
 
     public String getInputSuffix(int i) {
         int idx = i + 1; // channel names are 1-based
-        if (isRGBW2 || isIX) {
+        if (isRGBW2 || isIX || isMultiButton) {
             return ""; // RGBW2 has only 1 channel
-        } else if (isRoller || isDimmer || isMultiButton) {
+        } else if (isRoller || isDimmer) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
             // Dimmer has up to 2 inputs to control light
             return String.valueOf(idx);

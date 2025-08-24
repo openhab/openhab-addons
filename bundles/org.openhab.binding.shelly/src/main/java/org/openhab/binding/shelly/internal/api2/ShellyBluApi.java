@@ -291,7 +291,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             for (int bttnIdx = 0; bttnIdx < e.blu.buttons.length; bttnIdx++) {
                                 if (e.blu.buttons[bttnIdx] != 0) {
                                     ShellyInputState input = deviceStatus.inputs.get(bttnIdx);
-                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE, e.blu.buttons[bttnIdx].toString());
+                                    input.event = mapValue(MAP_BLU_INPUT_EVENT_TYPE, e.blu.buttons[bttnIdx].toString());
 
                                     String group = getProfile().getInputGroup(bttnIdx);
                                     String suffix = profile.getInputSuffix(bttnIdx);

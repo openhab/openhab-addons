@@ -93,7 +93,7 @@ public class ShellyDevicesTest {
                 Arguments.of(THING_TYPE_SHELLYBLUHT, 1), //
                 Arguments.of(THING_TYPE_SHELLYBLUDW, 1), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, 0), //
-                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, 2), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, 0), //
                 Arguments.of(THING_TYPE_SHELLYBLUREMOTE, 2));
     }
 }
