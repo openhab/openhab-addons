@@ -16,44 +16,44 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 
-            <channel-group id="channel1" typeId="rgbw2Channel">
-                <label>@text/channel-group-type.shelly.rgbw2Channel1.label</label>
-            </channel-group>
-            <channel-group id="channel2" typeId="rgbw2Channel">
-                <label>@text/channel-group-type.shelly.rgbw2Channel2.label</label>
-            </channel-group>
-            <channel-group id="channel3" typeId="rgbw2Channel">
-                <label>@text/channel-group-type.shelly.rgbw2Channel3.label</label>
-            </channel-group>
-            <channel-group id="channel4" typeId="rgbw2Channel">
-                <label>@text/channel-group-type.shelly.rgbw2Channel4.label</label>
-            </channel-group>
+			<channel-group id="channel1" typeId="rgbw2Channel">
+				<label>@text/channel-group-type.shelly.rgbw2Channel1.label</label>
+			</channel-group>
+			<channel-group id="channel2" typeId="rgbw2Channel">
+				<label>@text/channel-group-type.shelly.rgbw2Channel2.label</label>
+			</channel-group>
+			<channel-group id="channel3" typeId="rgbw2Channel">
+				<label>@text/channel-group-type.shelly.rgbw2Channel3.label</label>
+			</channel-group>
+			<channel-group id="channel4" typeId="rgbw2Channel">
+				<label>@text/channel-group-type.shelly.rgbw2Channel4.label</label>
+			</channel-group>
 
-            <channel-group id="status1" typeId="ixChannel">
-                <label>@text/channel-group-type.shelly.iXChannel1.label</label>
-            </channel-group>
-            <channel-group id="status2" typeId="ixChannel">
-                <label>@text/channel-group-type.shelly.iXChannel2.label</label>
-            </channel-group>
-            <channel-group id="status3" typeId="ixChannel">
-                <label>@text/channel-group-type.shelly.iXChannel3.label</label>
-            </channel-group>
-            <channel-group id="status4" typeId="ixChannel">
-                <label>@text/channel-group-type.shelly.iXChannel4.label</label>
-            </channel-group>
+			<channel-group id="status1" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.iXChannel1.label</label>
+			</channel-group>
+			<channel-group id="status2" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.iXChannel2.label</label>
+			</channel-group>
+			<channel-group id="status3" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.iXChannel3.label</label>
+			</channel-group>
+			<channel-group id="status4" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.iXChannel4.label</label>
+			</channel-group>
 
-            <channel-group id="meter1" typeId="meter">
-                <label>@text/channel-group-type.shelly.meter1.label</label>
-            </channel-group>
-            <channel-group id="meter2" typeId="meter">
-                <label>@text/channel-group-type.shelly.meter2.label</label>
-            </channel-group>
-            <channel-group id="meter3" typeId="meter">
-                <label>@text/channel-group-type.shelly.meter3.label</label>
-            </channel-group>
-            <channel-group id="meter4" typeId="meter">
-                <label>@text/channel-group-type.shelly.meter4.label</label>
-            </channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter1.label</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter2.label</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter3.label</label>
+			</channel-group>
+			<channel-group id="meter4" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter4.label</label>
+			</channel-group>
 
 		</channel-groups>
 
@@ -67,59 +67,59 @@
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-            <channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
 			<channel-group id="white" typeId="whiteSettings"/>
 
-            <channel-group id="channel1" typeId="rgbw2Channel">
-                <label>@text/channel-group-type.shelly.rgbw2Channel1.label</label>
-            </channel-group>
-            <channel-group id="channel2" typeId="rgbw2Channel">
-                <label>@text/channel-group-type.shelly.rgbw2Channel2.label</label>
-            </channel-group>
-            <channel-group id="channel3" typeId="rgbw2Channel">
-                <label>@text/channel-group-type.shelly.rgbw2Channel3.label</label>
-            </channel-group>
-            <channel-group id="channel4" typeId="rgbw2Channel">
-                <label>@text/channel-group-type.shelly.rgbw2Channel4.label</label>
-            </channel-group>
-            <channel-group id="channel5" typeId="rgbw2Channel">
-                <label>@text/channel-group-type.shelly.rgbw2Channel4.label</label>
-            </channel-group>
+			<channel-group id="channel1" typeId="rgbw2Channel">
+				<label>@text/channel-group-type.shelly.rgbw2Channel1.label</label>
+			</channel-group>
+			<channel-group id="channel2" typeId="rgbw2Channel">
+				<label>@text/channel-group-type.shelly.rgbw2Channel2.label</label>
+			</channel-group>
+			<channel-group id="channel3" typeId="rgbw2Channel">
+				<label>@text/channel-group-type.shelly.rgbw2Channel3.label</label>
+			</channel-group>
+			<channel-group id="channel4" typeId="rgbw2Channel">
+				<label>@text/channel-group-type.shelly.rgbw2Channel4.label</label>
+			</channel-group>
+			<channel-group id="channel5" typeId="rgbw2Channel">
+				<label>@text/channel-group-type.shelly.rgbw2Channel4.label</label>
+			</channel-group>
 
-            <channel-group id="status1" typeId="ixChannel">
-                <label>@text/channel-group-type.shelly.iXChannel1.label</label>
-            </channel-group>
-            <channel-group id="status2" typeId="ixChannel">
-                <label>@text/channel-group-type.shelly.iXChannel2.label</label>
-            </channel-group>
-            <channel-group id="status3" typeId="ixChannel">
-                <label>@text/channel-group-type.shelly.iXChannel3.label</label>
-            </channel-group>
-            <channel-group id="status4" typeId="ixChannel">
-                <label>@text/channel-group-type.shelly.iXChannel4.label</label>
-            </channel-group>
-            <channel-group id="status5" typeId="ixChannel">
-                <label>@text/channel-group-type.shelly.iXChannel4.label</label>
-            </channel-group>
+			<channel-group id="status1" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.iXChannel1.label</label>
+			</channel-group>
+			<channel-group id="status2" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.iXChannel2.label</label>
+			</channel-group>
+			<channel-group id="status3" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.iXChannel3.label</label>
+			</channel-group>
+			<channel-group id="status4" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.iXChannel4.label</label>
+			</channel-group>
+			<channel-group id="status5" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.iXChannel4.label</label>
+			</channel-group>
 
-            <channel-group id="meter1" typeId="meter">
-                <label>@text/channel-group-type.shelly.meter1.label</label>
-            </channel-group>
-            <channel-group id="meter2" typeId="meter">
-                <label>@text/channel-group-type.shelly.meter2.label</label>
-            </channel-group>
-            <channel-group id="meter3" typeId="meter">
-                <label>@text/channel-group-type.shelly.meter3.label</label>
-            </channel-group>
-            <channel-group id="meter4" typeId="meter">
-                <label>@text/channel-group-type.shelly.meter4.label</label>
-            </channel-group>
-            <channel-group id="meter5" typeId="meter">
-                <label>@text/channel-group-type.shelly.meter4.label</label>
-            </channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter1.label</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter2.label</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter3.label</label>
+			</channel-group>
+			<channel-group id="meter4" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter4.label</label>
+			</channel-group>
+			<channel-group id="meter5" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter4.label</label>
+			</channel-group>
 
 		</channel-groups>
 

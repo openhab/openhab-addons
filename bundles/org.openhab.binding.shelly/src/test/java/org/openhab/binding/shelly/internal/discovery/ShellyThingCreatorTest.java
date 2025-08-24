@@ -105,14 +105,13 @@ public class ShellyThingCreatorTest {
 
                 // Shelly Plus
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS3EM63),
-                Arguments.of("shellyplusrgbw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSRGBWPM),
-                Arguments.of("shellyplusrgbw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSRGBWPM),
+                Arguments.of("shellyplusrgbwpm-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSRGBWPM),
 
                 // Shelly Pro
                 Arguments.of("shellypro3em-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM),
                 Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM63),
                 Arguments.of("shellypro3em400-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM400), //
-                Arguments.of("shellyprorgbw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRORGBWPM),
+                Arguments.of("shellyprorgbwpm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRORGBWPM),
 
                 // Shelly BLU
                 Arguments.of("shellyblubutton-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUBUTTON), //
