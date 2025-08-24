@@ -102,8 +102,11 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSUNI = "SNSN-0043X";
     public static final String SHELLYDT_PLUSDIMMERUS = "SNDM-0013US";
     public static final String SHELLYDT_PLUSDIMMERG3 = "S3DM-0A101WWL";
-    public static final String SHELLYDT_PLUSDIMMER10V = "SNDM-00100WW";
-    public static final String SHELLYDT_PLUSDIMMER0110VG3 = "S3DM-0010WW";
+    public static final String SHELLYDT_PLUSDIMMERG4 = "S4DM-0A101WWL";
+    public static final String SHELLYDT_PLUSDIMMER10V = "SNDM-00100WW"; // Gen2: 0-10V
+    public static final String SHELLYDT_PLUSDIMMER10V_2 = "SNGW-0A11WW010";
+    public static final String SHELLYDT_PLUSDIMMER0110VG3 = "S3DM-0010WW"; // Gen3; 0-1/10V
+    public static final String SHELLYDT_PLUSDIMMERDALIG3 = "S3DM-0A1WW";
     public static final String SHELLYDT_PLUSWALLDISPLAY = "SAWD-0A1XX10EU1";
     public static final String SHELLYDT_PLUSRGBWPM = "SNDC-0D4P10WW";
     public static final String SHELLYDT_PLUSSTRIP = "S4PL-00416EU";
@@ -137,6 +140,9 @@ public class ShellyDevices {
     public static final String SHELLYDT_PRO3EM_2 = "SPEM-003CEBEU120";
     public static final String SHELLYDT_PRO3EM3CT63 = "SPEM-003CEBEU63";
     public static final String SHELLYDT_PRO3EM400 = "SPEM-003CEBEU400";
+    public static final String SHELLYDT_PRODIMMER1PM = "SPDM-001PE01EU";
+    public static final String SHELLYDT_PRODIMMER2PM = "SPDM-002PE01EU";
+    public static final String SHELLYDT_PRODIMMER10V = "SPCC-001PE10EU";
 
     // Shelly Plus Mini Series
     public static final String SHELLYDT_MINI_1 = "SNSW-001X8EU";
@@ -150,21 +156,17 @@ public class ShellyDevices {
     public static final String SHELLYDT_MINI_EM = "S4EM-001PXCEU16"; // PM was renamed to EM in Gen4
 
     // Shelly BLU Series
-    public static final String SHELLYDT_BLUCLASS_BUTTON = "SBBT";
-    public static final String SHELLYDT_BLUCLASS_HT = "SBHT";
-    public static final String SHELLYDT_BLUCLASS_DW = "SBDW";
-    public static final String SHELLYDT_BLUCLASS_MOTION = "SBMO";
-
-    public static final String SHELLYDT_BLUBUTTON1 = "SBBT-002C";
-    public static final String SHELLYDT_BLUHT = "SBHT-003C";
-    public static final String SHELLYDT_BLUDW = "SBDW-002C";
-    public static final String SHELLYDT_BLUMOTION = "SBMO-003Z";
+    public static final String SHELLYDT_BLUBUTTON = "SBBT";
+    public static final String SHELLYDT_BLUDW = "SBDW";
+    public static final String SHELLYDT_BLUMOTION = "SBMO";
+    public static final String SHELLYDT_BLUHT = "SBHT";
 
     // Thing Type ID prefixes
     public static final String THING_TYPE_SHELLYPLUS_PREFIX = "shellyplus";
     public static final String THING_TYPE_SHELLYPRO_PREFIX = "shellypro";
 
     // Service name prefixes
+    public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
     public static final String SERVICE_NAME_SHELLYPLUSRANGE_PREFIX = "shellyplusrange";
     public static final String SERVICE_NAME_SHELLYPLUG_PREFIX = "shellyplug";
     public static final String SERVICE_NAME_SHELLYPLUGS_PREFIX = "shellyplugs";
@@ -236,6 +238,8 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMERUS = new ThingTypeUID(BINDING_ID, "shellypluswdus");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMER10V = new ThingTypeUID(BINDING_ID, "shellyplus10v");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMER = new ThingTypeUID(BINDING_ID, "shellyplusdimmer");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDALIDIMMER = new ThingTypeUID(BINDING_ID,
+            "shellyplusdalidimmer");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSRGBWPM = new ThingTypeUID(BINDING_ID, "shellyplusrgbwpm");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSSTRIP = new ThingTypeUID(BINDING_ID, "shellyplusstrip");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSEM = new ThingTypeUID(BINDING_ID, "shellyplusem");
@@ -266,6 +270,9 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM = new ThingTypeUID(BINDING_ID, "shellypro3em");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em63");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM400 = new ThingTypeUID(BINDING_ID, "shellypro3em400");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER1PM = new ThingTypeUID(BINDING_ID, "shellyprodimmer1pm");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER2PM = new ThingTypeUID(BINDING_ID, "shellyprodimmer2pm");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER10V = new ThingTypeUID(BINDING_ID, "shellyprodimmer10v");
 
     // Shelly Blu series
     public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON = new ThingTypeUID(BINDING_ID, "shellyblubutton");
@@ -281,7 +288,8 @@ public class ShellyDevices {
     // Dimmer devices
     public static final Set<ThingTypeUID> GROUP_DIMMER_THING_TYPES = Set.of( //
             THING_TYPE_SHELLYDIMMER, THING_TYPE_SHELLYDIMMER2, // Gen 1
-            THING_TYPE_SHELLYPLUSDIMMER, THING_TYPE_SHELLYPLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMER10V); // Plus
+            THING_TYPE_SHELLYPLUSDIMMER, THING_TYPE_SHELLYPLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMER10V, // Plus
+            THING_TYPE_SHELLYPRODIMMER1PM, THING_TYPE_SHELLYPRODIMMER2PM); // Pro
 
     // Duo devices
     public static final Set<ThingTypeUID> GROUP_DUO_THING_TYPES = Set.of( //
@@ -413,8 +421,11 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUSUNI, THING_TYPE_SHELLYPLUSUNI),
             Map.entry(SHELLYDT_PLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMERUS),
             Map.entry(SHELLYDT_PLUSDIMMER10V, THING_TYPE_SHELLYPLUSDIMMER10V),
+            Map.entry(SHELLYDT_PLUSDIMMER10V_2, THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry(SHELLYDT_PLUSDIMMER0110VG3, THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry(SHELLYDT_PLUSDIMMERG3, THING_TYPE_SHELLYPLUSDIMMER),
+            Map.entry(SHELLYDT_PLUSDIMMERG4, THING_TYPE_SHELLYPLUSDIMMER),
+            Map.entry(SHELLYDT_PLUSDIMMERDALIG3, THING_TYPE_SHELLYPLUSDALIDIMMER),
             Map.entry(SHELLYDT_PLUSRGBWPM, THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry(SHELLYDT_PLUSEM, THING_TYPE_SHELLYPLUSEM),
             Map.entry(SHELLYDT_PLUS3EM63, THING_TYPE_SHELLYPLUS3EM63),
@@ -454,17 +465,15 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO3EM_2, THING_TYPE_SHELLYPRO3EM), //
             Map.entry(SHELLYDT_PRO3EM3CT63, THING_TYPE_SHELLYPRO3EM63), //
             Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
+            Map.entry(SHELLYDT_PRODIMMER1PM, THING_TYPE_SHELLYPRODIMMER1PM),
+            Map.entry(SHELLYDT_PRODIMMER2PM, THING_TYPE_SHELLYPRODIMMER2PM),
+            Map.entry(SHELLYDT_PRODIMMER10V, THING_TYPE_SHELLYPRODIMMER10V),
 
             // BLU Series
-            Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON),
-            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
+            Map.entry(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON),
             Map.entry(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW),
             Map.entry(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION),
-
-            Map.entry(SHELLYDT_BLUCLASS_BUTTON, THING_TYPE_SHELLYBLUBUTTON), //
-            Map.entry(SHELLYDT_BLUCLASS_HT, THING_TYPE_SHELLYBLUHT), //
-            Map.entry(SHELLYDT_BLUCLASS_DW, THING_TYPE_SHELLYBLUDW),
-            Map.entry(SHELLYDT_BLUCLASS_MOTION, THING_TYPE_SHELLYBLUMOTION),
+            Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
 
             // Wall displays
             Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
@@ -518,9 +527,6 @@ public class ShellyDevices {
                 THING_TYPE_SHELLYUNKNOWN, THING_TYPE_SHELLYPROTECTED));
     }
 
-    /*
-     * serviceName / thingType mapping
-     */
     public static final Map<String, ThingTypeUID> THING_TYPE_BY_SERVICE_NAME = Map.ofEntries(
             // Shelly Gen1
             Map.entry("shelly1", THING_TYPE_SHELLY1), //
@@ -576,10 +582,15 @@ public class ShellyDevices {
             Map.entry("shellyplusht", THING_TYPE_SHELLYPLUSHT), //
             Map.entry("shellyplussmoke", THING_TYPE_SHELLYPLUSSMOKE),
             Map.entry("shellyplusuni", THING_TYPE_SHELLYPLUSUNI),
-            Map.entry("shellypluswdus", THING_TYPE_SHELLYPLUSDIMMERUS),
-            Map.entry("shellyplus10v", THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry("shellyplusdimmer", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellydimmerg3", THING_TYPE_SHELLYPLUSDIMMER),
+            Map.entry("shellydimmerg4", THING_TYPE_SHELLYPLUSDIMMER),
+            Map.entry("shellyplusdalidimmer", THING_TYPE_SHELLYPLUSDALIDIMMER),
+            Map.entry("shellyddimmerg3", THING_TYPE_SHELLYPLUSDALIDIMMER),
+            Map.entry("shellyplus10v", THING_TYPE_SHELLYPLUSDIMMER10V),
+            Map.entry("shellyplus010v", THING_TYPE_SHELLYPLUSDIMMER10V), // Gen2
+            Map.entry("shelly0110dimg3", THING_TYPE_SHELLYPLUSDIMMER10V), // Gen3
+            Map.entry("shellypluswdus", THING_TYPE_SHELLYPLUSDIMMERUS),
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
             Map.entry("shellyblugw", THING_TYPE_SHELLYPLUSBLUGW), //
@@ -615,9 +626,15 @@ public class ShellyDevices {
             Map.entry("shellypro4pm", THING_TYPE_SHELLYPRO4PM), //
             Map.entry("shellyproem50", THING_TYPE_SHELLYPROEM50), //
             Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM), //
-            Map.entry("shellypro3em63", THING_TYPE_SHELLYPRO3EM63), //
-            Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63), //
+            Map.entry("shellypro3em63", THING_TYPE_SHELLYPRO3EM63),
+            Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63),
             Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400),
+            Map.entry("shellyprodimmer1pm", THING_TYPE_SHELLYPRODIMMER1PM),
+            Map.entry("shellyprodm1pm", THING_TYPE_SHELLYPRODIMMER1PM),
+            Map.entry("shellyprodimmer2pm", THING_TYPE_SHELLYPRODIMMER2PM),
+            Map.entry("shellyprodm2pm", THING_TYPE_SHELLYPRODIMMER2PM),
+            Map.entry("shellyprodimmer10v", THING_TYPE_SHELLYPRODIMMER10V),
+            Map.entry("Shellypro0110pm", THING_TYPE_SHELLYPRODIMMER10V),
 
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON), //
@@ -640,10 +657,4 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLY3EM, 3), //
             Map.entry(THING_TYPE_SHELLYPLUS3EM63, 3), //
             Map.entry(THING_TYPE_SHELLYPRO3EM, 3));
-
-    // Number of inputs
-    public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //
-            Map.entry(THING_TYPE_SHELLYBLUBUTTON, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
-            Map.entry(THING_TYPE_SHELLYBLUDW, 1));
 }

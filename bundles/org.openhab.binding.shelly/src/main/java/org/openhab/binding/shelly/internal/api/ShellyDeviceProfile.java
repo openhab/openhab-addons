@@ -17,7 +17,6 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
@@ -231,24 +229,6 @@ public class ShellyDeviceProfile {
                                                                    // sleep mode)
     }
 
-    public void initializeInputs(ThingTypeUID thingTypeUID, String btnType) {
-        Integer predefinedNumInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUID);
-        if (numInputs == 0 && predefinedNumInputs != null) {
-            numInputs = predefinedNumInputs;
-        }
-        if (numInputs > 0) {
-            ShellySettingsInput inputSetting = btnType.isEmpty() ? //
-                    new ShellySettingsInput() : new ShellySettingsInput(btnType);
-            status.inputs = new ArrayList<>();
-            ArrayList<@Nullable ShellySettingsInput> inputs = new ArrayList<>();
-            for (int i = 0; i < numInputs; i++) {
-                inputs.add(inputSetting);
-                status.inputs.add(new ShellyInputState(i));
-            }
-            settings.inputs = inputs;
-        }
-    }
-
     public void updateFromStatus(ShellySettingsStatus status) {
         if (hasRelays) {
             // Dimmer-2 doesn't report inputs under /settings, only on /status, we need to update that info after init
@@ -268,7 +248,7 @@ public class ShellyDeviceProfile {
         }
         int idx = i + 1;
         if (isDimmer) {
-            return CHANNEL_GROUP_DIMMER_CONTROL;
+            return numMeters <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL : CHANNEL_GROUP_DIMMER_CONTROL + idx;
         } else if (isRoller) {
             return numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
         } else if (hasRelays) {
@@ -303,6 +283,14 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_STATUS;
         } else if (isRoller) {
             return numRelays <= 2 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
+        } else if (isDimmer && settings.dimmers != null) {
+            int numDimmer = settings.dimmers.size();
+            if (numDimmer <= 1) {
+                return CHANNEL_GROUP_RELAY_CONTROL;
+            }
+
+            int numChannels = numInputs / numDimmer; // Device has more than 1 dimmer
+            return CHANNEL_GROUP_RELAY_CONTROL + (1 + (i / numChannels));
         } else {
             // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
@@ -313,10 +301,13 @@ public class ShellyDeviceProfile {
         int idx = i + 1; // channel names are 1-based
         if (isRGBW2 || isIX) {
             return ""; // RGBW2 has only 1 channel
-        } else if (isRoller || isDimmer) {
+        } else if (isRoller) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
             // Dimmer has up to 2 inputs to control light
             return String.valueOf(idx);
+        } else if (isDimmer && settings.dimmers != null) {
+            int numDimmer = settings.dimmers.size();
+            return String.valueOf(numDimmer <= 1 ? idx : (i % numDimmer) + 1);
         } else if (hasRelays) {
             return numRelays == 1 && numInputs >= 2 ? String.valueOf(idx) : "";
         }
@@ -438,5 +429,24 @@ public class ShellyDeviceProfile {
 
         // If device is not yet intialized or the enabled property is missing we assume that CoIoT is enabled
         return true;
+    }
+
+    /**
+     * Generates a service name based on the provided model name and MAC address.
+     * Delimiters will be stripped from the returned MAC address.
+     *
+     * @param name Model name such as SBBT-02C or just SBDW
+     * @param mac MAC address with or without colon delimiters
+     * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
+     */
+    public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
+        String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
+        return SERVICE_NAME_SHELLYBLU_PREFIX + switch (model) {
+            case SHELLYDT_BLUBUTTON -> "button";
+            case SHELLYDT_BLUDW -> "dw";
+            case SHELLYDT_BLUMOTION -> "motion";
+            case SHELLYDT_BLUHT -> "ht";
+            default -> throw new IllegalArgumentException("Unsupported BLU device model " + model);
+        } + "-" + mac.replaceAll(":", "").toLowerCase();
     }
 }
