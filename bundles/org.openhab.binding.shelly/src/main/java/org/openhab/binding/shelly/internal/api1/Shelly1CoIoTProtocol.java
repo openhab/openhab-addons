@@ -369,10 +369,6 @@ public class Shelly1CoIoTProtocol {
         return profile;
     }
 
-    public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
-        return sen;
-    }
-
     public void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap) {
     }
 
