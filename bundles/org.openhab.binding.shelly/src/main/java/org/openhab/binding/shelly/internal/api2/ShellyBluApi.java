@@ -57,7 +57,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private boolean connected = false; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
-    private final int pidCycleThreshold = 50;
+    private static final int PID_CYCLE_TRESHHOLD = 50;
 
     /**
      * Regular constructor - called by Thing handler
@@ -189,7 +189,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             getString(e.blu.addr), getInteger(e.blu.pid), gson.toJson(e));
                     if (e.blu.pid != null) {
                         int pid = e.blu.pid;
-                        if (lastPid != -1 && pid < (lastPid - pidCycleThreshold)) {
+                        if (lastPid != -1 && pid < (lastPid - PID_CYCLE_TRESHHOLD)) {
                             logger.debug(
                                     "{}: Received pid {} is so low that a new cycle has probably begun since lastPID={}",
                                     thingName, pid, lastPid);
