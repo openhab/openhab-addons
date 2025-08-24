@@ -56,8 +56,9 @@ public class ShellyDeviceProfile {
     private static final Pattern GEN1_VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
     private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]*)?");
 
-    public String thingName = "";
     public boolean initialized = false; // true when initialized
+
+    public String thingName = "";
     public boolean extFeatures = false;
 
     public String settingsJson = "";
