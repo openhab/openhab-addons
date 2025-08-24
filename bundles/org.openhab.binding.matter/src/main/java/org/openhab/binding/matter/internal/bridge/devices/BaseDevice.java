@@ -102,11 +102,7 @@ public abstract class BaseDevice implements StateChangeListener {
         }
         MatterDeviceOptions options = activate();
         activated = true;
-        String label = primaryItem.getLabel();
-        if (label == null) {
-            label = primaryItem.getName();
-        }
-        return new BridgedEndpoint(deviceType(), primaryItem.getName(), label, primaryItem.getName(),
+        return new BridgedEndpoint(deviceType(), primaryItem.getName(), options.label, primaryItem.getName(),
                 "Type " + primaryItem.getType(), String.valueOf(primaryItem.getName().hashCode()), options.clusters);
     }
 
