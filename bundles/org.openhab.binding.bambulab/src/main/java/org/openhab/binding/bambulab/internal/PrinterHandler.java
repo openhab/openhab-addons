@@ -35,7 +35,9 @@ import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -93,6 +95,7 @@ public class PrinterHandler extends BaseBridgeHandler
         implements PrinterWatcher.StateSubscriber, BambuHandler, ConnectionCallback {
     private static final String INTERNAL_COMMAND_PREFIX = ">";
     public static final String LOGIN_URL = "https://api.bambulab.com/v1/user-service/user/login";
+    public static final String ACCESS_CODE_VALID_TILL_PROPERTY = "accessCodeValidTill";
     private final HttpClient httpClient;
     private final Gson jsonMapper;
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
@@ -175,6 +178,21 @@ public class PrinterHandler extends BaseBridgeHandler
     }
 
     private void internalInitialize() throws InitializationException {
+        {
+            var validTill = getThing().getProperties().getOrDefault(ACCESS_CODE_VALID_TILL_PROPERTY, "");
+            if (!validTill.isEmpty()) {
+                try {
+                    var parse = LocalDateTime.parse(validTill);
+                    if (parse.isBefore(LocalDateTime.now())) {
+                        throw new InitializationException(CONFIGURATION_ERROR,
+                                "@text/printer.handler.init.accessCodeExpired");
+                    }
+                } catch (DateTimeParseException e) {
+                    logger.debug("Invalid access code till date: {}", validTill);
+                }
+            }
+        }
+
         var config = getConfigAs(PrinterConfiguration.class);
 
         config.validateSerial();
@@ -623,10 +641,19 @@ public class PrinterHandler extends BaseBridgeHandler
                 if (bambu.accessToken == null || bambu.accessToken.isBlank()) {
                     throw new BambuApiException(findSerial(config), "Access token not found in response: " + content);
                 }
-                var configuration = editConfiguration();
-                configuration.put("accessCode", bambu.accessToken);
-                configuration.put("hostname", CLOUD_MODE_HOSTNAME);
-                updateConfiguration(configuration);
+                {
+                    var configuration = editConfiguration();
+                    configuration.put("accessCode", bambu.accessToken);
+                    configuration.put("hostname", CLOUD_MODE_HOSTNAME);
+                    updateConfiguration(configuration);
+                }
+                {
+                    var now = LocalDateTime.now();
+                    var thing = editThing()
+                            .withProperty(ACCESS_CODE_VALID_TILL_PROPERTY, now.plusSeconds(bambu.expiresIn).toString())
+                            .build();
+                    updateThing(thing);
+                }
                 var message = "Access code was set. Please visit https://makerworld.com/api/v1/design-user-service/my/preference to get username (remember to add `u_` prefix).";
                 logger.info(message);
                 return message;
