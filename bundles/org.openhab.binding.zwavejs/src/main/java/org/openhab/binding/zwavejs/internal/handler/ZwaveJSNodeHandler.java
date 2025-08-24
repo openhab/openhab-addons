@@ -98,14 +98,14 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     // Nodes may contain multiple lighting endpoints; this map holds each one's ColorCapability.
     private Map<Integer, ColorCapability> colorCapabilities = new HashMap<>();
-    private Map<Integer, RollerShutterCapability> rollerShutterCapabilities = new HashMap<>();
+    protected Map<Integer, RollerShutterCapability> rollerShutterCapabilities = new HashMap<>();
 
     public ZwaveJSNodeHandler(final Thing thing, final ZwaveJSTypeGenerator typeGenerator) {
         super(thing);
         this.typeGenerator = typeGenerator;
     }
 
-    private ZwaveJSChannelConfiguration getChannelConfiguration(@Nullable Channel channel) {
+    protected ZwaveJSChannelConfiguration getChannelConfiguration(@Nullable Channel channel) {
         if (channel == null) {
             return new ZwaveJSChannelConfiguration();
         }
@@ -531,7 +531,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return false;
         }
 
-        ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
+        ZwaveJSChannelConfiguration channelConfig = getChannelConfiguration(channel);
 
         RollerShutterCapability rollerShutterCapability = rollerShutterCapabilities.get(channelConfig.endpoint);
         boolean isRollerShutterRelatedCommand = (rollerShutterCapability != null
@@ -576,7 +576,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                     if (newValue) {
                         rollerShutterState = UpDownType.UP;
                     }
-                } else if (isCommandForDown && !isUpDownInverted || isCommandForDown && isUpDownInverted) {
+                } else if (isCommandForDown && !isUpDownInverted || isCommandForUp && isUpDownInverted) {
                     rollerShutterCapability.setDirectionDown(newValue);
                     if (newValue) {
                         rollerShutterState = UpDownType.DOWN;

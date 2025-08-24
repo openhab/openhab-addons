@@ -18,8 +18,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 
 /**
- * A class encapsulating the roller shutter capability of a roller shutter
- * endpoint
+ * Represents the capabilities of a roller shutter device, including its movement direction,
+ * position, and associated channels for controlling the device.
+ * <p>
+ * This class provides methods to manage the movement direction (up or down),
+ * track the cached position, and handle inversion logic for the roller shutter.
+ * It also stores information about the associated channels for dimmer, up, and down controls.
+ * Without any inversion, 100% is fully open (up position) and 0% is fully closed (down position).
  *
  * @author Leo Siepel - Initial contribution
  */
@@ -44,6 +49,13 @@ public class RollerShutterCapability {
 
     public boolean isMovingDown() {
         return isMovingDown;
+    }
+
+    /**
+     * Returns the cached position for testing purposes.
+     */
+    public int getCachedPosition() {
+        return cachedPosition;
     }
 
     /**
