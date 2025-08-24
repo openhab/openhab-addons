@@ -93,6 +93,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private String mqttUser = "";
     protected final Map<String, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
     private final ExpiringCache<Home> homeCache = new ExpiringCache<>(Duration.ofMinutes(10), this::refreshHome);
+    private final ExpiringCache<HomeData> homeDataCache = new ExpiringCache<>(Duration.ofMinutes(10),
+            this::refreshHomeData);
 
     private final Gson gson = new Gson();
 
@@ -128,9 +130,15 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public HomeData getHomeData(String rrHomeId) {
+    public HomeData getHomeData() {
+        return homeDataCache.getValue();
+    }
+
+    @Nullable
+    public HomeData refreshHomeData() {
         try {
-            return webTargets.getHomeData(rrHomeId, rriot);
+            Home home = homeCache.getValue();
+            return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
         } catch (RoborockException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return new HomeData();
@@ -319,7 +327,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 logger.debug("{}: MQTT disconnected (source {}): {}", getThing().getUID().getId(), ctx.getSource(),
                         ctx.getCause().getMessage());
                 mqttConnectTask.cancel();
-                mqttConnectTask.schedule(60);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "MQTT disconnected (source " + ctx.getSource() + "): " + ctx.getCause().getMessage());
             }
         };
 

@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.roborock.internal.RoborockAccountHandler;
-import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -83,35 +82,26 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
     }
 
     @Nullable
-    protected Home getHomeDetail() {
-        return thingHandler.getHomeDetail();
-    }
-
-    @Nullable
-    protected HomeData getHomeData(String rrHomeID) {
-        return thingHandler.getHomeData(rrHomeID);
+    protected HomeData getHomeData() {
+        return thingHandler.getHomeData();
     }
 
     private void discover() {
         ThingUID bridgeUID = thingHandler.getThing().getUID();
-        Home home;
-        home = getHomeDetail();
-        if (home != null) {
-            HomeData homeData;
-            homeData = getHomeData(Integer.toString(home.data.rrHomeId));
+        HomeData homeData;
+        homeData = getHomeData();
 
-            if (homeData != null) {
-                for (int i = 0; i < homeData.result.devices.length; i++) {
-                    if ("1.0".equals(homeData.result.devices[i].pv)) {
-                        Map<String, Object> properties = Map.of("sn",
-                                (homeData.result.devices[i].sn != null) ? homeData.result.devices[i].sn : "N/A");
-                        ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, homeData.result.devices[i].duid);
-                        thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                                .withProperties(properties).withLabel(homeData.result.devices[i].name).build());
-                    } else {
-                        logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.",
-                                homeData.result.devices[i].duid, homeData.result.devices[i].pv);
-                    }
+        if (homeData != null) {
+            for (int i = 0; i < homeData.result.devices.length; i++) {
+                if ("1.0".equals(homeData.result.devices[i].pv)) {
+                    Map<String, Object> properties = Map.of("sn",
+                            (homeData.result.devices[i].sn != null) ? homeData.result.devices[i].sn : "N/A");
+                    ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, homeData.result.devices[i].duid);
+                    thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
+                            .withLabel(homeData.result.devices[i].name).build());
+                } else {
+                    logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.",
+                            homeData.result.devices[i].duid, homeData.result.devices[i].pv);
                 }
             }
         }

@@ -319,37 +319,32 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void pollData() {
         logger.debug("Running pollData for: {}", getThing().getUID().getId());
-        if (!rrHomeId.isEmpty()) {
-            HomeData homeData = bridgeHandler.getHomeData(rrHomeId);
-            if ((homeData != null && (homeData.result != null))) {
-                for (int i = 0; i < homeData.result.devices.length; i++) {
-                    if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
-                        if (localKey.isEmpty()) {
-                            localKey = homeData.result.devices[i].localKey;
-                        }
-                        updateState(CHANNEL_ERROR_ID,
-                                new DecimalType(homeData.result.devices[i].deviceStatus.errorCode));
-                        updateState(CHANNEL_STATE_ID,
-                                new DecimalType(homeData.result.devices[i].deviceStatus.vacuumState));
-                        updateState(CHANNEL_BATTERY, new DecimalType(homeData.result.devices[i].deviceStatus.battery));
-                        updateState(CHANNEL_FAN_POWER,
-                                new DecimalType(homeData.result.devices[i].deviceStatus.fanPower));
-                        updateState(CHANNEL_MOP_DRYING,
-                                new DecimalType(homeData.result.devices[i].deviceStatus.dryingStatus));
-                        updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
-                                new DecimalType(homeData.result.devices[i].deviceStatus.mainBrushWorkTime));
-                        updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
-                                new DecimalType(homeData.result.devices[i].deviceStatus.sideBrushWorkTime));
-                        updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
-                                new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
+        HomeData homeData = bridgeHandler.getHomeData();
+        if ((homeData != null && (homeData.result != null))) {
+            for (int i = 0; i < homeData.result.devices.length; i++) {
+                if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
+                    if (localKey.isEmpty()) {
+                        localKey = homeData.result.devices[i].localKey;
+                    }
+                    updateState(CHANNEL_ERROR_ID, new DecimalType(homeData.result.devices[i].deviceStatus.errorCode));
+                    updateState(CHANNEL_STATE_ID, new DecimalType(homeData.result.devices[i].deviceStatus.vacuumState));
+                    updateState(CHANNEL_BATTERY, new DecimalType(homeData.result.devices[i].deviceStatus.battery));
+                    updateState(CHANNEL_FAN_POWER, new DecimalType(homeData.result.devices[i].deviceStatus.fanPower));
+                    updateState(CHANNEL_MOP_DRYING,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.dryingStatus));
+                    updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.mainBrushWorkTime));
+                    updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.sideBrushWorkTime));
+                    updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
 
-                        homeRooms = homeData.result.rooms;
-                        if (homeData.result.devices[i].online) {
-                            sendAllMqttCommands();
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.comm-error.vac-offline");
-                        }
+                    homeRooms = homeData.result.rooms;
+                    if (homeData.result.devices[i].online) {
+                        sendAllMqttCommands();
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/offline.comm-error.vac-offline");
                     }
                 }
             }
