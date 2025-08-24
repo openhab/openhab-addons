@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * {@link ShellyBluApi} implementsBLU interface
  *
  * @author Markus Michels - Initial contribution
+ * @author Udo Hartmann - Add support for decoding multi button inputs
  */
 @NonNullByDefault
 public class ShellyBluApi extends Shelly2ApiRpc {
@@ -184,8 +185,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             for (Shelly2NotifyEvent e : message.params.events) {
                 String event = getString(e.event);
                 if (event.startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                    logger.debug("{}: BLU event {} received from address {}, pid={}, packet={} ({})", thingName, event,
-                            getString(e.blu.addr), getInteger(e.blu.pid), getString(e.blu.packet), e);
+                    logger.debug("{}: BLU event {} received from address {}, pid={} (JSON={})", thingName, event,
+                            getString(e.blu.addr), getInteger(e.blu.pid), gson.toJson(e));
                     if (e.blu.pid != null) {
                         int pid = e.blu.pid;
                         if (lastPid != -1 && pid < (lastPid - pidCycleThreshold)) {
