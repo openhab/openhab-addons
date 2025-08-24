@@ -78,7 +78,9 @@ class GenericDeviceTest {
 
         @Override
         public MatterDeviceOptions activate() {
-            return new MatterDeviceOptions(Map.of(), "test");
+            MetaDataMapping primaryMetadata = metaDataMapping(primaryItem);
+            Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
+            return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
         }
 
         @Override
@@ -103,10 +105,7 @@ class GenericDeviceTest {
         Metadata metadata = new Metadata(key, "attr1,attr2", config);
         numberItem = new NumberItem("testNumber");
         when(metadataRegistry.get(any(MetadataKey.class))).thenReturn(metadata);
-        when(client.addEndpoint(new BridgedEndpoint("TestDevice", "testNumber", "test", "testNumber", "Type Number",
-                String.valueOf(numberItem.getName().hashCode()),
-                Map.of("cluster.attribute", Map.of("value", "value")))))
-                .thenReturn(CompletableFuture.completedFuture("success"));
+        when(client.addEndpoint(any(BridgedEndpoint.class))).thenReturn(CompletableFuture.completedFuture("success"));
 
         device = new TestGenericDevice(metadataRegistry, client, numberItem);
     }
@@ -160,12 +159,22 @@ class GenericDeviceTest {
         assertEquals("value", mapping.getAttributeOptions().get("cluster.attribute"));
     }
 
-    // @Test
-    // void testRegisterDevice() {
-    // device.registerDevice();
-    // verify(client).addEndpoint(eq("TestDevice"), eq("testNumber"), eq("test"), eq("testNumber"), eq("Type Number"),
-    // any(), any());
-    // }
+    @Test
+    void testActivateBridgedEndpointValues() {
+        BridgedEndpoint endpoint = device.activateBridgedEndpoint();
+        assertEquals("TestDevice", endpoint.deviceType);
+        assertEquals("testNumber", endpoint.id);
+        assertEquals("Test Label", endpoint.nodeLabel);
+        assertEquals("testNumber", endpoint.productName);
+        assertEquals("Type Number", endpoint.productLabel);
+        assertEquals(String.valueOf(numberItem.getName().hashCode()), endpoint.serialNumber);
+    }
+
+    @Test
+    void testActivateBridgedEndpointTwiceThrows() {
+        device.activateBridgedEndpoint();
+        assertThrows(IllegalStateException.class, () -> device.activateBridgedEndpoint());
+    }
 
     @Test
     void testMapClusterAttributes() {
