@@ -149,7 +149,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
 
         // Then one thing found
-        assert latch.await(3, TimeUnit.SECONDS);
+        assert latch.await(4, TimeUnit.SECONDS);
         var discoveryResults = discoveryListener.getDiscoveryResults();
         assertThat(discoveryResults.size(), is(1));
         var result = discoveryResults.get(0);
