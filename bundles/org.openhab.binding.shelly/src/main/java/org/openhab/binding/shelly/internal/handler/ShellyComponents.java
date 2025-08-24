@@ -573,9 +573,7 @@ public class ShellyComponents {
         }
 
         // Update Add-On channeös
-        if (status.extTemperature != null)
-
-        {
+        if (status.extTemperature != null) {
             // Shelly 1/1PM support up to 3 external sensors
             // for whatever reason those are not represented as an array, but 3 elements
             updated |= updateTempChannel(status.extTemperature.sensor1, thingHandler, CHANNEL_ESENSOR_TEMP1);
