@@ -14,15 +14,21 @@ package org.openhab.binding.bambulab.internal;
 
 import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
-import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.*;
-import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.CHAMBER_LIGHT;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.WORK_LIGHT;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.off;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.on;
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand.*;
 
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,7 +55,7 @@ import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
 @NonNullByDefault
 class PrinterHandlerTest {
     @Spy
-    PrinterHandler printerHandler = new PrinterHandler(mock(Bridge.class));
+    PrinterHandler printerHandler = new PrinterHandler(mock(Bridge.class), mock(HttpClient.class));
 
     @BeforeEach
     void setUp() {
