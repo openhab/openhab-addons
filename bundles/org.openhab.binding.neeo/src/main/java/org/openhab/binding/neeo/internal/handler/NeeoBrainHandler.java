@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -212,10 +214,10 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
                         logger.debug(
                                 "Unable to create a callback URL because there is no primary address specified (please set the primary address in the configuration)");
                     } else {
-                        final URL url = new URL(callbackURL, servletPath);
+                        final URL url = callbackURL.toURI().resolve(servletPath).toURL();
                         api.registerForwardActions(url);
                     }
-                } catch (NamespaceException | ServletException e) {
+                } catch (NamespaceException | ServletException | URISyntaxException e) {
                     logger.debug("Error registering forward actions to {}: {}", servletPath, e.getMessage(), e);
                 }
             }
@@ -371,9 +373,11 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
      * @param config the non-null brain configuration
      * @return the callback URL
      * @throws MalformedURLException if the URL is malformed
+     * @throws URISyntaxException if the URI is malformed
      */
     @Nullable
-    private URL createCallbackUrl(String brainId, NeeoBrainConfig config) throws MalformedURLException {
+    private URL createCallbackUrl(String brainId, NeeoBrainConfig config)
+            throws MalformedURLException, URISyntaxException {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         Objects.requireNonNull(config, "config cannot be null");
 
@@ -383,6 +387,6 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             return null;
         }
 
-        return new URL("http://" + ipAddress + ":" + servicePort);
+        return new URI("http", null, ipAddress, servicePort, null, null, null).toURL();
     }
 }

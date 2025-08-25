@@ -13,6 +13,8 @@
 package org.openhab.binding.remoteopenhab.internal.handler;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.DateTimeException;
 import java.time.ZonedDateTime;
@@ -160,8 +162,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
         URL url;
         try {
-            url = new URL(config.useHttps ? "https" : "http", host, config.port, path);
-        } catch (MalformedURLException e) {
+            url = new URI(config.useHttps ? "https" : "http", null, host, config.port, path, null, null).toURL();
+        } catch (MalformedURLException | URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-invalid-rest-url");
             return;

@@ -22,6 +22,7 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -183,7 +184,7 @@ public class OnvifDiscovery {
     }
 
     public String getBrandFromLoginPage(String hostname) throws IOException {
-        URL url = new URL("http://" + hostname);
+        URL url = URI.create("http://" + hostname).toURL();
         String brand = "onvif";
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(1000);

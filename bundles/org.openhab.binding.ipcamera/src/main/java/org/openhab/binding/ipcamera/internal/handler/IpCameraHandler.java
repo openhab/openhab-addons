@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -447,7 +448,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         try {
-            url = new URL(longUrl);
+            url = URI.create(longUrl).toURL();
             int port = url.getPort();
             if (port == -1) {
                 if (url.getQuery() == null) {

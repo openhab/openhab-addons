@@ -18,6 +18,7 @@ import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
@@ -113,7 +114,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     private VenstarRuntimeData runtimeData = new VenstarRuntimeData();
     private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
     private @Nullable Future<?> updatesTask;
-    private @Nullable URL baseURL;
+    private @Nullable URI baseURL;
     private int refresh;
     private final HttpClient httpClient;
     private final Gson gson;
@@ -276,19 +277,18 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         }
     }
 
-    @SuppressWarnings("null") // compiler does not see new URL(url) as never being null
     private void connect() {
         stopUpdateTasks();
         VenstarThermostatConfiguration config = getConfigAs(VenstarThermostatConfiguration.class);
         try {
-            baseURL = new URL(config.url);
+            baseURL = URI.create(config.url);
             if (!httpClient.isStarted()) {
                 httpClient.start();
             }
             httpClient.getAuthenticationStore().clearAuthentications();
             httpClient.getAuthenticationStore().clearAuthenticationResults();
             httpClient.getAuthenticationStore().addAuthentication(
-                    new DigestAuthentication(baseURL.toURI(), "thermostat", config.username, config.password));
+                    new DigestAuthentication(baseURL, "thermostat", config.username, config.password));
             refresh = config.refresh;
             startUpdatesTask(0);
         } catch (Exception e) {
@@ -581,7 +581,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
     private String getData(String path) throws VenstarAuthenticationException, VenstarCommunicationException {
         try {
-            URL getURL = new URL(baseURL, path);
+            URL getURL = baseURL.resolve(path).toURL();
             Request request = httpClient.newRequest(getURL.toURI()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             return sendRequest(request);
         } catch (MalformedURLException | URISyntaxException e) {
@@ -592,7 +592,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     private String postData(String path, Map<String, String> params)
             throws VenstarAuthenticationException, VenstarCommunicationException {
         try {
-            URL postURL = new URL(baseURL, path);
+            URL postURL = baseURL.resolve(path).toURL();
             Request request = httpClient.newRequest(postURL.toURI()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .method(HttpMethod.POST);
             params.forEach(request::param);
