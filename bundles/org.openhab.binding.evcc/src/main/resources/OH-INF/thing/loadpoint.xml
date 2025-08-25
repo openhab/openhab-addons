@@ -429,6 +429,36 @@
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
+	<channel-type id="loadpoint-charge-current-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charge Current 1</label>
+		<description>Actual charge current of charger phase L1</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpoint-charge-current-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charge Current 2</label>
+		<description>Actual charge current of charger phase L2</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpoint-charge-current-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charge Current 3</label>
+		<description>Actual charge current of charger phase L3</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
 	<channel-type id="loadpoint-phases-active">
 		<item-type>Number</item-type>
 		<label>Active Phases</label>
