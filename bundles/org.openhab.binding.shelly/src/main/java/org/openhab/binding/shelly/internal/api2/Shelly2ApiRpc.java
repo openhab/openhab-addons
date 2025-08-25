@@ -112,7 +112,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket();
     private @Nullable Shelly2AuthChallenge authInfo;
 
-    private static int MAX_SCRIPT_ID = 10;
+    // Plus devices support up to 3 scripts, Pro devices up to 10
+    // We need to find a free script id when uploading our script
+    // We want to limit script ids being checked, so define a max id
+    private static int MAX_SCRIPT_ID = 15;
 
     /**
      * Regular constructor - called by Thing handler
@@ -496,10 +499,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 if (ourId == -1) {
                     // find free script id
                     ourId = 0;
-                    for (ourId = 1; ourId < MAX_SCRIPT_ID && testScriptId(scriptList, ourId); ourId++) {
+                    for (ourId = 1; ourId <= MAX_SCRIPT_ID && testScriptId(scriptList, ourId); ourId++) {
                     }
                 }
-                if (ourId < 10) {
+                if (ourId <= MAX_SCRIPT_ID) {
                     // Create new script, get id
                     ShellyScriptResponse rsp = apiRequest(new Shelly2RpcRequest()
                             .withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withId(ourId).withName(script),
