@@ -150,6 +150,25 @@ public abstract class BaseMetadata {
         this.factor = 1.0;
     }
 
+    public boolean notFirstPropertyKeyName(String propertyName) {
+        // Get the replacement value for the propertyName
+        String value = CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.get(propertyName);
+        if (value == null) {
+            return false;
+        }
+        // Find all keys with the same value, preserving insertion order
+        String firstKey = null;
+        for (Map.Entry<String, String> entry : CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.entrySet()) {
+            if (entry.getValue().equals(value)) {
+                if (firstKey == null) {
+                    firstKey = entry.getKey();
+                }
+            }
+        }
+        // Return true if propertyName is not the first key for this value
+        return firstKey != null && !firstKey.equals(propertyName);
+    }
+
     /*
      * Determines the factor based on the unit string.
      *

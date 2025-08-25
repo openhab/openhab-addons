@@ -523,6 +523,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         if (metadata.isIgnoredCommandClass(event.args.commandClassName)) {
             return true;
         }
+        // ZUI reports value changes for both read and write channels. Only process the first.
+        if (metadata.notFirstPropertyKeyName(COLOR_TEMP_CHANNEL_PROPERTY_NAME)) {
+            return true;
+        }
+
         String channelId = metadata.id;
         logger.trace("Getting the configuration for linked channel {}", metadata.id);
         Channel channel = thing.getChannel(metadata.id);
