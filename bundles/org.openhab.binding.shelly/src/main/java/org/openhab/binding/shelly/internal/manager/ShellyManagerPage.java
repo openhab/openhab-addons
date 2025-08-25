@@ -558,13 +558,19 @@ public class ShellyManagerPage {
         return option.toString();
     }
 
-    protected static String getDisplayName(Map<String, String> properties) {
+    protected static String getDisplayName(Map<String, String> properties, Thing thing) {
         String name = getString(properties.get(PROPERTY_DEV_NAME));
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_SERVICE_NAME));
         }
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_MAC_ADDRESS));
+        }
+        if (name.isEmpty()) {
+            name = thing.getLabel();
+        }
+        if (name == null || name.isEmpty()) {
+            name = thing.getUID().getId();
         }
         return name;
     }
