@@ -150,8 +150,8 @@ public class Websocket extends RestApi {
                 refresher.cancel(false);
             }
             refresher = null;
+            scheduler.execute(this::stop);
         }
-        scheduler.execute(this::stop);
     }
 
     /**

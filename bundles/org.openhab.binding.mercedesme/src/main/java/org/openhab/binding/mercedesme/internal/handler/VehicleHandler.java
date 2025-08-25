@@ -1056,14 +1056,14 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * Check correct channel patterns
          */
-        if (csm.hasUomObserver()) {
-            UOMObserver deliveredObserver = csm.getUomObserver();
+        UOMObserver deliveredObserver = csm.getUomObserver();
+        if (deliveredObserver != null) {
             UOMObserver storedObserver = unitStorage.get(channel);
-            boolean change = true;
-            if (storedObserver != null && deliveredObserver != null) {
+            boolean change = storedObserver == null;
+            if (storedObserver != null) {
                 change = !storedObserver.equals(deliveredObserver);
             }
-            // Channel adaptions for items with configurable units
+            // Channel adaption for items with configurable units
             String pattern = deliveredObserver.getPattern(csm.getGroup(), csm.getChannel());
             if (pattern != null) {
                 if (pattern.startsWith("%") && change) {
