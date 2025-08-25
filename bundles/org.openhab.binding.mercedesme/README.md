@@ -391,23 +391,24 @@ Group name: `range`
 
 All channels read-only.
 
-| Channel          | Type                 |  Description                    | bev | hybrid | combustion |
-|------------------|----------------------|---------------------------------|-----|--------|------------|
-| mileage          | Number:Length        |  Total Mileage                  | X   | X      | X          |
-| home-distance    | Number:Length        |  Distance to Home               | X   | X      | X          |
-| soc              | Number:Dimensionless |  Battery State of Charge        | X   | X      |            |
-| charged          | Number:Energy        |  Charged Battery Energy         | X   | X      |            |
-| uncharged        | Number:Energy        |  Uncharged Battery Energy       | X   | X      |            |
-| range-electric   | Number:Length        |  Electric Range                 | X   | X      |            |
-| radius-electric  | Number:Length        |  Electric Radius for Map        | X   | X      |            |
-| fuel-level       | Number:Dimensionless |  Fuel Level in Percent          |     | X      | X          |
-| fuel-remain      | Number:Volume        |  Remaining Fuel                 |     | X      | X          |
-| fuel-open        | Number:Volume        |  Open Fuel Capacity             |     | X      | X          |
-| range-fuel       | Number:Length        |  Fuel Range                     |     | X      | X          |
-| radius-fuel      | Number:Length        |  Fuel Radius for Map            |     | X      | X          |
-| range-hybrid     | Number:Length        |  Hybrid Range                   |     | X      |            |
-| radius-hybrid    | Number:Length        |  Hybrid Radius for Map          |     | X      |            |
-| adblue-level     | Number:Dimensionless |  AdBlue tank level in percent   |     |        | X          |
+| Channel               | Type                 |  Description                    | bev | hybrid | combustion |
+|-----------------------|----------------------|---------------------------------|-----|--------|------------|
+| mileage               | Number:Length        |  Total Mileage                  | X   | X      | X          |
+| home-distance         | Number:Length        |  Distance to Home               | X   | X      | X          |
+| soc                   | Number:Dimensionless |  Battery State of Charge        | X   | X      |            |
+| charged               | Number:Energy        |  Charged Battery Energy         | X   | X      |            |
+| uncharged             | Number:Energy        |  Uncharged Battery Energy       | X   | X      |            |
+| energy-to-target-soc  | Number:Energy        |  Energy to Target SoC           | X   | X      |            |
+| range-electric        | Number:Length        |  Electric Range                 | X   | X      |            |
+| radius-electric       | Number:Length        |  Electric Radius for Map        | X   | X      |            |
+| fuel-level            | Number:Dimensionless |  Fuel Level in Percent          |     | X      | X          |
+| fuel-remain           | Number:Volume        |  Remaining Fuel                 |     | X      | X          |
+| fuel-open             | Number:Volume        |  Open Fuel Capacity             |     | X      | X          |
+| range-fuel            | Number:Length        |  Fuel Range                     |     | X      | X          |
+| radius-fuel           | Number:Length        |  Fuel Radius for Map            |     | X      | X          |
+| range-hybrid          | Number:Length        |  Hybrid Range                   |     | X      |            |
+| radius-hybrid         | Number:Length        |  Hybrid Radius for Map          |     | X      |            |
+| adblue-level          | Number:Dimensionless |  AdBlue tank level in percent   |     |        | X          |
 
 Channels with `radius` are just giving a _guess_ which radius can be reached in a map display.
 
