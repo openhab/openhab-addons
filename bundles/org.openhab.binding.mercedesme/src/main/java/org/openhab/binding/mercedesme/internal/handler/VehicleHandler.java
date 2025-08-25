@@ -907,6 +907,8 @@ public class VehicleHandler extends BaseThingHandler {
                     vas = atts.get(MB_KEY_SELECTED_CHARGE_PROGRAM);
                     if (vas != null) {
                         selectedChargeProgram = (int) vas.getIntValue();
+                    }
+                    if (selectedChargeProgram != -1) {
                         ChargeProgramParameters cpp = cpv.getChargeProgramParameters(selectedChargeProgram);
                         ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
                                 DecimalType.valueOf(Integer.toString(selectedChargeProgram)));
@@ -918,6 +920,8 @@ public class VehicleHandler extends BaseThingHandler {
                         ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
                                 OnOffType.from(cpp.getAutoUnlock()));
                         updateChannel(autoUnlockMap);
+                    } else {
+                        logger.trace("Charge Program index {} not valid", selectedChargeProgram);
                     }
                 } else {
                     logger.trace("No Charge Program property available for {}", thing.getThingTypeUID());

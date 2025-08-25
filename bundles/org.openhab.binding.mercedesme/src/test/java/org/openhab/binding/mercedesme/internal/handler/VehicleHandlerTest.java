@@ -40,9 +40,13 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 
+import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
+import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage.Builder;
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 
 /**
  * {@link VehicleHandlerTest} check state updates and command sending of vehicles
@@ -213,6 +217,7 @@ class VehicleHandlerTest {
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vehicleConfig.batteryCapacity = (float) 66.5;
         vHandler.config = vehicleConfig;
+
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
@@ -667,5 +672,48 @@ class VehicleHandlerTest {
 
         assertEquals("29 %", updateListener.getResponse("test::combustion:range#adblue-level").toFullString(),
                 "AdBlue Tank Level");
+    }
+
+    @Test
+    public void testChargeProgramUpdate() {
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vehicleConfig.batteryCapacity = (float) 66.5;
+        vHandler.config = vehicleConfig;
+
+        // One update to set the charge program
+        String initJson = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-ChargeProgram0.json");
+        VEPUpdate update = ProtoConverter.json2Proto(initJson, true);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
+        assertEquals("80 %", updateListener.getResponse("test::bev:charge#max-soc").toFullString(), "Max SoC init");
+        QuantityType<?> energy = (QuantityType<?>) updateListener.getResponse("test::bev:range#energy-to-target-soc");
+        assertEquals(3.990, energy.doubleValue(), 0.001, "Energy to max SoC init");
+
+        // Partial update
+        String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-MaxSoc.json");
+        Builder pmBuilder = PushMessage.newBuilder();
+        try {
+            JsonFormat.parser().ignoringUnknownFields().merge(json, pmBuilder);
+        } catch (InvalidProtocolBufferException e) {
+            fail(e.getMessage());
+        }
+        PushMessage pm = pmBuilder.build();
+        assertTrue(pm.hasVepUpdates());
+        update = pm.getVepUpdates().getUpdatesMap().get("UNIT_TEST_VIN");
+        assertNotNull(update);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
+        energy = (QuantityType<?>) updateListener.getResponse("test::bev:range#energy-to-target-soc");
+        assertEquals("90 %", updateListener.getResponse("test::bev:charge#max-soc").toFullString(), "Max SoC update");
+        assertEquals(10.640, energy.doubleValue(), 0.001, "Energy to max SoC Update");
     }
 }
