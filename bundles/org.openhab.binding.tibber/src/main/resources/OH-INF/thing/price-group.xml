@@ -7,9 +7,17 @@
 		<label>Price</label>
 		<description>Price Informations</description>
 		<channels>
+			<channel id="total-price" typeId="price">
+				<label>Total Price</label>
+				<description>Total price including energy and taxes</description>
+			</channel>
 			<channel id="spot-price" typeId="price">
 				<label>Spot Price</label>
-				<description>Spot prices for today and tomorrow</description>
+				<description>Spot prices for energy today and tomorrow</description>
+			</channel>
+			<channel id="tax" typeId="price">
+				<label>Tax</label>
+				<description>Taxes and additional expenses</description>
 			</channel>
 			<channel id="level" typeId="price-level">
 				<label>Price Level</label>

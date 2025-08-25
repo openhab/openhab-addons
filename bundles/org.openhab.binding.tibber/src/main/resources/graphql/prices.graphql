@@ -6,11 +6,15 @@
           tomorrow {
             startsAt
             total
+            energy
+            tax
             level
           }
           today {
             startsAt
             total
+            energy
+            tax
             level
           }
         }
