@@ -561,7 +561,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             State rollerShutterState = null;
             ZwaveJSChannelConfiguration rollerShutterConfig = getChannelConfiguration(
                     rollerShutterCapability.rollerShutterChannelId);
-            boolean isUpDownInverted = Objects.requireNonNull(rollerShutterConfig).isUpDownInverted;
+            boolean isUpDownInverted = rollerShutterConfig.isUpDownInverted;
             if (event.args.newValue instanceof Number newValue) {
                 rollerShutterCapability.setPosition(newValue.intValue(), isUpDownInverted);
                 rollerShutterState = metadata.setState(event.args.newValue,
