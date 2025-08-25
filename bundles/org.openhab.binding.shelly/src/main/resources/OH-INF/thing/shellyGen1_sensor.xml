@@ -586,6 +586,49 @@
 		<state readOnly="false" min="0" max="86400" pattern="%.0f %unit%"/>
 	</channel-type>
 
+	<channel-type id="sensorChannel">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorChannel.label</label>
+		<description>@text/channel-type.shelly.sensorChannel.description</description>
+	</channel-type>
+
+	<channel-type id="sensorRotation">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorRotation.label</label>
+		<description>@text/channel-type.shelly.sensorRotation.description</description>
+		<state readOnly="true" pattern="%0.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="sensorSteps">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorSteps.label</label>
+		<description>@text/channel-type.shelly.sensorSteps.description</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="sensorDirection">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.sensorDirection.label</label>
+		<description>@text/channel-type.shelly.sensorDirection.description</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="up">@text/channel-type.shelly.sensorDirection.state.option.up</option>
+				<option value="down">@text/channel-type.shelly.sensorDirection.state.option.down</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorDistance">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorDistance.label</label>
+		<description>@text/channel-type.shelly.sensorDistance.description</description>
+		<category>Distance</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
 	<channel-type id="senseKey">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.senseKey.label</label>
