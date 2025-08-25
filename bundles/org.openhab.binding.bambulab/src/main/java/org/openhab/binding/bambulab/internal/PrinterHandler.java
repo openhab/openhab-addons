@@ -14,6 +14,9 @@ package org.openhab.binding.bambulab.internal;
 
 import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.Duration.between;
+import static java.time.LocalDateTime.now;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedList;
 import static java.util.Objects.requireNonNull;
@@ -178,20 +181,7 @@ public class PrinterHandler extends BaseBridgeHandler
     }
 
     private void internalInitialize() throws InitializationException {
-        {
-            var validTill = getThing().getProperties().getOrDefault(ACCESS_CODE_VALID_TILL_PROPERTY, "");
-            if (!validTill.isEmpty()) {
-                try {
-                    var parse = LocalDateTime.parse(validTill);
-                    if (parse.isBefore(LocalDateTime.now())) {
-                        throw new InitializationException(CONFIGURATION_ERROR,
-                                "@text/printer.handler.init.accessCodeExpired");
-                    }
-                } catch (DateTimeParseException e) {
-                    logger.debug("Invalid access code till date: {}", validTill);
-                }
-            }
-        }
+        validateAccessCode();
 
         var config = getConfigAs(PrinterConfiguration.class);
 
@@ -219,6 +209,25 @@ public class PrinterHandler extends BaseBridgeHandler
         } catch (RejectedExecutionException ex) {
             logger.debug("Task was rejected", ex);
             throw new InitializationException(CONFIGURATION_ERROR, ex);
+        }
+    }
+
+    private void validateAccessCode() throws InitializationException {
+        var validTill = getThing().getProperties().getOrDefault(ACCESS_CODE_VALID_TILL_PROPERTY, "");
+        if (validTill.isEmpty()) {
+            return;
+        }
+        try {
+            var parse = LocalDateTime.parse(validTill);
+            if (parse.isBefore(now())) {
+                throw new InitializationException(CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired");
+            }
+            var duration = between(now().toInstant(UTC), parse.toInstant(UTC));
+            scheduler.schedule(
+                    () -> updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired"),
+                    duration.getSeconds(), SECONDS);
+        } catch (DateTimeParseException e) {
+            logger.debug("Invalid access code till date: {}", validTill, e);
         }
     }
 
@@ -648,7 +657,7 @@ public class PrinterHandler extends BaseBridgeHandler
                     updateConfiguration(configuration);
                 }
                 {
-                    var now = LocalDateTime.now();
+                    var now = now();
                     var thing = editThing()
                             .withProperty(ACCESS_CODE_VALID_TILL_PROPERTY, now.plusSeconds(bambu.expiresIn).toString())
                             .build();
