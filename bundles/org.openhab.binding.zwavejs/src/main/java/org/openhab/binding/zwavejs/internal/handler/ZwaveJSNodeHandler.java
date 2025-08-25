@@ -524,7 +524,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return true;
         }
         // ZUI reports value changes for both read and write channels. Only process the first.
-        if (metadata.notFirstPropertyKeyName(COLOR_TEMP_CHANNEL_PROPERTY_NAME)) {
+        if (!ChannelMetadata.isFirstOrNotMapped(event.args.propertyName)) {
             return true;
         }
 

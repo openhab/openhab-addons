@@ -18,6 +18,7 @@ import static org.openhab.binding.zwavejs.internal.CommandClassConstants.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -72,9 +73,16 @@ public abstract class BaseMetadata {
             "°F/C", "", // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
             "%rH", "%"); // Z-Wave JS uses %rH to represent relative humidity, but openHAB expects the standard % unit.
 
-    private static final Map<String, String> CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS = Map.of("currentValue", "value", //
-            "targetValue", "value", "currentColor", "color", "targetColor", "color", //
-            "targetMode", "mode", "currentMode", "mode"); //
+    private static final Map<String, String> CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS;
+    static {
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS = new LinkedHashMap<>();
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("currentValue", "value");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("targetValue", "value");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("currentColor", "color");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("targetColor", "color");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("currentMode", "mode");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("targetMode", "mode");
+    }
     private static final List<Integer> COMMAND_CLASSES_ADVANCED = List.of(44, 117);
     private static final List<Integer> SWITCH_STATES_OFF_CLOSED = List.of(-1, 0, 23);
 
@@ -150,23 +158,19 @@ public abstract class BaseMetadata {
         this.factor = 1.0;
     }
 
-    public boolean notFirstPropertyKeyName(String propertyName) {
-        // Get the replacement value for the propertyName
+    public static boolean isFirstOrNotMapped(@Nullable String propertyName) {
+        if (propertyName == null || propertyName.contains("unknown")) {
+            return true;
+        }
         String value = CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.get(propertyName);
         if (value == null) {
-            return false;
+            return true;
         }
+        // Find the first key with this value
         // Find all keys with the same value, preserving insertion order
-        String firstKey = null;
-        for (Map.Entry<String, String> entry : CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.entrySet()) {
-            if (entry.getValue().equals(value)) {
-                if (firstKey == null) {
-                    firstKey = entry.getKey();
-                }
-            }
-        }
-        // Return true if propertyName is not the first key for this value
-        return firstKey != null && !firstKey.equals(propertyName);
+        String firstKey = CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.entrySet().stream()
+                .filter(e -> Objects.equals(e.getValue(), value)).map(Map.Entry::getKey).findFirst().orElse(null);
+        return Objects.equals(firstKey, propertyName);
     }
 
     /*
