@@ -125,16 +125,16 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             Map.entry(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH),
             Map.entry(SHELLY_BTNEVENT_HOLDING, SHELLY_BTNEVENT_HOLDING));
 
-    public static final Map<String, String> MAP_BLU_INPUT_EVENT_TYPE = Map.ofEntries(//
+    public static final Map<Integer, String> MAP_BLU_INPUT_EVENT_TYPE = Map.ofEntries(//
             // BTHome
-            Map.entry("1", SHELLY_BTNEVENT_1SHORTPUSH), // press
-            Map.entry("2", SHELLY_BTNEVENT_2SHORTPUSH), // double_press
-            Map.entry("3", SHELLY_BTNEVENT_3SHORTPUSH), // triple_press
-            Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), // long_press
-            Map.entry("5", SHELLY_BTNEVENT_LONGSHORTPUSH), // we have no long_double_press
-            Map.entry("6", SHELLY_BTNEVENT_SHORTLONGPUSH), // we have no long_triple_press
-            Map.entry("128", SHELLY_BTNEVENT_HOLDING), // hold_press
-            Map.entry("254", SHELLY_BTNEVENT_HOLDING)); // hold_press old firmware
+            Map.entry(1, SHELLY_BTNEVENT_1SHORTPUSH), // press
+            Map.entry(2, SHELLY_BTNEVENT_2SHORTPUSH), // double_press
+            Map.entry(3, SHELLY_BTNEVENT_3SHORTPUSH), // triple_press
+            Map.entry(4, SHELLY_BTNEVENT_LONGPUSH), // long_press
+            Map.entry(5, SHELLY_BTNEVENT_LONGSHORTPUSH), // we have no long_double_press
+            Map.entry(6, SHELLY_BTNEVENT_SHORTLONGPUSH), // we have no long_triple_press
+            Map.entry(128, SHELLY_BTNEVENT_HOLDING), // hold_press
+            Map.entry(254, SHELLY_BTNEVENT_HOLDING)); // hold_press old firmware
 
     protected static final Map<String, String> MAP_INPUT_EVENT_ID = Map.of(//
             SHELLY2_EVENT_BTNUP, SHELLY_EVENT_BTN_OFF, //
@@ -1005,16 +1005,24 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return request;
     }
 
-    protected String mapValue(Map<String, String> map, @Nullable String key) {
-        if (key == null || key.isEmpty()) {
-            return "";
-        }
-        if (!map.containsKey(key)) {
+    protected String mapValue(Map<String, String> map, String key) {
+        String value = map.getOrDefault(key, "");
+        if (value.isEmpty()) {
             logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
                     map);
             return "";
         }
-        String value = getString(map.get(key));
+        logger.trace("{}: API value was mapped to '{}'", thingName, value);
+        return value;
+    }
+
+    protected String mapIntValue(Map<Integer, String> map, Integer key) {
+        String value = map.getOrDefault(key, "");
+        if (value.isEmpty()) {
+            logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
+                    map);
+            return "";
+        }
         logger.trace("{}: API value '{}' was mapped to '{}'", thingName, key, value);
         return value;
     }

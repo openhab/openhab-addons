@@ -567,7 +567,6 @@ public class ShellyChannelDefinitions {
                 CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.motion != null || (sdata.sensor != null && sdata.sensor.motion != null),
                 CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION);
-        addChannel(thing, newChannels, sdata.distance != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE);
         if (sdata.sensor != null) { // DW, Sense or Motion
             addChannel(thing, newChannels, sdata.sensor.state != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE); // DW/DW2
             addChannel(thing, newChannels, sdata.sensor.motionActive != null, CHANNEL_GROUP_SENSOR, // Motion
@@ -578,10 +577,20 @@ public class ShellyChannelDefinitions {
                     CHANNEL_SENSOR_VIBRATION);
 
         }
-        // Create tilt for DW/DW2, for BLU DW create channel even tilt is reported separately after lux
+
+        // Shelly DW/DW2/BLU DW
+        // Depending on timing the device only reports tilt or illuminance in the 1st packet only distance or vibration
+        // In this case create both channels, also if only one is included in the first packet
         if (sdata.accel != null || (profile.isBlu && profile.isDW && sdata.lux != null)) {
             addChannel(thing, newChannels, sdata.lux != null || sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR,
                     CHANNEL_SENSOR_TILT);
+        }
+
+        // Depending on timing Shelly BLU distance reports in the 1st packet only distance or vibration
+        // In this case create both channels, also if only one is included in the first packet
+        if (sdata.distance != null || profile.isDistance) {
+            addChannel(thing, newChannels, sdata.distance != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE);
+
         }
 
         // Gas

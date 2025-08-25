@@ -98,12 +98,13 @@ public class ShellyDeviceProfile {
     public boolean isSensor = false; // true for HT & Smoke
     public boolean hasBattery = false; // true if battery device
     public boolean isSense = false; // true if thing is a Shelly Sense
-    public boolean isRemote = false; // true if thing is a Shelly BLU Remote
-    public boolean isMotion = false; // true if thing is a Shelly Motion
     public boolean isHT = false; // true for H&T
     public boolean isDW = false; // true for Door Window sensor
     public boolean isButton = false; // true for a Shelly Button 1
     public boolean isMultiButton = false; // true for a Shelly BLU Wall Switch 4 or RC Button 4
+    public boolean isMotion = false; // true if thing is a Shelly Motion
+    public boolean isDistance = false; // true if thing is a Shelly BLU Distance
+    public boolean isRemote = false; // true if thing is a Shelly BLU Remote
     public boolean isIX = false; // true for a Shelly IX
     public boolean isTRV = false; // true for a Shelly TRV
     public boolean isSmoke = false; // true for Shelly Smoke
@@ -219,6 +220,7 @@ public class ShellyDeviceProfile {
         isDW = GROUP_DOORWINDOW_THING_TYPES.contains(thingTypeUID);
         isMotion = GROUP_MOTION_THING_TYPES.contains(thingTypeUID);
         isSense = THING_TYPE_SHELLYSENSE.equals(thingTypeUID);
+        isDistance = THING_TYPE_SHELLYBLUDISTANCE.equals(thingTypeUID);
         isRemote = THING_TYPE_SHELLYBLUREMOTE.equals(thingTypeUID);
         isIX = GROUP_IX_THING_TYPES.contains(thingTypeUID);
         isButton = GROUP_BUTTON_THING_TYPES.contains(thingTypeUID);

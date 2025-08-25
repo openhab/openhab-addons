@@ -319,7 +319,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
         profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
         if (profile.isRGBW2) {
-            ArrayList<ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
+            ArrayList<@Nullable ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
             rgbwLights.add(new ShellySettingsRgbwLight());
             profile.settings.lights = rgbwLights;
             profile.status.lights = new ArrayList<>();

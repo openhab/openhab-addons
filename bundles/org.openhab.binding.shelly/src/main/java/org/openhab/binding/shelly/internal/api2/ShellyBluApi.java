@@ -292,23 +292,29 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             for (int bttnIdx = 0; bttnIdx < e.blu.buttons.length; bttnIdx++) {
                                 if (e.blu.buttons[bttnIdx] != 0) {
                                     ShellyInputState input = deviceStatus.inputs.get(bttnIdx);
-                                    input.event = mapValue(MAP_BLU_INPUT_EVENT_TYPE, e.blu.buttons[bttnIdx].toString());
-
-                                    String group = getProfile().getInputGroup(bttnIdx);
-                                    String suffix = profile.getInputSuffix(bttnIdx);
-                                    // ignore HOLDING events for counter and trigger
-                                    if (!SHELLY_BTNEVENT_HOLDING.equalsIgnoreCase(input.event)) {
-                                        logger.debug("{}: update to {}, pid={}", message.src, input.event, e.blu.pid);
-                                        t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
-                                                getStringType(input.event));
-                                        input.eventCount++;
-                                        t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
-                                                getDecimal(input.eventCount));
-                                        t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
+                                    String btnEvent = mapIntValue(MAP_BLU_INPUT_EVENT_TYPE, e.blu.buttons[bttnIdx]);
+                                    if (!btnEvent.isEmpty()) {
+                                        // ignore HOLDING events for counter and trigger
+                                        if (!SHELLY_BTNEVENT_HOLDING.equals(btnEvent) || !profile.isMultiButton) {
+                                            input.event = btnEvent;
+                                            input.eventCount++;
+                                            String group = getProfile().getInputGroup(bttnIdx);
+                                            String suffix = profile.getInputSuffix(bttnIdx);
+                                            logger.debug("{}: update to {}, pid={}", message.src, input.event,
+                                                    e.blu.pid);
+                                            t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
+                                                    getStringType(input.event));
+                                            t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
+                                                    getDecimal(input.eventCount));
+                                            t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
+                                        } else {
+                                            logger.debug("{}: Ignore button event HOLDING, pid={}", message.src,
+                                                    e.blu.pid);
+                                        }
+                                        deviceStatus.inputs.set(bttnIdx, input);
                                     } else {
-                                        logger.debug("{}: ignore H, pid={}", message.src, e.blu.pid);
+                                        logger.debug("{}: Unknown Button event", thingName);
                                     }
-                                    deviceStatus.inputs.set(bttnIdx, input);
                                 }
                             }
                         }
