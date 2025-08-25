@@ -111,6 +111,7 @@ public class PrinterHandler extends BaseBridgeHandler
     private @Nullable PrinterClientConfig config;
     private final Collection<AmsDeviceHandler> amses = synchronizedList(new ArrayList<>());
     private final AtomicReference<@Nullable Report> latestPrinterState = new AtomicReference<>();
+    private @Nullable ScheduledFuture<?> validateAccessCodeSchedule;
 
     public PrinterHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
@@ -223,7 +224,7 @@ public class PrinterHandler extends BaseBridgeHandler
                 throw new InitializationException(CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired");
             }
             var duration = between(now().toInstant(UTC), parse.toInstant(UTC));
-            scheduler.schedule(
+            validateAccessCodeSchedule = scheduler.schedule(
                     () -> updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired"),
                     duration.getSeconds(), SECONDS);
         } catch (DateTimeParseException e) {
@@ -315,6 +316,7 @@ public class PrinterHandler extends BaseBridgeHandler
             closeReconnectSchedule();
             closeCamera();
             closeClient();
+            closeValidateAccessCodeSchedule();
         } finally {
             logger = LoggerFactory.getLogger(PrinterHandler.class);
         }
@@ -353,6 +355,14 @@ public class PrinterHandler extends BaseBridgeHandler
         reconnectSchedule.set(null);
         if (localReconnectSchedule != null) {
             localReconnectSchedule.cancel(true);
+        }
+    }
+
+    private void closeValidateAccessCodeSchedule() {
+        var local = validateAccessCodeSchedule;
+        validateAccessCodeSchedule = null;
+        if (local != null) {
+            local.cancel(true);
         }
     }
 
