@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.roborock.internal.RoborockAccountHandler;
 import org.openhab.binding.roborock.internal.api.HomeData;
+import org.openhab.binding.roborock.internal.api.HomeData.Devices;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -86,24 +87,31 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         return thingHandler.getHomeData();
     }
 
-    private void discover() {
+    private void findDevice(Devices devices[]) {
         ThingUID bridgeUID = thingHandler.getThing().getUID();
+        for (int i = 0; i < devices.length; i++) {
+            if ("1.0".equals(devices[i].pv)) {
+                Map<String, Object> properties = Map.of("sn", (devices[i].sn != null) ? devices[i].sn : "N/A");
+                ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, devices[i].duid);
+                thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
+                        .withLabel(devices[i].name).build());
+            } else {
+                logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.", devices[i].duid,
+                        devices[i].pv);
+            }
+        }
+    }
+
+    private void discover() {
         HomeData homeData;
         homeData = getHomeData();
 
         if (homeData != null) {
-            for (int i = 0; i < homeData.result.devices.length; i++) {
-                if ("1.0".equals(homeData.result.devices[i].pv)) {
-                    Map<String, Object> properties = Map.of("sn",
-                            (homeData.result.devices[i].sn != null) ? homeData.result.devices[i].sn : "N/A");
-                    ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, homeData.result.devices[i].duid);
-                    thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
-                            .withLabel(homeData.result.devices[i].name).build());
-                } else {
-                    logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.",
-                            homeData.result.devices[i].duid, homeData.result.devices[i].pv);
-                }
-            }
+            Devices devices[] = homeData.result.devices;
+            findDevice(devices);
+            // also check for shared devices
+            Devices receivedDevices[] = homeData.result.receivedDevices;
+            findDevice(receivedDevices);
         }
     }
 

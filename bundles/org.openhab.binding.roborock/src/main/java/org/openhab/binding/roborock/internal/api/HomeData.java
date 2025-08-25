@@ -35,6 +35,7 @@ public class HomeData {
         public String name = "";
         public @NonNullByDefault({}) Products[] products;
         public @NonNullByDefault({}) Devices[] devices;
+        public @NonNullByDefault({}) Devices[] receivedDevices;
         public @NonNullByDefault({}) Rooms[] rooms;
         public String status = "";
         public boolean success;
