@@ -16,6 +16,8 @@ import static org.openhab.binding.zwavejs.internal.BindingConstants.VIRTUAL_ROLL
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the capabilities of a roller shutter device, including its movement direction,
@@ -30,6 +32,7 @@ import org.openhab.core.thing.ChannelUID;
  */
 @NonNullByDefault
 public class RollerShutterCapability {
+    private Logger logger = LoggerFactory.getLogger(RollerShutterCapability.class);
     public Integer endpoint;
     public String rollerShutterChannelId;
     public ChannelUID dimmerChannel;
@@ -66,6 +69,9 @@ public class RollerShutterCapability {
      *            be set to false.
      */
     public void setDirectionUp(boolean isMovingUp) {
+        logger.trace(
+                "RollershutterCapability.setDirectionUp() (endpoint: {}, cachedPosition: {}, isMovingUp: {}, isMovingDown: {})",
+                endpoint, cachedPosition, isMovingUp, this.isMovingDown);
         this.isMovingUp = isMovingUp;
         if (isMovingUp) {
             this.isMovingDown = false;
@@ -79,6 +85,8 @@ public class RollerShutterCapability {
      *            When set to true, the direction up flag will be automatically set to false.
      */
     public void setDirectionDown(boolean isMovingDown) {
+        logger.trace("RollershutterCapability.isMovingDown() (endpoint: {}, cachedisMovingDown: {}, isMovingDown: {})",
+                endpoint, this.isMovingDown, isMovingDown);
         this.isMovingDown = isMovingDown;
         if (isMovingDown) {
             this.isMovingUp = false;
@@ -92,6 +100,9 @@ public class RollerShutterCapability {
      * @param isMovingDown {@code true} if the roller shutter is moving down, {@code false} otherwise.
      */
     public void setDirection(boolean isMovingUp, boolean isMovingDown) {
+        logger.trace(
+                "RollershutterCapability.setDirection() (endpoint: {}, cachedPosition: {}, isMovingUp: {}, isMovingDown: {})",
+                endpoint, cachedPosition, isMovingUp, isMovingDown);
         this.isMovingUp = isMovingUp;
         this.isMovingDown = isMovingDown;
     }
@@ -103,6 +114,9 @@ public class RollerShutterCapability {
      * @param isUpDownInverted
      */
     public void setPosition(int position, boolean isUpDownInverted) {
+        logger.trace(
+                "RollershutterCapability.setPosition() (endpoint: {}, position: {}, isUpDownInverted: {}, cachedPosition: {})",
+                endpoint, position, isUpDownInverted, cachedPosition);
         if (position == cachedPosition) {
             this.isMovingUp = false;
             this.isMovingDown = false;
