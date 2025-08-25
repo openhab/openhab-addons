@@ -263,6 +263,7 @@
 /bundles/org.openhab.binding.mspa/ @weymann
 /bundles/org.openhab.binding.mybmw/ @ntruchsess @mherwege @martingrassl
 /bundles/org.openhab.binding.mycroft/ @dalgwen
+/bundles/org.openhab.binding.myenergi/ @renescherer @StephenCookNaN @volkmarnissen
 /bundles/org.openhab.binding.mynice/ @clinique
 /bundles/org.openhab.binding.mystrom/ @pail23
 /bundles/org.openhab.binding.myuplink/ @alexf2015

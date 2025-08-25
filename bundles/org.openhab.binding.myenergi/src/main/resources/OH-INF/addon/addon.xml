@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="myenergi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>myenergi Binding</name>
+	<description>The myenergi binding connects to the myenergi hub and interacts with the following myenergi products:
+		Zappi EV charger,
+		Harvi remote device for CT sensors,
+		Eddi solar energy diverter.
+	</description>
+
+</addon:addon>

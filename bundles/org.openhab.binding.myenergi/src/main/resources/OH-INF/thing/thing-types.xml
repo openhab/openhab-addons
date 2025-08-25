@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myenergi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+
+		<label>myenergi API Bridge</label>
+		<description>The myenergi Cloud API Bridge</description>
+
+		<config-description>
+			<parameter name="hubSerialNumber" type="text" required="true">
+				<label>Hub Serial Number.</label>
+				<description>The Hub Serial Number to access the MyEnergi API ()</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password to access the MyEnergi API (same as the smart phone app password)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" min="1">
+				<label>Topology Refresh Interval</label>
+				<description>Query interval (in hours) for device topology</description>
+				<default>24</default>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="harvi">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Harvi</label>
+		<description>myenergi wireless energy sensor</description>
+
+		<channels>
+			<channel id="last-updated-time" typeId="last-updated-time-type"/>
+			<channel id="clamp-name1" typeId="clamp-name-type"/>
+			<channel id="clamp-power1" typeId="clamp-power-type"/>
+			<channel id="clamp-phase1" typeId="phase-type"/>
+			<channel id="clamp-name2" typeId="clamp-name-type"/>
+			<channel id="clamp-power2" typeId="clamp-power-type"/>
+			<channel id="clamp-phase2" typeId="phase-type"/>
+			<channel id="clamp-name3" typeId="clamp-name-type"/>
+			<channel id="clamp-power3" typeId="clamp-power-type"/>
+			<channel id="clamp-phase3" typeId="phase-type"/>
+		</channels>
+
+		<properties>
+			<property name="serialNumber"/>
+			<property name="firmwareVersion"/>
+		</properties>
+
+	</thing-type>
+
+	<thing-type id="zappi">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Zappi</label>
+		<description>myenergi EV charger</description>
+
+		<channels>
+			<channel id="last-updated-time" typeId="last-updated-time-type"/>
+			<channel id="supply-voltage" typeId="voltage-type"/>
+			<channel id="supply-frequency" typeId="frequency-type"/>
+			<channel id="number-of-phases" typeId="number-of-phases-type"/>
+			<channel id="locking-mode" typeId="locking-mode-type"/>
+			<channel id="charging-mode" typeId="charging-mode-type"/>
+			<channel id="status" typeId="zappi-status-type"/>
+			<channel id="plug-status" typeId="plug-status-type"/>
+			<channel id="command-tries" typeId="command-tries-type"/>
+			<channel id="diverter-priority" typeId="diverter-priority-type"/>
+			<channel id="minimum-green-level" typeId="minimum-green-level-type"/>
+			<channel id="grid-power" typeId="grid-power-type"/>
+			<channel id="generated-power" typeId="generated-power-type"/>
+			<channel id="diverted-power" typeId="diverted-power-type"/>
+			<channel id="consumed-power" typeId="consumed-power-type"/>
+			<channel id="charge-added" typeId="charge-added-type"/>
+			<channel id="smart-boost-time" typeId="boost-end-time-type"/>
+			<channel id="smart-boost-charge" typeId="boost-charge-type"/>
+			<channel id="timed-boost-time" typeId="boost-end-time-type"/>
+			<channel id="timed-boost-charge" typeId="boost-charge-type"/>
+			<channel id="clamp-name1" typeId="clamp-name-type"/>
+			<channel id="clamp-power1" typeId="clamp-power-type"/>
+			<channel id="clamp-name2" typeId="clamp-name-type"/>
+			<channel id="clamp-power2" typeId="clamp-power-type"/>
+			<channel id="clamp-name3" typeId="clamp-name-type"/>
+			<channel id="clamp-power3" typeId="clamp-power-type"/>
+			<channel id="clamp-name4" typeId="clamp-name-type"/>
+			<channel id="clamp-power4" typeId="clamp-power-type"/>
+			<channel id="clamp-name5" typeId="clamp-name-type"/>
+			<channel id="clamp-power5" typeId="clamp-power-type"/>
+			<channel id="clamp-name6" typeId="clamp-name-type"/>
+			<channel id="clamp-power6" typeId="clamp-power-type"/>
+		</channels>
+
+		<properties>
+			<property name="serialNumber"/>
+			<property name="firmwareVersion"/>
+		</properties>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" required="false" min="5">
+				<label>Refresh Interval</label>
+				<description>Query interval (in seconds) for device measurements (generation, consumption etc.)</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="eddi">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Eddi</label>
+		<description>myenergi solar power diverter</description>
+
+		<channels>
+			<channel id="last-updated-time" typeId="last-updated-time-type"/>
+			<channel id="supply-voltage" typeId="voltage-type"/>
+			<channel id="supply-frequency" typeId="frequency-type"/>
+			<channel id="status" typeId="eddi-status-type"/>
+			<channel id="diverter-priority" typeId="diverter-priority-type"/>
+			<channel id="phase" typeId="phase-type"/>
+			<channel id="grid-power" typeId="grid-power-type"/>
+			<channel id="boost-mode" typeId="boost-mode-type"/>
+			<channel id="energy-transferred" typeId="energy-transferred-type"/>
+			<channel id="generated-power" typeId="generated-power-type"/>
+			<channel id="diverted-power" typeId="diverted-power-type"/>
+			<channel id="consumed-power" typeId="consumed-power-type"/>
+			<channel id="boost-remaining" typeId="boost-remaining-type"/>
+			<channel id="active-heater" typeId="active-heater-type"/>
+			<channel id="heater-priority" typeId="heater-priority-type"/>
+			<channel id="heater-name1" typeId="heater-name1-type"/>
+			<channel id="heater-name2" typeId="heater-name2-type"/>
+			<channel id="temperature1" typeId="temperature1-type"/>
+			<channel id="temperature2" typeId="temperature2-type"/>
+			<channel id="clamp-name1" typeId="clamp-name-type"/>
+			<channel id="clamp-power1" typeId="clamp-power-type"/>
+			<channel id="clamp-name2" typeId="clamp-name-type"/>
+			<channel id="clamp-power2" typeId="clamp-power-type"/>
+			<channel id="clamp-name3" typeId="clamp-name-type"/>
+			<channel id="clamp-power3" typeId="clamp-power-type"/>
+		</channels>
+
+		<properties>
+			<property name="serialNumber"/>
+			<property name="firmwareVersion"/>
+		</properties>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" required="false" min="5">
+				<label>Refresh Interval</label>
+				<description>Query interval (in seconds) for device measurements (generation, consumption etc.)</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="last-updated-time-type">
+		<item-type>DateTime</item-type>
+		<label>Last Updated Time</label>
+		<description>The time when the device was last updated</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="clamp-name-type">
+		<item-type>String</item-type>
+		<label>Clamp Name/Type</label>
+		<description>CT Sensors have the following usages: None, Grid, Generation Only, Storage Only, Gen &amp; Battery,
+			Monitor and AC Battery</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="None">None</option>
+				<option value="Grid">Grid</option>
+				<option value="Generation Only">Generation Only</option>
+				<option value="Storage Only">Storage Only</option>
+				<option value="Gen &amp; Battery">Gen &amp; Battery</option>
+				<option value="Monitor">Monitor</option>
+				<option value="AC Battery">AC Battery</option>
+			</options>
+		</state>
+
+	</channel-type>
+
+	<channel-type id="grid-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power</label>
+		<description>Grid power property shows the import and export power. It is used to determine if surplus power is
+			available.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="generated-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Generated Power</label>
+		<description>Power from the generator (if available)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="diverted-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Diverted Power</label>
+		<description>The diverted power</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="consumed-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Consumed Power</label>
+		<description>Power consumed by the house (if available)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="clamp-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Clamp Power</label>
+		<description>The measured power at the CT clamp</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="phase-type">
+		<item-type>Number</item-type>
+		<label>Phase</label>
+		<description>The phase this CT clamp is attached to</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="number-of-phases-type">
+		<item-type>Number</item-type>
+		<label>Number of Phases</label>
+		<description>The number of phases in the installation</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="voltage-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Supply voltage to the unit</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="frequency-type">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency</label>
+		<description>Grid frequency</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="charge-added-type">
+		<item-type>Number:Energy</item-type>
+		<label>Charge Added</label>
+		<description>Energy supplied to the EV during current charge session</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boost-charge-type">
+		<item-type>Number:Energy</item-type>
+		<label>Boost Charge</label>
+		<description>Energy supplied to the EV during current boost</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="locking-mode-type">
+		<item-type>Number</item-type>
+		<label>Locking Mode</label>
+		<description>The current locking mode of the device as bitmap.Bit 0: Locked Now, Bit 1: Lock when plugged in, Bit 2:
+			Lock when unplugged, Bit 3: Charge when locked, Bit 4: Charge Session Allowed (Even if locked)</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="charging-mode-type">
+		<item-type>String</item-type>
+		<label>Charging Mode</label>
+		<description>The current charging mode of the device</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Boost</option>
+				<option value="1">Fast</option>
+				<option value="2">Eco</option>
+				<option value="3">Eco+</option>
+				<option value="4">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zappi-status-type">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>The current status of the device</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Starting</option>
+				<option value="1">Waiting for Export</option>
+				<option value="2">Demand Side Response</option>
+				<option value="3">Diverting</option>
+				<option value="4">Boosting</option>
+				<option value="5">Charge Complete</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plug-status-type">
+		<item-type>String</item-type>
+		<label>Plug Status</label>
+		<description>The current plug status of the device</description>
+		<state readOnly="true">
+			<options>
+				<option value="A">EV Disconnected</option>
+				<option value="B1">Awaiting Surplus</option>
+				<option value="B2">Charge Complete</option>
+				<option value="C1">Transitory - unknown</option>
+				<option value="C2">Charging Max Power</option>
+				<option value="F">Fault/Restart</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="eddi-status-type">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>The current status of the device</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Starting</option>
+				<option value="1">Awaiting Surplus</option>
+				<option value="3">Diverting</option>
+				<option value="4">Boosting</option>
+				<option value="5">Max temp reached</option>
+				<option value="6">Stopped</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="command-tries-type">
+		<item-type>Number</item-type>
+		<label>Command Status/Retries</label>
+		<description>0-10 Trying, 253 Acked and Failed, 254 Acked and OK, 255 No command has ever been sent</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="diverter-priority-command">
+		<item-type>Number</item-type>
+		<label>Diverter Priority</label>
+		<description>The diverter priority</description>
+		<state pattern="%d" min="1" max="10" step="1"/>
+	</channel-type>
+
+	<channel-type id="diverter-priority-type">
+		<item-type>Number</item-type>
+		<label>Diverter Priority</label>
+		<description>The diverter priority</description>
+		<state pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="heater-priority-type">
+		<item-type>Number</item-type>
+		<label>Heater Priority</label>
+		<description>The priority heater</description>
+		<state readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="minimum-green-level-type">
+		<item-type>Number</item-type>
+		<label>Minimum Green Level</label>
+		<description>The minimum percentage of green energy to allow charging</description>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="boost-end-time-type">
+		<item-type>String</item-type>
+		<label>Boost End Time</label>
+		<description>The time when the boost process should finish (HH:MM)</description>
+		<state readOnly="false" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="temperature1-type">
+		<item-type>Number</item-type>
+		<label>Tank 1 Temperature</label>
+		<description>Tank 2 temperature</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature2-type">
+		<item-type>Number</item-type>
+		<label>Tank 2 Temperature</label>
+		<description>Tank 2 temperature</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energy-transferred-type">
+		<item-type>Number</item-type>
+		<label>Energy Transferred</label>
+		<description>Energy Transferred</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="boost-remaining-type">
+		<item-type>Number</item-type>
+		<label>Boost Remaining</label>
+		<description>Boost time remaining (s)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="heater-name1-type">
+		<item-type>String</item-type>
+		<label>Heater 1 name</label>
+		<description>Heater 1 name</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="heater-name2-type">
+		<item-type>String</item-type>
+		<label>Heater 2 name</label>
+		<description>Heater 2 name</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="active-heater-type">
+		<item-type>Number</item-type>
+		<label>Active heater</label>
+		<description>Active Heater</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="boost-mode-type">
+		<item-type>String</item-type>
+		<label>Boost Mode</label>
+		<description>Boost Mode</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
