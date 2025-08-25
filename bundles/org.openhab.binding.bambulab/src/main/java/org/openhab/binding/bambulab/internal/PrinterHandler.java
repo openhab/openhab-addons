@@ -220,10 +220,11 @@ public class PrinterHandler extends BaseBridgeHandler
         }
         try {
             var parse = LocalDateTime.parse(validTill);
-            if (parse.isBefore(now())) {
+            var now = now();
+            if (parse.isBefore(now)) {
                 throw new InitializationException(CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired");
             }
-            var duration = between(now().toInstant(UTC), parse.toInstant(UTC));
+            var duration = between(now.toInstant(UTC), parse.toInstant(UTC));
             validateAccessCodeSchedule = scheduler.schedule(
                     () -> updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired"),
                     duration.getSeconds(), SECONDS);
