@@ -225,9 +225,16 @@ public class PrinterHandler extends BaseBridgeHandler
                 throw new InitializationException(CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired");
             }
             var duration = between(now.toInstant(UTC), parse.toInstant(UTC));
-            validateAccessCodeSchedule = scheduler.schedule(
-                    () -> updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired"),
-                    duration.getSeconds(), SECONDS);
+            try {
+                validateAccessCodeSchedule = scheduler
+                        .schedule(
+                                () -> updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                                        "@text/printer.handler.init.accessCodeExpired"),
+                                duration.getSeconds(), SECONDS);
+            } catch (RejectedExecutionException ex) {
+                logger.debug("Task was rejected", ex);
+                throw new InitializationException(CONFIGURATION_ERROR, ex);
+            }
         } catch (DateTimeParseException e) {
             logger.debug("Invalid access code till date: {}", validTill, e);
         }
