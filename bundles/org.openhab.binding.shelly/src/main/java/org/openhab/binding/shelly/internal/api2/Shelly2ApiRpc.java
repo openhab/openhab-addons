@@ -112,6 +112,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket();
     private @Nullable Shelly2AuthChallenge authInfo;
 
+    // Plus devices support up to 3 scripts, Pro devices up to 10
+    // We need to find a free script id when uploading our script
+    // We want to limit script ids being checked, so define a max id
+    private static final int MAX_SCRIPT_ID = 15;
+
     /**
      * Regular constructor - called by Thing handler
      *
@@ -432,9 +437,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (!install) {
                 if (ourId != -1) {
                     startScript(ourId, false);
-                    enableScript(script, false);
+                    enableScript(script, ourId, false);
                     deleteScript(ourId);
-                    logger.debug("{}: Script {} was disabledd, id={}", thingName, script, ourId);
+                    logger.debug("{}: Script {} was disabled, id={}", thingName, script, ourId);
                 }
                 return;
             }
@@ -491,13 +496,24 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (upload) {
                 logger.debug("{}: Script will be installed...", thingName);
 
-                // Create new script, get id
-                ShellyScriptResponse rsp = apiRequest(
-                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withName(script),
-                        ShellyScriptResponse.class);
-                ourId = rsp.id;
-                logger.debug("{}: Script has been created, id={}", thingName, ourId);
-                upload = true;
+                if (ourId == -1) {
+                    // find free script id
+                    ourId = 0;
+                    for (ourId = 1; ourId <= MAX_SCRIPT_ID && testScriptId(scriptList, ourId); ourId++) {
+                    }
+                }
+                if (ourId <= MAX_SCRIPT_ID) {
+                    // Create new script, get id
+                    ShellyScriptResponse rsp = apiRequest(new Shelly2RpcRequest()
+                            .withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withId(ourId).withName(script),
+                            ShellyScriptResponse.class);
+                    ourId = rsp.id;
+                    logger.debug("{}: Script has been created, id={}", thingName, ourId);
+                    upload = true;
+                } else {
+                    logger.debug("{}: Too many scripts installed on this device", thingName);
+                    upload = false;
+                }
             }
 
             if (upload) {
@@ -518,7 +534,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 } while (processed < length);
                 running = false;
             }
-            if (enableScript(script, true) && upload) {
+            if (enableScript(script, ourId, true) && upload) {
                 logger.info("{}: Script {} was {} installed successful", thingName, thingName, script);
             }
 
@@ -537,6 +553,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
     }
 
+    private boolean testScriptId(ShellyScriptListResponse scriptList, int id) {
+        for (ShellyScriptListEntry s : scriptList.scripts) {
+            if (s.id == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean startScript(int ourId, boolean start) {
         if (ourId != -1) {
             try {
@@ -550,9 +575,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return false;
     }
 
-    private boolean enableScript(String script, boolean enable) {
+    private boolean enableScript(String script, int scriptId, boolean enable) {
         try {
             Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
+            params.id = scriptId;
             params.config.name = script;
             params.config.enable = enable;
             apiRequest(SHELLYRPC_METHOD_SCRIPT_SETCONFIG, params, String.class);
