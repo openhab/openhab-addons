@@ -71,14 +71,12 @@ public class EvccBaseThingHandlerTest {
         protected void createChannel(@NonNull String thingKey, @NonNull ThingBuilder builder,
                 @NonNull JsonElement value) {
             createChannelCalled = true;
-            super.createChannel(thingKey, builder, value);
         }
 
         @Override
         protected void setItemValue(@NonNull ItemTypeUnit itemTypeUnit, @NonNull ChannelUID channelUID,
                 @NonNull JsonElement value) {
             setItemValueCalled = true;
-            super.setItemValue(itemTypeUnit, channelUID, value);
         }
 
         @Override
