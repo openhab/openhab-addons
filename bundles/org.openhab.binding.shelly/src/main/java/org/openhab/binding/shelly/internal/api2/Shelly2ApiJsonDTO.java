@@ -995,6 +995,7 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2ConfigParms {
+        public Integer id;
         public String name;
         public Boolean enable;
         public String server;

@@ -428,7 +428,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (!install) {
                 if (ourId != -1) {
                     startScript(ourId, false);
-                    enableScript(script, false);
+                    enableScript(script, false, ourId);
                     deleteScript(ourId);
                     logger.debug("{}: Script {} was disabledd, id={}", thingName, script, ourId);
                 }
@@ -514,7 +514,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 } while (processed < length);
                 running = false;
             }
-            if (enableScript(script, true) && upload) {
+            if (enableScript(script, true, ourId) && upload) {
                 logger.info("{}: Script {} was {} installed successful", thingName, thingName, script);
             }
 
@@ -546,11 +546,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return false;
     }
 
-    private boolean enableScript(String script, boolean enable) {
+    private boolean enableScript(String script, boolean enable, Integer scriptId) {
         try {
             Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
             params.config.name = script;
             params.config.enable = enable;
+            params.id = scriptId;
             apiRequest(SHELLYRPC_METHOD_SCRIPT_SETCONFIG, params, String.class);
             return true;
         } catch (ShellyApiException e) {
