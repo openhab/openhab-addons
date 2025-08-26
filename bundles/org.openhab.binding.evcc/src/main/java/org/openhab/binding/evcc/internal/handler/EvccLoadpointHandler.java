@@ -61,7 +61,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL() + API_PATH_LOADPOINTS + "/" + (index + 1);
-            JsonObject stateOpt = handler.getCachedEvccState();
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
@@ -110,11 +110,11 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         version = Utils.convertVersionStringToIntArray(state.get("version").getAsString().split(" ")[0]);
         state = state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
         modifyJSON(state);
-        super.updateFromEvccState(state);
+        super.updateStatesFromApiResponse(state);
     }
 
     private void modifyJSON(JsonObject state) {

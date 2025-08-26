@@ -46,7 +46,7 @@ public class EvccPvHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState();
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
@@ -58,9 +58,9 @@ public class EvccPvHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         state = state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
-        super.updateFromEvccState(state);
+        super.updateStatesFromApiResponse(state);
     }
 
     @Override

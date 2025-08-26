@@ -66,9 +66,9 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         state = state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
-        super.updateFromEvccState(state);
+        super.updateStatesFromApiResponse(state);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL() + API_PATH_VEHICLES;
-            JsonObject stateOpt = handler.getCachedEvccState();
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;

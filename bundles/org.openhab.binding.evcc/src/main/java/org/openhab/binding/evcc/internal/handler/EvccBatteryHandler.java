@@ -46,7 +46,7 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState();
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
@@ -58,10 +58,10 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         state = state.has(JSON_MEMBER_BATTERY) ? state.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject()
                 : new JsonObject();
-        super.updateFromEvccState(state);
+        super.updateStatesFromApiResponse(state);
     }
 
     @Override

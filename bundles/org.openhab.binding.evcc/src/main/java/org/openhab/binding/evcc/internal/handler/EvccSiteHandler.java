@@ -66,11 +66,11 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         if (state.has("gridConfigured")) {
             modifyJSON(state);
         }
-        super.updateFromEvccState(state);
+        super.updateStatesFromApiResponse(state);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL();
-            JsonObject state = handler.getCachedEvccState();
+            JsonObject state = handler.getCachedEvccState().deepCopy();
             if (state.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
