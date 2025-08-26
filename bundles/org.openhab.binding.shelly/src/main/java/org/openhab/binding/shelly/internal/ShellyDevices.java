@@ -680,5 +680,7 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
             Map.entry(THING_TYPE_SHELLYBLUHT, 1), //
             Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
+            Map.entry(THING_TYPE_SHELLYBLUMOTION, 0), // button is iside the housing
+            Map.entry(THING_TYPE_SHELLYBLUDISTANCE, 0), // button is iside the housing
             Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2));
 }

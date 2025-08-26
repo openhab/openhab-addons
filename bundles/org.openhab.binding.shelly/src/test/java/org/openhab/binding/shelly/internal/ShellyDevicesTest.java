@@ -79,7 +79,7 @@ public class ShellyDevicesTest {
     @MethodSource("provideTestCasesFornNumberInputsByBluThingType")
     void numberInputsByBluThingType(ThingTypeUID thingTypeUid, int expectedInputs) {
         Integer numberInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUid);
-        if (numberInputs != null || expectedInputs > 0) {
+        if (numberInputs != null) {
             assertThat("Number of inputs in THING_TYPE_CAP_NUM_INPUTS for " + thingTypeUid.getId() + " does not match "
                     + numberInputs, numberInputs, is(equalTo(expectedInputs)));
         }

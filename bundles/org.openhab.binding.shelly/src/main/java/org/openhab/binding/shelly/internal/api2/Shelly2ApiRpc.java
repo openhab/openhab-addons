@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_CAP_NUM_METERS;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
@@ -678,13 +679,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onNotifyEvent(Shelly2RpcNotifyEvent message) throws ShellyApiException {
-        logger.debug("{}: NotifyEvent  received: {}", thingName, gson.toJson(message));
+    public void onNotifyEvent(String eventJSON) throws ShellyApiException {
+        logger.debug("{}: NotifyEvent  received: {}", thingName, eventJSON);
         ShellyDeviceProfile profile = getProfile();
 
         getThing().incProtMessages();
         getThing().restartWatchdog();
 
+        Shelly2RpcNotifyEvent message = fromJson(gson, eventJSON, Shelly2RpcNotifyEvent.class);
         for (Shelly2NotifyEvent e : message.params.events) {
             switch (e.event) {
                 case SHELLY2_EVENT_BTNUP:

@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,9 +32,9 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorState;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
+import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
@@ -160,8 +160,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public void onNotifyEvent(Shelly2RpcNotifyEvent message) {
-        logger.trace("{}: ShellyEvent received: {}", thingName, gson.toJson(message));
+    public void onNotifyEvent(String eventJSON) {
+        logger.trace("{}: ShellyEvent received: {}", thingName, eventJSON);
 
         ShellyBluHandler t = (ShellyBluHandler) thing;
         if (t == null) {
@@ -182,11 +182,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                 t.restartWatchdog();
             }
 
+            Shelly2RpcNotifyEvent message = fromJson(gson, eventJSON, Shelly2RpcNotifyEvent.class);
             for (Shelly2NotifyEvent e : message.params.events) {
                 String event = getString(e.event);
                 if (event.startsWith(SHELLY2_EVENT_BLUPREFIX)) {
                     logger.debug("{}: BLU event {} received from address {}, pid={} (JSON={})", thingName, event,
-                            getString(e.blu.addr), getInteger(e.blu.pid), gson.toJson(e));
+                            getString(e.blu.addr), getInteger(e.blu.pid), eventJSON);
                     if (e.blu.pid != null) {
                         int pid = e.blu.pid;
                         if (lastPid != -1 && pid < (lastPid - PID_CYCLE_TRESHHOLD)) {
@@ -322,7 +323,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         updated |= ShellyComponents.updateSensors(getThing(), deviceStatus);
                         break;
                     default:
-                        super.onNotifyEvent(message);
+                        super.onNotifyEvent(eventJSON);
                 }
             }
         } catch (ShellyApiException e) {
@@ -357,12 +358,17 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     private String getFirmwareVersion(Long firmware) {
+        // BTHome knows a 24 and 32 bit format. I want to strip off the first digit on 24 bit
+        // 32-bit: 0x01001700 -> 1.0.23.0 - GA of 1.0.23
+        // 32-bit: 0x01001605 -> 1.0.22.4 - rc4 of 1.0.22
+        // 24-bit: 0x00010204 -> 0.1.2.4 -> 1.2.4
         int digit4 = (int) (firmware & 0x000000FF);
         int digit3 = (int) (firmware & 0x0000FF00) >> 8;
         int digit2 = (int) (firmware & 0x00FF0000) >> 16;
         int digit1 = (int) (firmware & 0xFF000000) >> 24;
-        String strFirmware = digit1 > 0 ? digit1 + "." + digit2 + "." + digit3 + "." + digit4
-                : digit1 + "." + digit2 + "." + digit3;
+        String strFirmware = digit1 > 0 ? //
+                digit1 + "." + digit2 + "." + digit3 + "." + digit4 : // 32bit
+                digit2 + "." + digit3 + "." + digit4; // 24 bit
         logger.debug("{}: Detected firmware version: {}", thingName, strFirmware);
         return strFirmware;
     }
