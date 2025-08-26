@@ -115,7 +115,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     // Plus devices support up to 3 scripts, Pro devices up to 10
     // We need to find a free script id when uploading our script
     // We want to limit script ids being checked, so define a max id
-    private static int MAX_SCRIPT_ID = 15;
+    private static final int MAX_SCRIPT_ID = 15;
 
     /**
      * Regular constructor - called by Thing handler
