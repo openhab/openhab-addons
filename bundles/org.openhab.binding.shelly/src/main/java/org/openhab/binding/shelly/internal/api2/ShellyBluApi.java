@@ -169,7 +169,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             return;
         }
 
-        boolean updated = false;
         try {
             ShellyDeviceProfile profile = getProfile();
 
@@ -314,13 +313,13 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                         }
                                         deviceStatus.inputs.set(bttnIdx, input);
                                     } else {
-                                        logger.debug("{}: Unknown Button event", thingName);
+                                        logger.debug("{}: Unknown Button event {}", thingName, e.blu.buttons[bttnIdx]);
                                     }
                                 }
                             }
                         }
-                        updated |= ShellyComponents.updateDeviceStatus(t, deviceStatus);
-                        updated |= ShellyComponents.updateSensors(getThing(), deviceStatus);
+                        ShellyComponents.updateDeviceStatus(t, deviceStatus);
+                        ShellyComponents.updateSensors(getThing(), deviceStatus);
                         break;
                     default:
                         super.onNotifyEvent(eventJSON);
@@ -329,8 +328,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         } catch (ShellyApiException e) {
             logger.debug("{}: Unable to process event", thingName, e);
             t.incProtErrors();
-        }
-        if (updated) {
         }
     }
 
