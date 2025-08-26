@@ -590,7 +590,6 @@ public class ShellyChannelDefinitions {
         // In this case create both channels, also if only one is included in the first packet
         if (sdata.distance != null || profile.isDistance) {
             addChannel(thing, newChannels, sdata.distance != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE);
-
         }
 
         // Gas

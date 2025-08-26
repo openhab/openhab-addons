@@ -263,7 +263,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;
     public static final int DIGITS_ROTATION = 1;
-    public static final int DIGITS_DISTANCE = 2;
+    public static final int DIGITS_DISTANCE = 0;
 
     public static final int SHELLY_API_TIMEOUT_MS = 10000;
     public static final int UPDATE_STATUS_INTERVAL_SECONDS = 3; // check for updates every x sec

@@ -230,8 +230,8 @@ public class Shelly2RpcSocket {
      */
     @OnWebSocketMessage
     public void onText(Session session, String receivedMessage) {
+        Shelly2RpctInterface handler = websocketHandler;
         try {
-            Shelly2RpctInterface handler = websocketHandler;
             Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
             logger.trace("{}: Inbound Rpc message: {}", thingName, receivedMessage);
             if (handler != null) {

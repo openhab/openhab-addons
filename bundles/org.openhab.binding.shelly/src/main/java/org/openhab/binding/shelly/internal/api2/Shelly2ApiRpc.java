@@ -682,11 +682,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void onNotifyEvent(String eventJSON) throws ShellyApiException {
         logger.debug("{}: NotifyEvent  received: {}", thingName, eventJSON);
         ShellyDeviceProfile profile = getProfile();
+        Shelly2RpcNotifyEvent message = fromJson(gson, eventJSON, Shelly2RpcNotifyEvent.class);
 
         getThing().incProtMessages();
         getThing().restartWatchdog();
 
-        Shelly2RpcNotifyEvent message = fromJson(gson, eventJSON, Shelly2RpcNotifyEvent.class);
         for (Shelly2NotifyEvent e : message.params.events) {
             switch (e.event) {
                 case SHELLY2_EVENT_BTNUP:

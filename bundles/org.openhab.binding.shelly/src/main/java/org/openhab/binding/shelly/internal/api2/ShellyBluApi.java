@@ -171,9 +171,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
 
         try {
             ShellyDeviceProfile profile = getProfile();
+            Shelly2RpcNotifyEvent message = fromJson(gson, eventJSON, Shelly2RpcNotifyEvent.class);
 
             t.incProtMessages();
-
             if (!connected) {
                 connected = true;
                 t.setThingOnline();
@@ -181,7 +181,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                 t.restartWatchdog();
             }
 
-            Shelly2RpcNotifyEvent message = fromJson(gson, eventJSON, Shelly2RpcNotifyEvent.class);
             for (Shelly2NotifyEvent e : message.params.events) {
                 String event = getString(e.event);
                 if (event.startsWith(SHELLY2_EVENT_BLUPREFIX)) {
@@ -312,8 +311,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                                     e.blu.pid);
                                         }
                                         deviceStatus.inputs.set(bttnIdx, input);
-                                    } else {
-                                        logger.debug("{}: Unknown Button event {}", thingName, e.blu.buttons[bttnIdx]);
                                     }
                                 }
                             }
