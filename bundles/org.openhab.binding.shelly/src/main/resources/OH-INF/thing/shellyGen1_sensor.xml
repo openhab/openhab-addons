@@ -619,7 +619,7 @@
 	</channel-type>
 
 	<channel-type id="sensorDistance">
-		<item-type unitHint="m">Number:Length</item-type>
+		<item-type unitHint="mm">Number:Length</item-type>
 		<label>@text/channel-type.shelly.sensorDistance.label</label>
 		<description>@text/channel-type.shelly.sensorDistance.description</description>
 		<category>Distance</category>

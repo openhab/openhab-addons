@@ -1856,7 +1856,7 @@ See notes on discovery of Shelly BLU devices above.
 
 | Group   | Channel       | Type     | read-only | Description                                                                         |
 | ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
-| sensors | distance      | Number   | yes       | Distance in m                                                                       |
+| sensors | distance      | Number   | yes       | Distance in mm                                                                      |
 |         | vibration     | Switch   | yes       | ON: Vibration detected                                                              |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |

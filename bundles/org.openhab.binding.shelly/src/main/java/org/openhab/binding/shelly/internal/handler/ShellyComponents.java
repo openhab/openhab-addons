@@ -18,6 +18,8 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
 
+import javax.measure.MetricPrefix;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -526,7 +528,7 @@ public class ShellyComponents {
             }
             if (sdata.distance != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE,
-                        toQuantityType(getDouble(sdata.distance * 1000.0), DIGITS_DISTANCE, SIUnits.METRE));
+                        toQuantityType(getDouble(sdata.distance), DIGITS_DISTANCE, MetricPrefix.MILLI(SIUnits.METRE)));
             }
             if (sdata.sensor != null && sdata.sensor.vibration != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
