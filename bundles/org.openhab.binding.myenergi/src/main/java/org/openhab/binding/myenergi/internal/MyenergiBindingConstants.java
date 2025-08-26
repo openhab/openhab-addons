@@ -110,9 +110,9 @@ public class MyenergiBindingConstants {
     public static final String EDDI_CHANNEL_CLAMP_POWER_1 = "clamp-power1";
     public static final String EDDI_CHANNEL_CLAMP_POWER_2 = "clamp-power2";
     public static final String EDDI_CHANNEL_CLAMP_POWER_3 = "clamp-power3";
-    public static final String EDDI_CHANNEL_CLAMP_NAME_1 = "clamp-pame1";
-    public static final String EDDI_CHANNEL_CLAMP_NAME_2 = "clamp-pame2";
-    public static final String EDDI_CHANNEL_CLAMP_NAME_3 = "clamp-pame3";
+    public static final String EDDI_CHANNEL_CLAMP_NAME_1 = "clamp-name1";
+    public static final String EDDI_CHANNEL_CLAMP_NAME_2 = "clamp-name2";
+    public static final String EDDI_CHANNEL_CLAMP_NAME_3 = "clamp-name3";
     public static final String EDDI_CHANNEL_ACTIVE_HEATER = "active-heater";
     public static final String EDDI_CHANNEL_HEATER_NAME_1 = "heater-name1";
     public static final String EDDI_CHANNEL_HEATER_NAME_2 = "heater-name2";

@@ -15,7 +15,7 @@ package org.openhab.binding.myenergi.internal.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MyenergiException} class is the parent of all Octopus Energy binding exceptions.
+ * The {@link MyenergiException} class is the parent of all myenergi binding exceptions.
  *
  * @author Rene Scherer - Initial contribution
  */

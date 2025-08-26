@@ -393,7 +393,7 @@
 	<channel-type id="temperature1-type">
 		<item-type>Number</item-type>
 		<label>Tank 1 Temperature</label>
-		<description>Tank 2 temperature</description>
+		<description>Tank 1 temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
