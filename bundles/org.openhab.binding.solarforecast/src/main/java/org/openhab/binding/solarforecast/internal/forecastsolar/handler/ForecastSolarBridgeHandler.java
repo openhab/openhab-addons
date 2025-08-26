@@ -22,12 +22,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
@@ -36,6 +39,7 @@ import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObj
 import org.openhab.binding.solarforecast.internal.forecastsolar.config.ForecastSolarBridgeConfiguration;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
@@ -60,18 +64,21 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
+    private static final String BASE_URL = "https://api.forecast.solar/";
     private static final int CALM_DOWN_TIME_MINUTES = 61;
 
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarBridgeHandler.class);
 
     private ForecastSolarBridgeConfiguration configuration = new ForecastSolarBridgeConfiguration();
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private Optional<PointType> homeLocation;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable PointType homeLocation;
     private Instant calmDownEnd = Instant.MIN;
 
-    protected List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
+    protected ScheduledExecutorService sequentialScheduler = ThreadPoolManager
+            .getPoolBasedSequentialScheduledExecutorService(BINDING_ID, null);
+    protected CopyOnWriteArrayList<ForecastSolarPlaneHandler> planes = new CopyOnWriteArrayList<>();
 
-    public ForecastSolarBridgeHandler(Bridge bridge, Optional<PointType> location) {
+    public ForecastSolarBridgeHandler(Bridge bridge, @Nullable PointType location) {
         super(bridge);
         homeLocation = location;
     }
@@ -84,45 +91,33 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     @Override
     public void initialize() {
         configuration = getConfigAs(ForecastSolarBridgeConfiguration.class);
-        PointType locationConfigured;
-
-        // handle location error cases
-        if (configuration.location.isBlank()) {
-            if (homeLocation.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/solarforecast.site.status.location-missing");
-                return;
-            } else {
-                locationConfigured = homeLocation.get();
-                // continue with openHAB location
-            }
-        } else {
+        if (!configuration.location.isBlank()) {
+            // if configuration location is set, it has precedence
             try {
-                locationConfigured = new PointType(configuration.location);
+                homeLocation = new PointType(configuration.location);
                 // continue with location from configuration
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
             }
         }
+        // handle location error cases
+        PointType localHomeLocation = homeLocation;
+        if (localHomeLocation == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/solarforecast.site.status.location-missing");
+            return;
+        }
 
         // update configuration with location
         Configuration editConfig = editConfiguration();
-        editConfig.put("location", locationConfigured.toString());
+        editConfig.put("location", localHomeLocation.toString());
         updateConfiguration(editConfig);
         configuration = getConfigAs(ForecastSolarBridgeConfiguration.class);
 
-        // update attached planes with changed parameters
-        planes.forEach(plane -> {
-            plane.setLocation(new PointType(configuration.location));
-            if (!configuration.apiKey.isBlank()) {
-                plane.setApiKey(configuration.apiKey);
-            }
-        });
-
         updateStatus(ThingStatus.UNKNOWN);
-        refreshJob = Optional
-                .of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));
+        refreshJob = sequentialScheduler.scheduleWithFixedDelay(this::updateData, 0, REFRESH_ACTUAL_INTERVAL,
+                TimeUnit.MINUTES);
     }
 
     @Override
@@ -134,7 +129,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
                 case CHANNEL_ENERGY_REMAIN:
                 case CHANNEL_ENERGY_TODAY:
                 case CHANNEL_POWER_ACTUAL:
-                    getData();
+                    updateData();
                     break;
                 case CHANNEL_POWER_ESTIMATE:
                 case CHANNEL_ENERGY_ESTIMATE:
@@ -144,10 +139,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         }
     }
 
-    /**
-     * Get data for all planes. Synchronized to protect plane list from being modified during update
-     */
-    protected synchronized void getData() {
+    protected void updateData() {
         if (planes.isEmpty()) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
                     "@text/solarforecast.site.status.no-planes");
@@ -164,10 +156,9 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         double energySum = 0;
         double powerSum = 0;
         double daySum = 0;
-        for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
+        for (Iterator<ForecastSolarPlaneHandler> planeIter = planes.iterator(); planeIter.hasNext();) {
             try {
-                ForecastSolarPlaneHandler sfph = iterator.next();
-                ForecastSolarObject fo = sfph.fetchData();
+                ForecastSolarObject fo = planeIter.next().getData();
                 ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
                 energySum += fo.getActualEnergyValue(now);
                 powerSum += fo.getActualPowerValue(now);
@@ -187,18 +178,20 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         }
     }
 
-    public synchronized void forecastUpdate() {
+    public void requestForecastUpdate() {
+        sequentialScheduler.execute(this::forecastUpdate);
+    }
+
+    protected void forecastUpdate() {
         if (planes.isEmpty()) {
             return;
         }
         TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<>();
         TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<>();
         List<SolarForecast> forecastObjects = new ArrayList<>();
-        for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
-            ForecastSolarPlaneHandler sfph = iterator.next();
-            forecastObjects.addAll(sfph.getSolarForecasts());
+        for (Iterator<ForecastSolarPlaneHandler> planeIter = planes.iterator(); planeIter.hasNext();) {
+            forecastObjects.addAll(planeIter.next().getSolarForecasts());
         }
-
         // bugfix: https://github.com/weymann/OH3-SolarForecast-Drops/issues/5
         // find common start and end time which fits to all forecast objects to avoid ambiguous values
         final Instant commonStart = Utils.getCommonStartTime(forecastObjects);
@@ -235,35 +228,56 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
 
     @Override
     public void dispose() {
-        refreshJob.ifPresent(job -> job.cancel(true));
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null) {
+            localRefreshJob.cancel(true);
+        }
     }
 
-    public synchronized void addPlane(ForecastSolarPlaneHandler sfph) {
+    public void addPlane(ForecastSolarPlaneHandler sfph) {
         logger.trace("Adding plane {}", sfph.getThing().getUID());
         planes.add(sfph);
-        // update passive PV plane with necessary data
-        sfph.setLocation(new PointType(configuration.location));
-        if (!configuration.apiKey.isBlank()) {
-            sfph.setApiKey(configuration.apiKey);
-        }
-        getData();
+        sequentialScheduler.execute(this::updateData);
     }
 
-    public synchronized void removePlane(ForecastSolarPlaneHandler sfph) {
+    public void removePlane(ForecastSolarPlaneHandler sfph) {
         logger.trace("Removing plane {}", sfph.getThing().getUID());
         planes.remove(sfph);
     }
 
     @Override
-    public synchronized List<SolarForecast> getSolarForecasts() {
+    public List<SolarForecast> getSolarForecasts() {
         List<SolarForecast> l = new ArrayList<SolarForecast>();
-        planes.forEach(entry -> {
-            l.addAll(entry.getSolarForecasts());
-        });
+        for (Iterator<ForecastSolarPlaneHandler> planeIter = planes.iterator(); planeIter.hasNext();) {
+            l.addAll(planeIter.next().getSolarForecasts());
+        }
         return l;
     }
 
     public void calmDown() {
         calmDownEnd = Utils.now().plus(CALM_DOWN_TIME_MINUTES, ChronoUnit.MINUTES);
+    }
+
+    public String getBaseUrl() {
+        String url = BASE_URL;
+        if (!configuration.apiKey.isBlank()) {
+            url += configuration.apiKey + SLASH;
+        }
+        return url + "estimate/" + location().getLatitude() + SLASH + location().getLongitude() + SLASH;
+    }
+
+    private PointType location() {
+        PointType localHomeLocation = homeLocation;
+        if (localHomeLocation == null) {
+            throw new IllegalStateException("Location is not set");
+        }
+        return localHomeLocation;
+    }
+
+    Map<String, String> queryParameters(Map<String, String> parameters) {
+        if (configuration.inverterKwp != Double.MAX_VALUE) {
+            parameters.put("inverter", String.valueOf(configuration.inverterKwp));
+        }
+        return parameters;
     }
 }

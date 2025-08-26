@@ -184,7 +184,12 @@ public class Utils {
      * @param service the persistence service to query
      * @return the total energy produced in kWh, empty if the item unit is not power or energy
      */
-    public static Optional<Double> getEnergyTillNow(String calculationItemName, QueryablePersistenceService service) {
+    public static Optional<Double> getEnergyTillNow(String calculationItemName,
+            @Nullable QueryablePersistenceService service) {
+        if (service == null) {
+            LOGGER.info("No persistence service available");
+            return Optional.empty();
+        }
         ZonedDateTime beginPeriodDT = ZonedDateTime.now(Utils.getClock()).truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime endPeriodDT = ZonedDateTime.now(Utils.getClock());
         FilterCriteria fc = new FilterCriteria();

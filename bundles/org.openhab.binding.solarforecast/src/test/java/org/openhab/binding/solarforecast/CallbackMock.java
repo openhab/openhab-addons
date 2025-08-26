@@ -80,6 +80,9 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
         seriesMap.put(channelUID.getAsString(), timeSeries);
+        timeSeries.getStates().forEachOrdered(entry -> {
+            // System.out.println(entry.timestamp() + " -> " + entry.state());
+        });
     }
 
     public TimeSeries getTimeSeries(String cuid) {
@@ -93,6 +96,18 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
         currentInfo = thingStatus;
+    }
+
+    public void waitForOnline() {
+        int count = 0;
+        while (currentInfo.getStatus() != ThingStatus.ONLINE && count < 10) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+            count++;
+        }
     }
 
     public ThingStatusInfo getStatus() {

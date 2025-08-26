@@ -15,13 +15,13 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 import static org.mockito.Mockito.mock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solarforecast.CallbackMock;
-import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
-import org.openhab.core.library.types.PointType;
-import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 /**
  * The {@link ForecastSolarPlaneMock} mocks Plane Handler for solar.forecast
@@ -32,15 +32,26 @@ import org.openhab.core.thing.internal.ThingImpl;
 @NonNullByDefault
 public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {
 
-    public ForecastSolarPlaneMock(ForecastSolarObject fso) {
-        super(new ThingImpl(SolarForecastBindingConstants.FORECAST_SOLAR_PLANE, new ThingUID("test", "plane")),
-                mock(HttpClient.class));
-        super.setCallback(new CallbackMock());
-        setLocation(PointType.valueOf("1.23,9.87"));
-        super.setForecast(fso);
+    public ForecastSolarPlaneMock(Thing thing, CallbackMock cm) {
+        super(thing, mock(HttpClient.class));
+        super.setCallback(cm);
     }
 
     public void updateForecast(ForecastSolarObject fso) {
         super.setForecast(fso);
+    }
+
+    @Override
+    public @Nullable ThingHandlerCallback getCallback() {
+        return super.getCallback();
+    }
+
+    @Override
+    public void updateConfiguration(Configuration config) {
+        super.updateConfiguration(config);
+    }
+
+    public String getURL() {
+        return super.buildUrl();
     }
 }
