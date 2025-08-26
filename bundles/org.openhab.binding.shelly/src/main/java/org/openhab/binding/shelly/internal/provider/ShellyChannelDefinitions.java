@@ -243,9 +243,9 @@ public class ShellyChannelDefinitions {
 
                 // BLU Remote
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_CHANNEL, "sensorChannel", ITEMT_NUMBER))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATION1, "sensorRotation", ITEMT_NUMBER))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATION2, "sensorRotation", ITEMT_NUMBER))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATION3, "sensorRotation", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATIONX, "sensorRotationX", ITEMT_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATIONY, "sensorRotationY", ITEMT_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATIONZ, "sensorRotationZ", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DIRECTION, "sensorDirection", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STEPS, "sensorSteps", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DISTANCE, "sensorDistance", ITEMT_DISTANCE))
@@ -611,9 +611,9 @@ public class ShellyChannelDefinitions {
         // BLU Remote
         if (profile.isRemote) {
             addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL);
-            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION1);
-            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION2);
-            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION3);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONX);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONY);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONZ);
             addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DIRECTION);
             addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STEPS);
         }

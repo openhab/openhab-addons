@@ -260,9 +260,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             if (e.blu.rotations.length == 1) { // BLU DW
                                 sensorData.accel.tilt = e.blu.rotations[0].intValue();
                             } else if (e.blu.rotations.length == 3) { // BLU Remote
-                                sensorData.rotation1 = getDouble(e.blu.rotations[0]);
-                                sensorData.rotation2 = getDouble(e.blu.rotations[1]);
-                                sensorData.rotation3 = getDouble(e.blu.rotations[2]);
+                                sensorData.rotationX = getDouble(e.blu.rotations[0]);
+                                sensorData.rotationY = getDouble(e.blu.rotations[1]);
+                                sensorData.rotationZ = getDouble(e.blu.rotations[2]);
                             }
                         }
                         if (e.blu.dimmer != null) {

@@ -1199,9 +1199,9 @@ public class Shelly1ApiJsonDTO {
         public Integer channel;
         public String direction;
         public Integer steps;
-        public Double rotation1;
-        public Double rotation2;
-        public Double rotation3;
+        public Double rotationX;
+        public Double rotationY;
+        public Double rotationZ;
         public Double distance;
     }
 

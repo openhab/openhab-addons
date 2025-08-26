@@ -505,14 +505,14 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
                         toQuantityType(getDouble(adc.voltage), 2, Units.VOLT));
             }
-            if (sdata.rotation1 != null) {
+            if (sdata.rotationX != null) {
                 // BLU Remote
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION1,
-                        toQuantityType(getDouble(sdata.rotation1.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION2,
-                        toQuantityType(getDouble(sdata.rotation2.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATION3,
-                        toQuantityType(getDouble(sdata.rotation3.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONX,
+                        toQuantityType(getDouble(sdata.rotationX.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONY,
+                        toQuantityType(getDouble(sdata.rotationY.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONZ,
+                        toQuantityType(getDouble(sdata.rotationZ.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
             }
             if (sdata.direction != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DIRECTION,

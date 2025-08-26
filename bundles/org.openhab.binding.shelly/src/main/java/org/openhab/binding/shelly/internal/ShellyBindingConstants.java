@@ -123,9 +123,9 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_SLEEPTIME = "sensorSleepTime";
     public static final String CHANNEL_SENSOR_ALARM_STATE = "alarmState";
     public static final String CHANNEL_SENSOR_ERROR = "lastError";
-    public static final String CHANNEL_SENSOR_ROTATION1 = "rotation1"; // BLU Remote
-    public static final String CHANNEL_SENSOR_ROTATION2 = "rotation2"; // BLU Remote
-    public static final String CHANNEL_SENSOR_ROTATION3 = "rotation3"; // BLU Remote
+    public static final String CHANNEL_SENSOR_ROTATIONX = "rotationX"; // BLU Remote
+    public static final String CHANNEL_SENSOR_ROTATIONY = "rotationY"; // BLU Remote
+    public static final String CHANNEL_SENSOR_ROTATIONZ = "rotationZ"; // BLU Remote
     public static final String CHANNEL_SENSOR_CHANNEL = "channel"; // BLU Remote
     public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
     public static final String CHANNEL_SENSOR_DIRECTION = "direction"; // BLU Remote

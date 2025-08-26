@@ -1006,6 +1006,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected String mapValue(Map<String, String> map, String key) {
+        if (key.isEmpty()) {
+            return "";
+        }
+
         String value = map.getOrDefault(key, "");
         if (value.isEmpty()) {
             logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
