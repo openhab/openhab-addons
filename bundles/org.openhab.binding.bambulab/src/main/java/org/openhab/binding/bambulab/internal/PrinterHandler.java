@@ -620,6 +620,7 @@ public class PrinterHandler extends BaseBridgeHandler
 
     public void requestLoginCode(String username, String password) throws BambuApiException {
         var request = httpClient.POST(LOGIN_URL);
+        request.timeout(3, SECONDS);
         request.accept("application/json");
         request.content(new StringContentProvider("application/json",
                 jsonMapper.toJson(new BambuPasswordRequest(username, password)), UTF_8));
@@ -649,6 +650,7 @@ public class PrinterHandler extends BaseBridgeHandler
 
     public String requestAccessCode(String username, String code) throws BambuApiException {
         var request = httpClient.POST(LOGIN_URL);
+        request.timeout(3, SECONDS);
         request.accept("application/json");
         request.content(new StringContentProvider("application/json",
                 jsonMapper.toJson(new BambuCodeRequest(username, code)), UTF_8));

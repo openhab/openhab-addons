@@ -14,6 +14,7 @@ package org.openhab.binding.bambulab.internal;
 
 import java.io.Serial;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig;
@@ -21,6 +22,7 @@ import pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class BambuApiException extends Exception {
     @Serial
     private static final long serialVersionUID = 1L;
