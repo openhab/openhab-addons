@@ -52,6 +52,10 @@ public class StateUtil {
         return value == null ? UnDefType.NULL : new QuantityType<>(value, Units.BYTE);
     }
 
+    public static State qtyBytesOrNull(@Nullable Long value) {
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, Units.BYTE);
+    }
+
     public static State intOrNull(@Nullable Integer value) {
         return value == null ? UnDefType.NULL : new DecimalType(value.floatValue());
     }
