@@ -71,7 +71,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     protected final Map<String, Set<HaID>> componentsPerThingID = new HashMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new HashMap<>();
     protected final Map<String, DiscoveryResult> allResults = new HashMap<>();
-    private final Set<ThingUID> dirtyResults = new HashSet<>();
+    private Set<ThingUID> dirtyResults = new HashSet<>();
     private final Object discoveryStateLock = new Object();
 
     private @Nullable ScheduledFuture<?> future;
