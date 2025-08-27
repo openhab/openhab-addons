@@ -367,10 +367,10 @@ public class PrinterHandler extends BaseBridgeHandler
     }
 
     private void closeValidateAccessCodeSchedule() {
-        var local = validateAccessCodeSchedule;
-        validateAccessCodeSchedule = null;
-        if (local != null) {
-            local.cancel(true);
+        var validateAccessCodeSchedule = this.validateAccessCodeSchedule;
+        this.validateAccessCodeSchedule = null;
+        if (validateAccessCodeSchedule!= null) {
+            validateAccessCodeSchedule.cancel(true);
         }
     }
 
