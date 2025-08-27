@@ -23,9 +23,14 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.junit.jupiter.api.*;
-import org.openhab.core.thing.*;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
@@ -33,15 +38,22 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import io.micrometer.common.lang.Nullable;
+
 /**
  * The {@link EvccBaseThingHandlerTest} is responsible for testing the BaseThingHandler implementation
  *
  * @author Marcel Goerentz - Initial contribution
  */
+@NonNullByDefault
 public class EvccBaseThingHandlerTest {
 
-    private Thing thing;
-    private TestEvccBaseThingHandler handler;
+    @Nullable
+    private Thing thing = mock(Thing.class);
+    @Nullable
+    private ChannelTypeRegistry channelTypeRegistry = mock(ChannelTypeRegistry.class);
+    @Nullable
+    private TestEvccBaseThingHandler handler = new TestEvccBaseThingHandler(thing, channelTypeRegistry);
 
     // Concrete subclass for testing
     private static class TestEvccBaseThingHandler extends EvccBaseThingHandler {
@@ -57,37 +69,34 @@ public class EvccBaseThingHandlerTest {
         }
 
         @Override
-        protected void updateThing(@NonNull Thing thing) {
+        protected void updateThing(Thing thing) {
             updateThingCalled = true;
         }
 
         @Override
-        protected void updateStatus(@NonNull ThingStatus status) {
+        protected void updateStatus(ThingStatus status) {
             lastUpdatedStatus = status;
             updateStatusCalled = true;
         }
 
         @Override
-        protected void createChannel(@NonNull String thingKey, @NonNull ThingBuilder builder,
-                @NonNull JsonElement value) {
+        protected void createChannel(String thingKey, ThingBuilder builder, JsonElement value) {
             createChannelCalled = true;
         }
 
         @Override
-        protected void setItemValue(@NonNull ItemTypeUnit itemTypeUnit, @NonNull ChannelUID channelUID,
-                @NonNull JsonElement value) {
+        protected void setItemValue(ItemTypeUnit itemTypeUnit, ChannelUID channelUID, JsonElement value) {
             setItemValueCalled = true;
         }
 
         @Override
-        public void prepareApiResponseForChannelStateUpdate(@NonNull JsonObject state) {
+        public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
             prepareApiResponseForChannelStateUpdateCalled = true;
             super.updateStatesFromApiResponse(state);
         }
 
-        @NonNull
         @Override
-        public JsonObject getStateFromCachedState(@NonNull JsonObject state) {
+        public JsonObject getStateFromCachedState(JsonObject state) {
             return new JsonObject();
         }
     }
