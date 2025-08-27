@@ -33,11 +33,11 @@ public class GraalJSScriptEngineConfiguration {
     private static final String CFG_WRAPPER_ENABLED = "wrapperEnabled";
     private static final String CFG_DEPENDENCY_TRACKING_ENABLED = "dependencyTrackingEnabled";
 
-    public static final int INJECTION_DISABLED = 0;
-    public static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY = 2;
-    public static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 1;
+    private static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY = 1;
+    private static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_AND_TRANSFORMATIONS = 2;
+    private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 3;
 
-    private int injectionEnabled = 2;
+    private int injectionEnabled = INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     private boolean injectionCachingEnabled = true;
     private boolean wrapperEnabled = true;
     private boolean dependencyTrackingEnabled = true;
@@ -91,8 +91,16 @@ public class GraalJSScriptEngineConfiguration {
                 Boolean.class, true);
     }
 
-    public boolean isInjection(int type) {
-        return type == injectionEnabled;
+    public boolean isInjectionEnabledForUiBasedScript() {
+        return injectionEnabled >= INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY;
+    }
+
+    public boolean isInjectionEnabledForTransformations() {
+        return injectionEnabled >= INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_AND_TRANSFORMATIONS;
+    }
+
+    public boolean isInjectionEnabledForAllScripts() {
+        return injectionEnabled == INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     }
 
     public boolean isInjectionCachingEnabled() {
