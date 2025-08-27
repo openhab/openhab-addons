@@ -98,7 +98,7 @@ public class PrinterHandler extends BaseBridgeHandler
         implements PrinterWatcher.StateSubscriber, BambuHandler, ConnectionCallback {
     private static final String INTERNAL_COMMAND_PREFIX = ">";
     private static final String LOGIN_URL = "https://api.bambulab.com/v1/user-service/user/login";
-    public static final String ACCESS_CODE_VALID_TILL_PROPERTY = "accessCodeValidTill";
+    private static final String ACCESS_CODE_VALID_TILL_PROPERTY = "accessCodeValidTill";
     private final HttpClient httpClient;
     private final Gson jsonMapper;
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
