@@ -15,10 +15,15 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_ENERGY;
 
 import java.util.Collections;
 import java.util.Map;
@@ -32,7 +37,9 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -189,5 +196,74 @@ public class EvccBaseThingHandlerTest {
         assertFalse(handler.updateThingCalled);
         assertTrue(handler.updateStatusCalled); // Status is updated even if nothing else happens
         assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+    }
+
+    @Test
+    public void testHandleCommandWithNumberItemType() {
+        ChannelUID channelUID = new ChannelUID("test:thing:uid:battery-capacity");
+        RefreshType command = RefreshType.REFRESH;
+
+        JsonObject cachedState = new JsonObject();
+        cachedState.add("capacity", new JsonPrimitive(42.0));
+
+        ChannelType mockChannelType = mock(ChannelType.class);
+        when(mockChannelType.getItemType()).thenReturn(NUMBER_ENERGY);
+        when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
+
+        doReturn(cachedState).when(handler).getStateFromCachedState(any());
+        handler.bridgeHandler = mock(EvccBridgeHandler.class);
+
+        handler.handleCommand(channelUID, command);
+
+        assertTrue(handler.setItemValueCalled);
+    }
+
+    @Test
+    public void testHandleCommandWithRefreshTypeAndValidValue() {
+        ChannelUID channelUID = new ChannelUID("test:thing:uid:battery-capacity");
+        RefreshType command = RefreshType.REFRESH;
+
+        JsonObject cachedState = new JsonObject();
+        cachedState.add("capacity", new JsonPrimitive(42.0));
+
+        ChannelType mockChannelType = mock(ChannelType.class);
+        when(mockChannelType.getItemType()).thenReturn(NUMBER_ENERGY);
+        when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
+
+        doReturn(cachedState).when(handler).getStateFromCachedState(any());
+        handler.bridgeHandler = mock(EvccBridgeHandler.class);
+
+        handler.handleCommand(channelUID, command);
+
+        assertTrue(handler.setItemValueCalled);
+    }
+
+    @Test
+    public void testHandleCommandWithRefreshTypeAndMissingValue() {
+        ChannelUID channelUID = new ChannelUID("test:thing:uid:battery-capacity");
+        RefreshType command = RefreshType.REFRESH;
+
+        JsonObject cachedState = new JsonObject(); // no "capacity" key
+        doReturn(cachedState).when(handler).getStateFromCachedState(any());
+
+        handler.handleCommand(channelUID, command);
+
+        assertFalse(handler.setItemValueCalled);
+    }
+
+    @Test
+    public void testCreateChannelWithUnknownItemType() {
+        JsonElement value = new JsonPrimitive(5.5);
+        ThingBuilder builder = mock(ThingBuilder.class);
+
+        // Mock ChannelType mit "Unknown" als ItemType
+        ChannelType mockChannelType = mock(ChannelType.class);
+        when(mockChannelType.getItemType()).thenReturn(NUMBER_ENERGY);
+        when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
+
+        handler.createChannel("capacity", builder, value);
+
+        assertTrue(handler.createChannelCalled); // Flag gesetzt
+        verify(builder, never()).withChannel(any()); // Kein Channel sollte hinzugefügt werden
     }
 }
