@@ -19,14 +19,15 @@
 			<label>Inject Global Variables from Helper Library</label>
 			<description><![CDATA[
 			Import all variables from the openHAB JavaScript library for common services like items, things, actions, log, etc... <br>
-			If disabled, the openHAB JavaScript library can be imported manually using"<code>require('openhab')</code>.
+			If disabled, the openHAB JavaScript library can be imported manually using <code>require('openhab')</code>.
 			]]></description>
 			<options>
-				<option value="2">Auto injection enabled only for UI-based scripts (recommended)</option>
-				<option value="1">Auto injection enabled for all scripts, i.e. including file-based scripts</option>
+				<option value="3">Auto injection for all scripts, including file-based scripts and transformations</option>
+				<option value="2">Auto injection for UI-based scripts and transformations</option>
+				<option value="1">Auto injection only for UI-based scripts (recommended)</option>
 				<option value="0">Disable auto-injection and import manually instead</option>
 			</options>
-			<default>2</default>
+			<default>3</default>
 		</parameter>
 		<parameter name="wrapperEnabled" type="boolean" required="true" groupName="environment">
 			<label>Wrap UI-based scripts in Self-Executing Function</label>
