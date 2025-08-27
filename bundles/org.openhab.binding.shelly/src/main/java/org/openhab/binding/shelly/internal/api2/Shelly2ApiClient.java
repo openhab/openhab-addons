@@ -1010,8 +1010,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return "";
         }
 
-        String value = map.getOrDefault(key, "");
-        if (value.isEmpty()) {
+        String value = map.get(key);
+        if (value == null) {
             logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
                     map);
             return "";
@@ -1021,8 +1021,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected String mapIntValue(Map<Integer, String> map, Integer key) {
-        String value = map.getOrDefault(key, "");
-        if (value.isEmpty()) {
+        String value = map.get(key);
+        if (value == null) {
             logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
                     map);
             return "";
