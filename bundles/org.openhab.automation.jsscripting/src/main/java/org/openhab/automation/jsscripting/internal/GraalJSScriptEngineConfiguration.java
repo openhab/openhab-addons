@@ -37,7 +37,7 @@ public class GraalJSScriptEngineConfiguration {
     private static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_AND_TRANSFORMATIONS = 2;
     private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 3;
 
-    private int injectionEnabled = INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY;
+    private int injectionEnabled = INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     private boolean injectionCachingEnabled = true;
     private boolean wrapperEnabled = true;
     private boolean dependencyTrackingEnabled = true;

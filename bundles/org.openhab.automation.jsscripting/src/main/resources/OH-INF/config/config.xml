@@ -27,7 +27,7 @@
 				<option value="1">Auto injection only for UI-based scripts (recommended)</option>
 				<option value="0">Disable auto-injection and import manually instead</option>
 			</options>
-			<default>1</default>
+			<default>3</default>
 		</parameter>
 		<parameter name="wrapperEnabled" type="boolean" required="true" groupName="environment">
 			<label>Wrap UI-based scripts in Self-Executing Function</label>
