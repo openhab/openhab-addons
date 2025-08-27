@@ -55,7 +55,7 @@ To obtain an access token, you can use the `requestLoginCode` and `requestAccess
 2.  **Request Access Code**: Once you receive the verification code, use the `requestAccessCode` action with your Bambu Lab username (email) and the received 6-digit code. This will retrieve the access token and automatically update the printer thing's configuration with the new `accessCode` and set the `hostname` to `us.mqtt.bambulab.com`.
     ![Request Access Code](docs/RequestAccessCode.png)
 
-Alternatively, you can still use the `bambu.sh` script as described below:
+Alternatively, you can use the `bambu.sh` script as described below:
 
 To obtain an access token, you can use the provided `bambu.sh` script. This script simplifies the process of logging in and retrieving your access token.
 
