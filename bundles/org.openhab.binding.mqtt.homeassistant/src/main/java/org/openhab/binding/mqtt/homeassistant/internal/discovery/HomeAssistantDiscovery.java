@@ -246,12 +246,9 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
         componentsSet.add(haID);
 
-        // Reuse ArrayList but only allocate once per call
-        List<HaID> components = new ArrayList<>(componentsSet);
-
         // Convert components to short topics
-        List<String> topics = new ArrayList<>(components.size());
-        for (HaID component : components) {
+        List<String> topics = new ArrayList<>(componentsSet.size());
+        for (HaID component : componentsSet) {
             topics.add(component.toShortTopic());
         }
 
@@ -272,10 +269,10 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     }
 
     protected void publishResults() {
-        Set<ThingUID> toPublish = new HashSet<>();
+        Set<ThingUID> toPublish;
         synchronized (discoveryStateLock) {
-            toPublish.addAll(dirtyResults);
-            dirtyResults.clear();
+            toPublish = dirtyResults;
+            dirtyResults = new HashSet<>();
         }
         for (ThingUID uid : toPublish) {
             DiscoveryResult result = allResults.get(uid.toString());
