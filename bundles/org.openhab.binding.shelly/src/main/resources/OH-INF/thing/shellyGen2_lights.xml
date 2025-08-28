@@ -17,7 +17,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:rgbw2-gen2"/>
+		<config-description-ref uri="thing-type:shelly:rgbw-gen2"/>
 	</thing-type>
 
 	<channel-group-type id="rgbwpmColorControl">

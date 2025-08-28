@@ -1020,7 +1020,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return value;
     }
 
-    protected String mapIntValue(Map<Integer, String> map, Integer key) {
+    protected String mapIntValue(Map<Integer, String> map, int key) {
         String value = map.get(key);
         if (value == null) {
             logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,

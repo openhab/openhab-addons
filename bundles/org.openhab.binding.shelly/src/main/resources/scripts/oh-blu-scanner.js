@@ -5,7 +5,7 @@
  * 
  * @author Markus Michels - Initial contribution
  * @author Udo Hartmann - Add support for decoding multi button inputs
- * @author Igor Jason - Sensor parameter fixing, decoding of dimmer
+ * @author Igor Jasan - Sensor parameter fixing, decoding of dimmer
  */
 
 let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT", "SBDI", "SBRC"];
