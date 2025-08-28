@@ -67,7 +67,6 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     // TCP port 554 (Windows share / Linux samba)
     // TCP port 1025 (Xbox / MS-RPC)
     private Set<Integer> tcpServicePorts = Set.of(80, 548, 554, 1025);
-    private AtomicInteger scannedIPcount = new AtomicInteger(0);
     private @Nullable ExecutorService executorService = null;
     private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
     private final NetworkUtils networkUtils = new NetworkUtils();
@@ -155,12 +154,15 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         logger.debug("Starting Network Device Discovery");
 
         Map<String, Set<CidrAddress>> discoveryList = networkUtils.getNetworkIPsPerInterface();
+        // Track completion for all interfaces
+        final int totalInterfaces = discoveryList.size();
+        final AtomicInteger completedInterfaces = new AtomicInteger(0);
 
         for (String networkInterface : discoveryList.keySet()) {
             final Set<String> networkIPs = networkUtils.getNetworkIPs(
                     Objects.requireNonNull(discoveryList.get(networkInterface)), MAXIMUM_IPS_PER_INTERFACE);
             logger.debug("Scanning {} IPs on interface {} ", networkIPs.size(), networkInterface);
-            scannedIPcount.set(0);
+            final AtomicInteger scannedIPcount = new AtomicInteger(0);
 
             for (String ip : networkIPs) {
                 service.execute(() -> {
@@ -179,12 +181,18 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
                     try {
                         pd.getValue();
                     } catch (ExecutionException | InterruptedException e) {
-                        stopScan();
+                        logger.warn("Error scanning IP {} on interface {}: {}", ip, networkInterface, e.getMessage());
+                        // Do not stop the whole scan; just log and continue
                     }
                     int count = scannedIPcount.incrementAndGet();
                     if (count == networkIPs.size()) {
-                        logger.trace("Scan of {} IPs on interface {} successful", scannedIPcount, networkInterface);
-                        stopScan();
+                        logger.debug("Scan of {} IPs on interface {} completed", scannedIPcount.get(),
+                                networkInterface);
+                        // Only call stopScan after all interfaces are done
+                        if (completedInterfaces.incrementAndGet() == totalInterfaces) {
+                            logger.debug("All network interface scans completed. Stopping scan.");
+                            stopScan();
+                        }
                     }
                 });
             }
