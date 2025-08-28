@@ -23,7 +23,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -122,13 +124,33 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     public void finalDetectionResult(PresenceDetectionValue value) {
     }
 
+    private ExecutorService createDiscoveryExecutor() {
+        int cores = Runtime.getRuntime().availableProcessors();
+
+        return new ThreadPoolExecutor(cores * 2, // core pool size
+                cores * 8, // max pool size for bursts
+                60L, TimeUnit.SECONDS, // keep-alive for idle threads
+                new LinkedBlockingQueue<>(cores * 50), // bounded queue (e.g. 400 items if 8 cores)
+                new ThreadFactory() {
+                    private final AtomicInteger count = new AtomicInteger(1);
+
+                    @Override
+                    public Thread newThread(@Nullable Runnable r) {
+                        Thread t = new Thread(r, "NetworkDiscovery-" + count.getAndIncrement());
+                        t.setDaemon(true);
+                        return t;
+                    }
+                }, new ThreadPoolExecutor.CallerRunsPolicy() // backpressure when saturated
+        );
+    }
+
     /**
      * Starts the DiscoveryThread for each IP on each interface on the network
      */
     @Override
     protected void startScan() {
         if (executorService == null) {
-            executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+            executorService = createDiscoveryExecutor();
         }
         final ExecutorService service = executorService;
         if (service == null) {
