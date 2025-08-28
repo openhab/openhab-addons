@@ -521,6 +521,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         httpRequest(SHELLY_URL_SETTINGS + "?" + setting + "=" + value);
     }
 
+    @Override
+    public void loraSendData(int id, String data) throws ShellyApiException {
+        throw new IllegalArgumentException("API call loraSendData not implemented");
+    }
+
     /**
      * Set event callback URLs. Depending on the device different event types are supported. In fact all of them will be
      * redirected to the binding's servlet and act as a trigger to schedule a status update

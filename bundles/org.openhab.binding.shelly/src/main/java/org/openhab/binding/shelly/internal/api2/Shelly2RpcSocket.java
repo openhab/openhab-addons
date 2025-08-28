@@ -226,10 +226,12 @@ public class Shelly2RpcSocket {
      * @param receivedMessage Textial API message
      */
     @OnWebSocketMessage
-    public void onText(Session session, String receivedMessage) {
+    public void onText(Session session, String eventMessage) {
         try {
             Shelly2RpctInterface handler = websocketHandler;
-            Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
+            Shelly2RpcBaseMessage message = fromJson(gson, eventMessage, Shelly2RpcBaseMessage.class);
+            String receivedMessage = eventMessage;
+
             logger.trace("{}: Inbound Rpc message: {}", thingName, receivedMessage);
             if (handler != null) {
                 if (thingName.isEmpty()) {
@@ -248,6 +250,13 @@ public class Shelly2RpcSocket {
                         handler.onNotifyStatus(status);
                         return;
                     case SHELLYRPC_METHOD_NOTIFYEVENT:
+                        if (receivedMessage.contains("lora:")) {
+                            // The LoRa add-on doesn't report the data in the structured event format, but raw data
+                            // string modify JSON to avoid an exception, because data is a String and not a structure
+                            // Non-LoRa event, uses standard formal
+                            receivedMessage = eventMessage.replace("\"data\":\"", "\"lora\":\"");
+                        }
+
                         Shelly2RpcNotifyEvent events = fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class);
                         events.src = message.src;
                         if (events.params == null || events.params.events == null) {
@@ -267,7 +276,7 @@ public class Shelly2RpcSocket {
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            ShellyThingCreator.addBluThing(message.src, e.blu, thingTable);
+                                            ShellyThingCreator.addBluThing(getString(message.src), e.blu, thingTable);
                                         } else {
                                             logger.debug(
                                                     "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
@@ -288,7 +297,7 @@ public class Shelly2RpcSocket {
                         getString(message.src), receivedMessage);
             }
         } catch (ShellyApiException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), eventMessage);
         }
     }
 
