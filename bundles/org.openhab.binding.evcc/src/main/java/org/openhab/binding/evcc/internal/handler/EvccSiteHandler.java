@@ -27,6 +27,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -98,18 +99,24 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     private void modifyJSON(JsonObject state) {
         for (Map.Entry<String, JsonElement> entry : state.getAsJsonObject("grid").entrySet()) {
-            if (entry.getKey().equals("currents")) {
-                int phase = 1;
-                for (JsonElement value : entry.getValue().getAsJsonArray()) {
-                    state.add("gridCurrentL" + phase, value);
-                    phase++;
-                }
+            if ("currents".equals(entry.getKey())) {
+                addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Current");
+            } else if ("voltages".equals(entry.getKey())) {
+                addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Voltage");
             } else {
                 state.add("grid" + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
             }
         }
         state.remove("grid");
         state.remove("gridConfigured");
+    }
+
+    protected void addMeasurementDatapointsToState(JsonObject state, JsonArray values, String datapoint) {
+        int phase = 1;
+        for (JsonElement value : values) {
+            state.add("grid" + datapoint + "L" + phase, value);
+            phase++;
+        }
     }
 
     @Override

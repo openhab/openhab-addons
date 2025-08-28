@@ -29,6 +29,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -121,17 +122,23 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         JSON_KEYS.forEach((oldKey, newKey) -> {
             if (state.has(oldKey)) {
                 if (oldKey.equals("chargeCurrents")) {
-                    int phase = 1;
-                    for (JsonElement current : state.getAsJsonArray(oldKey)) {
-                        state.add("chargeCurrentL" + phase, current);
-                        phase++;
-                    }
+                    addMeasurementDatapointsToState(state, state.getAsJsonArray(oldKey), "Current");
+                } else if (oldKey.equals("chargeVoltages")) {
+                    addMeasurementDatapointsToState(state, state.getAsJsonArray(oldKey), "Voltage");
                 } else {
                     state.add(newKey, state.get(oldKey));
                 }
                 state.remove(oldKey);
             }
         });
+    }
+
+    protected void addMeasurementDatapointsToState(JsonObject state, JsonArray values, String datapoint) {
+        int phase = 1;
+        for (JsonElement value : values) {
+            state.add("charge" + datapoint + "L" + phase, value);
+            phase++;
+        }
     }
 
     @Override
