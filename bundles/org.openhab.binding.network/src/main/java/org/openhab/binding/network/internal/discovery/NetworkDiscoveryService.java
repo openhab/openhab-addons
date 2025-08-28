@@ -204,12 +204,15 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             return;
         }
 
+        service.shutdown(); // initiate shutdown
         try {
-            service.awaitTermination(PING_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+            if (!service.awaitTermination(PING_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
+                service.shutdownNow(); // force shutdown if still busy
+            }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Reset interrupt flag
+            service.shutdownNow();
+            Thread.currentThread().interrupt();
         }
-        service.shutdown();
         executorService = null;
     }
 
