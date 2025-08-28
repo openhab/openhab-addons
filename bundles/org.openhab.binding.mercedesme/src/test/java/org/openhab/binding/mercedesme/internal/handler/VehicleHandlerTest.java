@@ -243,7 +243,7 @@ class VehicleHandlerTest {
         assertEquals("0", updateListener.getResponse("test::bev:charge#error").toFullString(), "Charge Error");
 
         assertEquals("3.990000009536743 kWh",
-                updateListener.getResponse("test::bev:range#energy-to-target-soc").toFullString(),
+                updateListener.getResponse("test::bev:range#energy-to-max-soc").toFullString(),
                 "Energy to max SoC Update");
     }
 
@@ -394,8 +394,7 @@ class VehicleHandlerTest {
         assertEquals("3.4000000953674316 kWh",
                 updateListener.getResponse("test::hybrid:range#uncharged").toFullString(), "Battery Uncharged Update");
         assertEquals(UnDefType.NULL.toFullString(),
-                updateListener.getResponse("test::hybrid:range#energy-to-target-soc").toFullString(),
-                "Energy to Max SoC");
+                updateListener.getResponse("test::hybrid:range#energy-to-max-soc").toFullString(), "Energy to Max SoC");
         assertEquals("9.579999923706055 l", updateListener.getResponse("test::hybrid:range#tank-remain").toFullString(),
                 "Tank Remain Update");
         assertEquals("50.31999969482422 l", updateListener.getResponse("test::hybrid:range#tank-open").toFullString(),
@@ -694,7 +693,7 @@ class VehicleHandlerTest {
         updateListener.waitForUpdates();
 
         assertEquals("80 %", updateListener.getResponse("test::bev:charge#max-soc").toFullString(), "Max SoC init");
-        QuantityType<?> energy = (QuantityType<?>) updateListener.getResponse("test::bev:range#energy-to-target-soc");
+        QuantityType<?> energy = (QuantityType<?>) updateListener.getResponse("test::bev:range#energy-to-max-soc");
         assertEquals(3.990, energy.doubleValue(), 0.001, "Energy to max SoC init");
 
         // Partial update
@@ -712,7 +711,7 @@ class VehicleHandlerTest {
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
-        energy = (QuantityType<?>) updateListener.getResponse("test::bev:range#energy-to-target-soc");
+        energy = (QuantityType<?>) updateListener.getResponse("test::bev:range#energy-to-max-soc");
         assertEquals("90 %", updateListener.getResponse("test::bev:charge#max-soc").toFullString(), "Max SoC update");
         assertEquals(10.640, energy.doubleValue(), 0.001, "Energy to max SoC Update");
     }

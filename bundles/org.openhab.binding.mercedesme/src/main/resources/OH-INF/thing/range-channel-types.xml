@@ -50,12 +50,12 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="energy-to-target-soc">
+	<channel-type id="energy-to-max-soc">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy to Target SoC</label>
-		<description>Energy needed to reach target state of charge</description>
+		<label>Energy to Maximum SoC</label>
+		<description>Energy needed to reach maximum state of charge</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>

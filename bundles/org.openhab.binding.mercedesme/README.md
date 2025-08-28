@@ -398,7 +398,7 @@ All channels read-only.
 | soc                   | Number:Dimensionless |  Battery State of Charge        | X   | X      |            |
 | charged               | Number:Energy        |  Charged Battery Energy         | X   | X      |            |
 | uncharged             | Number:Energy        |  Uncharged Battery Energy       | X   | X      |            |
-| energy-to-target-soc  | Number:Energy        |  Energy to Target SoC           | X   | X      |            |
+| energy-to-max-soc     | Number:Energy        |  Energy to Maximum SoC          | X   | X      |            |
 | range-electric        | Number:Length        |  Electric Range                 | X   | X      |            |
 | radius-electric       | Number:Length        |  Electric Radius for Map        | X   | X      |            |
 | fuel-level            | Number:Dimensionless |  Fuel Level in Percent          |     | X      | X          |
@@ -432,7 +432,7 @@ States and controls are depending on your vehicle capabilities.
 | power               | Number:Power         |  Current Charging Power                | X    |       |
 | end-time            | DateTime             |  Estimated Charging End                | X    |       |
 | program             | Number               |  Selected Charge Program               | X    | X     |
-| max-soc             | Number:Dimensionless |  Charge Target SoC                     | X    | X     |
+| max-soc             | Number:Dimensionless |  Maximum State of Charge               | X    | X     |
 | auto-unlock         | Switch               |  Auto Unlock Coupler after charging    | X    | X     |
 
 #### Charge Flap Mapping

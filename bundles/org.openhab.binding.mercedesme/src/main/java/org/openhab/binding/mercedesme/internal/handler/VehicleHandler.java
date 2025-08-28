@@ -182,8 +182,9 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (accountHandler != null) {
-            accountHandler.unregisterVin(config.vin);
+        AccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler != null) {
+            localAccountHandler.unregisterVin(config.vin);
         }
         eventQueue.clear();
         super.dispose();

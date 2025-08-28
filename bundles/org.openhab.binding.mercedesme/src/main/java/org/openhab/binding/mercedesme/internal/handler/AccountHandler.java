@@ -147,8 +147,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             logger.debug("AccountHandler is disposed, skipping scheduleRefresh");
             return;
         }
-        if (refreshScheduler != null) {
-            refreshScheduler.cancel(false);
+        ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
+        if (localRefreshScheduler != null) {
+            localRefreshScheduler.cancel(false);
         }
         Instant nextSchedule = Instant.now().plus(delayInSeconds, ChronoUnit.SECONDS);
         logger.trace("Next schedule at {}", nextSchedule);
@@ -200,8 +201,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void dispose() {
         disposed = true;
-        if (refreshScheduler != null) {
-            refreshScheduler.cancel(false);
+        ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
+        if (localRefreshScheduler != null) {
+            localRefreshScheduler.cancel(false);
         }
         refreshScheduler = null;
         eventQueue.clear();
