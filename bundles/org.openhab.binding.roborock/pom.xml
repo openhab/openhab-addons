@@ -14,4 +14,12 @@
 
   <name>openHAB Add-ons :: Bundles :: Roborock Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.paho</groupId>
+      <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+      <version>1.2.5</version>
+    </dependency>
+  </dependencies>
+
 </project>

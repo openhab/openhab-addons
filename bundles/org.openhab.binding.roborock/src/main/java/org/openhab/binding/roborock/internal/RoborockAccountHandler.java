@@ -27,12 +27,18 @@ import java.util.HexFormat;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.zip.CRC32;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login;
@@ -58,16 +64,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.lifecycle.MqttClientConnectedListener;
-import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
-import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
-import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5ConnAckException;
-import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5DisconnectException;
-import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckReasonCode;
-import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 
 /**
  * The {@link RoborockAccountHandler} is responsible for handling commands, which are
@@ -76,7 +72,7 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
  * @author Paul Smedley - Initial contribution
  */
 @NonNullByDefault
-public class RoborockAccountHandler extends BaseBridgeHandler {
+public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCallbackExtended {
 
     private final Logger logger = LoggerFactory.getLogger(RoborockAccountHandler.class);
 
@@ -85,7 +81,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private final SchedulerTask initTask;
     private final SchedulerTask mqttConnectTask;
     private final RoborockWebTargets webTargets;
-    private @Nullable Mqtt5AsyncClient mqttClient;
+    private @Nullable MqttClient mqttClient;
     private String token = "";
     private String baseUri = "";
     private Rriot rriot = new Login().new Rriot();
@@ -279,7 +275,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             connectMqttClient();
             logger.debug("Bridge connected to MQTT");
             updateStatus(ThingStatus.ONLINE);
-        } catch (InterruptedException | RoborockException e) {
+        } catch (MqttException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.no-mqtt");
         }
@@ -291,102 +287,97 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         teardown(false);
     }
 
-    public void connectMqttClient() throws RoborockException, InterruptedException {
-        String mqttHost = "";
-        int mqttPort = 1883;
-        String mqttPassword = "";
+    public void connectMqttClient() throws MqttException {
         try {
             URI mqttURL = new URI(rriot.r.m);
-            mqttHost = mqttURL.getHost();
-            mqttPort = mqttURL.getPort();
             mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
-            mqttPassword = ProtocolUtils.md5Hex(rriot.s + ':' + rriot.k).substring(16);
-        } catch (URISyntaxException e) {
-            logger.error("Malformed mqtt URL");
-        }
+            String mqttPassword = ProtocolUtils.md5Hex(rriot.s + ':' + rriot.k).substring(16);
 
-        final MqttClientConnectedListener connectedListener = ctx -> {
-            String topic = "rr/m/o/" + rriot.u + "/" + ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10)
-                    + "/#";
-            this.mqttClient.subscribeWith().topicFilter(topic).callback(this::handleMessage).send()
-                    .whenComplete((subAck, error) -> {
-                        if (error == null) {
-                            logger.debug("Subscribed to topic {}", topic);
-                        } else {
-                            logger.debug("Unable to subscribe to {}", topic, error);
-                        }
-                    });
-        };
+            String serverURI = "ssl://" + mqttURL.getHost() + ":" + mqttURL.getPort();
+            String clientId = mqttUser;
 
-        final MqttClientDisconnectedListener disconnectListener = ctx -> {
-            boolean expectedShutdown = ctx.getSource() == MqttDisconnectSource.USER
-                    && ctx.getCause() instanceof Mqtt5DisconnectException;
-            // As the client already was disconnected, there's no need to do it again in disconnect() later
-            this.mqttClient = null;
-            if (!expectedShutdown) {
-                logger.debug("{}: MQTT disconnected (source {}): {}", getThing().getUID().getId(), ctx.getSource(),
-                        ctx.getCause().getMessage());
-                mqttConnectTask.cancel();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "MQTT disconnected (source " + ctx.getSource() + "): " + ctx.getCause().getMessage());
-            }
-        };
+            mqttClient = new MqttClient(serverURI, clientId, new MemoryPersistence());
+            mqttClient.setCallback(this);
 
-        final Mqtt5AsyncClient client = MqttClient.builder() //
-                .useMqttVersion5() //
-                .identifier(mqttUser) //
-                .simpleAuth() //
-                .username(mqttUser) //
-                .password(mqttPassword.getBytes()) //
-                .applySimpleAuth() //
-                .serverHost(mqttHost) //
-                .serverPort(mqttPort) //
-                .sslWithDefaultConfig() //
-                .addConnectedListener(connectedListener) //
-                .addDisconnectedListener(disconnectListener) //
-                .automaticReconnectWithDefaultConfig() //
-                .buildAsync();
+            MqttConnectOptions connOpts = new MqttConnectOptions();
+            connOpts.setCleanSession(false);
+            connOpts.setUserName(mqttUser);
+            connOpts.setPassword(mqttPassword.toCharArray());
+            connOpts.setAutomaticReconnect(true);
+            connOpts.setConnectionTimeout(60);
+            connOpts.setKeepAliveInterval(0);
 
-        try {
-            this.mqttClient = client;
-            client.connectWith().noSessionExpiry().cleanStart(false).send().get();
+            logger.debug("Connecting to MQTT broker at {}", serverURI);
+            mqttClient.connect(connOpts);
             logger.debug("Established MQTT connection.");
-        } catch (ExecutionException e) {
-            Throwable cause = e.getCause();
-            boolean isAuthFailure = cause instanceof Mqtt5ConnAckException connAckException
-                    && connAckException.getMqttMessage().getReasonCode() == Mqtt5ConnAckReasonCode.NOT_AUTHORIZED;
-            mqttConnectTask.cancel();
-            mqttConnectTask.schedule(280);
-            if (isAuthFailure) {
-                logger.debug("Authorization failure.");
-            }
-            throw new RoborockException(e);
+        } catch (URISyntaxException e) {
+            logger.error("Malformed MQTT URL", e);
+            throw new MqttException(e);
+        } catch (MqttException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.mqtt-login-fail");
+            throw e;
         }
     }
 
-    public void handleMessage(@Nullable Mqtt5Publish publish) {
-        if (publish == null || publish.getPayload().isEmpty()) {
-            logger.debug("handleMessage - empty publish received");
+    @Override
+    public void connectComplete(boolean reconnect, @Nullable String serverURI) {
+        logger.debug("MQTT connection established. Reconnect: {}, Server URI: {}", reconnect, serverURI);
+
+        // Subscribe to topics after a successful connection
+        try {
+            String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
+            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
+            mqttClient.subscribe(topic, 0);
+            logger.debug("Subscribed to topic {}", topic);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (MqttException e) {
+            logger.error("Failed to subscribe to MQTT topic after connection complete", e);
+        }
+    }
+
+    @Override
+    public void connectionLost(@Nullable Throwable cause) {
+        logger.warn("MQTT connection lost: {}. Automatic reconnect is enabled.", cause.getMessage());
+        // Additional logic can be placed here if specific actions are needed on disconnect
+    }
+
+    @Override
+    public void messageArrived(@Nullable String topic, @Nullable MqttMessage message) throws Exception {
+        byte[] payload = message.getPayload();
+        if (payload == null || payload.length == 0) {
+            logger.debug("Empty payload received on topic {}", topic);
             return;
         }
 
-        String receivedTopic = publish.getTopic().toString();
-        String destination = receivedTopic.substring(receivedTopic.lastIndexOf('/') + 1);
+        String destination = topic.substring(topic.lastIndexOf('/') + 1);
         logger.debug("Received MQTT message for device {}", destination);
 
-        // check list of child handlers and send message to the right one
+        // Check list of child handlers and send message to the right one
         RoborockVacuumHandler handler = childDevices.get(destination);
         if (handler != null) {
-            handler.handleMessage(publish.getPayloadAsBytes());
+            handler.handleMessage(payload);
         } else {
             logger.warn("Received MQTT message for unknown device destination: {}", destination);
         }
     }
 
+    @Override
+    public void deliveryComplete(@Nullable IMqttDeliveryToken token) {
+        logger.trace("MQTT message delivery complete.");
+    }
+
     public void disconnectMqttClient() {
-        Mqtt5AsyncClient client = this.mqttClient;
-        if (client != null) {
-            client.disconnect();
+        if (mqttClient != null) {
+            try {
+                if (mqttClient.isConnected()) {
+                    mqttClient.disconnect();
+                }
+                mqttClient.close();
+                logger.debug("MQTT client disconnected and closed.");
+            } catch (MqttException e) {
+                logger.error("Error while disconnecting MQTT client.", e);
+            }
         }
         this.mqttClient = null;
     }
@@ -419,18 +410,21 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String payload = gson.toJson(payloadMap);
         logger.trace("MQTT payload = {}", payload);
 
-        byte[] message = build(localKey, protocol, timestamp, payload.getBytes(StandardCharsets.UTF_8));
+        byte[] messageBytes = build(localKey, protocol, timestamp, payload.getBytes(StandardCharsets.UTF_8));
         // now send message via mqtt
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
-        if (this.mqttClient != null && this.mqttClient.getState().isConnected()) {
+        if (this.mqttClient != null && this.mqttClient.isConnected()) {
             logger.debug("Publishing {} message to {}", method, topic);
-            mqttClient.publishWith().topic(topic).qos(MqttQos.AT_LEAST_ONCE).payload(message).retain(false).send()
-                    .whenComplete((mqtt5Publish, throwable) -> {
-                        if (throwable != null) {
-                            logger.debug("mqtt publish failed");
-                        }
-                    });
-            return id;
+            try {
+                MqttMessage message = new MqttMessage(messageBytes);
+                message.setQos(1);
+                message.setRetained(false);
+                mqttClient.publish(topic, message);
+                return id;
+            } catch (MqttException e) {
+                logger.error("MQTT publish failed", e);
+                return -1;
+            }
         } else {
             logger.debug("Failed to publish {} message to {}, this.mqttClient == null", method, topic);
             return -1;
