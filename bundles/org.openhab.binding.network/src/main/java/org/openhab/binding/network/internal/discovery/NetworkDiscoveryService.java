@@ -16,7 +16,6 @@ import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -151,8 +150,10 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         if (service == null) {
             return;
         }
+
         removeOlderResults(getTimestampOfLastScan(), null);
         logger.debug("Starting Network Device Discovery");
+
         Map<String, Set<CidrAddress>> discoveryList = networkUtils.getNetworkIPsPerInterface();
 
         for (String networkInterface : discoveryList.keySet()) {
@@ -160,20 +161,21 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
                     Objects.requireNonNull(discoveryList.get(networkInterface)), MAXIMUM_IPS_PER_INTERFACE);
             logger.debug("Scanning {} IPs on interface {} ", networkIPs.size(), networkInterface);
             scannedIPcount.set(0);
-            for (String ip : networkIPs) {
-                final PresenceDetection pd = new PresenceDetection(this, scheduler, Duration.ofSeconds(2));
-                pd.setHostname(ip);
-                pd.setNetworkInterfaceNames(Set.of(networkInterface));
-                pd.setIOSDevice(true);
-                pd.setUseDhcpSniffing(false);
-                pd.setTimeout(PING_TIMEOUT);
-                // Ping devices
-                pd.setUseIcmpPing(true);
-                pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
-                // TCP devices
-                pd.setServicePorts(tcpServicePorts);
 
+            for (String ip : networkIPs) {
                 service.execute(() -> {
+                    PresenceDetection pd = presenceDetectorThreadLocal.get();
+
+                    // Reset per-IP fields
+                    pd.setHostname(ip);
+                    pd.setNetworkInterfaceNames(Set.of(networkInterface));
+                    pd.setIOSDevice(true);
+                    pd.setUseDhcpSniffing(false);
+                    pd.setTimeout(PING_TIMEOUT);
+                    pd.setUseIcmpPing(true);
+                    pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
+                    pd.setServicePorts(tcpServicePorts);
+
                     try {
                         pd.getValue();
                     } catch (ExecutionException | InterruptedException e) {
@@ -189,6 +191,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         }
         logger.debug("Finished Network Device Discovery");
     }
+
+    private final ThreadLocal<PresenceDetection> presenceDetectorThreadLocal = ThreadLocal
+            .withInitial(() -> new PresenceDetection(this, scheduler, Duration.ofSeconds(2)));
 
     @Override
     protected synchronized void stopScan() {
@@ -236,11 +241,8 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         };
         label += " (" + ip + ":" + tcpPort + ")";
 
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(PARAMETER_HOSTNAME, ip);
-        properties.put(PARAMETER_PORT, tcpPort);
         thingDiscovered(DiscoveryResultBuilder.create(createServiceUID(ip, tcpPort)).withTTL(DISCOVERY_RESULT_TTL)
-                .withProperties(properties).withLabel(label).build());
+                .withProperty(PARAMETER_HOSTNAME, ip).withProperty(PARAMETER_PORT, tcpPort).withLabel(label).build());
     }
 
     public static ThingUID createPingUID(String ip) {
@@ -256,8 +258,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     public void newPingDevice(String ip) {
         logger.trace("Found pingable network device with IP address {}", ip);
 
-        Map<String, Object> properties = Map.of(PARAMETER_HOSTNAME, ip);
         thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(DISCOVERY_RESULT_TTL)
-                .withProperties(properties).withLabel("Network Device (" + ip + ")").build());
+                .withProperty(PARAMETER_HOSTNAME, ip).withLabel("Network Device (" + ip + ")").build());
     }
 }
