@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -102,7 +101,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     @Deactivate
     protected void deactivate() {
         if (executorService != null) {
-            executorService.shutdown();
+            executorService.shutdownNow();
         }
         super.deactivate();
     }
@@ -126,20 +125,16 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
     private ExecutorService createDiscoveryExecutor() {
         int cores = Runtime.getRuntime().availableProcessors();
+        AtomicInteger count = new AtomicInteger(1);
 
         return new ThreadPoolExecutor(cores * 2, // core pool size
                 cores * 8, // max pool size for bursts
                 60L, TimeUnit.SECONDS, // keep-alive for idle threads
-                new LinkedBlockingQueue<>(cores * 50), // bounded queue (e.g. 400 items if 8 cores)
-                new ThreadFactory() {
-                    private final AtomicInteger count = new AtomicInteger(1);
-
-                    @Override
-                    public Thread newThread(@Nullable Runnable r) {
-                        Thread t = new Thread(r, "NetworkDiscovery-" + count.getAndIncrement());
-                        t.setDaemon(true);
-                        return t;
-                    }
+                new LinkedBlockingQueue<>(cores * 50), // bounded queue
+                r -> {
+                    Thread t = new Thread(r, "NetworkDiscovery-" + count.getAndIncrement());
+                    t.setDaemon(true);
+                    return t;
                 }, new ThreadPoolExecutor.CallerRunsPolicy() // backpressure when saturated
         );
     }
@@ -179,7 +174,6 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
                 pd.setServicePorts(tcpServicePorts);
 
                 service.execute(() -> {
-                    Thread.currentThread().setName("Discovery thread " + ip);
                     try {
                         pd.getValue();
                     } catch (ExecutionException | InterruptedException e) {
