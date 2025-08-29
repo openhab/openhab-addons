@@ -435,7 +435,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 try {
                     completableFuture.join();
                 } catch (CancellationException | CompletionException e) {
-                    logger.debug("Detection future failed to complete", e);
+                    logger.debug("Detection future failed to complete {}", e.getMessage());
                 }
             });
             logger.debug("All {} detection futures for {} have completed", completableFutures.size(), hostname);
