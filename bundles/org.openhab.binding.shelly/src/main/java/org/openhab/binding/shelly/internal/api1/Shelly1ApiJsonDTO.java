@@ -77,6 +77,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_EVENT_OUT_OFF = "out_off";
     public static final String SHELLY_EVENT_SHORTPUSH = "shortpush";
     public static final String SHELLY_EVENT_LONGPUSH = "longpush";
+
     // Button
     public static final String SHELLY_EVENT_DOUBLE_SHORTPUSH = "double_shortpush";
     public static final String SHELLY_EVENT_TRIPLE_SHORTPUSH = "triple_shortpush";
@@ -1193,6 +1194,15 @@ public class Shelly1ApiJsonDTO {
         // Shelly TRV
         public Boolean calibrated;
         public ArrayList<ShellyThermnostat> thermostats;
+
+        // Shelly BLU Remote
+        public Integer channel;
+        public String direction;
+        public Integer steps;
+        public Double rotationX;
+        public Double rotationY;
+        public Double rotationZ;
+        public Double distance;
     }
 
     public static class ShellySettingsSmoke {

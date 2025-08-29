@@ -18,6 +18,8 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
 
+import javax.measure.MetricPrefix;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -63,12 +65,15 @@ public class ShellyComponents {
     public static boolean updateDeviceStatus(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
 
-        if (!profile.gateway.isEmpty()) {
-            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
-        }
         if (!thingHandler.areChannelsCreated()) {
             thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createDeviceChannels(thingHandler.getThing(),
                     thingHandler.getProfile(), status));
+        }
+
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
+
+        if (!profile.gateway.isEmpty()) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
         }
 
         if (getLong(status.uptime) > 10) {
@@ -467,7 +472,7 @@ public class ShellyComponents {
                             getStringType(sdata.lux.illumination));
                 }
             }
-            if (sdata.accel != null) {
+            if (sdata.accel != null && sdata.accel.tilt != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
                         toQuantityType(getDouble(sdata.accel.tilt.doubleValue()), DIGITS_NONE, Units.DEGREE_ANGLE));
             }
@@ -499,6 +504,35 @@ public class ShellyComponents {
                 ShellyADC adc = sdata.adcs.get(0);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
                         toQuantityType(getDouble(adc.voltage), 2, Units.VOLT));
+            }
+            if (sdata.rotationX != null) {
+                // BLU Remote
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONX,
+                        toQuantityType(getDouble(sdata.rotationX.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONY,
+                        toQuantityType(getDouble(sdata.rotationY.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONZ,
+                        toQuantityType(getDouble(sdata.rotationZ.doubleValue()), DIGITS_ROTATION, Units.DEGREE_ANGLE));
+            }
+            if (sdata.direction != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DIRECTION,
+                        getStringType(sdata.direction));
+            }
+            if (sdata.steps != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STEPS,
+                        getDecimal(sdata.steps));
+            }
+            if (sdata.channel != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL,
+                        getDecimal(sdata.channel));
+            }
+            if (sdata.distance != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE,
+                        toQuantityType(getDouble(sdata.distance), DIGITS_DISTANCE, MetricPrefix.MILLI(SIUnits.METRE)));
+            }
+            if (sdata.sensor != null && sdata.sensor.vibration != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
+                        OnOffType.from(sdata.sensor.vibration));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);

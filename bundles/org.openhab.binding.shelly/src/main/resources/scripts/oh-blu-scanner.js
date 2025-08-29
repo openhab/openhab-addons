@@ -4,10 +4,11 @@
  * Decoding of event data is based on the BTHome standard.
  * 
  * @author Markus Michels - Initial contribution
- * @author Udo Hartmann - Add support for decoding multi button stats
+ * @author Udo Hartmann - Add support for decoding multi button inputs
+ * @author Igor Jasan - Sensor parameter fixing, decoding of dimmer
  */
 
-let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT"];
+let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT", "SBDI", "SBRC"];
 let ALLTERCO_MFD_ID_STR = "0ba9";
 let BTHOME_SVC_ID_STR = "fcd2";
 
