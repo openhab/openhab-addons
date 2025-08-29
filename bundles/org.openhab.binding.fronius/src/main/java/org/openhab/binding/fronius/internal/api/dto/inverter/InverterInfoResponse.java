@@ -19,17 +19,16 @@ import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link InverterRealtimeResponse} is responsible for storing
- * the response from the GetInverterRealtimeData request.
+ * The {@link InverterInfoResponse} is responsible for storing the response from the GetInverterInfo request.
  *
- * @author Thomas Rokohl - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
-public class InverterRealtimeResponse extends BaseFroniusResponse {
+public class InverterInfoResponse extends BaseFroniusResponse {
     @SerializedName("Body")
-    private @Nullable InverterRealtimeBody body;
+    private @Nullable InverterInfoBody body;
 
-    public @Nullable InverterRealtimeBody getBody() {
+    public @Nullable InverterInfoBody getBody() {
         return body;
     }
 }

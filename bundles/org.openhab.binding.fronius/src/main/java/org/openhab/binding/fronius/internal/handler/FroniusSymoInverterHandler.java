@@ -33,10 +33,7 @@ import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
-import org.openhab.binding.fronius.internal.api.dto.inverter.InverterDeviceStatus;
-import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBody;
-import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBodyData;
-import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeResponse;
+import org.openhab.binding.fronius.internal.api.dto.inverter.*;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeBody;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeBodyData;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeInverter;
@@ -132,7 +129,10 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
         Map<String, String> properties = editProperties();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, localInverterInfo.serial());
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, localInverterInfo.firmware());
+        String firmware = localInverterInfo.firmware();
+        if (firmware != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware);
+        }
         updateProperties(properties);
     }
 
@@ -142,7 +142,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
-            inverterInfo = getInverterInfo(bridgeConfig.hostname);
+            inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
             updateProperties();
             initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
         }
@@ -158,9 +158,10 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     public void handleBridgeConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleBridgeConfigurationUpdate(configurationParameters);
         Bridge bridge = getBridge();
-        if (bridge != null) {
+        FroniusBaseDeviceConfiguration config = this.config;
+        if (bridge != null && config != null) {
             FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
-            inverterInfo = getInverterInfo(bridgeConfig.hostname);
+            inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
             updateProperties();
             initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
         }
@@ -380,6 +381,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     /**
      * Make the InverterRealtimeDataRequest
      *
+     * @param scheme http or https
      * @param ip address of the device
      * @param deviceId of the device
      * @return {InverterRealtimeResponse} the object representation of the json response
@@ -388,6 +390,18 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             throws FroniusCommunicationException {
         String location = FroniusBindingConstants.getInverterDataUrl(scheme, ip, deviceId);
         return collectDataFromUrl(InverterRealtimeResponse.class, location);
+    }
+
+    /**
+     * Make the InverterInfoRequest
+     *
+     * @param scheme http or https
+     * @param ip address of the device
+     * @return {InverterInfoResponse} the object representation of the json response
+     */
+    private InverterInfoResponse getInverterInfoData(String scheme, String ip) throws FroniusCommunicationException {
+        String location = FroniusBindingConstants.getInverterInfoUrl(scheme, ip);
+        return collectDataFromUrl(InverterInfoResponse.class, location);
     }
 
     /**
@@ -406,11 +420,38 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     /**
      * Get the version information of the inverter
      *
-     * @param hostname the IP address of the inverter
-     * @return InverterInfo containing serial number and firmware version, or null if not available
+     * @param scheme http or https
+     * @param ip address of the device
+     * @param deviceId of the device
+     * @return InverterInfoBody containing serial number and firmware version, or null if not available
      */
-    private @Nullable InverterInfo getInverterInfo(String hostname) {
-        final String host = "http://" + hostname;
+    private @Nullable InverterInfo getInverterInfo(String schema, String ip, int deviceId) {
+        InverterInfoResponse inverterInfoResponse = null;
+        try {
+            inverterInfoResponse = getInverterInfoData(schema, ip);
+        } catch (FroniusCommunicationException e) {
+            logger.warn("Failed to get InverterInfo from Fronius inverter at {}: {}", ip, e.getMessage());
+            return null;
+        }
+        if (inverterInfoResponse.getBody() == null) {
+            return null;
+        }
+        InverterInfoBody inverterInfoBody = inverterInfoResponse.getBody();
+        if (inverterInfoBody == null) {
+            return null;
+        }
+        Map<Integer, InverterInfoBodyData> inverterInfoBodyData = inverterInfoBody.getData();
+        if (inverterInfoBodyData == null) {
+            return null;
+        }
+        InverterInfoBodyData data = inverterInfoBodyData.get(deviceId);
+        if (data == null) {
+            return null;
+        }
+
+        final String serial = String.valueOf(data.getUniqueID());
+
+        final String host = "http://" + ip;
         final String versionPath = "/status/version";
 
         String url = host + "/api" + versionPath; // try the new API path first
@@ -422,34 +463,31 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             try {
                 response = FroniusHttpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
             } catch (FroniusCommunicationException ex) {
-                logger.warn("Failed to get version info from Fronius inverter at {}: {}", hostname, ex.getMessage());
-                return null;
+                logger.debug("Failed to get version info from Fronius inverter at {}: {}", ip, ex.getMessage());
+                return new InverterInfo(serial, null);
             }
         }
         try {
             JsonElement jsonElement = JsonParser.parseString(response);
             if (!jsonElement.isJsonObject()) {
-                logger.warn("Invalid JSON response for version info from Fronius inverter at {}: {}", hostname,
-                        response);
-                return null;
+                logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", ip, response);
+                return new InverterInfo(serial, null);
             }
             try {
-                String serial = jsonElement.getAsJsonObject().get("serialNumber").getAsString();
                 String firmware = jsonElement.getAsJsonObject().get("swrevisions").getAsJsonObject().get("GEN24")
                         .getAsString();
                 return new InverterInfo(serial, firmware);
             } catch (IllegalStateException | UnsupportedOperationException e) {
-                logger.warn("Failed to parse version info from Fronius inverter at {}: {}", hostname, e.getMessage());
-                return null;
+                logger.debug("Failed to parse version info from Fronius inverter at {}: {}", ip, e.getMessage());
+                return new InverterInfo(serial, null);
             }
         } catch (JsonSyntaxException e) {
             // 404 errors go here, as the response is not valid JSON
-            logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", hostname, response,
-                    e);
+            logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", ip, response, e);
         }
-        return null;
+        return new InverterInfo(serial, null);
     }
 
-    private record InverterInfo(String serial, String firmware) {
+    private record InverterInfo(String serial, @Nullable String firmware) {
     }
 }
