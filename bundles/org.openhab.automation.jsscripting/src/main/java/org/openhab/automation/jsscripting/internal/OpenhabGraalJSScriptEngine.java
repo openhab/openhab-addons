@@ -329,7 +329,15 @@ public class OpenhabGraalJSScriptEngine
     protected String onScript(String script) {
         if (isUiBasedScript() && configuration.isWrapperEnabled()) {
             logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
-            return "(function() {" + System.lineSeparator() + script + System.lineSeparator() + "})()";
+
+            String eventConversionScript = "";
+            if (configuration.isEventConversionEnabled()) {
+                eventConversionScript = "const event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event"
+                        + System.lineSeparator();
+            }
+
+            return "(function() {" + System.lineSeparator() + eventConversionScript + script + System.lineSeparator()
+                    + "})()";
         }
         return super.onScript(script);
     }
