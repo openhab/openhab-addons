@@ -69,13 +69,13 @@ Thing froniuswattpilot:wattpilot:garage "Wattpilot Garage" [hostname="xxx.xxx.xx
 Group                     Wattpilot_Garage                             "Wattpilot Garage"                                                          ["Equipment"]
 
 // Control
-Switch                    Wattpilot_Garage_Charging_Allowed            "Charging Allowed"                      <BatteryLevel>  (Wattpilot_Garage)  ["Control"]                 {channel="froniuswattpilot:wattpilot:garage:control#charging-allowed"}
-String                    Wattpilot_Garage_Charging_Mode               "Charging Mode"                         <BatteryLevel>  (Wattpilot_Garage)  ["Control"]                 {channel="froniuswattpilot:wattpilot:garage:control#charging-mode"}
+Switch                    Wattpilot_Garage_Charging_Allowed            "Charging Allowed"                      <BatteryLevel>  (Wattpilot_Garage)  ["Control", "Enabled"]      {channel="froniuswattpilot:wattpilot:garage:control#charging-allowed"}
+String                    Wattpilot_Garage_Charging_Mode               "Charging Mode"                         <BatteryLevel>  (Wattpilot_Garage)  ["Control", "Mode"]         {channel="froniuswattpilot:wattpilot:garage:control#charging-mode"}
 Number:ElectricCurrent    Wattpilot_Garage_Charging_Current            "Charging Current [%d A]"               <Energy>        (Wattpilot_Garage)  ["Setpoint", "Current"]     {channel="froniuswattpilot:wattpilot:garage:control#charging-current", unit="A"}
 Number:Power              Wattpilot_Garage_PV_Surplus_Power_Threshold  "PV Surplus Power Threshold [%.1f kW]"  <SolarPlant>    (Wattpilot_Garage)  ["Setpoint", "Power"]       {channel="froniuswattpilot:wattpilot:garage:control#pv-surplus-threshold", unit="kW"}
-Number:Dimensionless      Wattpilot_Garage_PV_Surplus_SoC_Threshold    "PV Surplus SoC Threshold [%d %%]"      <SolarPlant>    (Wattpilot_Garage)  ["Setpoint"]                {channel="froniuswattpilot:wattpilot:garage:control#pv-surplus-soc", unit="%"}
-Switch                    Wattpilot_Garage_Boost_Enabled               "Boost Enabled"                         <BatteryLevel>  (Wattpilot_Garage)  ["Control"]                 {channel="froniuswattpilot:wattpilot:garage:control#boost-enabled"}
-Number:Dimensionless      Wattpilot_Garage_Boost_SoC_Limit             "Boost SoC Limit [%d %%]"               <BatteryLevel>  (Wattpilot_Garage)  ["Setpoint"]                {channel="froniuswattpilot:wattpilot:garage:control#boost-soc", unit="%"}
+Number:Dimensionless      Wattpilot_Garage_PV_Surplus_SoC_Threshold    "PV Surplus SoC Threshold [%d %%]"      <SolarPlant>    (Wattpilot_Garage)  ["Setpoint", "Energy"]      {channel="froniuswattpilot:wattpilot:garage:control#pv-surplus-soc", unit="%"}
+Switch                    Wattpilot_Garage_Boost_Enabled               "Boost Enabled"                         <BatteryLevel>  (Wattpilot_Garage)  ["Control", "Enabled"]      {channel="froniuswattpilot:wattpilot:garage:control#boost-enabled"}
+Number:Dimensionless      Wattpilot_Garage_Boost_SoC_Limit             "Boost SoC Limit [%d %%]"               <BatteryLevel>  (Wattpilot_Garage)  ["Setpoint", "Energy"]      {channel="froniuswattpilot:wattpilot:garage:control#boost-soc", unit="%"}
 
 // Status
 Switch                    Wattpilot_Garage_Charging_Possible           "Charging Possible"                     <BatteryLevel>  (Wattpilot_Garage)  ["Status"]                  {channel="froniuswattpilot:wattpilot:garage:status#charging-possible"}

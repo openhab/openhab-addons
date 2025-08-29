@@ -123,6 +123,7 @@
 		<category>Battery</category>
 		<tags>
 			<tag>Control</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state>
 			<options>
@@ -180,6 +181,7 @@
 		<category>SolarPlant</category>
 		<tags>
 			<tag>Setpoint</tag>
+			<tag>Energy</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -190,6 +192,7 @@
 		<category>Battery</category>
 		<tags>
 			<tag>Control</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state>
 			<options>
@@ -206,6 +209,7 @@
 		<category>Battery</category>
 		<tags>
 			<tag>Setpoint</tag>
+			<tag>Energy</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
