@@ -64,6 +64,13 @@
 				<label>Status Positioning</label>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="energy-to-max-soc" groupIds="range">
+				<type>mercedesme:energy-to-max-soc</type>
+				<label>Energy to Maximum SoC</label>
+				<description>Energy needed to reach maximum state of charge</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="mercedesme:hybrid">
@@ -130,6 +137,13 @@
 			<add-channel id="status-pos" groupIds="position">
 				<type>mercedesme:status-pos</type>
 				<label>Status Positioning</label>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="energy-to-max-soc" groupIds="range">
+				<type>mercedesme:energy-to-max-soc</type>
+				<label>Energy to Maximum SoC</label>
+				<description>Energy needed to reach maximum state of charge</description>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
