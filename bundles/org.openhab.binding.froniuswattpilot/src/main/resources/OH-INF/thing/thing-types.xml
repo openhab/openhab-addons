@@ -19,7 +19,7 @@
 		<properties>
 			<property name="serialNumber"/>
 			<property name="firmwareVersion"/>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>hostname</representation-property>
@@ -46,6 +46,9 @@
 			<channel id="charging-mode" typeId="charging-mode"/>
 			<channel id="charging-current" typeId="charging-current"/>
 			<channel id="pv-surplus-threshold" typeId="pv-surplus-threshold"/>
+			<channel id="pv-surplus-soc" typeId="pv-surplus-soc"/>
+			<channel id="boost-enabled" typeId="boost-enabled"/>
+			<channel id="boost-soc" typeId="boost-soc"/>
 		</channels>
 	</channel-group-type>
 
@@ -120,6 +123,7 @@
 		<category>Battery</category>
 		<tags>
 			<tag>Control</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state>
 			<options>
@@ -167,6 +171,45 @@
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Power</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="pv-surplus-soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>PV Surplus SoC Threshold</label>
+		<description>The battery SoC at which PV surplus charging starts</description>
+		<category>SolarPlant</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="boost-enabled">
+		<item-type>Switch</item-type>
+		<label>Boost Mode</label>
+		<description>Boost charging in Eco or Next Trip mode by using power from the battery</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="ON">Boost enabled</option>
+				<option value="OFF">Boost disabled</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="boost-soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Boost SoC Limit</label>
+		<description>Limit SoC to discharge the battery to when boost is enabled</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
