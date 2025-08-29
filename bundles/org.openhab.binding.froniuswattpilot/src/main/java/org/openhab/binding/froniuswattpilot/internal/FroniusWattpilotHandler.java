@@ -74,6 +74,26 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         client.addListener(this);
     }
 
+    private @Nullable Integer getPercent(Command command) {
+        switch (command) {
+            case QuantityType<?> qt -> {
+                qt = qt.toUnit(Units.PERCENT);
+                if (qt == null) {
+                    logger.debug("Failed to convert QuantityType to PERCENT!");
+                    return null;
+                }
+                return qt.intValue();
+            }
+            case DecimalType dt -> {
+                return dt.intValue();
+            }
+            default -> {
+                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                return null;
+            }
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String groupId = channelUID.getGroupId();
@@ -137,23 +157,10 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
                     client.sendCommand(new SetSurplusPowerThresholdCommand(watts));
                     break;
                 case CHANNEL_PV_SURPLUS_SOC:
-                    int percent;
-                    switch (command) {
-                        case QuantityType<?> qt -> {
-                            qt = qt.toUnit(Units.PERCENT);
-                            if (qt == null) {
-                                logger.debug("Failed to convert QuantityType to PERCENT!");
-                                return;
-                            }
-                            percent = qt.intValue();
-                        }
-                        case DecimalType dt -> percent = dt.intValue();
-                        default -> {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                            return;
-                        }
+                    Integer surplusSoC = getPercent(command);
+                    if (surplusSoC != null) {
+                        client.sendCommand(new SetSurplusSoCThresholdCommand(surplusSoC));
                     }
-                    client.sendCommand(new SetSurplusSoCThresholdCommand(percent));
                     break;
                 case CHANNEL_BOOST_ENABLED:
                     if (command instanceof OnOffType oft) {
@@ -163,22 +170,10 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
                     }
                     break;
                 case CHANNEL_BOOST_SOC:
-                    switch (command) {
-                        case QuantityType<?> qt -> {
-                            qt = qt.toUnit(Units.PERCENT);
-                            if (qt == null) {
-                                logger.debug("Failed to convert QuantityType to PERCENT!");
-                                return;
-                            }
-                            percent = qt.intValue();
-                        }
-                        case DecimalType dt -> percent = dt.intValue();
-                        default -> {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                            return;
-                        }
+                    Integer boostSoc = getPercent(command);
+                    if (boostSoc != null) {
+                        client.sendCommand(new SetBoostSoCLimitCommand(boostSoc));
                     }
-                    client.sendCommand(new SetBoostSoCLimitCommand(percent));
                     break;
                 default:
                     logger.debug("Unknown channel id: {}", channelId);
