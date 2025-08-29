@@ -420,7 +420,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     /**
      * Get the version information of the inverter
      *
-     * @param schema http or https
+     * @param scheme http or https
      * @param ip address of the device
      * @param deviceId of the device
      * @return InverterInfoBody containing serial number and firmware version, or null if not available
