@@ -26,6 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -153,7 +154,14 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         removeOlderResults(getTimestampOfLastScan(), null);
         logger.debug("Starting Network Device Discovery");
 
-        Map<String, Set<CidrAddress>> discoveryList = networkUtils.getNetworkIPsPerInterface();
+        Map<String, Set<CidrAddress>> discoveryList = networkUtils.getNetworkIPsPerInterface().entrySet().stream()
+                .filter(e -> e.getValue() != null && !e.getValue().isEmpty())
+                .filter(e -> e.getValue().stream().noneMatch(addr -> {
+                    String hostAddress = addr.getAddress().getHostAddress();
+                    return hostAddress.startsWith("127.") // loopback 127.0.0.0/8
+                            || hostAddress.startsWith("169.254."); // link-local 169.254.0.0/16
+                })).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
         // Track completion for all interfaces
         final int totalInterfaces = discoveryList.size();
         final AtomicInteger completedInterfaces = new AtomicInteger(0);
@@ -192,12 +200,12 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
                         if (completedInterfaces.incrementAndGet() == totalInterfaces) {
                             logger.debug("All network interface scans completed. Stopping scan.");
                             stopScan();
+                            logger.debug("Finished Network Device Discovery");
                         }
                     }
                 });
             }
         }
-        logger.debug("Finished Network Device Discovery");
     }
 
     private final ThreadLocal<PresenceDetection> presenceDetectorThreadLocal = ThreadLocal

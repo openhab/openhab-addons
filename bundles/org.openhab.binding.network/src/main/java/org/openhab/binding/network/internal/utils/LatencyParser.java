@@ -60,7 +60,7 @@ public class LatencyParser {
      *         contain a latency value which matches the known patterns.
      */
     public @Nullable Duration parseLatency(String inputLine) {
-        logger.debug("Parsing latency from input {}", inputLine);
+        logger.trace("Parsing latency from input {}", inputLine);
 
         Matcher m = LATENCY_PATTERN.matcher(inputLine);
         if (m.find() && m.groupCount() >= 2) {
@@ -69,8 +69,6 @@ public class LatencyParser {
             }
             return millisToDuration(Double.parseDouble(m.group(1).replace(",", ".")));
         }
-
-        logger.debug("Did not find a latency value");
         return null;
     }
 }
