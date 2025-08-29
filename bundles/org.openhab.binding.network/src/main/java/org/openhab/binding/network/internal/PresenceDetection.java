@@ -29,8 +29,10 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -101,11 +103,19 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     int detectionChecks;
     private String lastReachableNetworkInterfaceName = "";
 
+    // Executor for async tasks (e.g., iOS wakeup/arp chain)
+    private final Executor asyncExecutor;
+
     public PresenceDetection(final PresenceDetectionListener updateListener,
-            ScheduledExecutorService scheduledExecutorService, Duration cacheDeviceStateTime)
-            throws IllegalArgumentException {
+            ScheduledExecutorService scheduledExecutorService, Duration cacheDeviceStateTime) {
+        this(updateListener, scheduledExecutorService, cacheDeviceStateTime, ForkJoinPool.commonPool());
+    }
+
+    public PresenceDetection(final PresenceDetectionListener updateListener,
+            ScheduledExecutorService scheduledExecutorService, Duration cacheDeviceStateTime, Executor asyncExecutor) {
         this.updateListener = updateListener;
         this.scheduledExecutorService = scheduledExecutorService;
+        this.asyncExecutor = asyncExecutor;
         cache = new ExpiringCacheAsync<>(cacheDeviceStateTime);
     }
 
@@ -537,27 +547,39 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         logger.trace("Perform ARP ping presence detection for {} on interface: {}", hostname, interfaceName);
 
         withDestinationAddress(destinationAddress -> {
-            try {
-                if (iosDevice) {
-                    networkUtils.wakeUpIOS(destinationAddress);
-                    Thread.sleep(50);
-                }
-
-                PingResult pingResult = networkUtils.nativeArpPing(arpPingMethod, arpPingUtilPath, interfaceName,
-                        destinationAddress.getHostAddress(), timeout);
-                if (pingResult != null) {
-                    if (pingResult.isSuccess()) {
-                        updateReachable(pdv, ARP_PING, getLatency(pingResult));
-                        lastReachableNetworkInterfaceName = interfaceName;
-                    } else if (lastReachableNetworkInterfaceName.equals(interfaceName)) {
-                        logger.trace("{} is no longer reachable on network interface: {}", hostname, interfaceName);
-                        lastReachableNetworkInterfaceName = "";
+            Runnable arpPingTask = () -> {
+                try {
+                    PingResult pingResult = networkUtils.nativeArpPing(arpPingMethod, arpPingUtilPath, interfaceName,
+                            destinationAddress.getHostAddress(), timeout);
+                    if (pingResult != null) {
+                        if (pingResult.isSuccess()) {
+                            updateReachable(pdv, ARP_PING, getLatency(pingResult));
+                            lastReachableNetworkInterfaceName = interfaceName;
+                        } else if (lastReachableNetworkInterfaceName.equals(interfaceName)) {
+                            logger.trace("{} is no longer reachable on network interface: {}", hostname, interfaceName);
+                            lastReachableNetworkInterfaceName = "";
+                        }
                     }
+                } catch (IOException e) {
+                    logger.trace("Failed to execute an ARP ping for {}", hostname, e);
+                } catch (InterruptedException e) {
+                    // This can be ignored, the thread will end anyway
                 }
-            } catch (IOException e) {
-                logger.trace("Failed to execute an ARP ping for {}", hostname, e);
-            } catch (InterruptedException ignored) {
-                // This can be ignored, the thread will end anyway
+            };
+
+            if (iosDevice) {
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        networkUtils.wakeUpIOS(destinationAddress);
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        // Ignore, thread will end
+                    } catch (IOException e) {
+                        logger.trace("Failed to wake up iOS device for {}", hostname, e);
+                    }
+                }, asyncExecutor).thenRunAsync(arpPingTask, asyncExecutor);
+            } else {
+                arpPingTask.run();
             }
         });
     }
