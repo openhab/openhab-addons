@@ -33,8 +33,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -79,7 +77,6 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private boolean useIcmpPing;
     private Set<Integer> tcpPorts = new HashSet<>();
 
-    private Duration refreshInterval = Duration.ofMinutes(1);
     private Duration timeout = Duration.ofSeconds(5);
     private @Nullable Instant lastSeen;
 
@@ -93,10 +90,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     ExpiringCacheAsync<PresenceDetectionValue> cache;
 
     private final PresenceDetectionListener updateListener;
-    private ScheduledExecutorService scheduledExecutorService;
 
     private Set<String> networkInterfaceNames = Set.of();
-    private @Nullable ScheduledFuture<?> refreshJob;
     protected @Nullable ExecutorService detectionExecutorService;
     protected @Nullable ExecutorService waitForResultExecutorService;
     private String dhcpState = "off";
@@ -106,15 +101,13 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     // Executor for async tasks (e.g., iOS wakeup/arp chain)
     private final Executor asyncExecutor;
 
-    public PresenceDetection(final PresenceDetectionListener updateListener,
-            ScheduledExecutorService scheduledExecutorService, Duration cacheDeviceStateTime) {
-        this(updateListener, scheduledExecutorService, cacheDeviceStateTime, ForkJoinPool.commonPool());
+    public PresenceDetection(final PresenceDetectionListener updateListener, Duration cacheDeviceStateTime) {
+        this(updateListener, cacheDeviceStateTime, ForkJoinPool.commonPool());
     }
 
-    public PresenceDetection(final PresenceDetectionListener updateListener,
-            ScheduledExecutorService scheduledExecutorService, Duration cacheDeviceStateTime, Executor asyncExecutor) {
+    public PresenceDetection(final PresenceDetectionListener updateListener, Duration cacheDeviceStateTime,
+            Executor asyncExecutor) {
         this.updateListener = updateListener;
-        this.scheduledExecutorService = scheduledExecutorService;
         this.asyncExecutor = asyncExecutor;
         cache = new ExpiringCacheAsync<>(cacheDeviceStateTime);
     }
@@ -125,10 +118,6 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
     public Set<Integer> getServicePorts() {
         return tcpPorts;
-    }
-
-    public Duration getRefreshInterval() {
-        return refreshInterval;
     }
 
     public Duration getTimeout() {
@@ -176,10 +165,6 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
     public void setUseDhcpSniffing(boolean enable) {
         this.useDHCPsniffing = enable;
-    }
-
-    public void setRefreshInterval(Duration refreshInterval) {
-        this.refreshInterval = refreshInterval;
     }
 
     public void setTimeout(Duration timeout) {
@@ -633,40 +618,16 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         updateReachable(DHCP_REQUEST, Duration.ZERO);
     }
 
-    /**
-     * Start/Restart a fixed scheduled runner to update the devices reach-ability state.
-     */
-    public void startAutomaticRefresh() {
-        ScheduledFuture<?> future = refreshJob;
-        if (future != null && !future.isDone()) {
-            future.cancel(true);
+    public void refresh() {
+        try {
+            logger.debug("Refreshing {} reachability state", hostname);
+            getValue();
+        } catch (InterruptedException | ExecutionException e) {
+            logger.debug("Failed to refresh {} presence detection", hostname, e);
         }
-        refreshJob = scheduledExecutorService.scheduleWithFixedDelay(() -> {
-            try {
-                logger.debug("Refreshing {} reachability state", hostname);
-                getValue();
-            } catch (InterruptedException | ExecutionException e) {
-                logger.debug("Failed to refresh {} presence detection", hostname, e);
-            }
-        }, 0, refreshInterval.toMillis(), TimeUnit.MILLISECONDS);
     }
 
-    /**
-     * Return <code>true</code> if automatic refreshing is enabled.
-     */
-    public boolean isAutomaticRefreshing() {
-        return refreshJob != null;
-    }
-
-    /**
-     * Stop automatic refreshing.
-     */
-    public void stopAutomaticRefresh() {
-        ScheduledFuture<?> future = refreshJob;
-        if (future != null && !future.isDone()) {
-            future.cancel(true);
-            refreshJob = null;
-        }
+    public void dispose() {
         InetAddress cached = cachedDestination;
         if (cached != null) {
             disableDHCPListen(cached);

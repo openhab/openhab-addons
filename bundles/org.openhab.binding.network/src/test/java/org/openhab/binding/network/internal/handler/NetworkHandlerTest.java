@@ -79,21 +79,15 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_RETRY, 10);
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
             conf.put(NetworkBindingConstants.PARAMETER_PORT, 8080);
-            conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, 101010);
             conf.put(NetworkBindingConstants.PARAMETER_TIMEOUT, 1234);
             return conf;
         });
-        PresenceDetection presenceDetection = spy(
-                new PresenceDetection(handler, scheduledExecutorService, Duration.ofSeconds(2)));
-        // Mock start/stop automatic refresh
-        doNothing().when(presenceDetection).startAutomaticRefresh();
-        doNothing().when(presenceDetection).stopAutomaticRefresh();
+        PresenceDetection presenceDetection = spy(new PresenceDetection(handler, Duration.ofSeconds(2)));
 
         handler.initialize(presenceDetection);
         assertThat(handler.retries, is(10));
         assertThat(presenceDetection.getHostname(), is("127.0.0.1"));
         assertThat(presenceDetection.getServicePorts().iterator().next(), is(8080));
-        assertThat(presenceDetection.getRefreshInterval(), is(Duration.ofMillis(101010)));
         assertThat(presenceDetection.getTimeout(), is(Duration.ofMillis(1234)));
     }
 
@@ -109,7 +103,7 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
             return conf;
         });
-        handler.initialize(new PresenceDetection(handler, scheduledExecutorService, Duration.ofSeconds(2)));
+        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2)));
         // Check that we are offline
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
@@ -126,13 +120,10 @@ public class NetworkHandlerTest extends JavaTest {
         when(thing.getConfiguration()).thenAnswer(a -> {
             Configuration conf = new Configuration();
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
+            conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, 0); // disable auto refresh
             return conf;
         });
-        PresenceDetection presenceDetection = spy(
-                new PresenceDetection(handler, scheduledExecutorService, Duration.ofSeconds(2)));
-        // Mock start/stop automatic refresh
-        doNothing().when(presenceDetection).startAutomaticRefresh();
-        doNothing().when(presenceDetection).stopAutomaticRefresh();
+        PresenceDetection presenceDetection = spy(new PresenceDetection(handler, Duration.ofSeconds(2)));
         doReturn(Instant.now()).when(presenceDetection).getLastSeen();
 
         handler.initialize(presenceDetection);

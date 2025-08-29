@@ -66,7 +66,7 @@ public class PresenceDetectionTest {
         doReturn(IpPingMethodEnum.WINDOWS_PING).when(networkUtils).determinePingMethod();
 
         // Inject a direct executor so async tasks run synchronously in tests
-        subject = spy(new PresenceDetection(listener, scheduledExecutorService, Duration.ofSeconds(2), Runnable::run));
+        subject = spy(new PresenceDetection(listener, Duration.ofSeconds(2), Runnable::run));
         subject.networkUtils = networkUtils;
 
         // Set a useful configuration. The default presenceDetection is a no-op.
