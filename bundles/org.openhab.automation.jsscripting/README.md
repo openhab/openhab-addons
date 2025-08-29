@@ -295,6 +295,8 @@ See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for fu
   - .removeItem(itemOrItemName) ⇒ `Item|null`
   - .replaceItem([itemConfig](#itemconfig)) ⇒ `Item|null`
   - .safeItemName(s) ⇒ `string`
+  - .metadata ⇒ [`items.metadata` namespace](https://openhab.github.io/openhab-js/items.metadata.html): Manage metadata directly without the need of going "through" the Item
+  - .itemChannelLink ⇒ [`items.itemChannelLink` namespace](https://openhab.github.io/openhab-js/items.itemChannelLink.html): Manage Item -> channel links
 
 ```javascript
 var item = items.KitchenLight;
@@ -1284,7 +1286,7 @@ Rule are completed by calling `.build(name, description, tags, id)` , all parame
 A simple example of this would look like:
 
 ```javascript
-rules.when().item("F1_Light").changed().then().send("changed").toItem("F2_Light").build("My Rule", "My First Rule");
+rules.when().item("F1_Light").changed().then().send("changed").toItem("F2_Light").build("My Rule", "My First Rule", ['MyTag1', 'Tag2'], 'MyRuleID');
 ```
 
 Operations and conditions can also optionally take functions:
@@ -1422,29 +1424,30 @@ The `event` object provides some information about that trigger.
 
 This table gives an overview over the `event` object:
 
-| Property Name     | Trigger Types                                       | Description                                                                   | Rules DSL Equivalent   |
-|-------------------|-----------------------------------------------------|-------------------------------------------------------------------------------|------------------------|
-| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | Previous state of Item or Group that triggered event                          | `previousState`        |
-| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | New state of Item or Group that triggered event                               | N/A                    |
-| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger` | State of Item that triggered event                                            | `triggeringItem.state` |
-| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`         | Command that triggered event                                                  | `receivedCommand`      |
-| `itemName`        | `Item****Trigger`, `Group****Trigger`               | Name of Item that triggered event                                             | `triggeringItem.name`  |
-| `groupName`       | `Group****Trigger`                                  | Name of the group whose member triggered event                                | N/A                    |
-| `receivedEvent`   | `ChannelEventTrigger`                               | Channel event that triggered event                                            | N/A                    |
-| `channelUID`      | `ChannelEventTrigger`                               | UID of channel that triggered event                                           | N/A                    |
-| `oldStatus`       | `ThingStatusChangeTrigger`                          | Previous state of Thing that triggered event                                  | N/A                    |
-| `newStatus`       | `ThingStatusChangeTrigger`                          | New state of Thing that triggered event                                       | N/A                    |
-| `status`          | `ThingStatusUpdateTrigger`                          | State of Thing that triggered event                                           | N/A                    |
-| `thingUID`        | `Thing****Trigger`                                  | UID of Thing that triggered event                                             | N/A                    |
-| `cronExpression`  | `GenericCronTrigger`                                | Cron expression of the trigger                                                | N/A                    |
-| `time`            | `TimeOfDayTrigger`                                  | Time of day value of the trigger                                              | N/A                    |
-| `timeOnly`        | `DateTimeTrigger`                                   | Whether the trigger only considers the time part of the DateTime Item         | N/A                    |
-| `offset`          | `DateTimeTrigger`                                   | Offset in seconds added to the time of the DateTime Item                      | N/A                    |
-| `eventType`       | all except `PWMTrigger`, `PIDTrigger`               | Type of event that triggered event (change, command, triggered, update, time) | N/A                    |
-| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                          | N/A                    |
-| `eventClass`      | all                                                 | Java class name of the triggering event                                       | N/A                    |
-| `module`          | all                                                 | (user-defined or auto-generated) name of trigger                              | N/A                    |
-| `raw`             | all                                                 | Original contents of the event including data passed from a calling rule      | N/A                    |
+| Property Name     | Trigger Types                                       | Description                                                                                            | Rules DSL Equivalent   |
+|-------------------|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------|------------------------|
+| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | Previous state of Item or Group that triggered event                                                   | `previousState`        |
+| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | New state of Item or Group that triggered event                                                        | N/A                    |
+| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger` | State of Item that triggered event                                                                     | `triggeringItem.state` |
+| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`         | Command that triggered event                                                                           | `receivedCommand`      |
+| `itemName`        | `Item****Trigger`, `Group****Trigger`               | Name of Item that triggered event                                                                      | `triggeringItem.name`  |
+| `groupName`       | `Group****Trigger`                                  | Name of the group whose member triggered event                                                         | N/A                    |
+| `receivedEvent`   | `ChannelEventTrigger`                               | Channel event that triggered event                                                                     | N/A                    |
+| `channelUID`      | `ChannelEventTrigger`                               | UID of channel that triggered event                                                                    | N/A                    |
+| `oldStatus`       | `ThingStatusChangeTrigger`                          | Previous state of Thing that triggered event                                                           | N/A                    |
+| `newStatus`       | `ThingStatusChangeTrigger`                          | New state of Thing that triggered event                                                                | N/A                    |
+| `status`          | `ThingStatusUpdateTrigger`                          | State of Thing that triggered event                                                                    | N/A                    |
+| `thingUID`        | `Thing****Trigger`                                  | UID of Thing that triggered event                                                                      | N/A                    |
+| `cronExpression`  | `GenericCronTrigger`                                | Cron expression of the trigger                                                                         | N/A                    |
+| `time`            | `TimeOfDayTrigger`                                  | Time of day value of the trigger                                                                       | N/A                    |
+| `timeOnly`        | `DateTimeTrigger`                                   | Whether the trigger only considers the time part of the DateTime Item                                  | N/A                    |
+| `offset`          | `DateTimeTrigger`                                   | Offset in seconds added to the time of the DateTime Item                                               | N/A                    |
+| `eventType`       | all except `PWMTrigger`, `PIDTrigger`               | Type of event that triggered event (change, command, triggered, update, time)                          | N/A                    |
+| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                                                   | N/A                    |
+| `eventName`       | all                                                 | simple Java class name of the triggering event, e.g. `ExecutionEvent`                                  | N/A                    |
+| `eventClass`      | all                                                 | full Java class name of the triggering event, e.g. `org.openhab.core.automation.events.ExecutionEvent` | N/A                    |
+| `module`          | all                                                 | (user-defined or auto-generated) name of trigger                                                       | N/A                    |
+| `raw`             | all                                                 | Original contents of the event including data passed from a calling rule                               | N/A                    |
 
 All properties are typeof `string` except for properties contained by `raw` which are unmodified from the original types.
 
