@@ -12,24 +12,24 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.inverter;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link InverterRealtimeResponse} is responsible for storing
- * the response from the GetInverterRealtimeData request.
+ * The {@link InverterInfoBody} is responsible for storing the "Body" node of the {@link InverterInfoResponse}.
  *
- * @author Thomas Rokohl - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
-public class InverterRealtimeResponse extends BaseFroniusResponse {
-    @SerializedName("Body")
-    private @Nullable InverterRealtimeBody body;
+public class InverterInfoBody {
+    @SerializedName("Data")
+    private @Nullable Map<Integer, InverterInfoBodyData> data;
 
-    public @Nullable InverterRealtimeBody getBody() {
-        return body;
+    public @Nullable Map<Integer, InverterInfoBodyData> getData() {
+        return data;
     }
 }
