@@ -71,12 +71,12 @@ If you want to manually configure the device, you can also read those values fro
 For line powered device on the same subnet `ip` address and `protocol` version are automatically detected.
 Tuya devices announce their presence via UDP broadcast packets, which is usually not available in other subnets.
 Battery powered devices do not announce their presence at all.
-There is no clear rule how to determine if a device has protocol 3.3 or 3.1.
-It is recommended to start with 3.3 and watch the log file if it that works and use 3.1 otherwise.
+If automatic protocol version detection does not work there is no clear rule how to determine if a device has protocol 3.3 or 3.1.
+In this case it is recommended to start with 3.3 and watch the log file. If 3.3 does not work try use 3.1.
 
-Some devices do not automatically refresh channels (e.g. some power meters).
-The `pollingInterval` can be increased from the default value `0` (off) to a minimum of 10s or higher.
-The device is then requested to refresh its data channels and reports the status.
+Some devices do not automatically refresh channels or only refresh at fairly long intervals even though the data is sampled at a much higher rate. (e.g. some power meters only send updates every 10 minutes but sample continuously.)
+The `pollingInterval` can be used to adjust how often channels are updated and can be set to `0` (off) or to any integer value of 10 seconds or higher. The default is 10 seconds.
+Note that this has no practical effect on battery powered devices. These only wake up when they have something to say and then go straight back to sleep.
 
 In case something is not working, please open an issue on [GitHub](https://github.com/openhab/openhab-addons/issues/new?title=[tuya]) and add TRACE level logs.
 
