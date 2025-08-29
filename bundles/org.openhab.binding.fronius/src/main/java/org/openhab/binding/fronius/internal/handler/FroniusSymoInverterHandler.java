@@ -425,10 +425,10 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return InverterInfoBody containing serial number and firmware version, or null if not available
      */
-    private @Nullable InverterInfo getInverterInfo(String schema, String ip, int deviceId) {
+    private @Nullable InverterInfo getInverterInfo(String scheme, String ip, int deviceId) {
         InverterInfoResponse inverterInfoResponse = null;
         try {
-            inverterInfoResponse = getInverterInfoData(schema, ip);
+            inverterInfoResponse = getInverterInfoData(scheme, ip);
         } catch (FroniusCommunicationException e) {
             logger.warn("Failed to get InverterInfo from Fronius inverter at {}: {}", ip, e.getMessage());
             return null;
@@ -451,7 +451,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
         final String serial = String.valueOf(data.getUniqueID());
 
-        final String host = "http://" + ip;
+        final String host = scheme + "://" + ip;
         final String versionPath = "/status/version";
 
         String url = host + "/api" + versionPath; // try the new API path first
