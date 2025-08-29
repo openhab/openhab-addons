@@ -201,7 +201,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     }
 
     private final ThreadLocal<PresenceDetection> presenceDetectorThreadLocal = ThreadLocal
-            .withInitial(() -> new PresenceDetection(this, scheduler, Duration.ofSeconds(2)));
+            .withInitial(() -> new PresenceDetection(this, Duration.ofSeconds(2)));
 
     @Override
     protected synchronized void stopScan() {

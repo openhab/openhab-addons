@@ -21,8 +21,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.network.internal.NetworkBindingConfiguration;
 import org.openhab.binding.network.internal.NetworkBindingConfigurationListener;
 import org.openhab.binding.network.internal.NetworkBindingConstants;
@@ -62,6 +65,7 @@ public class NetworkHandler extends BaseThingHandler
         implements PresenceDetectionListener, NetworkBindingConfigurationListener {
     private final Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
     private @NonNullByDefault({}) PresenceDetection presenceDetection;
+    private @Nullable ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) WakeOnLanPacketSender wakeOnLanPacketSender;
 
     private boolean isTCPServiceDevice;
@@ -85,7 +89,7 @@ public class NetworkHandler extends BaseThingHandler
 
     private void refreshValue(ChannelUID channelUID) {
         // We are not yet even initialized, don't do anything
-        if (presenceDetection == null || !presenceDetection.isAutomaticRefreshing()) {
+        if (presenceDetection == null || refreshJob == null) {
             return;
         }
 
@@ -153,9 +157,10 @@ public class NetworkHandler extends BaseThingHandler
 
     @Override
     public void dispose() {
-        PresenceDetection detection = presenceDetection;
-        if (detection != null) {
-            detection.stopAutomaticRefresh();
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            this.refreshJob = null;
         }
         presenceDetection = null;
     }
@@ -189,16 +194,17 @@ public class NetworkHandler extends BaseThingHandler
         }
 
         this.retries = handlerConfiguration.retry.intValue();
-        presenceDetection.setRefreshInterval(Duration.ofMillis(handlerConfiguration.refreshInterval));
         presenceDetection.setTimeout(Duration.ofMillis(handlerConfiguration.timeout));
 
         wakeOnLanPacketSender = new WakeOnLanPacketSender(handlerConfiguration.macAddress,
                 handlerConfiguration.hostname, handlerConfiguration.port, handlerConfiguration.networkInterfaceNames);
 
         updateStatus(ThingStatus.ONLINE);
-        presenceDetection.startAutomaticRefresh();
 
-        updateNetworkProperties();
+        if (handlerConfiguration.refreshInterval > 0) {
+            refreshJob = scheduler.scheduleWithFixedDelay(presenceDetection::refresh, 0,
+                    handlerConfiguration.refreshInterval, TimeUnit.MILLISECONDS);
+        }
     }
 
     private void updateNetworkProperties() {
@@ -214,8 +220,7 @@ public class NetworkHandler extends BaseThingHandler
     // Create a new network service and apply all configurations.
     @Override
     public void initialize() {
-        initialize(new PresenceDetection(this, scheduler,
-                Duration.ofMillis(configuration.cacheDeviceStateTimeInMS.intValue())));
+        initialize(new PresenceDetection(this, Duration.ofMillis(configuration.cacheDeviceStateTimeInMS.intValue())));
     }
 
     /**
