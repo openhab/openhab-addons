@@ -126,8 +126,9 @@ public class OpenAITTSService extends AbstractCachedTTSService {
         content.addProperty("voice", voice.getLabel().toLowerCase());
         content.addProperty("speed", config.speed);
 
-        if (!"tts-1".equals(config.model) && !"tts-1-hd".equals(config.model))
+        if (!"tts-1".equals(config.model) && !"tts-1-hd".equals(config.model) && !config.instructions.isEmpty()) {
             content.addProperty("instructions", config.instructions);
+        }
 
         String queryJson = gson.toJson(content);
 
