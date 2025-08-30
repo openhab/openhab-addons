@@ -185,6 +185,19 @@
 				<description>Current power consumption (as positive value) and production (as negative value)</description>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="total-price" groupIds="price">
+				<type>tibber:price</type>
+				<label>Total Price</label>
+				<description>Total price including energy and taxes</description>
+			</add-channel>
+			<add-channel id="tax" groupIds="price">
+				<type>tibber:price</type>
+				<label>Tax</label>
+				<description>Taxes and additional expenses</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
