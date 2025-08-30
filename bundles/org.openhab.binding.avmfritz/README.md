@@ -33,6 +33,13 @@ If not, please make sure that the target openHAB system does not block the port 
 Additionally, they serve as a bridge for accessing other AHA devices.
 For AHA functionality, the router has to run at least on firmware FRITZ!OS 6.00 and it has to support the "Smart Home" service.
 
+> [!NOTE]
+> **FRITZ!DECT is now called FRITZ!Smart**
+> e.g. FRITZ!DECT 200 is now called FRITZ!Smart Energy 200 or FRITZ!DECT 302 is now called FRITZ!Smart Thermo 302.
+> Otherwise, everything will remain typically FRITZ!.
+> FRITZ!Smart contains FRITZ!DECT's convenience, sophisticated technology, and familiar ease of use.
+> In terms of technology, the FRITZ!Smart products are identical with FRITZ!DECT. 
+
 ### FRITZ!DECT 200 / FRITZ!DECT 210
 
 This switchable outlets [FRITZ!DECT 210](https://fritz.com/produkte/smart-home/fritzsmart-energy-210/) and [FRITZ!DECT 200](https://fritz.com/produkte/smart-home/fritzsmart-energy-200/) have to be connected to a FRITZ!Box by DECT protocol.
