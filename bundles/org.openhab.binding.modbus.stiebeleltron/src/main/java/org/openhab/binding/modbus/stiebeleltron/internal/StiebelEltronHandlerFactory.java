@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.modbus.stiebeleltron.internal;
 
-import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.THING_TYPE_HEATPUMP;
+import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.stiebeleltron.internal.handler.StiebelEltronHandler;
+import org.openhab.binding.modbus.stiebeleltron.internal.handler.StiebelEltronHandlerAllWpm;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -31,12 +32,17 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Added new thing for WPM compatible heat pumps according to
+ *         Stiebel-Eltron Software Documentation/ Software extension for Internet Service Gateway (ISG) / Modbus TCP/IP
+ *         Version 9535
+ *
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.stiebeleltron", service = ThingHandlerFactory.class)
 public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HEATPUMP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HEATPUMP,
+            THING_TYPE_STIEBELELTRON_HEATPUMP_ALLWPM);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,6 +55,8 @@ public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_HEATPUMP.equals(thingTypeUID)) {
             return new StiebelEltronHandler(thing);
+        } else if (THING_TYPE_STIEBELELTRON_HEATPUMP_ALLWPM.equals(thingTypeUID)) {
+            return new StiebelEltronHandlerAllWpm(thing);
         }
 
         return null;
