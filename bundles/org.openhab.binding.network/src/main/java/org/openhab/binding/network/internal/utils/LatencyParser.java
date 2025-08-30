@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LatencyParser {
 
-    private static final Pattern LATENCY_PATTERN = Pattern.compile(".*time=(.*) ?(u|m)s.*");
+    private static final Pattern LATENCY_PATTERN = Pattern.compile(".*time(?:=|<)(.*) ?(u|m)s.*");
     private final Logger logger = LoggerFactory.getLogger(LatencyParser.class);
 
     // This is how the input looks like on Mac and Linux:
@@ -60,7 +60,7 @@ public class LatencyParser {
      *         contain a latency value which matches the known patterns.
      */
     public @Nullable Duration parseLatency(String inputLine) {
-        logger.trace("Parsing latency from input {}", inputLine);
+        logger.trace("Parsing latency from input \"{}\"", inputLine);
 
         Matcher m = LATENCY_PATTERN.matcher(inputLine);
         if (m.find() && m.groupCount() >= 2) {
