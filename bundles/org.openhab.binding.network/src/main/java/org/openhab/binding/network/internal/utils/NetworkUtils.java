@@ -305,7 +305,7 @@ public class NetworkUtils {
         } catch (IOException e) {
             logger.trace("Native ping to 127.0.0.1 failed", e);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Reset interrupt flag
+            Thread.currentThread().interrupt();
         }
         return IpPingMethodEnum.JAVA_PING;
     }

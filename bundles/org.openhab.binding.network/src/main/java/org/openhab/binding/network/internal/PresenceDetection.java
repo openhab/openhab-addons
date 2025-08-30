@@ -548,7 +548,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 } catch (IOException e) {
                     logger.trace("Failed to execute an ARP ping for {}", hostname, e);
                 } catch (InterruptedException e) {
-                    // This can be ignored, the thread will end anyway
+                    Thread.currentThread().interrupt();
+                    return;
                 }
             };
 
@@ -558,7 +559,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                         networkUtils.wakeUpIOS(destinationAddress);
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
-                        // Ignore, thread will end
+                        Thread.currentThread().interrupt();
+                        return;
                     } catch (IOException e) {
                         logger.trace("Failed to wake up iOS device for {}", hostname, e);
                     }
@@ -600,7 +602,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             } catch (IOException e) {
                 logger.trace("Failed to execute a native ping for {}", hostname, e);
             } catch (InterruptedException e) {
-                // This can be ignored, the thread will end anyway
+                Thread.currentThread().interrupt();
+                return;
             }
         });
     }
@@ -622,8 +625,11 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         try {
             logger.debug("Refreshing {} reachability state", hostname);
             getValue();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (ExecutionException e) {
             logger.debug("Failed to refresh {} presence detection", hostname, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
         }
     }
 
