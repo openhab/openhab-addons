@@ -14,4 +14,12 @@
 
   <name>openHAB Add-ons :: Bundles :: ChatGPT Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.ui.bundles</groupId>
+      <artifactId>org.openhab.ui.habot</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

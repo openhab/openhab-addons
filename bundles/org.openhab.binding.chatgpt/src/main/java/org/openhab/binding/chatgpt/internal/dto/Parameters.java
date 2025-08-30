@@ -51,25 +51,52 @@ public class Parameters {
         this.required = required;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Property {
-
         private String type;
         private String description;
+        private Map<String, Property> properties;
+        private List<String> required;
+        private Property items;
 
         public String getType() {
             return type;
-        }
-
-        public String getDescription() {
-            return description;
         }
 
         public void setType(String type) {
             this.type = type;
         }
 
+        public String getDescription() {
+            return description;
+        }
+
         public void setDescription(String description) {
             this.description = description;
+        }
+
+        public Map<String, Property> getProperties() {
+            return properties;
+        }
+
+        public void setProperties(Map<String, Property> properties) {
+            this.properties = properties;
+        }
+
+        public List<String> getRequired() {
+            return required;
+        }
+
+        public void setRequired(List<String> required) {
+            this.required = required;
+        }
+
+        public Property getItems() {
+            return items;
+        }
+
+        public void setItems(Property items) {
+            this.items = items;
         }
     }
 }

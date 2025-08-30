@@ -24,7 +24,7 @@ public class ChatGPTChannelConfiguration {
 
     public String model = "gpt-4o-mini";
 
-    public Double temperature = 0.5;
+    public Double temperature = 1.0;
 
     public Double topP = 1.0;
 

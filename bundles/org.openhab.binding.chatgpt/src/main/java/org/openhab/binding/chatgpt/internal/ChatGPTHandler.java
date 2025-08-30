@@ -59,7 +59,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 public class ChatGPTHandler extends BaseThingHandler {
 
-    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHandler.class);
 
     private HttpClient httpClient;
@@ -68,6 +67,7 @@ public class ChatGPTHandler extends BaseThingHandler {
     private String apiUrl = "";
     private String modelUrl = "";
     private String lastPrompt = "";
+    private Integer timeout = 0;
     private List<String> models = List.of();
 
     public ChatGPTHandler(Thing thing, HttpClientFactory httpClientFactory) {
@@ -169,9 +169,9 @@ public class ChatGPTHandler extends BaseThingHandler {
     }
 
     public @Nullable String sendPrompt(String queryJson) {
-        Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiKey).content(new StringContentProvider(queryJson));
+        Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST).timeout(timeout, TimeUnit.MILLISECONDS)
+                .header("Content-Type", "application/json").header("Authorization", "Bearer " + apiKey)
+                .content(new StringContentProvider(queryJson));
         logger.trace("Query '{}'", queryJson);
         try {
             ContentResponse response = request.send();
@@ -179,8 +179,7 @@ public class ChatGPTHandler extends BaseThingHandler {
             if (response.getStatus() == HttpStatus.OK_200) {
                 return response.getContentAsString();
             } else {
-                logger.error("ChatGPT request resulted in HTTP {} with message: {}", response.getStatus(),
-                        response.getReason());
+                logger.error("Request failed with status {}: {}", response.getStatus(), response.getContentAsString());
                 return null;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -210,12 +209,13 @@ public class ChatGPTHandler extends BaseThingHandler {
         this.apiKey = apiKey;
         this.apiUrl = config.apiUrl;
         this.modelUrl = config.modelUrl;
+        this.timeout = config.requestTimeout;
 
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             try {
-                Request request = httpClient.newRequest(modelUrl).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                Request request = httpClient.newRequest(modelUrl).timeout(timeout, TimeUnit.MILLISECONDS)
                         .method(HttpMethod.GET).header("Authorization", "Bearer " + apiKey);
                 ContentResponse response = request.send();
                 if (response.getStatus() == 200) {
