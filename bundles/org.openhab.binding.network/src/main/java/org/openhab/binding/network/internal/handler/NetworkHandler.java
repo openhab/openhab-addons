@@ -80,7 +80,7 @@ public class NetworkHandler extends BaseThingHandler
     private ScheduledExecutorService executor;
 
     /**
-     * Do not call this directly, but use the {@see NetworkHandlerBuilder} instead.
+     * Creates a new instance using the specified parameters.
      */
     public NetworkHandler(Thing thing, ScheduledExecutorService executor, boolean isTCPServiceDevice,
             NetworkBindingConfiguration configuration) {
