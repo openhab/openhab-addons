@@ -16,13 +16,14 @@ import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -37,6 +38,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.net.CidrAddress;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -65,7 +67,6 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     // TCP port 554 (Windows share / Linux samba)
     // TCP port 1025 (Xbox / MS-RPC)
     private Set<Integer> tcpServicePorts = Set.of(80, 548, 554, 1025);
-    private AtomicInteger scannedIPcount = new AtomicInteger(0);
     private @Nullable ExecutorService executorService = null;
     private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
     private final NetworkUtils networkUtils = new NetworkUtils();
@@ -98,7 +99,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     @Deactivate
     protected void deactivate() {
         if (executorService != null) {
-            executorService.shutdown();
+            executorService.shutdownNow();
         }
         super.deactivate();
     }
@@ -120,51 +121,92 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     public void finalDetectionResult(PresenceDetectionValue value) {
     }
 
+    private ExecutorService createDiscoveryExecutor() {
+        int cores = Runtime.getRuntime().availableProcessors();
+        AtomicInteger count = new AtomicInteger(1);
+
+        return new ThreadPoolExecutor(cores * 2, // core pool size
+                cores * 8, // max pool size for bursts
+                60L, TimeUnit.SECONDS, // keep-alive for idle threads
+                new LinkedBlockingQueue<>(cores * 50), // bounded queue
+                r -> {
+                    Thread t = new Thread(r, "NetworkDiscovery-" + count.getAndIncrement());
+                    t.setDaemon(true);
+                    return t;
+                }, new ThreadPoolExecutor.CallerRunsPolicy() // backpressure when saturated
+        );
+    }
+
     /**
      * Starts the DiscoveryThread for each IP on each interface on the network
      */
     @Override
     protected void startScan() {
         if (executorService == null) {
-            executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+            executorService = createDiscoveryExecutor();
         }
         final ExecutorService service = executorService;
         if (service == null) {
             return;
         }
+
         removeOlderResults(getTimestampOfLastScan(), null);
-        logger.trace("Starting Network Device Discovery");
+        logger.debug("Starting Network Device Discovery");
 
-        final Set<String> networkIPs = networkUtils.getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE);
-        scannedIPcount.set(0);
+        Map<String, Set<CidrAddress>> discoveryList = networkUtils.getNetworkIPsPerInterface();
 
-        for (String ip : networkIPs) {
-            final PresenceDetection pd = new PresenceDetection(this, scheduler, Duration.ofSeconds(2));
-            pd.setHostname(ip);
-            pd.setIOSDevice(true);
-            pd.setUseDhcpSniffing(false);
-            pd.setTimeout(PING_TIMEOUT);
-            // Ping devices
-            pd.setUseIcmpPing(true);
-            pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
-            // TCP devices
-            pd.setServicePorts(tcpServicePorts);
+        // Track completion for all interfaces
+        final int totalInterfaces = discoveryList.size();
+        final AtomicInteger completedInterfaces = new AtomicInteger(0);
 
-            service.execute(() -> {
-                Thread.currentThread().setName("Discovery thread " + ip);
-                try {
-                    pd.getValue();
-                } catch (ExecutionException | InterruptedException e) {
-                    stopScan();
-                }
-                int count = scannedIPcount.incrementAndGet();
-                if (count == networkIPs.size()) {
-                    logger.trace("Scan of {} IPs successful", scannedIPcount);
-                    stopScan();
-                }
-            });
+        for (String networkInterface : discoveryList.keySet()) {
+            final Set<String> networkIPs = networkUtils.getNetworkIPs(
+                    Objects.requireNonNull(discoveryList.get(networkInterface)), MAXIMUM_IPS_PER_INTERFACE);
+            logger.debug("Scanning {} IPs on interface {} ", networkIPs.size(), networkInterface);
+            final AtomicInteger scannedIPcount = new AtomicInteger(0);
+
+            for (String ip : networkIPs) {
+                service.execute(() -> {
+                    PresenceDetection pd = presenceDetectorThreadLocal.get();
+
+                    // Reset per-IP fields
+                    pd.setHostname(ip);
+                    pd.setNetworkInterfaceNames(Set.of(networkInterface));
+                    pd.setIOSDevice(true);
+                    pd.setUseDhcpSniffing(false);
+                    pd.setTimeout(PING_TIMEOUT);
+                    pd.setUseIcmpPing(true);
+                    pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
+                    pd.setServicePorts(tcpServicePorts);
+
+                    try {
+                        pd.getValue();
+                    } catch (ExecutionException e) {
+                        logger.warn("Error scanning IP {} on interface {}: {}", ip, networkInterface, e.getMessage());
+                        // Do not stop the whole scan; just log and continue
+                    } catch (InterruptedException e1) {
+                        logger.trace("Scan interrupted for IP {} on interface {}", ip, networkInterface);
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                    int count = scannedIPcount.incrementAndGet();
+                    if (count == networkIPs.size()) {
+                        logger.debug("Scan of {} IPs on interface {} completed", scannedIPcount.get(),
+                                networkInterface);
+                        // Only call stopScan after all interfaces are done
+                        if (completedInterfaces.incrementAndGet() == totalInterfaces) {
+                            logger.debug("All network interface scans completed. Stopping scan.");
+                            stopScan();
+                            logger.debug("Finished Network Device Discovery");
+                        }
+                    }
+                });
+            }
         }
     }
+
+    private final ThreadLocal<PresenceDetection> presenceDetectorThreadLocal = ThreadLocal
+            .withInitial(() -> new PresenceDetection(this, Duration.ofSeconds(2)));
 
     @Override
     protected synchronized void stopScan() {
@@ -174,12 +216,15 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             return;
         }
 
+        service.shutdown(); // initiate shutdown
         try {
-            service.awaitTermination(PING_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+            if (!service.awaitTermination(PING_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
+                service.shutdownNow(); // force shutdown if still busy
+            }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Reset interrupt flag
+            service.shutdownNow();
+            Thread.currentThread().interrupt();
         }
-        service.shutdown();
         executorService = null;
     }
 
@@ -209,11 +254,8 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         };
         label += " (" + ip + ":" + tcpPort + ")";
 
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(PARAMETER_HOSTNAME, ip);
-        properties.put(PARAMETER_PORT, tcpPort);
         thingDiscovered(DiscoveryResultBuilder.create(createServiceUID(ip, tcpPort)).withTTL(DISCOVERY_RESULT_TTL)
-                .withProperties(properties).withLabel(label).build());
+                .withProperty(PARAMETER_HOSTNAME, ip).withProperty(PARAMETER_PORT, tcpPort).withLabel(label).build());
     }
 
     public static ThingUID createPingUID(String ip) {
@@ -229,8 +271,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     public void newPingDevice(String ip) {
         logger.trace("Found pingable network device with IP address {}", ip);
 
-        Map<String, Object> properties = Map.of(PARAMETER_HOSTNAME, ip);
         thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(DISCOVERY_RESULT_TTL)
-                .withProperties(properties).withLabel("Network Device (" + ip + ")").build());
+                .withProperty(PARAMETER_HOSTNAME, ip).withLabel("Network Device (" + ip + ")").build());
     }
 }
