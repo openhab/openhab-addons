@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -76,12 +77,15 @@ public class NetworkHandler extends BaseThingHandler
     // Retry counter. Will be reset as soon as a device presence detection succeed.
     private int retryCounter = 0;
     private NetworkHandlerConfiguration handlerConfiguration = new NetworkHandlerConfiguration();
+    private ScheduledExecutorService executor;
 
     /**
      * Do not call this directly, but use the {@see NetworkHandlerBuilder} instead.
      */
-    public NetworkHandler(Thing thing, boolean isTCPServiceDevice, NetworkBindingConfiguration configuration) {
+    public NetworkHandler(Thing thing, ScheduledExecutorService executor, boolean isTCPServiceDevice,
+            NetworkBindingConfiguration configuration) {
         super(thing);
+        this.executor = executor;
         this.isTCPServiceDevice = isTCPServiceDevice;
         this.configuration = configuration;
         this.configuration.addNetworkBindingConfigurationListener(this);
@@ -202,7 +206,7 @@ public class NetworkHandler extends BaseThingHandler
         updateStatus(ThingStatus.ONLINE);
 
         if (handlerConfiguration.refreshInterval > 0) {
-            refreshJob = scheduler.scheduleWithFixedDelay(presenceDetection::refresh, 0,
+            refreshJob = executor.scheduleWithFixedDelay(presenceDetection::refresh, 0,
                     handlerConfiguration.refreshInterval, TimeUnit.MILLISECONDS);
         }
     }
