@@ -71,7 +71,7 @@ public class NetworkHandlerTest extends JavaTest {
     @Test
     public void checkAllConfigurations() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
-        NetworkHandler handler = spy(new NetworkHandler(thing, true, config));
+        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, true, config));
         handler.setCallback(callback);
         // Provide all possible configuration
         when(thing.getConfiguration()).thenAnswer(a -> {
@@ -94,7 +94,7 @@ public class NetworkHandlerTest extends JavaTest {
     @Test
     public void tcpDeviceInitTests() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
-        NetworkHandler handler = spy(new NetworkHandler(thing, true, config));
+        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, true, config));
         assertThat(handler.isTCPServiceDevice(), is(true));
         handler.setCallback(callback);
         // Port is missing, should make the device OFFLINE
@@ -114,7 +114,7 @@ public class NetworkHandlerTest extends JavaTest {
     @Test
     public void pingDeviceInitTests() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
-        NetworkHandler handler = spy(new NetworkHandler(thing, false, config));
+        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, false, config));
         handler.setCallback(callback);
         // Provide minimal configuration
         when(thing.getConfiguration()).thenAnswer(a -> {

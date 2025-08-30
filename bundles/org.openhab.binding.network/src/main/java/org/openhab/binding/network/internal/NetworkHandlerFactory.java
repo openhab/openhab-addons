@@ -13,11 +13,13 @@
 package org.openhab.binding.network.internal;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.network.internal.handler.NetworkHandler;
 import org.openhab.binding.network.internal.handler.SpeedTestHandler;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -42,8 +44,10 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.network")
 public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
-
+    private static final String NETWORK_HANDLER_THREADPOOL_NAME = "networkBinding";
     private final Logger logger = LoggerFactory.getLogger(NetworkHandlerFactory.class);
+    private final ScheduledExecutorService executor = ThreadPoolManager
+            .getScheduledPool(NETWORK_HANDLER_THREADPOOL_NAME);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -78,9 +82,9 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(NetworkBindingConstants.PING_DEVICE)
                 || thingTypeUID.equals(NetworkBindingConstants.BACKWARDS_COMPATIBLE_DEVICE)) {
-            return new NetworkHandler(thing, false, configuration);
+            return new NetworkHandler(thing, executor, false, configuration);
         } else if (thingTypeUID.equals(NetworkBindingConstants.SERVICE_DEVICE)) {
-            return new NetworkHandler(thing, true, configuration);
+            return new NetworkHandler(thing, executor, true, configuration);
         } else if (thingTypeUID.equals(NetworkBindingConstants.SPEEDTEST_DEVICE)) {
             return new SpeedTestHandler(thing);
         }
