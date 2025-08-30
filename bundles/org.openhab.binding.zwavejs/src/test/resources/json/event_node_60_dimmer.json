@@ -1,0 +1,17 @@
+{
+    "type": "event",
+    "event": {
+        "source": "node",
+        "event": "value updated",
+        "nodeId": 60,
+        "args": {
+            "commandClassName": "Multilevel Switch",
+            "commandClass": 38,
+            "property": "currentValue",
+            "endpoint": 1,
+            "newValue": 52,
+            "prevValue": 98,
+            "propertyName": "currentValue"
+        }
+    }
+}
