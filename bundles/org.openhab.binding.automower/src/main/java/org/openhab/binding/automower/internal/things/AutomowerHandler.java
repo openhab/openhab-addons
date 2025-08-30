@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -129,24 +128,6 @@ public class AutomowerHandler extends BaseThingHandler {
                     int index = Integer.parseInt(channelIDSplit[0]) - 1;
                     String param = channelIDSplit[1];
                     sendAutomowerCalendarTask(command, index, param);
-                } else if (GROUP_WORKAREA.startsWith(groupId)) {
-                    String[] channelIDSplit = channelId.split("-", 2);
-                    int index = Integer.parseInt(channelIDSplit[0]) - 1;
-                    String param = channelIDSplit[1];
-                    if (CHANNEL_WORKAREA_CUTTING_HEIGHT.equals(param)) {
-                        if (command instanceof OnOffType cmd) {
-                            sendAutomowerWorkAreaEnable(index, ((cmd == OnOffType.ON) ? true : false));
-                        }
-                    } else if (CHANNEL_WORKAREA_ENABLED.equals(channelIDSplit[0])) {
-                        if (command instanceof QuantityType cmd) {
-                            cmd = cmd.toUnit("%");
-                            if (cmd != null) {
-                                sendAutomowerWorkAreaCuttingHeight(index, cmd.byteValue());
-                            }
-                        } else if (command instanceof DecimalType cmd) {
-                            sendAutomowerWorkAreaCuttingHeight(index, cmd.byteValue());
-                        }
-                    }
                 } else if (GROUP_SETTING.startsWith(groupId)) {
                     if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)) {
                         if (command instanceof DecimalType cmd) {
@@ -212,6 +193,10 @@ public class AutomowerHandler extends BaseThingHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(AutomowerActions.class);
+    }
+
+    public ZoneId getMowerZoneId() {
+        return this.mowerZoneId;
     }
 
     @Override
@@ -592,30 +577,36 @@ public class AutomowerHandler extends BaseThingHandler {
     /**
      * Sends WorkArea enable Setting to the automower
      *
-     * @param index Index of WorkArea
+     * @param areaId Id of WorkArea
      * @param enable WorkArea enabled or disabled
      * 
      */
-    public void sendAutomowerWorkAreaEnable(int index, boolean enable) {
+    public void sendAutomowerWorkAreaEnable(String areaId, boolean enable) {
         Mower mower = this.mowerState;
         if (mower != null && isValidResult(mower)) {
-            WorkArea workArea = mower.getAttributes().getWorkAreas().get(index);
-            sendAutomowerWorkArea(workArea.getWorkAreaId(), enable, workArea.getCuttingHeight());
+            WorkArea workArea = mower.getAttributes().getWorkAreas().stream()
+                    .filter(area -> String.valueOf(area.getWorkAreaId()).equals(areaId)).findFirst().orElse(null);
+            if (workArea != null) {
+                sendAutomowerWorkArea(workArea.getWorkAreaId(), enable, workArea.getCuttingHeight());
+            }
         }
     }
 
     /**
      * Sends WorkArea CuttingHeight Setting to the automower
      * 
-     * @param index Index of WorkArea
+     * @param areaId Id of WorkArea
      * @param cuttingHeight CuttingHeight of the WorkArea
      * 
      */
-    public void sendAutomowerWorkAreaCuttingHeight(int index, byte cuttingHeight) {
+    public void sendAutomowerWorkAreaCuttingHeight(String areaId, byte cuttingHeight) {
         Mower mower = this.mowerState;
         if (mower != null && isValidResult(mower)) {
-            WorkArea workArea = mower.getAttributes().getWorkAreas().get(index);
-            sendAutomowerWorkArea(workArea.getWorkAreaId(), workArea.isEnabled(), cuttingHeight);
+            WorkArea workArea = mower.getAttributes().getWorkAreas().stream()
+                    .filter(area -> String.valueOf(area.getWorkAreaId()).equals(areaId)).findFirst().orElse(null);
+            if (workArea != null) {
+                sendAutomowerWorkArea(workArea.getWorkAreaId(), workArea.isEnabled(), cuttingHeight);
+            }
         }
     }
 
@@ -911,32 +902,6 @@ public class AutomowerHandler extends BaseThingHandler {
             removeChannel(CHANNEL_STAYOUTZONE_DIRTY, channelRemove);
         }
 
-        i = 0;
-        if (capabilities.hasWorkAreas()) {
-            List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
-            if (workAreas != null) {
-                for (; i < workAreas.size(); i++) {
-                    int j = 0;
-                    createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "Number", channelAdd);
-                    createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "String", channelAdd);
-                    createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "Number:Dimensionless", channelAdd);
-                    createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "Switch", channelAdd);
-                    createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "Number:Dimensionless", channelAdd);
-                    createIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), CHANNEL_TYPE_WORKAREA.get(j++),
-                            "DateTime", channelAdd);
-                }
-            }
-        }
-        // remove all consecutive channels that are no longer required
-        for (int j = 0; j < CHANNEL_WORKAREA.size(); j++) {
-            removeConsecutiveIndexedChannels(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j), channelRemove);
-        }
-
         // remove channels that are now longer required and add new once
         updateThing(editThing().withChannels(channelAdd).withoutChannels(channelRemove).build());
     }
@@ -1135,7 +1100,6 @@ public class AutomowerHandler extends BaseThingHandler {
 
                 List<StayOutZone> stayOutZoneList = mower.getAttributes().getStayOutZones().getZones();
                 if (stayOutZoneList != null) {
-                    // Adding handler to map of handlers
                     AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
                     if (automowerBridgeHandler != null) {
                         for (StayOutZone zone : stayOutZoneList) {
@@ -1154,42 +1118,19 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private void updateWorkAreasChannels(Mower mower, Capabilities capabilities) {
-        int i = 0;
         if (capabilities.hasWorkAreas()) {
             List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
             if (workAreas != null) {
-                for (; i < workAreas.size(); i++) {
-                    int j = 0;
-                    WorkArea workArea = workAreas.get(i);
-                    updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                            new DecimalType(workArea.getWorkAreaId()));
-
-                    if (workArea.getWorkAreaId() == 0L && workArea.getName().isBlank()) {
-                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                new StringType("main area"));
-                    } else {
-                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                new StringType(workArea.getName()));
-                    }
-                    updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                            new QuantityType<>(workArea.getCuttingHeight(), Units.PERCENT));
-                    updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                            OnOffType.from(workArea.isEnabled()));
-                    if (workArea.getProgress() != null) {
-                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                new QuantityType<>(workArea.getProgress(), Units.PERCENT));
-                    } else {
-                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), UnDefType.NULL);
-                    }
-
-                    // lastTimeCompleted is in seconds, convert it to milliseconds
-                    Long lastTimeCompleted = workArea.getLastTimeCompleted();
-                    // If lastTimeCompleted is 0 it means the work area has never been completed
-                    if (lastTimeCompleted != null && lastTimeCompleted != 0L) {
-                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), new DateTimeType(
-                                toZonedDateTime(TimeUnit.SECONDS.toMillis(lastTimeCompleted), mowerZoneId)));
-                    } else {
-                        updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), UnDefType.NULL);
+                AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+                if (automowerBridgeHandler != null) {
+                    for (WorkArea area : workAreas) {
+                        AutomowerWorkAreaHandler areaHandler = automowerBridgeHandler
+                                .getAutomowerWorkAreaHandlerByThingId(String.valueOf(area.getWorkAreaId()));
+                        if (areaHandler != null) {
+                            areaHandler.updateWorkAreaChannels(area, this);
+                        } else {
+                            logger.trace("No AutomowerWorkAreaHandler found for areaId: {}", area.getWorkAreaId());
+                        }
                     }
                 }
             }
@@ -1259,7 +1200,7 @@ public class AutomowerHandler extends BaseThingHandler {
      * @param zoneId - Intended timezone of the timestamp
      * @return ZonedDateTime using provided timezone
      */
-    private ZonedDateTime toZonedDateTime(long timestamp, ZoneId zoneId) {
+    public ZonedDateTime toZonedDateTime(long timestamp, ZoneId zoneId) {
         return ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("UTC")).withZoneSameLocal(zoneId);
     }
 

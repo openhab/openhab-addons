@@ -113,9 +113,13 @@
 		<description>An automatic lawn mower work-area</description>
 		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
-		<channel-groups>
-			<channel-group id="workarea" typeId="workAreasType"/>
-		</channel-groups>
+		<channels>
+			<channel id="name" typeId="workareaNameType"/>
+			<channel id="cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="enabled" typeId="workareaEnabledType"/>
+			<channel id="progress" typeId="workareaProgressType"/>
+			<channel id="last-time-completed" typeId="workareaLastTimeCompletedType"/>
+		</channels>
 
 		<properties>
 			<property name="mowerId">N/A</property>
@@ -213,20 +217,6 @@
 		<!-- channels created on demand
 			<channels>
 			<channel id="dirty" typeId="zoneDirtyType"/>
-			</channels>
-		-->
-	</channel-group-type>	<!-- Work Areas -->
-	<channel-group-type id="workAreasType">
-		<label>Work Areas</label>
-		<!-- channels created on demand
-			<channels>
-			<channel id="<xx>-id" typeId="workareaIdType"/>
-			<channel id="<xx>-name" typeId="workareaNameType"/>
-			<channel id="<xx>-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="<xx>-enabled" typeId="workareaEnabledType"/>
-			<channel id="<xx>-progress" typeId="workareaProgressType"/>
-			<channel id="<xx>-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			...
 			</channels>
 		-->
 	</channel-group-type>
@@ -635,36 +625,29 @@
 	</channel-type>
 
 	<!-- Work Areas -->
-	<channel-type id="workareaIdType" advanced="true">
-		<item-type>Number</item-type>
-		<label>Work Area Id</label>
-		<description>Id of the Work Area</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="workareaNameType" advanced="true">
+	<channel-type id="workareaNameType" advanced="false">
 		<item-type>String</item-type>
-		<label>Work Area Name</label>
+		<label>Name</label>
 		<description>Name of the Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="workareaCuttingHeightType" advanced="true">
+	<channel-type id="workareaCuttingHeightType" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cutting Height</label>
 		<description>Cutting height of the Work Area, range: 0-100</description>
 		<state pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="workareaEnabledType" advanced="true">
+	<channel-type id="workareaEnabledType" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Work Area Enabled</label>
+		<label>Enabled</label>
 		<description>If the Work Area is enabled or disabled</description>
 	</channel-type>
 
 	<channel-type id="workareaProgressType" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Work Area Progress</label>
+		<label>Progress</label>
 		<description>The progress on a Work Area. EPOS Automower® and systematic mowing Work Areas only</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>

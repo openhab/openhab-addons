@@ -87,14 +87,12 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                     ThingTypeUID zoneThingTypeUID = THING_TYPE_STAYOUTZONE;
                     ThingUID zoneThingUid = new ThingUID(THING_TYPE_STAYOUTZONE, bridgeUID, stayOutZone.getId());
 
-                    Map<String, Object> stayoutZoneProperties = new HashMap<>();
-                    stayoutZoneProperties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
-                    stayoutZoneProperties.put(AutomowerBindingConstants.AUTOMOWER_STAYOUTZONE_ID, stayOutZone.getId());
-
-                    this.bridgeHandler.registerMowerIdForZoneId(stayOutZone.getId(), mower.getId());
+                    Map<String, Object> zoneProperties = new HashMap<>();
+                    zoneProperties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
+                    zoneProperties.put(AutomowerBindingConstants.AUTOMOWER_STAYOUTZONE_ID, stayOutZone.getId());
 
                     DiscoveryResult stayoutZoneDiscoveryResult = DiscoveryResultBuilder.create(zoneThingUid)
-                            .withThingType(zoneThingTypeUID).withProperties(stayoutZoneProperties).withBridge(bridgeUID)
+                            .withThingType(zoneThingTypeUID).withProperties(zoneProperties).withBridge(bridgeUID)
                             .withRepresentationProperty(AutomowerBindingConstants.AUTOMOWER_STAYOUTZONE_ID)
                             .withLabel(mower.getAttributes().getSystem().getName() + " - StayoutZone "
                                     + stayOutZone.getName())
@@ -112,12 +110,16 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                     areaProperties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
                     areaProperties.put(AutomowerBindingConstants.AUTOMOWER_WORKAREA_ID, workArea.getWorkAreaId());
 
+                    String areaName;
+                    if (workArea.getWorkAreaId() == 0L && workArea.getName().isBlank()) {
+                        areaName = "main area";
+                    } else {
+                        areaName = workArea.getName();
+                    }
                     DiscoveryResult areaDiscoveryResult = DiscoveryResultBuilder.create(areaThingUid)
                             .withThingType(areaThingTypeUID).withProperties(areaProperties).withBridge(bridgeUID)
                             .withRepresentationProperty(AutomowerBindingConstants.AUTOMOWER_WORKAREA_ID)
-                            .withLabel(
-                                    mower.getAttributes().getSystem().getName() + " - WorkArea " + workArea.getName())
-                            .build();
+                            .withLabel(mower.getAttributes().getSystem().getName() + " - WorkArea " + areaName).build();
 
                     thingDiscovered(areaDiscoveryResult);
                 }

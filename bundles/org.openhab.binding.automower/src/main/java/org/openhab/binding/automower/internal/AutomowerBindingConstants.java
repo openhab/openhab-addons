@@ -126,21 +126,6 @@ public class AutomowerBindingConstants {
 
     public static final String CHANNEL_STAYOUTZONE_DIRTY = GROUP_STAYOUTZONE + "dirty";
 
-    // Work Areas Channel ids
-    public static final String GROUP_WORKAREA = "workarea#";
-
-    public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = "area-cutting-height";
-    public static final String CHANNEL_WORKAREA_ENABLED = "area-enabled";
-    public static final ArrayList<String> CHANNEL_WORKAREA = new ArrayList<>(List.of("area-id", "area-name",
-            CHANNEL_WORKAREA_CUTTING_HEIGHT, CHANNEL_WORKAREA_ENABLED, "area-progress", "area-last-time-completed"));
-
-    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_WORKAREA = new ArrayList<>(List.of(
-            new ChannelTypeUID(BINDING_ID, "workareaIdType"), new ChannelTypeUID(BINDING_ID, "workareaNameType"),
-            new ChannelTypeUID(BINDING_ID, "workareaCuttingHeightType"),
-            new ChannelTypeUID(BINDING_ID, "workareaEnabledType"),
-            new ChannelTypeUID(BINDING_ID, "workareaProgressType"),
-            new ChannelTypeUID(BINDING_ID, "workareaLastTimeCompletedType")));
-
     // Messages Channel ids
     public static final String GROUP_MESSAGE = "message#";
 
@@ -191,6 +176,14 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STAYOUTZONE_NAME = "name";
     public static final String CHANNEL_STAYOUTZONE_ENABLED = "enabled";
 
+    // Work Area Channel ids
+    public static final String CHANNEL_WORKAREA_NAME = "name";
+    public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = "cutting-height";
+    public static final String CHANNEL_WORKAREA_ENABLED = "enabled";
+    public static final String CHANNEL_WORKAREA_PROGRESS = "progress";
+    public static final String CHANNEL_WORKAREA_LAST_TIME_COMPLETED = "last-time-completed";
+
+    // Error codes and messages
     public static final Map<Integer, String> ERROR = new HashMap<>() {
         private static final long serialVersionUID = 1L;
         {
