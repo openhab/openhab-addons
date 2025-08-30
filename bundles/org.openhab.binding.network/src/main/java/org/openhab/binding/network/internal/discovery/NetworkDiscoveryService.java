@@ -188,9 +188,13 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
                     try {
                         pd.getValue();
-                    } catch (ExecutionException | InterruptedException e) {
+                    } catch (ExecutionException e) {
                         logger.warn("Error scanning IP {} on interface {}: {}", ip, networkInterface, e.getMessage());
                         // Do not stop the whole scan; just log and continue
+                    } catch (InterruptedException e1) {
+                        logger.trace("Scan interrupted for IP {} on interface {}", ip, networkInterface);
+                        Thread.currentThread().interrupt();
+                        return;
                     }
                     int count = scannedIPcount.incrementAndGet();
                     if (count == networkIPs.size()) {
