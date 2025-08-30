@@ -67,7 +67,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     // TCP port 554 (Windows share / Linux samba)
     // TCP port 1025 (Xbox / MS-RPC)
     private Set<Integer> tcpServicePorts = Set.of(80, 548, 554, 1025);
-    private @Nullable ExecutorService executorService = null;
+
+    /* All access must be guarded by "this" */
+    private @Nullable ExecutorService executorService;
     private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
     private final NetworkUtils networkUtils = new NetworkUtils();
 
@@ -98,8 +100,11 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     @Override
     @Deactivate
     protected void deactivate() {
-        if (executorService != null) {
-            executorService.shutdownNow();
+        synchronized (this) {
+            if (executorService != null) {
+                executorService.shutdownNow();
+                executorService = null;
+            }
         }
         super.deactivate();
     }
@@ -142,10 +147,13 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
      */
     @Override
     protected void startScan() {
-        if (executorService == null) {
-            executorService = createDiscoveryExecutor();
+        final ExecutorService service;
+        synchronized (this) {
+            if (executorService == null) {
+                executorService = createDiscoveryExecutor();
+            }
+            service = executorService;
         }
-        final ExecutorService service = executorService;
         if (service == null) {
             return;
         }
@@ -205,23 +213,25 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    protected synchronized void stopScan() {
-        super.stopScan();
-        final ExecutorService service = executorService;
-        if (service == null) {
-            return;
+    protected void stopScan() {
+        final ExecutorService service;
+        synchronized (this) {
+            super.stopScan();
+            service = executorService;
+            if (service == null) {
+                return;
+            }
+            executorService = null;
         }
 
-        service.shutdown(); // initiate shutdown
+        service.shutdownNow(); // Initiate shutdown
         try {
             if (!service.awaitTermination(PING_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
-                service.shutdownNow(); // force shutdown if still busy
+                logger.warn("Network discovery scan failed to stop within the timeout of {}", PING_TIMEOUT);
             }
         } catch (InterruptedException e) {
-            service.shutdownNow();
             Thread.currentThread().interrupt();
         }
-        executorService = null;
     }
 
     public static ThingUID createServiceUID(String ip, int tcpPort) {
