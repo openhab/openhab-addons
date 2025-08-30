@@ -69,9 +69,9 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         updateJSON(state);
-        super.updateFromEvccState(state);
+        super.updateStatesFromApiResponse(state);
     }
 
     protected void updateJSON(JsonObject state) {

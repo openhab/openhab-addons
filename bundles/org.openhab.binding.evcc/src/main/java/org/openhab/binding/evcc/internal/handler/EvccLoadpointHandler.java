@@ -29,6 +29,8 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -40,6 +42,11 @@ import com.google.gson.JsonObject;
 public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccLoadpointHandler.class);
+
+    // JSON keys that need a special treatment, in example for backwards compatibility
+    private static final Map<String, String> JSON_KEYS = Map.ofEntries(Map.entry("chargeCurrent", "offeredCurrent"),
+            Map.entry("vehiclePresent", "connected"), Map.entry("enabled", "charging"),
+            Map.entry("phases", "phasesConfigured"), Map.entry("chargeCurrents", ""));
     protected final int index;
     private int[] version = {};
 
@@ -55,7 +62,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL() + API_PATH_LOADPOINTS + "/" + (index + 1);
-            JsonObject stateOpt = handler.getCachedEvccState();
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
@@ -76,7 +83,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
             String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
-            // Backwardscompatibility for phasesConfigured
+            // Backwards compatibility for phasesConfigured
             if ("configuredPhases".equals(datapoint) && version[0] == 0 && version[1] < 200) {
                 datapoint = "phases";
             }
@@ -104,27 +111,33 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         version = Utils.convertVersionStringToIntArray(state.get("version").getAsString().split(" ")[0]);
         state = state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
         modifyJSON(state);
-        super.updateFromEvccState(state);
+        super.updateStatesFromApiResponse(state);
     }
 
     private void modifyJSON(JsonObject state) {
-        // This is for backward compatibility with older evcc versions
-        if (state.has("chargeCurrent")) {
-            state.addProperty("offeredCurrent", state.get("chargeCurrent").getAsDouble());
-            state.remove("chargeCurrent");
-        }
-        if (state.has("vehiclePresent")) {
-            state.add("connected", state.get("vehiclePresent"));
-        }
-        if (state.has("enabled")) {
-            state.add("charging", state.get("enabled"));
-        }
-        if (state.has("phases")) {
-            state.add("phasesConfigured", state.get("phases"));
+        JSON_KEYS.forEach((oldKey, newKey) -> {
+            if (state.has(oldKey)) {
+                if (oldKey.equals("chargeCurrents")) {
+                    addMeasurementDatapointsToState(state, state.getAsJsonArray(oldKey), "Current");
+                } else if (oldKey.equals("chargeVoltages")) {
+                    addMeasurementDatapointsToState(state, state.getAsJsonArray(oldKey), "Voltage");
+                } else {
+                    state.add(newKey, state.get(oldKey));
+                }
+                state.remove(oldKey);
+            }
+        });
+    }
+
+    protected void addMeasurementDatapointsToState(JsonObject state, JsonArray values, String datapoint) {
+        int phase = 1;
+        for (JsonElement value : values) {
+            state.add("charge" + datapoint + "L" + phase, value);
+            phase++;
         }
     }
 
