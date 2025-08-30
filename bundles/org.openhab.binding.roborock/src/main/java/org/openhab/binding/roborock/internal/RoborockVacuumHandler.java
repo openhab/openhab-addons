@@ -153,7 +153,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (channelUID.getId().equals(CHANNEL_RPC) || channelUID.getId().equals(CHANNEL_COMMAND)) {
-                sendRPCCommand(command.toString());
+                String[] commandArray = command.toFullString().split(",", 2);
+                if (commandArray.length == 1) {
+                    sendRPCCommand(commandArray[0]);
+                } else {
+                    sendRPCCommand(commandArray[0], commandArray[1]);
+                }
                 return;
             }
             if (channelUID.getId().equals(CHANNEL_VACUUM)) {
