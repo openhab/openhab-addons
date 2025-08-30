@@ -7,6 +7,5 @@
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-ui-habot</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.chatgpt/${project.version}</bundle>
-		<bundle dependency="true">mvn:com.google.code.gson/gson/2.13.1</bundle>
 	</feature>
 </features>
