@@ -367,13 +367,13 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 // {"I":3119,"T":"S","D":"timestamp","U":"s","R":["U32","-1"],"L":1},
                 if (s.value != 0) {
                     updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
-                            getTimestamp(getString("GMT"), (long) s.value));
+                            getTimestamp(getString(profile.settings.timezone), (long) s.value));
                 }
                 break;
             case "3120": // motionActive (timestamp os GMT, not adapted to the adapted timezone)
                 // {"I":3120,"T":"S","D":"motionActive","R":["0/1","-1"],"L":1},
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_ACT,
-                        getTimestamp("GMT", (long) s.value));
+                        getTimestamp(getString(profile.settings.timezone), (long) s.value));
                 break;
 
             case "6108": // A, gas, none/mild/heavy/test or unknown

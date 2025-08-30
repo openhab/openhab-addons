@@ -61,60 +61,68 @@ public class ShellyThingCreatorTest {
 
     @ParameterizedTest
     @MethodSource("provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset")
-    void getThingUIDReturnsThingUidAccordingToRuleset(String serviceName, String mode,
+    void getThingUIDReturnsThingUidAccordingToRuleset(String serviceName, String deviceType, String mode,
             ThingTypeUID expectedThingTypeUid) {
-        ThingUID actual = ShellyThingCreator.getThingUID(serviceName, "", mode);
+        ThingUID actual = ShellyThingCreator.getThingUID(serviceName, deviceType, mode);
         ThingUID expected = new ThingUID(expectedThingTypeUid, DEVICE_ID);
 
-        assertThat("serviceName: " + serviceName + "; mode: " + mode, actual, is(equalTo(expected)));
+        assertThat("serviceName: " + serviceName + "; deviceType: " + deviceType + "; mode: " + mode, actual,
+                is(equalTo(expected)));
         assertThat(SUPPORTED_THING_TYPES, hasItem(expectedThingTypeUid));
     }
 
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset() {
         return Stream.of( //
-                Arguments.of("johndoe-" + DEVICE_ID, "", THING_TYPE_SHELLYUNKNOWN), //
-                Arguments.of("shellyplug-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUG), //
-                Arguments.of("shellyplug-s-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUGS), //
-                Arguments.of("shellyplug-u1-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUG), //
-                Arguments.of("shellyplugu1-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUGU1), //
-                Arguments.of("shellyplusplug-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGS), //
-                Arguments.of("shellyplugsg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGS), //
-                Arguments.of("shellyplugus-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGUS), //
-                Arguments.of("shellydimmer-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER), //
-                Arguments.of("shellydimmer2-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER2), //
-                Arguments.of("shellyem-" + DEVICE_ID, "", THING_TYPE_SHELLYEM), //
-                Arguments.of("shellyem3-" + DEVICE_ID, "", THING_TYPE_SHELLY3EM), //
-                Arguments.of("shellyrgbw2-" + DEVICE_ID, "color", THING_TYPE_SHELLYRGBW2_COLOR), //
-                Arguments.of("shellyrgbw2-" + DEVICE_ID, "white", THING_TYPE_SHELLYRGBW2_WHITE), //
-                Arguments.of("shellycolorbulb-" + DEVICE_ID, "", THING_TYPE_SHELLYDUORGBW), //
-                Arguments.of("shellyvintage-" + DEVICE_ID, "", THING_TYPE_SHELLYVINTAGE), //
-                Arguments.of("shellybulb-" + DEVICE_ID, "", THING_TYPE_SHELLYBULB), //
-                Arguments.of("shellybulbduo-" + DEVICE_ID, "", THING_TYPE_SHELLYDUO), //
-                Arguments.of("shellymotion-" + DEVICE_ID, "", THING_TYPE_SHELLYMOTION), //
-                Arguments.of("shellymotion2-" + DEVICE_ID, "", THING_TYPE_SHELLYMOTION), //
-                Arguments.of("shellymotionsensor-" + DEVICE_ID, "", THING_TYPE_SHELLYMOTION),
-                Arguments.of("shellyflood-" + DEVICE_ID, "", THING_TYPE_SHELLYFLOOD),
-                Arguments.of("shellyht-" + DEVICE_ID, "", THING_TYPE_SHELLYHT),
-                Arguments.of("shellydw-" + DEVICE_ID, "", THING_TYPE_SHELLYDOORWIN),
-                Arguments.of("shellydw2-" + DEVICE_ID, "", THING_TYPE_SHELLYDOORWIN2),
-                Arguments.of("shellygas-" + DEVICE_ID, "", THING_TYPE_SHELLYGAS),
-                Arguments.of("shellyuni-" + DEVICE_ID, "", THING_TYPE_SHELLYUNI),
-                Arguments.of("shellyem-" + DEVICE_ID, "", THING_TYPE_SHELLYEM),
-                Arguments.of("shellyem3-" + DEVICE_ID, "", THING_TYPE_SHELLY3EM),
+                Arguments.of("johndoe-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNKNOWN), //
+                Arguments.of("shellyazplug-" + DEVICE_ID, SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of("shellyplugsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGSAZ, "", THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of("shellyoutdoorsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGOUTDOORSG3, "",
+                        THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of("shellyplug-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
+                Arguments.of("shellyplug-s-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS), //
+                Arguments.of("shellyplug-u1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG), //
+                Arguments.of("shellyplugu1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1), //
+                Arguments.of("shellyplusplug-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of("shellyplugsg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of("shellyplugus-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGUS), //
+                Arguments.of("shellydimmer-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDIMMER), //
+                Arguments.of("shellydimmer2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDIMMER2), //
+                Arguments.of("shellyem-" + DEVICE_ID, "", "", THING_TYPE_SHELLYEM), //
+                Arguments.of("shellyem3-" + DEVICE_ID, "", "", THING_TYPE_SHELLY3EM), //
+                Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "color", THING_TYPE_SHELLYRGBW2_COLOR), //
+                Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "white", THING_TYPE_SHELLYRGBW2_WHITE), //
+                Arguments.of("shellycolorbulb-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDUORGBW), //
+                Arguments.of("shellyvintage-" + DEVICE_ID, "", "", THING_TYPE_SHELLYVINTAGE), //
+                Arguments.of("shellybulb-" + DEVICE_ID, "", "", THING_TYPE_SHELLYBULB), //
+                Arguments.of("shellybulbduo-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDUO), //
+                Arguments.of("shellymotion-" + DEVICE_ID, "", "", THING_TYPE_SHELLYMOTION), //
+                Arguments.of("shellymotion2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYMOTION), //
+                Arguments.of("shellymotionsensor-" + DEVICE_ID, "", "", THING_TYPE_SHELLYMOTION),
+                Arguments.of("shellyflood-" + DEVICE_ID, "", "", THING_TYPE_SHELLYFLOOD),
+                Arguments.of("shellyht-" + DEVICE_ID, "", "", THING_TYPE_SHELLYHT),
+                Arguments.of("shellydw-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDOORWIN),
+                Arguments.of("shellydw2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYDOORWIN2),
+                Arguments.of("shellygas-" + DEVICE_ID, "", "", THING_TYPE_SHELLYGAS),
+                Arguments.of("shellyuni-" + DEVICE_ID, "", "", THING_TYPE_SHELLYUNI),
+                Arguments.of("shellyem-" + DEVICE_ID, "", "", THING_TYPE_SHELLYEM),
+                Arguments.of("shellyem3-" + DEVICE_ID, "", "", THING_TYPE_SHELLY3EM),
 
-                // Shelly Plus
-                Arguments.of("shelly3em63g3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS3EM63),
+                // SHelly Plus
+                Arguments.of("shellyemg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSEM),
+                Arguments.of("shelly3em63g3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUS3EM63),
+                Arguments.of("shellydimmerg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER),
+                Arguments.of("shellydimmerg4-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER),
+                Arguments.of("shellyplus010v-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER10V),
+                Arguments.of("shelly0110dimg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMER10V),
+                Arguments.of("Shellyddimmerg3-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDALIDIMMER),
+                Arguments.of("shellypluswdus-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSDIMMERUS),
 
                 // Shelly Pro
-                Arguments.of("shellypro3em-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM),
-                Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM63),
-                Arguments.of("shellypro3em400-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM400), //
-
-                // Shelly BLU
-                Arguments.of("shellyblubutton-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUBUTTON), //
-                Arguments.of("shellybluht-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUHT), //
-                Arguments.of("shellybludw-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUDW), //
-                Arguments.of("shellyblumotion-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUMOTION) //
+                Arguments.of("shellypro3em-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM),
+                Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM63),
+                Arguments.of("shellypro3em400-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRO3EM400),
+                Arguments.of("shellyprodm1pm-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRODIMMER1PM),
+                Arguments.of("shellyprodm2pm-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPRODIMMER2PM) //
         );
     }
 
@@ -200,6 +208,9 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSHTG3, "", THING_TYPE_SHELLYPLUSHT), //
                 Arguments.of(SHELLYDT_PLUSSMOKE, "", THING_TYPE_SHELLYPLUSSMOKE), //
                 Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYPLUSUNI), //
+                Arguments.of(SHELLYDT_PLUSDIMMERG3, "", THING_TYPE_SHELLYPLUSDIMMER), //
+                Arguments.of(SHELLYDT_PLUSDIMMERG4, "", THING_TYPE_SHELLYPLUSDIMMER), //
+                Arguments.of(SHELLYDT_PLUSDIMMERDALIG3, "", THING_TYPE_SHELLYPLUSDALIDIMMER), //
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS), //
                 Arguments.of(SHELLYDT_PLUSDIMMER10V, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
                 Arguments.of(SHELLYDT_PLUSDIMMER0110VG3, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
@@ -207,7 +218,6 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSEM, "", THING_TYPE_SHELLYPLUSEM), //
                 Arguments.of(SHELLYDT_PLUS3EM63, "", THING_TYPE_SHELLYPLUS3EM63), //
                 Arguments.of(SHELLYDT_PLUSRGBWPM, "", THING_TYPE_SHELLYPLUSRGBWPM),
-                Arguments.of(SHELLYDT_PLUSBLUGW, "", THING_TYPE_SHELLYPLUSBLUGW), //
 
                 // Plus Mini Series
                 Arguments.of(SHELLYDT_MINI_1, "", THING_TYPE_SHELLYMINI_1), //
@@ -247,36 +257,19 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
                 Arguments.of(SHELLYDT_PRO3EM3CT63, "", THING_TYPE_SHELLYPRO3EM63), //
                 Arguments.of(SHELLYDT_PRO3EM400, "", THING_TYPE_SHELLYPRO3EM400), //
+                Arguments.of(SHELLYDT_PRODIMMER1PM, "", THING_TYPE_SHELLYPRODIMMER1PM), //
+                Arguments.of(SHELLYDT_PRODIMMER2PM, "", THING_TYPE_SHELLYPRODIMMER2PM), //
+                Arguments.of(SHELLYDT_PRODIMMER10V, "", THING_TYPE_SHELLYPRODIMMER10V), //
 
                 // BLU Series
-                Arguments.of(SHELLYDT_BLUBUTTON1, "", THING_TYPE_SHELLYBLUBUTTON), //
-                Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
+                Arguments.of(SHELLYDT_BLUBUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
                 Arguments.of(SHELLYDT_BLUDW, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of(SHELLYDT_BLUMOTION, "", THING_TYPE_SHELLYBLUMOTION), //
-
-                Arguments.of(SHELLYDT_BLUCLASS_BUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
-                Arguments.of(SHELLYDT_BLUCLASS_HT, "", THING_TYPE_SHELLYBLUHT), //
-                Arguments.of(SHELLYDT_BLUCLASS_DW, "", THING_TYPE_SHELLYBLUDW), //
-                Arguments.of(SHELLYDT_BLUCLASS_MOTION, "", THING_TYPE_SHELLYBLUMOTION), //
+                Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
+                Arguments.of(SHELLYDT_PLUSBLUGW, "", THING_TYPE_SHELLYPLUSBLUGW), //
 
                 // Wall displays
                 Arguments.of(SHELLYDT_PLUSWALLDISPLAY, "", THING_TYPE_SHELLYPLUSWALLDISPLAY));
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideTestCasesForgetThingUIDDeviceTypeTakesPrecedence")
-    void getThingUIDDeviceTypeTakesPrecedence(String serviceName, String deviceType,
-            ThingTypeUID expectedThingTypeUid) {
-        ThingUID actual = ShellyThingCreator.getThingUID(serviceName, deviceType, "");
-        ThingUID expected = new ThingUID(expectedThingTypeUid, DEVICE_ID);
-
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    private static Stream<Arguments> provideTestCasesForgetThingUIDDeviceTypeTakesPrecedence() {
-        return Stream.of( //
-                Arguments.of("shellyplusshutter-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE), //
-                Arguments.of("notfound-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE));
     }
 
     @Test
@@ -296,27 +289,26 @@ public class ShellyThingCreatorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideTestCasesForGetBluServiceName")
-    void getBluServiceName(String name, String mac, String expectedServiceName) {
-        String actualServiceName = ShellyThingCreator.getBluServiceName(name, mac);
-        assertThat(actualServiceName, is(equalTo(expectedServiceName)));
+    @MethodSource("provideTestCasesForIsValidShellyServiceName")
+    void isValidShellyServiceName(String serviceName, boolean expected) {
+        assertThat("serviceName: " + serviceName, ShellyThingCreator.isValidShellyServiceName(serviceName),
+                is(expected));
     }
 
-    private static Stream<Arguments> provideTestCasesForGetBluServiceName() {
+    private static Stream<Arguments> provideTestCasesForIsValidShellyServiceName() {
         return Stream.of( //
-                Arguments.of("SBBT", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
-                Arguments.of("SBBT-02C", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
-                Arguments.of("SBBT-02C-03D", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
-                Arguments.of("SBDW", "001A2B3C4D5E", "shellybludw-001a2b3c4d5e"), //
-                Arguments.of("SBMO", "001A2B3C4D5E", "shellyblumotion-001a2b3c4d5e"), //
-                Arguments.of("SBHT", "001A2B3C4D5E", "shellybluht-001a2b3c4d5e"), //
-                Arguments.of("SBHT", "00:1A:2B:3C:4D:5E", "shellybluht-001a2b3c4d5e"));
-    }
-
-    @Test
-    void getBluServiceNameWhenNameUnknownThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ShellyThingCreator.getBluServiceName("sbbt", "001A2B3C4D5E");
-        });
+                Arguments.of("shellypmmini-123456789012", true), //
+                Arguments.of("ShellyPlusPMMini-Test", true), //
+                Arguments.of("shelly1-ABC", true), //
+                Arguments.of("ShellyOne-001", true), //
+                Arguments.of("MyShelly-001", true), //
+                Arguments.of("my-shelly", false), //
+                Arguments.of("shelly_one-001", false), //
+                Arguments.of("shelly-", false), //
+                Arguments.of("shelly 1-001", false), //
+                Arguments.of("shelly1-001!", false), //
+                Arguments.of("shell-001", false), //
+                Arguments.of("ShellyPlusPMMini", false), //
+                Arguments.of("ShellyPlusPMMini - Test", false));
     }
 }
