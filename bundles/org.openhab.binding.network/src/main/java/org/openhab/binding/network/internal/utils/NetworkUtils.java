@@ -185,14 +185,22 @@ public class NetworkUtils {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface networkInterface = en.nextElement();
-                if (networkInterface.isUp() && !networkInterface.isLoopback()) {
-                    logger.trace("Network interface: {} is included in the search", networkInterface.getName());
-                    outputMap.put(networkInterface.getName(),
-                            networkInterface.getInterfaceAddresses().stream()
-                                    .map(m -> new CidrAddress(m.getAddress(), m.getNetworkPrefixLength()))
-                                    .collect(Collectors.toSet()));
-                } else {
+                if (networkInterface.isUp() || !networkInterface.isLoopback()) {
                     logger.trace("Network interface: {} is excluded in the search", networkInterface.getName());
+                    continue;
+                }
+
+                Set<CidrAddress> addresses = networkInterface.getInterfaceAddresses().stream()
+                        .map(m -> new CidrAddress(m.getAddress(), m.getNetworkPrefixLength()))
+                        .filter(cidr -> !cidr.getAddress().isLoopbackAddress()) // (127.x.x.x, ::1)
+                        .filter(cidr -> !cidr.getAddress().isLinkLocalAddress())// (169.254.x.x or fe80::/10)
+                        .collect(Collectors.toSet());
+
+                if (!addresses.isEmpty()) {
+                    logger.trace("Network interface: {} is included in the search", networkInterface.getName());
+                    outputMap.put(networkInterface.getName(), addresses);
+                } else {
+                    logger.trace("Network interface: {} has no usable addresses", networkInterface.getName());
                 }
             }
         } catch (SocketException e) {
