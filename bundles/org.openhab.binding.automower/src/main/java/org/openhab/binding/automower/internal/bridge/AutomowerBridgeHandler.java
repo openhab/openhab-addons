@@ -34,6 +34,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
+import org.openhab.binding.automower.internal.things.AutomowerStayoutZoneHandler;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.thing.Bridge;
@@ -71,6 +72,9 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private final WebSocketClient webSocketClient;
     private boolean closing;
     private Map<String, AutomowerHandler> automowerHandlers = new HashMap<>();
+    private Map<String, AutomowerStayoutZoneHandler> automowerStayoutZoneHandlers = new HashMap<>();
+    private Map<String, String> zoneId2mowerid = new HashMap<>();
+    // private Map<String, AutomowerWorkAreaHandler> automowerWorkAreaHandlers = new HashMap<>();
 
     public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
             WebSocketClient webSocketClient) {
@@ -88,6 +92,36 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     public void unregisterAutomowerHandler(String mowerId) {
         automowerHandlers.remove(mowerId);
         logger.trace("Unregistered AutomowerHandler for mower with ID: {}", mowerId);
+    }
+
+    public @Nullable AutomowerHandler getAutomowerHandlerByThingId(@Nullable String thingId) {
+        return automowerHandlers.get(thingId);
+    }
+
+    public @Nullable AutomowerHandler getAutomowerHandlerByStayoutZoneId(@Nullable String zoneId) {
+        return automowerHandlers.get(zoneId2mowerid.get(zoneId));
+    }
+
+    public void registerAutomowerStayoutZoneHandler(String zoneId, AutomowerStayoutZoneHandler handler) {
+        automowerStayoutZoneHandlers.put(zoneId, handler);
+        logger.trace("Registered AutomowerStayoutZoneHandler for zone with ID: {}", zoneId);
+    }
+
+    public void unregisterAutomowerStayoutZoneHandler(String zoneId) {
+        automowerStayoutZoneHandlers.remove(zoneId);
+        logger.trace("Unregistered AutomowerStayoutZoneHandler for zone with ID: {}", zoneId);
+    }
+
+    public @Nullable AutomowerStayoutZoneHandler getAutomowerStayoutZoneHandlerByThingId(@Nullable String thingId) {
+        return automowerStayoutZoneHandlers.get(thingId);
+    }
+
+    public void registerMowerIdForZoneId(String zoneId, String mowerId) {
+        zoneId2mowerid.put(zoneId, mowerId);
+    }
+
+    public @Nullable String getMowerIdByZoneId(@Nullable String zoneId) {
+        return zoneId2mowerid.get(zoneId);
     }
 
     public WebSocketClient getWebSocketClient() {
@@ -112,10 +146,6 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     public void setClosing(boolean closing) {
         this.closing = closing;
-    }
-
-    public @Nullable AutomowerHandler getAutomowerHandlerByThingId(@Nullable String thingId) {
-        return automowerHandlers.get(thingId);
     }
 
     public synchronized void pollAutomowers(AutomowerBridge bridge) {

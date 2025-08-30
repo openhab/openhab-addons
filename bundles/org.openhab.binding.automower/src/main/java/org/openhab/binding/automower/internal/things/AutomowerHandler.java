@@ -93,6 +93,7 @@ import com.google.gson.JsonObject;
  *
  * @author Markus Pfleger - Initial contribution
  * @author Marcin Czeczko - Added support for planner and calendar data
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public class AutomowerHandler extends BaseThingHandler {
@@ -128,15 +129,6 @@ public class AutomowerHandler extends BaseThingHandler {
                     int index = Integer.parseInt(channelIDSplit[0]) - 1;
                     String param = channelIDSplit[1];
                     sendAutomowerCalendarTask(command, index, param);
-                } else if (GROUP_STAYOUTZONE.startsWith(groupId)) {
-                    String[] channelIDSplit = channelId.split("-", 2);
-                    int index = Integer.parseInt(channelIDSplit[0]) - 1;
-                    String param = channelIDSplit[1];
-                    if (CHANNEL_STAYOUTZONE_ENABLED.equals(param)) {
-                        if (command instanceof OnOffType cmd) {
-                            sendAutomowerStayOutZone(index, ((cmd == OnOffType.ON) ? true : false));
-                        }
-                    }
                 } else if (GROUP_WORKAREA.startsWith(groupId)) {
                     String[] channelIDSplit = channelId.split("-", 2);
                     int index = Integer.parseInt(channelIDSplit[0]) - 1;
@@ -565,20 +557,6 @@ public class AutomowerHandler extends BaseThingHandler {
     /**
      * Sends StayOutZone Setting to the automower
      *
-     * @param index Index of zone
-     * @param enable Zone enabled or disabled
-     */
-    public void sendAutomowerStayOutZone(int index, boolean enable) {
-        Mower mower = this.mowerState;
-        if (mower != null && isValidResult(mower)) {
-            StayOutZone stayOutZone = mower.getAttributes().getStayOutZones().getZones().get(index);
-            sendAutomowerStayOutZone(stayOutZone.getId(), enable);
-        }
-    }
-
-    /**
-     * Sends StayOutZone Setting to the automower
-     *
      * @param zoneId Id of zone
      * @param enable Zone enabled or disabled
      */
@@ -929,27 +907,8 @@ public class AutomowerHandler extends BaseThingHandler {
         i = 0;
         if (capabilities.hasStayOutZones()) {
             createChannel(CHANNEL_STAYOUTZONE_DIRTY, CHANNEL_TYPE_STAYOUTZONES_DIRTY, "Switch", channelAdd);
-
-            if (mower.getAttributes().getStayOutZones() != null) {
-                List<StayOutZone> stayOutZones = mower.getAttributes().getStayOutZones().getZones();
-                if (stayOutZones != null) {
-                    for (; i < stayOutZones.size(); i++) {
-                        int j = 0;
-                        createIndexedChannel(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j),
-                                CHANNEL_TYPE_STAYOUTZONE.get(j++), "String", channelAdd);
-                        createIndexedChannel(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j),
-                                CHANNEL_TYPE_STAYOUTZONE.get(j++), "String", channelAdd);
-                        createIndexedChannel(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j),
-                                CHANNEL_TYPE_STAYOUTZONE.get(j++), "Switch", channelAdd);
-                    }
-                }
-            }
         } else {
             removeChannel(CHANNEL_STAYOUTZONE_DIRTY, channelRemove);
-        }
-        // remove all consecutive channels that are no longer required
-        for (int j = 0; j < CHANNEL_STAYOUTZONE.size(); j++) {
-            removeConsecutiveIndexedChannels(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j), channelRemove);
         }
 
         i = 0;
@@ -1169,7 +1128,6 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private void updateStayOutZonesChannels(Mower mower, Capabilities capabilities) {
-        int i = 0;
         if (capabilities.hasStayOutZones()) {
             StayOutZones stayOutZones = mower.getAttributes().getStayOutZones();
             if (stayOutZones != null) {
@@ -1177,14 +1135,18 @@ public class AutomowerHandler extends BaseThingHandler {
 
                 List<StayOutZone> stayOutZoneList = mower.getAttributes().getStayOutZones().getZones();
                 if (stayOutZoneList != null) {
-                    for (; i < stayOutZoneList.size(); i++) {
-                        int j = 0;
-                        updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
-                                new StringType(stayOutZoneList.get(i).getId()));
-                        updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
-                                new StringType(stayOutZoneList.get(i).getName()));
-                        updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
-                                OnOffType.from(stayOutZoneList.get(i).isEnabled()));
+                    // Adding handler to map of handlers
+                    AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+                    if (automowerBridgeHandler != null) {
+                        for (StayOutZone zone : stayOutZoneList) {
+                            AutomowerStayoutZoneHandler zoneHandler = automowerBridgeHandler
+                                    .getAutomowerStayoutZoneHandlerByThingId(zone.getId());
+                            if (zoneHandler != null) {
+                                zoneHandler.updateStayOutZoneChannels(zone);
+                            } else {
+                                logger.trace("No AutomowerStayoutZoneHandler found for zoneId: {}", zone.getId());
+                            }
+                        }
                     }
                 }
             }

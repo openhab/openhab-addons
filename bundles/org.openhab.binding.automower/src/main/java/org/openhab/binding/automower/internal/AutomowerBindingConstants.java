@@ -125,13 +125,6 @@ public class AutomowerBindingConstants {
     public static final String GROUP_STAYOUTZONE = "stayoutzone#";
 
     public static final String CHANNEL_STAYOUTZONE_DIRTY = GROUP_STAYOUTZONE + "dirty";
-    public static final String CHANNEL_STAYOUTZONE_ENABLED = "zone-enabled";
-    public static final ArrayList<String> CHANNEL_STAYOUTZONE = new ArrayList<>(
-            List.of("zone-id", "zone-name", CHANNEL_STAYOUTZONE_ENABLED));
-
-    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_STAYOUTZONE = new ArrayList<>(
-            List.of(new ChannelTypeUID(BINDING_ID, "zoneIdType"), new ChannelTypeUID(BINDING_ID, "zoneNameType"),
-                    new ChannelTypeUID(BINDING_ID, "zoneEnabledType")));
 
     // Work Areas Channel ids
     public static final String GROUP_WORKAREA = "workarea#";
@@ -193,6 +186,10 @@ public class AutomowerBindingConstants {
 
     public static final ChannelTypeUID CHANNEL_TYPE_STAYOUTZONES_DIRTY = new ChannelTypeUID(BINDING_ID,
             "zoneDirtyType");
+
+    // Stayout Zone Channel ids
+    public static final String CHANNEL_STAYOUTZONE_NAME = "name";
+    public static final String CHANNEL_STAYOUTZONE_ENABLED = "enabled";
 
     public static final Map<Integer, String> ERROR = new HashMap<>() {
         private static final long serialVersionUID = 1L;

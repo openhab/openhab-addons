@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.automower.internal.discovery;
 
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_AUTOMOWER;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_STAYOUTZONE;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_WORKAREA;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,9 +79,7 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(mowerThingUid)
                         .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)
                         .withRepresentationProperty(AutomowerBindingConstants.AUTOMOWER_ID)
-                        .withLabel(mower.getAttributes().getSystem().getName() + " (Automower "
-                                + mower.getAttributes().getSystem().getModel() + ")")
-                        .build();
+                        .withLabel(mower.getAttributes().getSystem().getName()).build();
 
                 thingDiscovered(discoveryResult);
 
@@ -95,11 +91,12 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                     stayoutZoneProperties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
                     stayoutZoneProperties.put(AutomowerBindingConstants.AUTOMOWER_STAYOUTZONE_ID, stayOutZone.getId());
 
+                    this.bridgeHandler.registerMowerIdForZoneId(stayOutZone.getId(), mower.getId());
+
                     DiscoveryResult stayoutZoneDiscoveryResult = DiscoveryResultBuilder.create(zoneThingUid)
                             .withThingType(zoneThingTypeUID).withProperties(stayoutZoneProperties).withBridge(bridgeUID)
                             .withRepresentationProperty(AutomowerBindingConstants.AUTOMOWER_STAYOUTZONE_ID)
-                            .withLabel(mower.getAttributes().getSystem().getName() + " (Automower "
-                                    + mower.getAttributes().getSystem().getModel() + ") - StayOutZone "
+                            .withLabel(mower.getAttributes().getSystem().getName() + " - StayoutZone "
                                     + stayOutZone.getName())
                             .build();
 
@@ -118,9 +115,8 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                     DiscoveryResult areaDiscoveryResult = DiscoveryResultBuilder.create(areaThingUid)
                             .withThingType(areaThingTypeUID).withProperties(areaProperties).withBridge(bridgeUID)
                             .withRepresentationProperty(AutomowerBindingConstants.AUTOMOWER_WORKAREA_ID)
-                            .withLabel(mower.getAttributes().getSystem().getName() + " (Automower "
-                                    + mower.getAttributes().getSystem().getModel() + ") - WorkArea "
-                                    + String.valueOf(workArea.getWorkAreaId()))
+                            .withLabel(
+                                    mower.getAttributes().getSystem().getName() + " - WorkArea " + workArea.getName())
                             .build();
 
                     thingDiscovered(areaDiscoveryResult);

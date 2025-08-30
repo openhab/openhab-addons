@@ -10,7 +10,6 @@
 		<description>The bridge to communicate with the Automower® Connect API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
-
 		<config-description>
 			<parameter name="appKey" type="text" required="true">
 				<label>Application Key</label>
@@ -93,9 +92,10 @@
 		<description>An automatic lawn mower stay-out zone</description>
 		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
-		<channel-groups>
-			<channel-group id="stayoutzone" typeId="stayoutZonesType"/>
-		</channel-groups>
+		<channels>
+			<channel id="name" typeId="zoneNameType"/>
+			<channel id="enabled" typeId="zoneEnabledType"/>
+		</channels>
 
 		<properties>
 			<property name="mowerId">N/A</property>
@@ -213,15 +213,9 @@
 		<!-- channels created on demand
 			<channels>
 			<channel id="dirty" typeId="zoneDirtyType"/>
-			<channel id="<xx>-id" typeId="zoneIdType"/>
-			<channel id="<xx>-name" typeId="zoneNameType"/>
-			<channel id="<xx>-enabled" typeId="zoneEnabledType"/>
-			...
 			</channels>
 		-->
-	</channel-group-type>
-
-	<!-- Work Areas -->
+	</channel-group-type>	<!-- Work Areas -->
 	<channel-group-type id="workAreasType">
 		<label>Work Areas</label>
 		<!-- channels created on demand
@@ -627,23 +621,16 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="zoneIdType" advanced="true">
+	<channel-type id="zoneNameType" advanced="false">
 		<item-type>String</item-type>
-		<label>Stayout Zone Id</label>
-		<description>Id of the stay-out zone</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="zoneNameType" advanced="true">
-		<item-type>String</item-type>
-		<label>Stayout Zone Name</label>
+		<label>Name</label>
 		<description>The name of the stay-out zone</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="zoneEnabledType" advanced="true">
+	<channel-type id="zoneEnabledType" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Stayout Zone Enabled</label>
+		<label>Enabled</label>
 		<description>If the stay-out zone is enabled, the Automower® will not access the zone</description>
 	</channel-type>
 
