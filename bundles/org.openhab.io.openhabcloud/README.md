@@ -323,7 +323,7 @@ rule "Motion Detected Notification" do
                       icon: "motion",
                       tag: "Motion Tag",
                       title: "Motion Detected",
-                      id: "motion-id-1234"
+                      id: "motion-id-1234",
                       attachment: "https://apartment.my/camera-snapshot.jpg",
                       buttons: { "Turn on the light" => "command:Apartment_Light:ON" }
   end
@@ -385,7 +385,7 @@ rule "Motion Detected Notification" do
                       icon: "motion",
                       tag: "Motion Tag",
                       title: "Motion Detected",
-                      id: "motion-id-1234"
+                      id: "motion-id-1234",
                       attachment: "item:Apartment_Camera_Snapshot",
                       buttons: { "Turn on the light" => "command:Apartment_Light:ON" }
   end
