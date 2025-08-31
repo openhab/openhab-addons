@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.modbus.sungrow.internal;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
+import org.openhab.binding.modbus.sungrow.internal.mapper.impl.DeviceTypeMapper;
+import org.openhab.binding.modbus.sungrow.internal.mapper.impl.OutputTypeMapper;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
@@ -88,7 +89,6 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         int currentRequestFirstRegister = 0;
 
         for (SungrowInverterRegisters channel : SungrowInverterRegisters.values()) {
-
             if (currentRequest.isEmpty()) {
                 currentRequest.add(channel);
                 currentRequestFirstRegister = channel.getRegisterNumber();
@@ -97,8 +97,8 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                         + channel.getRegisterCount();
                 if (sizeWithRegisterAdded > ModbusConstants.MAX_REGISTERS_READ_COUNT) {
                     requests.add(new ModbusRequest(currentRequest, getSlaveId(), tries));
-                    currentRequest = new ArrayDeque<>();
 
+                    currentRequest = new ArrayDeque<>();
                     currentRequest.add(channel);
                     currentRequestFirstRegister = channel.getRegisterNumber();
                 } else {
@@ -144,6 +144,9 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         }
 
         this.updateStatus(ThingStatus.UNKNOWN);
+
+        this.updateProperties(config);
+
         this.modbusRequests = this.buildRequests(config.maxTries);
 
         for (ModbusRequest request : modbusRequests) {
@@ -155,6 +158,60 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                     this::readError //
             );
         }
+    }
+
+    private void updateProperties(SungrowInverterConfiguration config) {
+        ModbusReadRequestBlueprint getVersionRequest = new ModbusReadRequestBlueprint(this.getSlaveId(),
+                ModbusReadFunctionCode.READ_INPUT_REGISTERS, //
+                4949, //
+                33, //
+                config.maxTries //
+        );
+        this.submitOneTimePoll(getVersionRequest, this::updateVersionProperties, this::readError);
+
+        ModbusReadRequestBlueprint getDeviceInfo = new ModbusReadRequestBlueprint(this.getSlaveId(),
+                ModbusReadFunctionCode.READ_INPUT_REGISTERS, //
+                4989, //
+                13, //
+                config.maxTries //
+        );
+        this.submitOneTimePoll(getDeviceInfo, this::updateDeviceInfoProperties, this::readError);
+    }
+
+    private void updateVersionProperties(AsyncModbusReadResult result) {
+        result.getRegisters().ifPresent(registers -> {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+
+            long protocolNo = ModbusBitUtilities.extractUInt32(registers.getBytes(), 0);
+            getThing().setProperty("Protocol No", String.valueOf(protocolNo));
+            long protocolVersion = ModbusBitUtilities.extractUInt32(registers.getBytes(), 4);
+            getThing().setProperty("Protocol Version", String.valueOf(protocolVersion));
+            String certVersionArm = ModbusBitUtilities.extractStringFromRegisters(registers, 4, 28,
+                    StandardCharsets.UTF_8);
+            getThing().setProperty("Certification version number of ARM software", certVersionArm);
+            String certVersionDsp = ModbusBitUtilities.extractStringFromRegisters(registers, 19, 28,
+                    StandardCharsets.UTF_8);
+            getThing().setProperty("Certification version number of DSP software", certVersionDsp);
+        });
+    }
+
+    private void updateDeviceInfoProperties(AsyncModbusReadResult result) {
+        result.getRegisters().ifPresent(registers -> {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+            String serialNumber = ModbusBitUtilities.extractStringFromRegisters(registers, 0, 20,
+                    StandardCharsets.UTF_8);
+            getThing().setProperty("Serial Number", serialNumber);
+            int deviceTypeCode = ModbusBitUtilities.extractUInt16(registers.getBytes(), 20);
+            getThing().setProperty("Device Type", DeviceTypeMapper.instance().map(new BigDecimal(deviceTypeCode)));
+            int outputPower = ModbusBitUtilities.extractUInt16(registers.getBytes(), 22);
+            getThing().setProperty("Nominal Output Power", outputPower * 100 + " W");
+            int outputType = ModbusBitUtilities.extractUInt16(registers.getBytes(), 24);
+            getThing().setProperty("Output Type", OutputTypeMapper.instance().map(new BigDecimal(outputType)));
+        });
     }
 
     private void readSuccessful(ModbusRequest request, AsyncModbusReadResult result) {
