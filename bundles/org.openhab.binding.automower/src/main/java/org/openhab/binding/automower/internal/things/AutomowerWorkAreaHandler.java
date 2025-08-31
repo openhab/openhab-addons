@@ -66,11 +66,22 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         if (RefreshType.REFRESH != command) {
             AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
             if (automowerBridgeHandler != null) {
-                AutomowerHandler handler = automowerBridgeHandler.getAutomowerHandlerByWorkAreaId(this.thingId);
-                if (handler != null) {
+                String thingId = channelUID.getThingUID().getId();
+                // Split thingId at the last "-" to get mowerId and areaId
+                String mowerId = null;
+                String areaId = null;
+                int lastDash = thingId.lastIndexOf("-");
+                if (lastDash != -1) {
+                    mowerId = thingId.substring(0, lastDash);
+                    areaId = thingId.substring(lastDash + 1);
+                }
+                logger.trace("Handling command {} for channel {} of mowerId {} and areaId {}", command, channelUID,
+                        mowerId, areaId);
+                AutomowerHandler handler = automowerBridgeHandler.getAutomowerHandlerByMowerId(mowerId);
+                if (handler != null && areaId != null) {
                     if (CHANNEL_WORKAREA_ENABLED.equals(channelUID.getIdWithoutGroup())) {
                         if (command instanceof OnOffType cmd) {
-                            handler.sendAutomowerWorkAreaEnable(this.thingId, cmd == OnOffType.ON);
+                            handler.sendAutomowerWorkAreaEnable(areaId, cmd == OnOffType.ON);
                         } else {
                             logger.warn("Command {} not supported for channel {}", command, channelUID);
                         }
@@ -78,22 +89,22 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
                         if (command instanceof QuantityType cmd) {
                             cmd = cmd.toUnit("%");
                             if (cmd != null) {
-                                handler.sendAutomowerWorkAreaCuttingHeight(this.thingId, cmd.byteValue());
+                                handler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
                             }
                         } else if (command instanceof DecimalType cmd) {
-                            handler.sendAutomowerWorkAreaCuttingHeight(this.thingId, cmd.byteValue());
+                            handler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
                         } else {
                             logger.warn("Command {} not supported for channel {}", command, channelUID);
                         }
+                    } else {
+                        logger.warn("Command {} not supported for channel {}", command, channelUID);
                     }
                 } else {
-                    logger.warn("No AutomowerHandler found for areaId {}", this.thingId);
+                    logger.warn("No AutomowerHandler found for mowerId {}", mowerId);
                 }
             } else {
                 logger.warn("No AutomowerBridgeHandler found for thingId {}", this.thingId);
             }
-        } else {
-            logger.warn("Command {} not supported for channel {}", command, channelUID);
         }
     }
 

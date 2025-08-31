@@ -1125,7 +1125,8 @@ public class AutomowerHandler extends BaseThingHandler {
                 if (automowerBridgeHandler != null) {
                     for (WorkArea area : workAreas) {
                         AutomowerWorkAreaHandler areaHandler = automowerBridgeHandler
-                                .getAutomowerWorkAreaHandlerByThingId(String.valueOf(area.getWorkAreaId()));
+                                .getAutomowerWorkAreaHandlerByThingId(
+                                        mower.getId() + "-" + String.valueOf(area.getWorkAreaId()));
                         if (areaHandler != null) {
                             areaHandler.updateWorkAreaChannels(area, this);
                         } else {

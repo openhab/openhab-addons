@@ -50,7 +50,6 @@
 			<channel-group id="statistic" typeId="statisticsType"/>
 			<channel-group id="calendartask" typeId="calendarTasksType"/>
 			<channel-group id="stayoutzone" typeId="stayoutZonesType"/>
-			<channel-group id="workarea" typeId="workAreasType"/>
 			<channel-group id="command" typeId="commandsType"/>
 			<channel-group id="message" typeId="messagesType"/>
 		</channel-groups>

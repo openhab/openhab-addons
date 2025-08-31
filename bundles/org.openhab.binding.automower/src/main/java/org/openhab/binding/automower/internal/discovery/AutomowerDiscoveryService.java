@@ -104,7 +104,7 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                 for (WorkArea workArea : mower.getAttributes().getWorkAreas()) {
                     ThingTypeUID areaThingTypeUID = THING_TYPE_WORKAREA;
                     ThingUID areaThingUid = new ThingUID(THING_TYPE_WORKAREA, bridgeUID,
-                            String.valueOf(workArea.getWorkAreaId()));
+                            mower.getId() + "-" + String.valueOf(workArea.getWorkAreaId()));
 
                     Map<String, Object> areaProperties = new HashMap<>();
                     areaProperties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());

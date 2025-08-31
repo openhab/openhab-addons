@@ -33,7 +33,6 @@ import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.StayOutZone;
-import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.WorkArea;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
 import org.openhab.binding.automower.internal.things.AutomowerStayoutZoneHandler;
@@ -78,7 +77,6 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private Map<String, AutomowerStayoutZoneHandler> automowerStayoutZoneHandlers = new HashMap<>();
     private Map<String, String> zoneId2mowerid = new HashMap<>();
     private Map<String, AutomowerWorkAreaHandler> automowerWorkAreaHandlers = new HashMap<>();
-    private Map<String, String> areaId2mowerid = new HashMap<>();
 
     public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
             WebSocketClient webSocketClient) {
@@ -98,16 +96,12 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         logger.trace("Unregistered AutomowerHandler for mower with ID: {}", mowerId);
     }
 
-    public @Nullable AutomowerHandler getAutomowerHandlerByThingId(@Nullable String thingId) {
-        return automowerHandlers.get(thingId);
+    public @Nullable AutomowerHandler getAutomowerHandlerByMowerId(@Nullable String mowerId) {
+        return automowerHandlers.get(mowerId);
     }
 
     public @Nullable AutomowerHandler getAutomowerHandlerByStayoutZoneId(@Nullable String zoneId) {
         return automowerHandlers.get(zoneId2mowerid.get(zoneId));
-    }
-
-    public @Nullable AutomowerHandler getAutomowerHandlerByWorkAreaId(@Nullable String areaId) {
-        return automowerHandlers.get(areaId2mowerid.get(areaId));
     }
 
     public void registerAutomowerStayoutZoneHandler(String zoneId, AutomowerStayoutZoneHandler handler) {
@@ -144,14 +138,6 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     public @Nullable AutomowerWorkAreaHandler getAutomowerWorkAreaHandlerByThingId(@Nullable String thingId) {
         return automowerWorkAreaHandlers.get(thingId);
-    }
-
-    public void registerMowerIdForAreaId(String areaId, String mowerId) {
-        areaId2mowerid.put(areaId, mowerId);
-    }
-
-    public @Nullable String getMowerIdByAreaId(@Nullable String areaId) {
-        return areaId2mowerid.get(areaId);
     }
 
     public WebSocketClient getWebSocketClient() {
@@ -196,10 +182,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                     for (StayOutZone stayOutZone : mower.getAttributes().getStayOutZones().getZones()) {
                         registerMowerIdForZoneId(stayOutZone.getId(), mowerId);
                     }
-                    for (WorkArea workArea : mower.getAttributes().getWorkAreas()) {
-                        registerMowerIdForAreaId(String.valueOf(workArea.getWorkAreaId()), mowerId);
-                    }
-                    AutomowerHandler automowerHandler = getAutomowerHandlerByThingId(mowerId);
+                    AutomowerHandler automowerHandler = getAutomowerHandlerByMowerId(mowerId);
                     if (automowerHandler != null) {
                         logger.debug("Data from REST API for known AutomowerHandler with mowerId: {}", mowerId);
                         automowerHandler.updateAutomowerStateViaREST(mower);
@@ -284,8 +267,8 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         ScheduledFuture<?> currentPollingJob = automowerBridgePollingJob;
         if (currentPollingJob == null) {
             final long pollingIntervalToUse = pollingIntervalS == null ? DEFAULT_POLLING_INTERVAL_S : pollingIntervalS;
-            automowerBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollAutomowers(bridge),
-                    pollingIntervalToUse, pollingIntervalToUse, TimeUnit.SECONDS);
+            automowerBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollAutomowers(bridge), 1,
+                    pollingIntervalToUse, TimeUnit.SECONDS);
         }
     }
 
