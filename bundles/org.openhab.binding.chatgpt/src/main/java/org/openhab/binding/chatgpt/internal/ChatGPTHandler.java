@@ -100,30 +100,25 @@ public class ChatGPTHandler extends BaseThingHandler {
                 return;
             }
 
-            if (chatResponse != null) {
-                String finishReason = chatResponse.getChoices().get(0).getFinishReason();
+            String finishReason = chatResponse.getChoices().get(0).getFinishReason();
 
-                if ("length".equals(finishReason)) {
-                    logger.warn("Token length exceeded. Increase maximum token limit to avoid the issue.");
-                    return;
-                }
+            if ("length".equals(finishReason)) {
+                logger.warn("Token length exceeded. Increase maximum token limit to avoid the issue.");
+                return;
+            }
 
-                @Nullable
-                ChatMessage chatResponseMessage = chatResponse.getChoices().get(0).getChatMessage();
+            @Nullable
+            ChatMessage chatResponseMessage = chatResponse.getChoices().get(0).getChatMessage();
 
-                if (chatResponseMessage == null) {
-                    logger.error("ChatGPT response does not contain a message.");
-                    return;
-                }
+            if (chatResponseMessage == null) {
+                logger.error("ChatGPT response does not contain a message.");
+                return;
+            }
 
-                @Nullable
-                String msg = chatResponseMessage.getContent();
-                if (msg != null) {
-                    updateState(channelUID, new StringType(msg));
-                }
-
-            } else {
-                logger.warn("Didn't receive any response from ChatGPT - this is unexpected.");
+            @Nullable
+            String msg = chatResponseMessage.getContent();
+            if (msg != null) {
+                updateState(channelUID, new StringType(msg));
             }
         }
     }

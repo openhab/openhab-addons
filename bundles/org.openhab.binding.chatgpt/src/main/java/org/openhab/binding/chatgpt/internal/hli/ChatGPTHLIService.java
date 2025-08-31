@@ -232,7 +232,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             String response = chatGPTHandler.sendPrompt(requestBody);
             String answer = processChatResponse(response);
 
-            if (answer != null && !answer.isEmpty()) {
+            if (!answer.isEmpty()) {
                 reply.setAnswer(answer);
             }
 
@@ -240,24 +240,21 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                 Intent intent = this.lastCreatedIntent;
                 reply.setIntent(intent);
 
-                logger.trace("Created Intent: {}", intent.toString());
+                if (this.matchedItemsCache != null) {
+                    Collection<Item> matchedItems = this.matchedItemsCache;
 
-                Collection<Item> matchedItems = this.matchedItemsCache != null ? this.matchedItemsCache : List.of();
+                    String[] itemStrings = matchedItems.stream().map(Item::getName).toArray(String[]::new);
+                    reply.setMatchedItems(itemStrings);
 
-                String[] itemStrings = matchedItems.stream().map(Item::getName).toArray(String[]::new);
-                reply.setMatchedItems(itemStrings);
-
-                logger.trace("Matched items: {}", Arrays.toString(itemStrings));
-
-                Card card;
-                if ("show-chart".equalsIgnoreCase(intent.getName())) {
-                    String period = intent.getEntities().getOrDefault("period", "D");
-                    card = cardBuilder.buildChartCard(intent, matchedItems, period);
-                } else {
-                    card = cardBuilder.buildCard(intent, matchedItems);
+                    Card card;
+                    if ("show-chart".equalsIgnoreCase(intent.getName())) {
+                        String period = intent.getEntities().getOrDefault("period", "D");
+                        card = cardBuilder.buildChartCard(intent, matchedItems, period);
+                    } else {
+                        card = cardBuilder.buildCard(intent, matchedItems);
+                    }
+                    reply.setCard(card);
                 }
-                logger.trace("Card created: {}", card.toString());
-                reply.setCard(card);
             }
 
         } else {
@@ -313,6 +310,11 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             return "";
         }
 
+        if (this.config == null) {
+            logger.warn("ChatGPT configuration is still null");
+            return "";
+        }
+
         logger.trace("Received response: {}", response);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -321,11 +323,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             chatResponse = objectMapper.readValue(response, ChatResponse.class);
         } catch (JsonProcessingException e) {
             logger.debug("Failed to parse ChatGPT response: {}", e.getMessage(), e);
-            return "";
-        }
-
-        if (chatResponse == null) {
-            logger.warn("Didn't receive any response from ChatGPT - this is unexpected.");
             return "";
         }
 
@@ -370,7 +367,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         return (chatResponseMessage.getContent() == null) ? "" : chatResponseMessage.getContent();
     }
 
-    private String executeToolCalls(@Nullable List<ChatToolCalls> toolCalls) {
+    private String executeToolCalls(List<ChatToolCalls> toolCalls) {
 
         StringBuilder combinedAnswer = new StringBuilder();
 
@@ -426,6 +423,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         if (this.config == null) {
             if (thingHandler == null) {
                 logger.error("ThingHandler is null in ChatGPTHLIService, cannot get configuration!");
+                return null;
             } else if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
                 this.config = chatGPTHandler.getConfigAs();
                 logger.debug("Loaded ChatGPT config: {}", this.config);
