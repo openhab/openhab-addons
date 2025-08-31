@@ -6,7 +6,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="meter">
-		<label>Smart Meter</label>
+		<label>SML Smart Meter</label>
 		<description>The meter device to read the SML or IEC 62056-21 messages from</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<config-description>
@@ -51,6 +51,24 @@
 				<description>Reserved to conform to special semantics specified in specific standards. EDL_FNN: Currently applies
 					the energy direction to WATT channels (which are absolute values) (see fnn lastenheft edl)</description>
 				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="dlms-meter">
+		<label>DLMS/COSEM Smart Meter</label>
+		<description>Thing for reading DLMS/COSEM Smart Meters via an IEC 62056-21 optical read head.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Port</label>
+				<description>Serial port of the IEC 62056-21 optical read head.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s" min="10">
+				<label>Refresh Interval</label>
+				<description>Interval at which the readings are polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
