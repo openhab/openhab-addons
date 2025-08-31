@@ -173,7 +173,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="ouputcomState">
+	<channel-type id="outputcomState">
 		<item-type>Number</item-type>
 		<label>Output Com State</label>
 		<description>State of the communication output</description>
@@ -195,7 +195,7 @@
 			<options>
 				<option value="0">New/Unlock</option>
 				<option value="1">New/Lock</option>
-				<option value="1">Registered</option>
+				<option value="2">Registered</option>
 			</options>
 		</state>
 	</channel-type>

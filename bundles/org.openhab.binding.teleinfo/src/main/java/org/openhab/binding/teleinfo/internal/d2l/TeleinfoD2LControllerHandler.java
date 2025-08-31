@@ -75,6 +75,7 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
     private final Logger logger = LoggerFactory.getLogger(TeleinfoD2LControllerHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
+    // this prefix is use on appKey in d2L
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private static final DateTimeFormatter LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
     private static final DateTimeFormatter LOCALDATETIME_FORMATTER = new DateTimeFormatterBuilder()
@@ -227,8 +228,8 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
                 // once read, each key is removed from the operation.
                 keyIterator.remove();
             }
-        } catch (Exception ex) {
-            logger.debug("errors occured in data reception loop", ex);
+        } catch (IOException ex) {
+            logger.debug("IO Exception occurred in data reception loop", ex);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ex.getMessage());
         } finally {
             try {
@@ -264,11 +265,13 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
             // if so, get appKey and ivKey and decode the buffer
             String appKey = handler.getAppKey();
             String ivKey = handler.getIvKey();
+            // Prefix "7F" is required for AES key derivation to ensure proper key formatting for d2l.
+            final String AES_KEY_PREFIX = "7F";
 
             try {
                 Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
-                byte[] bytesKey = new BigInteger("7F" + appKey, 16).toByteArray();
+                byte[] bytesKey = new BigInteger(AES_KEY_PREFIX + appKey, 16).toByteArray();
                 SecretKeySpec key = new SecretKeySpec(bytesKey, 1, bytesKey.length - 1, "AES");
 
                 byte[] bytesIv = new BigInteger(ivKey, 16).toByteArray();

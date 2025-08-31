@@ -382,7 +382,7 @@
 				<description>Type of PLC</description>
 			</channel>
 
-			<channel id="outputcom" typeId="ouputcomState">
+			<channel id="outputcom" typeId="outputcomState">
 				<label>Communication Output State</label>
 				<description>State of communication output</description>
 			</channel>

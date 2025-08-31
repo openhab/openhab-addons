@@ -335,6 +335,16 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
     }
 
     private void updateCalcVars(double urms, double sinst) {
+        if (urms == 0) {
+            logger.warn("Invalid input: urms is zero, cannot perform calculations.");
+            return;
+        }
+
+        if (urms < 0 || sinst < 0) {
+            logger.warn("Invalid input: urms and sinst must be positive. Received urms={}, sinst={}", urms, sinst);
+            return;
+        }
+
         double irms1c = sinst / urms;
 
         Label channelIrms1f = Label.IRMS1F;
