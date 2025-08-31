@@ -111,6 +111,7 @@ class TidalHandleCommands {
                     tidalApi.setRepeatState(deviceId, command.toString());
                     commandRun = true;
                 }
+                break;
             case CHANNEL_DEVICEVOLUME:
                 if (command instanceof DecimalType decimalCommand) {
                     final PercentType volume = command instanceof PercentType percentType ? percentType
