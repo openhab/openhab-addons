@@ -18,8 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
@@ -31,17 +35,22 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AutomowerDiscoveryService} is responsible for discovering new mowers available for the
  * configured app key.
  *
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - Added StayoutZone and WorkArea as well as background discovery
  */
 @NonNullByDefault
 public class AutomowerDiscoveryService extends AbstractDiscoveryService {
 
     private final AutomowerBridgeHandler bridgeHandler;
+    private final Logger logger = LoggerFactory.getLogger(AutomowerDiscoveryService.class);
+    private @Nullable ScheduledExecutorService scheduler;
 
     public AutomowerDiscoveryService(AutomowerBridgeHandler bridgeHandler) {
         super(Set.of(THING_TYPE_AUTOMOWER), 10, false);
@@ -50,6 +59,27 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        checkDiscovered();
+    }
+
+    public void startBackgroundDiscovery() {
+        logger.trace("Starting background discovery scheduler");
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        // Poll bridge every 60 seconds
+        scheduler.scheduleWithFixedDelay(() -> checkDiscovered(), 10, 60, TimeUnit.SECONDS);
+        this.scheduler = scheduler;
+    }
+
+    public void stopBackgroundDiscovery() {
+        logger.trace("Stopping background discovery scheduler");
+        ScheduledExecutorService scheduler = this.scheduler;
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdownNow(); // Stop any running discovery threads
+            this.scheduler = null;
+        }
+    }
+
+    private void checkDiscovered() {
         Optional<MowerListResult> registeredMowers = bridgeHandler.getAutomowers();
 
         registeredMowers.ifPresent(mowers -> {

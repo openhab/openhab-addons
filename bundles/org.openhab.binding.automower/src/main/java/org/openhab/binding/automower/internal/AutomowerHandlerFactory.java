@@ -61,6 +61,7 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     private final OAuthFactory oAuthFactory;
     protected final @NonNullByDefault({}) HttpClient httpClient;
     private @Nullable ServiceRegistration<?> automowerDiscoveryServiceRegistration;
+    private @Nullable AutomowerDiscoveryService discoveryService;
     private final TimeZoneProvider timeZoneProvider;
     private final WebSocketFactory webSocketFactory;
 
@@ -110,5 +111,20 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
         AutomowerDiscoveryService discoveryService = new AutomowerDiscoveryService(handler);
         this.automowerDiscoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
                 discoveryService, new Hashtable<>());
+        discoveryService.startBackgroundDiscovery();
+        this.discoveryService = discoveryService;
+    }
+
+    private void unregisterOndiloDiscoveryService() {
+        AutomowerDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.stopBackgroundDiscovery();
+            this.discoveryService = null;
+        }
+        ServiceRegistration<?> automowerDiscoveryServiceRegistration = this.automowerDiscoveryServiceRegistration;
+        if (automowerDiscoveryServiceRegistration != null) {
+            automowerDiscoveryServiceRegistration.unregister();
+            this.automowerDiscoveryServiceRegistration = null;
+        }
     }
 }
