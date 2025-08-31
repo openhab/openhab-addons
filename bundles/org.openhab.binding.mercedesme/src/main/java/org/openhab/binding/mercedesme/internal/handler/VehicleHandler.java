@@ -876,7 +876,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
 
         /**
-         * handle Charge Program
+         * handle Charge Program values
          */
         if (Constants.BEV.equals(thing.getThingTypeUID().getId())
                 || Constants.HYBRID.equals(thing.getThingTypeUID().getId())) {
@@ -915,18 +915,17 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             }
 
+            /**
+             * handle Charge Program index
+             */
             vas = atts.get(MB_KEY_SELECTED_CHARGE_PROGRAM);
             if (vas != null) {
                 selectedChargeProgram = (int) vas.getIntValue();
-                logger.trace("Charge Program selected value found {}", selectedChargeProgram);
             } else {
-                logger.trace("Charge Program selected value not found, full update? {}", fullUpdate);
                 if (fullUpdate) {
-                    logger.trace("Charge Program selected value found {}", selectedChargeProgram);
                     selectedChargeProgram = ChargeProgram.DEFAULT_CHARGE_PROGRAM_VALUE;
                 }
             }
-            logger.trace("Charge Program selected {}", selectedChargeProgram);
             if (selectedChargeProgram != -1 && !chargeGroupValueStorage.isEmpty()) {
                 if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
                     ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
@@ -952,7 +951,6 @@ public class VehicleHandler extends BaseThingHandler {
                 logger.trace("Either Charge Program index {} not valid or charge programs not supported {} ",
                         selectedChargeProgram, chargeGroupValueStorage);
             }
-
         }
 
         /**
