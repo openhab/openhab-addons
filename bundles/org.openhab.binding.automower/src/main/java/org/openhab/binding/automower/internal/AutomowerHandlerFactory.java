@@ -100,10 +100,7 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof AutomowerBridgeHandler) {
-            ServiceRegistration<?> automowerDiscoveryServiceRegistration = this.automowerDiscoveryServiceRegistration;
-            if (automowerDiscoveryServiceRegistration != null) {
-                automowerDiscoveryServiceRegistration.unregister();
-            }
+            unregisterOndiloDiscoveryService();
         }
     }
 
