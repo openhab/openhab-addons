@@ -133,6 +133,9 @@ public class TibberHandler extends BaseThingHandler {
                     case CHANNEL_TOTAL_PRICE:
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TOTAL_PRICE),
                                 priceCache);
+                        sendTimeSeries(
+                                new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_DEPRECATED_SPOT_PRICE),
+                                priceCache);
                         break;
                     case CHANNEL_SPOT_PRICE:
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE),
@@ -331,6 +334,9 @@ public class TibberHandler extends BaseThingHandler {
                         }
                         priceCache = timeSeriesTotalPrices;
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TOTAL_PRICE),
+                                timeSeriesTotalPrices);
+                        sendTimeSeries(
+                                new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_DEPRECATED_SPOT_PRICE),
                                 timeSeriesTotalPrices);
                         energyCache = timeSeriesEnergyPrices;
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE),

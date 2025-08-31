@@ -51,11 +51,15 @@ All read-only.
 
 | Channel ID        | Type                 | Description                                | Time Series  |
 |-------------------|----------------------|--------------------------------------------|--------------|
-| total-price       | Number:EnergyPrice   | Total price including energy and taxes     | yes          |
-| spot-price        | Number:EnergyPrice   | Spot prices for energy today and tomorrow  | yes          |
+| total             | Number:EnergyPrice   | Total price including energy and taxes     | yes          |
+| spot              | Number:EnergyPrice   | Spot prices for energy today and tomorrow  | yes          |
 | tax               | Number:EnergyPrice   | Taxes and additional expenses              | yes          |
 | level             | Number               | Price levels for today and tomorrow        | yes          |
 | average           | Number:EnergyPrice   | Average price from last 24 hours           | yes          |
+
+Channel `spot-price` is _deprecated_ and will be removed in the next major update.
+It's still available as advanced channel.
+Naming was misleading as it reflected the total price and not the [Nord Pool spot price](https://developer.tibber.com/docs/reference#price) used by Tibber.
 
 The `level` number is mapping the [Tibber Rating](https://developer.tibber.com/docs/reference#pricelevel) into numbers.
 Zero reflects _normal_ price while values above 0 are _expensive_ and values below 0 are _cheap_.

@@ -7,11 +7,15 @@
 		<label>Price</label>
 		<description>Price Informations</description>
 		<channels>
-			<channel id="total-price" typeId="price">
+			<channel id="total" typeId="price">
 				<label>Total Price</label>
 				<description>Total price including energy and taxes</description>
 			</channel>
-			<channel id="spot-price" typeId="price">
+			<channel id="spot-price" typeId="advanced-price">
+				<label>Spot Price</label>
+				<description>**Deprecated** Use total channel from price group</description>
+			</channel>
+			<channel id="spot" typeId="price">
 				<label>Spot Price</label>
 				<description>Spot prices for energy today and tomorrow</description>
 			</channel>
