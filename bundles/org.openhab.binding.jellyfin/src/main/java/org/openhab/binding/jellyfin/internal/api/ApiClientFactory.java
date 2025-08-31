@@ -13,10 +13,8 @@
 package org.openhab.binding.jellyfin.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
@@ -27,11 +25,8 @@ import org.osgi.service.component.annotations.ServiceScope;
 @NonNullByDefault
 @Component(scope = ServiceScope.SINGLETON, configurationPid = "api.jellyfin", service = ApiClientFactory.class)
 public class ApiClientFactory {
-    private final HttpClientFactory httpClientFactory;
-
     @Activate
-    public ApiClientFactory(@Reference final HttpClientFactory httpClientFactory) {
-        this.httpClientFactory = httpClientFactory;
+    public ApiClientFactory() {
     }
 
     /**
