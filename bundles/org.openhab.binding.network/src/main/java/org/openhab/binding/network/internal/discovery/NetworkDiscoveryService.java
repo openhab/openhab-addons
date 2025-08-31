@@ -166,19 +166,18 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             final AtomicInteger scannedIPcount = new AtomicInteger(0);
 
             for (String ip : networkIPs) {
+                final PresenceDetection pd = new PresenceDetection(this, Duration.ofSeconds(2));
+                pd.setHostname(ip);
+                pd.setIOSDevice(true);
+                pd.setUseDhcpSniffing(false);
+                pd.setTimeout(PING_TIMEOUT);
+                // Ping devices
+                pd.setUseIcmpPing(true);
+                pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
+                // TCP devices
+                pd.setServicePorts(tcpServicePorts);
+
                 service.execute(() -> {
-                    PresenceDetection pd = presenceDetectorThreadLocal.get();
-
-                    // Reset per-IP fields
-                    pd.setHostname(ip);
-                    pd.setNetworkInterfaceNames(Set.of(networkInterface));
-                    pd.setIOSDevice(true);
-                    pd.setUseDhcpSniffing(false);
-                    pd.setTimeout(PING_TIMEOUT);
-                    pd.setUseIcmpPing(true);
-                    pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
-                    pd.setServicePorts(tcpServicePorts);
-
                     try {
                         pd.getValue();
                     } catch (ExecutionException e) {
@@ -204,9 +203,6 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             }
         }
     }
-
-    private final ThreadLocal<PresenceDetection> presenceDetectorThreadLocal = ThreadLocal
-            .withInitial(() -> new PresenceDetection(this, Duration.ofSeconds(2)));
 
     @Override
     protected synchronized void stopScan() {
