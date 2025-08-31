@@ -16,7 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 
 /**
- * The {@link ForecastSolarBridgeConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ForecastSolarBridgeConfiguration} class contains fields mapping for all possible forecast solar bridges
+ * free, adjustable and smart.
  *
  * @author Bernd Weymann - Initial contribution
  */
