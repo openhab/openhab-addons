@@ -187,16 +187,26 @@
 		</instruction-set>
 
 		<instruction-set targetVersion="6">
-			<add-channel id="total-price" groupIds="price">
+			<add-channel id="total" groupIds="price">
 				<type>tibber:price</type>
 				<label>Total Price</label>
 				<description>Total price including energy and taxes</description>
+			</add-channel>
+			<add-channel id="spot" groupIds="price">
+				<type>tibber:price</type>
+				<label>Spot Price</label>
+				<description>Spot prices for energy today and tomorrow</description>
 			</add-channel>
 			<add-channel id="tax" groupIds="price">
 				<type>tibber:price</type>
 				<label>Tax</label>
 				<description>Taxes and additional expenses</description>
 			</add-channel>
+			<update-channel id="spot-price" groupIds="price">
+				<type>tibber:advanced-price</type>
+				<label>Spot Price (DEPRECATED)</label>
+				<description>(DEPRECATED) Use total channel from price group</description>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 

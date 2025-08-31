@@ -12,8 +12,8 @@
 				<description>Total price including energy and taxes</description>
 			</channel>
 			<channel id="spot-price" typeId="advanced-price">
-				<label>Spot Price</label>
-				<description>**Deprecated** Use total channel from price group</description>
+				<label>Spot Price (DEPRECATED)</label>
+				<description>(DEPRECATED) Use total channel from price group</description>
 			</channel>
 			<channel id="spot" typeId="price">
 				<label>Spot Price</label>
