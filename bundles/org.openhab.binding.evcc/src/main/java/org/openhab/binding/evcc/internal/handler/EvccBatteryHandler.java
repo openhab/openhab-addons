@@ -52,20 +52,20 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject();
+            JsonObject state = stateOpt.getAsJsonArray(JSON_KEY_BATTERY).get(index).getAsJsonObject();
             commonInitialize(state);
         });
     }
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.has(JSON_MEMBER_BATTERY) ? state.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject()
+        state = state.has(JSON_KEY_BATTERY) ? state.getAsJsonArray(JSON_KEY_BATTERY).get(index).getAsJsonObject()
                 : new JsonObject();
         super.updateStatesFromApiResponse(state);
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject();
+        return state.getAsJsonArray(JSON_KEY_BATTERY).get(index).getAsJsonObject();
     }
 }

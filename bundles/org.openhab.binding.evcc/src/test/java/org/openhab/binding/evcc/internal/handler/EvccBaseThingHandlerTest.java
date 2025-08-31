@@ -34,7 +34,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_POWE
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TEMPERATURE;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -61,14 +61,10 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
-import io.micrometer.common.lang.Nullable;
 
 /**
  * The {@link EvccBaseThingHandlerTest} is responsible for testing the BaseThingHandler implementation
@@ -82,84 +78,18 @@ public class EvccBaseThingHandlerTest {
     private Thing thing = mock(Thing.class);
 
     @SuppressWarnings("null")
-    private ChannelTypeRegistry channelTypeRegistry = mock(ChannelTypeRegistry.class);
+    private final ChannelTypeRegistry channelTypeRegistry = mock(ChannelTypeRegistry.class);
 
-    @Nullable
-    private TestEvccBaseThingHandler handler = new TestEvccBaseThingHandler(thing, channelTypeRegistry);
-
-    // Concrete subclass for testing
-    private static class TestEvccBaseThingHandler extends EvccBaseThingHandler {
-        public boolean setItemValueCalled = false;
-        public boolean createChannelCalled = false;
-        public boolean updateThingCalled = false;
-        public boolean updateStatusCalled = false;
-        public boolean prepareApiResponseForChannelStateUpdateCalled = true;
-        public boolean logUnknownChannelXmlCalled = false;
-        public ThingStatus lastUpdatedStatus = ThingStatus.UNKNOWN;
-        public boolean updateStateCalled = false;
-        public State lastState = UnDefType.UNDEF;
-        public ChannelUID lastChannelUID = new ChannelUID("dummy:dummy:dummy:dummy");
-
-        public TestEvccBaseThingHandler(Thing thing, ChannelTypeRegistry registry) {
-            super(thing, registry);
-        }
-
-        @Override
-        protected void updateThing(Thing thing) {
-            updateThingCalled = true;
-        }
-
-        @Override
-        protected void updateStatus(ThingStatus status) {
-            lastUpdatedStatus = status;
-            updateStatusCalled = true;
-        }
-
-        @Override
-        protected void createChannel(String thingKey, ThingBuilder builder, JsonElement value) {
-            createChannelCalled = true;
-        }
-
-        @Override
-        protected void setItemValue(ItemTypeUnit itemTypeUnit, ChannelUID channelUID, JsonElement value) {
-            setItemValueCalled = true;
-            super.setItemValue(itemTypeUnit, channelUID, value);
-        }
-
-        @Override
-        public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-            prepareApiResponseForChannelStateUpdateCalled = true;
-            super.updateStatesFromApiResponse(state);
-        }
-
-        @Override
-        public JsonObject getStateFromCachedState(JsonObject state) {
-            return new JsonObject();
-        }
-
-        @Override
-        public void updateState(ChannelUID uid, State state) {
-            updateStateCalled = true;
-            lastState = state;
-            lastChannelUID = uid;
-        }
-
-        // Make sure no files are getting created
-        @Override
-        protected void logUnknownChannelXml(String key, String itemType) {
-            logUnknownChannelXmlCalled = true;
-        }
-    }
+    private BaseThingHandlerTestClass handler = new BaseThingHandlerTestClass(thing, channelTypeRegistry);
 
     @SuppressWarnings("null")
     @BeforeEach
     public void setUp() {
         thing = mock(Thing.class);
-        ChannelTypeRegistry channelTypeRegistry = mock(ChannelTypeRegistry.class);
-        handler = spy(new TestEvccBaseThingHandler(thing, channelTypeRegistry));
+        handler = spy(new BaseThingHandlerTestClass(thing, channelTypeRegistry));
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
-        when(thing.getChannels()).thenReturn(Collections.emptyList());
+        when(thing.getChannels()).thenReturn(new ArrayList<>());
     }
 
     @Nested
@@ -191,6 +121,7 @@ public class EvccBaseThingHandlerTest {
             assertEquals(ThingStatus.UNKNOWN, handler.lastUpdatedStatus);
         }
 
+        @SuppressWarnings("null")
         @Test
         public void updateFromEvccStateWithPrimitiveValueCreatesChannelAndSetsItemValue() {
             handler.isInitialized = true;
@@ -198,6 +129,9 @@ public class EvccBaseThingHandlerTest {
             state.add("capacity", new JsonPrimitive(5.5));
             // Channel does not exist
             when(thing.getChannel(anyString())).thenReturn(null);
+            ChannelType mockChannelType = mock(ChannelType.class);
+            when(mockChannelType.getItemType()).thenReturn(NUMBER_ENERGY);
+            when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
 
             handler.updateStatesFromApiResponse(state);
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
@@ -317,7 +251,7 @@ public class EvccBaseThingHandlerTest {
         when(mockChannelType.getItemType()).thenReturn("Unknown");
         when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
 
-        handler.createChannel("capacity", builder, value);
+        handler.createChannel("capacity", value);
 
         assertTrue(handler.createChannelCalled);
         verify(builder, never()).withChannel(any());
@@ -373,6 +307,7 @@ public class EvccBaseThingHandlerTest {
                     Arguments.of(CoreItemFactory.SWITCH, OnOffType.class));
         }
 
+        @SuppressWarnings("null")
         @ParameterizedTest
         @MethodSource("provideItemTypesWithExpectedStateClass")
         void setItemValueWithVariousTypes(String itemType, Class<?> expectedStateClass) {

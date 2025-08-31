@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.JSON_MEMBER_LOADPOINTS;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.JSON_KEY_LOADPOINTS;
 
 import java.util.Map;
 
@@ -75,9 +75,9 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
     }
 
     protected void updateJSON(JsonObject state) {
-        JsonObject heatingState = state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
+        JsonObject heatingState = state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
         renameJsonKeys(heatingState); // rename the json keys
-        state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).set(index, heatingState); // Update the keys in the original JSON
+        state.getAsJsonArray(JSON_KEY_LOADPOINTS).set(index, heatingState); // Update the keys in the original JSON
     }
 
     private static void renameJsonKeys(JsonObject json) {

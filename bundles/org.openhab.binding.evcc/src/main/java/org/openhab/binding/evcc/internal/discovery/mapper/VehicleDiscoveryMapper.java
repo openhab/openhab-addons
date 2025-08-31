@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.discovery.mapper;
 
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.JSON_MEMBER_VEHICLES;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_ID;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_TYPE;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_TYPE_VEHICLE;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,14 +41,14 @@ public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonObject vehicles = state.getAsJsonObject(JSON_MEMBER_VEHICLES);
+        JsonObject vehicles = state.getAsJsonObject(JSON_KEY_VEHICLES);
         if (vehicles == null) {
             return results;
         }
         for (Map.Entry<String, JsonElement> entry : vehicles.entrySet()) {
             JsonObject v = entry.getValue().getAsJsonObject();
             String id = entry.getKey();
-            String title = v.has("title") ? v.get("title").getAsString() : id;
+            String title = v.has(JSON_KEY_TITLE) ? v.get(JSON_KEY_TITLE).getAsString() : id;
 
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_VEHICLE, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(title));

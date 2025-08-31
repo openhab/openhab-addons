@@ -67,7 +67,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
+        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
         super.updateStatesFromApiResponse(state);
     }
 
@@ -82,14 +82,14 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
+            JsonObject state = stateOpt.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
             commonInitialize(state);
         });
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_MEMBER_VEHICLES) ? state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId)
+        return state.has(JSON_KEY_VEHICLES) ? state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId)
                 : new JsonObject();
     }
 }

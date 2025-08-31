@@ -62,7 +62,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.has(JSON_MEMBER_STATISTICS) ? state.getAsJsonObject(JSON_MEMBER_STATISTICS) : new JsonObject();
+        state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
         for (String statisticsKey : state.keySet()) {
             JsonObject statistic = state.getAsJsonObject(statisticsKey);
             logger.debug("Extracting statistics for {}", statisticsKey);

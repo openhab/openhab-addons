@@ -52,20 +52,20 @@ public class EvccPvHandler extends EvccBaseThingHandler {
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
+            JsonObject state = stateOpt.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
             commonInitialize(state);
         });
     }
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
+        state = state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
         super.updateStatesFromApiResponse(state);
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_MEMBER_PV) ? state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject()
+        return state.has(JSON_KEY_PV) ? state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject()
                 : new JsonObject();
     }
 }
