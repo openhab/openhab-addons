@@ -13,6 +13,7 @@
 		<label>Sungrow Inverter</label>
 		<description>Sungrow inverter connected via Modbus.</description>
 		<category>Inverter</category>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sg-overview" typeId="sg-overview"/>
 			<channel-group id="sg-power-flow-information" typeId="sg-power-flow-information"/>
