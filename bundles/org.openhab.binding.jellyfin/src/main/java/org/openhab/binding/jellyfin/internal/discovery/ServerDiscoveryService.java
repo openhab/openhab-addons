@@ -94,7 +94,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemInformation.getVersion());
             properties.put(Thing.PROPERTY_VENDOR, "https://jellyfin.org");
 
-            properties.put(Constants.PROPERTY_SERVER_URI, uri);
+            properties.put(Constants.ServerProperties.SERVER_URI, uri);
         } catch (ApiException e) {
             logger.warn("Unable to get device properties: {}", e);
         }

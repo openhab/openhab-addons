@@ -13,6 +13,7 @@
 package org.openhab.binding.jellyfin.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.Thing;
 
 /**
  * The {@link Configuration} class contains fields mapping thing configuration parameters.
@@ -54,4 +55,20 @@ public class Configuration {
      * User ID
      */
     public String userId = "";
+
+    /**
+     * Checks if a configuration exists for the given thing.
+     *
+     * @param thing the thing to check the configuration for
+     * @return true if the configuration is complete, false otherwise
+     */
+    public static boolean configurationExists(Thing thing) {
+        Configuration config = thing.getConfiguration().as(Configuration.class);
+        return config != null && !config.hostname.isEmpty();
+    }
+
+    public static boolean tokenExists(Thing thing) {
+        Configuration config = thing.getConfiguration().as(Configuration.class);
+        return config != null && !config.token.isEmpty();
+    }
 }

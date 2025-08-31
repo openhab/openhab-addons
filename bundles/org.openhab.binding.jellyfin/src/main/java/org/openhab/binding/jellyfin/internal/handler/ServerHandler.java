@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.handler;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Configuration;
+import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
@@ -48,10 +50,11 @@ public class ServerHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ExceptionHandler exceptionHandler;
     private final ApiClient apiClient;
+    private final Configuration configuration;
 
     Map<String, @Nullable ScheduledFuture<?>> tasks = new HashMap<>();
 
-    public static class TASKS {
+    private static class TASKS {
         public static final String CONNECT = "Connect";
         public static final String REGISTER = "Registration";
         public static final String POLL = "Update";
@@ -66,6 +69,7 @@ public class ServerHandler extends BaseBridgeHandler {
         super(bridge);
 
         this.exceptionHandler = new ExceptionHandler();
+        this.configuration = this.getConfigAs(Configuration.class);
         this.apiClient = apiClient;
     }
 
@@ -90,29 +94,41 @@ public class ServerHandler extends BaseBridgeHandler {
     private synchronized Runnable initializeHandler() {
         return () -> {
             try {
-                if (this.configurationExists()) {
+                if (Configuration.configurationExists(this.getThing())) {
+                    var uriObject = new URI(this.configuration.ssl ? "https" : "http", null, // userInfo
+                            this.configuration.hostname, this.configuration.port, this.configuration.path, null, // query
+                            null // fragment
+                    );
 
-                    this.stopTasks();
-                    this.startTasks();
+                    var uriString = uriObject.toString();
+
+                    this.apiClient.updateBaseUri(uriString);
                 } else {
-                    logger.warn("Jellyfin configuration is missing or incomplete. Please check your settings.");
+                    var uriString = thing.getProperties().get(Constants.ServerProperties.SERVER_URI);
+                    var uriObject = new URI(uriString);
 
-                    var description = "";
-                    ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
-                            ThingStatusDetail.CONFIGURATION_PENDING, description);
-                    this.getThing().setStatusInfo(statusInfo);
+                    this.configuration.hostname = uriObject.getHost();
+                    this.configuration.port = uriObject.getPort();
+                    this.configuration.ssl = "https".equalsIgnoreCase(uriObject.getScheme());
+                    this.configuration.path = uriObject.getPath();
+
+                    this.apiClient.updateBaseUri(uriString);
+
+                    thing.getProperties().remove(Constants.ServerProperties.SERVER_URI);
+
+                    logger.info("Creating initial configuration for discovered server at {}:{}",
+                            this.configuration.hostname, this.configuration.port);
                 }
+                this.stopTasks();
+                this.startTasks();
             } catch (Exception e) {
-                this.logger.warn("Error during initialization: {}", e.getMessage(), e);
-
+                this.logger.error("Error during initialization: {}", e.getMessage(), e);
                 this.exceptionHandler.handle(e);
             }
         };
     }
 
     private synchronized void startTasks() {
-        var currentStatus = this.getThing().getStatus();
-
         String taskId = TASKS.CONNECT;
         Runnable task = null;
 
@@ -138,12 +154,6 @@ public class ServerHandler extends BaseBridgeHandler {
         }
     }
 
-    private boolean configurationExists() {
-        var configuration = this.getConfigAs(Configuration.class);
-
-        return (configuration.token.trim() != "");
-    }
-
     private Object handleConnection(SystemInfo systemInfo) {
         try {
             // Log all available server information at INFO level
@@ -151,6 +161,9 @@ public class ServerHandler extends BaseBridgeHandler {
             logger.info("  Server Name: {}", systemInfo.getServerName());
             logger.info("  Local Address: {}", systemInfo.getLocalAddress());
             logger.info("  Version: {}", systemInfo.getVersion());
+
+            this.thing.getProperties().put(Constants.ServerProperties.SERVER_VERSION, systemInfo.getVersion());
+
             logger.info("  Product Name: {}", systemInfo.getProductName());
             // Note: getOperatingSystem() is deprecated but still available for logging
             @SuppressWarnings("deprecation")
