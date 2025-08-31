@@ -228,7 +228,7 @@ The following channels are available on all Linky telemeters in standard TIC mod
 | commonLSMGroup#distributor-rate       | `rate`                     	 | Stge decode : distributor rate index                                              |
 | commonLSMGroup#clock                  | `contact`                  	 | Stge decode : clock state                                                         |
 | commonLSMGroup#plc                    | `plc`                      	 | Stge decode : PLC                                                             |
-| commonLSMGroup#outputcom              | `ouputcomState`            	 | Stge decode : Output com state                                                |
+| commonLSMGroup#outputcom              | `outputcomState`            	 | Stge decode : Output com state                                                |
 | commonLSMGroup#plc-state              | `plcState`                 	 | Stge decode : PLC state                                                       |
 | commonLSMGroup#plc-synchro            | `synchroPlcState`         	 | Stge decode : PLC Synchro state                                               |
 | commonLSMGroup#tempo-today            | `tempo`                    	 | Stge decode : Today tempo color                                                   |
