@@ -166,7 +166,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             final AtomicInteger scannedIPcount = new AtomicInteger(0);
 
             for (String ip : networkIPs) {
-                final PresenceDetection pd = new PresenceDetection(this, Duration.ofSeconds(2));
+                final PresenceDetection pd = new PresenceDetection(this, Duration.ofSeconds(2), service);
                 pd.setHostname(ip);
                 pd.setIOSDevice(true);
                 pd.setUseDhcpSniffing(false);

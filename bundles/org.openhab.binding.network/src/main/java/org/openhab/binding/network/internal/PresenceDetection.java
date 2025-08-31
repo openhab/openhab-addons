@@ -30,9 +30,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -92,23 +89,16 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private final PresenceDetectionListener updateListener;
 
     private Set<String> networkInterfaceNames = Set.of();
-    protected @Nullable ExecutorService detectionExecutorService;
-    protected @Nullable ExecutorService waitForResultExecutorService;
     private String dhcpState = "off";
     int detectionChecks;
     private String lastReachableNetworkInterfaceName = "";
 
-    // Executor for async tasks (e.g., iOS wakeup/arp chain)
-    private final Executor asyncExecutor;
-
-    public PresenceDetection(final PresenceDetectionListener updateListener, Duration cacheDeviceStateTime) {
-        this(updateListener, cacheDeviceStateTime, ForkJoinPool.commonPool());
-    }
+    private final Executor executor;
 
     public PresenceDetection(final PresenceDetectionListener updateListener, Duration cacheDeviceStateTime,
-            Executor asyncExecutor) {
+            Executor executor) {
         this.updateListener = updateListener;
-        this.asyncExecutor = asyncExecutor;
+        this.executor = executor;
         cache = new ExpiringCacheAsync<>(cacheDeviceStateTime);
     }
 
@@ -317,10 +307,6 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         cache.getValue(this::performPresenceDetection).thenAccept(callback);
     }
 
-    public ExecutorService getThreadsFor(int threadCount) {
-        return Executors.newFixedThreadPool(threadCount);
-    }
-
     private void withDestinationAddress(Consumer<InetAddress> consumer) {
         InetAddress destinationAddress = destination.getValue();
         if (destinationAddress == null) {
@@ -330,24 +316,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         }
     }
 
-    private void stopDetection() {
-        ExecutorService detectionExecutorService = this.detectionExecutorService;
-        if (detectionExecutorService != null) {
-            logger.debug("Shutting down detectionExecutorService");
-            detectionExecutorService.shutdownNow();
-            this.detectionExecutorService = null;
-        }
-        ExecutorService waitForResultExecutorService = this.waitForResultExecutorService;
-        if (waitForResultExecutorService != null) {
-            logger.debug("Shutting down waitForResultExecutorService");
-            waitForResultExecutorService.shutdownNow();
-            this.waitForResultExecutorService = null;
-        }
-    }
-
     /**
      * Perform a presence detection with ICMP-, ARP ping and TCP connection attempts simultaneously.
-     * A fixed thread pool will be created with as many threads as necessary to perform all tests at once.
      *
      * Please be aware of the following restrictions:
      * <ul>
@@ -383,53 +353,40 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             return CompletableFuture.completedFuture(pdv);
         }
 
-        stopDetection();
-
-        ExecutorService detectionExecutorService = getThreadsFor(detectionChecks);
-        this.detectionExecutorService = detectionExecutorService;
-        ExecutorService waitForResultExecutorService = getThreadsFor(1);
-        this.waitForResultExecutorService = waitForResultExecutorService;
-
         List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
 
         for (Integer tcpPort : tcpPorts) {
             addAsyncDetection(completableFutures, () -> {
-                Thread.currentThread().setName("presenceDetectionTCP_" + hostname + " " + tcpPort);
                 performServicePing(pdv, tcpPort);
-            }, detectionExecutorService);
+            });
         }
 
         // ARP ping for IPv4 addresses. Use single executor for Windows tool and
         // each own executor for each network interface for other tools
         if (arpPingMethod == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
             addAsyncDetection(completableFutures, () -> {
-                Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
-                // arp-ping.exe tool capable of handling multiple interfaces by itself
                 performArpPing(pdv, "");
-            }, detectionExecutorService);
+            });
         } else if (interfaceNames != null) {
             for (final String interfaceName : interfaceNames) {
                 addAsyncDetection(completableFutures, () -> {
-                    Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
                     performArpPing(pdv, interfaceName);
-                }, detectionExecutorService);
+                });
             }
         }
 
         // ICMP ping
         if (pingMethod != IpPingMethodEnum.DISABLED) {
             addAsyncDetection(completableFutures, () -> {
-                Thread.currentThread().setName("presenceDetectionICMP_" + hostname);
                 if (pingMethod == IpPingMethodEnum.JAVA_PING) {
                     performJavaPing(pdv);
                 } else {
                     performSystemPing(pdv);
                 }
-            }, detectionExecutorService);
+            });
         }
 
         return CompletableFuture.supplyAsync(() -> {
-            Thread.currentThread().setName("presenceDetectionResult_" + hostname);
             logger.debug("Waiting for {} detection futures for {} to complete", completableFutures.size(), hostname);
             completableFutures.forEach(completableFuture -> {
                 try {
@@ -448,17 +405,12 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             logger.debug("Sending listener final result: {}", pdv);
             updateListener.finalDetectionResult(pdv);
 
-            detectionExecutorService.shutdownNow();
-            this.detectionExecutorService = null;
-            detectionChecks = 0;
-
             return pdv;
-        }, waitForResultExecutorService);
+        }, executor);
     }
 
-    private void addAsyncDetection(List<CompletableFuture<Void>> completableFutures, Runnable detectionRunnable,
-            ExecutorService executorService) {
-        completableFutures.add(CompletableFuture.runAsync(detectionRunnable, executorService)
+    private void addAsyncDetection(List<CompletableFuture<Void>> completableFutures, Runnable detectionRunnable) {
+        completableFutures.add(CompletableFuture.runAsync(detectionRunnable, executor)
                 .orTimeout(timeout.plusSeconds(3).toMillis(), TimeUnit.MILLISECONDS));
     }
 
@@ -564,7 +516,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                     } catch (IOException e) {
                         logger.trace("Failed to wake up iOS device for {}", hostname, e);
                     }
-                }, asyncExecutor).thenRunAsync(arpPingTask, asyncExecutor);
+                }, executor).thenRunAsync(arpPingTask, executor);
             } else {
                 arpPingTask.run();
             }

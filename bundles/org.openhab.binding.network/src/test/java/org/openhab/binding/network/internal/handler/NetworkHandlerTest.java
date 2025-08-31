@@ -82,7 +82,8 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_TIMEOUT, 1234);
             return conf;
         });
-        PresenceDetection presenceDetection = spy(new PresenceDetection(handler, Duration.ofSeconds(2)));
+        PresenceDetection presenceDetection = spy(
+                new PresenceDetection(handler, Duration.ofSeconds(2), scheduledExecutorService));
 
         handler.initialize(presenceDetection);
         assertThat(handler.retries, is(10));
@@ -103,7 +104,7 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
             return conf;
         });
-        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2)));
+        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), scheduledExecutorService));
         // Check that we are offline
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
@@ -123,7 +124,8 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, 0); // disable auto refresh
             return conf;
         });
-        PresenceDetection presenceDetection = spy(new PresenceDetection(handler, Duration.ofSeconds(2)));
+        PresenceDetection presenceDetection = spy(
+                new PresenceDetection(handler, Duration.ofSeconds(2), scheduledExecutorService));
         doReturn(Instant.now()).when(presenceDetection).getLastSeen();
 
         handler.initialize(presenceDetection);
