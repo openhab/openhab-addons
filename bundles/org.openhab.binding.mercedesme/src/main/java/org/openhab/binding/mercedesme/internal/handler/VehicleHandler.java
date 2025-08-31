@@ -942,7 +942,6 @@ public class VehicleHandler extends BaseThingHandler {
                     ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
                             OnOffType.from(autoUnlockToSelect));
                     updateChannel(autoUnlockMap);
-
                 } else {
                     logger.trace("Charge Program index {} not found in {}", selectedChargeProgram,
                             chargeGroupValueStorage);
