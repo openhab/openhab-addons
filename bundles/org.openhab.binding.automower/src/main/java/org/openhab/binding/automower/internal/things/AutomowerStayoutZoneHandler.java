@@ -65,7 +65,7 @@ public class AutomowerStayoutZoneHandler extends BaseThingHandler {
                         AutomowerHandler handler = automowerBridgeHandler
                                 .getAutomowerHandlerByStayoutZoneId(this.thingId);
                         if (handler != null) {
-                            handler.sendAutomowerStayOutZone(this.thingId, ((cmd == OnOffType.ON) ? true : false));
+                            handler.sendAutomowerStayOutZone(this.thingId, cmd == OnOffType.ON);
                         } else {
                             logger.warn("No AutomowerHandler found for zoneId {}", this.thingId);
                         }

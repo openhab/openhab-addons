@@ -70,7 +70,7 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
                 if (handler != null) {
                     if (CHANNEL_WORKAREA_ENABLED.equals(channelUID.getIdWithoutGroup())) {
                         if (command instanceof OnOffType cmd) {
-                            handler.sendAutomowerWorkAreaEnable(this.thingId, ((cmd == OnOffType.ON) ? true : false));
+                            handler.sendAutomowerWorkAreaEnable(this.thingId, cmd == OnOffType.ON);
                         } else {
                             logger.warn("Command {} not supported for channel {}", command, channelUID);
                         }

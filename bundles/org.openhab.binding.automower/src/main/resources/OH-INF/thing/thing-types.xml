@@ -32,7 +32,6 @@
 				<description>How often the current Automower® states should be polled using REST API</description>
 			</parameter>
 		</config-description>
-
 	</bridge-type>
 
 	<!-- Automower Thing Type -->
