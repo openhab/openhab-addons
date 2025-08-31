@@ -97,7 +97,7 @@ public class BaseCluster {
     }
 
     // Structs
-    public class AtomicAttributeStatusStruct {
+    public static class AtomicAttributeStatusStruct {
         public Integer attributeId; // attrib-id
         public Integer statusCode; // status
 
@@ -107,7 +107,7 @@ public class BaseCluster {
         }
     }
 
-    public class MeasurementAccuracyRangeStruct {
+    public static class MeasurementAccuracyRangeStruct {
         public BigInteger rangeMin; // int64
         public BigInteger rangeMax; // int64
         public Integer percentMax; // percent100ths
@@ -131,7 +131,7 @@ public class BaseCluster {
         }
     }
 
-    public class MeasurementAccuracyStruct {
+    public static class MeasurementAccuracyStruct {
         public MeasurementTypeEnum measurementType; // MeasurementTypeEnum
         public Boolean measured; // bool
         public BigInteger minMeasuredValue; // int64
@@ -149,7 +149,7 @@ public class BaseCluster {
         }
     }
 
-    public class Date {
+    public static class Date {
         public Integer year; // uint8
         public Integer month; // uint8
         public Integer day; // uint8
@@ -163,7 +163,7 @@ public class BaseCluster {
         }
     }
 
-    public class Locationdesc {
+    public static class Locationdesc {
         public String locationName; // string
         public Integer floorNumber; // int16
         public Integer areaType; // tag
@@ -175,7 +175,7 @@ public class BaseCluster {
         }
     }
 
-    public class Semtag {
+    public static class Semtag {
         public Integer mfgCode; // vendor-id
         public Integer namespaceId; // namespace
         public Integer tag; // tag
@@ -189,7 +189,7 @@ public class BaseCluster {
         }
     }
 
-    public class Tod {
+    public static class Tod {
         public Integer hours; // uint8
         public Integer minutes; // uint8
         public Integer seconds; // uint8
@@ -274,6 +274,44 @@ public class BaseCluster {
         public final String label;
 
         private SoftwareVersionCertificationStatusEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum Namespace implements MatterEnum {
+        CLOSURE(1, "Closure"),
+        COMPASS_DIRECTION(2, "CompassDirection"),
+        COMPASS_LOCATION(3, "CompassLocation"),
+        DIRECTION(4, "Direction"),
+        LEVEL(5, "Level"),
+        LOCATION(6, "Location"),
+        NUMBER(7, "Number"),
+        POSITION(8, "Position"),
+        ELECTRICAL_MEASUREMENT(10, "ElectricalMeasurement"),
+        LAUNDRY(14, "Laundry"),
+        POWER_SOURCE(15, "PowerSource"),
+        AREA_NAMESPACE(16, "AreaNamespace"),
+        LANDMARK_NAMESPACE(17, "LandmarkNamespace"),
+        RELATIVE_POSITION(18, "RelativePosition"),
+        REFRIGERATOR(65, "Refrigerator"),
+        ROOM_AIR_CONDITIONER(66, "RoomAirConditioner"),
+        SWITCHES(67, "Switches");
+
+        public final Integer value;
+        public final String label;
+
+        private Namespace(Integer value, String label) {
             this.value = value;
             this.label = label;
         }

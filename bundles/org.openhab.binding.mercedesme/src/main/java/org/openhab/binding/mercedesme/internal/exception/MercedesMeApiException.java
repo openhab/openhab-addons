@@ -10,26 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercedesme.internal.dto;
-
-import java.util.UUID;
+package org.openhab.binding.mercedesme.internal.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PINRequest} dto contains JSon body for PIN request
+ * The {@link MercedesMeApiException} is thrown if an exception occurs during API calls
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class PINRequest {
-    public String emailOrPhoneNumber;
-    public String countryCode;
-    public String nonce;
+public class MercedesMeApiException extends Exception {
 
-    public PINRequest(String mail, String country) {
-        emailOrPhoneNumber = mail;
-        countryCode = country;
-        nonce = UUID.randomUUID().toString();
+    private static final long serialVersionUID = 8841726242900964396L;
+
+    public MercedesMeApiException(String message) {
+        super(message);
     }
 }

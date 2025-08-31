@@ -75,7 +75,7 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
     /**
      * Represents the data associated with a Thread Network.
      */
-    public class ThreadNetworkStruct {
+    public static class ThreadNetworkStruct {
         /**
          * This field shall indicate the Extended PAN ID from the OperationalDataset for the given Thread network.
          */

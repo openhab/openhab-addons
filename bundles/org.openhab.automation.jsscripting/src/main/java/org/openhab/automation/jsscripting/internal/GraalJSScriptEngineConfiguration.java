@@ -31,15 +31,17 @@ public class GraalJSScriptEngineConfiguration {
     private static final String CFG_INJECTION_ENABLED = "injectionEnabledV2";
     private static final String CFG_INJECTION_CACHING_ENABLED = "injectionCachingEnabled";
     private static final String CFG_WRAPPER_ENABLED = "wrapperEnabled";
+    private static final String CFG_EVENT_CONVERSION_ENABLED = "eventConversionEnabled";
     private static final String CFG_DEPENDENCY_TRACKING_ENABLED = "dependencyTrackingEnabled";
 
-    public static final int INJECTION_DISABLED = 0;
-    public static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY = 2;
-    public static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 1;
+    private static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY = 1;
+    private static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_AND_TRANSFORMATIONS = 2;
+    private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 3;
 
-    private int injectionEnabled = 2;
+    private int injectionEnabled = INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     private boolean injectionCachingEnabled = true;
     private boolean wrapperEnabled = true;
+    private boolean eventConversionEnabled = true;
     private boolean dependencyTrackingEnabled = true;
 
     /**
@@ -57,11 +59,18 @@ public class GraalJSScriptEngineConfiguration {
      * @param config configuration parameters to apply to JavaScript
      */
     void modified(Map<String, ?> config) {
+        boolean oldInjectionEnabledForUiBasedScript = isInjectionEnabledForUiBasedScript();
         boolean oldDependencyTrackingEnabled = dependencyTrackingEnabled;
         boolean oldWrapperEnabled = wrapperEnabled;
+        boolean oldEventConversionEnabled = eventConversionEnabled;
 
         this.update(config);
 
+        if (oldInjectionEnabledForUiBasedScript != isInjectionEnabledForUiBasedScript()
+                && !isInjectionEnabledForUiBasedScript() && isEventConversionEnabled()) {
+            logger.warn(
+                    "Injection disabled for UI-based scripts, but event conversion is enabled. Event conversion will not work.");
+        }
         if (oldDependencyTrackingEnabled != dependencyTrackingEnabled) {
             logger.info(
                     "{} dependency tracking for JavaScript Scripting. Please resave your scripts to apply this change.",
@@ -71,6 +80,16 @@ public class GraalJSScriptEngineConfiguration {
             logger.info(
                     "{} wrapper for JavaScript Scripting. Please resave your UI-based scripts to apply this change.",
                     wrapperEnabled ? "Enabled" : "Disabled");
+        }
+        if (oldEventConversionEnabled != eventConversionEnabled) {
+            if (eventConversionEnabled && (!isInjectionEnabledForUiBasedScript() || !wrapperEnabled)) {
+                logger.warn(
+                        "Enabled event conversion for UI-based scripts, but auto-injection or wrapper is disabled. Event conversion will not work.");
+            }
+            if (!eventConversionEnabled) {
+                logger.info(
+                        "Disabled event conversion for JavaScript Scripting. Please resave your scripts to apply this change.");
+            }
         }
     }
 
@@ -87,12 +106,22 @@ public class GraalJSScriptEngineConfiguration {
         injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED), Boolean.class,
                 true);
         wrapperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_WRAPPER_ENABLED), Boolean.class, true);
+        eventConversionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_EVENT_CONVERSION_ENABLED), Boolean.class,
+                true);
         dependencyTrackingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEPENDENCY_TRACKING_ENABLED),
                 Boolean.class, true);
     }
 
-    public boolean isInjection(int type) {
-        return type == injectionEnabled;
+    public boolean isInjectionEnabledForUiBasedScript() {
+        return injectionEnabled >= INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY;
+    }
+
+    public boolean isInjectionEnabledForTransformations() {
+        return injectionEnabled >= INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_AND_TRANSFORMATIONS;
+    }
+
+    public boolean isInjectionEnabledForAllScripts() {
+        return injectionEnabled == INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     }
 
     public boolean isInjectionCachingEnabled() {
@@ -101,6 +130,10 @@ public class GraalJSScriptEngineConfiguration {
 
     public boolean isWrapperEnabled() {
         return wrapperEnabled;
+    }
+
+    public boolean isEventConversionEnabled() {
+        return eventConversionEnabled;
     }
 
     public boolean isDependencyTrackingEnabled() {

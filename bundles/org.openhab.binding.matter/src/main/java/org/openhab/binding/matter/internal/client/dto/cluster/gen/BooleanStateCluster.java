@@ -44,7 +44,7 @@ public class BooleanStateCluster extends BaseCluster {
     /**
      * If this event is supported, it shall be generated when the StateValue attribute changes.
      */
-    public class StateChange {
+    public static class StateChange {
         /**
          * This field shall indicate the new value of the StateValue attribute.
          */

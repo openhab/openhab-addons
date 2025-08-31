@@ -52,7 +52,7 @@ The following configuration options are available on the BTicino Smarther Chrono
 
 ### Account Creation
 
-Follow the instructions in the tutorial [here](https://developer.legrand.com/tutorials/getting-started/), under:
+Follow the instructions in the [Legrand getting started tutorial](https://developer.legrand.com/tutorials/getting-started/), under:
 
 - Step 1 : Create an account
 - Step 2 : Subscribe to a product and get subscription key
@@ -62,7 +62,7 @@ Simply write down your "Primary Key" as it will be needed later on in the bridge
 
 ### Application Creation
 
-Follow the instructions in the tutorial [here](https://developer.legrand.com/tutorials/create-an-application/), under:
+Follow the instructions in the [Legrand create an application tutorial](https://developer.legrand.com/tutorials/create-an-application/), under:
 
 - Step 1 : Register your application
 - Step 2 : Check scopes
@@ -122,7 +122,7 @@ You can force reinitialization by authorizing again on the `/bticinosmarther/con
 
 ### Troubleshooting
 
-When configuring the bridge (see step 13 [here](#thing-configuration)), you can receive the following error from Legrand portal:
+When configuring the bridge (see step 13 in the [Thing Configuration section](#thing-configuration)), you can receive the following error from Legrand portal:
 
 ```json
 {
@@ -131,7 +131,7 @@ When configuring the bridge (see step 13 [here](#thing-configuration)), you can 
 }
 ```
 
-This means you've either opened the `/bticinosmarther/connectsmarther` page from the wrong address or set the wrong "Reply URL" attribute in your application (see step 1 [here](#application-creation)).
+This means you've either opened the `/bticinosmarther/connectsmarther` page from the wrong address or set the wrong "Reply URL" attribute in your application (see step 1 in the [Application Creation section](#application-creation)).
 Please remember these two strings must match for authentication process to work.
 
 To solve the issue, either:

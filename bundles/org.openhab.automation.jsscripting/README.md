@@ -71,16 +71,57 @@ console.log("Thing status",thingStatusInfo.getStatus());
 
 See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of functionality.
 
-### UI Event Object
+### Event Object
 
-**NOTE**: Note that `event` object is different in UI based rules and file based rules! This section is only valid for UI based rules. If you use file based rules, refer to [file based rules event object documentation](#event-object).
-Note that `event` object is only available when the UI based rule was triggered by an event and is not called from another rule!
-Trying to access `event` in this case does not work and will lead to an error. Use `this.event` instead (will be `undefined` when it does not exist).
+When a rule is triggered, the script is provided the event instance that triggered it.
+The specific data depends on the event type.
+The `event` object provides some information about that trigger.
 
-When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
-When a rule is triggered, there is additional context available for the action in a variable called `event`.
+This table gives an overview over the `event` object:
 
-This table gives an overview over the `event` object for most common trigger types:
+| Property Name     | Trigger Types                                       | Description                                                                                            | Rules DSL Equivalent   |
+|-------------------|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------|------------------------|
+| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | Previous state of Item or Group that triggered event                                                   | `previousState`        |
+| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | New state of Item or Group that triggered event                                                        | N/A                    |
+| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger` | State of Item that triggered event                                                                     | `triggeringItem.state` |
+| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`         | Command that triggered event                                                                           | `receivedCommand`      |
+| `itemName`        | `Item****Trigger`, `Group****Trigger`               | Name of Item that triggered event                                                                      | `triggeringItem.name`  |
+| `groupName`       | `Group****Trigger`                                  | Name of the group whose member triggered event                                                         | N/A                    |
+| `receivedEvent`   | `ChannelEventTrigger`                               | Channel event that triggered event                                                                     | N/A                    |
+| `channelUID`      | `ChannelEventTrigger`                               | UID of channel that triggered event                                                                    | N/A                    |
+| `oldStatus`       | `ThingStatusChangeTrigger`                          | Previous state of Thing that triggered event                                                           | N/A                    |
+| `newStatus`       | `ThingStatusChangeTrigger`                          | New state of Thing that triggered event                                                                | N/A                    |
+| `status`          | `ThingStatusUpdateTrigger`                          | State of Thing that triggered event                                                                    | N/A                    |
+| `thingUID`        | `Thing****Trigger`                                  | UID of Thing that triggered event                                                                      | N/A                    |
+| `cronExpression`  | `GenericCronTrigger`                                | Cron expression of the trigger                                                                         | N/A                    |
+| `time`            | `TimeOfDayTrigger`                                  | Time of day value of the trigger                                                                       | N/A                    |
+| `timeOnly`        | `DateTimeTrigger`                                   | Whether the trigger only considers the time part of the DateTime Item                                  | N/A                    |
+| `offset`          | `DateTimeTrigger`                                   | Offset in seconds added to the time of the DateTime Item                                               | N/A                    |
+| `eventType`       | all except `PWMTrigger`, `PIDTrigger`               | Type of event that triggered event (change, command, triggered, update, time)                          | N/A                    |
+| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                                                   | N/A                    |
+| `eventName`       | all                                                 | simple Java class name of the triggering event, e.g. `ExecutionEvent`                                  | N/A                    |
+| `eventClass`      | all                                                 | full Java class name of the triggering event, e.g. `org.openhab.core.automation.events.ExecutionEvent` | N/A                    |
+| `module`          | all                                                 | (user-defined or auto-generated) name of trigger                                                       | N/A                    |
+| `raw`             | all                                                 | Original contents of the event including data passed from a calling rule                               | N/A                    |
+
+All properties are typeof `string` except for properties contained by `raw` which are unmodified from the original types.
+
+Please note that when using `GenericEventTrigger`, the available properties depend on the chosen event types.
+It is not possible for the openhab-js library to provide type conversions for all properties of all openHAB events, as those are too many.
+In case the event object does not provide type-conversed properties for your chosen event type, use the `payload` property to gain access to the event's (Java data type) payload.
+
+**NOTE:**
+`Group****Trigger`s use the equivalent `Item****Trigger` as trigger for each member.
+
+See [openhab-js : EventObject](https://openhab.github.io/openhab-js/rules.html#.EventObject) for full API documentation.
+
+When disabling the option _Convert Event from Java to JavaScript type in UI-based scripts_, you will receive a raw Java event object instead of the `event` object described above.
+See the expandable section below for more details.
+
+<details>
+<summary>Raw UI Event Object</summary>
+
+This table gives an overview over the raw Java `event` object for UI-based scripts for most common trigger types:
 
 | Property Name  | Type                                                                                                                 | Trigger Types                          | Description                                                                                                   | Rules DSL Equivalent   |
 |----------------|----------------------------------------------------------------------------------------------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------|
@@ -109,6 +150,8 @@ console.log(event.itemState == ON)  // OK. Comparing Java types
 console.log(event.itemState == "test") // WRONG. Will always log "false"
 console.log(event.itemState.toString() == "test") // OK
 ```
+
+</details>
 
 ## Scripting Basics
 
@@ -295,6 +338,8 @@ See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for fu
   - .removeItem(itemOrItemName) ⇒ `Item|null`
   - .replaceItem([itemConfig](#itemconfig)) ⇒ `Item|null`
   - .safeItemName(s) ⇒ `string`
+  - .metadata ⇒ [`items.metadata` namespace](https://openhab.github.io/openhab-js/items.metadata.html): Manage metadata directly without the need of going "through" the Item
+  - .itemChannelLink ⇒ [`items.itemChannelLink` namespace](https://openhab.github.io/openhab-js/items.itemChannelLink.html): Manage Item -> channel links
 
 ```javascript
 var item = items.KitchenLight;
@@ -1190,6 +1235,9 @@ Local variable state is not persisted among reloads, see using the [cache](#cach
 
 File based rules can be created in 2 different ways: using [JSRule](#jsrule) or the [Rule Builder](#rule-builder).
 
+When a rule is triggered, the script is provided information about the event that triggered the rule in the `event` object.
+Please refer to [Event Object](#event-object) for documentation.
+
 See [openhab-js : rules](https://openhab.github.io/openhab-js/rules.html) for full API documentation.
 
 ### JSRule
@@ -1284,7 +1332,7 @@ Rule are completed by calling `.build(name, description, tags, id)` , all parame
 A simple example of this would look like:
 
 ```javascript
-rules.when().item("F1_Light").changed().then().send("changed").toItem("F2_Light").build("My Rule", "My First Rule");
+rules.when().item("F1_Light").changed().then().send("changed").toItem("F2_Light").build("My Rule", "My First Rule", ['MyTag1', 'Tag2'], 'MyRuleID');
 ```
 
 Operations and conditions can also optionally take functions:
@@ -1409,54 +1457,6 @@ rules.when(true).item('HallLight').receivedCommand().then().sendIt().toItem('Kit
 // When the HallLight is updated to ON, make sure that BedroomLight1 is set to the same state as the BedroomLight2
 rules.when(true).item('HallLight').receivedUpdate().then().copyState().fromItem('BedroomLight1').toItem('BedroomLight2').build();
 ```
-
-### Event Object
-
-**NOTE**: The `event` object is different in UI Based Rules and File Based Rules!
-This section is only valid for File Based Rules.
-If you use UI Based Rules, refer to [UI based rules event object documentation](#ui-event-object).
-
-When a rule is triggered, the script is provided the event instance that triggered it.
-The specific data depends on the event type.
-The `event` object provides some information about that trigger.
-
-This table gives an overview over the `event` object:
-
-| Property Name     | Trigger Types                                       | Description                                                                   | Rules DSL Equivalent   |
-|-------------------|-----------------------------------------------------|-------------------------------------------------------------------------------|------------------------|
-| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | Previous state of Item or Group that triggered event                          | `previousState`        |
-| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | New state of Item or Group that triggered event                               | N/A                    |
-| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger` | State of Item that triggered event                                            | `triggeringItem.state` |
-| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`         | Command that triggered event                                                  | `receivedCommand`      |
-| `itemName`        | `Item****Trigger`, `Group****Trigger`               | Name of Item that triggered event                                             | `triggeringItem.name`  |
-| `groupName`       | `Group****Trigger`                                  | Name of the group whose member triggered event                                | N/A                    |
-| `receivedEvent`   | `ChannelEventTrigger`                               | Channel event that triggered event                                            | N/A                    |
-| `channelUID`      | `ChannelEventTrigger`                               | UID of channel that triggered event                                           | N/A                    |
-| `oldStatus`       | `ThingStatusChangeTrigger`                          | Previous state of Thing that triggered event                                  | N/A                    |
-| `newStatus`       | `ThingStatusChangeTrigger`                          | New state of Thing that triggered event                                       | N/A                    |
-| `status`          | `ThingStatusUpdateTrigger`                          | State of Thing that triggered event                                           | N/A                    |
-| `thingUID`        | `Thing****Trigger`                                  | UID of Thing that triggered event                                             | N/A                    |
-| `cronExpression`  | `GenericCronTrigger`                                | Cron expression of the trigger                                                | N/A                    |
-| `time`            | `TimeOfDayTrigger`                                  | Time of day value of the trigger                                              | N/A                    |
-| `timeOnly`        | `DateTimeTrigger`                                   | Whether the trigger only considers the time part of the DateTime Item         | N/A                    |
-| `offset`          | `DateTimeTrigger`                                   | Offset in seconds added to the time of the DateTime Item                      | N/A                    |
-| `eventType`       | all except `PWMTrigger`, `PIDTrigger`               | Type of event that triggered event (change, command, triggered, update, time) | N/A                    |
-| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                          | N/A                    |
-| `eventClass`      | all                                                 | Java class name of the triggering event                                       | N/A                    |
-| `module`          | all                                                 | (user-defined or auto-generated) name of trigger                              | N/A                    |
-| `raw`             | all                                                 | Original contents of the event including data passed from a calling rule      | N/A                    |
-
-All properties are typeof `string` except for properties contained by `raw` which are unmodified from the original types.
-
-Please note that when using `GenericEventTrigger`, the available properties depend on the chosen event types.
-It is not possible for the openhab-js library to provide type conversions for all properties of all openHAB events, as those are too many.
-In case the event object does not provide type-conversed properties for your chosen event type, use the `payload` property to gain access to the event's (Java data type) payload.
-
-**NOTE:**
-`Group****Trigger`s use the equivalent `Item****Trigger` as trigger for each member.
-Time triggers do not provide any event instance, therefore no property is populated.
-
-See [openhab-js : EventObject](https://openhab.github.io/openhab-js/rules.html#.EventObject) for full API documentation.
 
 ## Advanced Scripting
 

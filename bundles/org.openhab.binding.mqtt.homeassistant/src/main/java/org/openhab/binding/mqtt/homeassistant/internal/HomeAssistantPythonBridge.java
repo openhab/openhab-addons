@@ -60,6 +60,14 @@ public class HomeAssistantPythonBridge {
 
         context.eval(PYTHON,
                 """
+                        # we need to set up the path just like it would have been set up on Linux, even if we're
+                        # on Windows
+                        import os
+                        import sys
+
+                        if os.sep != '/':
+                            sys.path.append(os.path.join(sys.prefix, "lib", "python%d.%d" % sys.version_info[:2], "site-packages"))
+
                         from homeassistant.helpers.template import Template
                         from homeassistant.components.mqtt.models import MqttCommandTemplate, MqttValueTemplate
                         from homeassistant.components.mqtt.discovery import process_discovery_config
