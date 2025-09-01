@@ -53,7 +53,7 @@
 		<label>Shelly BLU Distance</label>
 		<description>@text/thing-type.shelly.shellybludistance.description</description>
 		<category>Sensor</category>
-		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -68,6 +68,7 @@
 		<label>Shelly BLU H&amp;T</label>
 		<description>@text/thing-type.shelly.shellybluht.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
