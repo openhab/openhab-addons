@@ -64,6 +64,7 @@ public class EvccBindingConstants {
     public static final String JSON_MEMBER_PV = "pv";
     public static final String JSON_MEMBER_STATISTICS = "statistics";
     public static final String JSON_MEMBER_VEHICLES = "vehicles";
+    public static final String JSON_MEMBER_CHARGER_FEATURE_HEATING = "chargerFeatureHeating";
 
     public static final String NUMBER_CURRENCY = CoreItemFactory.NUMBER + ":Currency";
     public static final String NUMBER_DIMENSIONLESS = CoreItemFactory.NUMBER + ":Dimensionless";
@@ -74,4 +75,5 @@ public class EvccBindingConstants {
     public static final String NUMBER_TIME = CoreItemFactory.NUMBER + ":Time";
     public static final String NUMBER_LENGTH = CoreItemFactory.NUMBER + ":Length";
     public static final String NUMBER_ENERGY_PRICE = CoreItemFactory.NUMBER + ":EnergyPrice";
+    public static final String NUMBER_TEMPERATURE = CoreItemFactory.NUMBER + ":Temperature";
 }

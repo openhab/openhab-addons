@@ -154,6 +154,11 @@ public class Authorization {
     private void storeToken(String tokenResponse) {
         try {
             TokenResponse tokenResponseJson = Utils.GSON.fromJson(tokenResponse, TokenResponse.class);
+            if (tokenResponseJson == null) {
+                handleInvalidToken();
+                logger.warn("Token response is null");
+                return;
+            }
             // response doesn't contain creation date time so set it manually
             tokenResponseJson.createdOn = Instant.now().toString();
             // A refresh token is delivered optional. If not set in response take old one

@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link InverterRealtimeResponse} is responsible for storing
- * the response from the GetInverterRealtimeData response.
+ * the response from the GetInverterRealtimeData request.
  *
  * @author Thomas Rokohl - Initial contribution
  */
