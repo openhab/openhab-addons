@@ -176,7 +176,7 @@ public class NetworkUtils {
 
     /**
      * Retrieves a map of network interface names to their associated IP addresses.
-     * 
+     *
      * @return A map where the key is the name of the network interface and the value is a set of CidrAddress objects
      *         representing the IP addresses and network prefix lengths for that interface.
      */
@@ -185,7 +185,7 @@ public class NetworkUtils {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface networkInterface = en.nextElement();
-                if (networkInterface.isUp() || !networkInterface.isLoopback()) {
+                if (!networkInterface.isUp() || networkInterface.isLoopback()) {
                     logger.trace("Network interface: {} is excluded in the search", networkInterface.getName());
                     continue;
                 }
