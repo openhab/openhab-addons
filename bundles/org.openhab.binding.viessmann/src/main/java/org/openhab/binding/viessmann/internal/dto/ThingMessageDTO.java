@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openhab.binding.viessmann.internal.dto.features.FeatureCommands;
+import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 
 /**
  * Superclass for all Thing message types.
@@ -148,21 +149,11 @@ public class ThingMessageDTO {
 
     public String getChannelId() {
         StringBuilder sb = new StringBuilder();
-        String f = featureClear.replace(".", ";");
-        String[] parts = f.split(";");
-        int count = 0;
-        for (String str : parts) {
-            if (count != 0) {
-                sb.append(str.substring(0, 1).toUpperCase()).append(str.substring(1));
-            } else {
-                sb.append(str);
-            }
-            count++;
-        }
+        sb.append(featureClear.replace(".", "-"));
         if (!suffix.isEmpty()) {
             sb.append("#").append(suffix);
         }
-        return sb.toString();
+        return ViessmannUtil.camelToHyphen(sb.toString());
     }
 
     public String getSubChannelId() {
@@ -192,7 +183,7 @@ public class ThingMessageDTO {
         Matcher matcher = pattern.matcher(featureClear);
         if (matcher.find()) {
             circuitId = matcher.group(0);
-            circuitId.replace(".", "");
+            circuitId = circuitId.replace(".", "");
         }
         return circuitId;
     }

@@ -16,7 +16,10 @@ import static org.openhab.binding.viessmann.internal.ViessmannBindingConstants.*
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,9 +35,11 @@ import org.openhab.binding.viessmann.internal.dto.events.EventsDTO;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureDataDTO;
 import org.openhab.binding.viessmann.internal.dto.features.FeaturesDTO;
 import org.openhab.binding.viessmann.internal.interfaces.BridgeInterface;
+import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -43,6 +48,10 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -59,7 +68,7 @@ import com.google.gson.JsonSyntaxException;
 public class ViessmannGatewayHandler extends BaseBridgeHandler implements BridgeInterface {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final Set<String> ERROR_CHANNELS = Set.of("lastErrorMessage", "errorIsActive");
+    private static final Set<String> ERROR_CHANNELS = Set.of("last-error-message", "error-is-active");
 
     protected @Nullable ViessmannGatewayDiscoveryService discoveryService;
 
@@ -72,10 +81,13 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
     protected final List<String> devicesList = new ArrayList<>();
     protected final List<DeviceData> discoveredDeviceList = new ArrayList<>();
 
+    private final ItemChannelLinkRegistry linkRegistry;
+
     private GatewayConfiguration config = new GatewayConfiguration();
 
-    public ViessmannGatewayHandler(Bridge bridge) {
+    public ViessmannGatewayHandler(Bridge bridge, ItemChannelLinkRegistry linkRegistry) {
         super(bridge);
+        this.linkRegistry = linkRegistry;
     }
 
     @Override
@@ -151,9 +163,76 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
             startViessmannErrorsPolling(config.pollingIntervalErrors);
         }
 
+        migrateChannelIds();
+
         getAllDevices();
         if (!devicesList.isEmpty()) {
             updateBridgeStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    private void migrateChannelIds() {
+        List<Channel> oldChannels = thing.getChannels();
+        List<Channel> newChannels = new ArrayList<>(oldChannels.size());
+
+        Map<ChannelUID, ChannelUID> renameMap = new LinkedHashMap<>();
+
+        for (Channel channel : oldChannels) {
+            String oldId = channel.getUID().getId();
+            String newId = ViessmannUtil.camelToHyphen(oldId);
+
+            if (!newId.equals(oldId)) {
+                logger.info("Migrating channel '{}' -> '{}'", oldId, newId);
+
+                ChannelUID oldUid = channel.getUID();
+                ChannelUID newUid = new ChannelUID(thing.getUID(), newId);
+
+                String channelLabel = channel.getLabel();
+
+                String channelType = ViessmannUtil
+                        .camelToHyphen(Objects.requireNonNull(channel.getChannelTypeUID()).toString());
+                channelType = channelType.replace(BINDING_ID + ":", "");
+
+                ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType);
+
+                if (channelLabel != null) {
+                    Channel newChannel = ChannelBuilder.create(newUid, channel.getAcceptedItemType())
+                            .withLabel(channelLabel).withType(channelTypeUID).withProperties(channel.getProperties())
+                            .build();
+
+                    newChannels.add(newChannel);
+                    renameMap.put(oldUid, newUid);
+                }
+            }
+        }
+
+        if (renameMap.isEmpty()) {
+            return;
+        }
+
+        updateThing(editThing().withChannels(newChannels).build());
+
+        if (linkRegistry != null) {
+            for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
+                ChannelUID oldUid = e.getKey();
+                ChannelUID newUid = e.getValue();
+
+                Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
+
+                for (ItemChannelLink link : links) {
+                    String item = link.getItemName();
+                    try {
+                        linkRegistry.remove(link.getUID());
+                    } catch (Exception ex) {
+                        logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
+                    }
+
+                    linkRegistry.add(new ItemChannelLink(item, newUid));
+                    logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
+                }
+            }
+        } else {
+            logger.warn("ItemChannelLinkRegistry not available – cannot migrate item links.");
         }
     }
 
@@ -216,7 +295,7 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
             if (errors != null && !errors.data.isEmpty()) {
                 String state = errors.data.get(0).body.errorDescription;
                 Boolean active = errors.data.get(0).body.active;
-                updateState("lastErrorMessage", StringType.valueOf(state));
+                updateState("last-error-message", StringType.valueOf(state));
                 updateState("errorIsActive", OnOffType.from(active));
             }
         } catch (ViessmannCommunicationException e) {

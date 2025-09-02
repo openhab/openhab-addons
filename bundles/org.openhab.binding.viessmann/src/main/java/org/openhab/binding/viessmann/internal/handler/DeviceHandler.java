@@ -17,8 +17,10 @@ import static org.openhab.binding.viessmann.internal.ViessmannBindingConstants.*
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +42,7 @@ import org.openhab.binding.viessmann.internal.dto.features.FeatureProperties;
 import org.openhab.binding.viessmann.internal.dto.schedule.DaySchedule;
 import org.openhab.binding.viessmann.internal.dto.schedule.ScheduleDTO;
 import org.openhab.binding.viessmann.internal.interfaces.BridgeInterface;
+import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -52,9 +55,13 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +75,7 @@ import com.google.gson.GsonBuilder;
  * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
+@Component(service = DeviceHandler.class)
 public class DeviceHandler extends ViessmannThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
@@ -78,8 +86,12 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private final Map<String, HeatingCircuit> heatingCircuits = new HashMap<>();
 
-    public DeviceHandler(Thing thing, ViessmannDynamicStateDescriptionProvider stateDescriptionProvider) {
+    private final ItemChannelLinkRegistry linkRegistry;
+
+    public DeviceHandler(Thing thing, ViessmannDynamicStateDescriptionProvider stateDescriptionProvider,
+            ItemChannelLinkRegistry linkRegistry) {
         super(thing, stateDescriptionProvider);
+        this.linkRegistry = linkRegistry;
     }
 
     @Override
@@ -92,8 +104,74 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
         updateProperty(PROPERTY_ID, config.deviceId); // set representation property used by discovery
 
+        migrateChannelIds();
+
         initDeviceState();
         logger.trace("Device handler finished initializing");
+    }
+
+    private void migrateChannelIds() {
+        List<Channel> oldChannels = thing.getChannels();
+        List<Channel> newChannels = new ArrayList<>(oldChannels.size());
+
+        Map<ChannelUID, ChannelUID> renameMap = new LinkedHashMap<>();
+
+        for (Channel channel : oldChannels) {
+            String oldId = channel.getUID().getId();
+            String newId = ViessmannUtil.camelToHyphen(oldId);
+
+            if (!newId.equals(oldId)) {
+                logger.info("Migrating channel '{}' -> '{}'", oldId, newId);
+
+                ChannelUID oldUid = channel.getUID();
+                ChannelUID newUid = new ChannelUID(thing.getUID(), newId);
+
+                String channelLabel = channel.getLabel();
+
+                String channelType = ViessmannUtil
+                        .camelToHyphen(Objects.requireNonNull(channel.getChannelTypeUID()).toString());
+                channelType = channelType.replace(BINDING_ID + ":", "");
+
+                ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType);
+                if (channelLabel != null) {
+                    Channel newChannel = ChannelBuilder.create(newUid, channel.getAcceptedItemType())
+                            .withLabel(channelLabel).withType(channelTypeUID).withProperties(channel.getProperties())
+                            .build();
+
+                    newChannels.add(newChannel);
+                    renameMap.put(oldUid, newUid);
+                }
+            }
+        }
+
+        if (renameMap.isEmpty()) {
+            return;
+        }
+
+        updateThing(editThing().withChannels(newChannels).build());
+
+        if (linkRegistry != null) {
+            for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
+                ChannelUID oldUid = e.getKey();
+                ChannelUID newUid = e.getValue();
+
+                Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
+
+                for (ItemChannelLink link : links) {
+                    String item = link.getItemName();
+                    try {
+                        linkRegistry.remove(link.getUID());
+                    } catch (Exception ex) {
+                        logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
+                    }
+
+                    linkRegistry.add(new ItemChannelLink(item, newUid));
+                    logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
+                }
+            }
+        } else {
+            logger.warn("ItemChannelLinkRegistry not available – cannot migrate item links.");
+        }
     }
 
     @Override
@@ -500,7 +578,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                             switch (entry) {
                                 case "entries":
                                     subMsg.setSuffix("produced");
-                                    subMsg.setChannelType("type-boolean-readOnly");
+                                    subMsg.setChannelType("type-boolean-read-only");
                                     createSubChannel(subMsg);
                                     break;
                                 case "day":
@@ -511,30 +589,30 @@ public class DeviceHandler extends ViessmannThingHandler {
                                     createSubChannel(subMsg);
                                     break;
                                 case "week":
-                                    subMsg.setSuffix("thisWeek");
+                                    subMsg.setSuffix("this-week");
                                     subMsg.setChannelType(subChannelType);
                                     createSubChannel(subMsg);
-                                    subMsg.setSuffix("lastWeek");
+                                    subMsg.setSuffix("last-week");
                                     createSubChannel(subMsg);
                                     break;
                                 case "month":
-                                    subMsg.setSuffix("thisMonth");
+                                    subMsg.setSuffix("this-month");
                                     subMsg.setChannelType(subChannelType);
                                     createSubChannel(subMsg);
-                                    subMsg.setSuffix("lastMonth");
+                                    subMsg.setSuffix("last-month");
                                     createSubChannel(subMsg);
                                     break;
                                 case "year":
-                                    subMsg.setSuffix("thisYear");
+                                    subMsg.setSuffix("this-year");
                                     subMsg.setChannelType(subChannelType);
                                     createSubChannel(subMsg);
-                                    subMsg.setSuffix("lastYear");
+                                    subMsg.setSuffix("last-year");
                                     createSubChannel(subMsg);
                                     break;
                                 case "active":
                                     if (featureDataDTO.feature.contains("oneTimeCharge")) {
                                         subMsg.setSuffix("status");
-                                        subMsg.setChannelType("type-boolean-readOnly");
+                                        subMsg.setChannelType("type-boolean-read-only");
                                         createSubChannel(subMsg);
                                     }
                                 default:
@@ -575,21 +653,21 @@ public class DeviceHandler extends ViessmannThingHandler {
                                                 updateChannelState(subMsg.getChannelId(), parts[1], unit);
                                                 break;
                                             case "week":
-                                                subMsg.setSuffix("thisWeek");
+                                                subMsg.setSuffix("this-week");
                                                 updateChannelState(subMsg.getChannelId(), parts[0], unit);
-                                                subMsg.setSuffix("lastWeek");
+                                                subMsg.setSuffix("last-week");
                                                 updateChannelState(subMsg.getChannelId(), parts[1], unit);
                                                 break;
                                             case "month":
-                                                subMsg.setSuffix("thisMonth");
+                                                subMsg.setSuffix("this-month");
                                                 updateChannelState(subMsg.getChannelId(), parts[0], unit);
-                                                subMsg.setSuffix("lastMonth");
+                                                subMsg.setSuffix("last-month");
                                                 updateChannelState(subMsg.getChannelId(), parts[1], unit);
                                                 break;
                                             case "year":
-                                                subMsg.setSuffix("thisYear");
+                                                subMsg.setSuffix("this-year");
                                                 updateChannelState(subMsg.getChannelId(), parts[0], unit);
-                                                subMsg.setSuffix("lastYear");
+                                                subMsg.setSuffix("last-year");
                                                 updateChannelState(subMsg.getChannelId(), parts[1], unit);
                                                 break;
                                             default:
@@ -854,7 +932,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         FeatureCommands commands = msg.getCommands();
         if (commands != null) {
             List<String> com = commands.getUsedCommands();
-            if (!com.isEmpty() && !"type-boolean-readOnly".equals(channelType)) {
+            if (!com.isEmpty() && !"type-boolean-read-only".equals(channelType)) {
                 for (String command : com) {
                     switch (command) {
                         case "setTemperature":
@@ -865,24 +943,24 @@ public class DeviceHandler extends ViessmannThingHandler {
                             break;
                         case "setMin":
                             if (msg.getSuffix().contains("min")) {
-                                channelType = "type-setMin";
+                                channelType = "type-set-min";
                             }
                             break;
                         case "setMax":
                             if (msg.getSuffix().contains("max")) {
-                                channelType = "type-setMax";
+                                channelType = "type-set-max";
                             }
                             break;
                         case "setHysteresis":
-                            channelType = "type-setTargetHysteresis";
+                            channelType = "type-set-target-hysteresis";
                             break;
                         case "setMode":
-                            channelType = "type-setMode";
+                            channelType = "type-set-mode";
                             break;
                         case "setSchedule":
                         case "setName":
                             if (msg.getSuffix().contains("active")) {
-                                channelType = "type-boolean-readOnly";
+                                channelType = "type-boolean-read-only";
                             }
                             break;
                         default:
@@ -890,16 +968,16 @@ public class DeviceHandler extends ViessmannThingHandler {
                     }
                 }
             } else if ("type-boolean".equals(channelType)) {
-                channelType = channelType + "-readOnly";
+                channelType = channelType + "-read-only";
             }
         } else if ("type-boolean".equals(channelType)) {
-            channelType = channelType + "-readOnly";
+            channelType = channelType + "-read-only";
         }
-        return channelType;
+        return channelType.toLowerCase();
     }
 
     private void setStateDescriptionOptions(ThingMessageDTO msg) {
-        if ("type-setMode".equals(convertChannelType(msg))) {
+        if ("type-set-mode".equals(convertChannelType(msg))) {
             List<String> modes = msg.commands.setMode.params.mode.constraints.enumValue;
             if (modes != null) {
                 List<StateOption> stateOptions = new ArrayList<>();

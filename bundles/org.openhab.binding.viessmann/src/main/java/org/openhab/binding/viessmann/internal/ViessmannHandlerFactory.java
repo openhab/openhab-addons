@@ -34,6 +34,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -57,6 +58,7 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
     private final StorageService storageService;
     private final BindingServlet bindingServlet;
     private final ViessmannDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final ItemChannelLinkRegistry linkRegistry;
 
     private @Nullable String callbackUrl;
 
@@ -66,11 +68,13 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public ViessmannHandlerFactory(@Reference HttpService httpService, @Reference HttpClientFactory httpClientFactory,
             @Reference StorageService storageService,
-            final @Reference ViessmannDynamicStateDescriptionProvider stateDescriptionProvider) {
+            final @Reference ViessmannDynamicStateDescriptionProvider stateDescriptionProvider,
+            @Reference ItemChannelLinkRegistry linkRegistry) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.bindingServlet = new BindingServlet(httpService);
         this.storageService = storageService;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.linkRegistry = linkRegistry;
     }
 
     @Override
@@ -98,15 +102,15 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new ViessmannAccountHandler((Bridge) thing, storage, httpClient, createCallbackUrl());
+            return new ViessmannAccountHandler((Bridge) thing, storage, httpClient, createCallbackUrl(), linkRegistry);
         } else if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
-            return new ViessmannGatewayHandler((Bridge) thing);
+            return new ViessmannGatewayHandler((Bridge) thing, linkRegistry);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new ViessmannBridgeHandler((Bridge) thing, storage, httpClient, createCallbackUrl());
+            return new ViessmannBridgeHandler((Bridge) thing, storage, httpClient, createCallbackUrl(), linkRegistry);
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new DeviceHandler(thing, stateDescriptionProvider);
+            return new DeviceHandler(thing, stateDescriptionProvider, linkRegistry);
         }
         return null;
     }
