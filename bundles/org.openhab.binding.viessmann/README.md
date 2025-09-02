@@ -64,7 +64,6 @@ The `gateway` thing supports connection to the `account`- thing (Discovery)
 * `disablePolling` (default = OFF) Deactivates the polling to carry out the manual poll using an item
 
 
-
 (*) Used to calculate refresh time in seconds.
 (**) If set to 0, then the interval will be calculated by the binding.
 
@@ -78,27 +77,27 @@ _All configurations are made in the UI_
 
 | channel             | type   | RO/RW | description                                |
 |---------------------|--------|-------|--------------------------------------------|
-| `countApiCalls`     | Number | RO    | How often the API is called this day       |
+| `count-api-calls`     | Number | RO    | How often the API is called this day       |
 
 
 ### `bridge`
 
 | channel             | type   | RO/RW | description                                |
 |---------------------|--------|-------|--------------------------------------------|
-| `countApiCalls`     | Number | RO    | How often the API is called this day       |
-| `errorIsActive`     | Switch | RO    | Indicates whether the error is set / unset |
-| `lastErrorMessage`  | String | RO    | Last error message from the installation   |
-| `runQueryOnce`      | Switch | W     | Run device query once                      |
-| `runErrorQueryOnce` | Switch | W     | Run error query once                       |
+| `count-api-calls`     | Number | RO    | How often the API is called this day       |
+| `error-is-active`     | Switch | RO    | Indicates whether the error is set / unset |
+| `last-error-message`  | String | RO    | Last error message from the installation   |
+| `run-query-once`      | Switch | W     | Run device query once                      |
+| `run-rerror-query-once` | Switch | W     | Run error query once                       |
 
 ### `gateway`
 
 | channel             | type   | RO/RW | description                                |
 |---------------------|--------|-------|--------------------------------------------|
-| `errorIsActive`     | Switch | RO    | Indicates whether the error is set / unset |
-| `lastErrorMessage`  | String | RO    | Last error message from the installation   |
-| `runQueryOnce`      | Switch | W     | Run device query once                      |
-| `runErrorQueryOnce` | Switch | W     | Run error query once                       |
+| `error-is-active`     | Switch | RO    | Indicates whether the error is set / unset |
+| `last-error-message`  | String | RO    | Last error message from the installation   |
+| `run-query-once`      | Switch | W     | Run device query once                      |
+| `run-rerror-query-once` | Switch | W     | Run error query once                       |
 
 ### `device`
 

@@ -40,7 +40,7 @@ public class ViessmannBindingConstants {
 
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Set.of(THING_TYPE_DEVICE);
 
-    public static final String COUNT_API_CALLS = "countApiCalls";
+    public static final String COUNT_API_CALLS = "count-api-calls";
 
     // References for needed API identifiers
     public static final String VIESSMANN_HOST = "api.viessmann-climatesolutions.com";
@@ -84,8 +84,8 @@ public class ViessmannBindingConstants {
     public static final Map<String, String> MODES_MAP = ViessmannUtil.readProperties(ViessmannBindingConstants.class,
             "modes.properties");
 
-    public static final String CHANNEL_RUN_QUERY_ONCE = "runQueryOnce";
-    public static final String CHANNEL_RUN_ERROR_QUERY_ONCE = "runErrorQueryOnce";
+    public static final String CHANNEL_RUN_QUERY_ONCE = "run-query-once";
+    public static final String CHANNEL_RUN_ERROR_QUERY_ONCE = "run-error-query-once";
 
     public static final List<String> PROPERTIES_URIS = List.of( //
             "setNameUri", //

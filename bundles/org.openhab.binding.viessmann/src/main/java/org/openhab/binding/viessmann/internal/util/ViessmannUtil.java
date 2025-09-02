@@ -31,13 +31,20 @@ import org.slf4j.LoggerFactory;
  * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
-public class ViessmannUtil {
+public final class ViessmannUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViessmannUtil.class);
 
     private ViessmannUtil() {
-        // Utility class, no instantiation
+        throw new AssertionError("No instances allowed");
     }
 
+    /**
+     * Gets a resource file as {@link InputStream}.
+     *
+     * @param clazz class used to get the classloader
+     * @param fileName resource file name
+     * @return optional stream of the resource
+     */
     public static Optional<InputStream> getResourceStream(Class<?> clazz, String fileName) {
         ClassLoader classLoader = clazz.getClassLoader();
         if (classLoader == null) {
@@ -47,6 +54,13 @@ public class ViessmannUtil {
         return Optional.ofNullable(classLoader.getResourceAsStream(fileName));
     }
 
+    /**
+     * Reads a properties file into a {@link Map}.
+     *
+     * @param clazz class used to get the classloader
+     * @param fileName properties file name
+     * @return map with key-value pairs, or empty map if not readable
+     */
     public static Map<String, String> readProperties(Class<?> clazz, String fileName) {
         return Objects.requireNonNull(getResourceStream(clazz, fileName).map(inputStream -> {
             Properties properties = new Properties();
@@ -60,5 +74,17 @@ public class ViessmannUtil {
                 return new HashMap<String, String>();
             }
         }).orElse(Map.of()));
+    }
+
+    /**
+     * Converts camelCase to hyphenated lowercase.
+     *
+     * @param input camelCase string
+     * @return hyphenated lowercase string
+     */
+    public static String camelToHyphen(String input) {
+        String result = input.replaceAll("([a-z])([A-Z])", "$1-$2").replaceAll("([A-Z])([A-Z][a-z])", "$1-$2");
+        result = result.replaceAll("([a-zA-Z])([0-9]+)", "$1-$2").replaceAll("([0-9]+)([a-zA-Z])", "$1-$2");
+        return result.toLowerCase();
     }
 }

@@ -19,8 +19,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -41,9 +43,11 @@ import org.openhab.binding.viessmann.internal.dto.installation.Data;
 import org.openhab.binding.viessmann.internal.dto.installation.Gateway;
 import org.openhab.binding.viessmann.internal.dto.installation.InstallationDTO;
 import org.openhab.binding.viessmann.internal.interfaces.ApiInterface;
+import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -51,6 +55,10 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -69,7 +77,6 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
 
     private final Storage<String> stateStorage;
 
-    // private static final Set<String> ERROR_CHANNELS = Set.of("lastErrorMessage", "errorIsActive");
     private static final String STORED_API_CALLS = "apiCalls";
 
     private final HttpClient httpClient;
@@ -96,14 +103,17 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
     protected final Map<String, String> serialToGatewayType = new HashMap<>();
     protected final Map<String, Integer> registeredErrorPollingInterval = new HashMap<>();
 
+    private final ItemChannelLinkRegistry linkRegistry;
+
     private AccountConfiguration config = new AccountConfiguration();
 
     public ViessmannAccountHandler(Bridge bridge, Storage<String> stateStorage, HttpClient httpClient,
-            @Nullable String callbackUrl) {
+            @Nullable String callbackUrl, ItemChannelLinkRegistry linkRegistry) {
         super(bridge);
         this.stateStorage = stateStorage;
         this.httpClient = httpClient;
         this.callbackUrl = callbackUrl;
+        this.linkRegistry = linkRegistry;
     }
 
     public void setInstallationGatewayId(@Nullable String newInstallation, @Nullable String newGateway) {
@@ -185,11 +195,78 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
         api.createOAuthClientService(this);
         api.doAuthorize();
 
+        migrateChannelIds();
+
         getAllGateways();
         if (!gatewaysList.isEmpty()) {
             updateBridgeStatus(ThingStatus.ONLINE);
             updateProperty("pollingInterval [s]", String.valueOf(pollingInterval));
             startViessmannBridgePolling(pollingInterval, 1);
+        }
+    }
+
+    private void migrateChannelIds() {
+        List<Channel> oldChannels = thing.getChannels();
+        List<Channel> newChannels = new ArrayList<>(oldChannels.size());
+
+        Map<ChannelUID, ChannelUID> renameMap = new LinkedHashMap<>();
+
+        for (Channel channel : oldChannels) {
+            String oldId = channel.getUID().getId();
+            String newId = ViessmannUtil.camelToHyphen(oldId);
+
+            if (!newId.equals(oldId)) {
+                logger.info("Migrating channel '{}' -> '{}'", oldId, newId);
+
+                ChannelUID oldUid = channel.getUID();
+                ChannelUID newUid = new ChannelUID(thing.getUID(), newId);
+
+                String channelLabel = channel.getLabel();
+
+                String channelType = ViessmannUtil
+                        .camelToHyphen(Objects.requireNonNull(channel.getChannelTypeUID()).toString());
+                channelType = channelType.replace(BINDING_ID + ":", "");
+
+                ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType);
+
+                if (channelLabel != null) {
+                    Channel newChannel = ChannelBuilder.create(newUid, channel.getAcceptedItemType())
+                            .withLabel(channelLabel).withType(channelTypeUID).withProperties(channel.getProperties())
+                            .build();
+
+                    newChannels.add(newChannel);
+                    renameMap.put(oldUid, newUid);
+                }
+            }
+        }
+
+        if (renameMap.isEmpty()) {
+            return;
+        }
+
+        updateThing(editThing().withChannels(newChannels).build());
+
+        if (linkRegistry != null) {
+            for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
+                ChannelUID oldUid = e.getKey();
+                ChannelUID newUid = e.getValue();
+
+                Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
+
+                for (ItemChannelLink link : links) {
+                    String item = link.getItemName();
+                    try {
+                        linkRegistry.remove(link.getUID());
+                    } catch (Exception ex) {
+                        logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
+                    }
+
+                    linkRegistry.add(new ItemChannelLink(item, newUid));
+                    logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
+                }
+            }
+        } else {
+            logger.warn("ItemChannelLinkRegistry not available – cannot migrate item links.");
         }
     }
 
