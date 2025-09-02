@@ -789,17 +789,6 @@ public class SmartThingsApiService implements SamsungTvService {
                         Optional<STSSEData> data = Optional.ofNullable(new Gson().fromJson(rawData, STSSEData.class));
                         data.ifPresentOrElse(d -> {
                             d.setTvInfo(tvInfo);
-                            // Disable this section for now, as not sure it works, or is necessary
-                            // String[] inputList = d.getInputSourceList();
-                            // if (inputList.length > 0) {
-                            // logger.trace("{}: SSE Got input source list: {}", host, Arrays.asList(inputList));
-                            // tvInfo.ifPresent(a -> a.updateSupportedInputSources(inputList));
-                            // }
-                            // List<?> inputMapList = d.getInputSourceMapList();
-                            // if (inputMapList.toArray(String[]::new).length > 0) {
-                            // logger.trace("{}: SSE Got input map source list: {}", host, inputMapList);
-                            // tvInfo.ifPresent(a -> a.updateSupportedInputSourcesMap(inputMapList));
-                            // }
                             String inputSource = d.getInputSource();
                             if (!inputSource.isBlank()) {
                                 updateState(SOURCE_NAME, inputSource);
