@@ -99,7 +99,7 @@
 
 	<channel-type id="boiler-actual-circulation-pump-state-channel">
 		<item-type>Number</item-type>
-		<label>Boiler Actuial Circulation Pump State</label>
+		<label>Boiler Actual Circulation Pump State</label>
 		<state readOnly="true">
 			<options>
 				<option value="0">OFF</option>

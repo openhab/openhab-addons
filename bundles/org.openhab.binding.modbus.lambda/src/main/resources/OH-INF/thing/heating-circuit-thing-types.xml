@@ -101,7 +101,7 @@
 				<option value="17">STBY-ECHO</option>
 				<option value="18">STBY-COOLING</option>
 				<option value="19">STBY-FROST</option>
-				<option value="20">STB-FLOORDRY</option>
+				<option value="20">STBY-FLOORDRY</option>
 			</options>
 		</state>
 	</channel-type>
