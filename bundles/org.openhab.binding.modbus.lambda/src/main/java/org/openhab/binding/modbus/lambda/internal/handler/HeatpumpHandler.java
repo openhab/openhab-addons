@@ -124,10 +124,6 @@ public class HeatpumpHandler extends BaseThingHandler {
      */
     protected @Nullable HeatpumpConfiguration config = null;
     /**
-     * Parser used to convert incoming raw messages into system blocks
-     * private final SystemInfromationBlockParser systemInformationBlockParser = new SystemInfromationBlockParser();
-     */
-    /**
      * Parsers used to convert incoming raw messages into state blocks
      */
 
@@ -302,7 +298,7 @@ public class HeatpumpHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -313,14 +309,6 @@ public class HeatpumpHandler extends BaseThingHandler {
         } catch (EndpointNotInitializedException e) {
             // this will be handled below as endpoint remains null
         }
-
-        // if (comms == null) {
-        // @SuppressWarnings("null")
-        // String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-        // String.format("Bridge '%s' not completely initialized", label));
-        // return;
-        // }
 
         if (comms == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -424,7 +412,7 @@ public class HeatpumpHandler extends BaseThingHandler {
      *
      * @param high the high value
      * 
-     * @param low the low valze
+     * @param low the low value
      * 
      * @return the scaled value as a DecimalType
      */

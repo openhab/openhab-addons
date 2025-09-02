@@ -39,6 +39,7 @@ public class SolarBlockParser extends AbstractBaseParser {
         block.solarErrorNumber = extractUInt16(registers, 0, 0);
         block.solarOperatingState = extractUInt16(registers, 1, 0);
         block.solarCollectorTemperature = extractInt16(registers, 2, (short) 0);
+        // Two different versions for usage in different configurations of the manufacturer
         block.solarBuffer1Temperature = extractInt16(registers, 3, (short) 0);
         block.solarBuffer2Temperature = extractUInt16(registers, 4, 0);
 

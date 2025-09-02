@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.binding.modbus.lambda</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Lambda Bundle</name>
+  <name>openHAB Add-ons :: Bundles :: Lambda Binding</name>
 
   <dependencies>
     <dependency>
