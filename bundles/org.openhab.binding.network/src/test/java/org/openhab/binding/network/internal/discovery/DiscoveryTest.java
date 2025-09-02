@@ -57,7 +57,7 @@ public class DiscoveryTest {
     }
 
     @Test
-    public void pingDeviceDetected() {
+    public void pingDeviceDetected() throws InterruptedException {
         NetworkDiscoveryService d = new NetworkDiscoveryService();
         d.addDiscoveryListener(listener);
 
@@ -67,6 +67,7 @@ public class DiscoveryTest {
         when(value.isPingReachable()).thenReturn(true);
         when(value.isTcpServiceReachable()).thenReturn(false);
         d.partialDetectionResult(value);
+        Thread.sleep(200L);
         verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
         assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createPingUID(ip)));
@@ -74,7 +75,7 @@ public class DiscoveryTest {
     }
 
     @Test
-    public void tcpDeviceDetected() {
+    public void tcpDeviceDetected() throws InterruptedException {
         NetworkDiscoveryService d = new NetworkDiscoveryService();
         d.addDiscoveryListener(listener);
 
@@ -85,6 +86,7 @@ public class DiscoveryTest {
         when(value.isTcpServiceReachable()).thenReturn(true);
         when(value.getReachableTcpPorts()).thenReturn(List.of(1010));
         d.partialDetectionResult(value);
+        Thread.sleep(200L);
         verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
         assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createServiceUID(ip, 1010)));
