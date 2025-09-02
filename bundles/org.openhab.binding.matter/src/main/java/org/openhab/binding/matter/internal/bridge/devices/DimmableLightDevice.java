@@ -40,7 +40,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class DimmableLightDevice extends GenericDevice {
+public class DimmableLightDevice extends BaseDevice {
 
     private State lastOnOffState = OnOffType.OFF;
 

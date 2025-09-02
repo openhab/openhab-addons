@@ -147,6 +147,35 @@ public class FroniusBatteryControl {
     }
 
     /**
+     * Adds a schedule to the time of use settings of the Fronius hybrid inverter.
+     * 
+     * @param from start time of the forced charge period
+     * @param until end time of the forced charge period
+     * @param scheduleType the type of the schedule
+     * @param power the power value for the schedule
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    private void addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
+        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
+        System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
+
+        QuantityType<Power> powerInWatts = power.toUnit(Units.WATT);
+        if (powerInWatts == null) {
+            throw new IllegalArgumentException("power must be convertible to Watt unit");
+        }
+        if (powerInWatts.intValue() < 0) {
+            throw new IllegalArgumentException("power must be non-negative");
+        }
+        TimeOfUseRecord holdCharge = new TimeOfUseRecord(true, powerInWatts.intValue(), scheduleType,
+                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
+        timeOfUse[timeOfUse.length - 1] = holdCharge;
+        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+    }
+
+    /**
      * Resets the time of use settings (i.e. removes all time-dependent battery control settings) of the Fronius hybrid
      * inverter.
      *
@@ -179,14 +208,7 @@ public class FroniusBatteryControl {
      */
     public void addHoldBatteryChargeSchedule(LocalTime from, LocalTime until)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        TimeOfUseRecord[] currentTimeOfUse = getTimeOfUse().records();
-        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.length + 1];
-        System.arraycopy(currentTimeOfUse, 0, timeOfUse, 0, currentTimeOfUse.length);
-
-        TimeOfUseRecord holdCharge = new TimeOfUseRecord(true, 0, ScheduleType.DISCHARGE_MAX,
-                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
-        timeOfUse[timeOfUse.length - 1] = holdCharge;
-        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+        addSchedule(from, until, ScheduleType.DISCHARGE_MAX, new QuantityType<>(0, Units.WATT));
     }
 
     /**
@@ -213,18 +235,7 @@ public class FroniusBatteryControl {
      */
     public void addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
-        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
-        System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
-
-        QuantityType<Power> powerInWatts = power.toUnit(Units.WATT);
-        if (powerInWatts == null) {
-            throw new IllegalArgumentException("power must be convertible to Watt unit");
-        }
-        TimeOfUseRecord holdCharge = new TimeOfUseRecord(true, powerInWatts.intValue(), ScheduleType.CHARGE_MIN,
-                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
-        timeOfUse[timeOfUse.length - 1] = holdCharge;
-        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+        addSchedule(from, until, ScheduleType.CHARGE_MIN, power);
     }
 
     /**
@@ -248,14 +259,34 @@ public class FroniusBatteryControl {
      */
     public void addPreventBatteryChargingSchedule(LocalTime from, LocalTime until)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
-        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
-        System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
+        addSchedule(from, until, ScheduleType.CHARGE_MAX, new QuantityType<>(0, Units.WATT));
+    }
 
-        TimeOfUseRecord preventCharging = new TimeOfUseRecord(true, 0, ScheduleType.CHARGE_MAX,
-                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
-        timeOfUse[timeOfUse.length - 1] = preventCharging;
-        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+    /**
+     * Forces the battery to discharge right now with the specified power.
+     * 
+     * @param power the power to discharge the battery with
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void forceBatteryDischarging(QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        reset();
+        addForcedBatteryDischargingSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+    }
+
+    /**
+     * Forces the battery to discharge during a specific time period with the specified power.
+     * 
+     * @param from start time of the prevented charging period
+     * @param until end time of the prevented charging period
+     * @param power the power to discharge the battery with
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void addForcedBatteryDischargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        addSchedule(from, until, ScheduleType.DISCHARGE_MIN, power);
     }
 
     /**

@@ -840,7 +840,7 @@ public enum ComfoAirCommandType {
      *
      * @return all ComfoAirCommand's identified by keys
      */
-    public static Collection<ComfoAirCommand> getReadCommandsByEventTypes(List<String> keys) {
+    public static Collection<ComfoAirCommand> getReadCommandsByEventTypes(Set<String> keys) {
         Map<Integer, ComfoAirCommand> commands = new HashMap<>();
         for (ComfoAirCommandType entry : values()) {
             if (keys.contains(entry.key)) {

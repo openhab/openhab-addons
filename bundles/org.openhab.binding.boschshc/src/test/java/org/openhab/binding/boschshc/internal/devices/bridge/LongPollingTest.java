@@ -12,23 +12,12 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -60,7 +49,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
@@ -213,19 +201,21 @@ class LongPollingTest {
 
     private @NonNullByDefault({}) BoschHttpClient httpClient;
 
-    private @Mock @NonNullByDefault({}) Consumer<@NonNull LongPollResult> longPollHandler;
+    private @NonNullByDefault({}) Consumer<@NonNull LongPollResult> longPollHandler;
 
-    private @Mock @NonNullByDefault({}) Consumer<@NonNull Throwable> failureHandler;
+    private @NonNullByDefault({}) Consumer<@NonNull Throwable> failureHandler;
 
+    @SuppressWarnings("unchecked")
     @BeforeEach
     void beforeEach() {
-        fixture = new LongPolling(new SameThreadExecutorService(), longPollHandler, failureHandler);
         httpClient = mock(BoschHttpClient.class);
+        longPollHandler = mock(Consumer.class);
+        failureHandler = mock(Consumer.class);
+        fixture = new LongPolling(new SameThreadExecutorService(), longPollHandler, failureHandler);
     }
 
     @Test
     void start() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        // when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);

@@ -221,6 +221,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             case NUMBER_TIME:
                 updateState(channelUID, QuantityType.valueOf(value.getAsDouble() + " s"));
                 break;
+            case NUMBER_TEMPERATURE:
+                updateState(channelUID, QuantityType.valueOf(value.getAsDouble() + " " + itemTypeUnit.unitHint));
+                break;
             case CoreItemFactory.DATETIME:
                 updateState(channelUID, new DateTimeType(value.getAsString()));
                 break;
@@ -244,7 +247,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 key += "Price";
             }
         }
-        return (props.get("type") + "-" + Utils.sanitizeChannelID(key));
+        String type = "heating".equals(props.get("type")) ? "loadpoint" : props.get("type");
+        return (type + "-" + Utils.sanitizeChannelID(key));
     }
 
     @Override

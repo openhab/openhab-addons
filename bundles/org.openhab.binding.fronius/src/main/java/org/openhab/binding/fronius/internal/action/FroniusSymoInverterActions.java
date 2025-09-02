@@ -132,6 +132,35 @@ public class FroniusSymoInverterActions implements ThingActions {
         }
     }
 
+    public static boolean forceBatteryDischarging(ThingActions actions, QuantityType<Power> power) {
+        if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
+            return froniusSymoInverterActions.forceBatteryDischarging(power);
+        } else {
+            throw new IllegalArgumentException(
+                    "The 'actions' argument is not an instance of FroniusSymoInverterActions");
+        }
+    }
+
+    public static boolean addForcedBatteryDischargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
+            QuantityType<Power> power) {
+        if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
+            return froniusSymoInverterActions.addForcedBatteryDischargingSchedule(from, until, power);
+        } else {
+            throw new IllegalArgumentException(
+                    "The 'actions' argument is not an instance of FroniusSymoInverterActions");
+        }
+    }
+
+    public static boolean addForcedBatteryDischargingSchedule(ThingActions actions, ZonedDateTime from,
+            ZonedDateTime until, QuantityType<Power> power) {
+        if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
+            return froniusSymoInverterActions.addForcedBatteryDischargingSchedule(from, until, power);
+        } else {
+            throw new IllegalArgumentException(
+                    "The 'actions' argument is not an instance of FroniusSymoInverterActions");
+        }
+    }
+
     public static boolean setBackupReservedBatteryCapacity(ThingActions actions, int percent) {
         if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
             return froniusSymoInverterActions.setBackupReservedBatteryCapacity(percent);
@@ -263,6 +292,39 @@ public class FroniusSymoInverterActions implements ThingActions {
 
     public boolean addPreventBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until) {
         return addPreventBatteryChargingSchedule(from.toLocalTime(), until.toLocalTime());
+    }
+
+    @RuleAction(label = "@text/actions.force-battery-discharging.label", description = "@text/actions.force-battery-discharging.description")
+    public @ActionOutput(type = "boolean", label = "Success") boolean forceBatteryDischarging(
+            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            return executeBatteryControlAction(() -> {
+                batteryControl.forceBatteryDischarging(power);
+                return true;
+            });
+        }
+        return false;
+    }
+
+    @RuleAction(label = "@text/actions.add-forced-battery-discharging-schedule.label", description = "@text/actions.add-forced-battery-discharging-schedule.description")
+    public @ActionOutput(type = "boolean", label = "Success") boolean addForcedBatteryDischargingSchedule(
+            @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
+            @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
+            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            return executeBatteryControlAction(() -> {
+                batteryControl.addForcedBatteryDischargingSchedule(from, until, power);
+                return true;
+            });
+        }
+        return false;
+    }
+
+    public boolean addForcedBatteryDischargingSchedule(ZonedDateTime from, ZonedDateTime until,
+            QuantityType<Power> power) {
+        return addForcedBatteryDischargingSchedule(from.toLocalTime(), until.toLocalTime(), power);
     }
 
     @RuleAction(label = "@text/actions.backup-reserved-battery-capacity.label", description = "@text/actions.backup-reserved-battery-capacity.description")
