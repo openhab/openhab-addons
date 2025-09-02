@@ -30,7 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PresenceDetection} handles the connection to the Device.
+ * The {@link PresenceDetection} handles the connection to the Device. This class is not thread-safe.
  *
  * @author Marc Mettke - Initial contribution
  * @author David Gräff, 2017 - Rewritten
@@ -68,13 +68,15 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private String ipPingState = "Disabled";
     protected String arpPingUtilPath = "";
     private ArpPingUtilEnum arpPingMethod = ArpPingUtilEnum.DISABLED;
-    protected @Nullable IpPingMethodEnum pingMethod = IpPingMethodEnum.DISABLED;
+    protected IpPingMethodEnum pingMethod = IpPingMethodEnum.DISABLED;
     private boolean iosDevice;
     private boolean useArpPing;
     private boolean useIcmpPing;
     private Set<Integer> tcpPorts = new HashSet<>();
 
     private Duration timeout = Duration.ofSeconds(5);
+
+    /** All access must be guarded by "this" */
     private @Nullable Instant lastSeen;
 
     private @NonNullByDefault({}) String hostname;
@@ -188,6 +190,27 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     /**
+     * Sets the ping method directly. The exact ping method must be known, or things will fail.
+     * Use {@link NetworkUtils#determinePingMethod()} to find a supported method.
+     *
+     * @param pingMethod the {@link IpPingMethodEnum}.
+     */
+    public void setIcmpPingMethod(IpPingMethodEnum pingMethod) {
+        this.pingMethod = pingMethod;
+        switch (pingMethod) {
+            case DISABLED:
+                ipPingState = "Disabled";
+                break;
+            case JAVA_PING:
+                ipPingState = "Java ping";
+                break;
+            default:
+                ipPingState = pingMethod.name();
+                break;
+        }
+    }
+
+    /**
      * Enables or disables ARP pings. Will be automatically disabled if the destination
      * is not an IPv4 address. If the feature test for the native arping utility fails,
      * it will be disabled as well.
@@ -281,7 +304,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     /**
      * Return the last seen value as an {@link Instant} or <code>null</code> if not yet seen.
      */
-    public @Nullable Instant getLastSeen() {
+    public @Nullable synchronized Instant getLastSeen() {
         return lastSeen;
     }
 
@@ -388,17 +411,22 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
         return CompletableFuture.supplyAsync(() -> {
             logger.debug("Waiting for {} detection futures for {} to complete", completableFutures.size(), hostname);
-            completableFutures.forEach(completableFuture -> {
-                try {
-                    completableFuture.join();
-                } catch (CancellationException | CompletionException e) {
+            try {
+                CompletableFuture.allOf(completableFutures.toArray(CompletableFuture[]::new)).join();
+                logger.debug("All {} detection futures for {} have completed", completableFutures.size(), hostname);
+            } catch (CancellationException e) {
+                logger.debug("Detection future for {} was cancelled", hostname);
+            } catch (CompletionException e) {
+                if (e.getCause() instanceof TimeoutException) {
+                    logger.debug("Detection future for {} timed out", hostname);
+                } else {
                     logger.debug("Detection future failed to complete {}", e.getMessage());
+                    logger.trace("", e);
                 }
-            });
-            logger.debug("All {} detection futures for {} have completed", completableFutures.size(), hostname);
+            }
 
             if (!pdv.isReachable()) {
-                logger.debug("{} is unreachable, invalidating destination value", hostname);
+                logger.trace("{} is unreachable, invalidating cached destination value", hostname);
                 destination.invalidateValue();
             }
 
@@ -410,8 +438,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     private void addAsyncDetection(List<CompletableFuture<Void>> completableFutures, Runnable detectionRunnable) {
-        completableFutures.add(CompletableFuture.runAsync(detectionRunnable, executor)
-                .orTimeout(timeout.plusSeconds(3).toMillis(), TimeUnit.MILLISECONDS));
+        completableFutures.add(CompletableFuture.runAsync(detectionRunnable, executor));
     }
 
     /**
@@ -423,7 +450,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * @param type the detection type
      * @param latency the latency
      */
-    synchronized PresenceDetectionValue updateReachable(PresenceDetectionType type, Duration latency) {
+    PresenceDetectionValue updateReachable(PresenceDetectionType type, Duration latency) {
         PresenceDetectionValue pdv = new PresenceDetectionValue(hostname, latency);
         updateReachable(pdv, type, latency);
         return pdv;
@@ -439,20 +466,22 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * @param type the detection type
      * @param latency the latency
      */
-    synchronized void updateReachable(PresenceDetectionValue pdv, PresenceDetectionType type, Duration latency) {
+    void updateReachable(PresenceDetectionValue pdv, PresenceDetectionType type, Duration latency) {
         updateReachable(pdv, type, latency, -1);
     }
 
-    synchronized void updateReachable(PresenceDetectionValue pdv, PresenceDetectionType type, Duration latency,
-            int tcpPort) {
-        lastSeen = Instant.now();
+    void updateReachable(PresenceDetectionValue pdv, PresenceDetectionType type, Duration latency, int tcpPort) {
+        Instant now = Instant.now();
         pdv.addReachableDetectionType(type);
         pdv.updateLatency(latency);
         if (0 <= tcpPort) {
             pdv.addReachableTcpPort(tcpPort);
         }
         logger.debug("Sending listener partial result: {}", pdv);
-        updateListener.partialDetectionResult(pdv);
+        synchronized (this) {
+            lastSeen = now;
+            updateListener.partialDetectionResult(pdv);
+        }
     }
 
     protected void performServicePing(PresenceDetectionValue pdv, int tcpPort) {
