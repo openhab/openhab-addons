@@ -14,6 +14,13 @@ The precision parameter can be used to specify the minimum movement that can be 
 This is useful when latencies in the system prevent very small movements and will reduce the accuracy of the position estimation.
 
 The profile can be used with text based configurations too. The parameters are configured like:
+
 ```java
 Rollershutter <itemName> { channel="<channelUID>"[profile="transform:ROLLERSHUTTERPOSITION", uptime=<uptime>, downtime=<downtime>, precision=<minimum percent movement>]}
 ```
+
+## Setting a known position
+
+When this profile initially starts, it assumes the position of the rollershutter is in position 0.
+However, you can post and update to the item and the profile will update the known position.
+This is useful if a restart of openHAB occurs and you want to update the position to the last known position.
