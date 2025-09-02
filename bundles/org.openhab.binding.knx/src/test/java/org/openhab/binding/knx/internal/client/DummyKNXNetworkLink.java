@@ -22,16 +22,16 @@ import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.FrameEvent;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXAddress;
-import tuwien.auto.calimero.KNXTimeoutException;
-import tuwien.auto.calimero.Priority;
-import tuwien.auto.calimero.cemi.CEMILData;
-import tuwien.auto.calimero.link.KNXLinkClosedException;
-import tuwien.auto.calimero.link.KNXNetworkLink;
-import tuwien.auto.calimero.link.NetworkLinkListener;
-import tuwien.auto.calimero.link.medium.KNXMediumSettings;
+import io.calimero.FrameEvent;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXAddress;
+import io.calimero.KNXTimeoutException;
+import io.calimero.Priority;
+import io.calimero.cemi.CEMILData;
+import io.calimero.link.KNXLinkClosedException;
+import io.calimero.link.KNXNetworkLink;
+import io.calimero.link.NetworkLinkListener;
+import io.calimero.link.medium.KNXMediumSettings;
 
 /**
  * This class provides a simulated KNXNetworkLink with test stubs for integration tests.

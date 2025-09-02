@@ -39,16 +39,16 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXFormatException;
-import tuwien.auto.calimero.knxnetip.SecureConnection;
-import tuwien.auto.calimero.secure.Keyring;
-import tuwien.auto.calimero.secure.Keyring.Backbone;
-import tuwien.auto.calimero.secure.Keyring.Interface;
-import tuwien.auto.calimero.secure.KnxSecureException;
-import tuwien.auto.calimero.secure.Security;
-import tuwien.auto.calimero.xml.KNXMLException;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXFormatException;
+import io.calimero.knxnetip.SecureConnection;
+import io.calimero.secure.Keyring;
+import io.calimero.secure.Keyring.Backbone;
+import io.calimero.secure.Keyring.Interface;
+import io.calimero.secure.KnxSecureException;
+import io.calimero.secure.Security;
+import io.calimero.xml.KNXMLException;
 
 /**
  * The {@link KNXBridgeBaseThingHandler} is responsible for handling commands, which are
