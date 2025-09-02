@@ -168,14 +168,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         this.lastCreatedIntent = intent;
 
         if (params.getMatchedItems() != null && !params.getMatchedItems().isEmpty()) {
-            Collection<Item> matchedItems = params.getMatchedItems().stream().flatMap(name -> {
-                try {
-                    return Stream.of(itemRegistry.getItem(name));
-                } catch (ItemNotFoundException e) {
-                    logger.warn("Item '{}' from OpenAI not found in registry", name);
-                    return Stream.empty();
-                }
-            }).collect(Collectors.toList());
+            }).collect(Collectors.toUnmodifiableList());
 
             if (!matchedItems.isEmpty()) {
                 this.matchedItemsCache = matchedItems;
