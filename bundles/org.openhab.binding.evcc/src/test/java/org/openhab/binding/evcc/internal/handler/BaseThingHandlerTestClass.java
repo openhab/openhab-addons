@@ -93,6 +93,11 @@ public class BaseThingHandlerTestClass extends EvccBaseThingHandler {
     // Make sure no files are getting created
     @Override
     protected void logUnknownChannelXml(String key, String itemType) {
+    }
+
+    @Override
+    public void logUnknownChannelXmlAsync(String key, String itemType) {
         logUnknownChannelXmlCalled = true;
+        super.logUnknownChannelXmlAsync(key, itemType);
     }
 }

@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.TreeMap;
 
 import javax.measure.Unit;
 
@@ -32,9 +31,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * The {@link Utils} provides utility methods
@@ -125,5 +121,18 @@ public class Utils {
             return new int[] { 0, 0, 0 };
         }
         return Arrays.stream(input.split("\\.")).mapToInt(Integer::parseInt).toArray();
+    }
+
+    /**
+     * Capitalizes the first character of a string.
+     *
+     * @param input The input string.
+     * @return The string with the first character in uppercase.
+     */
+    public static String capitalizeFirstLetter(String input) {
+        if (input.isEmpty()) {
+            return input;
+        }
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
 }

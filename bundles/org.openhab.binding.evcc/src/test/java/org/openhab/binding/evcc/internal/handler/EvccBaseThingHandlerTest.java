@@ -12,17 +12,11 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_CURRENCY;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_DIMENSIONLESS;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_ELECTRIC_CURRENT;
@@ -36,6 +30,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -60,14 +55,16 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
- * The {@link EvccBaseThingHandlerTest} is responsible for testing the BaseThingHandler implementation
+ * The {@link EvccBaseThingHandlerTest} is responsible for testing the EvccBaseThingHandler implementation
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -75,7 +72,7 @@ import com.google.gson.JsonPrimitive;
 public class EvccBaseThingHandlerTest {
 
     @SuppressWarnings("null")
-    private Thing thing = mock(Thing.class);
+    private final Thing thing = mock(Thing.class);
 
     @SuppressWarnings("null")
     private final ChannelTypeRegistry channelTypeRegistry = mock(ChannelTypeRegistry.class);
@@ -85,7 +82,6 @@ public class EvccBaseThingHandlerTest {
     @SuppressWarnings("null")
     @BeforeEach
     public void setUp() {
-        thing = mock(Thing.class);
         handler = spy(new BaseThingHandlerTestClass(thing, channelTypeRegistry));
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
@@ -178,6 +174,19 @@ public class EvccBaseThingHandlerTest {
             assertTrue(handler.updateStatusCalled); // Status is updated even if nothing else happens
             assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
         }
+
+        @Test
+        void updateStatesFromApiResponseWithNullValueDoesNothing() {
+            handler.isInitialized = true;
+            JsonObject state = new JsonObject();
+            state.add("capacity", null); // Null value
+            handler.updateStatesFromApiResponse(state);
+            assertFalse(handler.createChannelCalled);
+            assertFalse(handler.setItemValueCalled);
+            assertFalse(handler.updateThingCalled);
+            assertTrue(handler.updateStatusCalled);
+            assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+        }
     }
 
     @Nested
@@ -237,6 +246,15 @@ public class EvccBaseThingHandlerTest {
 
             assertFalse(handler.setItemValueCalled);
             assertFalse(handler.logUnknownChannelXmlCalled);
+        }
+
+        @SuppressWarnings("null")
+        @Test
+        void handleCommandWithNonRefreshTypeDoesNothing() {
+            ChannelUID channelUID = new ChannelUID("test:thing:uid:battery-capacity");
+            Command command = mock(org.openhab.core.types.Command.class);
+            handler.handleCommand(channelUID, command);
+            assertFalse(handler.setItemValueCalled);
         }
     }
 
@@ -329,6 +347,53 @@ public class EvccBaseThingHandlerTest {
             assertTrue(handler.updateStateCalled);
             assertEquals(channelUID, handler.lastChannelUID);
             assertEquals(expectedStateClass, handler.lastState.getClass());
+        }
+
+        @SuppressWarnings("null")
+        @Test
+        void setItemValueWithUnknownItemTypeDoesNotUpdateState() {
+            ChannelUID channelUID = new ChannelUID("test:thing:uid:dummy");
+            JsonElement value = new JsonPrimitive(12.5);
+            ChannelType mockChannelType = mock(ChannelType.class);
+            when(mockChannelType.getItemType()).thenReturn("Unknown");
+            ItemTypeUnit itemTypeUnit = new ItemTypeUnit(mockChannelType, Units.ONE);
+
+            handler.setItemValue(itemTypeUnit, channelUID, value);
+
+            assertFalse(handler.updateStateCalled);
+            assertTrue(handler.logUnknownChannelXmlCalled);
+        }
+
+        @SuppressWarnings("null")
+        @Test
+        void setItemValueWithJsonNullDoesNotUpdateState() {
+            ChannelUID channelUID = new ChannelUID("test:thing:uid:dummy");
+            JsonElement value = JsonNull.INSTANCE;
+            ChannelType mockChannelType = mock(ChannelType.class);
+            when(mockChannelType.getItemType()).thenReturn(CoreItemFactory.NUMBER);
+            ItemTypeUnit itemTypeUnit = new ItemTypeUnit(mockChannelType, Units.ONE);
+
+            handler.setItemValue(itemTypeUnit, channelUID, value);
+
+            assertFalse(handler.updateStateCalled);
+        }
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    void logUnknownChannelXmlAsyncIsCalledAsynchronously() {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        doAnswer(invocation -> {
+            future.complete(true);
+            return null;
+        }).when(handler).logUnknownChannelXml(anyString(), anyString());
+
+        handler.logUnknownChannelXmlAsync("testKey", "testType");
+
+        try {
+            future.get(2, SECONDS);
+        } catch (Exception e) {
+            fail("logUnknownChannelXml was not called asynchronously");
         }
     }
 }
