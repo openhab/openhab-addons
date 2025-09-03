@@ -16,7 +16,6 @@
 
   <properties>
     <mqttbroker.port>1883</mqttbroker.port>
-    <graalpy.version>24.2.1</graalpy.version>
   </properties>
 
   <dependencies>
