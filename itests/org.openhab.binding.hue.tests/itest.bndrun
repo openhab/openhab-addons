@@ -99,4 +99,5 @@ Fragment-Host: org.openhab.binding.hue
 	org.jupnp;version='[3.0.3,3.0.4)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	org.openhab.core.semantics;version='[5.1.0,5.1.1)',\
-	org.eclipse.jdt.annotation;version='[2.2.600,2.2.601)'
+	org.eclipse.jdt.annotation;version='[2.2.600,2.2.601)',\
+	org.osgi.service.cm;version='[1.6.1,1.6.2)'
