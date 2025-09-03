@@ -13,7 +13,6 @@
 package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -71,7 +70,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     protected final Map<String, Set<HaID>> componentsPerThingID = new HashMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new HashMap<>();
     protected final Map<String, DiscoveryResult> allResults = new HashMap<>();
-    private Set<ThingUID> dirtyResults = new HashSet<>();
+    private final Set<ThingUID> dirtyResults = new HashSet<>();
     private final Object discoveryStateLock = new Object();
 
     private @Nullable ScheduledFuture<?> future;
@@ -247,10 +246,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         componentsSet.add(haID);
 
         // Convert components to short topics
-        List<String> topics = new ArrayList<>(componentsSet.size());
-        for (HaID component : componentsSet) {
-            topics.add(component.toShortTopic());
-        }
+        List<String> topics = componentsSet.stream().map(HaID::toShortTopic).toList();
 
         // Append handler configuration
         HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics);
