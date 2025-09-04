@@ -23,7 +23,6 @@ public class AuthToken {
     public Long issued;
 
     public AuthToken() {
-        super();
         issued = System.currentTimeMillis();
     }
 }

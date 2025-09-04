@@ -29,7 +29,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetWaterSystemPresentCommand extends IotDeviceCommand<Boolean> {
     public GetWaterSystemPresentCommand() {
-        super();
     }
 
     @Override

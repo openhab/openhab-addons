@@ -26,7 +26,6 @@ public class UnsupportedCommandTypeException extends Exception {
     private static final long serialVersionUID = 42L;
 
     public UnsupportedCommandTypeException() {
-        super();
     }
 
     public UnsupportedCommandTypeException(String message) {

@@ -35,6 +35,5 @@ public class EcoTouchException extends Exception {
     }
 
     public EcoTouchException() {
-        super();
     }
 }

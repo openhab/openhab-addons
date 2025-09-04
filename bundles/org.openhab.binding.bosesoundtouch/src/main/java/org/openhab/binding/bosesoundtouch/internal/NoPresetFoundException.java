@@ -24,7 +24,6 @@ public class NoPresetFoundException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public NoPresetFoundException() {
-        super();
     }
 
     public NoPresetFoundException(String message) {

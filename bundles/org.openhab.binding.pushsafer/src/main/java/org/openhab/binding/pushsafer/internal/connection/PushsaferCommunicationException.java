@@ -30,7 +30,6 @@ public class PushsaferCommunicationException extends RuntimeException {
      * Constructs a new exception with null as its detail message.
      */
     public PushsaferCommunicationException() {
-        super();
     }
 
     /**
