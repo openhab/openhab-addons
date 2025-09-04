@@ -7,6 +7,7 @@
 	<bridge-type id="account">
 		<label>Account</label>
 		<description>Control Roborock devices</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>Email Address</label>
@@ -25,7 +26,8 @@
 		</supported-bridge-type-refs>
 		<label>Robot Vacuum</label>
 		<description>Roborock Robot Vacuum Cleaner</description>
-
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
+		
 		<channel-groups>
 			<channel-group id="actions" typeId="actions"/>
 			<channel-group id="status" typeId="status"/>
@@ -147,13 +149,17 @@
 
 	<!-- Status channels -->
 	<channel-type id="clean-area">
-		<item-type>Number</item-type>
+		<item-type>Number:Area</item-type>
 		<label>Cleaning Area</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="clean-time">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Cleaning Time</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="dnd-enabled">
@@ -177,7 +183,8 @@
 	</channel-type>
 	<channel-type id="in-cleaning" advanced="true">
 		<item-type>Number</item-type>
-		<label>In Cleaning</label>
+		<label>In Cleaning?</label>
+		<description>1 = Cleaning, 0 = Not Cleaning</description>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="map-present" advanced="true">
@@ -226,6 +233,10 @@
 	<channel-type id="mop-mode">
 		<item-type>Number</item-type>
 		<label>Mop Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state min="300" max="303" step="1" pattern="%.0f%%" readOnly="false">
 			<options>
 				<option value="300">Standard</option>
@@ -272,6 +283,10 @@
 	<channel-type id="mop-drying-time">
 		<item-type>Number:Time</item-type>
 		<label>Mop Drying Time</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-mop-drying">
@@ -318,21 +333,37 @@
 	<channel-type id="main-brush-time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Main Brush Time till Replacement</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="side-brush-time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Side Brush Time till Replacement</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="filter-time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Filter Time till Replacement</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sensor-dirt-time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Sensor Dirt Time till Cleaning</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -340,6 +371,10 @@
 	<channel-type id="control">
 		<item-type>String</item-type>
 		<label>Control Vacuum</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="vacuum">Vacuum</option>
@@ -431,12 +466,20 @@
 		<item-type>DateTime</item-type>
 		<label>Cleaning Start</label>
 		<description>Last Cleaning Start Time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-clean-end-time">
 		<item-type>DateTime</item-type>
 		<label>Cleaning End</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<description>Last Cleaning End Time</description>
 		<category>Time</category>
 		<state readOnly="true"/>
@@ -444,6 +487,10 @@
 	<channel-type id="last-clean-duration">
 		<item-type>Number:Time</item-type>
 		<label>Cleaning Duration</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-clean-area">
@@ -526,6 +573,10 @@
 	<channel-type id="rssi" advanced="true">
 		<item-type>Number</item-type>
 		<label>RSSI</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -541,5 +592,9 @@
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power On/Off</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>
