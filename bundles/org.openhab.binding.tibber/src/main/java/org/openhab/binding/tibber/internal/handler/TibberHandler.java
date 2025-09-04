@@ -329,9 +329,10 @@ public class TibberHandler extends BaseThingHandler {
         // update thing with / without channels
         ThingBuilder thingBuilder = editThing();
         if (add) {
-            channels.forEach(channel -> {
-                updateThing(thingBuilder.withChannel(channel).build());
-            });
+            for (Channel channel : channels) {
+                thingBuilder = thingBuilder.withChannel(channel);
+            }
+            updateThing(thingBuilder.build());
         } else {
             updateThing(thingBuilder.withoutChannels(channels).build());
         }
@@ -494,9 +495,9 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     private boolean isRealtimeEnabled() {
-        Boolean localRealtimeEanbaled = realtimeEnabled;
-        if (localRealtimeEanbaled != null) {
-            return localRealtimeEanbaled.booleanValue();
+        Boolean localRealtimeEnabled = realtimeEnabled;
+        if (localRealtimeEnabled != null) {
+            return localRealtimeEnabled.booleanValue();
         } else {
             Request realtimeRequest = getRequest();
             String body = String.format(QUERY_CONTAINER,
@@ -512,9 +513,9 @@ public class TibberHandler extends BaseThingHandler {
                 JsonObject featuresObject = Utils.getJsonObject(object, REALTIME_FEATURE_JSON_PATH);
                 if (!featuresObject.isEmpty()) {
                     String rtEnabled = featuresObject.get("realTimeConsumptionEnabled").toString();
-                    localRealtimeEanbaled = Boolean.valueOf(rtEnabled);
-                    realtimeEnabled = localRealtimeEanbaled;
-                    return localRealtimeEanbaled.booleanValue();
+                    localRealtimeEnabled = Boolean.valueOf(rtEnabled);
+                    realtimeEnabled = localRealtimeEnabled;
+                    return localRealtimeEnabled.booleanValue();
                 }
             } catch (JsonSyntaxException | InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("Realtime feature query failed {}", e.getMessage());

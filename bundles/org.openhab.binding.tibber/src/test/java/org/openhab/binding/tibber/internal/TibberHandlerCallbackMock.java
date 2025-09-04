@@ -83,7 +83,7 @@ public class TibberHandlerCallbackMock implements ThingHandlerCallback {
             }
         }
         if (!thingStatusInfo.getStatus().equals(status)) {
-            fail("Thing status " + status + " not reached within 5 seconds");
+            fail("Thing status " + status + " not reached within 10 seconds");
         }
     }
 
