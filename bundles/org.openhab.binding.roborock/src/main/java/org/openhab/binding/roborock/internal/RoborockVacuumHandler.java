@@ -108,6 +108,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private boolean supportsRoutines = true;
     private final Gson gson = new Gson();
     private final SecureRandom secureRandom = new SecureRandom();
+    protected RoborockVacuumConfiguration config = new RoborockVacuumConfiguration();
+
     private String lastHistoryID = "";
 
     private final Map<String, Integer> outstandingRequests = new ConcurrentHashMap<>();
@@ -245,6 +247,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        config = getConfigAs(RoborockVacuumConfiguration.class);
+
         if (!(getBridge() instanceof Bridge bridge
                 && bridge.getHandler() instanceof RoborockAccountHandler accountHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
@@ -260,7 +264,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
-        final RoborockVacuumConfiguration config = getConfigAs(RoborockVacuumConfiguration.class);
         final long delayUntilNextPoll;
         if (initialDelaySeconds < 0) {
             long intervalSeconds = config.refresh * 60;
@@ -270,7 +273,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         } else {
             delayUntilNextPoll = initialDelaySeconds;
         }
-        logger.debug("{}: Scheduling next poll in {}s, refresh interval {}min", getThing().getUID().getId(),
+        logger.debug("{}: Scheduling next poll in {}s, refresh interval {}min", config.duid,
                 delayUntilNextPoll, config.refresh);
         pollTask.cancel();
         pollTask.schedule(delayUntilNextPoll);
@@ -325,7 +328,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void updateDevice(Devices devices[]) {
         for (int i = 0; i < devices.length; i++) {
-            if (getThing().getUID().getId().equals(devices[i].duid)) {
+            if (config.duid.equals(devices[i].duid)) {
                 if (localKey.isEmpty()) {
                     localKey = devices[i].localKey;
                 }
@@ -349,7 +352,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void pollData() {
-        logger.debug("Running pollData for: {}", getThing().getUID().getId());
+        logger.debug("Running pollData for: {}", config.duid);
         HomeData homeData = bridgeHandler.getHomeData();
         if ((homeData != null && (homeData.result != null))) {
             homeRooms = homeData.result.rooms;
@@ -360,7 +363,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         if (supportsRoutines) {
-            String routinesResponse = bridgeHandler.getRoutines(getThing().getUID().getId());
+            String routinesResponse = bridgeHandler.getRoutines(config.duid);
             if (!routinesResponse.isEmpty()
                     && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").isJsonArray()
                     && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray()
@@ -377,7 +380,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
                 updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
             } else {
-                logger.debug("Routines not supported for device {}", getThing().getUID().getId());
+                logger.debug("Routines not supported for device {}", config.duid);
                 supportsRoutines = false;
             }
         }
@@ -409,7 +412,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void handleMessage(byte[] payload) {
-        logger.debug("Received MQTT message for: {}", getThing().getUID().getId());
+        logger.debug("Received MQTT message for: {}", config.duid);
         try {
             String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
             if (response.isEmpty()) {
@@ -1003,7 +1006,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 methodName = outstandingRequests.entrySet().stream().filter(entry -> entry.getValue() == tempId)
                         .map(Map.Entry::getKey).findFirst().orElse(null);
             } while (methodName != null);
-            return localBridge.sendRPCCommand(method, params, getThing().getUID().getId(), localKey, nonce, id);
+            return localBridge.sendRPCCommand(method, params, config.duid, localKey, nonce, id);
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return 0;

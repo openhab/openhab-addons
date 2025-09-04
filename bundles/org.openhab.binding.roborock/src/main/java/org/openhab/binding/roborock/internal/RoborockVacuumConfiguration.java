@@ -25,5 +25,6 @@ public class RoborockVacuumConfiguration {
     /**
      * Vacuum configuration parameters.
      */
+    public String duid = "";
     public int refresh = 5; // in minutes
 }

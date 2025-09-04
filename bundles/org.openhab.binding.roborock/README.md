@@ -28,10 +28,9 @@ Just add a new thing, select the Roborock binding, then Roborock Account Binding
 
 ## `vacuum` Thing Configuration
 
-These should be created via discovery as the thingID is set to the ID discovered by the API.
-
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
+| duid            | N/A           | Yes      | No       | duid (Device UID) of the robot from the Roborock api                                 |
 | refresh         | 5             | No       | Yes      | The frequency with which to refresh information from Roborock specified in minutes   |
 
 ### Channels

@@ -15,7 +15,6 @@ package org.openhab.binding.roborock.internal.discovery;
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.roborock.internal.RoborockAccountHandler;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.HomeData.Devices;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -91,10 +92,16 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         for (int i = 0; i < devices.length; i++) {
             if ("1.0".equals(devices[i].pv)) {
-                Map<String, Object> properties = Map.of("sn", (devices[i].sn != null) ? devices[i].sn : "N/A");
-                ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, devices[i].duid);
-                thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
-                        .withLabel(devices[i].name).build());
+                Configuration configuration = new Configuration();
+                configuration.put(THING_CONFIG_DUID, devices[i].duid);
+                configuration.put(THING_PROPERTY_SN, (devices[i].sn != null) ? devices[i].sn : "N/A");
+
+                DiscoveryResult result = DiscoveryResultBuilder
+                        .create(new ThingUID(ROBOROCK_VACUUM, bridgeUID, devices[i].duid))
+                        .withProperties(configuration.getProperties()).withLabel(devices[i].name)
+                        .withRepresentationProperty(THING_CONFIG_DUID).withBridge(bridgeUID).build();
+
+                thingDiscovered(result);
             } else {
                 logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.", devices[i].duid,
                         devices[i].pv);

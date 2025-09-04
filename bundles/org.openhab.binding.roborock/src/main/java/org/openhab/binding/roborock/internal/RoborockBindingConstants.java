@@ -162,6 +162,9 @@ public class RoborockBindingConstants {
     public static final String COMMAND_GET_CUSTOMIZE_CLEAN_MODE = "get_customize_clean_mode";
     public static final String COMMAND_GET_MAP = "get_map_v1";
 
+    public static final String THING_CONFIG_DUID = "duid";
+    public static final String THING_PROPERTY_SN = "sn";
+
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT, ROBOROCK_VACUUM);
 }
