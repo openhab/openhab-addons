@@ -130,9 +130,9 @@ These channels hold the different Calendar Task configurations in case the Autom
 
 \<x\> ... 01-#calendartasks
 
-#### Stayout Zone Channels
+#### Stayout Zones Channels
 
-These channels hold the different Stayout Zone configurations.
+Channels that are relevant for all Stayout Zones of this Automower®.
 
 | channel                                      | type   | access mode | description                                                                                                                        | advanced |
 |----------------------------------------------|--------|-------------|------------------------------------------------------------------------------------------------------------------------------------|----------|
@@ -145,7 +145,7 @@ These channels hold the different Stayout Zone configurations.
 These channels hold the different Work Area configurations.
 
 | channel                                                 | type                  | access mode | description                                         | advanced |
-|------------------------------------------------------- -|-----------------------|-------------|-----------------------------------------------------|----------|
+|---------------------------------------------------------|-----------------------|-------------|-----------------------------------------------------|----------|
 | workarea#name                                           | String                | R           | Name of the Work Area                               | false    |
 | workarea#cutting-height                                 | Number:Dimensionless  | R/W         | Cutting height of the Work Area in percent. 0-100   | false    |
 | workarea#enabled                                        | Switch                | R/W         | If the Work Area is enabled or disabled             | false    |
