@@ -63,22 +63,22 @@ public class RoborockBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY = "status#battery";
-    public static final String CHANNEL_CLEAN_AREA = "status#clean_area";
-    public static final String CHANNEL_CLEAN_TIME = "status#clean_time";
-    public static final String CHANNEL_DND_ENABLED = "status#dnd_enabled";
-    public static final String CHANNEL_ERROR_CODE = "status#error_code";
-    public static final String CHANNEL_ERROR_ID = "status#error_id";
-    public static final String CHANNEL_FAN_POWER = "status#fan_power";
-    public static final String CHANNEL_IN_CLEANING = "status#in_cleaning";
-    public static final String CHANNEL_MAP_PRESENT = "status#map_present";
+    public static final String CHANNEL_CLEAN_AREA = "status#clean-area";
+    public static final String CHANNEL_CLEAN_TIME = "status#clean-time";
+    public static final String CHANNEL_DND_ENABLED = "status#dnd-enabled";
+    public static final String CHANNEL_ERROR_CODE = "status#error-code";
+    public static final String CHANNEL_ERROR_ID = "status#error-id";
+    public static final String CHANNEL_FAN_POWER = "status#fan-power";
+    public static final String CHANNEL_IN_CLEANING = "status#in-cleaning";
+    public static final String CHANNEL_MAP_PRESENT = "status#map-present";
     public static final String CHANNEL_STATE = "status#state";
-    public static final String CHANNEL_STATE_ID = "status#state_id";
-    public static final String CHANNEL_DOCK_STATE = "status#dock_state";
-    public static final String CHANNEL_DOCK_STATE_ID = "status#dock_state_id";
-    public static final String CHANNEL_MOP_DRYING = "status#is_mop_drying";
-    public static final String CHANNEL_MOP_TOTAL_DRYTIME = "status#mop_drying_time";
+    public static final String CHANNEL_STATE_ID = "status#state-id";
+    public static final String CHANNEL_DOCK_STATE = "status#dock-state";
+    public static final String CHANNEL_DOCK_STATE_ID = "status#dock-state-id";
+    public static final String CHANNEL_MOP_DRYING = "status#is-mop-drying";
+    public static final String CHANNEL_MOP_TOTAL_DRYTIME = "status#mop-drying-time";
 
-    public static final String CHANNEL_ROUTINES = "info#routine_mapping";
+    public static final String CHANNEL_ROUTINES = "info#routine-mapping";
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
@@ -95,33 +95,33 @@ public class RoborockBindingConstants {
     public static final String CHANNEL_RSSI = "network#rssi";
     public static final String CHANNEL_LIFE = "network#life";
 
-    public static final String CHANNEL_CONSUMABLE_MAIN_PERC = "consumables#main_brush_percent";
-    public static final String CHANNEL_CONSUMABLE_SIDE_PERC = "consumables#side_brush_percent";
-    public static final String CHANNEL_CONSUMABLE_FILTER_PERC = "consumables#filter_percent";
-    public static final String CHANNEL_CONSUMABLE_SENSOR_PERC = "consumables#sensor_dirt_percent";
-    public static final String CHANNEL_CONSUMABLE_MAIN_TIME = "consumables#main_brush_time";
-    public static final String CHANNEL_CONSUMABLE_SIDE_TIME = "consumables#side_brush_time";
-    public static final String CHANNEL_CONSUMABLE_FILTER_TIME = "consumables#filter_time";
-    public static final String CHANNEL_CONSUMABLE_SENSOR_TIME = "consumables#sensor_dirt_time";
-    public static final String CHANNEL_CONSUMABLE_RESET = "consumables#consumable_reset";
+    public static final String CHANNEL_CONSUMABLE_MAIN_PERC = "consumables#main-brush-percent";
+    public static final String CHANNEL_CONSUMABLE_SIDE_PERC = "consumables#side-brush-percent";
+    public static final String CHANNEL_CONSUMABLE_FILTER_PERC = "consumables#filter-percent";
+    public static final String CHANNEL_CONSUMABLE_SENSOR_PERC = "consumables#sensor-dirt-percent";
+    public static final String CHANNEL_CONSUMABLE_MAIN_TIME = "consumables#main-brush-time";
+    public static final String CHANNEL_CONSUMABLE_SIDE_TIME = "consumables#side-brush-time";
+    public static final String CHANNEL_CONSUMABLE_FILTER_TIME = "consumables#filter-time";
+    public static final String CHANNEL_CONSUMABLE_SENSOR_TIME = "consumables#sensor-dirt-time";
+    public static final String CHANNEL_CONSUMABLE_RESET = "consumables#consumable-reset";
 
-    public static final String CHANNEL_DND_FUNCTION = "dnd#dnd_function";
-    public static final String CHANNEL_DND_START = "dnd#dnd_start";
-    public static final String CHANNEL_DND_END = "dnd#dnd_end";
+    public static final String CHANNEL_DND_FUNCTION = "dnd#dnd-function";
+    public static final String CHANNEL_DND_START = "dnd#dnd-start";
+    public static final String CHANNEL_DND_END = "dnd#dnd-end";
 
-    public static final String CHANNEL_HISTORY_TOTALTIME = "history#total_clean_time";
-    public static final String CHANNEL_HISTORY_TOTALAREA = "history#total_clean_area";
-    public static final String CHANNEL_HISTORY_COUNT = "history#total_clean_count";
+    public static final String CHANNEL_HISTORY_TOTALTIME = "history#total-clean-time";
+    public static final String CHANNEL_HISTORY_TOTALAREA = "history#total-clean-area";
+    public static final String CHANNEL_HISTORY_COUNT = "history#total-clean-count";
 
-    public static final String CHANNEL_HISTORY_START_TIME = "cleaning#last_clean_start_time";
-    public static final String CHANNEL_HISTORY_END_TIME = "cleaning#last_clean_end_time";
-    public static final String CHANNEL_HISTORY_AREA = "cleaning#last_clean_area";
-    public static final String CHANNEL_HISTORY_DURATION = "cleaning#last_clean_duration";
-    public static final String CHANNEL_HISTORY_ERROR = "cleaning#last_clean_error";
-    public static final String CHANNEL_HISTORY_FINISH = "cleaning#last_clean_finish";
-    public static final String CHANNEL_HISTORY_FINISHREASON = "cleaning#last_clean_finish_reason";
-    public static final String CHANNEL_HISTORY_DUSTCOLLECTION = "cleaning#last_clean_dustcollection_status";
-    public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
+    public static final String CHANNEL_HISTORY_START_TIME = "cleaning#last-clean-start-time";
+    public static final String CHANNEL_HISTORY_END_TIME = "cleaning#last-clean-end-time";
+    public static final String CHANNEL_HISTORY_AREA = "cleaning#last-clean-area";
+    public static final String CHANNEL_HISTORY_DURATION = "cleaning#last-clean-duration";
+    public static final String CHANNEL_HISTORY_ERROR = "cleaning#last-clean-error";
+    public static final String CHANNEL_HISTORY_FINISH = "cleaning#last-clean-finish";
+    public static final String CHANNEL_HISTORY_FINISHREASON = "cleaning#last-clean-finish-reason";
+    public static final String CHANNEL_HISTORY_DUSTCOLLECTION = "cleaning#last-clean-dustcollection-status";
+    public static final String CHANNEL_HISTORY_RECORD = "cleaning#last-clean-record";
     public static final String CHANNEL_VACUUM_MAP = "cleaning#map";
 
     public static final String COMMAND_GET_STATUS = "get_status";
