@@ -48,6 +48,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.automower", service = ThingHandlerFactory.class)

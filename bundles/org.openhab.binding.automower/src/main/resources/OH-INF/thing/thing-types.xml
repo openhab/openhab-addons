@@ -68,11 +68,6 @@
 		</properties>
 
 		<config-description>
-			<parameter name="mowerId" type="text" required="true">
-				<label>Automower® Id</label>
-				<description>The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is
-					automatically filled when the thing is discovered.</description>
-			</parameter>
 			<parameter name="mowerZoneId" type="text" required="false">
 				<label>TimeZone</label>
 				<description>Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone configured in openHAB</description>

@@ -204,8 +204,7 @@ public class AutomowerHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
-            final String configMowerId = currentConfig.getMowerId();
-
+            final String mowerId = this.getThing().getUID().getId();
             final String configMowerZoneId = currentConfig.getMowerZoneId();
             if (configMowerZoneId != null && !configMowerZoneId.isBlank()) {
                 try {
@@ -218,21 +217,21 @@ public class AutomowerHandler extends BaseThingHandler {
                 mowerZoneId = timeZoneProvider.getTimeZone(); // not configured, use System TimeZone
             }
 
-            if (configMowerId == null) {
+            if (mowerId == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/conf-error-no-mower-id");
             } else {
-                automowerId.set(configMowerId);
+                automowerId.set(mowerId);
                 // Adding handler to map of handlers
                 AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
                 if (automowerBridgeHandler != null) {
-                    automowerBridgeHandler.registerAutomowerHandler(configMowerId, this);
+                    automowerBridgeHandler.registerAutomowerHandler(mowerId, this);
                 }
 
                 // initial poll to get the current state of the mower
                 poll();
                 // update messages once via polling of REST API and later event based via WebSocket only
-                initializeMessages(configMowerId);
+                initializeMessages(mowerId);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);

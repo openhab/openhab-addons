@@ -27,6 +27,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Markus Pfleger - Initial contribution
  * @author Marcin Czeczko - Added support for planner and calendar data
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public class AutomowerBindingConstants {

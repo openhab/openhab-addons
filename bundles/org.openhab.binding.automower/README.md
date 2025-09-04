@@ -38,7 +38,6 @@ In addition to periodic polling, the binding also receives event-triggered notif
 
 `automower:`
 
-- mowerId (mandatory): The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is automatically filled when the thing is discovered
 - mowerZoneId (optional): Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone of the system
 
 `workarea:`
@@ -233,9 +232,9 @@ The following actions are available for `automower` things:
 
 ```java
 Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", appSecret="<your_private_application_secret>", pollingInterval=300 ] {
-    Thing automower   12345678-1234-12ab-1234-123456abcdef   [ mowerId="12345678-1234-12ab-1234-123456abcdef" ] // 1234... is an example of the mowerId recieved via discovery
-    Thing workarea    12345678-1234-12ab-1234-123456abcdef-0 [ ]                                                // mowerId followed by the areaId received via discovery (0 := main area)
-    Thing stayoutzone 87654321-4321-ba21-4321-fedcba654321   [ ]                                                // 8765... is an example of the zoneId recieved via discovery
+    Thing automower   12345678-1234-12ab-1234-123456abcdef   [ ] // 1234... is an example of the mowerId recieved via discovery
+    Thing workarea    12345678-1234-12ab-1234-123456abcdef-0 [ ] // mowerId followed by the areaId received via discovery (0 := main area)
+    Thing stayoutzone 87654321-4321-ba21-4321-fedcba654321   [ ] // 8765... is an example of the zoneId recieved via discovery
 }
 ```
 
