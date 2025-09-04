@@ -16,7 +16,6 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -42,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.roborock", service = ThingHandlerFactory.class)
 public class RoborockHandlerFactory extends BaseThingHandlerFactory {
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final StorageService storageService;
     private final ChannelTypeRegistry channelTypeRegistry;
 
@@ -53,6 +52,7 @@ public class RoborockHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         this.storageService = storageService;
         this.channelTypeRegistry = channelTypeRegistry;
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
