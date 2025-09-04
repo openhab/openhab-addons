@@ -83,7 +83,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final RoborockWebTargets webTargets;
     private @Nullable MqttClient mqttClient;
     private String token = "";
-    private String baseUri = "";
+    private String baseUri = GET_URL_BY_EMAIL_URI;
     private Rriot rriot = new Login().new Rriot();
     private final SecureRandom secureRandom = new SecureRandom();
     private String mqttUser = "";

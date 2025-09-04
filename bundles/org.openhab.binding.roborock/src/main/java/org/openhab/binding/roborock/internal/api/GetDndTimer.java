@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Class for holding the set of parameters used by the get_consumables response
+ * Class for holding the set of parameters used by the get_dnd_timer response
  *
  * @author Paul Smedley - Initial Contribution
  *

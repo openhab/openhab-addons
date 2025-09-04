@@ -52,7 +52,6 @@ public class RoborockHandlerFactory extends BaseThingHandlerFactory {
             @Reference ChannelTypeRegistry channelTypeRegistry) {
         super.activate(componentContext);
         this.storageService = storageService;
-        this.httpClient = httpClientFactory.getCommonHttpClient();
         this.channelTypeRegistry = channelTypeRegistry;
     }
 
@@ -68,7 +67,7 @@ public class RoborockHandlerFactory extends BaseThingHandlerFactory {
         if (ROBOROCK_ACCOUNT.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new RoborockAccountHandler((Bridge) thing, storage, httpClient);
+            return new RoborockAccountHandler((Bridge) thing, storage, httpClientFactory.getCommonHttpClient());
         } else {
             return new RoborockVacuumHandler(thing, channelTypeRegistry);
         }

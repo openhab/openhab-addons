@@ -6,9 +6,10 @@ This binding is used to control Roborock robot vacuum cleaner products implement
 
 The following things types are available:
 
-| ThingType        | Description                                                                                                              |
-|------------------|--------------------------------------------------------------------------------------------------------------------------|
-| roborock:vacuum  | For RoboRock Robot Vacuum products                                                                                       |
+| ThingType | Description                                                                                                              |
+|-----------|--------------------------------------------------------------------------------------------------------------------------|
+| account   | Account bridge for Roborock Robot Vacuum products                                                                        |
+| vacuum    | For Roborock Robot Vacuum products                                                                                       |
 
 ## Discovery
 
@@ -28,11 +29,12 @@ Just add a new thing, select the Roborock binding, then Roborock Account Binding
 ## `vacuum` Thing Configuration
 
 These should be created via discovery as the thingID is set to the ID discovered by the API.
+
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | refresh         | 5             | No       | Yes      | The frequency with which to refresh information from Roborock specified in minutes   |
 
-## Channels
+### Channels
 
 | Type    | Channel                           | Description                |
 |---------|-----------------------------------|----------------------------|
@@ -99,7 +101,7 @@ Number statusBat    "Battery Level [%1.0f%%]" <battery>   (gVac,gVacStat) {chann
 Number statusArea    "Cleaned Area [%1.0fm²]" <zoom>   (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean_area" }
 Number statusTime    "Cleaning Time [%1.0f']" <clock>   (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean_time" }
 String  statusError    "Error [%s]"  <error>  (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#error_code" }
-Number statusFanPow    "Fan Power [%1.0f%%]"  <signal>   (gVacStat) {channel="roborock:vacuum:034F0E45:status#fan_power" }
+Number:Dimensionless statusFanPow    "Fan Power [%1.0f%%]"  <signal>   (gVacStat) {channel="roborock:vacuum:034F0E45:status#fan_power" }
 Number statusClean    "In Cleaning Status [%1.0f]"   <switch>  (gVacStat) {channel="roborock:vacuum:034F0E45:status#in_cleaning" }
 Switch statusDND    "DND Activated"    (gVacStat) {channel="roborock:vacuum:034F0E45:status#dnd_enabled" }
 Number statusStatus    "Status [%1.0f]"  <status>  (gVacStat) {channel="roborock:vacuum:034F0E45:status#state"}
