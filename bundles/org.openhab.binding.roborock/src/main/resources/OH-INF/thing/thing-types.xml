@@ -27,7 +27,7 @@
 		<label>Robot Vacuum</label>
 		<description>Roborock Robot Vacuum Cleaner</description>
 		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
-		
+
 		<channel-groups>
 			<channel-group id="actions" typeId="actions"/>
 			<channel-group id="status" typeId="status"/>
@@ -228,6 +228,10 @@
 	<channel-type id="water-box-mode">
 		<item-type>Number</item-type>
 		<label>Water Box Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="mop-mode">
@@ -466,22 +470,22 @@
 		<item-type>DateTime</item-type>
 		<label>Cleaning Start</label>
 		<description>Last Cleaning Start Time</description>
+		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
-		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-clean-end-time">
 		<item-type>DateTime</item-type>
 		<label>Cleaning End</label>
+		<description>Last Cleaning End Time</description>
+		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
-		<description>Last Cleaning End Time</description>
-		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-clean-duration">
