@@ -99,14 +99,11 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_CALENDARTASK_FRIDAY = "task-friday";
     public static final String CHANNEL_CALENDARTASK_SATURDAY = "task-saturday";
     public static final String CHANNEL_CALENDARTASK_SUNDAY = "task-sunday";
-    public static final String CHANNEL_CALENDARTASK_WORKAREAID = "task-workareaid";
-    public static final String CHANNEL_CALENDARTASK_WORKAREA = "task-workarea";
 
     public static final ArrayList<String> CHANNEL_CALENDARTASK = new ArrayList<>(
             List.of(CHANNEL_CALENDARTASK_START, CHANNEL_CALENDARTASK_DURATION, CHANNEL_CALENDARTASK_MONDAY,
                     CHANNEL_CALENDARTASK_TUEDAY, CHANNEL_CALENDARTASK_WEDNESDAY, CHANNEL_CALENDARTASK_THURSRAY,
-                    CHANNEL_CALENDARTASK_FRIDAY, CHANNEL_CALENDARTASK_SATURDAY, CHANNEL_CALENDARTASK_SUNDAY,
-                    CHANNEL_CALENDARTASK_WORKAREAID, CHANNEL_CALENDARTASK_WORKAREA));
+                    CHANNEL_CALENDARTASK_FRIDAY, CHANNEL_CALENDARTASK_SATURDAY, CHANNEL_CALENDARTASK_SUNDAY));
 
     public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_CALENDARTASK = new ArrayList<>(
             List.of(new ChannelTypeUID(BINDING_ID, "calendarTaskStartType"),
@@ -117,9 +114,7 @@ public class AutomowerBindingConstants {
                     new ChannelTypeUID(BINDING_ID, "calendarTaskThursdayType"),
                     new ChannelTypeUID(BINDING_ID, "calendarTaskFridayType"),
                     new ChannelTypeUID(BINDING_ID, "calendarTaskSaturdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskSundayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskWorkAreaIdType"),
-                    new ChannelTypeUID(BINDING_ID, "workareaNameType")));
+                    new ChannelTypeUID(BINDING_ID, "calendarTaskSundayType")));
 
     // Stayout Zones Channel ids
     public static final String GROUP_STAYOUTZONE = "stayoutzone#";
@@ -177,11 +172,14 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STAYOUTZONE_ENABLED = "enabled";
 
     // Work Area Channel ids
-    public static final String CHANNEL_WORKAREA_NAME = "name";
-    public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = "cutting-height";
-    public static final String CHANNEL_WORKAREA_ENABLED = "enabled";
-    public static final String CHANNEL_WORKAREA_PROGRESS = "progress";
-    public static final String CHANNEL_WORKAREA_LAST_TIME_COMPLETED = "last-time-completed";
+
+    public static final String GROUP_WORKAREA = "workarea#";
+
+    public static final String CHANNEL_WORKAREA_NAME = GROUP_WORKAREA + "name";
+    public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = GROUP_WORKAREA + "cutting-height";
+    public static final String CHANNEL_WORKAREA_ENABLED = GROUP_WORKAREA + "enabled";
+    public static final String CHANNEL_WORKAREA_PROGRESS = GROUP_WORKAREA + "progress";
+    public static final String CHANNEL_WORKAREA_LAST_TIME_COMPLETED = GROUP_WORKAREA + "last-time-completed";
 
     // Error codes and messages
     public static final Map<Integer, String> ERROR = new HashMap<>() {

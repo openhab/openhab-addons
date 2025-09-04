@@ -14,12 +14,16 @@ package org.openhab.binding.automower.internal.things;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.CalendarTask;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.WorkArea;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -28,6 +32,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -79,25 +84,36 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
                         mowerId, areaId);
                 AutomowerHandler handler = automowerBridgeHandler.getAutomowerHandlerByMowerId(mowerId);
                 if (handler != null && areaId != null) {
-                    if (CHANNEL_WORKAREA_ENABLED.equals(channelUID.getIdWithoutGroup())) {
-                        if (command instanceof OnOffType cmd) {
-                            handler.sendAutomowerWorkAreaEnable(areaId, cmd == OnOffType.ON);
-                        } else {
-                            logger.warn("Command {} not supported for channel {}", command, channelUID);
-                        }
-                    } else if (CHANNEL_WORKAREA_CUTTING_HEIGHT.equals(channelUID.getIdWithoutGroup())) {
-                        if (command instanceof QuantityType cmd) {
-                            cmd = cmd.toUnit("%");
-                            if (cmd != null) {
-                                handler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
+                    String groupId = channelUID.getGroupId();
+                    String channelId = channelUID.getIdWithoutGroup();
+                    if (groupId != null) {
+                        if (GROUP_CALENDARTASK.startsWith(groupId)) {
+                            String[] channelIDSplit = channelId.split("-", 2);
+                            int index = Integer.parseInt(channelIDSplit[0]) - 1;
+                            String param = channelIDSplit[1];
+                            handler.sendAutomowerCalendarTask(command, index, areaId, param);
+                        } else if (GROUP_WORKAREA.startsWith(groupId)) {
+                            if (CHANNEL_WORKAREA_ENABLED.equals(channelUID.getId())) {
+                                if (command instanceof OnOffType cmd) {
+                                    handler.sendAutomowerWorkAreaEnable(areaId, cmd == OnOffType.ON);
+                                } else {
+                                    logger.warn("Command {} not supported for channel {}", command, channelUID);
+                                }
+                            } else if (CHANNEL_WORKAREA_CUTTING_HEIGHT.equals(channelUID.getId())) {
+                                if (command instanceof QuantityType cmd) {
+                                    cmd = cmd.toUnit("%");
+                                    if (cmd != null) {
+                                        handler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
+                                    }
+                                } else if (command instanceof DecimalType cmd) {
+                                    handler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
+                                } else {
+                                    logger.warn("Command {} not supported for channel {}", command, channelUID);
+                                }
+                            } else {
+                                logger.warn("Command {} not supported for channel {}", command, channelUID);
                             }
-                        } else if (command instanceof DecimalType cmd) {
-                            handler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
-                        } else {
-                            logger.warn("Command {} not supported for channel {}", command, channelUID);
                         }
-                    } else {
-                        logger.warn("Command {} not supported for channel {}", command, channelUID);
                     }
                 } else {
                     logger.warn("No AutomowerHandler found for mowerId {}", mowerId);
@@ -117,8 +133,24 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         } else {
             logger.warn("No AutomowerBridgeHandler found for thingId {}", this.thingId);
         }
+
+        // Initial poll to create and set the status of the channels
+        poll();
+
         updateStatus(ThingStatus.ONLINE);
         logger.trace("AutomowerWorkAreaHandler initialized for thingId {}", this.thingId);
+    }
+
+    @Nullable
+    private AutomowerBridge getAutomowerBridge() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof AutomowerBridgeHandler bridgeHandler) {
+                return bridgeHandler.getAutomowerBridge();
+            }
+        }
+        return null;
     }
 
     @Nullable
@@ -141,7 +173,73 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         }
     }
 
-    public void updateWorkAreaChannels(WorkArea workArea, AutomowerHandler mowerHandler) {
+    public void poll() {
+        AutomowerBridge automowerBridge = getAutomowerBridge();
+        AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+        if (automowerBridgeHandler != null && automowerBridge != null) {
+            automowerBridgeHandler.pollAutomowers(automowerBridge);
+        }
+    }
+
+    private void addRemoveDynamicChannels(List<CalendarTask> calendarTasks, AutomowerHandler mowerHandler) {
+        // create a copy of the present channels
+        List<Channel> channelAdd = new ArrayList<>();
+        for (Channel channel : thing.getChannels()) {
+            channelAdd.add(channel);
+        }
+        List<Channel> channelRemove = new ArrayList<>();
+
+        int i;
+        for (i = 0; i < calendarTasks.size(); i++) {
+            int j = 0;
+            AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time", channelAdd, thing);
+            AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time", channelAdd, thing);
+            AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+            AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+            AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+            AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+            AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+            AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+            AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+        }
+        // remove all consecutive channels that are no longer required
+        for (int j = 0; j < CHANNEL_CALENDARTASK.size(); j++) {
+            AutomowerHandler.removeConsecutiveIndexedChannels(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                    channelRemove, thing);
+        }
+
+        // remove channels that are now longer required and add new once
+        updateThing(editThing().withChannels(channelAdd).withoutChannels(channelRemove).build());
+    }
+
+    public void updateChannels(WorkArea workArea, List<CalendarTask> calendarTasks, AutomowerHandler mowerHandler) {
+        updateWorkAreaChannels(workArea, mowerHandler);
+
+        // only show the Tasks of the current WorkArea
+        List<CalendarTask> calendarTasksFiltered = new ArrayList<>();
+        Long workAreaId = workArea.getWorkAreaId();
+        if (workAreaId != null) {
+            for (CalendarTask calendarTask : calendarTasks) {
+                if (calendarTask.getWorkAreaId().equals(workAreaId)) {
+                    calendarTasksFiltered.add(calendarTask);
+                }
+            }
+        }
+
+        addRemoveDynamicChannels(calendarTasksFiltered, mowerHandler);
+        updateCalendarTaskChannels(calendarTasksFiltered);
+    }
+
+    private void updateWorkAreaChannels(WorkArea workArea, AutomowerHandler mowerHandler) {
         if (workArea.getWorkAreaId() == 0L && workArea.getName().isBlank()) {
             updateState(CHANNEL_WORKAREA_NAME, new StringType("main area"));
         } else {
@@ -164,5 +262,35 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         } else {
             updateState(CHANNEL_WORKAREA_LAST_TIME_COMPLETED, UnDefType.NULL);
         }
+    }
+
+    private void updateCalendarTaskChannels(List<CalendarTask> calendarTasks) {
+        int i = 0;
+        for (; i < calendarTasks.size(); i++) {
+            int j = 0;
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    new QuantityType<>(calendarTasks.get(i).getStart(), Units.MINUTE));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    new QuantityType<>(calendarTasks.get(i).getDuration(), Units.MINUTE));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getMonday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getTuesday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getWednesday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getThursday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getFriday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getSaturday()));
+            updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
+                    OnOffType.from(calendarTasks.get(i).getSunday()));
+        }
+    }
+
+    private void updateIndexedState(String ChannelGroup, int id, String channel, org.openhab.core.types.State state) {
+        String indexedChannel = AutomowerHandler.getIndexedChannel(ChannelGroup, id, channel);
+        updateState(indexedChannel, state);
     }
 }

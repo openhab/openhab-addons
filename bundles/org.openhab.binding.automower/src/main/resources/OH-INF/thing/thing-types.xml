@@ -111,13 +111,10 @@
 		<description>An automatic lawn mower work-area</description>
 		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
-		<channels>
-			<channel id="name" typeId="workareaNameType"/>
-			<channel id="cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="enabled" typeId="workareaEnabledType"/>
-			<channel id="progress" typeId="workareaProgressType"/>
-			<channel id="last-time-completed" typeId="workareaLastTimeCompletedType"/>
-		</channels>
+		<channel-groups>
+			<channel-group id="workarea" typeId="workAreaType"/>
+			<channel-group id="calendartask" typeId="calendarTasksType"/>
+		</channel-groups>
 
 		<properties>
 			<property name="mowerId">N/A</property>
@@ -202,8 +199,6 @@
 			<channel id="<xx>-friday" typeId="calendarTaskFridayType"/>
 			<channel id="<xx>-saturday" typeId="calendarTaskSaturdayType"/>
 			<channel id="<xx>-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="<xx>-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="<xx>-workArea" typeId="workareaNameType"/>
 			...
 			</channels>
 		-->
@@ -217,6 +212,18 @@
 			<channel id="dirty" typeId="zoneDirtyType"/>
 			</channels>
 		-->
+	</channel-group-type>
+
+	<!-- Work Areas -->
+	<channel-group-type id="workAreaType">
+		<label>Work Area</label>
+		<channels>
+			<channel id="name" typeId="workareaNameType"/>
+			<channel id="cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="enabled" typeId="workareaEnabledType"/>
+			<channel id="progress" typeId="workareaProgressType"/>
+			<channel id="last-time-completed" typeId="workareaLastTimeCompletedType"/>
+		</channels>
 	</channel-group-type>
 
 	<!-- Messages -->
@@ -546,58 +553,52 @@
 	</channel-type>
 
 	<!-- Calendar Tasks -->
-	<channel-type id="calendarTaskStartType" advanced="true">
+	<channel-type id="calendarTaskStartType" advanced="false">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Start Time</label>
 		<description>Start time relative to midnight</description>
 		<state pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
-	<channel-type id="calendarTaskDurationType" advanced="true">
+	<channel-type id="calendarTaskDurationType" advanced="false">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration time</description>
 		<state pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
-	<channel-type id="calendarTaskMondayType" advanced="true">
+	<channel-type id="calendarTaskMondayType" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Enabled on Mondays</label>
 		<description>Enabled on Mondays</description>
 	</channel-type>
-	<channel-type id="calendarTaskTuesdayType" advanced="true">
+	<channel-type id="calendarTaskTuesdayType" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Enabled on Tuesdays</label>
 		<description>Enabled on Tuesdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskWednesdayType" advanced="true">
+	<channel-type id="calendarTaskWednesdayType" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Enabled on Wednesdays</label>
 		<description>Enabled on Wednesdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskThursdayType" advanced="true">
+	<channel-type id="calendarTaskThursdayType" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Enabled on Thursdays</label>
 		<description>Enabled on Thursdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskFridayType" advanced="true">
+	<channel-type id="calendarTaskFridayType" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Enabled on Fridays</label>
 		<description>Enabled on Fridays</description>
 	</channel-type>
-	<channel-type id="calendarTaskSaturdayType" advanced="true">
+	<channel-type id="calendarTaskSaturdayType" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Enabled on Saturdays</label>
 		<description>Enabled on Saturdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskSundayType" advanced="true">
+	<channel-type id="calendarTaskSundayType" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Enabled on Sundays</label>
 		<description>Enabled on Sundays</description>
-	</channel-type>
-	<channel-type id="calendarTaskWorkAreaIdType" advanced="true">
-		<item-type>Number</item-type>
-		<label>Work Area Id of Calendar</label>
-		<description>Work Area Id mapped to this calendar</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Stayout Zones -->
