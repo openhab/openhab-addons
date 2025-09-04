@@ -56,7 +56,7 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
 
     @BeforeEach
     public void setUp() {
-        handler = createHandler();
+        handler = spy(createHandler());
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());

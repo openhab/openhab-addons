@@ -60,7 +60,7 @@ public class EvccPvHandler extends EvccBaseThingHandler {
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         state = state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
-        super.updateStatesFromApiResponse(state);
+        updateStatesFromApiResponse(state);
     }
 
     @Override

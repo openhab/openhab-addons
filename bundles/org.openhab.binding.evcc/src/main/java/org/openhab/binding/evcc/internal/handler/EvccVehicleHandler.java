@@ -68,7 +68,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
-        super.updateStatesFromApiResponse(state);
+        updateStatesFromApiResponse(state);
     }
 
     @Override

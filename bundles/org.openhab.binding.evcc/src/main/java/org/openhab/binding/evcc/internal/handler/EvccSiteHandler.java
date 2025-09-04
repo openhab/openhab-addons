@@ -71,7 +71,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
         if (state.has("gridConfigured")) {
             modifyJSON(state);
         }
-        super.updateStatesFromApiResponse(state);
+        updateStatesFromApiResponse(state);
     }
 
     @Override

@@ -14,31 +14,40 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccBatteryHandlerTest} is responsible for testing the EvccBatteryHandler implementation
+ * The {@link EvccSiteHandlerTest} is responsible for testing the EvccPvHandler implementation
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBatteryHandler> {
+public class EvccPvHandlerTest extends AbstractThingHandlerTestClass<EvccPvHandler> {
+
+    private final JsonObject testState = new JsonObject();
+    private final JsonObject testObject = new JsonObject();
+    private final JsonObject verifyObject = new JsonObject();
 
     @Override
-    protected EvccBatteryHandler createHandler() {
-        return new EvccBatteryHandler(thing, channelTypeRegistry) {
+    protected EvccPvHandler createHandler() {
+        return new EvccPvHandler(thing, channelTypeRegistry) {
 
             @Override
             protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
@@ -67,20 +76,27 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         };
     }
 
+    @BeforeEach
+    public void setup() {
+        handler = spy(createHandler());
+        when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
+        when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "pv"));
+        when(thing.getChannels()).thenReturn(new ArrayList<>());
+
+        verifyObject.addProperty("power", 2000);
+
+        testObject.addProperty("power", 2000);
+        JsonArray loadpointArray = new JsonArray();
+        loadpointArray.add(testObject);
+        testState.add("pv", loadpointArray);
+    }
+
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
         EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
-
-        JsonObject batteryState = new JsonObject();
-        batteryState.addProperty("soc", 50);
-        JsonArray batteryArray = new JsonArray();
-        batteryArray.add(batteryState);
-        JsonObject state = new JsonObject();
-        state.add("battery", batteryArray);
-
-        when(bridgeHandler.getCachedEvccState()).thenReturn(state);
+        when(bridgeHandler.getCachedEvccState()).thenReturn(testState);
 
         handler.initialize();
         assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -92,14 +108,7 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         handler.bridgeHandler = mock(EvccBridgeHandler.class);
         handler.isInitialized = true;
 
-        JsonObject batteryState = new JsonObject();
-        batteryState.addProperty("soc", 50);
-        JsonArray batteryArray = new JsonArray();
-        batteryArray.add(batteryState);
-        JsonObject state = new JsonObject();
-        state.add("battery", batteryArray);
-
-        handler.prepareApiResponseForChannelStateUpdate(state);
+        handler.prepareApiResponseForChannelStateUpdate(testState);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
@@ -108,29 +117,14 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
     public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
         handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
-        JsonObject batteryState = new JsonObject();
-        batteryState.addProperty("soc", 50);
-        JsonArray batteryArray = new JsonArray();
-        batteryArray.add(batteryState);
-        JsonObject state = new JsonObject();
-        state.add("battery", batteryArray);
-
-        handler.prepareApiResponseForChannelStateUpdate(state);
-        verify(handler).updateStatesFromApiResponse(batteryState);
+        handler.prepareApiResponseForChannelStateUpdate(testState);
         assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testGetStateFromCachedState() {
-        JsonObject batteryState = new JsonObject();
-        batteryState.addProperty("soc", 50);
-        JsonArray batteryArray = new JsonArray();
-        batteryArray.add(batteryState);
-        JsonObject state = new JsonObject();
-        state.add("battery", batteryArray);
-
-        JsonObject result = handler.getStateFromCachedState(state);
-        assertSame(batteryState, result);
+        JsonObject result = handler.getStateFromCachedState(testState);
+        assertSame(testState.getAsJsonArray("pv").get(0), result);
     }
 }

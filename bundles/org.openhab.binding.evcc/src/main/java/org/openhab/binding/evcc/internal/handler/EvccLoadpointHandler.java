@@ -117,16 +117,16 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         version = Utils.convertVersionStringToIntArray(state.get("version").getAsString().split(" ")[0]);
         state = state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
         modifyJSON(state);
-        super.updateStatesFromApiResponse(state);
+        updateStatesFromApiResponse(state);
     }
 
     private void modifyJSON(JsonObject state) {
         JSON_KEYS.forEach((oldKey, newKey) -> {
             if (state.has(oldKey)) {
                 if (oldKey.equals(JSON_KEY_CHARGE_CURRENTS)) {
-                    addMeasurementDatapointsToState(state, state.getAsJsonArray(oldKey), "Current");
+                    addMeasurementDatapointToState(state, state.getAsJsonArray(oldKey), "Current");
                 } else if (oldKey.equals(JSON_KEY_CHARGE_VOLTAGES)) {
-                    addMeasurementDatapointsToState(state, state.getAsJsonArray(oldKey), "Voltage");
+                    addMeasurementDatapointToState(state, state.getAsJsonArray(oldKey), "Voltage");
                 } else {
                     state.add(newKey, state.get(oldKey));
                 }
@@ -135,7 +135,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         });
     }
 
-    protected void addMeasurementDatapointsToState(JsonObject state, JsonArray values, String datapoint) {
+    protected void addMeasurementDatapointToState(JsonObject state, JsonArray values, String datapoint) {
         int phase = 1;
         for (JsonElement value : values) {
             state.add("charge" + datapoint + "L" + phase, value);

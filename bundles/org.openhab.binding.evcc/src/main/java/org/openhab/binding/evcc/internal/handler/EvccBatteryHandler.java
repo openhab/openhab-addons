@@ -61,7 +61,7 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         state = state.has(JSON_KEY_BATTERY) ? state.getAsJsonArray(JSON_KEY_BATTERY).get(index).getAsJsonObject()
                 : new JsonObject();
-        super.updateStatesFromApiResponse(state);
+        updateStatesFromApiResponse(state);
     }
 
     @Override

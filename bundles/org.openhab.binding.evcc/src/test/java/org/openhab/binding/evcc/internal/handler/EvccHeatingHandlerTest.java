@@ -12,33 +12,42 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccBatteryHandlerTest} is responsible for testing the EvccBatteryHandler implementation
+ * The {@link EvccHeatingHandlerTest} is responsible for testing the EvccHeatingHandler implementation
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBatteryHandler> {
+public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHeatingHandler> {
+
+    private final JsonObject testState = new JsonObject();
+    private final JsonObject verifyObject = new JsonObject();
 
     @Override
-    protected EvccBatteryHandler createHandler() {
-        return new EvccBatteryHandler(thing, channelTypeRegistry) {
+    protected EvccHeatingHandler createHandler() {
+        return new EvccHeatingHandler(thing, channelTypeRegistry) {
 
             @Override
             protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
@@ -67,20 +76,39 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         };
     }
 
+    @BeforeEach
+    public void setup() {
+        handler = spy(createHandler());
+        when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
+        when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "heating"));
+        when(thing.getChannels()).thenReturn(new ArrayList<>());
+
+        verifyObject.addProperty("chargedEnergy", 50);
+        verifyObject.addProperty("effectiveLimitTemperature", 60);
+        verifyObject.addProperty("vehicleTemperature", 90);
+        verifyObject.addProperty("limitTemperature", 80);
+        verifyObject.addProperty("effectivePlanTemperature", 70);
+        verifyObject.addProperty("vehicleLimitTemperature", 90);
+
+        JsonObject testObject = new JsonObject();
+        testObject.addProperty("chargedEnergy", 50);
+        testObject.addProperty("effectiveLimitSoc", 60);
+        testObject.addProperty("effectivePlanSoc", 70);
+        testObject.addProperty("limitSoc", 80);
+        testObject.addProperty("vehicleLimitSoc", 90);
+        testObject.addProperty("vehicleSoc", 90);
+        JsonArray loadpointArray = new JsonArray();
+        loadpointArray.add(testObject);
+        testState.add("loadpoints", loadpointArray);
+    }
+
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
         EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
 
-        JsonObject batteryState = new JsonObject();
-        batteryState.addProperty("soc", 50);
-        JsonArray batteryArray = new JsonArray();
-        batteryArray.add(batteryState);
-        JsonObject state = new JsonObject();
-        state.add("battery", batteryArray);
-
-        when(bridgeHandler.getCachedEvccState()).thenReturn(state);
+        when(bridgeHandler.getCachedEvccState()).thenReturn(testState);
 
         handler.initialize();
         assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -92,14 +120,7 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         handler.bridgeHandler = mock(EvccBridgeHandler.class);
         handler.isInitialized = true;
 
-        JsonObject batteryState = new JsonObject();
-        batteryState.addProperty("soc", 50);
-        JsonArray batteryArray = new JsonArray();
-        batteryArray.add(batteryState);
-        JsonObject state = new JsonObject();
-        state.add("battery", batteryArray);
-
-        handler.prepareApiResponseForChannelStateUpdate(state);
+        handler.prepareApiResponseForChannelStateUpdate(testState);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
@@ -108,29 +129,21 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
     public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
         handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
-        JsonObject batteryState = new JsonObject();
-        batteryState.addProperty("soc", 50);
-        JsonArray batteryArray = new JsonArray();
-        batteryArray.add(batteryState);
-        JsonObject state = new JsonObject();
-        state.add("battery", batteryArray);
-
-        handler.prepareApiResponseForChannelStateUpdate(state);
-        verify(handler).updateStatesFromApiResponse(batteryState);
+        handler.prepareApiResponseForChannelStateUpdate(testState);
         assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
-    public void testGetStateFromCachedState() {
-        JsonObject batteryState = new JsonObject();
-        batteryState.addProperty("soc", 50);
-        JsonArray batteryArray = new JsonArray();
-        batteryArray.add(batteryState);
-        JsonObject state = new JsonObject();
-        state.add("battery", batteryArray);
+    public void testJsonGetsModifiedCorrectly() {
+        handler.prepareApiResponseForChannelStateUpdate(testState);
+        assertEquals(verifyObject, testState.getAsJsonArray("loadpoints").get(0));
+    }
 
-        JsonObject result = handler.getStateFromCachedState(state);
-        assertSame(batteryState, result);
+    @SuppressWarnings("null")
+    @Test
+    public void testGetStateFromCachedState() {
+        JsonObject result = handler.getStateFromCachedState(testState);
+        assertSame(testState.getAsJsonArray("loadpoints").get(0), result);
     }
 }
