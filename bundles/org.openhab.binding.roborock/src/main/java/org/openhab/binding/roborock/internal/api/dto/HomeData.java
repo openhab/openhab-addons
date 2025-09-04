@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.roborock.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,20 +21,19 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 
-@NonNullByDefault
 public class HomeData {
     public String api = "";
-    public @NonNullByDefault({}) Result result;
+    public Result result;
     public String status = "";
     public boolean success;
 
     public class Result {
         public int id;
         public String name = "";
-        public @NonNullByDefault({}) Products[] products;
-        public @NonNullByDefault({}) Devices[] devices;
-        public @NonNullByDefault({}) Devices[] receivedDevices;
-        public @NonNullByDefault({}) Rooms[] rooms;
+        public Products[] products;
+        public Devices[] devices;
+        public Devices[] receivedDevices;
+        public Rooms[] rooms;
         public String status = "";
         public boolean success;
     }
@@ -46,7 +43,7 @@ public class HomeData {
         public String name = "";
         public String model = "";
         public String category = "";
-        public @NonNullByDefault({}) Schema[] schema;
+        public Schema[] schema;
     }
 
     public class Schema {
@@ -66,7 +63,7 @@ public class HomeData {
         public String pv = "";
         public boolean online;
         public String sn = "";
-        public @NonNullByDefault({}) DeviceStatus deviceStatus;
+        public DeviceStatus deviceStatus;
         public boolean silentOtaSwitch;
         public boolean f;
     }

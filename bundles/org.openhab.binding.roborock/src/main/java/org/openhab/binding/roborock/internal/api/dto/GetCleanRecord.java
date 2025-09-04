@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.roborock.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,11 +21,10 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 
-@NonNullByDefault
 public class GetCleanRecord {
     public int id;
 
-    public @NonNullByDefault({}) Result[] result;
+    public Result[] result;
 
     public class Result {
         public long begin;

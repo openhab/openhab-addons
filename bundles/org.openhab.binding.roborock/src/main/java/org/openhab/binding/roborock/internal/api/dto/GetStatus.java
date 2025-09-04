@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.roborock.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,11 +21,10 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 
-@NonNullByDefault
 public class GetStatus {
     public int id;
 
-    public @NonNullByDefault({}) Result[] result;
+    public Result[] result;
 
     public class Result {
         @SerializedName("msg_ver")
@@ -113,7 +110,7 @@ public class GetStatus {
         public int isExploring;
 
         @SerializedName("adbumper_status")
-        public @NonNullByDefault({}) int[] adbumperStatus;
+        public int[] adbumperStatus;
 
         @SerializedName("water_shortage_status")
         public int waterShortageStatus;

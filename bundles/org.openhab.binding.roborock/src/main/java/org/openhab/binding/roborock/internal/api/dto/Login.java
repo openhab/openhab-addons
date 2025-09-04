@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.roborock.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * Class for holding the set of parameters used by the Login response
  *
@@ -21,11 +19,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 
-@NonNullByDefault
 public class Login {
     public String code = "";
     public String message = "";
-    public @NonNullByDefault({}) LoginData data;
+    public LoginData data;
 
     public class LoginData {
         public String uid = "";
@@ -34,7 +31,7 @@ public class Login {
         public String rruid = "";
         public String region = "";
         public String nickname = "";
-        public @NonNullByDefault({}) Rriot rriot;
+        public Rriot rriot;
         public String tuyaDeviceState = "";
         public String avatarurl = "";
     }
@@ -44,7 +41,7 @@ public class Login {
         public String s = "";
         public String h = "";
         public String k = "";
-        public @NonNullByDefault({}) R r;
+        public R r;
     }
 
     public class R {

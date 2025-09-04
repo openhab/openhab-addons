@@ -12,29 +12,26 @@
  */
 package org.openhab.binding.roborock.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
- * Class for holding the set of parameters used by the Home response
+ * Class for holding the set of parameters used by the get_network_info response
  *
  * @author Paul Smedley - Initial Contribution
  *
  */
 
-@NonNullByDefault
-public class Home {
-    public String code = "";
-    public String message = "";
-    public @NonNullByDefault({}) HomeData data;
+public class GetNetworkInfo {
+    public int id;
 
-    public class HomeData {
-        public int id;
-        public String name = "";
-        public int tuyaHomeId;
-        public int rrHomeId;
-        public String deviceListOrder = "";
+    public Result result;
+
+    public class Result {
+        public String ssid = "";
+        public String ip = "";
+        public String mac = "";
+        public String bssid = "";
+        public int rssi;
     }
 
-    public Home() {
+    public GetNetworkInfo() {
     }
 }

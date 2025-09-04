@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.roborock.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,11 +21,10 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 
-@NonNullByDefault
 public class GetDndTimer {
     public int id;
 
-    public @NonNullByDefault({}) Result[] result;
+    public Result[] result;
 
     public class Result {
         @SerializedName("start_hour")
@@ -43,7 +40,7 @@ public class GetDndTimer {
         public int endMinute;
         public int enabled;
 
-        public @NonNullByDefault({}) Actions actions;
+        public Actions actions;
     }
 
     public class Actions {
