@@ -236,8 +236,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.lux.value = (double) e.blu.illuminance;
                         }
                         if (e.blu.temperatures != null) {
-                            logger.trace("{}: Shelly BLU temperatures received: {}", thingName,
-                                    gson.toJson(e.blu.temperatures));
                             if (e.blu.temperatures.length == 1) {
                                 sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
                                 sensorData.tmp.isValid = true;
@@ -254,8 +252,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.sensor.motion = e.blu.motionState == 1;
                         }
                         if (e.blu.rotations != null) {
-                            logger.trace("{}: Shelly BLU rotation info received: {}", thingName,
-                                    gson.toJson(e.blu.rotations));
                             if (e.blu.rotations.length == 1) { // BLU DW
                                 sensorData.accel.tilt = e.blu.rotations[0].intValue();
                             } else if (e.blu.rotations.length == 3) { // BLU Remote
