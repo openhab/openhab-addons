@@ -52,29 +52,32 @@ public class AutomowerStayoutZoneHandler extends BaseThingHandler {
 
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
-        // REFRESH is not implemented as it would causes >100 channel updates in a row during setup (performance, API
-        // rate limit)
-        if (RefreshType.REFRESH != command) {
-            if (CHANNEL_STAYOUTZONE_ENABLED.equals(channelUID.getIdWithoutGroup())) {
-                if (command instanceof OnOffType cmd) {
-                    AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
-                    if (automowerBridgeHandler != null) {
-                        AutomowerHandler handler = automowerBridgeHandler
-                                .getAutomowerHandlerByStayoutZoneId(this.thingId);
-                        if (handler != null) {
-                            handler.sendAutomowerStayOutZone(this.thingId, cmd == OnOffType.ON);
-                        } else {
-                            logger.warn("No AutomowerHandler found for zoneId {}", this.thingId);
-                        }
-                    } else {
-                        logger.warn("No AutomowerBridgeHandler found for thingId {}", this.thingId);
-                    }
-                } else {
-                    logger.warn("Command {} not supported for channel {}", command, channelUID);
-                }
+        if (RefreshType.REFRESH == command) {
+            // REFRESH is not implemented as it would causes >100 channel updates in a row during setup (performance,
+            // API
+            // rate limit)
+            return;
+        }
+        AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+        if (automowerBridgeHandler == null) {
+            logger.warn("No AutomowerBridgeHandler found for zoneId {}", this.thingId);
+            return;
+        }
+        AutomowerHandler mowerHandler = automowerBridgeHandler.getAutomowerHandlerByStayoutZoneId(this.thingId);
+        if (mowerHandler == null) {
+            logger.warn("No AutomowerHandler found for zoneId {}", this.thingId);
+            return;
+        }
+
+        /* all pre-conditions met ... */
+        if (CHANNEL_STAYOUTZONE_ENABLED.equals(channelUID.getIdWithoutGroup())) {
+            if (command instanceof OnOffType cmd) {
+                mowerHandler.sendAutomowerStayOutZone(this.thingId, cmd == OnOffType.ON);
             } else {
                 logger.warn("Command {} not supported for channel {}", command, channelUID);
             }
+        } else {
+            logger.warn("Command {} not supported for channel {}", command, channelUID);
         }
     }
 
