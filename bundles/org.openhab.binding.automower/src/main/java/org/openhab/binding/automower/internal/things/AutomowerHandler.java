@@ -72,7 +72,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -204,7 +203,6 @@ public class AutomowerHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
-            final String mowerId = this.getThing().getUID().getId();
             final String configMowerZoneId = currentConfig.getMowerZoneId();
             if (configMowerZoneId != null && !configMowerZoneId.isBlank()) {
                 try {
@@ -217,24 +215,30 @@ public class AutomowerHandler extends BaseThingHandler {
                 mowerZoneId = timeZoneProvider.getTimeZone(); // not configured, use System TimeZone
             }
 
-            if (mowerId == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/conf-error-no-mower-id");
-            } else {
-                automowerId.set(mowerId);
-                // Adding handler to map of handlers
-                AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
-                if (automowerBridgeHandler != null) {
-                    automowerBridgeHandler.registerAutomowerHandler(mowerId, this);
-                }
-
-                // initial poll to get the current state of the mower
-                poll();
-                // update messages once via polling of REST API and later event based via WebSocket only
-                initializeMessages(mowerId);
+            final String mowerId = this.getThing().getUID().getId();
+            automowerId.set(mowerId);
+            // Adding handler to map of handlers
+            AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+            if (automowerBridgeHandler != null) {
+                automowerBridgeHandler.registerAutomowerHandler(mowerId, this);
             }
+
+            updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
+
+            scheduler.execute(() -> completeInitAsync());
+
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        }
+    }
+
+    private void completeInitAsync() {
+        String mowerId = automowerId.get();
+        if (!mowerId.equals(NO_ID)) {
+            // initial poll to get the current state of the mower
+            poll();
+            // update messages once via polling of REST API and later event based via WebSocket only
+            initializeMessages(mowerId);
         }
     }
 
@@ -257,10 +261,8 @@ public class AutomowerHandler extends BaseThingHandler {
 
     @Nullable
     private AutomowerBridge getAutomowerBridge() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof AutomowerBridgeHandler bridgeHandler) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof AutomowerBridgeHandler bridgeHandler) {
                 return bridgeHandler.getAutomowerBridge();
             }
         }
@@ -269,10 +271,8 @@ public class AutomowerHandler extends BaseThingHandler {
 
     @Nullable
     private AutomowerBridgeHandler getAutomowerBridgeHandler() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof AutomowerBridgeHandler bridgeHandler) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof AutomowerBridgeHandler bridgeHandler) {
                 return bridgeHandler;
             }
         }

@@ -28,7 +28,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -49,8 +48,6 @@ public class AutomowerStayoutZoneHandler extends BaseThingHandler {
     public AutomowerStayoutZoneHandler(Thing thing) {
         super(thing);
         this.thingId = this.getThing().getUID().getId();
-
-        logger.trace("AutomowerStayoutZoneHandler created for thingId {}", this.thingId);
     }
 
     @Override
@@ -96,10 +93,8 @@ public class AutomowerStayoutZoneHandler extends BaseThingHandler {
 
     @Nullable
     private AutomowerBridgeHandler getAutomowerBridgeHandler() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof AutomowerBridgeHandler bridgeHandler) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof AutomowerBridgeHandler bridgeHandler) {
                 return bridgeHandler;
             }
         }

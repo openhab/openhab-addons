@@ -64,7 +64,7 @@
 			<property name="mowerHasPosition">N/A</property>
 			<property name="mowerHasStayOutZones">N/A</property>
 			<property name="mowerHasWorkAreas">N/A</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -83,7 +83,6 @@
 
 		<label>Automower® StayoutZone</label>
 		<description>An automatic lawn mower stay-out zone</description>
-		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
 		<channels>
 			<channel id="name" typeId="zoneNameType"/>
@@ -93,6 +92,7 @@
 		<properties>
 			<property name="mowerId">N/A</property>
 			<property name="stayoutzoneId">N/A</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 	</thing-type>
 
@@ -104,7 +104,6 @@
 
 		<label>Automower® WorkArea</label>
 		<description>An automatic lawn mower work-area</description>
-		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="workarea" typeId="workAreaType"/>
@@ -114,6 +113,7 @@
 		<properties>
 			<property name="mowerId">N/A</property>
 			<property name="workareaId">N/A</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 	</thing-type>
 
@@ -445,7 +445,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="positionType" advanced="false">
+	<channel-type id="positionType">
 		<item-type>Location</item-type>
 		<label>Last GPS Position</label>
 		<description>Last GPS position of the Automower®</description>
@@ -548,49 +548,49 @@
 	</channel-type>
 
 	<!-- Calendar Tasks -->
-	<channel-type id="calendarTaskStartType" advanced="false">
+	<channel-type id="calendarTaskStartType">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Start Time</label>
 		<description>Start time relative to midnight</description>
 		<state pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
-	<channel-type id="calendarTaskDurationType" advanced="false">
+	<channel-type id="calendarTaskDurationType">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration time</description>
 		<state pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
-	<channel-type id="calendarTaskMondayType" advanced="false">
+	<channel-type id="calendarTaskMondayType">
 		<item-type>Switch</item-type>
 		<label>Enabled on Mondays</label>
 		<description>Enabled on Mondays</description>
 	</channel-type>
-	<channel-type id="calendarTaskTuesdayType" advanced="false">
+	<channel-type id="calendarTaskTuesdayType">
 		<item-type>Switch</item-type>
 		<label>Enabled on Tuesdays</label>
 		<description>Enabled on Tuesdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskWednesdayType" advanced="false">
+	<channel-type id="calendarTaskWednesdayType">
 		<item-type>Switch</item-type>
 		<label>Enabled on Wednesdays</label>
 		<description>Enabled on Wednesdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskThursdayType" advanced="false">
+	<channel-type id="calendarTaskThursdayType">
 		<item-type>Switch</item-type>
 		<label>Enabled on Thursdays</label>
 		<description>Enabled on Thursdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskFridayType" advanced="false">
+	<channel-type id="calendarTaskFridayType">
 		<item-type>Switch</item-type>
 		<label>Enabled on Fridays</label>
 		<description>Enabled on Fridays</description>
 	</channel-type>
-	<channel-type id="calendarTaskSaturdayType" advanced="false">
+	<channel-type id="calendarTaskSaturdayType">
 		<item-type>Switch</item-type>
 		<label>Enabled on Saturdays</label>
 		<description>Enabled on Saturdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskSundayType" advanced="false">
+	<channel-type id="calendarTaskSundayType">
 		<item-type>Switch</item-type>
 		<label>Enabled on Sundays</label>
 		<description>Enabled on Sundays</description>
@@ -605,35 +605,35 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="zoneNameType" advanced="false">
+	<channel-type id="zoneNameType">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>The name of the stay-out zone</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="zoneEnabledType" advanced="false">
+	<channel-type id="zoneEnabledType">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>If the stay-out zone is enabled, the Automower® will not access the zone</description>
 	</channel-type>
 
 	<!-- Work Areas -->
-	<channel-type id="workareaNameType" advanced="false">
+	<channel-type id="workareaNameType">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Name of the Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="workareaCuttingHeightType" advanced="false">
+	<channel-type id="workareaCuttingHeightType">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cutting Height</label>
 		<description>Cutting height of the Work Area, range: 0-100</description>
 		<state pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="workareaEnabledType" advanced="false">
+	<channel-type id="workareaEnabledType">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>If the Work Area is enabled or disabled</description>

@@ -38,7 +38,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -60,8 +59,6 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
     public AutomowerWorkAreaHandler(Thing thing) {
         super(thing);
         this.thingId = this.getThing().getUID().getId();
-
-        logger.trace("AutomowerWorkAreaHandler created for thingId {}", this.thingId);
     }
 
     @Override
@@ -134,19 +131,22 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
             logger.warn("No AutomowerBridgeHandler found for thingId {}", this.thingId);
         }
 
+        updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
+
+        scheduler.execute(() -> completeInitAsync());
+    }
+
+    private void completeInitAsync() {
         // Initial poll to create and set the status of the channels
         poll();
-
         updateStatus(ThingStatus.ONLINE);
         logger.trace("AutomowerWorkAreaHandler initialized for thingId {}", this.thingId);
     }
 
     @Nullable
     private AutomowerBridge getAutomowerBridge() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof AutomowerBridgeHandler bridgeHandler) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof AutomowerBridgeHandler bridgeHandler) {
                 return bridgeHandler.getAutomowerBridge();
             }
         }
@@ -155,10 +155,8 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
 
     @Nullable
     private AutomowerBridgeHandler getAutomowerBridgeHandler() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof AutomowerBridgeHandler bridgeHandler) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof AutomowerBridgeHandler bridgeHandler) {
                 return bridgeHandler;
             }
         }
@@ -226,12 +224,10 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
 
         // only show the Tasks of the current WorkArea
         List<CalendarTask> calendarTasksFiltered = new ArrayList<>();
-        Long workAreaId = workArea.getWorkAreaId();
-        if (workAreaId != null) {
-            for (CalendarTask calendarTask : calendarTasks) {
-                if (calendarTask.getWorkAreaId().equals(workAreaId)) {
-                    calendarTasksFiltered.add(calendarTask);
-                }
+        long workAreaId = workArea.getWorkAreaId();
+        for (CalendarTask calendarTask : calendarTasks) {
+            if (calendarTask.getWorkAreaId().equals(workAreaId)) {
+                calendarTasksFiltered.add(calendarTask);
             }
         }
 
