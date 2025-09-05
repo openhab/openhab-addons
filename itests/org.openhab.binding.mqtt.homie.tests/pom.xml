@@ -84,6 +84,17 @@
       <artifactId>netty-transport</artifactId>
       <version>${netty.version}</version>
     </dependency>
+    <!-- new transitive dependency since netty 4.1.124 -->
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.sdk.nativeimage</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.sdk.word</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
