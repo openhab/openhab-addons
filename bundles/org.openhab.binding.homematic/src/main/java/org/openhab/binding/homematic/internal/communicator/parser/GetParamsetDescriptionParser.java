@@ -51,7 +51,6 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void
 
         for (String datapointName : dpNames.keySet()) {
             Map<String, Object> dpMeta = dpNames.get(datapointName);
-            Map<String, Number> specialValues = toSpecialValues(dpMeta.get("SPECIAL"));
 
             HmDatapoint dp = assembleDatapoint(datapointName, toString(dpMeta.get("UNIT")),
                     toString(dpMeta.get("TYPE")), toOptionList(dpMeta.get("VALUE_LIST")), dpMeta.get("MIN"),
@@ -65,7 +64,7 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void
 
     private Map<String, Number> toSpecialValues(Object specialValues) {
         if (specialValues != null && specialValues instanceof Object[] array) {
-            Map<String, Number> result = new HashMap<String, Number>();
+            Map<String, Number> result = new HashMap<>();
             for (int i = 0; i < array.length; i++) {
                 if (array[i] instanceof Map itemMap) {
                     String id = (String) itemMap.get("ID");
