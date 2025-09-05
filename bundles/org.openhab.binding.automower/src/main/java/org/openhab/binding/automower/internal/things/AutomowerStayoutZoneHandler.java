@@ -26,6 +26,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
@@ -83,15 +84,16 @@ public class AutomowerStayoutZoneHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // Adding handler to map of handlers
         AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
         if (automowerBridgeHandler != null) {
+            // Adding handler to map of handlers
             automowerBridgeHandler.registerAutomowerStayoutZoneHandler(this.thingId, this);
+
+            updateStatus(ThingStatus.ONLINE);
+            logger.trace("AutomowerStayoutZoneHandler initialized for thingId {}", this.thingId);
         } else {
-            logger.warn("No AutomowerBridgeHandler found for thingId {}", this.thingId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
         }
-        updateStatus(ThingStatus.ONLINE);
-        logger.trace("AutomowerStayoutZoneHandler initialized for thingId {}", this.thingId);
     }
 
     @Nullable

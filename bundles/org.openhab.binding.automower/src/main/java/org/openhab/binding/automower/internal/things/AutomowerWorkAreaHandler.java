@@ -37,6 +37,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
@@ -130,17 +131,17 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // Adding handler to map of handlers
-        AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
-        if (automowerBridgeHandler != null) {
-            automowerBridgeHandler.registerAutomowerWorkAreaHandler(this.thingId, this);
-        } else {
-            logger.warn("No AutomowerBridgeHandler found for thingId {}", this.thingId);
-        }
-
         updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
 
-        scheduler.execute(() -> completeInitAsync());
+        AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+        if (automowerBridgeHandler != null) {
+            // Adding handler to map of handlers
+            automowerBridgeHandler.registerAutomowerWorkAreaHandler(this.thingId, this);
+
+            scheduler.execute(() -> completeInitAsync());
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+        }
     }
 
     private void completeInitAsync() {
