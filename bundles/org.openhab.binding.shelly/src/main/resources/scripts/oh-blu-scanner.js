@@ -295,7 +295,7 @@ function scanCB(ev, res) {
         console.log('New device found: address=', res.addr, ', name=', res.local_name);
         Shelly.emitEvent("oh-blu.scan_result", {"addr":res.addr, "name":res.local_name, "rssi":res.rssi, "tx_power":res.tx_power_level});
         SHELLY_BLU_CACHE[res.addr] = res.local_name;        
-        found = true
+        found = true;
       }
     }
     if (!found) {
