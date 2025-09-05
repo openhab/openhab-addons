@@ -28,7 +28,7 @@ public interface EvccThingLifecycleAware {
      * 
      * @param state the responded JSON
      */
-    void updateFromEvccState(JsonObject state);
+    void prepareApiResponseForChannelStateUpdate(JsonObject state);
 
     /**
      * This method shall return the to the thing corresponding JSON object

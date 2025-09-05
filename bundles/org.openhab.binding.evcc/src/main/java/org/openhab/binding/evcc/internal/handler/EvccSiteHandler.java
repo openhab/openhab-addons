@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +27,8 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -64,11 +67,11 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         if (state.has("gridConfigured")) {
             modifyJSON(state);
         }
-        super.updateFromEvccState(state);
+        updateStatesFromApiResponse(state);
     }
 
     @Override
@@ -76,7 +79,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL();
-            JsonObject state = handler.getCachedEvccState();
+            JsonObject state = handler.getCachedEvccState().deepCopy();
             if (state.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
@@ -95,8 +98,25 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     }
 
     private void modifyJSON(JsonObject state) {
-        state.add("gridPower", state.getAsJsonObject("grid").get("power"));
+        for (Map.Entry<String, JsonElement> entry : state.getAsJsonObject("grid").entrySet()) {
+            if ("currents".equals(entry.getKey())) {
+                addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Current");
+            } else if ("voltages".equals(entry.getKey())) {
+                addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Voltage");
+            } else {
+                state.add("grid" + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
+            }
+        }
+        state.remove("grid");
         state.remove("gridConfigured");
+    }
+
+    protected void addMeasurementDatapointsToState(JsonObject state, JsonArray values, String datapoint) {
+        int phase = 1;
+        for (JsonElement value : values) {
+            state.add("grid" + datapoint + "L" + phase, value);
+            phase++;
+        }
     }
 
     @Override

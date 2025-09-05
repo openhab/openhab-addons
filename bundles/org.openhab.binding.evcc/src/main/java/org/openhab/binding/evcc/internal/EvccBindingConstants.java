@@ -59,12 +59,23 @@ public class EvccBindingConstants {
     public static final String PROPERTY_TYPE_STATISTICS = "statistics";
     public static final String PROPERTY_TYPE_VEHICLE = "vehicle";
 
-    public static final String JSON_MEMBER_BATTERY = "battery";
-    public static final String JSON_MEMBER_LOADPOINTS = "loadpoints";
-    public static final String JSON_MEMBER_PV = "pv";
-    public static final String JSON_MEMBER_STATISTICS = "statistics";
-    public static final String JSON_MEMBER_VEHICLES = "vehicles";
-    public static final String JSON_MEMBER_CHARGER_FEATURE_HEATING = "chargerFeatureHeating";
+    public static final String JSON_KEY_BATTERY = "battery";
+    public static final String JSON_KEY_LOADPOINTS = "loadpoints";
+    public static final String JSON_KEY_PV = "pv";
+    public static final String JSON_KEY_STATISTICS = "statistics";
+    public static final String JSON_KEY_VEHICLES = "vehicles";
+    public static final String JSON_KEY_CHARGER_FEATURE_HEATING = "chargerFeatureHeating";
+    public static final String JSON_KEY_TITLE = "title";
+    public static final String JSON_KEY_CHARGE_CURRENT = "chargeCurrent";
+    public static final String JSON_KEY_OFFERED_CURRENT = "offeredCurrent";
+    public static final String JSON_KEY_VEHICLE_PRESENT = "vehiclePresent";
+    public static final String JSON_KEY_CONNECTED = "connected";
+    public static final String JSON_KEY_ENABLED = "enabled";
+    public static final String JSON_KEY_CHARGING = "charging";
+    public static final String JSON_KEY_PHASES = "phases";
+    public static final String JSON_KEY_PHASES_CONFIGURED = "phasesConfigured";
+    public static final String JSON_KEY_CHARGE_CURRENTS = "chargeCurrents";
+    public static final String JSON_KEY_CHARGE_VOLTAGES = "chargeVoltages";
 
     public static final String NUMBER_CURRENCY = CoreItemFactory.NUMBER + ":Currency";
     public static final String NUMBER_DIMENSIONLESS = CoreItemFactory.NUMBER + ":Dimensionless";

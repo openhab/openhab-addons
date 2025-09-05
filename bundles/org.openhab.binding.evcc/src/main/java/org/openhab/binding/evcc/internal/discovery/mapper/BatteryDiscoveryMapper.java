@@ -41,14 +41,15 @@ public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonArray batteries = state.getAsJsonArray(JSON_MEMBER_BATTERY);
+        JsonArray batteries = state.getAsJsonArray(JSON_KEY_BATTERY);
         if (batteries == null) {
             return results;
         }
         for (int i = 0; i < batteries.size(); i++) {
             JsonObject battery = batteries.get(i).getAsJsonObject();
-            String title = battery.has("title") ? battery.get("title").getAsString().toLowerCase(Locale.ROOT)
-                    : "battery" + i;
+            String title = battery.has(JSON_KEY_TITLE)
+                    ? battery.get(JSON_KEY_TITLE).getAsString().toLowerCase(Locale.ROOT)
+                    : JSON_KEY_BATTERY + i;
 
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_BATTERY, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(title));
