@@ -4,6 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
+	<!-- heat pump -->
 	<config-description uri="thing-type:stiebeleltron:modbusconfig">
 
 		<parameter name="refresh" type="integer" min="1" unit="s">
@@ -15,9 +16,52 @@
 
 		<parameter name="maxTries" type="integer" min="1">
 			<label>Maximum Tries When Reading</label>
-			<default>3</default>
 			<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			<default>3</default>
 			<advanced>true</advanced>
+		</parameter>
+
+	</config-description>
+
+	<!-- stiebel eltron heat pump v2 -->
+	<config-description uri="thing-type:stiebeleltron:heatpump-v2-config">
+
+		<parameter name="refresh" type="integer" min="1" unit="s">
+			<label>Polling Interval</label>
+			<description>Poll interval in seconds. Use zero to disable automatic polling.</description>
+			<default>5</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+
+		<parameter name="maxTries" type="integer" min="1">
+			<label>Maximum Tries When Reading</label>
+			<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			<default>3</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="allowResetCmds" type="boolean">
+			<label>Enable Reset Commands</label>
+			<description>Flag to enable execution of support reset commands (use with care)</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="heatpumpCount" type="integer" min="0" max="6">
+			<label>Number of heat pumps</label>
+			<description>Number of heat pumps in a WPMsystem or WPM3 based environment.</description>
+			<default>0</default>
+		</parameter>
+
+		<parameter name="wpmControllerId" type="integer">
+			<label>WPM Controller Identifier</label>
+			<description>WPM Controller Identifier (WPM3 = 390; WPM3i = 391; WPMsystem = 449).</description>
+			<default>390</default>
+		</parameter>
+
+		<parameter name="pollSgReady" type="boolean">
+			<label>Poll SG Ready Registers</label>
+			<description>Flag to enable polling of the SG Ready registers.</description>
+			<default>false</default>
 		</parameter>
 
 	</config-description>

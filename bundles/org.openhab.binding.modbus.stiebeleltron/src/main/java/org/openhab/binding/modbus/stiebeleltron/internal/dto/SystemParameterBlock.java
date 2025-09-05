@@ -25,4 +25,12 @@ public class SystemParameterBlock {
     public short ecoTemperatureHeating;
     public short comfortTemperatureWater;
     public short ecoTemperatureWater;
+
+    @Override
+    public String toString() {
+        return "SystemParameterBlock {" + "  operationMode=" + operationMode + ",\n  comfortTemperatureHeating="
+                + comfortTemperatureHeating + ",\n  ecoTemperatureHeating=" + ecoTemperatureHeating
+                + ",\n  comfortTemperatureWater=" + comfortTemperatureWater + ",\n  ecoTemperatureWater="
+                + ecoTemperatureWater + "}\n";
+    }
 }
