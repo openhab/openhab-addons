@@ -28,6 +28,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -362,20 +363,31 @@ public class NetworkUtils {
         switch (method) {
             case IPUTILS_LINUX_PING:
                 proc = new ProcessBuilder("ping", "-w", String.valueOf(timeout.toSeconds()), "-c", "1", hostname)
-                        .start();
+                        .redirectErrorStream(true).start();
                 break;
             case MAC_OS_PING:
                 proc = new ProcessBuilder("ping", "-t", String.valueOf(timeout.toSeconds()), "-c", "1", hostname)
-                        .start();
+                        .redirectErrorStream(true).start();
                 break;
             case WINDOWS_PING:
                 proc = new ProcessBuilder("ping", "-w", String.valueOf(timeout.toMillis()), "-n", "1", hostname)
-                        .start();
+                        .redirectErrorStream(true).start();
                 break;
             case JAVA_PING:
             default:
                 // We cannot estimate the command line for any other operating system and just return null
                 return null;
+        }
+
+        // Consume the output while the process runs
+        List<String> output = new ArrayList<>();
+        try (InputStreamReader isr = new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(isr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                output.add(line);
+                logger.trace("Network [ping output]: '{}'", line);
+            }
         }
 
         // The return code is 0 for a successful ping, 1 if device didn't
@@ -385,28 +397,25 @@ public class NetworkUtils {
         // see https://superuser.com/questions/403905/ping-from-windows-7-get-no-reply-but-sets-errorlevel-to-0
 
         int result = proc.waitFor();
+        Instant execStopTime = Instant.now();
         if (result != 0) {
-            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
+            return new PingResult(false, Duration.between(execStartTime, execStopTime));
         }
 
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
-            String line = r.readLine();
-            if (line == null) {
-                throw new IOException("Received no output from ping process.");
+        if (output.isEmpty()) {
+            throw new IOException("Received no output from ping process.");
+        }
+
+        for (String line : output) {
+            // Because of the Windows issue, we need to check this. We assume that the ping was successful whenever
+            // this specific string is contained in the output
+            if (line.contains("TTL=") || line.contains("ttl=")) {
+                PingResult pingResult = new PingResult(true, Duration.between(execStartTime, execStopTime));
+                pingResult.setResponseTime(latencyParser.parseLatency(line));
+                return pingResult;
             }
-            do {
-                // Because of the Windows issue, we need to check this. We assume that the ping was successful whenever
-                // this specific string is contained in the output
-                if (line.contains("TTL=") || line.contains("ttl=")) {
-                    PingResult pingResult = new PingResult(true, Duration.between(execStartTime, Instant.now()));
-                    pingResult.setResponseTime(latencyParser.parseLatency(line));
-                    return pingResult;
-                }
-                line = r.readLine();
-            } while (line != null);
-
-            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
         }
+        return new PingResult(false, Duration.between(execStartTime, execStopTime));
     }
 
     public enum ArpPingUtilEnum {
@@ -451,34 +460,47 @@ public class NetworkUtils {
         Instant execStartTime = Instant.now();
         Process proc;
         if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
-            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address)
+                    .redirectErrorStream(true).start();
         } else if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING) {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toSeconds()), "-C", "1", "-i",
-                    interfaceName, ipV4address).start();
+                    interfaceName, ipV4address).redirectErrorStream(true).start();
         } else if (arpingTool == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toMillis()), "-x", ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toMillis()), "-x", ipV4address)
+                    .redirectErrorStream(true).start();
         } else {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toSeconds()), "-c", "1", "-I",
-                    interfaceName, ipV4address).start();
+                    interfaceName, ipV4address).redirectErrorStream(true).start();
+        }
+
+        // Consume the output while the process runs
+        List<String> output = new ArrayList<>();
+        try (InputStreamReader isr = new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(isr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                output.add(line);
+                logger.trace("Network [arping output]: '{}'", line);
+            }
         }
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.
         int result = proc.waitFor();
+        Instant execStopTime = Instant.now();
         if (result != 0) {
-            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
+            return new PingResult(false, Duration.between(execStartTime, execStopTime));
         }
 
-        PingResult pingResult = new PingResult(true, Duration.between(execStartTime, Instant.now()));
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
-            String line = r.readLine();
-            while (line != null) {
-                Duration responseTime = latencyParser.parseLatency(line);
+        PingResult pingResult = new PingResult(true, Duration.between(execStartTime, execStopTime));
+        Duration responseTime;
+        for (String line : output) {
+            if (!line.isBlank()) {
+                responseTime = latencyParser.parseLatency(line);
                 if (responseTime != null) {
                     pingResult.setResponseTime(responseTime);
                     return pingResult;
                 }
-                line = r.readLine();
             }
         }
 
