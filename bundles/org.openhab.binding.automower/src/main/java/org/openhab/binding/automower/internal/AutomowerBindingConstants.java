@@ -34,11 +34,9 @@ public class AutomowerBindingConstants {
     private static final String BINDING_ID = "automower";
 
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-
-    // generic thing types
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "automower");
-    public static final ThingTypeUID THING_TYPE_STAYOUTZONE = new ThingTypeUID(BINDING_ID, "stayoutzone");
-    public static final ThingTypeUID THING_TYPE_WORKAREA = new ThingTypeUID(BINDING_ID, "workarea");
+    public static final ThingTypeUID THING_TYPE_STAYOUTZONE = new ThingTypeUID(BINDING_ID, "stay-out-zone");
+    public static final ThingTypeUID THING_TYPE_WORKAREA = new ThingTypeUID(BINDING_ID, "work-area");
 
     // List of all status Channel ids
     public static final String GROUP_STATUS = "status#";
@@ -89,7 +87,7 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATISTIC_UP_TIME = GROUP_STATISTIC + "up-time";
 
     // Calendar Task Channel ids
-    public static final String GROUP_CALENDARTASK = "calendartask#";
+    public static final String GROUP_CALENDARTASK = "calendar-task#";
 
     public static final String CHANNEL_CALENDARTASK_START = "task-start";
     public static final String CHANNEL_CALENDARTASK_DURATION = "task-duration";
@@ -107,18 +105,18 @@ public class AutomowerBindingConstants {
                     CHANNEL_CALENDARTASK_FRIDAY, CHANNEL_CALENDARTASK_SATURDAY, CHANNEL_CALENDARTASK_SUNDAY));
 
     public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_CALENDARTASK = new ArrayList<>(
-            List.of(new ChannelTypeUID(BINDING_ID, "calendarTaskStartType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskDurationType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskMondayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskTuesdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskWednesdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskThursdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskFridayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskSaturdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskSundayType")));
+            List.of(new ChannelTypeUID(BINDING_ID, "calendar-task-start-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-duration-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-monday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-tuesday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-wednesday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-thursday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-friday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-saturday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-sunday-type")));
 
     // Stayout Zones Channel ids
-    public static final String GROUP_STAYOUTZONE = "stayoutzone#";
+    public static final String GROUP_STAYOUTZONE = "stay-out-zone#";
 
     public static final String CHANNEL_STAYOUTZONE_DIRTY = GROUP_STAYOUTZONE + "dirty";
 
@@ -157,24 +155,23 @@ public class AutomowerBindingConstants {
 
     // Channel Types of dynamic channels
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA_ID = new ChannelTypeUID(BINDING_ID,
-            "workAreaIdType");
-    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA = new ChannelTypeUID(BINDING_ID, "workAreaType");
+            "work-area-id-type");
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA = new ChannelTypeUID(BINDING_ID, "work-area-type");
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE = new ChannelTypeUID(BINDING_ID,
-            "errorConfirmableType");
-    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_POSITION = new ChannelTypeUID(BINDING_ID, "positionType");
+            "error-confirmable-type");
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_POSITION = new ChannelTypeUID(BINDING_ID, "position-type");
     public static final ChannelTypeUID CHANNEL_TYPE_SETTING_HEADLIGHT_MODE = new ChannelTypeUID(BINDING_ID,
-            "settingHeadlightModeType");
+            "setting-headlight-mode-type");
 
     public static final ChannelTypeUID CHANNEL_TYPE_STAYOUTZONES_DIRTY = new ChannelTypeUID(BINDING_ID,
-            "zoneDirtyType");
+            "zone-dirty-type");
 
     // Stayout Zone Channel ids
     public static final String CHANNEL_STAYOUTZONE_NAME = "name";
     public static final String CHANNEL_STAYOUTZONE_ENABLED = "enabled";
 
     // Work Area Channel ids
-
-    public static final String GROUP_WORKAREA = "workarea#";
+    public static final String GROUP_WORKAREA = "work-area#";
 
     public static final String CHANNEL_WORKAREA_NAME = GROUP_WORKAREA + "name";
     public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = GROUP_WORKAREA + "cutting-height";

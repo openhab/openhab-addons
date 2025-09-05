@@ -9,16 +9,16 @@ This binding allows you to integrate, view and control Husqvarna Automower® law
 
 `automower:` A single Husqvarna Automower® robot
 
-`workarea:` A single Husqvarna Automower® work-area and the related schedule which is configured for a Husqvarna Automower®
+`work-area:` A single Husqvarna Automower® work-area and the related schedule which is configured for a Husqvarna Automower®
 
-`stayoutzone:` A single stayout-zone which is configured for a Husqvarna Automower®
+`stay-out-zone:` A single stay-out zone which is configured for a Husqvarna Automower®
 
 All Husqvarna Automower® models with "Automower® Connect" should be supported. It was tested with a Husqvarna Automower® 430X, 450X and 430X NERA.
 
 ## Discovery
 
 Once the bridge is created and configured, openHAB will automatically discover all Automower® robots registered on your account.
-If supported by your mower, work-areas and stayout-zones, configured via your Automower® App, will be discovered as well.
+If supported by your mower, work-areas and stay-out zones, configured via your Automower® App, will be discovered as well.
 
 ## Thing Configuration
 
@@ -40,11 +40,11 @@ In addition to periodic polling, the binding also receives event-triggered notif
 
 - mowerZoneId (optional): Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone of the system
 
-`workarea:`
+`work-area:`
 
  - none
 
-`stayoutzone:`
+`stay-out-zone:`
 
 - none
 
@@ -118,17 +118,17 @@ These channels hold the different Calendar Task configurations in case the Autom
 
 | channel                                                       | type        | access mode | description                                   | advanced |
 |---------------------------------------------------------------|-------------|-------------|-----------------------------------------------|----------|
-| calendartask#\<x\>-task-start                                 | Number:Time | R/W         | Start time relative to midnight               | false    |
-| calendartask#\<x\>-task-duration                              | Number:Time | R/W         | Duration time                                 | false    |
-| calendartask#\<x\>-task-monday                                | Switch      | R/W         | Enabled on Mondays                            | false    |
-| calendartask#\<x\>-task-tuesday                               | Switch      | R/W         | Enabled on Tuesdays                           | false    |
-| calendartask#\<x\>-task-wednesday                             | Switch      | R/W         | Enabled on Wednesdays                         | false    |
-| calendartask#\<x\>-task-thursday                              | Switch      | R/W         | Enabled on Thursdays                          | false    |
-| calendartask#\<x\>-task-friday                                | Switch      | R/W         | Enabled on Fridays                            | false    |
-| calendartask#\<x\>-task-saturday                              | Switch      | R/W         | Enabled on Saturdays                          | false    |
-| calendartask#\<x\>-task-sunday                                | Switch      | R/W         | Enabled on Sundays                            | false    |
+| calendar-task#\<x\>-task-start                                 | Number:Time | R/W         | Start time relative to midnight               | false    |
+| calendar-task#\<x\>-task-duration                              | Number:Time | R/W         | Duration time                                 | false    |
+| calendar-task#\<x\>-task-monday                                | Switch      | R/W         | Enabled on Mondays                            | false    |
+| calendar-task#\<x\>-task-tuesday                               | Switch      | R/W         | Enabled on Tuesdays                           | false    |
+| calendar-task#\<x\>-task-wednesday                             | Switch      | R/W         | Enabled on Wednesdays                         | false    |
+| calendar-task#\<x\>-task-thursday                              | Switch      | R/W         | Enabled on Thursdays                          | false    |
+| calendar-task#\<x\>-task-friday                                | Switch      | R/W         | Enabled on Fridays                            | false    |
+| calendar-task#\<x\>-task-saturday                              | Switch      | R/W         | Enabled on Saturdays                          | false    |
+| calendar-task#\<x\>-task-sunday                                | Switch      | R/W         | Enabled on Sundays                            | false    |
 
-\<x\> ... 01-#calendartasks
+\<x\> ... 01-#calendar-tasks
 
 #### Stayout Zones Channels
 
@@ -136,9 +136,9 @@ Channels that are relevant for all Stayout Zones of this Automower®.
 
 | channel                                      | type   | access mode | description                                                                                                                        | advanced |
 |----------------------------------------------|--------|-------------|------------------------------------------------------------------------------------------------------------------------------------|----------|
-| stayoutzone#dirty<sup id="a1">[1](#f1)</sup> | Switch | R           | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true     |
+| stay-out-zone#dirty<sup id="a1">[1](#f1)</sup> | Switch | R           | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true     |
 
-### `workarea` Channels
+### `work-area` Channels
 
 #### Work Area Channels
 
@@ -158,19 +158,19 @@ These channels hold the different Calendar Task configurations which belong to t
 
 | channel                                                       | type        | access mode | description                                   | advanced |
 |---------------------------------------------------------------|-------------|-------------|-----------------------------------------------|----------|
-| calendartask#\<x\>-task-start                                 | Number:Time | R/W         | Start time relative to midnight               | false    |
-| calendartask#\<x\>-task-duration                              | Number:Time | R/W         | Duration time                                 | false    |
-| calendartask#\<x\>-task-monday                                | Switch      | R/W         | Enabled on Mondays                            | false    |
-| calendartask#\<x\>-task-tuesday                               | Switch      | R/W         | Enabled on Tuesdays                           | false    |
-| calendartask#\<x\>-task-wednesday                             | Switch      | R/W         | Enabled on Wednesdays                         | false    |
-| calendartask#\<x\>-task-thursday                              | Switch      | R/W         | Enabled on Thursdays                          | false    |
-| calendartask#\<x\>-task-friday                                | Switch      | R/W         | Enabled on Fridays                            | false    |
-| calendartask#\<x\>-task-saturday                              | Switch      | R/W         | Enabled on Saturdays                          | false    |
-| calendartask#\<x\>-task-sunday                                | Switch      | R/W         | Enabled on Sundays                            | false    |
+| calendar-task#\<x\>-task-start                                 | Number:Time | R/W         | Start time relative to midnight               | false    |
+| calendar-task#\<x\>-task-duration                              | Number:Time | R/W         | Duration time                                 | false    |
+| calendar-task#\<x\>-task-monday                                | Switch      | R/W         | Enabled on Mondays                            | false    |
+| calendar-task#\<x\>-task-tuesday                               | Switch      | R/W         | Enabled on Tuesdays                           | false    |
+| calendar-task#\<x\>-task-wednesday                             | Switch      | R/W         | Enabled on Wednesdays                         | false    |
+| calendar-task#\<x\>-task-thursday                              | Switch      | R/W         | Enabled on Thursdays                          | false    |
+| calendar-task#\<x\>-task-friday                                | Switch      | R/W         | Enabled on Fridays                            | false    |
+| calendar-task#\<x\>-task-saturday                              | Switch      | R/W         | Enabled on Saturdays                          | false    |
+| calendar-task#\<x\>-task-sunday                                | Switch      | R/W         | Enabled on Sundays                            | false    |
 
-\<x\> ... 01-#calendartasks
+\<x\> ... 01-#calendar-tasks
 
-### `stayoutzone` Channels
+### `stay-out-zone` Channels
 
 These channels hold the different Stayout Zone configurations.
 
@@ -232,9 +232,9 @@ The following actions are available for `automower` things:
 
 ```java
 Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", appSecret="<your_private_application_secret>", pollingInterval=300 ] {
-    Thing automower   12345678-1234-12ab-1234-123456abcdef   [ ] // 1234... is an example of the mowerId recieved via discovery
-    Thing workarea    12345678-1234-12ab-1234-123456abcdef-0 [ ] // mowerId followed by the areaId received via discovery (0 := main area)
-    Thing stayoutzone 87654321-4321-ba21-4321-fedcba654321   [ ] // 8765... is an example of the zoneId recieved via discovery
+    Thing automower     12345678-1234-12ab-1234-123456abcdef   [ ] // 1234... is an example of the mowerId recieved via discovery
+    Thing work-area     12345678-1234-12ab-1234-123456abcdef-0 [ ] // mowerId followed by the areaId received via discovery (0 := main area)
+    Thing stay-out-zone 87654321-4321-ba21-4321-fedcba654321   [ ] // 8765... is an example of the zoneId recieved via discovery
 }
 ```
 
