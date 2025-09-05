@@ -30,6 +30,5 @@ public abstract class _1BSMessage extends EEP {
     }
 
     public _1BSMessage() {
-        super();
     }
 }

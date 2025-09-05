@@ -46,7 +46,6 @@ public class Pitmaster {
      * @param pm
      */
     public Pitmaster(List<String> type, List<Pm> pm) {
-        super();
         this.type = type;
         this.pm = pm;
     }

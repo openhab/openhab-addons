@@ -22,7 +22,6 @@ public class CommandTypeNotSupportedException extends Exception {
     private static final long serialVersionUID = -7970958467980752003L;
 
     public CommandTypeNotSupportedException() {
-        super();
     }
 
     public CommandTypeNotSupportedException(String message) {

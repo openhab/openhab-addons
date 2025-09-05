@@ -31,13 +31,11 @@ public class ClusterCommand {
      * @param options
      */
     public ClusterCommand(String commandName, Map<String, Object> args) {
-        super();
         this.commandName = commandName;
         this.args = args;
     }
 
     public ClusterCommand(String commandName) {
-        super();
         this.commandName = commandName;
         this.args = Collections.emptyMap();
     }

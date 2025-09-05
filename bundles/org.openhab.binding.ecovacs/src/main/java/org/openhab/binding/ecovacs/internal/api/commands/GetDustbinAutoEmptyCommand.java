@@ -27,7 +27,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetDustbinAutoEmptyCommand extends IotDeviceCommand<Boolean> {
     public GetDustbinAutoEmptyCommand() {
-        super();
     }
 
     @Override

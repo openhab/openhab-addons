@@ -38,7 +38,6 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
     private Thread readerThread;
 
     public RFXComJD2XXConnector(String readerThreadName) {
-        super();
         this.readerThreadName = readerThreadName;
     }
 
