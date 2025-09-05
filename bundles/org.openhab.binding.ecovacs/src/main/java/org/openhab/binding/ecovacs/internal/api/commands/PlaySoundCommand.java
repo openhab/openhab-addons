@@ -68,12 +68,10 @@ public class PlaySoundCommand extends AbstractNoResponseCommand {
     private final int soundId;
 
     public PlaySoundCommand(SoundType type) {
-        super();
         this.soundId = type.id;
     }
 
     public PlaySoundCommand(int soundId) {
-        super();
         this.soundId = soundId;
     }
 

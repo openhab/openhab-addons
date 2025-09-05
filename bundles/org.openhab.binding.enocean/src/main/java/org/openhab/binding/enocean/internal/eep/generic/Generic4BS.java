@@ -23,7 +23,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 public class Generic4BS extends GenericEEP {
 
     public Generic4BS() {
-        super();
     }
 
     public Generic4BS(ERP1Message packet) {

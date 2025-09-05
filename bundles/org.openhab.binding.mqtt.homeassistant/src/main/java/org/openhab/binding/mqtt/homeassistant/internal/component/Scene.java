@@ -52,7 +52,6 @@ public class Scene extends AbstractComponent<Scene.Configuration> {
     // A value that can provide a proper CommandDescription with values and labels
     class SceneValue extends TextValue {
         SceneValue() {
-            super();
         }
 
         @Override

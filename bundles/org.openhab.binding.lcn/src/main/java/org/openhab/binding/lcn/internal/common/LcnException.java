@@ -24,7 +24,6 @@ public class LcnException extends Exception {
     private static final long serialVersionUID = -4341882774124288028L;
 
     public LcnException() {
-        super();
     }
 
     public LcnException(String message) {

@@ -23,7 +23,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 public class GenericVLD extends GenericEEP {
 
     public GenericVLD() {
-        super();
     }
 
     public GenericVLD(ERP1Message packet) {

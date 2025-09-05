@@ -59,7 +59,6 @@ public class System {
      * @param time
      */
     public System(String time, String unit, Integer soc, Boolean charge, Integer rssi, Integer online) {
-        super();
         this.time = time;
         this.unit = unit;
         this.soc = soc;

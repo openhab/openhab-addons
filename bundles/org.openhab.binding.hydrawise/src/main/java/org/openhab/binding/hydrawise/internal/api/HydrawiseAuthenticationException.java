@@ -25,7 +25,6 @@ public class HydrawiseAuthenticationException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public HydrawiseAuthenticationException() {
-        super();
     }
 
     public HydrawiseAuthenticationException(@Nullable String message) {

@@ -27,7 +27,6 @@ public class SignIn {
     private String password;
 
     public SignIn(String apiKey, String email, String password) {
-        super();
         this.apiKey = apiKey;
         this.email = email;
         this.password = password;

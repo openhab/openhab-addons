@@ -31,7 +31,6 @@ public abstract class AbstractNoResponseCommand extends IotDeviceCommand<Abstrac
     }
 
     protected AbstractNoResponseCommand() {
-        super();
     }
 
     @Override

@@ -25,7 +25,6 @@ public class NotificationNotFoundException extends LaMetricTimeException {
     private static final long serialVersionUID = 1L;
 
     public NotificationNotFoundException() {
-        super();
     }
 
     public NotificationNotFoundException(String message, Throwable cause, boolean enableSuppression,
