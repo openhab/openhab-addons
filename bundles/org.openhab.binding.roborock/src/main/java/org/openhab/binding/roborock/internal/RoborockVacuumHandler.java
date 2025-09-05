@@ -273,8 +273,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         } else {
             delayUntilNextPoll = initialDelaySeconds;
         }
-        logger.debug("{}: Scheduling next poll in {}s, refresh interval {}min", config.duid,
-                delayUntilNextPoll, config.refresh);
+        logger.debug("{}: Scheduling next poll in {}s, refresh interval {}min", config.duid, delayUntilNextPoll,
+                config.refresh);
         pollTask.cancel();
         pollTask.schedule(delayUntilNextPoll);
     }
