@@ -15,16 +15,20 @@ package org.openhab.binding.network.internal.discovery;
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
 
+import java.io.IOException;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,16 +38,17 @@ import org.openhab.binding.network.internal.PresenceDetectionListener;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.net.CidrAddress;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,31 +75,16 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
     /* All access must be guarded by "this" */
     private @Nullable ExecutorService executorService;
-    private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
     private final NetworkUtils networkUtils = new NetworkUtils();
+    private final @Nullable ConfigurationAdmin admin;
 
-    public NetworkDiscoveryService() {
+    @Activate
+    public NetworkDiscoveryService(@Reference @Nullable ConfigurationAdmin admin) {
         super(SUPPORTED_THING_TYPES_UIDS,
                 (int) Math.round(new NetworkUtils().getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE).size()
                         * (durationToMillis(PING_TIMEOUT) / 1000.0)),
                 false);
-    }
-
-    @Override
-    @Activate
-    public void activate(@Nullable Map<String, Object> config) {
-        super.activate(config);
-        modified(config);
-    }
-
-    @Override
-    @Modified
-    protected void modified(@Nullable Map<String, Object> config) {
-        super.modified(config);
-        // We update instead of replace the configuration object, so that if the user updates the
-        // configuration, the values are automatically available in all handlers. Because they all
-        // share the same instance.
-        configuration.update(new Configuration(config).as(NetworkBindingConfiguration.class));
+        this.admin = admin;
     }
 
     @Override
@@ -126,20 +116,23 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     public void finalDetectionResult(PresenceDetectionValue value) {
     }
 
-    private ExecutorService createDiscoveryExecutor() {
-        int cores = Runtime.getRuntime().availableProcessors();
+    private ExecutorService createDiscoveryExecutor(@Nullable NetworkBindingConfiguration configuration) {
         AtomicInteger count = new AtomicInteger(1);
-
-        return new ThreadPoolExecutor(cores * 2, // core pool size
-                cores * 8, // max pool size for bursts
-                60L, TimeUnit.SECONDS, // keep-alive for idle threads
-                new LinkedBlockingQueue<>(cores * 50), // bounded queue
-                r -> {
-                    Thread t = new Thread(r, "OH-binding-network-discoveryWorker-" + count.getAndIncrement());
-                    t.setDaemon(true);
-                    return t;
-                }, new ThreadPoolExecutor.CallerRunsPolicy() // backpressure when saturated
-        );
+        int numThreads = configuration == null ? NetworkBindingConfiguration.DEFAULT_DISCOVERY_THREADS
+                : configuration.numberOfDiscoveryThreads;
+        if (numThreads > 0) {
+            return Executors.newFixedThreadPool(numThreads, r -> {
+                Thread t = new Thread(r, "OH-binding-network-discoveryWorker-" + count.getAndIncrement());
+                t.setDaemon(true);
+                return t;
+            });
+        } else {
+            return Executors.newCachedThreadPool(r -> {
+                Thread t = new Thread(r, "OH-binding-network-discoveryWorker-" + count.getAndIncrement());
+                t.setDaemon(true);
+                return t;
+            });
+        }
     }
 
     /**
@@ -147,10 +140,11 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
      */
     @Override
     protected void startScan() {
+        NetworkBindingConfiguration configuration = getConfig();
         final ExecutorService service;
         synchronized (this) {
             if (executorService == null) {
-                executorService = createDiscoveryExecutor();
+                executorService = createDiscoveryExecutor(configuration);
             }
             service = executorService;
         }
@@ -186,7 +180,12 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
                     pd.setTimeout(PING_TIMEOUT);
                     // Ping devices
                     pd.setIcmpPingMethod(pingMethod);
-                    pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
+                    if (configuration == null) {
+                        pd.setUseArpPing(true, NetworkBindingConfiguration.DEFAULT_ARPING_TOOL_PATH,
+                                NetworkBindingConfiguration.DEFAULT_ARPING_METHOD);
+                    } else {
+                        pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
+                    }
                     // TCP devices
                     pd.setServicePorts(tcpServicePorts);
                     pd.getValue((v) -> {
@@ -285,5 +284,27 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(DISCOVERY_RESULT_TTL)
                     .withProperty(PARAMETER_HOSTNAME, ip).withLabel("Network Device (" + ip + ")").build());
         }, "OH-binding-network-discoveryPingCourier").start();
+    }
+
+    private @Nullable NetworkBindingConfiguration getConfig() {
+        ConfigurationAdmin admin = this.admin;
+        if (admin == null) {
+            return null;
+        }
+        try {
+            Configuration configOnline = admin.getConfiguration(BINDING_CONFIGURATION_PID, null);
+            if (configOnline != null) {
+                Dictionary<String, Object> props = configOnline.getProperties();
+                if (props != null) {
+                    Map<String, Object> propMap = Collections.list(props.keys()).stream()
+                            .collect(Collectors.toMap(Function.identity(), props::get));
+                    return new org.openhab.core.config.core.Configuration(propMap)
+                            .as(NetworkBindingConfiguration.class);
+                }
+            }
+        } catch (IOException e) {
+            logger.warn("Unable to read configuration: {}", e.getMessage());
+        }
+        return null;
     }
 }

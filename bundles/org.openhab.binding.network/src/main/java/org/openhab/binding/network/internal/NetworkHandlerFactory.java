@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.network.internal;
 
+import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
+
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -41,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.network")
+@Component(service = ThingHandlerFactory.class, configurationPid = BINDING_CONFIGURATION_PID)
 public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
     private static final String NETWORK_HANDLER_THREADPOOL_NAME = "networkBinding";
@@ -51,7 +53,7 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return NetworkBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     // The activate component call is used to access the bindings configuration
@@ -80,12 +82,11 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(NetworkBindingConstants.PING_DEVICE)
-                || thingTypeUID.equals(NetworkBindingConstants.BACKWARDS_COMPATIBLE_DEVICE)) {
+        if (thingTypeUID.equals(PING_DEVICE) || thingTypeUID.equals(BACKWARDS_COMPATIBLE_DEVICE)) {
             return new NetworkHandler(thing, executor, false, configuration);
-        } else if (thingTypeUID.equals(NetworkBindingConstants.SERVICE_DEVICE)) {
+        } else if (thingTypeUID.equals(SERVICE_DEVICE)) {
             return new NetworkHandler(thing, executor, true, configuration);
-        } else if (thingTypeUID.equals(NetworkBindingConstants.SPEEDTEST_DEVICE)) {
+        } else if (thingTypeUID.equals(SPEEDTEST_DEVICE)) {
             return new SpeedTestHandler(thing);
         }
         return null;

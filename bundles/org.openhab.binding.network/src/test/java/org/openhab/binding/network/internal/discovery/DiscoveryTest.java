@@ -58,7 +58,7 @@ public class DiscoveryTest {
 
     @Test
     public void pingDeviceDetected() throws InterruptedException {
-        NetworkDiscoveryService d = new NetworkDiscoveryService();
+        NetworkDiscoveryService d = new NetworkDiscoveryService(null);
         d.addDiscoveryListener(listener);
 
         ArgumentCaptor<DiscoveryResult> result = ArgumentCaptor.forClass(DiscoveryResult.class);
@@ -76,7 +76,7 @@ public class DiscoveryTest {
 
     @Test
     public void tcpDeviceDetected() throws InterruptedException {
-        NetworkDiscoveryService d = new NetworkDiscoveryService();
+        NetworkDiscoveryService d = new NetworkDiscoveryService(null);
         d.addDiscoveryListener(listener);
 
         ArgumentCaptor<DiscoveryResult> result = ArgumentCaptor.forClass(DiscoveryResult.class);
