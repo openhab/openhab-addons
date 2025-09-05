@@ -68,9 +68,9 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void
             for (int i = 0; i < array.length; i++) {
                 if (array[i] instanceof Map itemMap) {
                     String id = (String) itemMap.get("ID");
-                    Number value = (Number) itemMap.get("VALUE");
-                    if (id != null && value != null) {
-                        result.put(id, value);
+                    Object value = itemMap.get("VALUE");
+                    if (id != null && value instanceof Number number) {
+                        result.put(id, number);
                     }
                 }
             }
