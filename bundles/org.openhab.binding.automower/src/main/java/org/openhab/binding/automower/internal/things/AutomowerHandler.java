@@ -56,6 +56,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Stay
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.WorkArea;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -836,27 +837,30 @@ public class AutomowerHandler extends BaseThingHandler {
         List<Channel> channelRemove = new ArrayList<>();
 
         if (capabilities.hasWorkAreas()) {
-            createChannel(CHANNEL_STATUS_WORK_AREA_ID, CHANNEL_TYPE_STATUS_WORK_AREA_ID, "Number", channelAdd, thing);
-            createChannel(CHANNEL_STATUS_WORK_AREA, CHANNEL_TYPE_STATUS_WORK_AREA, "String", channelAdd, thing);
+            createChannel(CHANNEL_STATUS_WORK_AREA_ID, CHANNEL_TYPE_STATUS_WORK_AREA_ID, CoreItemFactory.NUMBER,
+                    channelAdd, thing);
+            createChannel(CHANNEL_STATUS_WORK_AREA, CHANNEL_TYPE_STATUS_WORK_AREA, CoreItemFactory.STRING, channelAdd,
+                    thing);
         } else {
             removeChannel(CHANNEL_STATUS_WORK_AREA_ID, channelRemove, thing);
             removeChannel(CHANNEL_STATUS_WORK_AREA, channelRemove, thing);
         }
         if (capabilities.canConfirmError()) {
-            createChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE, CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE, "Switch", channelAdd,
-                    thing);
+            createChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE, CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE,
+                    CoreItemFactory.SWITCH, channelAdd, thing);
         } else {
             removeChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE, channelRemove, thing);
         }
         if (capabilities.hasPosition()) {
-            createChannel(CHANNEL_STATUS_POSITION, CHANNEL_TYPE_STATUS_POSITION, "Location", channelAdd, thing);
+            createChannel(CHANNEL_STATUS_POSITION, CHANNEL_TYPE_STATUS_POSITION, CoreItemFactory.LOCATION, channelAdd,
+                    thing);
         } else {
             removeChannel(CHANNEL_STATUS_POSITION, channelRemove, thing);
         }
 
         if (capabilities.hasHeadlights()) {
-            createChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE, "String", channelAdd,
-                    thing);
+            createChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE, CoreItemFactory.STRING,
+                    channelAdd, thing);
         } else {
             removeChannel(CHANNEL_SETTING_HEADLIGHT_MODE, channelRemove, thing);
         }
@@ -870,19 +874,19 @@ public class AutomowerHandler extends BaseThingHandler {
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
                         CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time", channelAdd, thing);
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
             }
             // remove all consecutive channels that are no longer required
             for (int j = 0; j < CHANNEL_CALENDARTASK.size(); j++) {
@@ -893,7 +897,8 @@ public class AutomowerHandler extends BaseThingHandler {
 
         i = 0;
         if (capabilities.hasStayOutZones()) {
-            createChannel(CHANNEL_STAYOUTZONE_DIRTY, CHANNEL_TYPE_STAYOUTZONES_DIRTY, "Switch", channelAdd, thing);
+            createChannel(CHANNEL_STAYOUTZONE_DIRTY, CHANNEL_TYPE_STAYOUTZONES_DIRTY, CoreItemFactory.SWITCH,
+                    channelAdd, thing);
         } else {
             removeChannel(CHANNEL_STAYOUTZONE_DIRTY, channelRemove, thing);
         }

@@ -25,6 +25,7 @@ import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.CalendarTask;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.WorkArea;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -195,19 +196,19 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
             AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
                     CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time", channelAdd, thing);
             AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
             AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
             AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
             AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
             AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
             AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
             AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", channelAdd, thing);
+                    CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
         }
         // remove all consecutive channels that are no longer required
         for (int j = 0; j < CHANNEL_CALENDARTASK.size(); j++) {
