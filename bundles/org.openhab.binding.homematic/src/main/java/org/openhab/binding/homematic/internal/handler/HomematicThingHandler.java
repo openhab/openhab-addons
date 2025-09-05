@@ -447,6 +447,16 @@ public class HomematicThingHandler extends BaseThingHandler {
             if (minValid && maxValid) {
                 return dp.getValue();
             }
+
+            Map<String, Number> specialValues = dp.getSpecialValues();
+            if (specialValues != null) {
+                Number value = dp.isFloatType() ? dp.getDoubleValue() : dp.getIntegerValue();
+                for (Number special : specialValues.values()) {
+                    if (value.equals(special)) {
+                        return dp.getValue();
+                    }
+                }
+            }
             logger.warn("Value for datapoint {} is outside of valid range, using default value for config.", dp);
             return dp.getDefaultValue();
         }
