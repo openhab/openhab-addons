@@ -40,6 +40,10 @@
 		</channel-groups>
 
 		<config-description>
+			<parameter name="duid" type="text" required="true">
+				<label>Device ID</label>
+				<description>Specifies the vacuum's Device UID.</description>
+			</parameter>
 			<parameter name="refresh" type="integer" unit="min" min="1" required="false">
 				<label>Refresh Interval</label>
 				<advanced>true</advanced>

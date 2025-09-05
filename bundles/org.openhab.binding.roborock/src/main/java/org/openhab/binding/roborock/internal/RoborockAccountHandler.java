@@ -83,7 +83,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final RoborockWebTargets webTargets;
     private @Nullable MqttClient mqttClient;
     private String token = "";
-    private String baseUri = GET_URL_BY_EMAIL_URI;
+    private String baseUri = "";
     private Rriot rriot = new Login().new Rriot();
     private final SecureRandom secureRandom = new SecureRandom();
     private String mqttUser = "";
@@ -117,11 +117,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Nullable
     public Home refreshHome() {
+        logger.info("refreshHome");
         try {
+            logger.info("refreshHome2, baseuri = {}, token = {}", baseUri, token);
             return webTargets.getHomeDetail(baseUri, token);
         } catch (RoborockException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
-            return new Home();
+            return null;
         }
     }
 
@@ -132,8 +134,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Nullable
     public HomeData refreshHomeData() {
+        logger.info("refreshHomeData");
         try {
             Home home = homeCache.getValue();
+            if (home == null) {
+                return new HomeData();
+            }
+            logger.info("refreshHomeData2");
             return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
         } catch (RoborockException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
