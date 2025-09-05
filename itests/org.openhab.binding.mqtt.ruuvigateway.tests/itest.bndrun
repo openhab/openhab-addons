@@ -119,6 +119,4 @@ Import-Package: \
 	jakarta.inject.jakarta.inject-api;version='[1.0.5,1.0.6)',\
 	org.openhab.core.semantics;version='[5.1.0,5.1.1)',\
 	jakarta.ws.rs-api;version='[2.1.6,2.1.7)',\
-	org.graalvm.sdk.nativeimage;version='[24.2.1,24.2.2)',\
-	org.graalvm.sdk.word;version='[24.2.1,24.2.2)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)'
