@@ -85,28 +85,30 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         String areaId = this.thingId.substring(lastDash + 1);
         logger.trace("Handling command {} for channel {} of mowerId {} and areaId {}", command, channelUID, mowerId,
                 areaId);
-        AutomowerHandler handler = automowerBridgeHandler.getAutomowerHandlerByMowerId(mowerId);
-        if (handler == null || areaId == null) {
+        AutomowerHandler mowerHandler = automowerBridgeHandler.getAutomowerHandlerByMowerId(mowerId);
+        if (mowerHandler == null) {
             logger.warn("No AutomowerHandler found for mowerId {}", mowerId);
             return;
         }
         String groupId = channelUID.getGroupId();
         String channelId = channelUID.getIdWithoutGroup();
-        if (groupId == null || channelId == null) {
+        if (groupId == null) {
             logger.warn("Invalid channelUID format: {}", channelUID);
             return;
         }
 
         /* all pre-conditions met ... */
-        if (GROUP_CALENDARTASK.startsWith(groupId)) {
+        if (RefreshType.REFRESH == command) {
+            mowerHandler.updateAutomowerState(); // refresh current state from cache
+        } else if (GROUP_CALENDARTASK.startsWith(groupId)) {
             String[] channelIDSplit = channelId.split("-", 2);
             int index = Integer.parseInt(channelIDSplit[0]) - 1;
             String param = channelIDSplit[1];
-            handler.sendAutomowerCalendarTask(command, index, areaId, param);
+            mowerHandler.sendAutomowerCalendarTask(command, index, areaId, param);
         } else if (GROUP_WORKAREA.startsWith(groupId)) {
             if (CHANNEL_WORKAREA_ENABLED.equals(channelUID.getId())) {
                 if (command instanceof OnOffType cmd) {
-                    handler.sendAutomowerWorkAreaEnable(areaId, cmd == OnOffType.ON);
+                    mowerHandler.sendAutomowerWorkAreaEnable(areaId, cmd == OnOffType.ON);
                 } else {
                     logger.warn("Command {} not supported for channel {}", command, channelUID);
                 }
@@ -114,12 +116,12 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
                 if (command instanceof QuantityType cmd) {
                     cmd = cmd.toUnit("%");
                     if (cmd != null) {
-                        handler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
+                        mowerHandler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
                     } else {
                         logger.warn("Command {} not supported for channel {}", command, channelUID);
                     }
                 } else if (command instanceof DecimalType cmd) {
-                    handler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
+                    mowerHandler.sendAutomowerWorkAreaCuttingHeight(areaId, cmd.byteValue());
                 } else {
                     logger.warn("Command {} not supported for channel {}", command, channelUID);
                 }

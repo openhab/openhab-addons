@@ -117,69 +117,77 @@ public class AutomowerHandler extends BaseThingHandler {
 
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
-        // REFRESH is not implemented as it would causes >100 channel updates in a row during setup (performance, API
-        // rate limit)
-        if (RefreshType.REFRESH != command) {
-            String groupId = channelUID.getGroupId();
-            String channelId = channelUID.getIdWithoutGroup();
-            if (groupId != null) {
-                if (GROUP_CALENDARTASK.startsWith(groupId)) {
-                    String[] channelIDSplit = channelId.split("-", 2);
-                    int index = Integer.parseInt(channelIDSplit[0]) - 1;
-                    String param = channelIDSplit[1];
-                    sendAutomowerCalendarTask(command, index, null, param);
-                } else if (GROUP_SETTING.startsWith(groupId)) {
-                    if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)) {
-                        if (command instanceof DecimalType cmd) {
-                            sendAutomowerSettingsCuttingHeight(cmd.byteValue());
-                        }
-                    } else if (channelUID.getId().equals(CHANNEL_SETTING_HEADLIGHT_MODE)) {
-                        if (command instanceof StringType cmd) {
-                            sendAutomowerSettingsHeadlightMode(cmd.toString());
-                        }
-                    }
-                } else if (GROUP_STATUS.startsWith(groupId)) {
-                    if (channelUID.getId().equals(CHANNEL_STATUS_ERROR_CODE)) {
-                        if (command instanceof DecimalType cmd) {
-                            if (cmd.equals(new DecimalType(0))) {
-                                sendAutomowerConfirmError();
-                            }
-                        }
-                    } else if (channelUID.getId().equals(CHANNEL_STATUS_POLL_UPDATE)) {
-                        if (command instanceof OnOffType cmd) {
-                            if (cmd == OnOffType.ON) {
-                                poll();
-                                updateState(CHANNEL_STATUS_POLL_UPDATE, OnOffType.OFF);
-                            }
-                        }
-                    }
-                } else if (GROUP_STATISTIC.startsWith(groupId)) {
-                    if (channelUID.getId().equals(CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME)) {
-                        if (command instanceof DecimalType cmd) {
-                            if (cmd.equals(new DecimalType(0))) {
-                                sendAutomowerResetCuttingBladeUsageTime();
-                            }
-                        } else if (command instanceof QuantityType cmd) {
-                            if (cmd.intValue() == 0) {
-                                sendAutomowerResetCuttingBladeUsageTime();
-                            }
-                        }
-                    }
-                } else if (GROUP_COMMAND.startsWith(groupId)) {
-                    AutomowerCommand.fromChannelUID(channelUID).ifPresent(commandName -> {
-                        logger.debug("Sending command '{}'", commandName);
-                        getCommandValue(command).ifPresentOrElse(param -> {
-                            if (commandName == AutomowerCommand.START_IN_WORK_AREA) {
-                                sendAutomowerCommand(commandName, param, null);
-                            } else {
-                                sendAutomowerCommand(commandName, param);
-                            }
-                        }, () -> sendAutomowerCommand(commandName));
+        String groupId = channelUID.getGroupId();
+        String channelId = channelUID.getIdWithoutGroup();
+        if (groupId == null || channelId == null) {
+            logger.warn("Invalid channelUID format: {}", channelUID);
+            return;
+        }
 
-                        updateState(channelUID, OnOffType.OFF);
-                    });
+        /* all pre-conditions met ... */
+        if (RefreshType.REFRESH == command) {
+            if (GROUP_MESSAGE.startsWith(groupId)) {
+                updateAutomowerMessages(); // refresh current state from cache
+            } else {
+                updateAutomowerState(); // refresh current state from cache
+            }
+        } else if (GROUP_CALENDARTASK.startsWith(groupId)) {
+            String[] channelIDSplit = channelId.split("-", 2);
+            int index = Integer.parseInt(channelIDSplit[0]) - 1;
+            String param = channelIDSplit[1];
+            sendAutomowerCalendarTask(command, index, null, param);
+        } else if (GROUP_SETTING.startsWith(groupId)) {
+            if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)) {
+                if (command instanceof DecimalType cmd) {
+                    sendAutomowerSettingsCuttingHeight(cmd.byteValue());
+                }
+            } else if (channelUID.getId().equals(CHANNEL_SETTING_HEADLIGHT_MODE)) {
+                if (command instanceof StringType cmd) {
+                    sendAutomowerSettingsHeadlightMode(cmd.toString());
                 }
             }
+        } else if (GROUP_STATUS.startsWith(groupId)) {
+            if (channelUID.getId().equals(CHANNEL_STATUS_ERROR_CODE)) {
+                if (command instanceof DecimalType cmd) {
+                    if (cmd.equals(new DecimalType(0))) {
+                        sendAutomowerConfirmError();
+                    }
+                }
+            } else if (channelUID.getId().equals(CHANNEL_STATUS_POLL_UPDATE)) {
+                if (command instanceof OnOffType cmd) {
+                    if (cmd == OnOffType.ON) {
+                        poll();
+                        updateState(CHANNEL_STATUS_POLL_UPDATE, OnOffType.OFF);
+                    }
+                }
+            }
+        } else if (GROUP_STATISTIC.startsWith(groupId)) {
+            if (channelUID.getId().equals(CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME)) {
+                if (command instanceof DecimalType cmd) {
+                    if (cmd.equals(new DecimalType(0))) {
+                        sendAutomowerResetCuttingBladeUsageTime();
+                    }
+                } else if (command instanceof QuantityType cmd) {
+                    if (cmd.intValue() == 0) {
+                        sendAutomowerResetCuttingBladeUsageTime();
+                    }
+                }
+            }
+        } else if (GROUP_COMMAND.startsWith(groupId)) {
+            AutomowerCommand.fromChannelUID(channelUID).ifPresent(commandName -> {
+                logger.debug("Sending command '{}'", commandName);
+                getCommandValue(command).ifPresentOrElse(param -> {
+                    if (commandName == AutomowerCommand.START_IN_WORK_AREA) {
+                        sendAutomowerCommand(commandName, param, null);
+                    } else {
+                        sendAutomowerCommand(commandName, param);
+                    }
+                }, () -> sendAutomowerCommand(commandName));
+
+                updateState(channelUID, OnOffType.OFF);
+            });
+        } else {
+            logger.warn("Command {} not supported for channel {}", command, channelUID);
         }
     }
 
@@ -312,10 +320,17 @@ public class AutomowerHandler extends BaseThingHandler {
         updateAutomowerState(mower);
     }
 
-    private void updateAutomowerState() {
+    public void updateAutomowerState() {
         Mower mower = this.mowerState;
         if (mower != null) {
             updateAutomowerState(mower);
+        }
+    }
+
+    private void updateAutomowerMessages() {
+        MowerMessages mowerMessages = this.mowerMessages;
+        if (mowerMessages != null) {
+            updateMessagesChannelState(mowerMessages);
         }
     }
 

@@ -53,12 +53,6 @@ public class AutomowerStayoutZoneHandler extends BaseThingHandler {
 
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH == command) {
-            // REFRESH is not implemented as it would causes >100 channel updates in a row during setup (performance,
-            // API
-            // rate limit)
-            return;
-        }
         AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
         if (automowerBridgeHandler == null) {
             logger.warn("No AutomowerBridgeHandler found for zoneId {}", this.thingId);
@@ -71,7 +65,9 @@ public class AutomowerStayoutZoneHandler extends BaseThingHandler {
         }
 
         /* all pre-conditions met ... */
-        if (CHANNEL_STAYOUTZONE_ENABLED.equals(channelUID.getIdWithoutGroup())) {
+        if (RefreshType.REFRESH == command) {
+            mowerHandler.updateAutomowerState(); // refresh current state from cache
+        } else if (CHANNEL_STAYOUTZONE_ENABLED.equals(channelUID.getIdWithoutGroup())) {
             if (command instanceof OnOffType cmd) {
                 mowerHandler.sendAutomowerStayOutZone(this.thingId, cmd == OnOffType.ON);
             } else {
