@@ -140,7 +140,6 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
     private void completeInitAsync() {
         // Initial poll to create and set the status of the channels
         poll();
-        updateStatus(ThingStatus.ONLINE);
         logger.trace("AutomowerWorkAreaHandler initialized for thingId {}", this.thingId);
     }
 
@@ -221,6 +220,8 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
     }
 
     public void updateChannels(WorkArea workArea, List<CalendarTask> calendarTasks, AutomowerHandler mowerHandler) {
+        updateStatus(ThingStatus.ONLINE);
+
         updateWorkAreaChannels(workArea, mowerHandler);
 
         // only show the Tasks of the current WorkArea
