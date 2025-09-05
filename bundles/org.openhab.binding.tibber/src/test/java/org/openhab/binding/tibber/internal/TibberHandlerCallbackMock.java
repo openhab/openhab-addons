@@ -49,6 +49,7 @@ import org.openhab.core.types.TimeSeries;
  */
 @NonNullByDefault
 public class TibberHandlerCallbackMock implements ThingHandlerCallback {
+    private static final int STATUS_WAIT_TIME = 10;
     ThingStatusInfo thingStatusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
 
     @Override
@@ -72,7 +73,7 @@ public class TibberHandlerCallbackMock implements ThingHandlerCallback {
     }
 
     public void waitFor(ThingStatus status) {
-        Instant stopWait = Instant.now().plus(10, ChronoUnit.SECONDS);
+        Instant stopWait = Instant.now().plus(STATUS_WAIT_TIME, ChronoUnit.SECONDS);
         synchronized (this) {
             while (!thingStatusInfo.getStatus().equals(status) && Instant.now().isBefore(stopWait)) {
                 try {
@@ -83,7 +84,7 @@ public class TibberHandlerCallbackMock implements ThingHandlerCallback {
             }
         }
         if (!thingStatusInfo.getStatus().equals(status)) {
-            fail("Thing status " + status + " not reached within 10 seconds");
+            fail("Thing status " + status + " not reached within " + STATUS_WAIT_TIME + " seconds");
         }
     }
 
