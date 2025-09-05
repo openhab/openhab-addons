@@ -19,7 +19,6 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.jmdns.ServiceInfo;
 
@@ -69,13 +68,6 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private final HttpClient httpClient;
     private final ConfigurationAdmin configurationAdmin;
 
-    public static final Pattern SHELLY_SERVICE_NAME_PATTERN = Pattern
-            .compile("^([a-z0-9]*shelly[a-z0-9]*)-([a-z0-9]+)$", Pattern.CASE_INSENSITIVE);
-
-    public static boolean isValidShellyServiceName(String serviceName) {
-        return SHELLY_SERVICE_NAME_PATTERN.matcher(serviceName).matches();
-    }
-
     @Activate
     public ShellyMDNSDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
             @Reference HttpClientFactory httpClientFactory, @Reference LocaleProvider localeProvider,
@@ -112,7 +104,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     public @Nullable DiscoveryResult createResult(final ServiceInfo service) {
         String serviceName = service.getName().toLowerCase(); // Shelly Duo: Name starts with "Shelly" rather than
                                                               // "shelly"
-        if (!isValidShellyServiceName(serviceName)) {
+        if (!ShellyThingCreator.isValidShellyServiceName(serviceName)) {
             return null;
         }
 
@@ -157,7 +149,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         if (serviceName == null) {
             return null;
         }
-        if (!isValidShellyServiceName(serviceName)) {
+        if (!ShellyThingCreator.isValidShellyServiceName(serviceName)) {
             logger.debug("{} is not a valid Shelly service name", serviceName);
             return null;
         }
