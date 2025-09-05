@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.pythonscripting.internal.fs.watch;
+package org.openhab.automation.pythonscripting.internal.fs;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.automation.pythonscripting.internal.PythonScriptEngineFactory;
+import org.openhab.automation.pythonscripting.internal.PythonScriptEngineConfiguration;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptDependencyTracker;
 import org.openhab.core.service.WatchService;
@@ -35,7 +35,7 @@ public class PythonDependencyTracker extends AbstractScriptDependencyTracker {
 
     @Activate
     public PythonDependencyTracker(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
-        super(watchService, PythonScriptEngineFactory.PYTHON_LIB_PATH.toString());
+        super(watchService, PythonScriptEngineConfiguration.PYTHON_LIB_PATH.toString());
     }
 
     @Deactivate
