@@ -411,7 +411,7 @@ public class NetworkUtils {
             // this specific string is contained in the output
             if (line.contains("TTL=") || line.contains("ttl=")) {
                 PingResult pingResult = new PingResult(true, Duration.between(execStartTime, execStopTime));
-                pingResult.setResponseTime(latencyParser.parseLatency(line));
+                pingResult.setResponseTime(latencyParser.parseLatency(line, null));
                 return pingResult;
             }
         }
@@ -496,7 +496,7 @@ public class NetworkUtils {
         Duration responseTime;
         for (String line : output) {
             if (!line.isBlank()) {
-                responseTime = latencyParser.parseLatency(line);
+                responseTime = latencyParser.parseLatency(line, arpingTool);
                 if (responseTime != null) {
                     pingResult.setResponseTime(responseTime);
                     return pingResult;
