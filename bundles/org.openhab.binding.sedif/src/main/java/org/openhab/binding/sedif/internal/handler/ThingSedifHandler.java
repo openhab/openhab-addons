@@ -273,10 +273,10 @@ public class ThingSedifHandler extends BaseThingHandler {
         boolean hasData = true;
         boolean hasAlreadyRetrieveData = false;
 
-        while (hasData && currentDate.isAfter(lastUpdateDate)) {
+        while ((hasData || !hasAlreadyRetrieveData) && currentDate.isAfter(lastUpdateDate)) {
             LocalDate startDate = currentDate.minusDays(periodLength - 1);
-
             try {
+                logger.info("Retrieve data from {} to {}:", startDate, currentDate);
                 MeterReading meterReading = updateConsumptionData(startDate, currentDate, true);
                 if (meterReading != null) {
                     newLastUpdateDate = meterReading.data.consommation[meterReading.data.consommation.length
