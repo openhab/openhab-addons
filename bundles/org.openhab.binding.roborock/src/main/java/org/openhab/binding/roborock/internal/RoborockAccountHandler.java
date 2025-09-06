@@ -118,7 +118,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     @Nullable
     public Home refreshHome() {
         try {
-            logger.info("refreshHome2, baseuri = {}, token = {}", baseUri, token);
             return webTargets.getHomeDetail(baseUri, token);
         } catch (RoborockException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
@@ -197,7 +196,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         if (childHandler instanceof RoborockVacuumHandler vacuumHandler) {
             childDevices.put(childThing.getUID().getId(), vacuumHandler);
         } else {
-            logger.warn("Initialized child handler is not a RoborockVacuumHandler: {}",
+            logger.debug("Initialized child handler is not a RoborockVacuumHandler: {}",
                     childHandler.getClass().getName());
         }
     }
@@ -311,9 +310,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             connOpts.setConnectionTimeout(60);
             connOpts.setKeepAliveInterval(0);
 
-            logger.debug("Connecting to MQTT broker at {}", serverURI);
             mqttClient.connect(connOpts);
-            logger.debug("Established MQTT connection.");
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.comm-error.mqtt-url-bad");
@@ -334,7 +331,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
             String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
             mqttClient.subscribe(topic, 0);
-            logger.debug("Subscribed to topic {}", topic);
             updateStatus(ThingStatus.ONLINE);
         } catch (MqttException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -344,7 +340,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void connectionLost(@Nullable Throwable cause) {
-        logger.warn("MQTT connection lost: {}. Automatic reconnect is enabled.", cause.getMessage());
         // Additional logic can be placed here if specific actions are needed on disconnect
     }
 
@@ -352,7 +347,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     public void messageArrived(@Nullable String topic, @Nullable MqttMessage message) throws Exception {
         byte[] payload = message.getPayload();
         if (payload == null || payload.length == 0) {
-            logger.debug("Empty payload received on topic {}", topic);
             return;
         }
 
@@ -370,7 +364,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void deliveryComplete(@Nullable IMqttDeliveryToken token) {
-        logger.trace("MQTT message delivery complete.");
     }
 
     public void disconnectMqttClient() {
@@ -380,7 +373,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     mqttClient.disconnect();
                 }
                 mqttClient.close();
-                logger.debug("MQTT client disconnected and closed.");
             } catch (MqttException e) {
                 logger.error("Error while disconnecting MQTT client.", e);
             }

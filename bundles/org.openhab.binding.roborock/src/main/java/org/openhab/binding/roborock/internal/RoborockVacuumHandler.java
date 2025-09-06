@@ -318,7 +318,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("Bridge status changed to {}", bridgeStatusInfo);
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             initTask.submit();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
@@ -353,7 +352,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void pollData() {
-        logger.debug("Running pollData for: {}", config.duid);
         HomeData homeData = bridgeHandler.getHomeData();
         if (homeData != null && homeData.result != null) {
             homeRooms = homeData.result.rooms;
@@ -413,11 +411,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void handleMessage(byte[] payload) {
-        logger.debug("Received MQTT message for: {}", config.duid);
         try {
             String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
             if (response.isEmpty()) {
-                logger.debug("MQTT message processed - invalid message format received");
                 return;
             }
 
@@ -444,7 +440,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         return;
                     }
 
-                    logger.debug("Received {} response for ID {}, parsing it.", methodName, messageId);
                     switch (methodName) {
                         case "getStatus":
                             handleGetStatus(jsonString);
@@ -517,13 +512,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
         } catch (JsonSyntaxException e) {
             // Occasionally get non-JSON returned from the Roborock MQTT server
-            logger.debug("Invalid JSON response", e);
         }
-        logger.trace("Finished processing MQTT message.");
     }
 
     private void handleGetStatus(String response) {
-        logger.trace("handleGetStatus - response {}", response);
         JsonObject statusResponse = JsonParser.parseString(response).getAsJsonObject().getAsJsonArray("result").get(0)
                 .getAsJsonObject();
         GetStatus getStatus;
@@ -638,7 +630,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetConsumables(String response) {
-        logger.trace("handleGetConsumable - response {}", response);
         GetConsumables getConsumables = gson.fromJson(response, GetConsumables.class);
         if (getConsumables != null) {
             int mainBrush = getConsumables.result[0].mainBrushWorkTime;
@@ -665,7 +656,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetRoomMapping(String response) {
-        logger.trace("getRoomMapping response = {}", response);
         for (RobotCapabilities cmd : FEATURES_CHANNELS) {
             if (COMMAND_GET_ROOM_MAPPING.equals(cmd.getCommand())) {
                 JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
@@ -696,7 +686,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetNetworkInfo(String response) {
-        logger.trace("handleGetNetworkInfo - response {}", response);
         GetNetworkInfo getNetworkInfo = gson.fromJson(response, GetNetworkInfo.class);
         if (getNetworkInfo != null && getNetworkInfo.result != null) {
             updateState(CHANNEL_SSID, new StringType(getNetworkInfo.result.ssid));
@@ -709,7 +698,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCleanRecord(String response) {
-        logger.trace("handleGetCleanRecord, response = {}", response);
         if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray()
                 && JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray().size() > 0
                 && JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0)
@@ -794,9 +782,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCleanSummary(String response) {
-        logger.trace("handleGetCleanSummary, response = {}", response);
         if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray()) {
-            logger.debug("old clean summary format");
             JsonArray historyData = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
             updateState(CHANNEL_HISTORY_TOTALTIME,
                     new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), Units.MINUTE));
@@ -842,7 +828,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetDndTimer(String response) {
-        logger.trace("handleGetDndTimer, response = {}", response);
         GetDndTimer getDndTimer = gson.fromJson(response, GetDndTimer.class);
         if (getDndTimer != null) {
             updateState(CHANNEL_DND_FUNCTION, new DecimalType(getDndTimer.result[0].enabled));
@@ -854,7 +839,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetSegmentStatus(String response) {
-        logger.trace("handleGetSegmentStatus, response = {}", response);
         if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray() && JsonParser
                 .parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
             JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result")
@@ -867,7 +851,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetMapStatus(String response) {
-        logger.trace("handleGetMapStatus, response = {}", response);
         if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray() && JsonParser
                 .parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
             JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result")
@@ -885,7 +868,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetLedStatus(String response) {
-        logger.trace("handleGetLedStatus, response = {}", response);
         if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray() && JsonParser
                 .parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
             JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result")
@@ -903,7 +885,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCarpetMode(String response) {
-        logger.trace("handleGetCarpetMode, response = {}", response);
         try {
             JsonArray getCarpetMode = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
             updateState(RobotCapabilities.CARPET_MODE.getChannel(),
@@ -915,20 +896,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetFwFeatures(String response) {
-        logger.trace("handleGetFwFeatures, response = {}", response);
         JsonArray getFwFeatures = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
         updateState(RobotCapabilities.FW_FEATURES.getChannel(), new StringType(getFwFeatures.toString()));
     }
 
     private void handleGetMultiMapsList(String response) {
-        logger.trace("handleGetMultiMapsList, response = {}", response);
         JsonArray getMultiMapsList = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
         updateState(RobotCapabilities.MULTI_MAP_LIST.getChannel(),
                 new StringType(getMultiMapsList.get(0).getAsJsonObject().toString()));
     }
 
     private void handleGetCustomizeCleanMode(String response) {
-        logger.trace("handleGetCustomizeCleanMode, response = {}", response);
         if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray()) {
             JsonArray getCustomizeCleanMode = JsonParser.parseString(response).getAsJsonObject().get("result")
                     .getAsJsonArray();

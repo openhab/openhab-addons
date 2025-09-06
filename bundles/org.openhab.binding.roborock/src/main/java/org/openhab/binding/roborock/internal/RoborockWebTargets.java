@@ -165,8 +165,6 @@ public class RoborockWebTargets {
     @Nullable
     public String doLogin(String baseUri, String email, String password) throws RoborockException {
         if (safeToken.isEmpty()) {
-            logger.warn(
-                    "Safe token is empty during doLogin. This might indicate getUrlByEmail was not called or failed.");
             safeToken = generateSafeToken(email); // Generate if somehow missed
         }
 
@@ -272,7 +270,9 @@ public class RoborockWebTargets {
                 jsonResponse = response.getContentAsString();
 
                 if (!jsonResponse.isEmpty()) {
-                    logger.trace("JSON response: '{}'", jsonResponse);
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("JSON response: '{}'", jsonResponse);
+                    }
                 }
 
                 if (status == HttpStatus.UNAUTHORIZED_401) {

@@ -179,7 +179,6 @@ public final class ProtocolUtils {
         CRC32 crc32 = new CRC32();
         crc32.update(message, 0, message.length - CRC_LENGTH);
         if (crc32.getValue() != (expectedCrc32 & 0xFFFFFFFFL)) {
-            LOGGER.debug("CRC32 mismatch. Calculated: {}, Expected: {}", crc32.getValue(), expectedCrc32);
             return false;
         }
         return true;
@@ -212,17 +211,11 @@ public final class ProtocolUtils {
         int payloadStart = HEADER_LENGTH_WITHOUT_CRC;
         int payloadEnd = payloadStart + header.payloadLen;
 
-        if (payloadEnd > message.length - CRC_LENGTH) { // Payload should not extend into CRC area
-            LOGGER.warn("Payload length ({}) exceeds message bounds for protocol 102. Message length: {}",
-                    header.payloadLen, message.length);
+        if (payloadEnd > message.length - CRC_LENGTH) {
             return "";
         }
 
         byte[] payload = Arrays.copyOfRange(message, payloadStart, payloadEnd);
-
-        LOGGER.trace(
-                "Parsed message version: {}, sequence: {}, random: {}, timestamp: {}, protocol: {}, payloadLen: {}",
-                header.version, header.sequence, header.random, header.timestamp, header.protocol, header.payloadLen);
 
         String encryptionKey = encodeTimestamp(header.timestamp) + localKey + SALT;
         try {
@@ -246,15 +239,12 @@ public final class ProtocolUtils {
      */
     public static String handleMessage(byte[] message, String localKey, byte[] nonce) {
         if (message.length < HEADER_LENGTH_WITHOUT_CRC + CRC_LENGTH) {
-            LOGGER.warn("Invalid message length received. Minimum required: {}",
-                    HEADER_LENGTH_WITHOUT_CRC + CRC_LENGTH);
             return "";
         }
 
         MessageHeader header = parseMessageHeader(message);
         if (!VERSION_1_0.equals(header.version)) {
             LOGGER.debug("Received message version is not 1.0: {}", header.version);
-            // Depending on protocol evolution, this might require a different handling path
             return "";
         }
 
