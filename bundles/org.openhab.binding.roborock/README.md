@@ -67,7 +67,6 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Number  | status#mop-drying-time            | Mop drying Time            |
 | Switch  | status#is-mop-drying              | Mop cleaning active        |
 | Number  | status#dock-state-id              | Dock status id             |
-| String  | status#dock-state                 | Dock status message        |
 
 There are several advanced channels, which may be useful in rules (e.g. for individual room cleaning etc)
 In case your vacuum does not support one of these commands, it will show "unsupported_method" for string channels or no value for numeric channels.

@@ -40,7 +40,6 @@ import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.HomeData.Devices;
 import org.openhab.binding.roborock.internal.api.HomeData.Rooms;
 import org.openhab.binding.roborock.internal.api.enums.ConsumablesType;
-import org.openhab.binding.roborock.internal.api.enums.DockStatusType;
 import org.openhab.binding.roborock.internal.api.enums.FanModeType;
 import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
 import org.openhab.binding.roborock.internal.api.enums.StatusType;
@@ -501,8 +500,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             .getAsJsonObject();
                     if (dpsJsonObject.has("121")) {
                         int stateInt = dpsJsonObject.get("121").getAsInt();
-                        StatusType state = StatusType.getType(stateInt);
-                        updateState(CHANNEL_STATE, new StringType(state.getDescription()));
                         updateState(CHANNEL_STATE_ID, new DecimalType(stateInt));
                     } else if (dpsJsonObject.has("122")) {
                         int battery = dpsJsonObject.get("122").getAsInt();
@@ -540,13 +537,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_ERROR_ID, new DecimalType(getStatus.result[0].errorCode));
             updateState(CHANNEL_IN_CLEANING, OnOffType.from(1 == getStatus.result[0].inCleaning));
             updateState(CHANNEL_MAP_PRESENT, OnOffType.from(1 == getStatus.result[0].mapPresent));
-
-            // handle vacuum state
-            StatusType state = StatusType.getType(getStatus.result[0].state);
-            updateState(CHANNEL_STATE, new StringType(state.getDescription()));
             updateState(CHANNEL_STATE_ID, new DecimalType(getStatus.result[0].state));
 
             State vacuum = OnOffType.OFF;
+            StatusType state = StatusType.getType(getStatus.result[0].state);
             String control;
             switch (state) {
                 case ZONE:
@@ -583,9 +577,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_VACUUM, vacuum);
 
             if (this.deviceCapabilities.containsKey(RobotCapabilities.DOCK_STATE_ID)) {
-                DockStatusType dockState = DockStatusType.getType(getStatus.result[0].dockErrorStatus);
-                updateState(CHANNEL_DOCK_STATE, new StringType(dockState.getDescription()));
-                updateState(CHANNEL_DOCK_STATE_ID, new DecimalType(dockState.getId()));
+                updateState(CHANNEL_DOCK_STATE_ID, new DecimalType(getStatus.result[0].dockErrorStatus));
             }
 
             if (deviceCapabilities.containsKey(RobotCapabilities.WATERBOX_MODE)) {

@@ -79,7 +79,6 @@
 			<channel id="in-cleaning" typeId="in-cleaning"/>
 			<channel id="dnd-enabled" typeId="dnd-enabled"/>
 			<channel id="map-present" typeId="map-present"/>
-			<channel id="state" typeId="state"/>
 			<channel id="state-id" typeId="state-id"/>
 			<channel id="segment-status" typeId="segment-status"/>
 			<channel id="map-status" typeId="map-status"/>
@@ -242,7 +241,53 @@
 			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="0">Unknown</option>
+				<option value="1">Initiating</option>
+				<option value="2">Sleeping</option>
+				<option value="3">Idle</option>
+				<option value="4">Remote Control</option>
+				<option value="5">Cleaning</option>
+				<option value="6">Returning Dock</option>
+				<option value="7">Manual Mode</option>
+				<option value="8">Charging</option>
+				<option value="9">Charging Error</option>
+				<option value="10">Paused</option>
+				<option value="11">Spot cleaning</option>
+				<option value="12">In Error</option>
+				<option value="13">Shutting Down</option>
+				<option value="14">Updating</option>
+				<option value="15">Docking</option>
+				<option value="16">Go To</option>
+				<option value="17">Zone Clean</option>
+				<option value="18">Room Clean</option>
+				<option value="22">Emptying the bin</option>
+				<option value="23">Washing the mop</option>
+				<option value="25">Washing the mop</option>
+				<option value="26">Going to wash the mop</option>
+				<option value="28">In call</option>
+				<option value="29">Mapping</option>
+				<option value="30">Egg attack</option>
+				<option value="32">Patrol</option>
+				<option value="33">Attaching the mop</option>
+				<option value="34">Detaching the mop</option>
+				<option value="100">Full</option>
+				<option value="101">Device Offline</option>
+				<option value="103">Locked</option>
+				<option value="202">Air drying stopping</option>
+				<option value="6301">Robot status mopping</option>
+				<option value="6302">Clean mop cleaning</option>
+				<option value="6303">Clean mop mopping</option>
+				<option value="6304">Segment mopping</option>
+				<option value="6305">Segment clean mop cleaning</option>
+				<option value="6306">Segment clean mop mopping</option>
+				<option value="6307">Zoned mopping</option>
+				<option value="6308">Zoned clean mop cleaning</option>
+				<option value="6309">Zoned clean mop mopping</option>
+				<option value="6310">Back to dock washing duster</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="segment-status" advanced="true">
 		<item-type>Switch</item-type>
@@ -352,15 +397,6 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dock-state">
-		<item-type>String</item-type>
-		<label>Dock State</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="dock-state-id">
 		<item-type>Number</item-type>
 		<label>Dock State ID</label>
@@ -368,7 +404,18 @@
 			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="0">OK</option>
+				<option value="34">Suction Error</option>
+				<option value="38">Error fresh water tank</option>
+				<option value="39">Error dirty water tank</option>
+				<option value="42">Maintenance brush jammed</option>
+				<option value="44">Dirty tank latch open</option>
+				<option value="46">Missing dust container/dust bag</option>
+				<option value="53">Cleaning tank full or blocked</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="mop-drying-time">
 		<item-type>Number:Time</item-type>

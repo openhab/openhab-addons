@@ -71,9 +71,7 @@ public class RoborockBindingConstants {
     public static final String CHANNEL_FAN_POWER = "status#fan-power";
     public static final String CHANNEL_IN_CLEANING = "status#in-cleaning";
     public static final String CHANNEL_MAP_PRESENT = "status#map-present";
-    public static final String CHANNEL_STATE = "status#state";
     public static final String CHANNEL_STATE_ID = "status#state-id";
-    public static final String CHANNEL_DOCK_STATE = "status#dock-state";
     public static final String CHANNEL_DOCK_STATE_ID = "status#dock-state-id";
     public static final String CHANNEL_MOP_DRYING = "status#is-mop-drying";
     public static final String CHANNEL_MOP_TOTAL_DRYTIME = "status#mop-drying-time";
