@@ -71,7 +71,7 @@ public class NetworkHandlerTest extends JavaTest {
     @Test
     public void checkAllConfigurations() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
-        NetworkHandler handler = spy(new NetworkHandler(thing, true, config));
+        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, true, config));
         handler.setCallback(callback);
         // Provide all possible configuration
         when(thing.getConfiguration()).thenAnswer(a -> {
@@ -79,28 +79,23 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_RETRY, 10);
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
             conf.put(NetworkBindingConstants.PARAMETER_PORT, 8080);
-            conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, 101010);
             conf.put(NetworkBindingConstants.PARAMETER_TIMEOUT, 1234);
             return conf;
         });
         PresenceDetection presenceDetection = spy(
-                new PresenceDetection(handler, scheduledExecutorService, Duration.ofSeconds(2)));
-        // Mock start/stop automatic refresh
-        doNothing().when(presenceDetection).startAutomaticRefresh();
-        doNothing().when(presenceDetection).stopAutomaticRefresh();
+                new PresenceDetection(handler, Duration.ofSeconds(2), scheduledExecutorService));
 
         handler.initialize(presenceDetection);
         assertThat(handler.retries, is(10));
         assertThat(presenceDetection.getHostname(), is("127.0.0.1"));
         assertThat(presenceDetection.getServicePorts().iterator().next(), is(8080));
-        assertThat(presenceDetection.getRefreshInterval(), is(Duration.ofMillis(101010)));
         assertThat(presenceDetection.getTimeout(), is(Duration.ofMillis(1234)));
     }
 
     @Test
     public void tcpDeviceInitTests() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
-        NetworkHandler handler = spy(new NetworkHandler(thing, true, config));
+        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, true, config));
         assertThat(handler.isTCPServiceDevice(), is(true));
         handler.setCallback(callback);
         // Port is missing, should make the device OFFLINE
@@ -109,7 +104,7 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
             return conf;
         });
-        handler.initialize(new PresenceDetection(handler, scheduledExecutorService, Duration.ofSeconds(2)));
+        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), scheduledExecutorService));
         // Check that we are offline
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
@@ -120,19 +115,17 @@ public class NetworkHandlerTest extends JavaTest {
     @Test
     public void pingDeviceInitTests() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
-        NetworkHandler handler = spy(new NetworkHandler(thing, false, config));
+        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, false, config));
         handler.setCallback(callback);
         // Provide minimal configuration
         when(thing.getConfiguration()).thenAnswer(a -> {
             Configuration conf = new Configuration();
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
+            conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, 0); // disable auto refresh
             return conf;
         });
         PresenceDetection presenceDetection = spy(
-                new PresenceDetection(handler, scheduledExecutorService, Duration.ofSeconds(2)));
-        // Mock start/stop automatic refresh
-        doNothing().when(presenceDetection).startAutomaticRefresh();
-        doNothing().when(presenceDetection).stopAutomaticRefresh();
+                new PresenceDetection(handler, Duration.ofSeconds(2), scheduledExecutorService));
         doReturn(Instant.now()).when(presenceDetection).getLastSeen();
 
         handler.initialize(presenceDetection);

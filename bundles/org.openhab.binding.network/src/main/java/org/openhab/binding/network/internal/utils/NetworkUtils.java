@@ -28,13 +28,16 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -151,7 +154,7 @@ public class NetworkUtils {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface networkInterface = en.nextElement();
-                if (!networkInterface.isLoopback()) {
+                if (networkInterface.isUp() && !networkInterface.isLoopback()) {
                     result.add(networkInterface.getName());
                 }
             }
@@ -173,13 +176,48 @@ public class NetworkUtils {
     }
 
     /**
+     * Retrieves a map of network interface names to their associated IP addresses.
+     *
+     * @return A map where the key is the name of the network interface and the value is a set of CidrAddress objects
+     *         representing the IP addresses and network prefix lengths for that interface.
+     */
+    public Map<String, Set<CidrAddress>> getNetworkIPsPerInterface() {
+        Map<String, Set<CidrAddress>> outputMap = new HashMap<>();
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface networkInterface = en.nextElement();
+                if (!networkInterface.isUp() || networkInterface.isLoopback()) {
+                    logger.trace("Network interface: {} is excluded in the search", networkInterface.getName());
+                    continue;
+                }
+
+                Set<CidrAddress> addresses = networkInterface.getInterfaceAddresses().stream()
+                        .map(m -> new CidrAddress(m.getAddress(), m.getNetworkPrefixLength()))
+                        .filter(cidr -> !cidr.getAddress().isLoopbackAddress()) // (127.x.x.x, ::1)
+                        .filter(cidr -> !cidr.getAddress().isLinkLocalAddress())// (169.254.x.x or fe80::/10)
+                        .collect(Collectors.toSet());
+
+                if (!addresses.isEmpty()) {
+                    logger.trace("Network interface: {} is included in the search", networkInterface.getName());
+                    outputMap.put(networkInterface.getName(), addresses);
+                } else {
+                    logger.trace("Network interface: {} has no usable addresses", networkInterface.getName());
+                }
+            }
+        } catch (SocketException e) {
+            logger.trace("Could not get network interfaces", e);
+        }
+        return outputMap;
+    }
+
+    /**
      * Takes the interfaceIPs and fetches every IP which can be assigned on their network
      *
      * @param interfaceIPs The IPs which are assigned to the Network Interfaces
      * @param maximumPerInterface The maximum of IP addresses per interface or 0 to get all.
      * @return Every single IP which can be assigned on the Networks the computer is connected to
      */
-    private Set<String> getNetworkIPs(Set<CidrAddress> interfaceIPs, int maximumPerInterface) {
+    public Set<String> getNetworkIPs(Set<CidrAddress> interfaceIPs, int maximumPerInterface) {
         Set<String> networkIPs = new LinkedHashSet<>();
 
         short minCidrPrefixLength = 8; // historic Class A network, addresses = 16777214
@@ -232,7 +270,7 @@ public class NetworkUtils {
             socket.connect(new InetSocketAddress(host, port), (int) timeout.toMillis());
             success = true;
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException e) {
-            logger.trace("Could not connect to {}:{}", host, port, e);
+            logger.trace("Could not connect to {}:{} {}", host, port, e.getMessage());
         }
         return new PingResult(success, Duration.between(execStartTime, Instant.now()));
     }
@@ -268,7 +306,7 @@ public class NetworkUtils {
         } catch (IOException e) {
             logger.trace("Native ping to 127.0.0.1 failed", e);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Reset interrupt flag
+            Thread.currentThread().interrupt();
         }
         return IpPingMethodEnum.JAVA_PING;
     }
@@ -325,20 +363,31 @@ public class NetworkUtils {
         switch (method) {
             case IPUTILS_LINUX_PING:
                 proc = new ProcessBuilder("ping", "-w", String.valueOf(timeout.toSeconds()), "-c", "1", hostname)
-                        .start();
+                        .redirectErrorStream(true).start();
                 break;
             case MAC_OS_PING:
                 proc = new ProcessBuilder("ping", "-t", String.valueOf(timeout.toSeconds()), "-c", "1", hostname)
-                        .start();
+                        .redirectErrorStream(true).start();
                 break;
             case WINDOWS_PING:
                 proc = new ProcessBuilder("ping", "-w", String.valueOf(timeout.toMillis()), "-n", "1", hostname)
-                        .start();
+                        .redirectErrorStream(true).start();
                 break;
             case JAVA_PING:
             default:
                 // We cannot estimate the command line for any other operating system and just return null
                 return null;
+        }
+
+        // Consume the output while the process runs
+        List<String> output = new ArrayList<>();
+        try (InputStreamReader isr = new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(isr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                output.add(line);
+                logger.trace("Network [ping output]: '{}'", line);
+            }
         }
 
         // The return code is 0 for a successful ping, 1 if device didn't
@@ -348,28 +397,25 @@ public class NetworkUtils {
         // see https://superuser.com/questions/403905/ping-from-windows-7-get-no-reply-but-sets-errorlevel-to-0
 
         int result = proc.waitFor();
+        Instant execStopTime = Instant.now();
         if (result != 0) {
-            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
+            return new PingResult(false, Duration.between(execStartTime, execStopTime));
         }
 
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
-            String line = r.readLine();
-            if (line == null) {
-                throw new IOException("Received no output from ping process.");
+        if (output.isEmpty()) {
+            throw new IOException("Received no output from ping process.");
+        }
+
+        for (String line : output) {
+            // Because of the Windows issue, we need to check this. We assume that the ping was successful whenever
+            // this specific string is contained in the output
+            if (line.contains("TTL=") || line.contains("ttl=")) {
+                PingResult pingResult = new PingResult(true, Duration.between(execStartTime, execStopTime));
+                pingResult.setResponseTime(latencyParser.parseLatency(line, null));
+                return pingResult;
             }
-            do {
-                // Because of the Windows issue, we need to check this. We assume that the ping was successful whenever
-                // this specific string is contained in the output
-                if (line.contains("TTL=") || line.contains("ttl=")) {
-                    PingResult pingResult = new PingResult(true, Duration.between(execStartTime, Instant.now()));
-                    pingResult.setResponseTime(latencyParser.parseLatency(line));
-                    return pingResult;
-                }
-                line = r.readLine();
-            } while (line != null);
-
-            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
         }
+        return new PingResult(false, Duration.between(execStartTime, execStopTime));
     }
 
     public enum ArpPingUtilEnum {
@@ -414,34 +460,47 @@ public class NetworkUtils {
         Instant execStartTime = Instant.now();
         Process proc;
         if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
-            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address)
+                    .redirectErrorStream(true).start();
         } else if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING) {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toSeconds()), "-C", "1", "-i",
-                    interfaceName, ipV4address).start();
+                    interfaceName, ipV4address).redirectErrorStream(true).start();
         } else if (arpingTool == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toMillis()), "-x", ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toMillis()), "-x", ipV4address)
+                    .redirectErrorStream(true).start();
         } else {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toSeconds()), "-c", "1", "-I",
-                    interfaceName, ipV4address).start();
+                    interfaceName, ipV4address).redirectErrorStream(true).start();
+        }
+
+        // Consume the output while the process runs
+        List<String> output = new ArrayList<>();
+        try (InputStreamReader isr = new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(isr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                output.add(line);
+                logger.trace("Network [arping output]: '{}'", line);
+            }
         }
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.
         int result = proc.waitFor();
+        Instant execStopTime = Instant.now();
         if (result != 0) {
-            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
+            return new PingResult(false, Duration.between(execStartTime, execStopTime));
         }
 
-        PingResult pingResult = new PingResult(true, Duration.between(execStartTime, Instant.now()));
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
-            String line = r.readLine();
-            while (line != null) {
-                Duration responseTime = latencyParser.parseLatency(line);
+        PingResult pingResult = new PingResult(true, Duration.between(execStartTime, execStopTime));
+        Duration responseTime;
+        for (String line : output) {
+            if (!line.isBlank()) {
+                responseTime = latencyParser.parseLatency(line, arpingTool);
                 if (responseTime != null) {
                     pingResult.setResponseTime(responseTime);
                     return pingResult;
                 }
-                line = r.readLine();
             }
         }
 
