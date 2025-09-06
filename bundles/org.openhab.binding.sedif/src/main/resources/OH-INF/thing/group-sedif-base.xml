@@ -7,7 +7,7 @@
 	<channel-group-type id="base">
 		<label>Standard Base</label>
 		<channels>
-			<channel id="mean-water-price" typeId="numeric-type">
+			<channel id="mean-water-price" typeId="numeric">
 				<label>Mean Water Price	</label>
 			</channel>
 		</channels>
