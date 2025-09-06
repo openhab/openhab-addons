@@ -35,6 +35,7 @@ The Sbus Bridge has the following configuration parameters:
 |:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
 | host    | text    | IP address of the Sbus device (typically broadcast)  | N/A     | yes      | no        |
 | port    | integer | UDP port number                                      | 6000    | no       | no        |
+| timeout | integer | Response timeout in milliseconds                     | 3000    | no       | yes       |
 
 ### Device Configuration
 
@@ -101,7 +102,7 @@ The color channel of RGBW controllers supports these additional parameters:
 ### Thing Configuration
 
 ```java
-Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000 ] {
+Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000, timeout=5000 ] {
     Thing rgbw colorctrl [ id=72, refresh=30 ] {
         Channels:
             Type color-channel : color [ channelNumber=1, enableWhite=true ]   // Full RGBW control with white component
