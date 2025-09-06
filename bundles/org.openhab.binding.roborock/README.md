@@ -86,43 +86,43 @@ Bridge roborock:account:account [ email="xxxx", password="xxxx" ] {
 ### `example.items` Example
 
 ```java
-Group                gVac            "Roborock Robot Vacuum"       <fan>
-Group                gVacStat        "Status Details"              <status>        (gVac)
-Group                gVacCons        "Consumables Usage"           <line-increase> (gVac)
-Group                gVacDND         "Do Not Disturb Settings"     <moon>          (gVac)
-Group                gVacHist        "Cleaning History"            <calendar>      (gVac)
-Group                gVacLast        "Last Cleaning Details"       <calendar>      (gVac)
+Group                gVac            "Roborock Robot Vacuum"         <fan>
+Group                gVacStat        "Status Details"                <status>        (gVac)
+Group                gVacCons        "Consumables Usage"             <line-increase> (gVac)
+Group                gVacDND         "Do Not Disturb Settings"       <moon>          (gVac)
+Group                gVacHist        "Cleaning History"              <calendar>      (gVac)
+Group                gVacLast        "Last Cleaning Details"         <calendar>      (gVac)
 
-String               actionControl   "Vacuum Control"                                              {channel="roborock:vacuum:034F0E45:actions#control" }
-String               actionCommand   "Vacuum Command"                                              {channel="roborock:vacuum:034F0E45:actions#commands" }
+String               actionControl   "Vacuum Control"                                                {channel="roborock:vacuum:034F0E45:actions#control" }
+String               actionCommand   "Vacuum Command"                                                {channel="roborock:vacuum:034F0E45:actions#commands" }
 
-Number:Dimensionless statusBat       "Battery Level [%1.0f%%]"     <battery>       (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#battery" }
-Number:Area          statusArea      "Cleaned Area [%1.0fm²]"      <zoom>          (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean-area" }
-Number:Time          statusTime      "Cleaning Time [%1.0f']"      <clock>         (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean-time" }
-String               statusError     "Error [%s]"                  <error>         (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#error-code" }
-Number:Dimensionless statusFanPow    "Fan Power [%1.0f%%]"         <signal>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#fan-power" }
-Number               statusClean     "In Cleaning Status [%1.0f]"  <switch>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#in-cleaning" }
-Switch               statusDND       "DND Activated"                               (gVacStat)      {channel="roborock:vacuum:034F0E45:status#dnd-enabled" }
-Number               statusStatus    "Status [%1.0f]"              <status>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#state"}
-Switch               isLocating      "Locating"                                    (gVacStat)      {channel="roborock:vacuum:034F0E45:status#is-locating" }
+Number:Dimensionless statusBat       "Battery Level [%1.0f%%]"       <battery>       (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#battery" }
+Number:Area          statusArea      "Cleaned Area [%1.0fm²]"        <zoom>          (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean-area" }
+Number:Time          statusTime      "Cleaning Time [%1.0f']"        <clock>         (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean-time" }
+String               statusError     "Error [%s]"                    <error>         (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#error-code" }
+Number:Dimensionless statusFanPow    "Fan Power [%1.0f%%]"           <signal>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#fan-power" }
+Number               statusClean     "In Cleaning Status [%1.0f]"    <switch>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#in-cleaning" }
+Switch               statusDND       "DND Activated"                                 (gVacStat)      {channel="roborock:vacuum:034F0E45:status#dnd-enabled" }
+Number               statusStatus    "Status [%1.0f]"                <status>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#state"}
+Switch               isLocating      "Locating"                                      (gVacStat)      {channel="roborock:vacuum:034F0E45:status#is-locating" }
 
-Number               consumableMain   "Main Brush [%1.0f]"                         (gVacCons)      {channel="roborock:vacuum:034F0E45:consumables#main-brush-time"}
-Number               consumableSide   "Side Brush [%1.0f]"                         (gVacCons)      {channel="roborock:vacuum:034F0E45:consumables#side-brush-time"}
-Number               consumableFilter "Filter Time[%1.0f]"                         (gVacCons)      {channel="roborock:vacuum:034F0E45:consumables#filter-time" }
-Number               consumableSensor "Sensor [%1.0f]"                             (gVacCons)      {channel="roborock:vacuum:034F0E45:consumables#sensor-dirt-time"}
+Number:Time          consumableMain   "Main Brush [%1.0f]"                           (gVacCons)      {channel="roborock:vacuum:034F0E45:consumables#main-brush-time"}
+Number:Time          consumableSide   "Side Brush [%1.0f]"                           (gVacCons)      {channel="roborock:vacuum:034F0E45:consumables#side-brush-time"}
+Number:Time          consumableFilter "Filter Time[%1.0f]"                           (gVacCons)      {channel="roborock:vacuum:034F0E45:consumables#filter-time" }
+Number:Time          consumableSensor "Sensor [%1.0f]"                               (gVacCons)      {channel="roborock:vacuum:034F0E45:consumables#sensor-dirt-time"}
 
-Switch               dndFunction   "DND Function"                  <moon>          (gVacDND)       {channel="roborock:vacuum:034F0E45:dnd#dnd-function"}
-String               dndStart   "DND Start Time [%s]"              <clock>         (gVacDND)       {channel="roborock:vacuum:034F0E45:dnd#dnd-start"}
-String               dndEnd   "DND End Time [%s]"                  <clock-on>      (gVacDND)       {channel="roborock:vacuum:034F0E45:dnd#dnd-end"}
+Switch               dndFunction      "DND Function"                 <moon>          (gVacDND)       {channel="roborock:vacuum:034F0E45:dnd#dnd-function"}
+String               dndStart         "DND Start Time [%s]"          <clock>         (gVacDND)       {channel="roborock:vacuum:034F0E45:dnd#dnd-start"}
+String               dndEnd           "DND End Time [%s]"            <clock-on>      (gVacDND)       {channel="roborock:vacuum:034F0E45:dnd#dnd-end"}
 
-Number               historyArea    "Total Cleaned Area [%1.0fm²]" <zoom>          (gVacHist)      {channel="roborock:vacuum:034F0E45:history#total-clean-area"}
-String               historyTime    "Total Clean Time [%s]"        <clock>         (gVacHist)      {channel="roborock:vacuum:034F0E45:history#total-clean-time"}
-Number               historyCount    "Total # Cleanings [%1.0f]"   <office>        (gVacHist)      {channel="roborock:vacuum:034F0E45:history#total-clean-count"}
+Number:Area          historyArea      "Total Cleaned Area [%1.0fm²]" <zoom>          (gVacHist)      {channel="roborock:vacuum:034F0E45:history#total-clean-area"}
+String               historyTime      "Total Clean Time [%s]"        <clock>         (gVacHist)      {channel="roborock:vacuum:034F0E45:history#total-clean-time"}
+Number               historyCount     "Total # Cleanings [%1.0f]"    <office>        (gVacHist)      {channel="roborock:vacuum:034F0E45:history#total-clean-count"}
 
-String               lastStart   "Last Cleaning Start time [%s]"   <clock>         (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-start-time"}
-String               lastEnd     "Last Cleaning End time [%s]"     <clock>         (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-end-time"}
-Number:Area          lastArea    "Last Cleaned Area [%1.0fm²]"     <zoom>          (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-area"}
-Number               lastTime    "Last Clean Time [%1.0f']"        <clock>         (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-duration"}
-Number               lastError    "Error [%s]"                     <error>         (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-error" }
-Switch               lastCompleted  "Last Cleaning Completed"                      (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-finish" }
+String               lastStart        "Last Cleaning Start time [%s]" <clock>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-start-time"}
+String               lastEnd          "Last Cleaning End time [%s]"   <clock>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-end-time"}
+Number:Area          lastArea         "Last Cleaned Area [%1.0fm²]"   <zoom>         (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-area"}
+Number:Time          lastTime         "Last Clean Time [%1.0f']"      <clock>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-duration"}
+Number               lastError        "Error [%s]"                    <error>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-error" }
+Switch               lastCompleted    "Last Cleaning Completed"                      (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-finish" }
 ```
