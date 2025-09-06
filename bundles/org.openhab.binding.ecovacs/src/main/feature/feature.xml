@@ -11,7 +11,7 @@
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/1.1.0</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.hsluv.hsluv/0.2</bundle>
 		<bundle dependency="true">mvn:org.minidns/minidns-core/1.1.1</bundle>
-		<bundle dependency="true">wrap:mvn:org.igniterealtime.smack/smack-core/4.5.0-beta6$Import-Package=!sun.security.pkcs11,org.*&amp;overwrite=merge</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.igniterealtime.smack.smack-core/4.5.0-beta6</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-im/4.5.0-beta6</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-extensions/4.5.0-beta6</bundle>
 		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-resolver-javax/4.5.0-beta6</bundle>
