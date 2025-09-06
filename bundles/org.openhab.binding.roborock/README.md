@@ -93,8 +93,8 @@ Group                gVacDND         "Do Not Disturb Settings"     <moon>       
 Group                gVacHist        "Cleaning History"            <calendar>      (gVac)
 Group                gVacLast        "Last Cleaning Details"       <calendar>      (gVac)
 
-String               actionControl   "Vacuum Control"                                          {channel="roborock:vacuum:034F0E45:actions#control" }
-String               actionCommand   "Vacuum Command"                                          {channel="roborock:vacuum:034F0E45:actions#commands" }
+String               actionControl   "Vacuum Control"                                              {channel="roborock:vacuum:034F0E45:actions#control" }
+String               actionCommand   "Vacuum Command"                                              {channel="roborock:vacuum:034F0E45:actions#commands" }
 
 Number:Dimensionless statusBat       "Battery Level [%1.0f%%]"     <battery>       (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#battery" }
 Number:Area          statusArea      "Cleaned Area [%1.0fm²]"      <zoom>          (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean-area" }
