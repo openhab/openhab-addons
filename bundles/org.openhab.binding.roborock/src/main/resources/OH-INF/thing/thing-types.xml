@@ -208,7 +208,7 @@
 	<channel-type id="in-cleaning" advanced="true">
 		<item-type>Number</item-type>
 		<label>In Cleaning?</label>
-		<description>1 = Cleaning, 0 = Not Cleaning</description>
+		<description>1 = Cleaning, 0 = Not cleaning</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -218,6 +218,7 @@
 	<channel-type id="map-present" advanced="true">
 		<item-type>Number</item-type>
 		<label>Map Present</label>
+		<description>1 = Map present, 0 = Map not present</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Status</tag>
@@ -228,6 +229,7 @@
 	<channel-type id="msg-seq" advanced="true">
 		<item-type>Number</item-type>
 		<label>Msg Seq</label>
+		<description>Message sequence number</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -273,6 +275,7 @@
 	<channel-type id="led-status" advanced="true">
 		<item-type>Number</item-type>
 		<label>Led Status</label>
+		<description>1 = LEDs on, 0 = LEDs off</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -344,6 +347,7 @@
 	<channel-type id="is-locating">
 		<item-type>Switch</item-type>
 		<label>Robot Locating</label>
+		<description>1 = Robot is locating it's position, 0 = robot is not locating it's position</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -534,7 +538,7 @@
 	</channel-type>
 	<channel-type id="segment" advanced="true">
 		<item-type>String</item-type>
-		<label>Vacuum Room [room#]</label>
+		<label>Vacuum Specific Room(s) [room#]</label>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -542,7 +546,7 @@
 	</channel-type>
 	<channel-type id="routine" advanced="true">
 		<item-type>String</item-type>
-		<label>Vacuum Routine [routine#]</label>
+		<label>Start Vacuum Routine [routine#]</label>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
