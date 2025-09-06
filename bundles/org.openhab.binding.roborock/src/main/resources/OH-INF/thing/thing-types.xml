@@ -456,6 +456,10 @@
 	<channel-type id="total-clean-time">
 		<item-type>Number:Time</item-type>
 		<label>Total Cleaning Time</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="total-clean-area">
