@@ -253,6 +253,7 @@ public class NetworkHandler extends BaseThingHandler
     // Create a new network service and apply all configurations.
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         executor.submit(() -> {
             initialize(new PresenceDetection(this, Duration.ofMillis(configuration.cacheDeviceStateTimeInMS.intValue()),
                     executor));

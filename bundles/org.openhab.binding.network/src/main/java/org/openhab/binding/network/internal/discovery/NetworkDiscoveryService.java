@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.network.internal.discovery;
 
-import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.BINDING_CONFIGURATION_PID;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.PARAMETER_HOSTNAME;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.PARAMETER_PORT;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.PING_DEVICE;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.SERVICE_DEVICE;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
 
 import java.io.IOException;
@@ -76,10 +81,10 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     /* All access must be guarded by "this" */
     private @Nullable ExecutorService executorService;
     private final NetworkUtils networkUtils = new NetworkUtils();
-    private final @Nullable ConfigurationAdmin admin;
+    private final ConfigurationAdmin admin;
 
     @Activate
-    public NetworkDiscoveryService(@Reference @Nullable ConfigurationAdmin admin) {
+    public NetworkDiscoveryService(@Reference ConfigurationAdmin admin) {
         super(SUPPORTED_THING_TYPES_UIDS,
                 (int) Math.round(new NetworkUtils().getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE).size()
                         * (durationToMillis(PING_TIMEOUT) / 1000.0)),
@@ -288,9 +293,6 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
     private @Nullable NetworkBindingConfiguration getConfig() {
         ConfigurationAdmin admin = this.admin;
-        if (admin == null) {
-            return null;
-        }
         try {
             Configuration configOnline = admin.getConfiguration(BINDING_CONFIGURATION_PID, null);
             if (configOnline != null) {
