@@ -174,8 +174,7 @@ public class RoborockWebTargets {
         String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
         String payload = "?username=" + encodedUsername + "&password=" + encodedPassword + "&needtwostepauth=false";
 
-        String response = invoke(baseUri + GET_TOKEN_PATH + payload, HttpMethod.POST, null, null);
-        return response;
+        return invoke(baseUri + GET_TOKEN_PATH + payload, HttpMethod.POST, null, null);
     }
 
     /**

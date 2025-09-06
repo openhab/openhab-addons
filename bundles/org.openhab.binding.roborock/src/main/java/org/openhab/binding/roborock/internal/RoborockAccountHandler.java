@@ -117,7 +117,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Nullable
     public Home refreshHome() {
-        logger.info("refreshHome");
         try {
             logger.info("refreshHome2, baseuri = {}, token = {}", baseUri, token);
             return webTargets.getHomeDetail(baseUri, token);
@@ -134,13 +133,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Nullable
     public HomeData refreshHomeData() {
-        logger.info("refreshHomeData");
         try {
             Home home = homeCache.getValue();
             if (home == null) {
                 return new HomeData();
             }
-            logger.info("refreshHomeData2");
             return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
         } catch (RoborockException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
@@ -178,7 +175,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         config = getConfigAs(RoborockAccountConfiguration.class);
         if (config == null || config.email.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing email address configuration");
+                    "@text/offline.conf-error.no-email");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -197,8 +194,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         logger.debug("Child registered with gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
                 getThing().getUID(), getThing().getLabel());
-        if (childHandler instanceof RoborockVacuumHandler) {
-            childDevices.put(childThing.getUID().getId(), (RoborockVacuumHandler) childHandler);
+        if (childHandler instanceof RoborockVacuumHandler vacuumHandler) {
+            childDevices.put(childThing.getUID().getId(), vacuumHandler);
         } else {
             logger.warn("Initialized child handler is not a RoborockVacuumHandler: {}",
                     childHandler.getClass().getName());
@@ -218,12 +215,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 baseUri = webTargets.getUrlByEmail(config.email);
             } catch (RoborockException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+                return;
             }
         }
         String sessionStoreToken = sessionStorage.get("token");
         String sessionStoreRriot = sessionStorage.get("rriot");
 
-        if (!(sessionStoreToken == null) && !(sessionStoreRriot == null)) {
+        if (sessionStoreToken != null && sessionStoreRriot != null) {
             logger.debug("Retrieved token and rriot values from sessionStorage");
             token = sessionStoreToken;
             @Nullable
@@ -240,20 +238,20 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     code = JsonParser.parseString(response).getAsJsonObject().get("code").getAsInt();
                 }
                 if (code == 200) {
-                    logger.debug("Successful login, parsing parameters");
                     Login loginResponse = gson.fromJson(response, Login.class);
                     sessionStorage.put("token", loginResponse.data.token);
                     sessionStorage.put("rriot", gson.toJson(loginResponse.data.rriot));
                     token = loginResponse.data.token;
                     rriot = loginResponse.data.rriot;
-                    updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unsuccessful login: "
-                            + JsonParser.parseString(response).getAsJsonObject().get("msg").getAsString());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.comm-error.login-failed "
+                                    + JsonParser.parseString(response).getAsJsonObject().get("msg").getAsString());
                     return;
                 }
             } catch (RoborockException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+                return;
             }
         }
         updateStatus(ThingStatus.ONLINE);
@@ -261,10 +259,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     private synchronized void teardown(boolean scheduleReconnection) {
-        disconnectMqttClient();
-
-        mqttConnectTask.cancel();
         initTask.cancel();
+        mqttConnectTask.cancel();
+        disconnectMqttClient();
 
         if (scheduleReconnection) {
             initTask.submit();
@@ -318,7 +315,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             mqttClient.connect(connOpts);
             logger.debug("Established MQTT connection.");
         } catch (URISyntaxException e) {
-            logger.error("Malformed MQTT URL", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.comm-error.mqtt-url-bad");
             throw new MqttException(e);
         } catch (MqttException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -339,7 +337,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("Subscribed to topic {}", topic);
             updateStatus(ThingStatus.ONLINE);
         } catch (MqttException e) {
-            logger.error("Failed to subscribe to MQTT topic after connection complete", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.mqtt-subscribe-fail");
         }
     }
 

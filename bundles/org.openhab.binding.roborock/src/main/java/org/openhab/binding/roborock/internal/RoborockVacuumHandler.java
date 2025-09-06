@@ -259,8 +259,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
         initTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
-        initTask.schedule(5);
         updateStatus(ThingStatus.UNKNOWN);
+        initTask.schedule(5);
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
@@ -293,6 +293,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                         "@text/offline.conf-error.no-token");
+                return;
             }
         }
 
@@ -354,7 +355,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private void pollData() {
         logger.debug("Running pollData for: {}", config.duid);
         HomeData homeData = bridgeHandler.getHomeData();
-        if ((homeData != null && (homeData.result != null))) {
+        if (homeData != null && homeData.result != null) {
             homeRooms = homeData.result.rooms;
             Devices devices[] = homeData.result.devices;
             updateDevice(devices);
@@ -420,7 +421,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 return;
             }
 
-            logger.trace("Received MQTT message: {}", response);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Received MQTT message: {}", response);
+            }
 
             if (JsonParser.parseString(response).isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()

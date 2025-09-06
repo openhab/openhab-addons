@@ -173,11 +173,19 @@
 	<channel-type id="error-code">
 		<item-type>String</item-type>
 		<label>Error Code</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="error-id">
 		<item-type>Number</item-type>
 		<label>Error ID</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="fan-power">
@@ -442,6 +450,10 @@
 	<channel-type id="dnd-function">
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb Functionality</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="dnd-start">
 		<item-type>String</item-type>
@@ -513,6 +525,10 @@
 	<channel-type id="last-clean-error">
 		<item-type>Number</item-type>
 		<label>Error</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-clean-finish">

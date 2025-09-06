@@ -43,10 +43,6 @@ import org.slf4j.LoggerFactory;
 public final class ProtocolUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolUtils.class);
 
-    private ProtocolUtils() {
-        // Prevent instantiation of util class
-    }
-
     private static byte[] md5bin(String key) {
         try {
             MessageDigest md = MessageDigest.getInstance(MD5_ALGORITHM);

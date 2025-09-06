@@ -83,8 +83,7 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         }
     }
 
-    @Nullable
-    protected HomeData getHomeData() {
+    protected @Nullable HomeData getHomeData() {
         return thingHandler.getHomeData();
     }
 
@@ -110,8 +109,7 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
     }
 
     private void discover() {
-        HomeData homeData;
-        homeData = getHomeData();
+        HomeData homeData = getHomeData();
 
         if (homeData != null) {
             Devices devices[] = homeData.result.devices;
