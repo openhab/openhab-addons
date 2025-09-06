@@ -13,6 +13,8 @@
 			<channel id="rtc" typeId="rtc"/>
 			<channel id="weekday" typeId="weekday"/>
 		</channels>
+
+		<representation-property>address</representation-property>
 		<config-description-ref uri="thing-type:plclogo:bridge"/>
 	</bridge-type>
 
