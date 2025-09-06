@@ -897,7 +897,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void handleGetFwFeatures(String response) {
         JsonArray getFwFeatures = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
-        updateState(RobotCapabilities.FW_FEATURES.getChannel(), new StringType(getFwFeatures.toString()));
+        Map<String, String> properties = editProperties();
+        properties.put("fw-features", getFwFeatures.toString());
+        updateProperties(properties);
     }
 
     private void handleGetMultiMapsList(String response) {

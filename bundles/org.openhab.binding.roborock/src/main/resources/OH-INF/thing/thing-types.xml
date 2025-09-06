@@ -226,16 +226,6 @@
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="msg-seq" advanced="true">
-		<item-type>Number</item-type>
-		<label>Msg Seq</label>
-		<description>Message sequence number</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="state">
 		<item-type>String</item-type>
 		<label>State</label>
@@ -730,15 +720,6 @@
 	</channel-type>
 
 	<!-- Info channels -->
-	<channel-type id="fw-features" advanced="true">
-		<item-type>String</item-type>
-		<label>Firmware Features</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="room-mapping" advanced="true">
 		<item-type>String</item-type>
 		<label>Room Mapping</label>

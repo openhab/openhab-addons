@@ -46,7 +46,6 @@ Just add a new thing, select the Roborock binding, then Roborock Account Binding
 | Switch  | status#map-status                 | Map Box Status             |
 | Switch  | status#led-status                 | Led Box Status             |
 | String  | info#carpet-mode                  | Carpet Mode details        |
-| String  | info#fw-features                  | Firmware Features          |
 | String  | info#room-mapping                 | Room Mapping details       |
 | String  | info#multi-maps-list              | Maps Listing details       |
 
