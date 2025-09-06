@@ -28,11 +28,8 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -75,8 +72,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
     private final Bundle bundle = FrameworkUtil.getBundle(getClass());
     private final TranslationProvider translation;
-
-    private final Map<ChannelUID, String> oldValues = new HashMap<>();
 
     @Nullable
     private volatile PLCLogoClient client; // S7 client used for communication with Logo!
@@ -178,7 +173,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                                 final var time = LocalTime.of(buffer[3], buffer[4], buffer[5]);
                                 rtc = ZonedDateTime.of(date, time, ZoneId.systemDefault());
                             } catch (DateTimeException exception) {
-                                logger.info("Return local server time: {}.", exception.getMessage());
+                                logger.warn("Return local server time: {}.", exception.getMessage());
                             }
                         }
                         updateState(channelUID, new DateTimeType(rtc));
@@ -193,24 +188,20 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                                     message = translation.getText(bundle, states.get(1 << bit), stateText, null);
                                 }
                             }
-                            synchronized (oldValues) {
-                                if ((message != null) && !Objects.equals(oldValues.get(channelUID), message)) {
-                                    updateState(channelUID, new StringType(message));
-                                    oldValues.put(channelUID, message);
-                                }
+                            if (message == null) {
+                                message = String.format("Unknown diagnostic bit is set in bitmask %s", stateText);
                             }
+                            updateState(channelUID, new StringType(message));
                         } else {
                             updateState(channelUID, new StringType("LOGO! family is not supported"));
                         }
                     }
                     case DAY_OF_WEEK_CHANNEL -> {
-                        final var value = DAY_OF_WEEK.get((int) buffer[0]);
-                        synchronized (oldValues) {
-                            if ((value != null) && !value.equals(oldValues.get(channelUID))) {
-                                updateState(channelUID, new StringType(value));
-                                oldValues.put(channelUID, value);
-                            }
+                        var value = DAY_OF_WEEK.get((int) buffer[0]);
+                        if (value == null) {
+                            value = String.format("Unknown day of week value %d received", buffer[0]);
                         }
+                        updateState(channelUID, new StringType(value));
                     }
                     default -> logger.info("Invalid channel {} found.", channelUID);
                 }
@@ -237,9 +228,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initialize LOGO! bridge handler.");
 
-        synchronized (oldValues) {
-            oldValues.clear();
-        }
         config = getConfigAs(PLCLogoBridgeConfiguration.class);
 
         var client = this.client;
@@ -316,16 +304,12 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 this.client = null;
             }
         }
-
-        synchronized (oldValues) {
-            oldValues.clear();
-        }
     }
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        super.childHandlerInitialized(childHandler, childThing);
         if (childHandler instanceof PLCCommonHandler handler) {
+            super.childHandlerInitialized(handler, childThing);
             synchronized (handlers) {
                 handlers.add(handler);
             }
@@ -338,8 +322,8 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             synchronized (handlers) {
                 handlers.remove(handler);
             }
+            super.childHandlerDisposed(handler, childThing);
         }
-        super.childHandlerDisposed(childHandler, childThing);
     }
 
     /**
