@@ -46,7 +46,8 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusMotionSensorHandler.class);
 
-    public SbusMotionSensorHandler(Thing thing, TranslationProvider translationProvider, LocaleProvider localeProvider) {
+    public SbusMotionSensorHandler(Thing thing, TranslationProvider translationProvider,
+            LocaleProvider localeProvider) {
         super(thing, translationProvider, localeProvider);
     }
 
@@ -69,14 +70,14 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
         try {
             SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
             ReadNineInOneStatusResponse response = readNineInOneStatus(adapter, config.subnetId, config.id);
-            
+
             // Update channel states from response
             updateChannelStatesFromResponse(response);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             Bundle bundle = FrameworkUtil.getBundle(getClass());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    translationProvider.getText(bundle, "error.device.communication", null, localeProvider.getLocale()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, translationProvider.getText(bundle,
+                    "error.device.communication", null, localeProvider.getLocale()));
             logger.warn("Error polling motion sensor device {}: {}", getThing().getUID(), e.getMessage());
         }
     }
@@ -124,7 +125,8 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
      * @return ReadNineInOneStatusResponse containing sensor data
      * @throws Exception if the SBUS transaction fails
      */
-    private ReadNineInOneStatusResponse readNineInOneStatus(SbusService adapter, int subnetId, int deviceId) throws Exception {
+    private ReadNineInOneStatusResponse readNineInOneStatus(SbusService adapter, int subnetId, int deviceId)
+            throws Exception {
         ReadNineInOneStatusRequest request = new ReadNineInOneStatusRequest();
         request.setSubnetID(subnetId);
         request.setUnitID(deviceId);
@@ -154,7 +156,8 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
                 logger.debug("Processed async 9-in-1 status response for handler {}", getThing().getUID());
             }
         } catch (Exception e) {
-            logger.warn("Error processing async message in motion sensor handler {}: {}", getThing().getUID(), e.getMessage());
+            logger.warn("Error processing async message in motion sensor handler {}: {}", getThing().getUID(),
+                    e.getMessage());
         }
     }
 

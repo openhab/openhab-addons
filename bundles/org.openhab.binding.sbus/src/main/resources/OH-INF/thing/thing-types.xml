@@ -167,7 +167,7 @@
 		</supported-bridge-type-refs>
 		<label>Lux Sensor</label>
 		<description>Sbus light level sensor device (9-in-1 devices)</description>
-		<semantic-equipment-tag>LightSensor</semantic-equipment-tag>
+		<semantic-equipment-tag>IlluminanceSensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>

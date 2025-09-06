@@ -66,6 +66,16 @@ public interface SbusService {
     void initialize(String host, int port) throws Exception;
 
     /**
+     * Initializes the service with connection parameters including timeout.
+     *
+     * @param host the host address of the Sbus device
+     * @param port the port number to use
+     * @param timeout the timeout in milliseconds to wait for response after sending a request
+     * @throws Exception if initialization fails
+     */
+    void initialize(String host, int port, int timeout) throws Exception;
+
+    /**
      * Closes the service and releases resources.
      */
     void close();

@@ -71,9 +71,10 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
             return;
         }
         try {
-            // Initialize Sbus service with the configuration parameters
+            // Initialize Sbus service with the configuration parameters including timeout
             sbusService = new SbusServiceImpl();
-            sbusService.initialize(config.host, config.port);
+            sbusService.initialize(config.host, config.port, config.timeout);
+            logger.debug("SBUS bridge initialized with timeout: {}ms", config.timeout);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
