@@ -136,21 +136,21 @@ public class MeterReading extends Value {
                 throw new SedifException("Invalid meterReading data: no day period");
             }
 
-            LocalDate firstDateExistingCoso = existingConso[0].dateIndex.toLocalDate();
+            LocalDate firstDateExistingConso = existingConso[0].dateIndex.toLocalDate();
             LocalDate lastDateExistingConso = existingConso[existingConso.length - 1].dateIndex.toLocalDate();
 
-            LocalDate firstDateIncomingCoso = incomingConso[0].dateIndex.toLocalDate();
+            LocalDate firstDateIncomingConso = incomingConso[0].dateIndex.toLocalDate();
             LocalDate lastDateIncomingConso = incomingConso[incomingConso.length - 1].dateIndex.toLocalDate();
 
             Consommation[] newConso = null;
 
             // The new block of data is before existing data
-            if (firstDateIncomingCoso.isBefore(firstDateExistingCoso)) {
+            if (firstDateIncomingConso.isBefore(firstDateExistingConso)) {
                 // We browse the incoming data backward from the end to find first mergeable index
                 int idx = incomingConso.length - 1;
 
                 // While go backward until we find a date in incomingConso before the firstDate of existing Conso
-                while (idx > 0 && incomingConso[idx].dateIndex.toLocalDate().isAfter(firstDateExistingCoso)) {
+                while (idx > 0 && incomingConso[idx].dateIndex.toLocalDate().isAfter(firstDateExistingConso)) {
                     idx--;
                 }
 
@@ -174,10 +174,36 @@ public class MeterReading extends Value {
                 System.arraycopy(existingConso, 0, newConso, 0, existingConso.length);
                 System.arraycopy(incomingConso, idx, newConso, existingConso.length, incomingConso.length - idx);
             }
+            // The new block of data is in middle of existing data
+            else {
+                // We browse the incoming data forward from the start to find first mergeable index
+                int idxStart = 0;
 
-            if (newConso != null) {
-                this.data.consommation = newConso;
+                while (idxStart < existingConso.length
+                        && existingConso[idxStart].dateIndex.toLocalDate().compareTo(firstDateIncomingConso) < 0) {
+                    idxStart++;
+                }
+                idxStart--;
+
+                int idxEnd = existingConso.length - 1;
+
+                // While go backward until we find a date in incomingConso before the firstDate of existing Conso
+                while (idxEnd > 0 && existingConso[idxEnd].dateIndex.toLocalDate().isAfter(lastDateIncomingConso)) {
+                    idxEnd--;
+                }
+                idxEnd++;
+
+                int len = idxStart + 1 + incomingConso.length + existingConso.length - idxEnd;
+                newConso = new Consommation[len];
+                System.arraycopy(existingConso, 0, newConso, 0, idxStart + 1);
+                System.arraycopy(incomingConso, 0, newConso, idxStart + 1, incomingConso.length);
+                if (idxEnd < existingConso.length) {
+                    System.arraycopy(existingConso, idxEnd, newConso, idxEnd + incomingConso.length - 1,
+                            existingConso.length - idxEnd);
+                }
             }
+
+            this.data.consommation = newConso;
         }
 
         return this;
