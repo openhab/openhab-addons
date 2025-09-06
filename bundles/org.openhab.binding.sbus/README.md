@@ -31,7 +31,7 @@ _note_ If openHAB is deployed in a Docker container, you must set the `network_m
 
 The Sbus Bridge has the following configuration parameters:
 
-| Name    | Type    | Description                                          | Default | Required | Advanced |
+| Name    | Type    | Description                                          | Default | Required | Advanced  |
 |:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
 | host    | text    | IP address of the Sbus device (typically broadcast)  | N/A     | yes      | no        |
 | port    | integer | UDP port number                                      | 6000    | no       | no        |
@@ -41,11 +41,11 @@ The Sbus Bridge has the following configuration parameters:
 
 All device types (RGBW Controller, Contact Sensor, Switch, Temperature, Motion Sensor, Lux Sensor) share the same configuration parameters:
 
-| Name    | Type    | Description                                          | Default | Required | Advanced |
+| Name    | Type    | Description                                          | Default | Required | Advanced  |
 |:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| subnetId| integer | Subnet ID the device is part of                     | N/A     | yes      | no        |
+| subnetId| integer | Subnet ID the device is part of                      | N/A     | yes      | no        |
 | id      | integer | Device ID                                            | N/A     | yes      | no        |
-| refresh | integer | Refresh interval in seconds (0 = listen-only mode)  | 30      | no       | yes       |
+| refresh | integer | Refresh interval in seconds (0 = listen-only mode)   | 30      | no       | yes       |
 
 **Note:** Setting `refresh=0` enables listen-only mode for all device types. In this mode, handlers only process asynchronous broadcast messages without actively polling the devices. This is particularly useful for Motion Sensor and Lux Sensor devices that broadcast status updates (0x02CA) from 9-in-1 devices.
 
@@ -60,7 +60,7 @@ All device types (RGBW Controller, Contact Sensor, Switch, Temperature, Motion S
 
 The color channel of RGBW controllers supports these additional parameters:
 
-| Parameter   | Type    | Description                                          | Default | Required | Advanced |
+| Parameter   | Type    | Description                                          | Default | Required | Advanced  |
 |:------------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
 | channelNumber | integer | The physical channel number on the Sbus device     | N/A     | yes      | no        |
 | enableWhite | boolean | Controls the white component support for RGB palette | true    | no       | yes       |
