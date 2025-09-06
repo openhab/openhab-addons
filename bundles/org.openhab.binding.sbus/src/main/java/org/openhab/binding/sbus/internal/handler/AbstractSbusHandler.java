@@ -10,16 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.handler;
+package org.openhab.binding.sbus.internal.handler;
 
 import static org.openhab.binding.sbus.BindingConstants.BINDING_ID;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.internal.SbusService;
+import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -38,14 +38,16 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ro.ciprianpascu.sbus.msg.SbusResponse;
+import ro.ciprianpascu.sbus.net.SbusMessageListener;
+
 /**
  * The {@link AbstractSbusHandler} is the base class for all Sbus device handlers.
  * It provides common functionality for device initialization, channel management, and polling.
  *
  * @author Ciprian Pascu - Initial contribution
  */
-@NonNullByDefault
-public abstract class AbstractSbusHandler extends BaseThingHandler {
+public abstract class AbstractSbusHandler extends BaseThingHandler implements SbusMessageListener {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected @Nullable SbusService sbusAdapter;
@@ -88,6 +90,14 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
         }
 
         startPolling();
+
+        // Register this handler as a listener for async messages
+        try {
+            sbusAdapter.addMessageListener(this);
+            logger.debug("Registered handler {} as message listener", getThing().getUID());
+        } catch (Exception e) {
+            logger.warn("Failed to register message listener for {}: {}", getThing().getUID(), e.getMessage());
+        }
     }
 
     /**
@@ -147,15 +157,70 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
      */
     protected abstract void pollDevice();
 
+    /**
+     * Process an asynchronous message received from the network.
+     * This method should be implemented by concrete handlers to process messages
+     * specific to their device type using their existing protocol adaptation methods.
+     *
+     * @param response the received SBUS response message
+     */
+    protected abstract void processAsyncMessage(SbusResponse response);
+
+    /**
+     * Reset the polling timer by cancelling the current polling job and starting a new one.
+     * This should be called when an async message is successfully processed to reduce
+     * unnecessary polling when the device is actively sending updates.
+     */
+    protected void resetPollingTimer() {
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(false); // Don't interrupt if already running
+        }
+        startPolling();
+        logger.debug("Reset polling timer for handler {}", getThing().getUID());
+    }
+
+    // SbusMessageListener implementation
+
+    @Override
+    public void onMessageReceived(SbusResponse response) {
+        try {
+            // Check if this message is relevant to this handler
+            if (isMessageRelevant(response)) {
+                logger.debug("Processing async message for handler {}", getThing().getUID());
+                processAsyncMessage(response);
+                resetPollingTimer();
+            }
+        } catch (Exception e) {
+            logger.warn("Error processing async message for handler {}: {}", getThing().getUID(), e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void onError(Exception error, byte[] rawMessage) {
+        logger.warn("Error in message listener for handler {}: {}", getThing().getUID(), error.getMessage(), error);
+    }
+
+    /**
+     * Check if the received message is relevant to this handler.
+     * This method should be implemented by concrete handlers to filter messages
+     * based on subnet ID, unit ID, or other criteria.
+     *
+     * @param response the received SBUS response message
+     * @return true if the message is relevant to this handler
+     */
+    protected abstract boolean isMessageRelevant(SbusResponse response);
+
     @Override
     public void dispose() {
         ScheduledFuture<?> job = pollingJob;
         if (job != null) {
             job.cancel(true);
         }
-        final SbusService adapter = sbusAdapter;
-        if (adapter != null) {
-            adapter.close();
+        if (sbusAdapter != null) {
+            // Unregister this handler as a listener
+            sbusAdapter.removeMessageListener(this);
+            logger.debug("Unregistered handler {} as message listener", getThing().getUID());
         }
         pollingJob = null;
         sbusAdapter = null;

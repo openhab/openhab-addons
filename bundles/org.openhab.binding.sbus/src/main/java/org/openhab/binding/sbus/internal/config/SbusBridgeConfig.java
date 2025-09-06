@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.handler.config;
+package org.openhab.binding.sbus.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -32,4 +32,9 @@ public class SbusBridgeConfig {
      * The port number for Sbus communication
      */
     public int port = Sbus.DEFAULT_PORT;
+
+    /**
+     * The timeout in milliseconds to wait for response after sending a request
+     */
+    public int timeout = Sbus.DEFAULT_TIMEOUT;
 }
