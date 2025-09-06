@@ -133,7 +133,7 @@
 			<channel id="last-update" typeId="last-update-type"/>
 			<channel id="last-poll-update" typeId="last-poll-update-type"/>
 			<channel id="poll-update" typeId="poll-update-type"/>
-			<channel id="battery" typeId="battery-type"/>
+			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="error-code" typeId="error-code-type"/>
 			<channel id="error-message" typeId="error-message-type"/>
 			<channel id="error-timestamp" typeId="error-timestamp-type"/>
@@ -362,17 +362,6 @@
 		<item-type>Switch</item-type>
 		<label>Poll Update</label>
 		<description>Poll Automower® status update from the cloud</description>
-	</channel-type>
-
-	<channel-type id="battery-type">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Battery</label>
-		<description>The battery state of charge in percent</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
-		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="error-code-type" advanced="true">
