@@ -33,6 +33,7 @@ import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * Tests cases for {@see PresenceDetectionValue}
@@ -58,7 +59,8 @@ public class DiscoveryTest {
 
     @Test
     public void pingDeviceDetected() throws InterruptedException {
-        NetworkDiscoveryService d = new NetworkDiscoveryService(null);
+        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
+        NetworkDiscoveryService d = new NetworkDiscoveryService(configAdmin);
         d.addDiscoveryListener(listener);
 
         ArgumentCaptor<DiscoveryResult> result = ArgumentCaptor.forClass(DiscoveryResult.class);
@@ -76,7 +78,8 @@ public class DiscoveryTest {
 
     @Test
     public void tcpDeviceDetected() throws InterruptedException {
-        NetworkDiscoveryService d = new NetworkDiscoveryService(null);
+        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
+        NetworkDiscoveryService d = new NetworkDiscoveryService(configAdmin);
         d.addDiscoveryListener(listener);
 
         ArgumentCaptor<DiscoveryResult> result = ArgumentCaptor.forClass(DiscoveryResult.class);
