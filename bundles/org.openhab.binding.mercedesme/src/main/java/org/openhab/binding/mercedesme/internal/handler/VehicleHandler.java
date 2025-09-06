@@ -98,6 +98,7 @@ import com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningStart;
 import com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningStop;
 import com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningType;
 import com.daimler.mbcarkit.proto.VehicleEvents;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
@@ -875,7 +876,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
 
         /**
-         * handle Charge Program
+         * handle Charge Program values
          */
         if (Constants.BEV.equals(thing.getThingTypeUID().getId())
                 || Constants.HYBRID.equals(thing.getThingTypeUID().getId())) {
@@ -905,25 +906,6 @@ public class VehicleHandler extends BaseThingHandler {
                     ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, OH_CHANNEL_PROGRAM);
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
-                    vas = atts.get(MB_KEY_SELECTED_CHARGE_PROGRAM);
-                    if (vas != null) {
-                        selectedChargeProgram = (int) vas.getIntValue();
-                    }
-                    if (selectedChargeProgram != -1) {
-                        ChargeProgramParameters cpp = cpv.getChargeProgramParameters(selectedChargeProgram);
-                        ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
-                                DecimalType.valueOf(Integer.toString(selectedChargeProgram)));
-                        updateChannel(programMap);
-                        ChannelStateMap maxSocMap = new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
-                                QuantityType.valueOf((double) cpp.getMaxSoc(), Units.PERCENT));
-                        updateChannel(maxSocMap);
-                        socChanged.set(true);
-                        ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
-                                OnOffType.from(cpp.getAutoUnlock()));
-                        updateChannel(autoUnlockMap);
-                    } else {
-                        logger.trace("Charge Program index {} not valid", selectedChargeProgram);
-                    }
                 } else {
                     logger.trace("No Charge Program property available for {}", thing.getThingTypeUID());
                 }
@@ -931,6 +913,42 @@ public class VehicleHandler extends BaseThingHandler {
                 if (fullUpdate) {
                     logger.trace("No Charge Programs found");
                 }
+            }
+
+            /**
+             * handle Charge Program index
+             */
+            vas = atts.get(MB_KEY_SELECTED_CHARGE_PROGRAM);
+            if (vas != null) {
+                selectedChargeProgram = (int) vas.getIntValue();
+            } else {
+                if (fullUpdate) {
+                    selectedChargeProgram = ChargeProgram.DEFAULT_CHARGE_PROGRAM_VALUE;
+                }
+            }
+            if (selectedChargeProgram != -1 && !chargeGroupValueStorage.isEmpty()) {
+                if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
+                    ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
+                            new DecimalType(selectedChargeProgram));
+                    updateChannel(programMap);
+                    JSONObject chargeProgramValues = chargeGroupValueStorage
+                            .getJSONObject(Integer.toString(selectedChargeProgram));
+                    int maxSocToSelect = chargeProgramValues.getInt(Constants.MAX_SOC_KEY);
+                    ChannelStateMap maxSocMap = new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
+                            QuantityType.valueOf(maxSocToSelect, Units.PERCENT));
+                    updateChannel(maxSocMap);
+                    socChanged.set(true);
+                    boolean autoUnlockToSelect = chargeProgramValues.getBoolean(Constants.AUTO_UNLOCK_KEY);
+                    ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
+                            OnOffType.from(autoUnlockToSelect));
+                    updateChannel(autoUnlockMap);
+                } else {
+                    logger.trace("Charge Program index {} not found in {}", selectedChargeProgram,
+                            chargeGroupValueStorage);
+                }
+            } else {
+                logger.trace("Either Charge Program index {} not valid or charge programs not supported {} ",
+                        selectedChargeProgram, chargeGroupValueStorage);
             }
         }
 
