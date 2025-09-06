@@ -11,6 +11,13 @@
 		<category>Price</category>
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
+	<channel-type id="advanced-price" advanced="true">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Current Total Price</label>
+		<description>Total Price + Tax</description>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
+	</channel-type>
 	<channel-type id="price-level">
 		<item-type>Number</item-type>
 		<label>Price Level</label>

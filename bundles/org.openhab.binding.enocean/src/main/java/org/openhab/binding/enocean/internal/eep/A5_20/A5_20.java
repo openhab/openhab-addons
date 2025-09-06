@@ -26,7 +26,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 public class A5_20 extends _4BSMessage {
 
     public A5_20() {
-        super();
 
         this.supportsTeachInVariation3 = true;
     }

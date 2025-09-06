@@ -29,7 +29,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class TemperatureSensorDevice extends GenericDevice {
+public class TemperatureSensorDevice extends BaseDevice {
 
     public TemperatureSensorDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);

@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
-import org.openhab.binding.matter.internal.bridge.devices.GenericDevice.MatterDeviceOptions;
+import org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MatterDeviceOptions;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Metadata;

@@ -31,6 +31,7 @@ import pl.grzeslowski.jbambuapi.camera.CameraConfig;
  */
 @NonNullByDefault
 public class PrinterConfiguration {
+    public static String CLOUD_MODE_HOSTNAME = "us.mqtt.bambulab.com";
     public Series series = Series.A;
     public String serial = "";
     public String hostname = "";
@@ -63,9 +64,14 @@ public class PrinterConfiguration {
         }
     }
 
-    public void validateUsername() {
+    public void validateUsername() throws InitializationException {
         if (username.isBlank()) {
             username = LOCAL_USERNAME;
+            return;
+        }
+        // for cloud mode, the username should start with `u_`
+        if (CLOUD_MODE_HOSTNAME.equals(hostname) && !username.startsWith("u_")) {
+            throw new InitializationException(CONFIGURATION_ERROR, "@text/printer.handler.init.usernameCloudMode");
         }
     }
 

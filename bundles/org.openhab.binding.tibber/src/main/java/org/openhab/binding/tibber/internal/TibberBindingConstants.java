@@ -43,7 +43,10 @@ public class TibberBindingConstants {
     public static final String CHANNEL_GROUP_STATISTICS = "statistics";
 
     // price channels
-    public static final String CHANNEL_SPOT_PRICE = "spot-price";
+    public static final String CHANNEL_TOTAL_PRICE = "total";
+    public static final String CHANNEL_SPOT_PRICE = "spot";
+    public static final String CHANNEL_DEPRECATED_SPOT_PRICE = "spot-price";
+    public static final String CHANNEL_TAX = "tax";
     public static final String CHANNEL_PRICE_LEVELS = "level";
     public static final String CHANNEL_AVERAGE = "average";
 
@@ -51,9 +54,11 @@ public class TibberBindingConstants {
     public static final String CHANNEL_CONSUMPTION = "consumption";
     public static final String CHANNEL_MIN_COSNUMPTION = "minimum-consumption";
     public static final String CHANNEL_PEAK_CONSUMPTION = "peak-consumption";
+    public static final String CHANNEL_AVERAGE_CONSUMPTION = "average-consumption";
     public static final String CHANNEL_PRODUCTION = "production";
     public static final String CHANNEL_MIN_PRODUCTION = "minimum-production";
     public static final String CHANNEL_PEAK_PRODUCTION = "peak-production";
+    public static final String CHANNEL_POWER_BALANCE = "power-balance";
     public static final String CHANNEL_VOLTAGE_1 = "voltage1";
     public static final String CHANNEL_VOLTAGE_2 = "voltage2";
     public static final String CHANNEL_VOLTAGE_3 = "voltage3";

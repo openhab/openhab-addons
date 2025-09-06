@@ -29,7 +29,6 @@ public class CommandNotSupportedException extends I18Exception {
     private static final long serialVersionUID = -7784829325604153947L;
 
     public CommandNotSupportedException() {
-        super();
     }
 
     public CommandNotSupportedException(final String message) {

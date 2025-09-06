@@ -3,8 +3,7 @@ import { WebSocketSession } from "../app";
 import { Controller } from "../Controller";
 import { toJSON } from "../util/Json";
 import { ControllerNode } from "./ControllerNode";
-import { Clusters } from "./namespaces/Clusters";
-import { Nodes } from "./namespaces/Nodes";
+import { Clusters, Nodes } from "./namespaces";
 
 const logger = Logger.get("ClientController");
 

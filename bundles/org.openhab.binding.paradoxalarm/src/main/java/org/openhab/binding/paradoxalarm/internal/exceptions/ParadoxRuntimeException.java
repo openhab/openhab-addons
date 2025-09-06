@@ -26,7 +26,6 @@ public class ParadoxRuntimeException extends RuntimeException {
     }
 
     public ParadoxRuntimeException() {
-        super();
     }
 
     public ParadoxRuntimeException(String message, Throwable cause, boolean enableSuppression,

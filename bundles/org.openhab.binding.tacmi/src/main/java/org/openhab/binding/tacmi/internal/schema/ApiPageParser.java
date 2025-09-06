@@ -113,7 +113,6 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     // needed for unit rewrite. it seems OHM is not registered as symbol in the units.
     public ApiPageParser(TACmiSchemaHandler taCmiSchemaHandler, Map<String, ApiPageEntry> entries,
             TACmiChannelTypeProvider channelTypeProvider) {
-        super();
         this.taCmiSchemaHandler = taCmiSchemaHandler;
         this.entries = entries;
         this.channelTypeProvider = channelTypeProvider;

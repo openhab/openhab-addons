@@ -89,7 +89,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
     public DatastoreAdministratorInformationEntry statusEntry; // 8 DatastoreAdministratorInformationEntry R S A
 
     // Structs
-    public class DatastoreStatusEntry {
+    public static class DatastoreStatusEntry {
         /**
          * This field shall contain the current state of the target device operation.
          */
@@ -107,7 +107,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         }
     }
 
-    public class DatastoreNodeKeyEntry {
+    public static class DatastoreNodeKeyEntry {
         public Integer groupKeySetId; // uint16
         /**
          * Indicates whether entry in this list is pending, committed, or delete-pending.
@@ -122,7 +122,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         }
     }
 
-    public class DatastoreGroupInformationEntry {
+    public static class DatastoreGroupInformationEntry {
         /**
          * The unique identifier for the group.
          */
@@ -163,7 +163,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         }
     }
 
-    public class DatastoreBindingEntry {
+    public static class DatastoreBindingEntry {
         /**
          * The unique identifier for the Binding entry in the Datastore’s list of DatastoreBindingEntry.
          */
@@ -187,7 +187,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         }
     }
 
-    public class DatastoreGroupIDEntry {
+    public static class DatastoreGroupIDEntry {
         /**
          * The unique identifier for the group.
          */
@@ -205,7 +205,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         }
     }
 
-    public class DatastoreEndpointEntry {
+    public static class DatastoreEndpointEntry {
         /**
          * The unique identifier for the endpoint.
          */
@@ -249,7 +249,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         }
     }
 
-    public class DatastoreACLEntry {
+    public static class DatastoreACLEntry {
         /**
          * The unique identifier for the ACL entry in the Datastore’s list of DatastoreACLEntry.
          */
@@ -273,7 +273,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         }
     }
 
-    public class DatastoreNodeInformationEntry {
+    public static class DatastoreNodeInformationEntry {
         /**
          * The unique identifier for the node.
          */
@@ -321,7 +321,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         }
     }
 
-    public class DatastoreAdministratorInformationEntry {
+    public static class DatastoreAdministratorInformationEntry {
         /**
          * The unique identifier for the node.
          */

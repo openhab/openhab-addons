@@ -108,6 +108,8 @@ public class TibberHandler extends BaseThingHandler {
     private boolean isDisposed = true;
 
     private TimeSeries priceCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+    private TimeSeries energyCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+    private TimeSeries taxCache = new TimeSeries(TimeSeries.Policy.REPLACE);
     private TimeSeries levelCache = new TimeSeries(TimeSeries.Policy.REPLACE);
     private TimeSeries averageCache = new TimeSeries(TimeSeries.Policy.REPLACE);
 
@@ -128,9 +130,19 @@ public class TibberHandler extends BaseThingHandler {
             String group = channelUID.getGroupId();
             if (CHANNEL_GROUP_PRICE.equals(group)) {
                 switch (channelUID.getIdWithoutGroup()) {
+                    case CHANNEL_TOTAL_PRICE:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TOTAL_PRICE),
+                                priceCache);
+                        sendTimeSeries(
+                                new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_DEPRECATED_SPOT_PRICE),
+                                priceCache);
+                        break;
                     case CHANNEL_SPOT_PRICE:
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE),
-                                priceCache);
+                                energyCache);
+                        break;
+                    case CHANNEL_TAX:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TAX), taxCache);
                         break;
                     case CHANNEL_PRICE_LEVELS:
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_PRICE_LEVELS),
@@ -303,20 +315,36 @@ public class TibberHandler extends BaseThingHandler {
                         spotPrices.addAll(priceInfo.getAsJsonArray("today"));
                         spotPrices.addAll(priceInfo.getAsJsonArray("tomorrow"));
 
-                        TimeSeries timeSeriesPrices = new TimeSeries(TimeSeries.Policy.REPLACE);
+                        TimeSeries timeSeriesTotalPrices = new TimeSeries(TimeSeries.Policy.REPLACE);
+                        TimeSeries timeSeriesEnergyPrices = new TimeSeries(TimeSeries.Policy.REPLACE);
+                        TimeSeries timeSeriesTaxPrices = new TimeSeries(TimeSeries.Policy.REPLACE);
                         TimeSeries timeSeriesLevels = new TimeSeries(TimeSeries.Policy.REPLACE);
                         for (JsonElement entry : spotPrices) {
                             JsonObject entryObject = entry.getAsJsonObject();
                             Instant startsAt = Instant.parse(entryObject.get("startsAt").getAsString());
-                            String priceString = entryObject.get("total").getAsString();
-                            timeSeriesPrices.add(startsAt, getEnergyPrice(priceString));
+                            String totalPriceString = entryObject.get("total").getAsString();
+                            timeSeriesTotalPrices.add(startsAt, getEnergyPrice(totalPriceString));
+                            String energyPriceString = entryObject.get("energy").getAsString();
+                            timeSeriesEnergyPrices.add(startsAt, getEnergyPrice(energyPriceString));
+                            String taxPriceString = entryObject.get("tax").getAsString();
+                            timeSeriesTaxPrices.add(startsAt, getEnergyPrice(taxPriceString));
 
                             String levelString = entryObject.get("level").getAsString();
                             timeSeriesLevels.add(startsAt, Utils.mapToState(levelString));
                         }
-                        priceCache = timeSeriesPrices;
+                        priceCache = timeSeriesTotalPrices;
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TOTAL_PRICE),
+                                timeSeriesTotalPrices);
+                        sendTimeSeries(
+                                new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_DEPRECATED_SPOT_PRICE),
+                                timeSeriesTotalPrices);
+                        energyCache = timeSeriesEnergyPrices;
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE),
-                                timeSeriesPrices);
+                                timeSeriesEnergyPrices);
+                        taxCache = timeSeriesTaxPrices;
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TAX),
+                                timeSeriesTaxPrices);
+
                         levelCache = timeSeriesLevels;
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_PRICE_LEVELS),
                                 timeSeriesLevels);
@@ -483,14 +511,12 @@ public class TibberHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_DAILY_PRODUCTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "accumulatedProductionLastHour");
             updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, value, "kWh");
-            value = Utils.getJsonValue(jsonData, "power");
-            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "minPower");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "maxPower");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, value, "W");
-            value = Utils.getJsonValue(jsonData, "powerProduction");
-            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PRODUCTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "averagePower");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_AVERAGE_CONSUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "minPowerProduction");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_PRODUCTION, value, "W");
             value = Utils.getJsonValue(jsonData, "maxPowerProduction");
@@ -507,6 +533,29 @@ public class TibberHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_2, value, "A");
             value = Utils.getJsonValue(jsonData, "currentL3");
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_3, value, "A");
+
+            String consumption = Utils.getJsonValue(jsonData, "power");
+            String production = Utils.getJsonValue(jsonData, "powerProduction");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION, consumption, "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PRODUCTION, production, "W");
+            double consumptionValue = parseValueSafely(consumption, "consumption");
+            double productionValue = parseValueSafely(production, "production");
+
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_POWER_BALANCE, String.valueOf(consumptionValue - productionValue),
+                    "W");
+        }
+    }
+
+    private double parseValueSafely(@Nullable String value, String valueType) {
+        if (value == null || value.isBlank() || EMPTY_VALUE.equals(value) || NULL_VALUE.equals(value)) {
+            return 0.0;
+        }
+
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            logger.error("Unable to parse {} value: {}. Assuming 0.", valueType, value, e);
+            return 0.0;
         }
     }
 

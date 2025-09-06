@@ -101,7 +101,6 @@ public class ShadowBufferDto {
     }
 
     public ShadowBufferDto() {
-        super();
         this.clientId = "";
         this.cloudPort = 0;
         this.lightOn = false;

@@ -39,7 +39,6 @@ public class SilvercrestWifiSocketResponse {
      */
     public SilvercrestWifiSocketResponse(final String macAddress, final String hostAddress,
             final SilvercrestWifiSocketResponseType type, final SilvercrestWifiSocketVendor vendor) {
-        super();
         this.macAddress = macAddress;
         this.hostAddress = hostAddress;
         this.type = type;

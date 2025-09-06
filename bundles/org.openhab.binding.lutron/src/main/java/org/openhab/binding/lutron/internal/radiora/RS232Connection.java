@@ -51,7 +51,6 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     protected RS232MessageParser parser = new RS232MessageParser();
 
     public RS232Connection(SerialPortManager serialPortManager) {
-        super();
         this.serialPortManager = serialPortManager;
     }
 

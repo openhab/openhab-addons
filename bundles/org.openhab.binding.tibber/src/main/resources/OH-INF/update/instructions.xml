@@ -168,7 +168,45 @@
 				<label>Last Hour Production</label>
 				<description>Net energy produced since last hour shift in kilowatt-hours</description>
 			</add-channel>
+		</instruction-set>
 
+		<instruction-set targetVersion="4">
+			<add-channel id="average-consumption" groupIds="live">
+				<type>tibber:power</type>
+				<label>Average Consumption</label>
+				<description>Average power consumption since midnight in watts</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<add-channel id="power-balance" groupIds="live">
+				<type>tibber:power</type>
+				<label>Power Balance</label>
+				<description>Current power consumption (as positive value) and production (as negative value)</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="total" groupIds="price">
+				<type>tibber:price</type>
+				<label>Total Price</label>
+				<description>Total price including energy and taxes</description>
+			</add-channel>
+			<add-channel id="spot" groupIds="price">
+				<type>tibber:price</type>
+				<label>Spot Price</label>
+				<description>Spot prices for energy today and tomorrow</description>
+			</add-channel>
+			<add-channel id="tax" groupIds="price">
+				<type>tibber:price</type>
+				<label>Tax</label>
+				<description>Taxes and additional expenses</description>
+			</add-channel>
+			<update-channel id="spot-price" groupIds="price">
+				<type>tibber:advanced-price</type>
+				<label>Spot Price (DEPRECATED)</label>
+				<description>(DEPRECATED) Use total channel from price group</description>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
