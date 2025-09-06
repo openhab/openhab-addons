@@ -148,6 +148,17 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
                             localeProvider.getLocale()), e);
                 }
             }, 0, config.refresh, TimeUnit.SECONDS);
+        } else if (config.refresh == 0) {
+            // Run polling once to set initial thing state when refresh is disabled
+            pollingJob = scheduler.schedule(() -> {
+                try {
+                    pollDevice();
+                } catch (Exception e) {
+                    Bundle bundle = FrameworkUtil.getBundle(getClass());
+                    logger.warn("{}", translationProvider.getText(bundle, "error.device.polling", null,
+                            localeProvider.getLocale()), e);
+                }
+            }, 0, TimeUnit.SECONDS);
         }
     }
 
