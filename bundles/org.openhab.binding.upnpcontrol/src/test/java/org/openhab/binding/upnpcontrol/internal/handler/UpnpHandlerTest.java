@@ -36,12 +36,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -75,10 +77,16 @@ public class UpnpHandlerTest {
     protected @Nullable UpnpService upnpService;
 
     @Mock
+    protected @Nullable UpnpControlHandlerFactory handlerFactory;
+
+    @Mock
     protected @Nullable UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
 
     @Mock
     protected @Nullable UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
+
+    @Mock
+    protected @Nullable MediaService mediaService;
 
     protected UpnpControlBindingConfiguration configuration = new UpnpControlBindingConfiguration();
 
