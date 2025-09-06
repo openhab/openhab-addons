@@ -1380,8 +1380,7 @@ public class AutomowerHandler extends BaseThingHandler {
             if (attributes.has("calendar") && attributes.get("calendar").isJsonObject()) {
                 JsonObject calendarObj = attributes.getAsJsonObject("calendar");
                 if (calendarObj.has("tasks")) {
-                    List<CalendarTask> calendarTasks = mower.getAttributes().getCalendar().getTasks();
-                    calendarTasks.clear();
+                    List<CalendarTask> calendarTasks = new ArrayList<>();
                     JsonArray tasks = calendarObj.getAsJsonArray("tasks");
                     for (int i = 0; i < tasks.size(); i++) {
                         JsonObject taskObj = tasks.get(i).getAsJsonObject();
@@ -1405,6 +1404,7 @@ public class AutomowerHandler extends BaseThingHandler {
                                 task.getSunday(), task.getWorkAreaId());
                         calendarTasks.add(task);
                     }
+                    mower.getAttributes().getCalendar().setTasks(calendarTasks);
                     metaData.setStatusTimestamp(nowMs);
                     updateMowerChannelState(mower);
                 }

@@ -65,11 +65,6 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
 
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH == command) {
-            // REFRESH is not implemented as it would causes >100 channel updates in a row during setup (performance,
-            // API rate limit)
-            return;
-        }
         AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
         if (automowerBridgeHandler == null) {
             logger.warn("No AutomowerBridgeHandler found for thingId {}", this.thingId);
