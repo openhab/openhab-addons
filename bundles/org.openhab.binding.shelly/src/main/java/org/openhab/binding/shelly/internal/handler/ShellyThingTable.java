@@ -61,7 +61,7 @@ public class ShellyThingTable {
     public ShellyThingInterface getThing(String key) {
         ShellyThingInterface t = findThing(key);
         if (t == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Unknown thing for key '" + key + "'");
         }
         return t;
     }

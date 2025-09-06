@@ -140,12 +140,18 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly BLU
 
-| thing-type        | Model                                                  | Vendor ID               |
-| ----------------- | ------------------------------------------------------ | ----------------------- |
-| shellyblubutton   | Shelly BLU Button 1                                    | SBBT                    |
-| shellybludw       | Shelly BLU Door/Windows                                | SBDW                    |
-| shellyblumotion   | Shelly BLU Motion                                      | SBMO                    |
-| shellybluht       | Shelly BLU H&T                                         | SBMO                    |
+| thing-type           | Model                                                  | Vendor ID               |
+| -------------------- | ------------------------------------------------------ | ----------------------- |
+| shellyblubutton      | Shelly BLU Button 1, Shelly BLU Tough                  | SBBT-002C               |
+| shellyblubutton      | Shelly BLU Tough ZB                                    | SBBT-102C               |
+| shellybluwallswitch4 | Shelly BLU Wallswitch 4                                | SBBT-EU5027             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4                                 | SBBT-004CUS             |
+| shellybluht          | Shelly BLU H&T                                         | SBHT-003C               |
+| shellybluht          | Shelly BLU H&T ZB                                      | SBHT-203C               |
+| shellybludw          | Shelly BLU Door/Windows                                | SBDW-002C               |
+| shellyblumotion      | Shelly BLU Motion                                      | SBMO-003Z               |
+| shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
+| shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
 
 ### Special Thing Types
 
@@ -1541,6 +1547,10 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 
+## Shelly BLU Gateway, BLU Gateway 3 (thing-type: shellyblugw)
+
+There are no additional channels besides the device group.
+
 ### Shelly Pro 1 PM (thing-type: shellypro1pm)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
@@ -1746,6 +1756,59 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
+# Shelly BLU Wall Switch 4 (thing-type: shellybluwallswitch4)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| status1 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status2 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 2                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status3 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 3                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status4 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 4                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+# Shelly BLU RC Button 4 (thing-type: shellyblurcbutton4)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| status1 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status2 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 2                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status3 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 3                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status4 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 4                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+
 ### Shelly BLU Door/Window Sensor (thing-type: shellybludw)
 
 See notes on discovery of Shelly BLU devices above.
@@ -1755,6 +1818,8 @@ See notes on discovery of Shelly BLU devices above.
 | sensors | state         | Contact  | yes       | OPEN: Contact is open, CLOSED: Contact is closed                                    |
 |         | lux           | Number   | yes       | Brightness in Lux                                                                   |
 |         | tilt          | Number   | yes       | Tilt in ° (angle), -1 indicates that the sensor is not calibrated                   |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed)                             |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
@@ -1779,13 +1844,48 @@ See notes on discovery of Shelly BLU devices above.
 | ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
 | sensors | temperature   | Number   | yes       | Temperature, unit is reported by tempUnit               |
 |         | humidity      | Number   | yes       | Relative humidity in %                                  |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
-## Shelly BLU Gateway (thing-type: shellyblugw,  shellyblugw3)
+### Shelly BLU Distance(thing-type: shellybludistance)
 
-There are no additional channels beside the device group.
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | distance      | Number   | yes       | Distance in mm                                                                      |
+|         | vibration     | Switch   | yes       | ON: Vibration detected                                                              |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Shelly BLU Remote (thing-type: shellybluremote)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | channel       | Number   | yes       | Selected channel                                                                    |
+|         | steps         | Number   | yes       | Number of steps the wheel was moved                                                 |
+|         | rotationX     | Number   | yes       | Rotation X axis                                                                     |
+|         | rotationY     | Number   | yes       | Rotation Y axis                                                                     |
+|         | rotationZ     | Number   | yes       | Rotation Z axis                                                                     |
+|         | direction     | Number   | yes       | up / down                                                                           |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed)                             |
+| status1 | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+| status2 | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+
 
 ## Shelly Wall Displays
 
