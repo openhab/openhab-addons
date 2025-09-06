@@ -15,6 +15,7 @@ package org.openhab.binding.sedif.internal.dto;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.HashMap;
@@ -244,7 +245,7 @@ public class MeterReading extends Value {
         int monthsNum = (realEndDate.getYear() - realStartDate.getYear()) * 12 + realEndDate.getMonthValue()
                 - realStartDate.getMonthValue() + 1;
 
-        int weeksNum = (realEndDate.getYear() - realStartDate.getYear()) * 52 + endWeek - startWeek + 1;
+        int weeksNum = (int) ChronoUnit.WEEKS.between(realStartDate, realEndDate) + 1;
 
         data.weekConso = new Consommation[weeksNum];
         data.monthConso = new Consommation[monthsNum];
