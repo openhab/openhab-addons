@@ -15,11 +15,14 @@ package org.openhab.binding.sedif.internal.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Contracts} holds Contract information
  *
  * @author Laurent Arnal - Initial contribution
  */
 public class Contracts extends Value {
+    @SerializedName("contrats")
     public List<Contract> contracts = new ArrayList<Contract>();
 }
