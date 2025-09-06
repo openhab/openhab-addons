@@ -73,7 +73,7 @@ public class TestPriceCalculator {
             fail("Error reading file " + priceResponseFile);
         }
         fail("Error reading file " + priceResponseFile);
-        throw new RuntimeException("Failed to create PriceCalculator");
+        throw new IllegalArgumentException("Failed to create PriceCalculator with " + priceResponseFile);
     }
 
     @Test
