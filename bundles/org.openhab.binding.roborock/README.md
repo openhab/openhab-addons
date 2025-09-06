@@ -42,9 +42,9 @@ Just add a new thing, select the Roborock binding, then Roborock Account Binding
 | Number  | network#rssi                      | Network RSSI               |
 | String  | actions#command                   | Send command via cloud     |
 | String  | actions#rpc                       | Send command via cloud     |
-| Number  | status#segment-status             | Segment Status             |
-| Number  | status#map-status                 | Map Box Status             |
-| Number  | status#led-status                 | Led Box Status             |
+| Switch  | status#segment-status             | Segment Status             |
+| Switch  | status#map-status                 | Map Box Status             |
+| Switch  | status#led-status                 | Led Box Status             |
 | String  | info#carpet-mode                  | Carpet Mode details        |
 | String  | info#fw-features                  | Firmware Features          |
 | String  | info#room-mapping                 | Room Mapping details       |
@@ -101,7 +101,7 @@ Number:Area          statusArea      "Cleaned Area [%1.0fm²]"        <zoom>    
 Number:Time          statusTime      "Cleaning Time [%1.0f']"        <clock>         (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean-time" }
 String               statusError     "Error [%s]"                    <error>         (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#error-code" }
 Number:Dimensionless statusFanPow    "Fan Power [%1.0f%%]"           <signal>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#fan-power" }
-Number               statusClean     "In Cleaning Status [%1.0f]"    <switch>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#in-cleaning" }
+Switch               statusClean     "In Cleaning Status [%1.0f]"    <switch>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#in-cleaning" }
 Switch               statusDND       "DND Activated"                                 (gVacStat)      {channel="roborock:vacuum:034F0E45:status#dnd-enabled" }
 Number               statusStatus    "Status [%1.0f]"                <status>        (gVacStat)      {channel="roborock:vacuum:034F0E45:status#state"}
 Switch               isLocating      "Locating"                                      (gVacStat)      {channel="roborock:vacuum:034F0E45:status#is-locating" }

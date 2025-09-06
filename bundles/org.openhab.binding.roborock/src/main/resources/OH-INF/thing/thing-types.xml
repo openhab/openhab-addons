@@ -206,9 +206,9 @@
 		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="in-cleaning" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>In Cleaning?</label>
-		<description>1 = Cleaning, 0 = Not cleaning</description>
+		<description>On = Cleaning, Off = Not cleaning</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -216,9 +216,9 @@
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="map-present" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Map Present</label>
-		<description>1 = Map present, 0 = Map not present</description>
+		<description>On = Map present, Off = Map not present</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Status</tag>
@@ -255,7 +255,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="segment-status" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Segment Status</label>
 		<tags>
 			<tag>Status</tag>
@@ -264,7 +264,7 @@
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="map-status" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Map Status</label>
 		<tags>
 			<tag>Status</tag>
@@ -273,9 +273,9 @@
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="led-status" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Led Status</label>
-		<description>1 = LEDs on, 0 = LEDs off</description>
+		<description>On = LEDs on, Off = LEDs off</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -288,16 +288,24 @@
 		<item-type>Number</item-type>
 		<label>Water Box Mode</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false"/>
+		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false">
+			<options>
+				<option value="200">Off</option>
+				<option value="201">Low</option>
+				<option value="202">Medium</option>
+				<option value="203">High</option>
+				<option value="204">Customised</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="mop-mode">
 		<item-type>Number</item-type>
 		<label>Mop Mode</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state min="300" max="303" step="1" pattern="%.0f%%" readOnly="false">
@@ -331,7 +339,7 @@
 		<label>Lock Status</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>Info</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -340,7 +348,7 @@
 		<label>Mop Forbidden</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>Info</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -386,7 +394,7 @@
 		<label>Mop Cleaning Active</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>Info</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

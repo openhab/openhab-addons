@@ -538,8 +538,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_ERROR_CODE,
                     new StringType(VacuumErrorType.getType(getStatus.result[0].errorCode).getDescription()));
             updateState(CHANNEL_ERROR_ID, new DecimalType(getStatus.result[0].errorCode));
-            updateState(CHANNEL_IN_CLEANING, new DecimalType(getStatus.result[0].inCleaning));
-            updateState(CHANNEL_MAP_PRESENT, new DecimalType(getStatus.result[0].mapPresent));
+            updateState(CHANNEL_IN_CLEANING, OnOffType.from(1 == getStatus.result[0].inCleaning));
+            updateState(CHANNEL_MAP_PRESENT, OnOffType.from(1 == getStatus.result[0].mapPresent));
 
             // handle vacuum state
             StatusType state = StatusType.getType(getStatus.result[0].state);
@@ -845,7 +845,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     .getAsJsonArray();
             String stat = getSegmentStatus.get(0).getAsString();
             if (!"OK".equals(stat)) {
-                updateState(RobotCapabilities.SEGMENT_STATUS.getChannel(), new DecimalType(Integer.parseInt(stat)));
+                updateState(RobotCapabilities.SEGMENT_STATUS.getChannel(), OnOffType.from(1 == Integer.parseInt(stat)));
             }
         }
     }
@@ -858,7 +858,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             try {
                 String stat = getSegmentStatus.get(0).getAsString();
                 if (!"OK".equals(stat)) {
-                    updateState(RobotCapabilities.MAP_STATUS.getChannel(), new DecimalType(Integer.parseInt(stat)));
+                    updateState(RobotCapabilities.MAP_STATUS.getChannel(), OnOffType.from(1 == Integer.parseInt(stat)));
                 }
             } catch (ClassCastException | IllegalStateException e) {
                 logger.debug("Could not update numeric channel {} with '{}': {}",
@@ -875,7 +875,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             try {
                 String stat = getSegmentStatus.get(0).getAsString();
                 if (!"OK".equals(stat)) {
-                    updateState(RobotCapabilities.LED_STATUS.getChannel(), new DecimalType(Integer.parseInt(stat)));
+                    updateState(RobotCapabilities.LED_STATUS.getChannel(), OnOffType.from(1 == Integer.parseInt(stat)));
                 }
             } catch (ClassCastException | IllegalStateException e) {
                 logger.debug("Could not update numeric channel {} with '{}': {}",
