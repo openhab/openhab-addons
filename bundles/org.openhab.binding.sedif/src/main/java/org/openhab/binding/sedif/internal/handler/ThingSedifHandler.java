@@ -523,6 +523,8 @@ public class ThingSedifHandler extends BaseThingHandler {
 
             updateState(SEDIF_BASE_GROUP, CHANNEL_PRIX_MOYEN_EAU, new DecimalType(values.prixMoyenEau));
 
+            sedifState.setLastIndexDate(
+                    values.data.consommation[values.data.consommation.length - 1].dateIndex.toLocalDate());
             updateConsumptionTimeSeries(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.consommation);
             updateConsumptionTimeSeries(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.weekConso);
             updateConsumptionTimeSeries(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.monthConso);
