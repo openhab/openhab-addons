@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
@@ -91,7 +92,7 @@ public class FeedHandler extends BaseThingHandler {
         // It is not necessary to check if the URL is valid, this will be done in fetchFeedData() method
         String urlString = (String) configuration.get(URL);
         try {
-            url = new URL(urlString);
+            url = URI.create(urlString).toURL();
         } catch (MalformedURLException e) {
             logger.warn("Url '{}' is not valid: ", urlString, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
