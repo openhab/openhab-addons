@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.handler;
+package org.openhab.binding.sbus.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sbus.BindingConstants;
-import org.openhab.binding.sbus.handler.config.SbusChannelConfig;
-import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.internal.SbusService;
+import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
+import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.HSBType;
@@ -33,13 +33,24 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ro.ciprianpascu.sbus.msg.ReadRgbwRequest;
+import ro.ciprianpascu.sbus.msg.ReadRgbwResponse;
+import ro.ciprianpascu.sbus.msg.ReadStatusChannelsRequest;
+import ro.ciprianpascu.sbus.msg.ReadStatusChannelsResponse;
+import ro.ciprianpascu.sbus.msg.SbusResponse;
+import ro.ciprianpascu.sbus.msg.WriteRgbwRequest;
+import ro.ciprianpascu.sbus.msg.WriteSingleChannelRequest;
+import ro.ciprianpascu.sbus.procimg.ByteRegister;
+import ro.ciprianpascu.sbus.procimg.InputRegister;
+import ro.ciprianpascu.sbus.procimg.Register;
+import ro.ciprianpascu.sbus.procimg.WordRegister;
+
 /**
  * The {@link SbusRgbwHandler} is responsible for handling commands for Sbus RGBW devices.
  * It supports reading and controlling red, green, blue, and white color channels.
  *
  * @author Ciprian Pascu - Initial contribution
  */
-@NonNullByDefault
 public class SbusRgbwHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusRgbwHandler.class);
@@ -113,11 +124,11 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
                 if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
                     // Read status channels for switch states
-                    int[] statuses = adapter.readStatusChannels(config.subnetId, config.id);
+                    int[] statuses = readStatusChannels(adapter, config.subnetId, config.id);
                     boolean isActive = isAnyRgbwValueActive(statuses);
                     // Read RGBW values for this channel
                     int[] rgbwValues = isActive ? statuses
-                            : adapter.readRgbw(config.subnetId, config.id, channelConfig.channelNumber);
+                            : readRgbw(adapter, config.subnetId, config.id, channelConfig.channelNumber);
                     fixRgbwValues(rgbwValues);
                     // Check if white channel should be disabled
                     boolean enableWhite = true; // Default to true if not specified
@@ -134,7 +145,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                     updateState(channel.getUID(), color);
                 } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
                     // Read status channels for switch states
-                    int[] statuses = adapter.readStatusChannels(config.subnetId, config.id);
+                    int[] statuses = readStatusChannels(adapter, config.subnetId, config.id);
 
                     // Update switch state
                     boolean isActive = isAnyRgbwValueActive(statuses);
@@ -177,7 +188,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)
                         && command instanceof HSBType hsbCommand) {
                     if (hsbCommand.getBrightness().intValue() == 0) {
-                        adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, 0, -1);
+                        writeSingleChannel(adapter, config.subnetId, config.id, channelConfig.channelNumber, 0, -1);
                         hsbCommand = new HSBType(hsbCommand.getHue(), hsbCommand.getSaturation(), PercentType.ZERO);
                     } else {
                         // Check if white channel should be disabled
@@ -194,8 +205,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                             var converted = ColorUtil.hsbToRgb(hsbCommand);
                             rgbw = new int[] { converted[0], converted[1], converted[2], 0 };
                         }
-                        adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw);
-                        adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, 100, -1);
+                        writeRgbw(adapter, config.subnetId, config.id, channelConfig.channelNumber, rgbw);
+                        writeSingleChannel(adapter, config.subnetId, config.id, channelConfig.channelNumber, 100, -1);
                         hsbCommand = new HSBType(hsbCommand.getHue(), hsbCommand.getSaturation(), PercentType.HUNDRED);
                     }
                     updateState(channelUID, hsbCommand);
@@ -203,7 +214,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                         && command instanceof OnOffType onOffCommand) {
                     // Handle switch command
                     boolean isOn = onOffCommand == OnOffType.ON;
-                    adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, isOn ? 100 : 0,
+                    writeSingleChannel(adapter, config.subnetId, config.id, channelConfig.channelNumber, isOn ? 100 : 0,
                             -1);
                     updateState(channelUID, OnOffType.from(isOn));
                 }
@@ -241,5 +252,216 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 rgbw[i] = 0;
             }
         }
+    }
+
+    // SBUS Protocol Adaptation Methods
+
+    /**
+     * Reads status channel values from an SBUS device.
+     *
+     * @param adapter the SBUS service adapter
+     * @param subnetId the subnet ID of the device
+     * @param deviceId the device ID
+     * @return array of status channel values
+     * @throws Exception if the SBUS transaction fails
+     */
+    private int[] readStatusChannels(SbusService adapter, int subnetId, int deviceId) throws Exception {
+        // Construct SBUS request
+        ReadStatusChannelsRequest request = new ReadStatusChannelsRequest();
+        request.setSubnetID(subnetId);
+        request.setUnitID(deviceId);
+
+        // Execute transaction and parse response
+        SbusResponse response = adapter.executeTransaction(request);
+        if (!(response instanceof ReadStatusChannelsResponse)) {
+            throw new Exception("Unexpected response type: " + response.getClass().getSimpleName());
+        }
+
+        ReadStatusChannelsResponse statusResponse = (ReadStatusChannelsResponse) response;
+        InputRegister[] registers = statusResponse.getRegisters();
+        int[] statusValues = new int[registers.length];
+        for (int i = 0; i < registers.length; i++) {
+            statusValues[i] = registers[i].getValue() & 0xff;
+        }
+        return statusValues;
+    }
+
+    /**
+     * Reads RGBW values from an SBUS device.
+     *
+     * @param adapter the SBUS service adapter
+     * @param subnetId the subnet ID of the device
+     * @param deviceId the device ID
+     * @param channelNumber the channel number
+     * @return array of RGBW values [R, G, B, W]
+     * @throws Exception if the SBUS transaction fails
+     */
+    private int[] readRgbw(SbusService adapter, int subnetId, int deviceId, int channelNumber) throws Exception {
+        // Construct SBUS request
+        ReadRgbwRequest request = new ReadRgbwRequest();
+        request.setSubnetID(subnetId);
+        request.setUnitID(deviceId);
+        request.setLoopNumber(channelNumber);
+
+        // Execute transaction and parse response
+        SbusResponse response = adapter.executeTransaction(request);
+        if (!(response instanceof ReadRgbwResponse)) {
+            throw new Exception("Unexpected response type: " + response.getClass().getSimpleName());
+        }
+
+        ReadRgbwResponse rgbwResponse = (ReadRgbwResponse) response;
+        InputRegister[] registers = rgbwResponse.getRegisters();
+        int[] rgbwValues = new int[Math.min(4, registers.length)];
+        for (int i = 0; i < rgbwValues.length; i++) {
+            rgbwValues[i] = registers[i].toUnsignedShort();
+        }
+        return rgbwValues;
+    }
+
+    /**
+     * Writes RGBW values to an SBUS device.
+     *
+     * @param adapter the SBUS service adapter
+     * @param subnetId the subnet ID of the device
+     * @param deviceId the device ID
+     * @param channelNumber the channel number
+     * @param rgbwValues array of RGBW values [R, G, B, W]
+     * @throws Exception if the SBUS transaction fails
+     */
+    private void writeRgbw(SbusService adapter, int subnetId, int deviceId, int channelNumber, int[] rgbwValues)
+            throws Exception {
+        // Construct SBUS request
+        WriteRgbwRequest request = new WriteRgbwRequest();
+        request.setSubnetID(subnetId);
+        request.setUnitID(deviceId);
+        // Note: WriteRgbwRequest might not have setChannelNo method, using basic request
+
+        // Create registers for RGBW values
+        Register[] registers = new Register[rgbwValues.length];
+        for (int i = 0; i < rgbwValues.length; i++) {
+            registers[i] = new ByteRegister((byte) (rgbwValues[i] & 0xff));
+        }
+        request.setRegisters(registers);
+
+        // Execute transaction
+        adapter.executeTransaction(request);
+    }
+
+    /**
+     * Writes a single channel value to an SBUS device.
+     *
+     * @param adapter the SBUS service adapter
+     * @param subnetId the subnet ID of the device
+     * @param deviceId the device ID
+     * @param channelNumber the channel number
+     * @param value the channel value (0-100)
+     * @param duration the duration (-1 for indefinite)
+     * @throws Exception if the SBUS transaction fails
+     */
+    private void writeSingleChannel(SbusService adapter, int subnetId, int deviceId, int channelNumber, int value,
+            int duration) throws Exception {
+        // Construct SBUS request
+        WriteSingleChannelRequest request = new WriteSingleChannelRequest(duration >= 0);
+        request.setSubnetID(subnetId);
+        request.setUnitID(deviceId);
+        request.setChannelNo(channelNumber);
+
+        // Create registers for value and duration
+        Register[] registers;
+        if (duration >= 0) {
+            registers = new Register[2];
+            registers[0] = new ByteRegister((byte) (value & 0xff)); // Value register
+            registers[1] = new WordRegister((short) duration); // Duration register
+        } else {
+            registers = new Register[1];
+            registers[0] = new ByteRegister((byte) (value & 0xff)); // Value register
+        }
+        request.setRegisters(registers);
+
+        // Execute transaction
+        adapter.executeTransaction(request);
+    }
+
+    // Async Message Handling
+
+    @Override
+    protected void processAsyncMessage(SbusResponse response) {
+        for (Channel channel : getThing().getChannels()) {
+            if (!isLinked(channel.getUID())) {
+                continue;
+            }
+
+            var channelTypeUID = channel.getChannelTypeUID();
+            if (channelTypeUID != null) {
+                String channelTypeId = channelTypeUID.getId();
+                int[] rgbwValues = new int[] {};
+                // Process the response based on type and available channels
+                if (response instanceof ReadStatusChannelsResponse
+                        && BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
+                    // Process status channel response using existing logic
+                    ReadStatusChannelsResponse statusResponse = (ReadStatusChannelsResponse) response;
+                    rgbwValues = extractStatusValues(statusResponse);
+                } else if (response instanceof ReadRgbwResponse
+                        && BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
+                    // Process RGBW response using existing logic
+                    ReadRgbwResponse rgbwResponse = (ReadRgbwResponse) response;
+                    rgbwValues = extractRgbwValues(rgbwResponse);
+                }
+                fixRgbwValues(rgbwValues);
+                // Check if white channel should be disabled
+                boolean enableWhite = true; // Default to true if not specified
+                if (channel.getConfiguration().containsKey("enableWhite")) {
+                    enableWhite = (boolean) channel.getConfiguration().get("enableWhite");
+                }
+                if (!enableWhite) {
+                    rgbwValues = new int[] { rgbwValues[0], rgbwValues[1], rgbwValues[2] };
+                }
+                // Convert RGBW to HSB using our custom conversion
+                HSBType color = ColorUtil.rgbToHsb(rgbwValues);
+                color = new HSBType(color.getHue(), color.getSaturation(),
+                        color.getBrightness().intValue() > 0 ? PercentType.HUNDRED : PercentType.ZERO);
+                updateState(channel.getUID(), color);
+                logger.debug("Processed async RGBW message for handler {}", getThing().getUID());
+            }
+        }
+    }
+
+    @Override
+    protected boolean isMessageRelevant(SbusResponse response) {
+        if (!(response instanceof ReadStatusChannelsResponse || response instanceof ReadRgbwResponse)) {
+            return false;
+        }
+
+        // Check if the message is for this device based on subnet and unit ID
+        SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
+        return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
+    }
+
+    /**
+     * Extract status values from ReadStatusChannelsResponse.
+     * Reuses existing logic from readStatusChannels method.
+     */
+    private int[] extractStatusValues(ReadStatusChannelsResponse response) {
+        InputRegister[] registers = response.getRegisters();
+        int[] statuses = new int[registers.length];
+
+        for (int i = 0; i < registers.length; i++) {
+            statuses[i] = registers[i].getValue() & 0xff;
+        }
+        return statuses;
+    }
+
+    /**
+     * Extract RGBW values from ReadRgbwResponse.
+     * Reuses existing logic from readRgbw method.
+     */
+    private int[] extractRgbwValues(ReadRgbwResponse response) {
+        InputRegister[] registers = response.getRegisters();
+        int[] rgbwValues = new int[Math.min(4, registers.length)];
+
+        for (int i = 0; i < registers.length; i++) {
+            rgbwValues[i] = registers[i].toUnsignedShort();
+        }
+        return rgbwValues;
     }
 }

@@ -36,7 +36,9 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE = new ThingTypeUID(BINDING_ID, "temperature");
     public static final ThingTypeUID THING_TYPE_RGBW = new ThingTypeUID(BINDING_ID, "rgbw");
-    public static final ThingTypeUID THING_TYPE_CONTACT = new ThingTypeUID(BINDING_ID, "contact");
+    public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
+    public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
+    public static final ThingTypeUID THING_TYPE_LUX_SENSOR = new ThingTypeUID(BINDING_ID, "lux-sensor");
 
     // Channel IDs for Switch Device
     public static final String CHANNEL_SWITCH_STATE = "state";
@@ -51,10 +53,18 @@ public class BindingConstants {
     public static final String CHANNEL_WHITE = "white";
     public static final String CHANNEL_COLOR = "color";
 
+    // Channel IDs for Motion Sensor Device
+    public static final String CHANNEL_MOTION = "motion";
+
+    // Channel IDs for Lux Sensor Device
+    public static final String CHANNEL_LUX = "lux";
+
     // Channel Types
     public static final String CHANNEL_TYPE_COLOR = "color-channel";
     public static final String CHANNEL_TYPE_SWITCH = "switch-channel";
     public static final String CHANNEL_TYPE_DIMMER = "dimmer-channel";
     public static final String CHANNEL_TYPE_PAIRED = "paired-channel";
     public static final String CHANNEL_TYPE_CONTACT = "contact-channel";
+    public static final String CHANNEL_TYPE_MOTION = "motion-channel";
+    public static final String CHANNEL_TYPE_LUX = "lux-channel";
 }

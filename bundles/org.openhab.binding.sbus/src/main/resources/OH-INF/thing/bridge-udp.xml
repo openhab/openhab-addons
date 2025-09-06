@@ -13,10 +13,16 @@
 				<default>localhost</default>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="port" type="integer">
+			<parameter name="port" type="integer" required="true">
 				<label>Port</label>
-				<description>Port of the slave</description>
-				<default>6000</default>
+				<description>Port for UDP connection</description>
+				<default>502</default>
+			</parameter>
+			<parameter name="timeout" type="integer">
+				<label>Response Timeout</label>
+				<description>Timeout in milliseconds to wait for response after sending a request</description>
+				<default>3000</default>
+				<unitLabel>ms</unitLabel>
 			</parameter>
 		</config-description>
 	</bridge-type>
