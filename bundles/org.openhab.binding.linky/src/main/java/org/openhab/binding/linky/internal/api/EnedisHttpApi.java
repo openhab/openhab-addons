@@ -268,7 +268,7 @@ public class EnedisHttpApi {
             ResponseMeter meterResponse = getData(handler, url, ResponseMeter.class);
             return meterResponse.meterReading;
         } else {
-            String url = String.format(apiUrl, mps, prmId, dtStart, dtEnd);
+            String url = String.format(apiUrl, mps, prmId, "C5", dtStart, dtEnd);
             ConsumptionReport consomptionReport = getData(handler, url, ConsumptionReport.class);
             return MeterReading.convertFromComsumptionReport(consomptionReport);
         }
