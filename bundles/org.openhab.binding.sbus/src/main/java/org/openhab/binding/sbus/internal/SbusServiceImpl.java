@@ -35,16 +35,6 @@ public class SbusServiceImpl implements SbusService {
     private @Nullable SbusAdapter adapter;
 
     @Override
-    public void initialize(String host, int port) throws Exception {
-        try {
-            adapter = new SbusAdapter(host, port);
-            logger.debug("SBUS adapter initialized for {}:{}", host, port);
-        } catch (SbusException e) {
-            throw new IllegalStateException("Failed to initialize SBUS adapter: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
     public void initialize(String host, int port, int timeout) throws Exception {
         try {
             adapter = new SbusAdapter(host, port, timeout);

@@ -57,15 +57,6 @@ public interface SbusService {
     void removeMessageListener(SbusMessageListener listener);
 
     /**
-     * Initializes the service with connection parameters.
-     *
-     * @param host the host address of the Sbus device
-     * @param port the port number to use
-     * @throws Exception if initialization fails
-     */
-    void initialize(String host, int port) throws Exception;
-
-    /**
      * Initializes the service with connection parameters including timeout.
      *
      * @param host the host address of the Sbus device
