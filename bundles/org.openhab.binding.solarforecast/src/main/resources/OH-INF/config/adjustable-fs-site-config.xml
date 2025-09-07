@@ -4,20 +4,19 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:solarforecast:fs-site">
+	<config-description uri="thing-type:solarforecast:adjustable-fs-site">
 		<parameter name="location" type="text">
 			<context>location</context>
 			<label>PV Location</label>
 			<description>Location of photovoltaic system. Location from openHAB settings is used in case of empty value.</description>
 		</parameter>
+		<parameter name="apiKey" type="text" required="true">
+			<label>API Key</label>
+			<description>If you have a paid subscription plan</description>
+		</parameter>
 		<parameter name="inverterKwp" type="decimal" step="0.1">
 			<label>Inverter Kilowatt Peak</label>
 			<description>Inverter maximum kilowatt peak capability</description>
-		</parameter>
-		<parameter name="apiKey" type="text">
-			<label>API Key</label>
-			<description>If you have a paid subscription plan</description>
-			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
