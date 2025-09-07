@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.serial.internal;
 
-import static org.openhab.binding.serial.internal.SerialBindingConstants.THING_TYPE_BRIDGE;
-import static org.openhab.binding.serial.internal.SerialBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.serial.internal.SerialBindingConstants.*;
 
 import java.util.Set;
 
@@ -21,6 +20,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.handler.SerialBridgeHandler;
 import org.openhab.binding.serial.internal.handler.SerialDeviceHandler;
+import org.openhab.binding.serial.internal.handler.TcpBridgeHandler;
+import org.openhab.binding.serial.internal.handler.TcpServerBridgeHandler;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -42,7 +43,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.serial", service = ThingHandlerFactory.class)
 public class SerialHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SERIAL_BRIDGE,
+            THING_TYPE_TCP_BRIDGE, THING_TYPE_TCP_SERVER_BRIDGE, THING_TYPE_DEVICE);
 
     private final SerialPortManager serialPortManager;
 
@@ -60,8 +62,12 @@ public class SerialHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(final Thing thing) {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
+        if (THING_TYPE_SERIAL_BRIDGE.equals(thingTypeUID)) {
             return new SerialBridgeHandler((Bridge) thing, serialPortManager);
+        } else if (THING_TYPE_TCP_BRIDGE.equals(thingTypeUID)) {
+            return new TcpBridgeHandler((Bridge) thing);
+        } else if (THING_TYPE_TCP_SERVER_BRIDGE.equals(thingTypeUID)) {
+            return new TcpServerBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return new SerialDeviceHandler(thing);
         }
