@@ -185,7 +185,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
     protected void resetPollingTimer() {
         ScheduledFuture<?> job = pollingJob;
         if (job != null) {
-            job.cancel(false); // Don't interrupt if already running
+            job.cancel(false); // Cancel the polling job without interrupting if it is currently running (cancel(false))
         }
         startPolling();
         logger.debug("Reset polling timer for handler {}", getThing().getUID());
