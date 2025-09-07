@@ -22,10 +22,12 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,6 +52,7 @@ import org.openhab.binding.network.internal.utils.PingResult;
 public class PresenceDetectionTest {
 
     private @NonNullByDefault({}) PresenceDetection subject;
+    private @NonNullByDefault({}) PresenceDetection asyncSubject;
 
     private @Mock @NonNullByDefault({}) Consumer<PresenceDetectionValue> callback;
     private @Mock @NonNullByDefault({}) ExecutorService detectionExecutorService;
@@ -65,7 +68,8 @@ public class PresenceDetectionTest {
         doReturn(ArpPingUtilEnum.IPUTILS_ARPING).when(networkUtils).determineNativeArpPingMethod(anyString());
         doReturn(IpPingMethodEnum.WINDOWS_PING).when(networkUtils).determinePingMethod();
 
-        subject = spy(new PresenceDetection(listener, scheduledExecutorService, Duration.ofSeconds(2)));
+        // Inject a direct executor so async tasks run synchronously in tests
+        subject = spy(new PresenceDetection(listener, Duration.ofSeconds(2), Runnable::run));
         subject.networkUtils = networkUtils;
 
         // Set a useful configuration. The default presenceDetection is a no-op.
@@ -77,36 +81,59 @@ public class PresenceDetectionTest {
         subject.setUseArpPing(true, "arping", ArpPingUtilEnum.IPUTILS_ARPING);
         subject.setUseIcmpPing(true);
 
+        asyncSubject = spy(new PresenceDetection(listener, Duration.ofSeconds(2), Executors.newSingleThreadExecutor()));
+
+        asyncSubject.networkUtils = networkUtils;
+        asyncSubject.setHostname("127.0.0.1");
+        asyncSubject.setTimeout(Duration.ofMillis(300));
+        asyncSubject.setUseDhcpSniffing(false);
+        asyncSubject.setIOSDevice(true);
+        asyncSubject.setServicePorts(Set.of(1010));
+        asyncSubject.setUseArpPing(true, "arping", ArpPingUtilEnum.IPUTILS_ARPING);
+        asyncSubject.setUseIcmpPing(true);
+
         assertThat(subject.pingMethod, is(IpPingMethodEnum.WINDOWS_PING));
     }
 
-    // Depending on the amount of test methods an according amount of threads is spawned.
-    // We will check if they spawn and return in time.
+    // Depending on the amount of test methods an according amount of threads is used.
     @Test
-    public void threadCountTest() {
-        assertNull(subject.detectionExecutorService);
+    public void usedThreadCountTest() {
+        // Custom executor to count submitted tasks
+        class CountingExecutor implements java.util.concurrent.Executor {
+            int count = 0;
+
+            @Override
+            public void execute(@Nullable Runnable command) {
+                count++;
+                if (command != null) {
+                    command.run();
+                }
+            }
+        }
+        CountingExecutor countingExecutor = new CountingExecutor();
+
+        // Create a new subject with the counting executor
+        subject = spy(new PresenceDetection(listener, Duration.ofSeconds(2), countingExecutor));
+        subject.networkUtils = networkUtils;
+        subject.setHostname("127.0.0.1");
+        subject.setTimeout(Duration.ofMillis(300));
+        subject.setUseDhcpSniffing(false);
+        subject.setIOSDevice(true);
+        subject.setServicePorts(Set.of(1010));
+        subject.setUseArpPing(true, "arping", ArpPingUtilEnum.IPUTILS_ARPING);
+        subject.setUseIcmpPing(true);
 
         doNothing().when(subject).performArpPing(any(), any());
         doNothing().when(subject).performJavaPing(any());
         doNothing().when(subject).performSystemPing(any());
         doNothing().when(subject).performServicePing(any(), anyInt());
 
-        doReturn(waitForResultExecutorService).when(subject).getThreadsFor(1);
-
         subject.getValue(callback -> {
+            // No-op callback
         });
 
-        // Thread count: ARP + ICMP + 1*TCP
-        assertThat(subject.detectionChecks, is(3));
-        assertNotNull(subject.detectionExecutorService);
-
-        // "Wait" for the presence detection to finish
-        ArgumentCaptor<Runnable> runnableCapture = ArgumentCaptor.forClass(Runnable.class);
-        verify(waitForResultExecutorService, times(1)).execute(runnableCapture.capture());
-        runnableCapture.getValue().run();
-
-        assertThat(subject.detectionChecks, is(0));
-        assertNull(subject.detectionExecutorService);
+        // Thread count: ARP + ICMP + 1*TCP + task completion watcher = 4
+        assertThat(countingExecutor.count, is(4));
     }
 
     @Test
@@ -117,27 +144,11 @@ public class PresenceDetectionTest {
                 anyString(), any(), any());
         doReturn(pingResult).when(networkUtils).servicePing(anyString(), anyInt(), any());
 
-        doReturn(detectionExecutorService).when(subject).getThreadsFor(3);
-        doReturn(waitForResultExecutorService).when(subject).getThreadsFor(1);
-
         subject.performPresenceDetection();
 
         assertThat(subject.detectionChecks, is(3));
 
-        // Perform the different presence detection threads now
-        ArgumentCaptor<Runnable> capture = ArgumentCaptor.forClass(Runnable.class);
-        verify(detectionExecutorService, times(3)).execute(capture.capture());
-        for (Runnable r : capture.getAllValues()) {
-            r.run();
-        }
-
-        // "Wait" for the presence detection to finish
-        ArgumentCaptor<Runnable> runnableCapture = ArgumentCaptor.forClass(Runnable.class);
-        verify(waitForResultExecutorService, times(1)).execute(runnableCapture.capture());
-        runnableCapture.getValue().run();
-
-        assertThat(subject.detectionChecks, is(0));
-
+        // All detection methods should be called (direct executor runs synchronously)
         verify(subject, times(0)).performJavaPing(any());
         verify(subject).performSystemPing(any());
         verify(subject).performArpPing(any(), any());
@@ -158,41 +169,22 @@ public class PresenceDetectionTest {
                 anyString(), any(), any());
         doReturn(pingResult).when(networkUtils).servicePing(anyString(), anyInt(), any());
 
-        doReturn(detectionExecutorService).when(subject).getThreadsFor(3);
-        doReturn(waitForResultExecutorService).when(subject).getThreadsFor(1);
-
         // We expect no valid value
-        assertTrue(subject.cache.isExpired());
+        assertTrue(asyncSubject.cache.isExpired());
         // Get value will issue a PresenceDetection internally.
-        subject.getValue(callback);
-        verify(subject).performPresenceDetection();
-        assertNotNull(subject.detectionExecutorService);
-        // There should be no straight callback yet
-        verify(callback, times(0)).accept(any());
-
-        // Perform the different presence detection threads now
-        ArgumentCaptor<Runnable> capture = ArgumentCaptor.forClass(Runnable.class);
-        verify(detectionExecutorService, times(3)).execute(capture.capture());
-        for (Runnable r : capture.getAllValues()) {
-            r.run();
-        }
-
-        // "Wait" for the presence detection to finish
-        capture = ArgumentCaptor.forClass(Runnable.class);
-        verify(waitForResultExecutorService, times(1)).execute(capture.capture());
-        capture.getValue().run();
-
-        // Although there are multiple partial results and a final result,
-        // the getValue() consumers get the fastest response possible, and only once.
+        asyncSubject.getValue(callback);
+        verify(asyncSubject).performPresenceDetection();
+        Thread.sleep(200); // give it some time to execute
+        // Callback should be called once with the result (since we use direct executor)
         verify(callback, times(1)).accept(any());
 
         // As long as the cache is valid, we can get the result back again
-        subject.getValue(callback);
+        asyncSubject.getValue(callback);
         verify(callback, times(2)).accept(any());
 
         // Invalidate value, we should not get a new callback immediately again
-        subject.cache.invalidateValue();
-        subject.getValue(callback);
+        asyncSubject.cache.invalidateValue();
+        asyncSubject.getValue(callback);
         verify(callback, times(2)).accept(any());
     }
 }
