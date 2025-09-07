@@ -35,19 +35,41 @@ Just add a new thing, select the Roborock binding, then Roborock Account Binding
 
 ### Channels
 
-| Type    | Channel                           | Description                |
-|---------|-----------------------------------|----------------------------|
-| String  | network#ssid                      | Network SSID               |
-| String  | network#bssid                     | Network BSSID              |
-| Number  | network#rssi                      | Network RSSI               |
-| String  | actions#command                   | Send command via cloud     |
-| String  | actions#rpc                       | Send command via cloud     |
-| Switch  | status#segment-status             | Segment Status             |
-| Switch  | status#map-status                 | Map Box Status             |
-| Switch  | status#led-status                 | Led Box Status             |
-| String  | info#carpet-mode                  | Carpet Mode details        |
-| String  | info#room-mapping                 | Room Mapping details       |
-| String  | info#multi-maps-list              | Maps Listing details       |
+| Type                 | Channel                           | Description                                |
+|----------------------|-----------------------------------|--------------------------------------------|
+| String               | network#ssid                      | Network SSID                               |
+| String               | network#bssid                     | Network BSSID                              |
+| Number               | network#rssi                      | Network RSSI                               |
+| String               | actions#control                   | Control vacuum (dock, vacuum, spot, pause) |
+| String               | actions#command                   | Send command via cloud                     |
+| String               | actions#rpc                       | Send command via cloud                     |
+| Switch               | actions#power                     | Power On/Off                               |
+| Switch               | status#segment-status             | Segment Status                             |
+| Number:Dimensionless | status#battery                    | Battery Status                             |
+| Number:Area          | status#clean-area                 | Total Cleaning Area                        |
+| Number:Time          | status#clean-time                 | Total Cleaning Time                        |
+| String               | status#error                      | Error reported by vacuum                   |
+| Number               | status#fan-power                  | Fan Power                                  |
+| Switch               | status#dnd-enabled                | Do not Disturb Status                      |
+| Number               | status#state                      | Vacuum Status                              |
+| Switch               | status#map-status                 | Map Box Status                             |
+| Switch               | status#led-status                 | Led Box Status                             |
+| String               | info#carpet-mode                  | Carpet Mode details                        |
+| String               | info#room-mapping                 | Room Mapping details                       |
+| String               | info#multi-maps-list              | Maps Listing details                       |
+| Number:Time          | consumables#main-brush-time       | Main Brush Time till Replacement           |
+| Number:Time          | consumables#side-brush-time       | Side Brush Time till Replacement           |
+| Number:Time          | consumables#sensor-dirt-time      | Sensor till Cleaning                       |
+| Number:Time          | consumables#filter-time           | Filter Time till Replacement               |
+| Number:Area          | history#total-clean-area          | Total Cleaned Area                         |
+| String               | history#total-clean-time          | Total Clean Time                           |
+| Number               | history#total-clean-count         | Total # Cleanings                          |
+| String               | cleaning#last-clean-start-time    | Last Cleaning Start time                   |
+| String               | cleaning#last-clean-end-time      | Last Cleaning End time                     |
+| Number:Area          | cleaning#last-clean-area          | Last Cleaned Area                          |
+| Number:Time          | cleaning#last-clean-duration      | Last Clean Time                            |
+| Number               | cleaning#last-clean-error         | Last Clean Error                           |
+| Switch               | cleaning#last-clean-finish        | Last Cleaning Completed                    |
 
 Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
 
@@ -93,6 +115,7 @@ Group                gVacLast        "Last Cleaning Details"         <calendar> 
 
 String               actionControl   "Vacuum Control"                                                {channel="roborock:vacuum:034F0E45:actions#control" }
 String               actionCommand   "Vacuum Command"                                                {channel="roborock:vacuum:034F0E45:actions#commands" }
+Switch               actionPower     "Vacuum On/Off"                                                 {channel="roborock:vacuum:034F0E45:actions#power" }
 
 Number:Dimensionless statusBat       "Battery Level [%1.0f%%]"       <battery>       (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#battery" }
 Number:Area          statusArea      "Cleaned Area [%1.0fm²]"        <zoom>          (gVac,gVacStat) {channel="roborock:vacuum:034F0E45:status#clean-area" }
