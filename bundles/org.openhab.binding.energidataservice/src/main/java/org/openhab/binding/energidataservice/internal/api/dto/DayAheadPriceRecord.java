@@ -31,6 +31,11 @@ public record DayAheadPriceRecord(@SerializedName("TimeUTC") Instant time,
         @Nullable @SerializedName("DayAheadPriceEUR") BigDecimal dayAheadPriceEUR) implements SpotPriceRecord {
 
     @Override
+    public Instant time() {
+        return time;
+    }
+
+    @Override
     public @Nullable BigDecimal priceDKK() {
         return dayAheadPriceDKK;
     }
