@@ -16,7 +16,7 @@
 			<parameter name="port" type="integer" required="true">
 				<label>Port</label>
 				<description>Port for UDP connection</description>
-				<default>502</default>
+				<default>6000</default>
 			</parameter>
 			<parameter name="timeout" type="integer">
 				<label>Response Timeout</label>
