@@ -173,7 +173,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         }
         try {
             EntityBareJid jid = JidCreate.entityBareFrom(to);
-            MultiUserChat chat = multiUserChatManager.getMultiUserChat(jid);
+            MultiUserChat chat = chatManager.getMultiUserChat(jid);
 
             if (!chat.isJoined()) {
                 chat.join(Resourcepart.from(nickname));
