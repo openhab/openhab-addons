@@ -99,6 +99,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private double divider = 1.00;
 
     public String userId = "";
+    public String segment = "";
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
@@ -302,7 +303,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
             addProps(props, PROPERTY_IDENTITY, title + " " + firstName + " " + lastName);
 
-            addProps(props, PROPERTY_CONTRACT_SEGMENT, values.contract.segment);
+            segment = values.contract.segment;
+            addProps(props, PROPERTY_CONTRACT_SEGMENT, segment);
             addProps(props, PROPERTY_CONTRACT_CONTRACT_STATUS, values.contract.contractStatus);
             addProps(props, PROPERTY_CONTRACT_CONTRACT_TYPE, values.contract.contractType);
             addProps(props, PROPERTY_CONTRACT_DISTRIBUTION_TARIFF, values.contract.distributionTariff);
@@ -710,7 +712,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                return api.getEnergyData(this, this.userId, config.prmId, from, to);
+                return api.getEnergyData(this, this.userId, config.prmId, segment, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data for {} : {}", config.prmId, e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -727,7 +729,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                return api.getEnergyIndex(this, this.userId, config.prmId, from, to);
+                return api.getEnergyIndex(this, this.userId, config.prmId, segment, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data for {} : {}", config.prmId, e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -744,7 +746,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                return api.getLoadCurveData(this, this.userId, config.prmId, from, to);
+                return api.getLoadCurveData(this, this.userId, config.prmId, segment, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -761,7 +763,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                return api.getPowerData(this, this.userId, config.prmId, from, to);
+                return api.getPowerData(this, this.userId, config.prmId, segment, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting power data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
