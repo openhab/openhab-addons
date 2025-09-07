@@ -130,8 +130,8 @@ public class ViessmannApi {
         viessmannAuth = new ViessmannAuth(this, handler, apiKey, httpClient, user, password, callbackUrl);
     }
 
-    public void doAuthorize() {
-        authorize();
+    public boolean doAuthorize() {
+        return authorize();
     }
 
     /**
@@ -140,7 +140,7 @@ public class ViessmannApi {
      * response, then assume that the Viessmann authorization process is complete. Otherwise,
      * start the Viessmann authorization process.
      */
-    private void authorize() {
+    private boolean authorize() {
         try {
             TokenResponseDTO localAccessTokenResponseDTO = getTokenResponseDTO();
             if (localAccessTokenResponseDTO != null) {
@@ -161,7 +161,9 @@ public class ViessmannApi {
                     }
                 }
             }
-            viessmannAuth.doAuthorization();
+            if (ViessmannAuthState.COMPLETE.equals(viessmannAuth.doAuthorization())) {
+                return true;
+            }
         } catch (ViessmannAuthException e) {
             if (logger.isDebugEnabled()) {
                 logger.info("API: The Viessmann authorization process threw an exception", e);
@@ -170,6 +172,7 @@ public class ViessmannApi {
             }
             viessmannAuth.setState(ViessmannAuthState.NEED_AUTH);
         }
+        return false;
     }
 
     public void checkExpiringToken() {

@@ -193,15 +193,16 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
         api = new ViessmannApi(this.config.apiKey, httpClient, this.config.user, this.config.password,
                 this.config.installationId, this.config.gatewaySerial, callbackUrl);
         api.createOAuthClientService(this);
-        api.doAuthorize();
 
-        migrateChannelIds();
+        if (api.doAuthorize()) {
+            migrateChannelIds();
 
-        getAllGateways();
-        if (!gatewaysList.isEmpty()) {
-            updateBridgeStatus(ThingStatus.ONLINE);
-            updateProperty("pollingInterval [s]", String.valueOf(pollingInterval));
-            startViessmannBridgePolling(pollingInterval, 1);
+            getAllGateways();
+            if (!gatewaysList.isEmpty()) {
+                updateBridgeStatus(ThingStatus.ONLINE);
+                updateProperty("pollingInterval [s]", String.valueOf(pollingInterval));
+                startViessmannBridgePolling(pollingInterval, 1);
+            }
         }
     }
 

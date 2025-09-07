@@ -14,6 +14,7 @@ package org.openhab.binding.viessmann.internal.api;
 
 import static org.openhab.binding.viessmann.internal.ViessmannBindingConstants.*;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.concurrent.ExecutionException;
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
@@ -30,11 +32,14 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.viessmann.internal.dto.oauth.AuthorizeResponseDTO;
 import org.openhab.binding.viessmann.internal.dto.oauth.TokenResponseDTO;
 import org.openhab.binding.viessmann.internal.interfaces.ApiInterface;
+import org.openhab.binding.viessmann.internal.util.PkceUtil;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -61,6 +66,8 @@ public class ViessmannAuth {
 
     private @Nullable AuthorizeResponseDTO authResponse;
     public @Nullable String accessToken;
+
+    private String codeVerifier = "";
 
     /**
      * The authorization code needed to make the first-time request
@@ -138,12 +145,18 @@ public class ViessmannAuth {
     private void authorize() throws ViessmannAuthException {
         logger.debug("ViessmannAuth: State is {}: Executing step: 'authorize'", state);
         if (callbackUrl != null) {
+            codeVerifier = PkceUtil.generateCodeVerifier();
+
+            String codeChallenge = PkceUtil.generateCodeChallenge(codeVerifier);
+
             StringBuilder url = new StringBuilder(VIESSMANN_AUTHORIZE_URL);
             url.append("?response_type=code");
             url.append("&client_id=").append(apiKey);
-            url.append("&code_challenge=2e21faa1-db2c-4d0b-a10f-575fd372bc8c-575fd372bc8c");
+            url.append("&code_challenge=").append(codeChallenge);
             url.append("&redirect_uri=").append(callbackUrl).append("/viessmann/authcode/");
             url.append("&scope=").append(VIESSMANN_SCOPE);
+            url.append("&code_challenge_method=S256");
+
             logger.trace("ViessmannAuth: Getting authorize URL={}", url);
             String response = executeUrlAuthorize(url.toString());
             logger.trace("ViessmannAuth: Auth response: {}", response);
@@ -154,7 +167,9 @@ public class ViessmannAuth {
                     return;
                 }
                 if (response.contains("error")) {
-                    logger.warn("ViessmannAuth: Login failed. Wrong code response.");
+                    JsonObject error = JsonParser.parseString(response).getAsJsonObject();
+                    String description = error.get("error_description").getAsString();
+                    logger.warn("ViessmannAuth: Login failed. {}", description);
                     return;
                 }
             }
@@ -198,7 +213,7 @@ public class ViessmannAuth {
             url.append("?grant_type=authorization_code");
             url.append("&client_id=").append(apiKey);
             url.append("&redirect_uri=").append(callbackUrl).append("/viessmann/authcode/");
-            url.append("&code_verifier=2e21faa1-db2c-4d0b-a10f-575fd372bc8c-575fd372bc8c");
+            url.append("&code_verifier=").append(codeVerifier);
             url.append("&code=").append(code);
 
             logger.trace("ViessmannAuth: Posting token URL={}", url);
@@ -261,22 +276,42 @@ public class ViessmannAuth {
 
     private void updateBridgeStatusApiKey() {
         bridgeHandler.updateBridgeStatusExtended(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                "Login fails. Please check API Key.");
+                "The login failed. Please check API Key.");
+    }
+
+    private void updateBridgeStatusRedirectionUri() {
+        bridgeHandler.updateBridgeStatusExtended(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                "The login failed. Please check the Redirection URI for your client in the Viessmann Developer Portal. <br> It must be <b>"
+                        + callbackUrl + "/viessmann/authcode/</b>");
     }
 
     private @Nullable String executeUrlAuthorize(String url) {
         String authorization = new String(Base64.getEncoder().encode((user + ":" + password).getBytes()),
                 StandardCharsets.UTF_8);
+        httpClient.getAuthenticationStore().clearAuthentications();
+        httpClient.getCookieStore().removeAll();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
         Request request = httpClient.newRequest(url).timeout(API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .method(HttpMethod.GET).header("Authorization", "Basic " + authorization);
+                .method(HttpMethod.GET).header("Authorization", "Basic " + authorization).header("Host", IAM_HOST)
+                .header("Accept", "application/json");
         try {
-            ContentResponse contentResponse = request.send();
+            ContentResponse contentResponse = request.onResponseContent((resp, buffer) -> {
+                byte[] bytes = new byte[buffer.remaining()];
+                buffer.get(bytes);
+                baos.write(bytes, 0, bytes.length);
+            }).send();
+
+            String body = baos.toString(StandardCharsets.UTF_8);
+            logger.debug("Response body: {}", body);
+
             switch (contentResponse.getStatus()) {
                 case HttpStatus.OK_200:
                     return contentResponse.getContentAsString();
                 case HttpStatus.BAD_REQUEST_400:
                     logger.debug("BAD REQUEST(400) response received: {}", contentResponse.getContentAsString());
-                    updateBridgeStatusApiKey();
+                    updateBridgeStatusRedirectionUri();
                     return contentResponse.getContentAsString();
                 case HttpStatus.UNAUTHORIZED_401:
                     logger.debug("UNAUTHORIZED(401) response received: {}", contentResponse.getContentAsString());
@@ -291,7 +326,18 @@ public class ViessmannAuth {
         } catch (TimeoutException e) {
             logger.debug("TimeoutException: Call to Viessmann API timed out");
         } catch (ExecutionException e) {
-            logger.debug("ExecutionException on call to Viessmann authorization API", e);
+            Throwable cause = e.getCause();
+            if (cause instanceof HttpResponseException httpEx) {
+                int status = httpEx.getResponse().getStatus();
+                String body = httpEx.getResponse().getReason();
+                logger.warn("HTTP error {} - {}", status, body);
+                String content = baos.toString(StandardCharsets.UTF_8);
+                logger.debug("Response content: {}", content);
+
+                updateBridgeStatusApiKey();
+            } else {
+                logger.error("ExecutionException cause: {}", cause.toString(), cause);
+            }
         } catch (InterruptedException e) {
             logger.debug("InterruptedException on call to Viessmann authorization API: {}", e.getMessage());
         }

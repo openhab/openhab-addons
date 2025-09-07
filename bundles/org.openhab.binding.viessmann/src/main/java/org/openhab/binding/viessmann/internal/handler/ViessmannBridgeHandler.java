@@ -191,23 +191,24 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
         api = new ViessmannApi(this.config.apiKey, httpClient, this.config.user, this.config.password,
                 this.config.installationId, this.config.gatewaySerial, callbackUrl);
         api.createOAuthClientService(this);
-        api.doAuthorize();
 
-        if (this.config.installationId.isEmpty() || this.config.gatewaySerial.isEmpty()) {
-            api.setInstallationAndGatewayId(this);
-            setConfigInstallationGatewayId();
-        }
+        if (api.doAuthorize()) {
+            if (this.config.installationId.isEmpty() || this.config.gatewaySerial.isEmpty()) {
+                api.setInstallationAndGatewayId(this);
+                setConfigInstallationGatewayId();
+            }
 
-        if (!config.disablePolling && errorChannelsLinked()) {
-            startViessmannErrorsPolling(config.pollingIntervalErrors);
-        }
+            if (!config.disablePolling && errorChannelsLinked()) {
+                startViessmannErrorsPolling(config.pollingIntervalErrors);
+            }
 
-        migrateChannelIds();
+            migrateChannelIds();
 
-        getAllDevices();
-        if (!devicesList.isEmpty()) {
-            updateBridgeStatus(ThingStatus.ONLINE);
-            startViessmannBridgePolling(getPollingInterval(), 1);
+            getAllDevices();
+            if (!devicesList.isEmpty()) {
+                updateBridgeStatus(ThingStatus.ONLINE);
+                startViessmannBridgePolling(getPollingInterval(), 1);
+            }
         }
     }
 
