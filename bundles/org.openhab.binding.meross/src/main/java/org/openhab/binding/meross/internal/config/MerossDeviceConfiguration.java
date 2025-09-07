@@ -15,11 +15,12 @@ package org.openhab.binding.meross.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MerossDoorConfiguration} class contains fields mapping garage door configuration parameters.
+ * The {@link MerossDeviceConfiguration} class is an abstract base class with common configuration parameters.
  *
  * @author Mark Herwege - Initial contribution
  */
 
 @NonNullByDefault
-public class MerossDoorConfiguration extends MerossDeviceConfiguration {
+public abstract class MerossDeviceConfiguration {
+    public String name = "";
 }

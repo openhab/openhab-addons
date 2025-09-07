@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 
 @NonNullByDefault
-public class MerossLightConfiguration {
-    public String name = "";
+public class MerossLightConfiguration extends MerossDeviceConfiguration {
     public @Nullable String lightName;
 }
