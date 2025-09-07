@@ -154,7 +154,13 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
         InputRegister[] registers = tempResponse.getRegisters();
         float[] temperatures = new float[registers.length];
         for (int i = 0; i < registers.length; i++) {
-            temperatures[i] = registers[i].toBytes()[0];
+            byte[] bytes = registers[i].toBytes();
+            if (bytes != null && bytes.length > 0) {
+                temperatures[i] = bytes[0];
+            } else {
+                logger.warn("Register {} returned empty or null byte array, using 0 as default temperature", i);
+                temperatures[i] = 0;
+            }
         }
         return temperatures;
     }
@@ -199,7 +205,13 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
         float[] temperatures = new float[registers.length];
 
         for (int i = 0; i < registers.length; i++) {
-            temperatures[i] = registers[i].toBytes()[0];
+            byte[] bytes = registers[i].toBytes();
+            if (bytes != null && bytes.length > 0) {
+                temperatures[i] = bytes[0];
+            } else {
+                logger.warn("Register {} returned empty or null byte array, using 0 as default temperature", i);
+                temperatures[i] = 0;
+            }
         }
         return temperatures;
     }

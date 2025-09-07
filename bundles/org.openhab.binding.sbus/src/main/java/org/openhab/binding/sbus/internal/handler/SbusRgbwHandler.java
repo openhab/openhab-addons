@@ -254,6 +254,40 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         }
     }
 
+    /** Scale 0..255 -> 0..100 and clamp to [0,100]. If already <=100, just clamp. */
+    private static int toPct100(int v) {
+        if (v <= 100) {
+            return Math.max(0, Math.min(100, v));
+        }
+        int pct = Math.round((v * 100f) / 255f);
+        return Math.max(0, Math.min(100, pct));
+    }
+
+    /** Ensures an RGBW array of length 4, scaled & clamped to 0..100. */
+    private static int[] toPct100(int[] rgbwIn) {
+        int[] out = new int[4];
+        for (int i = 0; i < 4; i++) {
+            int v = (rgbwIn != null && i < rgbwIn.length) ? rgbwIn[i] : 0;
+            out[i] = toPct100(v);
+        }
+        return out;
+    }
+
+    /** Scale 0..100 -> 0..255 and clamp to [0,255]. */
+    private static int to255(int v) {
+        v = Math.max(0, Math.min(100, v)); // Clamp to 0..100 first
+        return Math.round((v * 255f) / 100f);
+    }
+
+    /** Converts an array from 0..100 to 0..255 range. */
+    private static int[] to255(int[] pctIn) {
+        int[] out = new int[pctIn.length];
+        for (int i = 0; i < pctIn.length; i++) {
+            out[i] = to255(pctIn[i]);
+        }
+        return out;
+    }
+
     // SBUS Protocol Adaptation Methods
 
     /**
@@ -262,7 +296,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @param adapter the SBUS service adapter
      * @param subnetId the subnet ID of the device
      * @param deviceId the device ID
-     * @return array of status channel values
+     * @return array of status channel values (converted from 0..100 to 0..255)
      * @throws Exception if the SBUS transaction fails
      */
     private int[] readStatusChannels(SbusService adapter, int subnetId, int deviceId) throws Exception {
@@ -281,7 +315,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         InputRegister[] registers = statusResponse.getRegisters();
         int[] statusValues = new int[registers.length];
         for (int i = 0; i < registers.length; i++) {
-            statusValues[i] = registers[i].getValue() & 0xff;
+            int rawValue = registers[i].getValue() & 0xff;
+            // Convert from 0..100 (device protocol) to 0..255 (internal representation)
+            statusValues[i] = to255(rawValue);
         }
         return statusValues;
     }
@@ -293,7 +329,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @param subnetId the subnet ID of the device
      * @param deviceId the device ID
      * @param channelNumber the channel number
-     * @return array of RGBW values [R, G, B, W]
+     * @return array of RGBW values [R, G, B, W] (converted from 0..100 to 0..255)
      * @throws Exception if the SBUS transaction fails
      */
     private int[] readRgbw(SbusService adapter, int subnetId, int deviceId, int channelNumber) throws Exception {
@@ -313,13 +349,15 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         InputRegister[] registers = rgbwResponse.getRegisters();
         int[] rgbwValues = new int[Math.min(4, registers.length)];
         for (int i = 0; i < rgbwValues.length; i++) {
-            rgbwValues[i] = registers[i].toUnsignedShort();
+            int rawValue = registers[i].toUnsignedShort();
+            // Convert from 0..100 (device protocol) to 0..255 (internal representation)
+            rgbwValues[i] = to255(rawValue);
         }
         return rgbwValues;
     }
 
     /**
-     * Writes RGBW values to an SBUS device.
+     * Writes RGBW preset (DD32). Values must be 0..100 and LoopNo goes first.
      *
      * @param adapter the SBUS service adapter
      * @param subnetId the subnet ID of the device
@@ -330,16 +368,19 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      */
     private void writeRgbw(SbusService adapter, int subnetId, int deviceId, int channelNumber, int[] rgbwValues)
             throws Exception {
-        // Construct SBUS request
+        // 1) Scale/clamp to 0..100 per protocol
+        int[] pct = toPct100(rgbwValues);
+
+        // 2) Build DD32 frame: [LoopNo, R, G, B, W]
         WriteRgbwRequest request = new WriteRgbwRequest();
         request.setSubnetID(subnetId);
         request.setUnitID(deviceId);
-        // Note: WriteRgbwRequest might not have setChannelNo method, using basic request
+        request.setLoopNumber(channelNumber); // LoopNo (1..40) MUST go first for 0xDD32
 
         // Create registers for RGBW values
-        Register[] registers = new Register[rgbwValues.length];
-        for (int i = 0; i < rgbwValues.length; i++) {
-            registers[i] = new ByteRegister((byte) (rgbwValues[i] & 0xff));
+        Register[] registers = new Register[pct.length];
+        for (int i = 0; i < pct.length; i++) {
+            registers[i] = new ByteRegister((byte) (pct[i] & 0xff));
         }
         request.setRegisters(registers);
 
@@ -360,7 +401,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      */
     private void writeSingleChannel(SbusService adapter, int subnetId, int deviceId, int channelNumber, int value,
             int duration) throws Exception {
-        // Construct SBUS request
+        // Clamp to 0..100; if caller gave 0..255, scale first
+        value = Math.max(0, Math.min(100, value <= 100 ? value : Math.round((value * 100f) / 255f)));
         WriteSingleChannelRequest request = new WriteSingleChannelRequest(duration >= 0);
         request.setSubnetID(subnetId);
         request.setUnitID(deviceId);
@@ -446,7 +488,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         int[] statuses = new int[registers.length];
 
         for (int i = 0; i < registers.length; i++) {
-            statuses[i] = registers[i].getValue() & 0xff;
+            int rawValue = registers[i].getValue() & 0xff;
+            // Convert from 0..100 (device protocol) to 0..255 (internal representation)
+            statuses[i] = to255(rawValue);
         }
         return statuses;
     }
@@ -459,8 +503,10 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         InputRegister[] registers = response.getRegisters();
         int[] rgbwValues = new int[Math.min(4, registers.length)];
 
-        for (int i = 0; i < registers.length; i++) {
-            rgbwValues[i] = registers[i].toUnsignedShort();
+        for (int i = 0; i < rgbwValues.length; i++) {
+            int rawValue = registers[i].toUnsignedShort();
+            // Convert from 0..100 (device protocol) to 0..255 (internal representation)
+            rgbwValues[i] = to255(rawValue);
         }
         return rgbwValues;
     }
