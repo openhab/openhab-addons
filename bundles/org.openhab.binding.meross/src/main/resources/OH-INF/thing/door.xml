@@ -4,39 +4,34 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="light">
+	<thing-type id="door">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Meross Light</label>
-		<description>Meross Light</description>
+		<label>Meross Door</label>
+		<description>Meross Garage Door</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="doorState" typeId="doorState"/>
 		</channels>
 
 		<config-description>
 			<parameter name="name" type="text" required="true">
-				<label>Light name</label>
-				<description>The name of the light as registered to Meross account</description>
-			</parameter>
-			<parameter name="lightName" type="text" required="true">
-				<label>Light name</label>
-				<description>Deprecated: use name parameter</description>
-				<advanced>true</advanced>
+				<label>Door name</label>
+				<description>The name of the garage door as registered to Meross account</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch the power ON and OFF</description>
-		<category>Light</category>
+	<channel-type id="doorState">
+		<item-type>Rollershutter</item-type>
+		<label>Garage Door</label>
+		<description>Garage door state</description>
+		<category>garagedoor</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<tag>Control</tag>
+			<tag>OpenState</tag>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

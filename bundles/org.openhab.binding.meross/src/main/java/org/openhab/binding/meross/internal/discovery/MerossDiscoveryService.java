@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * The {@link MerossDiscoveryService} class is responsible for performing device discovery
  *
  * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Added garage door support
  */
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = MerossDiscoveryService.class)
@@ -90,9 +91,25 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
         } else {
             ThingUID bridgeUID = thingHandler.getThing().getUID();
             devices.forEach(device -> {
+                String deviceType = device.deviceType();
                 ThingTypeUID thingTypeUID;
-                if (isLightType(device.deviceType())) {
+                if (isLightType(deviceType)) {
                     thingTypeUID = MerossBindingConstants.THING_TYPE_LIGHT;
+                } else if (isDoorType(deviceType)) {
+                    switch (deviceType) {
+                        case MerossBindingConstants.MSG100:
+                            thingTypeUID = MerossBindingConstants.THING_TYPE_DOOR;
+                            break;
+                        case MerossBindingConstants.MSG200:
+                            thingTypeUID = MerossBindingConstants.THING_TYPE_TRIPLE_DOOR;
+                            break;
+                        default:
+                            logger.debug("Device type {} not recognized, default to single garage door opener",
+                                    deviceType);
+                            thingTypeUID = MerossBindingConstants.THING_TYPE_DOOR;
+                            break;
+                    }
+                    ;
                 } else {
                     logger.debug("Unsupported device found: name {} : type {}", device.devName(), device.deviceType());
                     return;
@@ -114,6 +131,12 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
     public boolean isLightType(String typeName) {
         String targetString = typeName.substring(0, 3);
         Set<String> types = MerossBindingConstants.DISCOVERABLE_LIGHT_HARDWARE_TYPES;
+        return types.stream().anyMatch(type -> type.equals(targetString));
+    }
+
+    public boolean isDoorType(String typeName) {
+        String targetString = typeName.substring(0, 3);
+        Set<String> types = MerossBindingConstants.DISCOVERABLE_DOOR_HARDWARE_TYPES;
         return types.stream().anyMatch(type -> type.equals(targetString));
     }
 }

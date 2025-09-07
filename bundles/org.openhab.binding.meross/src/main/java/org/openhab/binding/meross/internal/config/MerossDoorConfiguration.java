@@ -10,18 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meross.internal.factory;
+package org.openhab.binding.meross.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.meross.internal.command.Command;
 
 /**
- * The {@link ModeFactory} class is responsible for implementing command mode
+ * The {@link MerossDoorConfiguration} class contains fields mapping garage door configuration parameters.
  *
- * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
+
 @NonNullByDefault
-public abstract class ModeFactory {
-    public abstract Command commandMode(String mode, @Nullable Integer deviceChannel);
+public class MerossDoorConfiguration {
+    public String name = "";
 }

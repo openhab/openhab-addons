@@ -80,7 +80,7 @@ public class MerossManager {
      * @param commandMode The command Mode
      */
 
-    public void sendCommand(String deviceName, String commandType, String commandMode)
+    public void sendCommand(String deviceName, int deviceChannel, String commandType, String commandMode)
             throws IOException, MerossMqttConnackException {
         String uuid = merossHttpConnector.getDevUUIDByDevName(deviceName);
         if (uuid.isEmpty()) {
@@ -91,15 +91,18 @@ public class MerossManager {
         MqttMessageBuilder.setDestinationDeviceUUID(deviceUUID);
         String requestTopic = MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID);
         ModeFactory modeFactory = TypeFactory.getFactory(commandType);
-        Command command = modeFactory.commandMode(commandMode);
-        byte[] commandMessage = command.commandType(commandType);
+
         var abilities = getAbilities(deviceUUID);
-        if (abilities != null && abilities.isEmpty()) {
+        if (abilities != null && !abilities.isEmpty()) {
             if (!abilities.contains(MerossEnum.Namespace.getAbilityValueByName(commandType))) {
                 logger.debug("Command {} not supported", commandType);
                 return;
             }
         }
+
+        Command command = modeFactory.commandMode(commandMode, deviceChannel);
+        byte[] commandMessage = command.commandType(commandType);
+
         MerossMqttConnector.publishMqttMessage(commandMessage, requestTopic);
     }
 

@@ -12,19 +12,17 @@
  */
 package org.openhab.binding.meross.internal.handler;
 
-import static org.openhab.binding.meross.internal.MerossBindingConstants.CHANNEL_LIGHT_POWER;
+import static org.openhab.binding.meross.internal.MerossBindingConstants.CHANNEL_DOOR_STATE;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.meross.internal.MerossBindingConstants;
 import org.openhab.binding.meross.internal.api.MerossEnum;
 import org.openhab.binding.meross.internal.api.MerossManager;
-import org.openhab.binding.meross.internal.config.MerossLightConfiguration;
+import org.openhab.binding.meross.internal.config.MerossDoorConfiguration;
 import org.openhab.binding.meross.internal.exception.MerossMqttConnackException;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -38,17 +36,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MerossLightHandler} class is responsible for handling communication with plugs and bulbs
+ * The {@link MerossDoorHandler} class is responsible for handling communication with garage doors
  *
- * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class MerossLightHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(MerossLightHandler.class);
-    private MerossLightConfiguration config = new MerossLightConfiguration();
+public class MerossDoorHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(MerossDoorHandler.class);
+    private MerossDoorConfiguration config = new MerossDoorConfiguration();
     private @Nullable MerossBridgeHandler merossBridgeHandler;
 
-    public MerossLightHandler(Thing thing) {
+    public MerossDoorHandler(Thing thing) {
         super(thing);
     }
 
@@ -64,25 +62,14 @@ public class MerossLightHandler extends BaseThingHandler {
         if (merossHttpConnector == null) {
             return;
         }
-
-        // This code moves from a "lightName" configuration parameter to a "name" configuration parameter
-        config = getConfigAs(MerossLightConfiguration.class);
-        String lightName = config.lightName;
-        if (config.name.isEmpty() && (lightName != null)) {
-            config.name = lightName;
-            Configuration configuration = editConfiguration();
-            configuration.put(MerossBindingConstants.PROPERTY_DEVICE_NAME, config.lightName);
-            configuration.put(MerossBindingConstants.PROPERTY_LIGHT_DEVICE_NAME, null);
-            updateConfiguration(configuration);
-        }
-
+        config = getConfigAs(MerossDoorConfiguration.class);
         String deviceUUID;
         try {
             Thing thing = getThing();
             String label = thing.getLabel();
             if (config.name.isEmpty()) {
                 if (label != null) {
-                    config.lightName = label;
+                    config.name = label;
                 }
             }
             deviceUUID = merossHttpConnector.getDevUUIDByDevName(config.name);
@@ -92,7 +79,7 @@ public class MerossLightHandler extends BaseThingHandler {
         }
         if (deviceUUID.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No device found with name " + config.lightName);
+                    "No device found with name " + config.name);
             return;
         }
         var manager = MerossManager.newMerossManager(merossHttpConnector);
@@ -149,18 +136,25 @@ public class MerossLightHandler extends BaseThingHandler {
         if (merossHttpConnector != null) {
             merossManager = MerossManager.newMerossManager(merossHttpConnector);
         }
-        if (channelUID.getId().equals(CHANNEL_LIGHT_POWER)) {
-            if (command instanceof OnOffType) {
+        if (channelUID.getId().startsWith(CHANNEL_DOOR_STATE)) {
+            String channelId = channelUID.getId().substring(CHANNEL_DOOR_STATE.length());
+            int channel = 0;
+            try {
+                channel = Integer.valueOf(channelId);
+            } catch (NumberFormatException e) {
+                // Ignore and default to channel 0, this is because only a single channel available
+            }
+            if (command instanceof UpDownType) {
                 try {
-                    if (OnOffType.ON.equals(command)) {
+                    if (UpDownType.UP.equals(command)) {
                         if (merossManager != null) {
-                            merossManager.sendCommand(config.name, 0, MerossEnum.Namespace.CONTROL_TOGGLEX.name(),
-                                    OnOffType.ON.name());
+                            merossManager.sendCommand(config.name, channel,
+                                    MerossEnum.Namespace.GARAGE_DOOR_STATE.name(), UpDownType.UP.name());
                         }
-                    } else if (OnOffType.OFF.equals(command)) {
+                    } else if (UpDownType.DOWN.equals(command)) {
                         if (merossManager != null) {
-                            merossManager.sendCommand(config.name, 0, MerossEnum.Namespace.CONTROL_TOGGLEX.name(),
-                                    OnOffType.OFF.name());
+                            merossManager.sendCommand(config.name, channel,
+                                    MerossEnum.Namespace.GARAGE_DOOR_STATE.name(), UpDownType.DOWN.name());
                         }
                     }
                 } catch (IOException | MerossMqttConnackException e) {

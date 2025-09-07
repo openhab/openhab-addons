@@ -17,6 +17,7 @@ import static org.openhab.binding.meross.internal.MerossBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meross.internal.handler.MerossBridgeHandler;
+import org.openhab.binding.meross.internal.handler.MerossDoorHandler;
 import org.openhab.binding.meross.internal.handler.MerossLightHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -30,6 +31,7 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Added garage door support
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.meross", service = ThingHandlerFactory.class)
@@ -43,11 +45,12 @@ public class MerossHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new MerossBridgeHandler(thing);
-        } else if (THING_TYPE_LIGHT.equals(thingTypeUID)) {
+        } else if (LIGHT_THING_TYPES.contains(thingTypeUID)) {
             return new MerossLightHandler(thing);
+        } else if (DOOR_THING_TYPES.contains(thingTypeUID)) {
+            return new MerossDoorHandler(thing);
         }
         return null;
     }

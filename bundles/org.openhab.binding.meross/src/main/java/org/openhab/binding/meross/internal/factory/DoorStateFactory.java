@@ -15,21 +15,21 @@ package org.openhab.binding.meross.internal.factory;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meross.internal.command.Command;
-import org.openhab.binding.meross.internal.command.TogglexCommand;
+import org.openhab.binding.meross.internal.command.DoorStateCommand;
 
 /**
- * The {@link TypeFactory} class is responsible for switching among different togglex modes
+ * The {@link TypeFactory} class is responsible for converting to garage door state modes
  *
- * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class TogglexFactory extends ModeFactory {
+public class DoorStateFactory extends ModeFactory {
     @Override
     public Command commandMode(String mode, @Nullable Integer deviceChannel) {
         int channel = deviceChannel != null ? deviceChannel : 0;
         return switch (mode) {
-            case "ON" -> new TogglexCommand.TurnOn(channel);
-            case "OFF" -> new TogglexCommand.TurnOff(channel);
+            case "UP" -> new DoorStateCommand.Up(channel);
+            case "DOWN" -> new DoorStateCommand.Down(channel);
             default -> throw new IllegalStateException("Unexpected value: " + mode);
         };
     }

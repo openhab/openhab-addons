@@ -78,6 +78,8 @@ public class MerossMqttConnector {
         Mqtt5Publish publishMessage = Mqtt5Publish.builder().topic(requestTopic).qos(MqttQos.AT_MOST_ONCE)
                 .payload(message).build();
 
+        LOGGER.trace("MQTT publishing to topic {}, message {}", requestTopic,
+                new String(message, StandardCharsets.UTF_8));
         client.publish(publishMessage);
 
         String incomingResponse = null;
@@ -89,6 +91,7 @@ public class MerossMqttConnector {
                 if (mqtt5PublishResponse.getPayload().isPresent()) {
                     incomingResponse = StandardCharsets.UTF_8.decode(mqtt5PublishResponse.getPayload().get())
                             .toString();
+                    LOGGER.trace("MQTT received response {}", incomingResponse);
                 } else {
                     LOGGER.debug("Received an MQTT message without a payload");
                 }

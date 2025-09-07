@@ -25,6 +25,7 @@ public class TypeFactory {
     public static ModeFactory getFactory(String commandType) {
         return switch (commandType) {
             case "CONTROL_TOGGLEX" -> new TogglexFactory();
+            case "GARAGE_DOOR_STATE" -> new DoorStateFactory();
             default -> throw new IllegalStateException("Unexpected value: " + commandType);
         };
     }
