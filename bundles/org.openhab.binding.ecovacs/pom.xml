@@ -15,7 +15,6 @@
   <name>openHAB Add-ons :: Bundles :: Ecovacs Binding</name>
   <properties>
     <smack.version>4.5.0-beta6</smack.version>
-    <bnd.importpackage>sun.security.*;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencyManagement>
