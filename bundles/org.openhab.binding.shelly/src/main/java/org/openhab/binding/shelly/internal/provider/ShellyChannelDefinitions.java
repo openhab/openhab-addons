@@ -575,7 +575,6 @@ public class ShellyChannelDefinitions {
                     CHANNEL_SENSOR_MOTION_TS);
             addChannel(thing, newChannels, sdata.sensor.vibration != null, CHANNEL_GROUP_SENSOR,
                     CHANNEL_SENSOR_VIBRATION);
-
         }
 
         // Shelly DW/DW2/BLU DW
