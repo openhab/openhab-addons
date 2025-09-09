@@ -37,7 +37,6 @@ public class D5_00_01 extends _1BSMessage {
     protected static final byte CLOSED = 1 | TEACHIN_BIT;
 
     public D5_00_01() {
-        super();
     }
 
     public D5_00_01(ERP1Message packet) {

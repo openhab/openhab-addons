@@ -24,7 +24,6 @@ public class LIRCResponse {
     private final String[] data;
 
     public LIRCResponse(String command, boolean success, String[] data) {
-        super();
         this.command = command;
         this.success = success;
         this.data = data;

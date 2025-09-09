@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tasmotaplug.dto.TasmotaDTO;
 import org.openhab.binding.tasmotaplug.dto.TasmotaDTO.Energy;
 import org.openhab.binding.tasmotaplug.internal.TasmotaPlugConfiguration;
@@ -57,6 +58,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class TasmotaPlugHandler extends BaseThingHandler {
+    private static final long REQUEST_TIMEOUT_MS = 5000;
+
     private static final String PASSWORD_REGEX = "&password=(.*)&";
     private static final String PASSWORD_MASK = "&password=xxxx&";
 
@@ -251,7 +254,8 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
         try {
             logger.trace("Sending GET request to {}{}", plugHost, maskPassword(url));
-            ContentResponse contentResponse = httpClient.GET(plugHost + url);
+            ContentResponse contentResponse = httpClient.newRequest(plugHost + url).method(HttpMethod.GET)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             logger.trace("Response: {}", contentResponse.getContentAsString());
 
             if (contentResponse.getStatus() != OK_200) {

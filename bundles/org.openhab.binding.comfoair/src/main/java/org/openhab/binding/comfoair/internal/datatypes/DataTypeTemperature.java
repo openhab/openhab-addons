@@ -84,7 +84,7 @@ public class DataTypeTemperature implements ComfoAirDataType {
         if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_GHX) {
             template[commandType.getChangeDataPos()] = (int) celsius;
         } else {
-            template[commandType.getChangeDataPos()] = (int) (celsius + 20) * 2;
+            template[commandType.getChangeDataPos()] = (int) ((celsius + 20) * 2);
         }
         return template;
     }

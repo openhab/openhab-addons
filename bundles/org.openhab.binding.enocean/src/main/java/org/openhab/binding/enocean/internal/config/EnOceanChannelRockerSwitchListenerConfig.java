@@ -25,6 +25,5 @@ public class EnOceanChannelRockerSwitchListenerConfig extends EnOceanChannelRock
     public boolean handleSecondAction = false;
 
     public EnOceanChannelRockerSwitchListenerConfig() {
-        super();
     }
 }

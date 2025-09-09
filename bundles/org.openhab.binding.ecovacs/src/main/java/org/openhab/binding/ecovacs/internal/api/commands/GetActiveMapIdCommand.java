@@ -31,7 +31,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetActiveMapIdCommand extends IotDeviceCommand<String> {
     public GetActiveMapIdCommand() {
-        super();
     }
 
     @Override

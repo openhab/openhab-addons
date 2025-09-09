@@ -24,7 +24,6 @@ public class OperationModeNotAvailableException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public OperationModeNotAvailableException() {
-        super();
     }
 
     public OperationModeNotAvailableException(String message) {

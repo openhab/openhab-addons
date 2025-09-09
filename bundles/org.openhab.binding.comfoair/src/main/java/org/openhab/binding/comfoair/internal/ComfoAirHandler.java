@@ -82,7 +82,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                     if (changeCommand != null) {
                         Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID)
                                 .filter(this::isLinked).map(ChannelUID::getId).collect(Collectors.toSet());
-                        sendCommand(changeCommand, channelId);
+                        sendCommand(changeCommand);
 
                         Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
                                 .getAffectedReadCommands(channelId, keysToUpdate);
@@ -127,11 +127,15 @@ public class ComfoAirHandler extends BaseThingHandler {
 
                     updateState(ACTIVATE_CHANNEL_ID, OnOffType.ON);
 
-                    List<Channel> channels = this.thing.getChannels();
-
                     poller = scheduler.scheduleWithFixedDelay(() -> {
-                        for (Channel channel : channels) {
-                            updateChannelState(channel);
+                        Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID)
+                                .filter(this::isLinked).map(ChannelUID::getId).collect(Collectors.toSet());
+                        Collection<ComfoAirCommand> requiredReadCommands = ComfoAirCommandType
+                                .getReadCommandsByEventTypes(keysToUpdate);
+
+                        if (!requiredReadCommands.isEmpty()) {
+                            Runnable updateThread = new AffectedItemsUpdateThread(requiredReadCommands, keysToUpdate);
+                            updateThread.run();
                         }
                     }, 0, (this.config.refreshInterval > 0) ? this.config.refreshInterval
                             : DEFAULT_REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
@@ -190,11 +194,31 @@ public class ComfoAirHandler extends BaseThingHandler {
             ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
             if (readCommand != null && readCommand.getRequestCmd() != null) {
                 scheduler.submit(() -> {
-                    State state = sendCommand(readCommand, commandKey);
-                    updateState(channel.getUID(), state);
+                    int[] response = sendCommand(readCommand);
+                    updateStateFromResponse(commandKey, response);
                 });
             }
         }
+    }
+
+    private void updateStateFromResponse(String commandKey, int[] response) {
+        State value = UnDefType.UNDEF;
+
+        if (response.length > 0) {
+            ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(commandKey);
+
+            if (comfoAirCommandType != null) {
+                ComfoAirDataType dataType = comfoAirCommandType.getDataType();
+                value = dataType.convertToState(response, comfoAirCommandType);
+            }
+            if (value instanceof UnDefType) {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("unexpected value for key '{}'. DATA: {}", commandKey,
+                            ComfoAirSerialConnector.dumpData(response));
+                }
+            }
+        }
+        updateState(commandKey, value);
     }
 
     @Override
@@ -206,7 +230,7 @@ public class ComfoAirHandler extends BaseThingHandler {
         }
     }
 
-    private State sendCommand(ComfoAirCommand command, String commandKey) {
+    private int[] sendCommand(ComfoAirCommand command) {
         ComfoAirSerialConnector comfoAirConnector = this.comfoAirConnector;
 
         if (comfoAirConnector != null) {
@@ -253,7 +277,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                     preResponse = comfoAirConnector.sendCommand(command, ComfoAirCommandType.Constants.EMPTY_INT_ARRAY);
 
                     if (preResponse.length <= 0) {
-                        return UnDefType.NULL;
+                        return ComfoAirCommandType.Constants.EMPTY_INT_ARRAY;
                     } else {
                         command.setRequestCmd(requestCmd);
                         command.setReplyCmd(replyCmd);
@@ -262,26 +286,10 @@ public class ComfoAirHandler extends BaseThingHandler {
                 }
 
                 int[] response = comfoAirConnector.sendCommand(command, preResponse);
-
-                if (response.length > 0) {
-                    ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(commandKey);
-                    State value = UnDefType.UNDEF;
-
-                    if (comfoAirCommandType != null) {
-                        ComfoAirDataType dataType = comfoAirCommandType.getDataType();
-                        value = dataType.convertToState(response, comfoAirCommandType);
-                    }
-                    if (value instanceof UnDefType) {
-                        if (logger.isWarnEnabled()) {
-                            logger.warn("unexpected value for key '{}'. DATA: {}", commandKey,
-                                    ComfoAirSerialConnector.dumpData(response));
-                        }
-                    }
-                    return value;
-                }
+                return response;
             }
         }
-        return UnDefType.UNDEF;
+        return ComfoAirCommandType.Constants.EMPTY_INT_ARRAY;
     }
 
     public void pullDeviceProperties() {
@@ -333,13 +341,17 @@ public class ComfoAirHandler extends BaseThingHandler {
             for (ComfoAirCommand readCommand : this.affectedReadCommands) {
                 Integer replyCmd = readCommand.getReplyCmd();
                 if (replyCmd != null) {
-                    List<ComfoAirCommandType> commandTypes = ComfoAirCommandType.getCommandTypesByReplyCmd(replyCmd);
+                    int[] response = sendCommand(readCommand);
 
-                    for (ComfoAirCommandType commandType : commandTypes) {
-                        String commandKey = commandType.getKey();
-                        if (linkedChannels.contains(commandKey)) {
-                            State state = sendCommand(readCommand, commandKey);
-                            updateState(commandKey, state);
+                    if (response.length > 0) {
+                        List<ComfoAirCommandType> commandTypes = ComfoAirCommandType
+                                .getCommandTypesByReplyCmd(replyCmd);
+
+                        for (ComfoAirCommandType commandType : commandTypes) {
+                            String commandKey = commandType.getKey();
+                            if (linkedChannels.contains(commandKey)) {
+                                updateStateFromResponse(commandKey, response);
+                            }
                         }
                     }
                 }

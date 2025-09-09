@@ -48,7 +48,6 @@ public abstract class F6_02 extends _RPSMessage {
     int secondStatus = -1;
 
     public F6_02() {
-        super();
     }
 
     public F6_02(ERP1Message packet) {

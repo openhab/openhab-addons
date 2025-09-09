@@ -26,7 +26,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 public abstract class _VLDMessage extends EEP {
 
     public _VLDMessage() {
-        super();
     }
 
     public _VLDMessage(ERP1Message packet) {

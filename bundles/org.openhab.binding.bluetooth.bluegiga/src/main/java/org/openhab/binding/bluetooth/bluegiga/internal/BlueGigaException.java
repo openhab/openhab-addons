@@ -26,7 +26,6 @@ public class BlueGigaException extends RuntimeException {
     private static final long serialVersionUID = 58882813509800169L;
 
     public BlueGigaException() {
-        super();
     }
 
     public BlueGigaException(String message) {

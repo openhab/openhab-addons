@@ -132,7 +132,6 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     public D2_06_01() {
-        super();
     }
 
     public D2_06_01(ERP1Message packet) {

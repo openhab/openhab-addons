@@ -28,7 +28,6 @@ public class TransientCommunicationIssueException extends I18Exception {
     private static final long serialVersionUID = -7786449325604143287L;
 
     public TransientCommunicationIssueException() {
-        super();
     }
 
     public TransientCommunicationIssueException(final String message, final String i18key) {
