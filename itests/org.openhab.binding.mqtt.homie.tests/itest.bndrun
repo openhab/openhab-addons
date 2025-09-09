@@ -48,8 +48,8 @@ Import-Package: \
 	org.osgi.service.component;version='[1.5.1,1.5.2)',\
 	net.bytebuddy.byte-buddy;version='[1.17.6,1.17.7)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.17.6,1.17.7)',\
-	org.mockito.junit-jupiter;version='[4.11.0,4.11.1)',\
-	org.mockito.mockito-core;version='[4.11.0,4.11.1)',\
+	org.mockito.junit-jupiter;version='[5.19.0,5.19.1)',\
+	org.mockito.mockito-core;version='[5.19.0,5.19.1)',\
 	org.objenesis;version='[3.3.0,3.3.1)',\
 	xstream;version='[1.4.21,1.4.22)',\
 	javax.measure.unit-api;version='[2.2.0,2.2.1)',\
