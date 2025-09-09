@@ -237,74 +237,65 @@ public class TibberHandler extends BaseThingHandler {
                 } else {
                     JsonObject initalJson = Utils.getJsonObject(jsonResponse, INITIAL_QUERY_JSON_PATH);
                     if (initalJson.isEmpty()) {
-                        // case: unknown
-                        // initial call successful without error, but desired data is not available
-                        // declare communication error with response to resolve issue
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/status.initial-call-failed  [\"" + responseStatus + " - " + initialResponse
-                                        + "\"]");
+                        handleInitializeError(responseStatus + " - " + initialResponse, false);
                     } else {
                         if (initalJson.get("currentSubscription").isJsonNull()) {
-                            // case: no Tibber customer
-                            // if currentSubscription is null but homeid and token are correct then the user is not a
-                            // Tibber customer BUT if he has a Tibber Pulse hardware user can retrieve live values.
-                            // https://community.openhab.org/t/tibber-oh5/164158/52
-                            // remove price and cost channels
-                            managePriceChannels(false);
-                            updateStatus(ThingStatus.ONLINE);
-                            logger.info("No currency found in response: {}", initialResponse);
-                            // create websocket and watchdog
-                            webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
-                            watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
+                            initializePulseUser();
                         } else {
                             JsonObject currentJson = Utils.getJsonObject(jsonResponse, CURRENCY_QUERY_JSON_PATH);
                             if (!currentJson.isEmpty()) {
-                                // case: regular user
-                                // user can get all data and add channels if necessary
-                                managePriceChannels(true);
-                                updateStatus(ThingStatus.ONLINE);
-
-                                // check if currency is supported
-                                String currencyCode = currentJson.get("currency").getAsString();
-                                Unit<?> unit = CurrencyUnits.getInstance().getUnit(currencyCode);
-                                if (unit != null) {
-                                    currencyUnit = currencyCode;
-                                    logger.trace("Currency is set to {}", unit.getSymbol());
-                                } else {
-                                    logger.trace("Currency {} is unknown, falling back to DecimalType", currencyCode);
-                                }
-
-                                // create websocket and watchdog
-                                webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
-                                watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
-
-                                // start cron update for new spot prices
-                                scheduler.schedule(this::updateSpotPrices, 0, TimeUnit.MINUTES);
-                                int hour = tibberConfig.updateHour;
-                                String cronHour = (hour < 0) ? "*" : String.valueOf(hour);
-                                cronDaily = cron.schedule(this::updateSpotPrices,
-                                        String.format(CRON_DAILY_AT, cronHour));
+                                initializeTibberCustomer(currentJson);
                             } else {
-                                // case: unknown
-                                // if subscription is fine but current priceInfo cannot be obtained there's another
-                                // error
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "@text/status.initial-call-failed  [\"" + responseStatus + " - "
-                                                + initialResponse + "\"]");
+                                handleInitializeError(responseStatus + " - " + initialResponse, false);
                             }
                         }
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/status.initial-call-failed  [\"" + responseStatus + " - " + initialResponse + "\"]");
-                // in case of non ok_200 response schedule retry
-                scheduler.schedule(this::doInitialize, 60, TimeUnit.SECONDS);
+                handleInitializeError(responseStatus + " - " + initialResponse, true);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/status.initial-call-failed  [\"" + e.getMessage() + "\"]");
-            // in case of exception schedule retry
+            handleInitializeError(e.getMessage(), true);
+        }
+    }
+
+    private void initializeTibberCustomer(JsonObject initalJson) {
+        managePriceChannels(true);
+        updateStatus(ThingStatus.ONLINE);
+
+        // check if currency is supported
+        String currencyCode = initalJson.get("currency").getAsString();
+        Unit<?> unit = CurrencyUnits.getInstance().getUnit(currencyCode);
+        if (unit != null) {
+            currencyUnit = currencyCode;
+            logger.trace("Currency is set to {}", unit.getSymbol());
+        } else {
+            logger.trace("Currency {} is unknown, falling back to DecimalType", currencyCode);
+        }
+
+        // create websocket and watchdog
+        webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
+        watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
+
+        // start cron update for new spot prices
+        scheduler.schedule(this::updateSpotPrices, 0, TimeUnit.MINUTES);
+        int hour = tibberConfig.updateHour;
+        String cronHour = (hour < 0) ? "*" : String.valueOf(hour);
+        cronDaily = cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, cronHour));
+    }
+
+    private void initializePulseUser() {
+        managePriceChannels(false);
+        updateStatus(ThingStatus.ONLINE);
+        // create websocket and watchdog
+        webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
+        watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
+    }
+
+    private void handleInitializeError(@Nullable String message, boolean retry) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "@text/status.initial-call-failed  [\"" + message + "\"]");
+        if (retry) {
             scheduler.schedule(this::doInitialize, 60, TimeUnit.SECONDS);
         }
     }
@@ -312,10 +303,9 @@ public class TibberHandler extends BaseThingHandler {
     protected void managePriceChannels(boolean add) {
         boolean hasPriceChannels = thing
                 .getChannel(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE)) != null;
-        logger.trace("Add? {}. Has spot price channel? {}", add, hasPriceChannels);
+        logger.trace("Add channels? {}. Has spot price channel? {}", add, hasPriceChannels);
         if ((add && hasPriceChannels) || (!add && !hasPriceChannels)) {
             // don't add channel if already available OR remove channel if not available
-            logger.trace("Nothing to do");
             return;
         }
         // Collect channels to add/remove
