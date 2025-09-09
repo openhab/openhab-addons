@@ -257,7 +257,6 @@
 /bundles/org.openhab.binding.mqtt.awtrixlight/ @DrRSatzteil
 /bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
 /bundles/org.openhab.binding.mqtt.fpp/ @computergeek1507
-/bundles/org.openhab.binding.mqtt.generic/ @ccutrer
 /bundles/org.openhab.binding.mqtt.homeassistant/ @antroids @ccutrer
 /bundles/org.openhab.binding.mqtt.homie/ @ccutrer
 /bundles/org.openhab.binding.mqtt.ruuvigateway/ @ssalonen
