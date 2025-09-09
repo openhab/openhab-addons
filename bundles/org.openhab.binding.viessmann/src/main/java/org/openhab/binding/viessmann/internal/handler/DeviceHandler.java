@@ -861,9 +861,9 @@ public class DeviceHandler extends ViessmannThingHandler {
                             prop.put("setTemperatureParams", "targetTemperature");
                             break;
                         case "setTargetTemperature":
-                            prop.put("temperatureUri", commands.setTargetTemperature.uri);
-                            prop.put("command", "temperature");
-                            prop.put("temperatureParams", "temperature");
+                            prop.put("setTargetTemperatureUri", commands.setTargetTemperature.uri);
+                            prop.put("command", "setTargetTemperature");
+                            prop.put("setTargetTemperatureParams", "temperature");
                             break;
                         case "activate":
                             prop.put("activateUri", commands.activate.uri);

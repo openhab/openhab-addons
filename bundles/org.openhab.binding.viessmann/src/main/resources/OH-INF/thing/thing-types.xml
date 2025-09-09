@@ -467,4 +467,14 @@
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
+
+	<channel-type id="type-set-mode">
+		<item-type>String</item-type>
+		<label>Set Mode</label>
+		<category>heating</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
 </thing:thing-descriptions>
