@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.shelly.internal;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -69,5 +73,27 @@ public class ShellyDevicesTest {
         missingThingTypes.removeAll(SUPPORTED_THING_TYPES);
         assertThat("SUPPORTED_THING_TYPES must include keys of THING_TYPE_CAP_NUM_METERS", missingThingTypes,
                 is(empty()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesFornNumberInputsByBluThingType")
+    void numberInputsByBluThingType(ThingTypeUID thingTypeUid, int expectedInputs) {
+        Integer numberInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUid);
+        if (numberInputs != null) {
+            assertThat("Number of inputs in THING_TYPE_CAP_NUM_INPUTS for " + thingTypeUid.getId() + " does not match "
+                    + numberInputs, numberInputs, is(equalTo(expectedInputs)));
+        }
+    }
+
+    private static Stream<Arguments> provideTestCasesFornNumberInputsByBluThingType() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, 1), //
+                Arguments.of(THING_TYPE_SHELLYBLUWALLSWITCH4, 4), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4, 4), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, 1), //
+                Arguments.of(THING_TYPE_SHELLYBLUDW, 1), //
+                Arguments.of(THING_TYPE_SHELLYBLUMOTION, 0), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, 0), //
+                Arguments.of(THING_TYPE_SHELLYBLUREMOTE, 2));
     }
 }
