@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
