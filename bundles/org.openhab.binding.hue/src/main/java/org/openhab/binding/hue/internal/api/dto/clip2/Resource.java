@@ -180,11 +180,12 @@ public class Resource {
     /**
      * Get the alerts setting. We need to disambiguate between an alert setting and an alerts setting, because
      * both are represented by the same 'alert' JSON element. If the JSON element contains a 'status' field it is
-     * an alert setting, if it contains an 'action' field it is an alerts setting.
+     * an alert setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
      */
     public @Nullable Alerts getAlerts() {
         JsonElement alert = this.alert;
-        if (Objects.nonNull(alert) && alert.isJsonObject() && alert.getAsJsonObject().get("action") != null) {
+        if (Objects.nonNull(alert) && alert.isJsonObject() && (alert.getAsJsonObject().get("action") != null
+                || alert.getAsJsonObject().get("action_values") != null)) {
             return GSON.fromJson(alert, Alerts.class);
         }
         return null;
@@ -993,7 +994,7 @@ public class Resource {
     /**
      * Get the speaker alert sound. We need to disambiguate between an alert setting and an alerts setting, because
      * both are represented by the same 'alert' JSON element. If the JSON element contains a 'status' field it is
-     * an alert setting, if it contains an 'action' field it is an alerts setting.
+     * an alert setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
      */
     public @Nullable Sound getAlert() {
         JsonElement alert = this.alert;
