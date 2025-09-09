@@ -45,6 +45,10 @@ import org.openhab.binding.chatgpt.internal.dto.ToolChoice;
 import org.openhab.binding.chatgpt.internal.dto.functions.CreateIntent;
 import org.openhab.binding.chatgpt.internal.dto.functions.ItemsControl;
 import org.openhab.core.events.EventPublisher;
+import org.openhab.core.hli.Card;
+import org.openhab.core.hli.ChatReply;
+import org.openhab.core.hli.EnhancedHLIInterpreter;
+import org.openhab.core.hli.Intent;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -61,10 +65,6 @@ import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.TypeParser;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
-import org.openhab.ui.habot.card.Card;
-import org.openhab.ui.habot.card.CardBuilder;
-import org.openhab.ui.habot.nlp.ChatReply;
-import org.openhab.ui.habot.nlp.Intent;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -84,7 +84,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Component(service = { ChatGPTHLIService.class, HumanLanguageInterpreter.class })
 @NonNullByDefault
-public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInterpreter {
+public class ChatGPTHLIService implements ThingHandlerService, EnhancedHLIInterpreter {
 
     private @Nullable ThingHandler thingHandler;
     private List<ChatMessage> messages = new ArrayList<>();
@@ -102,7 +102,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
     @Activate
     public ChatGPTHLIService(@Reference ItemRegistry itemRegistry, @Reference EventPublisher eventPublisher,
-            final @Reference CardBuilder cardBuilder) {
+            @Reference CardBuilder cardBuilder) {
         this.itemRegistry = itemRegistry;
         this.eventPublisher = eventPublisher;
         this.cardBuilder = cardBuilder;
@@ -215,6 +215,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         return "Failed to interpret text";
     }
 
+    @Override
     public ChatReply reply(Locale locale, String text) {
 
         ChatReply reply = new ChatReply(locale, text);
@@ -236,7 +237,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                 reply.setAnswer(answer);
             }
 
-            if (this.lastCreatedIntent != null) {
+            if (this.lastCreatedIntent != null && cardBuilder != null) {
                 Intent intent = this.lastCreatedIntent;
                 reply.setIntent(intent);
 
@@ -488,10 +489,10 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         StringBuilder content = new StringBuilder();
         content.append(this.config.systemMessage);
 
-        Collection<Item> openaiItems = itemRegistry.getItemsByTag("ChatGPT");
+        Collection<Item> chatGPTItems = itemRegistry.getItemsByTag("ChatGPT");
 
-        if (!openaiItems.isEmpty()) {
-            openaiItems.forEach(item -> {
+        if (!chatGPTItems.isEmpty()) {
+            chatGPTItems.forEach(item -> {
                 String location = "";
                 String itemType = item.getType();
                 CommandDescription description = item.getCommandDescription();

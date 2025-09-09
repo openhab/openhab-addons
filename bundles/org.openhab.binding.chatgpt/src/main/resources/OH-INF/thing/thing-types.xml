@@ -58,7 +58,7 @@
 				<label>Temperature</label>
 				<description>What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more
 					random, while lower values like 0.2 will make it more focused and deterministic.</description>
-				<default>0.5</default>
+				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="topP" type="decimal" min="0" max="1" groupName="hli">
@@ -111,6 +111,12 @@
 			<parameter name="contextThreshold" type="integer" groupName="hli">
 				<label>Context Threshold</label>
 				<description>Limit total tokens included in context.</description>
+				<default>10000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" groupName="hli">
+				<label>Request Timeout</label>
+				<description>Each request timeout limit.</description>
 				<default>10000</default>
 				<advanced>true</advanced>
 			</parameter>
