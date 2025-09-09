@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="channel-type:homeassistant:channel">
+		<parameter name="component" type="text" readOnly="true">
+			<label>Component</label>
+			<description>Home Assistant component type (e.g. binary_sensor, switch, light)</description>
+			<default></default>
+		</parameter>
+		<parameter name="nodeid" type="text" readOnly="true">
+			<label>Node ID</label>
+			<description>Optional node name of the component</description>
+			<default></default>
+		</parameter>
+		<parameter name="objectid" type="text" readOnly="true" multiple="true">
+			<label>Object ID</label>
+			<description>Object ID of the component</description>
+			<default></default>
+		</parameter>
+		<parameter name="config" type="text" readOnly="true" multiple="true">
+			<label>JSON Configuration</label>
+			<description>The JSON configuration string received by the component via MQTT.</description>
+			<default></default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

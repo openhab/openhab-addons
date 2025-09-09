@@ -46,7 +46,6 @@
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.awtrixlight/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.espmilighthub/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.fpp/${project.version}</bundle>
-		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homeassistant/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homie/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.ruuvigateway/${project.version}</bundle>
 	</feature>

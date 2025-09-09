@@ -163,6 +163,7 @@
 /bundles/org.openhab.binding.heliosventilation/ @ramack
 /bundles/org.openhab.binding.heos/ @Wire82
 /bundles/org.openhab.binding.herzborg/ @Sonic-Amiga
+/bundles/org.openhab.binding.homeassistant/ @antroids @ccutrer
 /bundles/org.openhab.binding.homeconnect/ @bruestel
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.homewizard/ @Daniel-42
@@ -257,7 +258,6 @@
 /bundles/org.openhab.binding.mqtt.awtrixlight/ @DrRSatzteil
 /bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
 /bundles/org.openhab.binding.mqtt.fpp/ @computergeek1507
-/bundles/org.openhab.binding.mqtt.homeassistant/ @antroids @ccutrer
 /bundles/org.openhab.binding.mqtt.homie/ @ccutrer
 /bundles/org.openhab.binding.mqtt.ruuvigateway/ @ssalonen
 /bundles/org.openhab.binding.mspa/ @weymann
