@@ -314,8 +314,8 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
             if (errors != null && !errors.data.isEmpty()) {
                 String state = errors.data.get(0).body.errorDescription;
                 Boolean active = errors.data.get(0).body.active;
-                updateState("last-error-message", StringType.valueOf(state));
-                updateState("error-is-active", OnOffType.from(active));
+                updateState(CHANNEL_LAST_ERROR_MESSAGE, StringType.valueOf(state));
+                updateState(CHANNEL_ERROR_IS_ACTIVE, OnOffType.from(active));
             }
         } catch (ViessmannCommunicationException e) {
             updateBridgeStatusExtended(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

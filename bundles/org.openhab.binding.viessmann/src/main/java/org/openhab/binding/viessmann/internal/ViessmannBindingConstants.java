@@ -84,6 +84,8 @@ public class ViessmannBindingConstants {
     public static final Map<String, String> MODES_MAP = ViessmannUtil.readProperties(ViessmannBindingConstants.class,
             "modes.properties");
 
+    public static final String CHANNEL_LAST_ERROR_MESSAGE = "last-error-message";
+    public static final String CHANNEL_ERROR_IS_ACTIVE = "error-is-active";
     public static final String CHANNEL_RUN_QUERY_ONCE = "run-query-once";
     public static final String CHANNEL_RUN_ERROR_QUERY_ONCE = "run-error-query-once";
 

@@ -18,5 +18,5 @@ package org.openhab.binding.viessmann.internal.dto.features;
  * @author Ronny Grun - Initial contribution
  */
 public class FeatureSetNameParams {
-    FeatureParamsName name;
+    public FeatureParamsName name;
 }

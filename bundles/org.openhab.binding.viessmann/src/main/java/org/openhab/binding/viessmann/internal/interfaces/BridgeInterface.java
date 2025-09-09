@@ -18,17 +18,48 @@ import org.openhab.binding.viessmann.internal.api.ViessmannCommunicationExceptio
 import org.openhab.binding.viessmann.internal.handler.DeviceHandler;
 
 /**
- * The {@link BridgeInterface} is responsible for handling Bridges
+ * The {@link BridgeInterface} defines the contract for communication and
+ * interaction between the Viessmann bridge, Viessmann gateway and connected devices.
  *
+ * It is responsible for:
+ * <ul>
+ * <li>Assigning configuration details to devices</li>
+ * <li>Sending data to the Viessmann API</li>
+ * <li>Updating device features from the bridge</li>
+ * </ul>
+ *
+ * <p>
+ * <b>Null-handling:</b> All methods explicitly document how {@code null} inputs
+ * are processed (ignored, cause an exception, or return a default value).
  *
  * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
 public interface BridgeInterface {
 
+    /**
+     * Sets the installation gateway ID from the configuration into the given device handler.
+     *
+     * @param handler the {@link DeviceHandler} instance that should receive the gateway ID,
+     *            or {@code null} if no device is currently assigned
+     */
     void setConfigInstallationGatewayIdToDevice(@Nullable DeviceHandler handler);
 
+    /**
+     * Sends data to the Viessmann API.
+     *
+     * @param url the endpoint URL to which the data should be sent, may be {@code null}
+     * @param json the JSON payload containing the data, may be {@code null}
+     * @return {@code true} if the data was successfully sent, otherwise {@code false}
+     * @throws ViessmannCommunicationException if a communication error occurs with the API
+     */
     boolean setData(@Nullable String url, @Nullable String json) throws ViessmannCommunicationException;
 
+    /**
+     * Updates the features of a given device by requesting data from the bridge.
+     *
+     * @param handler the {@link DeviceHandler} whose features should be updated,
+     *            or {@code null} if no device is currently assigned
+     */
     void updateFeaturesOfDevice(@Nullable DeviceHandler handler);
 }

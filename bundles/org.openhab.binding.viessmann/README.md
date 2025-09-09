@@ -1,125 +1,180 @@
 # Viessmann Binding
 
-This binding connects Viessmann Devices via the new Viessmann API.
-It provides features like the ViCare-App.
+This binding connects Viessmann devices via the new Viessmann API.
+It provides features similar to the ViCare App.
 
-## Note / Important
+---
 
-You have to register your ViCare Account at the [Viessmann developer portal](https://developer.viessmann-climatesolutions.com/) and create a Client ID.
+## Important Notes
 
-* `name` - `i.e. openhab`
-* `Google reCAPTCHA` - `off`
-* `Redirect URI` - `http://localhost:8080/viessmann/authcode/` (*)
+You must register your ViCare account at the [Viessmann developer portal](https://developer.viessmann-climatesolutions.com/) and create a Client ID.
 
-(*) If your openHAB system is running on a different port than `8080`, you have to change this in the `Redirect URI`
+- `name` – e.g., `openhab`
+- `Google reCAPTCHA` – `off`
+- `Redirect URI` – `http://localhost:8080/viessmann/authcode/` (*)
 
-### Hint: 
+(*) If your openHAB system runs on a different port than `8080`, adjust the Redirect URI.
 
-On the Viessmann developer portal you can add more than one RedirectURI by tapping the plus sign.
+**Hint:** You can add multiple Redirect URIs on the Viessmann developer portal by clicking the plus sign.
+
+---
 
 ## Supported Things
 
-The binding supports the following thing types:
+- `account` – Connects to the Viessmann API to link the `gateway` thing.
+- `bridge` – Connects directly to the Viessmann API and links the first installed gateway.
+- `gateway` – Connects to the `account` thing (Discovery).
+- `device` – Represents individual devices (Discovery).
 
-* `account` - Supports connection to the Viessmann API to connect the `gateway` - thing
-* `bridge` - Supports connection to the Viessmann API and connects to the first installed gateway
-* `gateway` - Supports connection to the `account`- thing (Discovery)
-* `device` - Provides a device which is connected (Discovery)
-
-## Discovery
-
-Discovery is supported for all devices connected in your account.
+---
 
 ## Binding Configuration
 
-The `account` thing supports the connection to the Viessmann API to connect the `gateway` - thing
+### Account Thing
 
-* `apiKey` (required) The Client ID from the Viessmann developer portal
-* `user` (required) The E-Mail address which is registered for the ViCare App
-* `password` (required) The password which is registered for the ViCare App
-* `apiCallLimit` (default = 1450) The limit how often call the API (*)
-* `bufferApiCommands` (default = 450) The buffer for commands (*)
-* `pollingInterval` (default = 0) How often the available devices should be queried in seconds (**)
-* `pollingIntervalErrors` (default = 60) How often the errors should be queried in minutes
-* `disablePolling` (default = OFF) Deactivates the polling to carry out the manual poll using an item
+| Parameter           | Required | Default | Description |
+|--------------------|----------|---------|-------------|
+| `apiKey`            | Yes      | –       | Client ID from the Viessmann developer portal |
+| `user`              | Yes      | –       | E-Mail registered for the ViCare App |
+| `password`          | Yes      | –       | Password registered for the ViCare App |
+| `apiCallLimit`      | No       | 1450    | Limit for API calls (*) |
+| `bufferApiCommands` | No       | 450     | Buffer for commands (*) |
+| `pollingInterval`   | No       | 0       | Interval in seconds to query available devices (**) |
+| `pollingIntervalErrors` | No   | 60      | Interval in minutes to query errors |
+| `disablePolling`    | No       | OFF     | Disables automatic polling |
 
-The `bridge` thing supports connection to the Viessmann API and connects to the first installed gateway
+### Bridge Thing
 
-* `apiKey` (required) The Client ID from the Viessmann developer portal 
-* `user` (required) The E-Mail address which is registered for the ViCare App
-* `password` (required) The password which is registered for the ViCare App
-* `installationId` (optional / it will be discovered) The installation ID which belongs to your installation 
-* `gatewaySerial` (optional / it will be discovered) The gateway serial which belongs to your installation
-* `apiCallLimit` (default = 1450) The limit how often call the API (*) 
-* `bufferApiCommands` (default = 450) The buffer for commands (*)
-* `pollingInterval` (default = 0) How often the available devices should be queried in seconds (**) 
-* `pollingIntervalErrors` (default = 60) How often the errors should be queried in minutes 
-* `disablePolling` (default = OFF) Deactivates the polling to carry out the manual poll using an item
+| Parameter           | Required | Default | Description |
+|--------------------|----------|---------|-------------|
+| `apiKey`            | Yes      | –       | Client ID from the Viessmann developer portal |
+| `user`              | Yes      | –       | E-Mail registered for the ViCare App |
+| `password`          | Yes      | –       | Password registered for the ViCare App |
+| `installationId`    | No       | –       | Optional, will be discovered |
+| `gatewaySerial`     | No       | –       | Optional, will be discovered |
+| `apiCallLimit`      | No       | 1450    | Limit for API calls (*) |
+| `bufferApiCommands` | No       | 450     | Buffer for commands (*) |
+| `pollingInterval`   | No       | 0       | Interval in seconds to query available devices (**) |
+| `pollingIntervalErrors` | No   | 60      | Interval in minutes to query errors |
+| `disablePolling`    | No       | OFF     | Disables automatic polling |
 
-The `gateway` thing supports connection to the `account`- thing (Discovery)
+### Gateway Thing
 
-* `installationId` (optional / it will be discovered) The installation ID which belongs to your installation
-* `gatewaySerial` (optional / it will be discovered) The gateway serial which belongs to your installation
-* `pollingIntervalErrors` (default = 60) How often the errors should be queried in minutes
-* `disablePolling` (default = OFF) Deactivates the polling to carry out the manual poll using an item
+| Parameter           | Required | Default | Description |
+|--------------------|----------|---------|-------------|
+| `installationId`    | No       | –       | Optional, will be discovered |
+| `gatewaySerial`     | No       | –       | Optional, will be discovered |
+| `pollingIntervalErrors` | No   | 60      | Interval in minutes to query errors |
+| `disablePolling`    | No       | OFF     | Disables automatic polling |
 
+(*) Used to calculate refresh time in seconds  
+(**) If set to 0, interval is calculated automatically by the binding.
 
-(*) Used to calculate refresh time in seconds.
-(**) If set to 0, then the interval will be calculated by the binding.
-
-## Thing Configuration
-
-_All configurations are made in the UI_
+---
 
 ## Channels
 
-### `account`
+### Account
 
-| channel             | type   | RO/RW | description                                |
-|---------------------|--------|-------|--------------------------------------------|
-| `count-api-calls`     | Number | RO    | How often the API is called this day       |
+| Channel             | Type   | RO/RW | Description |
+|--------------------|--------|-------|-------------|
+| `count-api-calls`  | Number | RO    | Number of API calls today |
 
+### Bridge
 
-### `bridge`
+| Channel               | Type   | RO/RW | Description |
+|----------------------|--------|-------|-------------|
+| `count-api-calls`    | Number | RO    | Number of API calls today |
+| `error-is-active`    | Switch | RO    | Indicates active error |
+| `last-error-message` | String | RO    | Last error message from installation |
+| `run-query-once`     | Switch | W     | Run device query once |
+| `run-error-query-once` | Switch | W   | Run error query once |
 
-| channel             | type   | RO/RW | description                                |
-|---------------------|--------|-------|--------------------------------------------|
-| `count-api-calls`     | Number | RO    | How often the API is called this day       |
-| `error-is-active`     | Switch | RO    | Indicates whether the error is set / unset |
-| `last-error-message`  | String | RO    | Last error message from the installation   |
-| `run-query-once`      | Switch | W     | Run device query once                      |
-| `run-rerror-query-once` | Switch | W     | Run error query once                       |
+### Gateway
 
-### `gateway`
+| Channel               | Type   | RO/RW | Description |
+|----------------------|--------|-------|-------------|
+| `error-is-active`    | Switch | RO    | Indicates active error |
+| `last-error-message` | String | RO    | Last error message from installation |
+| `run-query-once`     | Switch | W     | Run device query once |
+| `run-error-query-once` | Switch | W   | Run error query once |
 
-| channel             | type   | RO/RW | description                                |
-|---------------------|--------|-------|--------------------------------------------|
-| `error-is-active`     | Switch | RO    | Indicates whether the error is set / unset |
-| `last-error-message`  | String | RO    | Last error message from the installation   |
-| `run-query-once`      | Switch | W     | Run device query once                      |
-| `run-rerror-query-once` | Switch | W     | Run error query once                       |
+### Device
 
-### `device`
+Channels are generated automatically for available features.
 
-There are many different channels.
-The channels are automatically generated for all available features.
+---
 
-## Breaking changes
+## Thing Hierarchy
+
+```
+Account Thing
+   │
+   └── Gateway Thing (discovered via Account)
+          │
+          └── Device Things (discovered via Gateway)
+
+Bridge Thing (connects directly to API)
+   │
+   └── Device Things (discovered via Bridge)
+```
+
+### Explanation
+
+- **Account Thing** – Central connection to Viessmann API; discovers gateways and devices.
+- **Gateway Thing** – Discovered via Account; devices discovered automatically.
+- **Bridge Thing** – Connects directly to API; discovers devices via first installed gateway at your heating system.
+- **Device Thing** – Represents individual devices; connected via Gateway or Bridge.
+
+---
+
+## Examples: Thing Definitions in openHAB
+
+### Account Thing
+
+```javascript
+Thing viessmann:account:myaccount "Viessmann Account" @ "Home" [
+    apiKey="YOUR_CLIENT_ID",
+    user="YOUR_EMAIL",
+    password="YOUR_PASSWORD"
+]
+```
+
+### Bridge Thing
+
+```javascript
+Thing viessmann:bridge:mybridge "Viessmann Bridge" @ "Home" [
+    apiKey="YOUR_CLIENT_ID",
+    user="YOUR_EMAIL",
+    password="YOUR_PASSWORD"
+]
+```
+
+### Gateway Thing
+
+```javascript
+Thing viessmann:gateway:mygateway "Viessmann Gateway" @ "Home" [
+    installationId="YOUR_INSTALLATION_ID",
+    gatewaySerial="YOUR_GATEWAY_SERIAL"
+]
+```
+
+### Device Thing
+
+```javascript
+Thing viessmann:device:heating "Heating Device" @ "Home" [
+    deviceId="YOUR_DEVICE_ID"
+]
+```
+
+---
+
+## Breaking Changes
 
 ### Version 5.1.0
 
-* New `account` and `gateway` thing have been added to support gateway selection. 
-  The existing `device` thing can be manually switched to the new `gateway` thing as bridge if needed.
+- Added new `account` and `gateway` things for gateway selection.  
+  Existing `device` things can be switched manually to the new `gateway` as bridge.  
+  After that, the `bridge` thing can be removed.
 
-### Version 2.3.10
 
-All channels on `device` - thing needs to be recreated to support Units Of Measurement.
-This happens automatically.
-
-The item type of each item has to be adjusted:
-
-| unit              | old item type | new item type         |
-|-------------------|---------------|-----------------------|
-| hour, minutes,... | Number        | Number:Time           |
-| percent           | Number        | Number:Dimensionless  |
-| temperature       | Number        | Number:Temperature    |
