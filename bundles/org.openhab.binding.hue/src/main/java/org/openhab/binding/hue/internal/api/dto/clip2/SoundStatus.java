@@ -40,7 +40,7 @@ public class SoundStatus {
     public List<SoundType> getSoundValues() {
         List<String> soundValues = this.soundValues;
         if (Objects.nonNull(soundValues)) {
-            return soundValues.stream().map(SoundType::of).collect(Collectors.toList());
+            return soundValues.stream().map(SoundType::of).toList();
         }
         return List.of();
     }
