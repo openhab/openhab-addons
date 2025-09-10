@@ -13,6 +13,8 @@
 package org.openhab.binding.astro.internal.calc;
 
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.SeasonName;
@@ -31,22 +33,23 @@ public class SeasonCalc {
     /**
      * Returns the seasons of the year of the specified calendar.
      */
-    public Season getSeason(Calendar calendar, double latitude, boolean useMeteorologicalSeason) {
+    public Season getSeason(Calendar calendar, double latitude, boolean useMeteorologicalSeason, TimeZone zone,
+            Locale locale) {
         int year = calendar.get(Calendar.YEAR);
         boolean isSouthernHemisphere = latitude < 0.0;
         Season season = currentSeason;
         if (currentYear != year) {
             season = new Season();
             if (!isSouthernHemisphere) {
-                season.setSpring(calcEquiSol(0, year));
-                season.setSummer(calcEquiSol(1, year));
-                season.setAutumn(calcEquiSol(2, year));
-                season.setWinter(calcEquiSol(3, year));
+                season.setSpring(calcEquiSol(0, year, zone, locale));
+                season.setSummer(calcEquiSol(1, year, zone, locale));
+                season.setAutumn(calcEquiSol(2, year, zone, locale));
+                season.setWinter(calcEquiSol(3, year, zone, locale));
             } else {
-                season.setSpring(calcEquiSol(2, year));
-                season.setSummer(calcEquiSol(3, year));
-                season.setAutumn(calcEquiSol(0, year));
-                season.setWinter(calcEquiSol(1, year));
+                season.setSpring(calcEquiSol(2, year, zone, locale));
+                season.setSummer(calcEquiSol(3, year, zone, locale));
+                season.setAutumn(calcEquiSol(0, year, zone, locale));
+                season.setWinter(calcEquiSol(1, year, zone, locale));
             }
             currentSeason = season;
             currentYear = year;
@@ -117,14 +120,14 @@ public class SeasonCalc {
     /**
      * Calculates the date of the season.
      */
-    private Calendar calcEquiSol(int season, int year) {
+    private Calendar calcEquiSol(int season, int year, TimeZone zone, Locale locale) {
         double estimate = calcInitial(season, year);
         double t = (estimate - 2451545.0) / 36525;
         double w = 35999.373 * t - 2.47;
         double dl = 1 + 0.0334 * cosDeg(w) + 0.0007 * cosDeg(2 * w);
         double s = periodic24(t);
         double julianDate = estimate + ((0.00001 * s) / dl);
-        return DateTimeUtils.toCalendar(julianDate);
+        return DateTimeUtils.toCalendar(julianDate, zone, locale);
     }
 
     /**

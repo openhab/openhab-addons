@@ -13,6 +13,8 @@
 package org.openhab.binding.astro.internal.util;
 
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
@@ -69,14 +71,15 @@ public class DateTimeUtils {
      * Creates a Range object within the specified months and days. The start
      * time is midnight, the end time is end of the day.
      */
-    public static Range getRange(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay) {
-        Calendar start = Calendar.getInstance();
+    public static Range getRange(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay,
+            TimeZone zone, Locale locale) {
+        Calendar start = Calendar.getInstance(zone, locale);
         start.set(Calendar.YEAR, startYear);
         start.set(Calendar.MONTH, startMonth);
         start.set(Calendar.DAY_OF_MONTH, startDay);
         start = truncateToMidnight(start);
 
-        Calendar end = Calendar.getInstance();
+        Calendar end = Calendar.getInstance(zone, locale);
         end.set(Calendar.YEAR, endYear);
         end.set(Calendar.MONTH, endMonth);
         end.set(Calendar.DAY_OF_MONTH, endDay);
@@ -91,12 +94,12 @@ public class DateTimeUtils {
     /**
      * Returns a calendar object from a julian date.
      */
-    public static Calendar toCalendar(double julianDate) {
+    public static Calendar toCalendar(double julianDate, TimeZone zone, Locale locale) {
         if (Double.compare(julianDate, Double.NaN) == 0 || julianDate == 0) {
             return null;
         }
         long millis = (long) ((julianDate + 0.5 - J1970) * MILLISECONDS_PER_DAY);
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(zone, locale);
         cal.setTimeInMillis(millis);
         int second = cal.get(Calendar.SECOND);
         if (second > 30) {
@@ -170,8 +173,8 @@ public class DateTimeUtils {
     /**
      * Returns the next Calendar from today.
      */
-    public static Calendar getNextFromToday(Calendar... calendars) {
-        return getNext(Calendar.getInstance(), calendars);
+    public static Calendar getNextFromToday(TimeZone zone, Locale locale, Calendar... calendars) {
+        return getNext(Calendar.getInstance(zone, locale), calendars);
     }
 
     static Calendar getNext(Calendar now, Calendar... calendars) {
@@ -218,10 +221,8 @@ public class DateTimeUtils {
     public static Calendar applyConfig(Calendar cal, AstroChannelConfig config) {
         Calendar cCal = cal;
         if (config.offset != 0) {
-            Calendar cOffset = Calendar.getInstance();
-            cOffset.setTime(cCal.getTime());
-            cOffset.add(Calendar.MINUTE, config.offset);
-            cCal = cOffset;
+            cCal = (Calendar) cal.clone();
+            cCal.add(Calendar.MINUTE, config.offset);
         }
 
         Calendar cEarliest = getAdjustedEarliest(cCal, config);
@@ -245,8 +246,8 @@ public class DateTimeUtils {
         return cal;
     }
 
-    public static Calendar createCalendarForToday(int hour, int minute) {
-        return DateTimeUtils.adjustTime(Calendar.getInstance(), hour * 60 + minute);
+    public static Calendar createCalendarForToday(int hour, int minute, TimeZone zone, Locale locale) {
+        return DateTimeUtils.adjustTime(Calendar.getInstance(zone, locale), hour * 60 + minute);
     }
 
     /**

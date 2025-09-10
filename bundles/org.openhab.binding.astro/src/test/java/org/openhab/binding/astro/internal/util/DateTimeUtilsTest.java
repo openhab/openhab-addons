@@ -49,24 +49,25 @@ public class DateTimeUtilsTest {
 
     @Test
     public void testGetSeasonAmsterdam() {
-        final Season season = seasonCalc.getSeason(DEC_10_2020, AMSTERDAM_LATITUDE, true);
+        final Season season = seasonCalc.getSeason(DEC_10_2020, AMSTERDAM_LATITUDE, true, TIME_ZONE, Locale.ROOT);
 
         assertNextSeason(season.getSpring(), 2020, JAN_20_2020, season);
         assertNextSeason(season.getSummer(), 2020, MAY_20_2020, season);
         assertNextSeason(season.getWinter(), 2020, SEPT_20_2020, season);
-        assertNextSeason(seasonCalc.getSeason(DEC_10_2021, AMSTERDAM_LATITUDE, true).getSpring(), 2021, DEC_10_2020,
-                season);
+        assertNextSeason(
+                seasonCalc.getSeason(DEC_10_2021, AMSTERDAM_LATITUDE, true, TIME_ZONE, Locale.ROOT).getSpring(), 2021,
+                DEC_10_2020, season);
     }
 
     @Test
     public void testGetSeasonSydney() {
-        final Season season = seasonCalc.getSeason(DEC_10_2020, SYDNEY_LATITUDE, true);
+        final Season season = seasonCalc.getSeason(DEC_10_2020, SYDNEY_LATITUDE, true, TIME_ZONE, Locale.ROOT);
 
         assertNextSeason(season.getAutumn(), 2020, JAN_20_2020, season);
         assertNextSeason(season.getWinter(), 2020, MAY_20_2020, season);
         assertNextSeason(season.getSummer(), 2020, SEPT_20_2020, season);
-        assertNextSeason(seasonCalc.getSeason(DEC_10_2021, SYDNEY_LATITUDE, true).getAutumn(), 2021, DEC_10_2020,
-                season);
+        assertNextSeason(seasonCalc.getSeason(DEC_10_2021, SYDNEY_LATITUDE, true, TIME_ZONE, Locale.ROOT).getAutumn(),
+                2021, DEC_10_2020, season);
     }
 
     @Test

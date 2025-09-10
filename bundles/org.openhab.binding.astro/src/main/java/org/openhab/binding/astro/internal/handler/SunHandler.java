@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.astro.internal.handler;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +30,7 @@ import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Thing;
@@ -48,17 +52,21 @@ public class SunHandler extends AstroThingHandler {
     /**
      * Constructor
      */
-    public SunHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider) {
-        super(thing, scheduler, timeZoneProvider);
+    public SunHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
+            LocaleProvider localeProvider) {
+        super(thing, scheduler, timeZoneProvider, localeProvider);
     }
 
     @Override
     public void publishPositionalInfo() {
-        sun = getSunAt(ZonedDateTime.now());
+        ZoneId zoneId = timeZoneProvider.getTimeZone();
+        TimeZone zone = TimeZone.getTimeZone(zoneId);
+        Locale locale = localeProvider.getLocale();
+        sun = getSunAt(ZonedDateTime.now(zoneId));
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
         Double altitude = thingConfig.altitude;
-        sunCalc.setPositionalInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
+        sunCalc.setPositionalInfo(Calendar.getInstance(zone, locale), latitude != null ? latitude : 0,
                 longitude != null ? longitude : 0, altitude != null ? altitude : 0, sun);
 
         sun.getEclipse().setElevations(this, timeZoneProvider);
@@ -83,8 +91,8 @@ public class SunHandler extends AstroThingHandler {
     }
 
     @Override
-    protected Job getDailyJob() {
-        return new DailyJobSun(thing.getUID().getAsString(), this);
+    protected Job getDailyJob(TimeZone zone, Locale locale) {
+        return new DailyJobSun(thing.getUID().getAsString(), this, zone, locale);
     }
 
     private Sun getSunAt(ZonedDateTime date) {
@@ -92,8 +100,8 @@ public class SunHandler extends AstroThingHandler {
         Double longitude = thingConfig.longitude;
         Double altitude = thingConfig.altitude;
         return sunCalc.getSunInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, altitude != null ? altitude : 0,
-                thingConfig.useMeteorologicalSeason);
+                longitude != null ? longitude : 0, altitude != null ? altitude : 0, thingConfig.useMeteorologicalSeason,
+                TimeZone.getTimeZone(timeZoneProvider.getTimeZone()), Locale.ROOT);
     }
 
     private Sun getPositionedSunAt(ZonedDateTime date) {

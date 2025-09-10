@@ -14,7 +14,7 @@ package org.openhab.binding.astro.internal.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.ZoneId;
+import java.util.TimeZone;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class SunTest {
     private Sun sun;
     private AstroChannelConfig config;
 
-    private static final ZoneId ZONE = ZoneId.systemDefault();
+    private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Asia/Gaza");
 
     @BeforeEach
     public void init() {
@@ -49,7 +49,7 @@ public class SunTest {
     public void testConstructor() throws Exception {
         assertNotNull(sun.getPhase());
         assertEquals(UnDefType.UNDEF,
-                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE));
+                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, TIME_ZONE));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class SunTest {
         sun.getPhase().setName(null);
 
         assertEquals(UnDefType.UNDEF,
-                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE));
+                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, TIME_ZONE));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class SunTest {
         sun.getPhase().setName(SunPhaseName.DAYLIGHT);
 
         assertEquals(new StringType("DAYLIGHT"),
-                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE));
+                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, TIME_ZONE));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class SunTest {
         assertNull(sun.getPhase());
 
         assertThrows(NullPointerException.class, () -> assertEquals(UnDefType.UNDEF,
-                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE)));
+                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, TIME_ZONE)));
     }
 
     @Test

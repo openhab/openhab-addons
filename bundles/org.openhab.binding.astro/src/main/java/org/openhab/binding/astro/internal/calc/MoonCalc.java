@@ -15,6 +15,8 @@ package org.openhab.binding.astro.internal.calc;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.EclipseKind;
@@ -48,7 +50,7 @@ public class MoonCalc {
     /**
      * Calculates all moon data at the specified coordinates
      */
-    public Moon getMoonInfo(Calendar calendar, double latitude, double longitude) {
+    public Moon getMoonInfo(Calendar calendar, double latitude, double longitude, TimeZone zone, Locale locale) {
         Moon moon = new Moon();
 
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
@@ -75,26 +77,28 @@ public class MoonCalc {
         moon.setSet(new Range(set, set));
 
         MoonPhase phase = moon.getPhase();
-        phase.setNew(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, NEW_MOON)));
-        phase.setFirstQuarter(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, FIRST_QUARTER)));
-        phase.setFull(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, FULL_MOON)));
-        phase.setThirdQuarter(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, LAST_QUARTER)));
+        phase.setNew(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, NEW_MOON), zone, locale));
+        phase.setFirstQuarter(
+                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, FIRST_QUARTER), zone, locale));
+        phase.setFull(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, FULL_MOON), zone, locale));
+        phase.setThirdQuarter(
+                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, LAST_QUARTER), zone, locale));
 
         Eclipse eclipse = moon.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
             double jdate = getEclipse(calendar, EclipseType.MOON, julianDateMidnight, eclipseKind);
-            eclipse.set(eclipseKind, DateTimeUtils.toCalendar(jdate), new Position());
+            eclipse.set(eclipseKind, DateTimeUtils.toCalendar(jdate, zone, locale), new Position());
         });
 
         double decimalYear = DateTimeUtils.getDecimalYear(calendar);
         MoonDistance apogee = moon.getApogee();
         double apogeeJd = getApogee(julianDate, decimalYear);
-        apogee.setDate(DateTimeUtils.toCalendar(apogeeJd));
+        apogee.setDate(DateTimeUtils.toCalendar(apogeeJd, zone, locale));
         apogee.setDistance(getDistance(apogeeJd));
 
         MoonDistance perigee = moon.getPerigee();
         double perigeeJd = getPerigee(julianDate, decimalYear);
-        perigee.setDate(DateTimeUtils.toCalendar(perigeeJd));
+        perigee.setDate(DateTimeUtils.toCalendar(perigeeJd, zone, locale));
         perigee.setDistance(getDistance(perigeeJd));
 
         return moon;
@@ -103,27 +107,28 @@ public class MoonCalc {
     /**
      * Calculates the moon illumination and distance.
      */
-    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Moon moon) {
+    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Moon moon, TimeZone zone,
+            Locale locale) {
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
-        setMoonPhase(calendar, moon);
+        setMoonPhase(calendar, moon, zone, locale);
         setAzimuthElevationZodiac(julianDate, latitude, longitude, moon);
 
         MoonDistance distance = moon.getDistance();
-        distance.setDate(Calendar.getInstance());
+        distance.setDate(calendar);
         distance.setDistance(getDistance(julianDate));
     }
 
     /**
      * Calculates the age and the current phase.
      */
-    private void setMoonPhase(Calendar calendar, Moon moon) {
+    private void setMoonPhase(Calendar calendar, Moon moon, TimeZone zone, Locale locale) {
         MoonPhase phase = moon.getPhase();
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
         double parentNewMoon = getPreviousPhase(calendar, julianDate, NEW_MOON);
         double age = Math.abs(parentNewMoon - julianDate);
         phase.setAge(age);
 
-        long parentNewMoonMillis = DateTimeUtils.toCalendar(parentNewMoon).getTimeInMillis();
+        long parentNewMoonMillis = DateTimeUtils.toCalendar(parentNewMoon, zone, locale).getTimeInMillis();
         long ageRangeTimeMillis = phase.getNew().getTimeInMillis() - parentNewMoonMillis;
         long ageCurrentMillis = System.currentTimeMillis() - parentNewMoonMillis;
         double agePercent = ageRangeTimeMillis != 0 ? ageCurrentMillis * 100.0 / ageRangeTimeMillis : 0;

@@ -18,8 +18,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.EclipseType;
@@ -142,12 +144,12 @@ public class SunCalc {
      * Calculates all sun rise and sets at the specified coordinates.
      */
     public Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude,
-            boolean useMeteorologicalSeason) {
-        return getSunInfo(calendar, latitude, longitude, altitude, false, useMeteorologicalSeason);
+            boolean useMeteorologicalSeason, TimeZone zone, Locale locale) {
+        return getSunInfo(calendar, latitude, longitude, altitude, false, useMeteorologicalSeason, zone, locale);
     }
 
     private Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude, boolean onlyAstro,
-            boolean useMeteorologicalSeason) {
+            boolean useMeteorologicalSeason, TimeZone zone, Locale locale) {
         double lw = -longitude * DEG2RAD;
         double phi = latitude * DEG2RAD;
         double j = DateTimeUtils.midnightDateToJulianDate(calendar) + 0.5;
@@ -176,23 +178,31 @@ public class SunCalc {
         double jastro2 = getSunriseJulianDate(jtransit, jdark);
 
         Sun sun = new Sun();
-        sun.setAstroDawn(new Range(DateTimeUtils.toCalendar(jastro2), DateTimeUtils.toCalendar(jnau2)));
-        sun.setAstroDusk(new Range(DateTimeUtils.toCalendar(jastro), DateTimeUtils.toCalendar(jdark)));
+        sun.setAstroDawn(new Range(DateTimeUtils.toCalendar(jastro2, zone, locale),
+                DateTimeUtils.toCalendar(jnau2, zone, locale)));
+        sun.setAstroDusk(new Range(DateTimeUtils.toCalendar(jastro, zone, locale),
+                DateTimeUtils.toCalendar(jdark, zone, locale)));
 
         if (onlyAstro) {
             return sun;
         }
 
-        sun.setNoon(new Range(DateTimeUtils.toCalendar(jtransit),
-                DateTimeUtils.toCalendar(jtransit + JD_ONE_MINUTE_FRACTION)));
-        sun.setRise(new Range(DateTimeUtils.toCalendar(jrise), DateTimeUtils.toCalendar(jriseend)));
-        sun.setSet(new Range(DateTimeUtils.toCalendar(jsetstart), DateTimeUtils.toCalendar(jset)));
+        sun.setNoon(new Range(DateTimeUtils.toCalendar(jtransit, zone, locale),
+                DateTimeUtils.toCalendar(jtransit + JD_ONE_MINUTE_FRACTION, zone, locale)));
+        sun.setRise(new Range(DateTimeUtils.toCalendar(jrise, zone, locale),
+                DateTimeUtils.toCalendar(jriseend, zone, locale)));
+        sun.setSet(new Range(DateTimeUtils.toCalendar(jsetstart, zone, locale),
+                DateTimeUtils.toCalendar(jset, zone, locale)));
 
-        sun.setCivilDawn(new Range(DateTimeUtils.toCalendar(jciv2), DateTimeUtils.toCalendar(jrise)));
-        sun.setCivilDusk(new Range(DateTimeUtils.toCalendar(jset), DateTimeUtils.toCalendar(jnau)));
+        sun.setCivilDawn(new Range(DateTimeUtils.toCalendar(jciv2, zone, locale),
+                DateTimeUtils.toCalendar(jrise, zone, locale)));
+        sun.setCivilDusk(
+                new Range(DateTimeUtils.toCalendar(jset, zone, locale), DateTimeUtils.toCalendar(jnau, zone, locale)));
 
-        sun.setNauticDawn(new Range(DateTimeUtils.toCalendar(jnau2), DateTimeUtils.toCalendar(jciv2)));
-        sun.setNauticDusk(new Range(DateTimeUtils.toCalendar(jnau), DateTimeUtils.toCalendar(jastro)));
+        sun.setNauticDawn(new Range(DateTimeUtils.toCalendar(jnau2, zone, locale),
+                DateTimeUtils.toCalendar(jciv2, zone, locale)));
+        sun.setNauticDusk(new Range(DateTimeUtils.toCalendar(jnau, zone, locale),
+                DateTimeUtils.toCalendar(jastro, zone, locale)));
 
         boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude, altitude);
 
@@ -210,7 +220,7 @@ public class SunCalc {
 
         // morning night
         Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, altitude, true,
-                useMeteorologicalSeason);
+                useMeteorologicalSeason, zone, locale);
         Range morningNightRange = null;
         if (sunYesterday.getAstroDusk().getEnd() != null
                 && DateTimeUtils.isSameDay(sunYesterday.getAstroDusk().getEnd(), calendar)) {
@@ -237,7 +247,7 @@ public class SunCalc {
             sun.setNight(new Range());
         } else {
             Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true,
-                    useMeteorologicalSeason);
+                    useMeteorologicalSeason, zone, locale);
             sun.setNight(new Range(sun.getAstroDusk().getEnd(), sunTomorrow.getAstroDawn().getStart()));
         }
 
@@ -247,14 +257,14 @@ public class SunCalc {
 
         eclipse.getKinds().forEach(eclipseKind -> {
             double jdate = mc.getEclipse(calendar, EclipseType.SUN, j, eclipseKind);
-            eclipse.set(eclipseKind, DateTimeUtils.toCalendar(jdate), new Position());
+            eclipse.set(eclipseKind, DateTimeUtils.toCalendar(jdate, zone, locale), new Position());
         });
 
-        SunZodiacCalc zodiacCalc = new SunZodiacCalc();
+        SunZodiacCalc zodiacCalc = new SunZodiacCalc(zone, locale);
         zodiacCalc.getZodiac(calendar).ifPresent(z -> sun.setZodiac(z));
 
         SeasonCalc seasonCalc = new SeasonCalc();
-        sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason));
+        sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason, zone, locale));
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {

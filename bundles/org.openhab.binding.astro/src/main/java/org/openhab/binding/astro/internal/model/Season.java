@@ -15,6 +15,8 @@ package org.openhab.binding.astro.internal.model;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.measure.quantity.Time;
 
@@ -108,8 +110,8 @@ public class Season {
     /**
      * Returns the next season.
      */
-    public Calendar getNextSeason() {
-        return DateTimeUtils.getNextFromToday(spring, summer, autumn, winter);
+    public Calendar getNextSeason(TimeZone zone, Locale locale) {
+        return DateTimeUtils.getNextFromToday(zone, locale, spring, summer, autumn, winter);
     }
 
     /**
@@ -126,9 +128,9 @@ public class Season {
     /**
      * Returns the time left for current season
      */
-    public QuantityType<Time> getTimeLeft() {
-        final Calendar now = Calendar.getInstance();
-        final Calendar next = getNextSeason();
+    public QuantityType<Time> getTimeLeft(TimeZone zone, Locale locale) {
+        final Calendar now = Calendar.getInstance(zone, locale);
+        final Calendar next = getNextSeason(zone, locale);
         final Duration timeLeft = Duration.of(next.getTimeInMillis() - now.getTimeInMillis(), ChronoUnit.MILLIS);
 
         return new QuantityType<>(timeLeft.toDays(), Units.DAY);

@@ -26,7 +26,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -44,6 +46,7 @@ import org.openhab.binding.astro.internal.job.PositionalJob;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.scheduler.CronScheduler;
@@ -77,6 +80,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     protected final TimeZoneProvider timeZoneProvider;
 
+    protected final LocaleProvider localeProvider;
+
     private final Lock monitor = new ReentrantLock();
 
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
@@ -87,10 +92,12 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     private @Nullable ScheduledCompletableFuture<?> dailyJob;
 
-    public AstroThingHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider) {
+    public AstroThingHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
+            LocaleProvider localeProvider) {
         super(thing);
         this.cronScheduler = scheduler;
         this.timeZoneProvider = timeZoneProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -175,8 +182,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             }
             try {
                 AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
-                updateState(channelUID,
-                        PropertyUtils.getState(channelUID, config, planet, timeZoneProvider.getTimeZone()));
+                updateState(channelUID, PropertyUtils.getState(channelUID, config, planet,
+                        TimeZone.getTimeZone(timeZoneProvider.getTimeZone())));
             } catch (Exception ex) {
                 logger.error("Can't update state for channel {} : {}", channelUID, ex.getMessage(), ex);
             }
@@ -194,8 +201,10 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             stopJobs();
             if (getThing().getStatus() == ONLINE) {
                 String thingUID = getThing().getUID().toString();
+                TimeZone zone = TimeZone.getTimeZone(timeZoneProvider.getTimeZone());
+                Locale locale = localeProvider.getLocale();
                 // Daily Job
-                Job runnable = getDailyJob();
+                Job runnable = getDailyJob(zone, locale);
                 dailyJob = cronScheduler.schedule(runnable, DAILY_MIDNIGHT);
                 logger.debug("Scheduled {} at midnight", dailyJob);
                 // Execute daily startup job immediately
@@ -347,7 +356,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /**
      * Returns the daily calculation {@link Job} (cannot be {@code null})
      */
-    protected abstract Job getDailyJob();
+    protected abstract Job getDailyJob(TimeZone zone, Locale locale);
 
     public abstract @Nullable Position getPositionAt(ZonedDateTime date);
 

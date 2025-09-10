@@ -16,6 +16,8 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.scheduleEvent;
 
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
@@ -34,6 +36,8 @@ import org.openhab.binding.astro.internal.model.Planet;
 public final class DailyJobMoon extends AbstractJob {
 
     private final AstroThingHandler handler;
+    public final TimeZone zone;
+    public final Locale locale;
 
     /**
      * Constructor
@@ -42,9 +46,11 @@ public final class DailyJobMoon extends AbstractJob {
      * @param handler the {@link AstroThingHandler} instance
      * @throws IllegalArgumentException if {@code thingUID} or {@code handler} is {@code null}
      */
-    public DailyJobMoon(String thingUID, AstroThingHandler handler) {
+    public DailyJobMoon(String thingUID, AstroThingHandler handler, TimeZone zone, Locale locale) {
         super(thingUID);
         this.handler = handler;
+        this.zone = zone;
+        this.locale = locale;
     }
 
     @Override
@@ -59,27 +65,33 @@ public final class DailyJobMoon extends AbstractJob {
             return;
         }
         Moon moon = (Moon) planet;
-        scheduleEvent(thingUID, handler, moon.getRise().getStart(), EVENT_START, EVENT_CHANNEL_ID_RISE, false);
-        scheduleEvent(thingUID, handler, moon.getSet().getEnd(), EVENT_END, EVENT_CHANNEL_ID_SET, false);
+        scheduleEvent(thingUID, handler, moon.getRise().getStart(), EVENT_START, EVENT_CHANNEL_ID_RISE, false, zone,
+                locale);
+        scheduleEvent(thingUID, handler, moon.getSet().getEnd(), EVENT_END, EVENT_CHANNEL_ID_SET, false, zone, locale);
 
         MoonPhase moonPhase = moon.getPhase();
         scheduleEvent(thingUID, handler, moonPhase.getFirstQuarter(), EVENT_PHASE_FIRST_QUARTER,
-                EVENT_CHANNEL_ID_MOON_PHASE, false);
+                EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
         scheduleEvent(thingUID, handler, moonPhase.getThirdQuarter(), EVENT_PHASE_THIRD_QUARTER,
-                EVENT_CHANNEL_ID_MOON_PHASE, false);
-        scheduleEvent(thingUID, handler, moonPhase.getFull(), EVENT_PHASE_FULL, EVENT_CHANNEL_ID_MOON_PHASE, false);
-        scheduleEvent(thingUID, handler, moonPhase.getNew(), EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false);
+                EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
+        scheduleEvent(thingUID, handler, moonPhase.getFull(), EVENT_PHASE_FULL, EVENT_CHANNEL_ID_MOON_PHASE, false,
+                zone, locale);
+        scheduleEvent(thingUID, handler, moonPhase.getNew(), EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
+                locale);
 
         Eclipse eclipse = moon.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
             Calendar eclipseDate = eclipse.getDate(eclipseKind);
             if (eclipseDate != null) {
-                scheduleEvent(thingUID, handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false);
+                scheduleEvent(thingUID, handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false,
+                        zone, locale);
             }
         });
 
-        scheduleEvent(thingUID, handler, moon.getPerigee().getDate(), EVENT_PERIGEE, EVENT_CHANNEL_ID_PERIGEE, false);
-        scheduleEvent(thingUID, handler, moon.getApogee().getDate(), EVENT_APOGEE, EVENT_CHANNEL_ID_APOGEE, false);
+        scheduleEvent(thingUID, handler, moon.getPerigee().getDate(), EVENT_PERIGEE, EVENT_CHANNEL_ID_PERIGEE, false,
+                zone, locale);
+        scheduleEvent(thingUID, handler, moon.getApogee().getDate(), EVENT_APOGEE, EVENT_CHANNEL_ID_APOGEE, false, zone,
+                locale);
     }
 
     @Override
