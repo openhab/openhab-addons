@@ -42,13 +42,10 @@ public class HomekitDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         // TODO Auto-generated method stub
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
-
     }
-
 }
