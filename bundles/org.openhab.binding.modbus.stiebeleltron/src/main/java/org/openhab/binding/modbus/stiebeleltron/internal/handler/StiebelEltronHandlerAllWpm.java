@@ -514,6 +514,19 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             return;
         }
 
+        boolean debug = true;
+        if (debug) {
+            String statusMsg = String.format("@text/offline.com-error [ \"%s\", \"%s\" ]", "com-error",
+                    StiebelEltronHandlerAllWpm.class.getName());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+            statusMsg = String.format("@text/offline.com-error-read [ \"%s\", \"%s\" ]", "read-error",
+                    StiebelEltronHandlerAllWpm.class.getName());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+            statusMsg = String.format("@text/offline.com-error-write [ \"%s\", \"%s\" ]", "write-error",
+                    StiebelEltronHandlerAllWpm.class.getName());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+        }
+
         StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
         if (myconfig == null) {
             logger.warn("Invalid config ref for stiebel eltron handler");
@@ -974,7 +987,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                 updateState(
                         channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM,
                                 String.format(CHANNEL_HP_HOTGAS_TEMPERATURE_FORMAT, idx + 1)),
-                        getScaled(block.heatPumps[idx].temperatureFlow, 10, CELSIUS));
+                        getScaled(block.heatPumps[idx].temperatureHotgas, 10, CELSIUS));
             } else if (!hpFeaturesObj.reported(SysInfoHpFeaturelKeys.HP_TEMPERATURE_HOTGAS)) {
                 logger.trace("HP{} Hotgas temperature not available", idx + 1);
                 updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM,
@@ -1345,76 +1358,76 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_PRODUCTION_HEAT_TODAY_FORMAT, idx + 1)),
-                    new QuantityType<>(energyRuntimeBlock.heatPumps[0].productionHeatToday, KILOWATT_HOUR));
+                    new QuantityType<>(energyRuntimeBlock.heatPumps[idx].productionHeatToday, KILOWATT_HOUR));
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_PRODUCTION_HEAT_TOTAL_FORMAT, idx + 1)),
-                    getEnergyQuantity(energyRuntimeBlock.heatPumps[0].productionHeatTotalHigh,
-                            energyRuntimeBlock.heatPumps[0].productionHeatTotalLow));
+                    getEnergyQuantity(energyRuntimeBlock.heatPumps[idx].productionHeatTotalHigh,
+                            energyRuntimeBlock.heatPumps[idx].productionHeatTotalLow));
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_PRODUCTION_WATER_TODAY_FORMAT, idx + 1)),
-                    new QuantityType<>(energyRuntimeBlock.heatPumps[0].productionWaterToday, KILOWATT_HOUR));
+                    new QuantityType<>(energyRuntimeBlock.heatPumps[idx].productionWaterToday, KILOWATT_HOUR));
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_PRODUCTION_WATER_TOTAL_FORMAT, idx + 1)),
-                    getEnergyQuantity(energyRuntimeBlock.heatPumps[0].productionWaterTotalHigh,
-                            energyRuntimeBlock.heatPumps[0].productionWaterTotalLow));
+                    getEnergyQuantity(energyRuntimeBlock.heatPumps[idx].productionWaterTotalHigh,
+                            energyRuntimeBlock.heatPumps[idx].productionWaterTotalLow));
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_PRODUCTION_NHZ_HEAT_TOTAL_FORMAT, idx + 1)),
-                    getEnergyQuantity(energyRuntimeBlock.heatPumps[0].productionNhzHeatingTotalHigh,
-                            energyRuntimeBlock.heatPumps[0].productionNhzHeatingTotalLow));
+                    getEnergyQuantity(energyRuntimeBlock.heatPumps[idx].productionNhzHeatingTotalHigh,
+                            energyRuntimeBlock.heatPumps[idx].productionNhzHeatingTotalLow));
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_PRODUCTION_NHZ_WATER_TOTAL_FORMAT, idx + 1)),
-                    getEnergyQuantity(energyRuntimeBlock.heatPumps[0].productionNhzHotwaterTotalHigh,
-                            energyRuntimeBlock.heatPumps[0].productionNhzHotwaterTotalLow));
+                    getEnergyQuantity(energyRuntimeBlock.heatPumps[idx].productionNhzHotwaterTotalHigh,
+                            energyRuntimeBlock.heatPumps[idx].productionNhzHotwaterTotalLow));
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_CONSUMPTION_HEAT_TODAY_FORMAT, idx + 1)),
-                    new QuantityType<>(energyRuntimeBlock.heatPumps[0].consumptionHeatToday, KILOWATT_HOUR));
+                    new QuantityType<>(energyRuntimeBlock.heatPumps[idx].consumptionHeatToday, KILOWATT_HOUR));
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_CONSUMPTION_HEAT_TOTAL_FORMAT, idx + 1)),
-                    getEnergyQuantity(energyRuntimeBlock.heatPumps[0].consumptionHeatTotalHigh,
-                            energyRuntimeBlock.heatPumps[0].consumptionHeatTotalLow));
+                    getEnergyQuantity(energyRuntimeBlock.heatPumps[idx].consumptionHeatTotalHigh,
+                            energyRuntimeBlock.heatPumps[idx].consumptionHeatTotalLow));
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_CONSUMPTION_WATER_TODAY_FORMAT, idx + 1)),
-                    new QuantityType<>(energyRuntimeBlock.heatPumps[0].consumptionWaterToday, KILOWATT_HOUR));
+                    new QuantityType<>(energyRuntimeBlock.heatPumps[idx].consumptionWaterToday, KILOWATT_HOUR));
             updateState(
                     channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                             String.format(CHANNEL_HP_CONSUMPTION_WATER_TOTAL_FORMAT, idx + 1)),
-                    getEnergyQuantity(energyRuntimeBlock.heatPumps[0].consumptionWaterTotalHigh,
-                            energyRuntimeBlock.heatPumps[0].consumptionWaterTotalLow));
+                    getEnergyQuantity(energyRuntimeBlock.heatPumps[idx].consumptionWaterTotalHigh,
+                            energyRuntimeBlock.heatPumps[idx].consumptionWaterTotalLow));
 
             EnergyRuntimeHpFeature hpFeaturesObj = energyRuntimeControl.hpEgRtList[idx];
             if (hpFeaturesObj.featureAvailable(EnergyRuntimeHpFeatureKeys.RUNTIMES)) {
                 updateState(
                         channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                                 String.format(CHANNEL_HP_CP1_HEATING_RUNTIME_FORMAT, idx + 1)),
-                        new QuantityType<>(energyRuntimeBlock.heatPumps[0].runtimeCompressor1Heating, HOUR));
+                        new QuantityType<>(energyRuntimeBlock.heatPumps[idx].runtimeCompressor1Heating, HOUR));
                 updateState(
                         channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                                 String.format(CHANNEL_HP_CP2_HEATING_RUNTIME_FORMAT, idx + 1)),
-                        new QuantityType<>(energyRuntimeBlock.heatPumps[0].runtimeCompressor2Heating, HOUR));
+                        new QuantityType<>(energyRuntimeBlock.heatPumps[idx].runtimeCompressor2Heating, HOUR));
                 updateState(
                         channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                                 String.format(CHANNEL_HP_CP12_HEATING_RUNTIME_FORMAT, idx + 1)),
-                        new QuantityType<>(energyRuntimeBlock.heatPumps[0].runtimeCompressor12Heating, HOUR));
+                        new QuantityType<>(energyRuntimeBlock.heatPumps[idx].runtimeCompressor12Heating, HOUR));
                 updateState(
                         channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                                 String.format(CHANNEL_HP_CP1_HOTWATER_RUNTIME_FORMAT, idx + 1)),
-                        new QuantityType<>(energyRuntimeBlock.heatPumps[0].runtimeCompressor1Hotwater, HOUR));
+                        new QuantityType<>(energyRuntimeBlock.heatPumps[idx].runtimeCompressor1Hotwater, HOUR));
                 updateState(
                         channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                                 String.format(CHANNEL_HP_CP2_HOTWATER_RUNTIME_FORMAT, idx + 1)),
-                        new QuantityType<>(energyRuntimeBlock.heatPumps[0].runtimeCompressor2Hotwater, HOUR));
+                        new QuantityType<>(energyRuntimeBlock.heatPumps[idx].runtimeCompressor2Hotwater, HOUR));
                 updateState(
                         channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                                 String.format(CHANNEL_HP_CP12_HOTWATER_RUNTIME_FORMAT, idx + 1)),
-                        new QuantityType<>(energyRuntimeBlock.heatPumps[0].runtimeCompressor12Hotwater, HOUR));
+                        new QuantityType<>(energyRuntimeBlock.heatPumps[idx].runtimeCompressor12Hotwater, HOUR));
             } else if (!hpFeaturesObj.featureReported(EnergyRuntimeHpFeatureKeys.RUNTIMES)) {
                 logger.trace("HP{} compressor runtimes not available", idx + 1);
                 updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
@@ -1436,7 +1449,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                 updateState(
                         channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
                                 String.format(CHANNEL_HP_COOLING_RUNTIME_FORMAT, idx + 1)),
-                        new QuantityType<>(energyRuntimeBlock.heatPumps[0].runtimeCompressorCooling, HOUR));
+                        new QuantityType<>(energyRuntimeBlock.heatPumps[idx].runtimeCompressorCooling, HOUR));
             } else if (!hpFeaturesObj.featureReported(EnergyRuntimeHpFeatureKeys.COOLING_RUNTIME)) {
                 logger.trace("HP{} cooling runtime not available", idx + 1);
                 updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,

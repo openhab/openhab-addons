@@ -216,7 +216,7 @@
 
 	<channel-group-type id="energy-runtime-information-allwpm">
 		<label>Energy/Runtime Info</label>
-		<description>nergy and Runtime Information (read-only channels)</description>
+		<description>Energy and Runtime Information (read-only channels)</description>
 		<channels>
 			<channel id="production-heat-today" typeId="production-heat-today-type"/>
 			<channel id="production-heat-total" typeId="production-heat-total-type"/>

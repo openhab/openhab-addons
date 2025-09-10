@@ -68,7 +68,7 @@ public class SgReadyEnergyManagementControl {
         sb.append("]\n  featureReported=[");
         for (int i = 0; i < featureReported.length; i++) {
             sb.append(SgReadyEnMgmtFeatureKeys.values()[i]).append("=").append(featureReported[i]);
-            if (i < featureAvailable.length - 1) {
+            if (i < featureReported.length - 1) {
                 sb.append(", ");
             }
         }
