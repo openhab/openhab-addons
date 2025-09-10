@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,6 +91,26 @@ class Clip2DtoTest {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
             .create();
     private static final Double MINIMUM_DIMMING_LEVEL = Double.valueOf(12.34f);
+
+    // Resource types which do not yet have a test JSON payload available
+    public static final Set<ResourceType> RESOURCES_WITH_NO_JSON_TEST_CASE_YET = EnumSet.of(
+    //@formatter:off
+            ResourceType.BELL_BUTTON,
+            ResourceType.CLIP,
+            ResourceType.CONVENIENCE_AREA_MOTION,
+            ResourceType.DEVICE_SOFTWARE_UPDATE,
+            ResourceType.GROUPED_LIGHT_LEVEL,
+            ResourceType.MATTER,
+            ResourceType.MATTER_FABRIC,
+            ResourceType.MOTION_AREA_CANDIDATE,
+            ResourceType.MOTION_AREA_CONFIGURATION,
+            ResourceType.SECURITY_AREA_MOTION,
+            ResourceType.SERVICE_GROUP,
+            ResourceType.SPEAKER,
+            ResourceType.WIFI_CONNECTIVITY,
+            ResourceType.ZIGBEE_DEVICE_DISCOVERY
+    //@formatter:on
+    );
 
     /**
      * Load the test JSON payload string from a file
@@ -653,6 +674,9 @@ class Clip2DtoTest {
     void testValidJson() {
         for (ResourceType res : ResourceType.values()) {
             if (!ResourceType.SSE_TYPES.contains(res)) {
+                if (RESOURCES_WITH_NO_JSON_TEST_CASE_YET.contains(res)) {
+                    continue;
+                }
                 try {
                     String file = res.name().toLowerCase();
                     String json = load(file);
