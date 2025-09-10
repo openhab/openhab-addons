@@ -25,7 +25,6 @@ import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.RTC_C
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,6 +38,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.openhab.binding.plclogo.internal.config.PLCLogoBridgeConfiguration;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
@@ -71,6 +71,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
 
     private final Bundle bundle = FrameworkUtil.getBundle(getClass());
+    private final TimeZoneProvider timeZone;
     private final TranslationProvider translation;
 
     @Nullable
@@ -81,25 +82,31 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     @Nullable
     private ScheduledFuture<?> rtcJob;
     private final Runnable rtcReader = new Runnable() {
-        private final List<Channel> channels = getThing().getChannels();
+        private final ChannelUID channel = new ChannelUID(getThing().getUID(), RTC_CHANNEL);
 
         @Override
         public void run() {
-            for (final var channel : channels) {
-                handleCommand(channel.getUID(), RefreshType.REFRESH);
-            }
+            handleCommand(channel, RefreshType.REFRESH);
         }
     };
-    private volatile ZonedDateTime rtc = ZonedDateTime.now();
+    private volatile ZonedDateTime rtc;
 
     @Nullable
     private ScheduledFuture<?> readerJob;
     private final Runnable dataReader = new Runnable() {
         // Buffer for block data read operation
         private final byte[] buffer = new byte[2048];
+        private final List<Channel> channels = getThing().getChannels();
 
         @Override
         public void run() {
+            for (final var channel : channels) {
+                // RTC channel is updated in rtcJob
+                if (!RTC_CHANNEL.equalsIgnoreCase(channel.getUID().getId())) {
+                    handleCommand(channel.getUID(), RefreshType.REFRESH);
+                }
+            }
+
             final var client = PLCBridgeHandler.this.client;
             final var memory = LOGO_MEMORY_BLOCK.get(getLogoFamily());
             final var layout = (memory != null) ? memory.get(MEMORY_SIZE) : null;
@@ -135,10 +142,13 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     /**
      * Constructor.
      */
-    public PLCBridgeHandler(Bridge bridge, TranslationProvider translation) {
+    public PLCBridgeHandler(final Bridge bridge, final TranslationProvider translation,
+            final TimeZoneProvider timeZone) {
         super(bridge);
+        this.timeZone = timeZone;
         this.translation = translation;
         config = getConfigAs(PLCLogoBridgeConfiguration.class);
+        rtc = ZonedDateTime.now(timeZone.getTimeZone());
     }
 
     @Override
@@ -165,13 +175,13 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             if (result == 0) {
                 switch (channelId) {
                     case RTC_CHANNEL -> {
-                        rtc = ZonedDateTime.now();
+                        rtc = ZonedDateTime.now(timeZone.getTimeZone());
                         if (!LOGO_0BA7.equalsIgnoreCase(getLogoFamily())) {
                             try {
                                 final var year = rtc.getYear() - rtc.getYear() % 100;
                                 final var date = LocalDate.of(year + buffer[0], buffer[1], buffer[2]);
                                 final var time = LocalTime.of(buffer[3], buffer[4], buffer[5]);
-                                rtc = ZonedDateTime.of(date, time, ZoneId.systemDefault());
+                                rtc = ZonedDateTime.of(date, time, timeZone.getTimeZone());
                             } catch (DateTimeException exception) {
                                 logger.warn("Return local server time: {}.", exception.getMessage());
                             }

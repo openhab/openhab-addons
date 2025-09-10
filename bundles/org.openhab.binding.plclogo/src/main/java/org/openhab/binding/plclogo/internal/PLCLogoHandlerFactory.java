@@ -29,6 +29,7 @@ import org.openhab.binding.plclogo.internal.handler.PLCDateTimeHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCDigitalHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCMemoryHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCPulseHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -51,6 +52,7 @@ import org.osgi.service.component.annotations.Reference;
 public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
 
     private final TranslationProvider translationProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE, THING_TYPE_MEMORY,
             THING_TYPE_ANALOG, THING_TYPE_DIGITAL, THING_TYPE_DATETIME, THING_TYPE_PULSE);
@@ -59,8 +61,10 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
      * Constructor.
      */
     @Activate
-    public PLCLogoHandlerFactory(@Reference TranslationProvider translationProvider) {
+    public PLCLogoHandlerFactory(@Reference TranslationProvider translationProvider,
+            @Reference TimeZoneProvider timeZoneProvider) {
         this.translationProvider = translationProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -71,7 +75,7 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_DEVICE.equals(thing.getThingTypeUID()) && (thing instanceof Bridge bridge)) {
-            return new PLCBridgeHandler(bridge, translationProvider);
+            return new PLCBridgeHandler(bridge, translationProvider, timeZoneProvider);
         } else if (THING_TYPE_ANALOG.equals(thing.getThingTypeUID())) {
             return new PLCAnalogHandler(thing);
         } else if (THING_TYPE_DIGITAL.equals(thing.getThingTypeUID())) {
