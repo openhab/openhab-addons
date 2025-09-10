@@ -10,14 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal;
+package org.openhab.binding.homekit.internal.handler;
 
-import static org.openhab.binding.homekit.internal.HomeKitBindingConstants.*;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -26,16 +27,16 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link HomeKitHandlerFactory} is responsible for creating things and thing
+ * The {@link HomekitHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.homekit", service = ThingHandlerFactory.class)
-public class HomeKitHandlerFactory extends BaseThingHandlerFactory {
+public class HomekitHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +47,8 @@ public class HomeKitHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new HomeKitHandler(thing);
+        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
+            return new HomekitBridgeHandler((Bridge) thing);
         }
 
         return null;

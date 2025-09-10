@@ -16,19 +16,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link HomeKitBindingConstants} class defines common constants, which are
+ * The {@link HomekitBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomeKitBindingConstants {
+public class HomekitBindingConstants {
 
     private static final String BINDING_ID = "homekit";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids
+    // TODO
     public static final String CHANNEL_1 = "channel1";
 }

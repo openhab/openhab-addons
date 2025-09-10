@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal;
+package org.openhab.binding.homekit.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link HomeKitConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link HomekitBridgeConfiguration} contains fields mapping bridge configuration parameters.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomeKitConfiguration {
+public class HomekitBridgeConfiguration {
 
     /**
      * Sample configuration parameters. Replace with your own.

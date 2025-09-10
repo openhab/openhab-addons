@@ -13,5 +13,11 @@
   <artifactId>org.openhab.binding.homekit</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: HomeKit Binding</name>
-
+<dependencies>
+<dependency>
+  <groupId>net.i2p.crypto</groupId>
+  <artifactId>eddsa</artifactId>
+  <version>0.3.0</version> <!-- or latest -->
+</dependency>
+</dependencies>
 </project>
