@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.meross.internal.dto;
 
-import java.io.File;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.meross.internal.api.MerossHttpConnector;
 
 /**
@@ -22,12 +21,11 @@ import org.openhab.binding.meross.internal.api.MerossHttpConnector;
  * @author Giovanni Fabiani - Initial contribution
  */
 
+@NonNullByDefault
 public class HttpConnectorBuilder {
     private String apiBaseUrl = "";
     private String userEmail = "";
     private String userPassword = "";
-    private File credentialFile;
-    private File deviceFile;
 
     public static HttpConnectorBuilder newBuilder() {
         return new HttpConnectorBuilder();
@@ -48,17 +46,7 @@ public class HttpConnectorBuilder {
         return this;
     }
 
-    public HttpConnectorBuilder setCredentialFile(File credentialFile) {
-        this.credentialFile = credentialFile;
-        return this;
-    }
-
-    public HttpConnectorBuilder setDeviceFile(File deviceFile) {
-        this.deviceFile = deviceFile;
-        return this;
-    }
-
     public MerossHttpConnector build() {
-        return new MerossHttpConnector(apiBaseUrl, userEmail, userPassword, credentialFile, deviceFile);
+        return new MerossHttpConnector(apiBaseUrl, userEmail, userPassword);
     }
 }

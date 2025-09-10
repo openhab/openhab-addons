@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface Command {
-    byte[] commandType(String type);
+    byte[] command(String deviceUUID);
 }

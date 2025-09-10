@@ -31,15 +31,16 @@ public class DoorStateCommand {
         protected int deviceChannel;
         protected final int openValue;
 
-        protected Base(int openValue, int deviceChannel) {
-            this.openValue = openValue;
+        protected Base(int deviceChannel, int openValue) {
             this.deviceChannel = deviceChannel;
+            this.openValue = openValue;
         }
 
         @Override
-        public byte[] commandType(String type) {
+        public byte[] command(String deviceUUID) {
             Map<String, Object> payload = Map.of("state", Map.of("open", openValue, "channel", deviceChannel));
-            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.GARAGE_DOOR_STATE.value(), payload);
+            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.GARAGE_DOOR_STATE.value(),
+                    deviceUUID, payload);
         }
     }
 
@@ -48,7 +49,7 @@ public class DoorStateCommand {
      */
     public static class Up extends Base {
         public Up(int deviceChannel) {
-            super(1, deviceChannel);
+            super(deviceChannel, 1);
         }
     }
 
@@ -57,7 +58,7 @@ public class DoorStateCommand {
      */
     public static class Down extends Base {
         public Down(int deviceChannel) {
-            super(0, deviceChannel);
+            super(deviceChannel, 0);
         }
     }
 }

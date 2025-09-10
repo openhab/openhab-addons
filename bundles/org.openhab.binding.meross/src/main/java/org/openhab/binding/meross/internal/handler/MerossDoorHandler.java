@@ -14,13 +14,11 @@ package org.openhab.binding.meross.internal.handler;
 
 import static org.openhab.binding.meross.internal.MerossBindingConstants.CHANNEL_DOOR_STATE;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.meross.internal.api.MerossEnum;
+import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.api.MerossManager;
 import org.openhab.binding.meross.internal.config.MerossDoorConfiguration;
-import org.openhab.binding.meross.internal.exception.MerossMqttConnackException;
+import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -28,6 +26,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,40 +53,31 @@ public class MerossDoorHandler extends MerossDeviceHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (thing.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE);
             return;
         }
-        MerossBridgeHandler merossBridgeHandler = this.merossBridgeHandler;
-        if (merossBridgeHandler == null) {
-            return;
-        }
-        var merossHttpConnector = merossBridgeHandler.getMerossHttpConnector();
-        MerossManager merossManager = null;
-        if (merossHttpConnector != null) {
-            merossManager = MerossManager.newMerossManager(merossHttpConnector);
-        }
+
         if (channelUID.getId().startsWith(CHANNEL_DOOR_STATE)) {
-            String channelId = channelUID.getId().substring(CHANNEL_DOOR_STATE.length());
+            String channelId = channelUID.getId().substring(CHANNEL_DOOR_STATE.lastIndexOf("_") + 1);
             int channel = 0;
             try {
                 channel = Integer.valueOf(channelId);
             } catch (NumberFormatException e) {
-                // Ignore and default to channel 0, this is because only a single channel available
+                // Ignore and default to channel 0, this is because only a single channel is available
             }
+            MerossManager manager = this.manager;
+            if (manager == null) {
+                logger.debug("Handling command, manager not available");
+                return;
+            }
+
             if (command instanceof UpDownType) {
                 try {
                     if (UpDownType.UP.equals(command)) {
-                        if (merossManager != null) {
-                            merossManager.sendCommand(config.name, channel,
-                                    MerossEnum.Namespace.GARAGE_DOOR_STATE.name(), UpDownType.UP.name());
-                        }
+                        manager.sendCommand(channel, Namespace.GARAGE_DOOR_STATE, UpDownType.UP.name());
                     } else if (UpDownType.DOWN.equals(command)) {
-                        if (merossManager != null) {
-                            merossManager.sendCommand(config.name, channel,
-                                    MerossEnum.Namespace.GARAGE_DOOR_STATE.name(), UpDownType.DOWN.name());
-                        }
+                        manager.sendCommand(channel, Namespace.GARAGE_DOOR_STATE, UpDownType.DOWN.name());
                     }
-                } catch (IOException | MerossMqttConnackException e) {
+                } catch (MqttException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Cannot send command" + e.getMessage());
                 }
@@ -99,5 +89,14 @@ public class MerossDoorHandler extends MerossDeviceHandler {
         } else {
             logger.debug("Unsupported channelUID {}", channelUID);
         }
+    }
+
+    @Override
+    public void updateState(int deviceChannel, State state) {
+        String channelId = CHANNEL_DOOR_STATE + "_" + Integer.toString(deviceChannel);
+        if (thing.getChannel(channelId) == null && deviceChannel == 0) {
+            channelId = CHANNEL_DOOR_STATE;
+        }
+        updateState(channelId, state);
     }
 }

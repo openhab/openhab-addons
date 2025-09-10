@@ -16,6 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meross.internal.command.Command;
 import org.openhab.binding.meross.internal.command.DoorStateCommand;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link TypeFactory} class is responsible for converting to garage door state modes
@@ -31,6 +34,15 @@ public class DoorStateFactory extends ModeFactory {
             case "UP" -> new DoorStateCommand.Up(channel);
             case "DOWN" -> new DoorStateCommand.Down(channel);
             default -> throw new IllegalStateException("Unexpected value: " + mode);
+        };
+    }
+
+    @Override
+    public State state(int merossState) {
+        return switch (merossState) {
+            case 0 -> OpenClosedType.CLOSED;
+            case 1 -> OpenClosedType.OPEN;
+            default -> UnDefType.UNDEF;
         };
     }
 }

@@ -14,15 +14,13 @@ package org.openhab.binding.meross.internal.handler;
 
 import static org.openhab.binding.meross.internal.MerossBindingConstants.CHANNEL_LIGHT_POWER;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.meross.internal.MerossBindingConstants;
-import org.openhab.binding.meross.internal.api.MerossEnum;
+import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.api.MerossManager;
 import org.openhab.binding.meross.internal.config.MerossLightConfiguration;
-import org.openhab.binding.meross.internal.exception.MerossMqttConnackException;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -30,6 +28,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,33 +67,23 @@ public class MerossLightHandler extends MerossDeviceHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (thing.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE);
             return;
         }
-        MerossBridgeHandler merossBridgeHandler = this.merossBridgeHandler;
-        if (merossBridgeHandler == null) {
+        MerossManager manager = this.manager;
+        if (manager == null) {
+            logger.debug("Handling command, manager not available");
             return;
         }
-        var merossHttpConnector = merossBridgeHandler.getMerossHttpConnector();
-        MerossManager merossManager = null;
-        if (merossHttpConnector != null) {
-            merossManager = MerossManager.newMerossManager(merossHttpConnector);
-        }
+
         if (channelUID.getId().equals(CHANNEL_LIGHT_POWER)) {
             if (command instanceof OnOffType) {
                 try {
                     if (OnOffType.ON.equals(command)) {
-                        if (merossManager != null) {
-                            merossManager.sendCommand(config.name, 0, MerossEnum.Namespace.CONTROL_TOGGLEX.name(),
-                                    OnOffType.ON.name());
-                        }
+                        manager.sendCommand(0, Namespace.CONTROL_TOGGLEX, OnOffType.ON.name());
                     } else if (OnOffType.OFF.equals(command)) {
-                        if (merossManager != null) {
-                            merossManager.sendCommand(config.name, 0, MerossEnum.Namespace.CONTROL_TOGGLEX.name(),
-                                    OnOffType.OFF.name());
-                        }
+                        manager.sendCommand(0, Namespace.CONTROL_TOGGLEX, OnOffType.OFF.name());
                     }
-                } catch (IOException | MerossMqttConnackException e) {
+                } catch (MqttException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Cannot send command" + e.getMessage());
                 }
@@ -106,5 +95,10 @@ public class MerossLightHandler extends MerossDeviceHandler {
         } else {
             logger.debug("Unsupported channelUID {}", channelUID);
         }
+    }
+
+    @Override
+    public void updateState(int deviceChannel, State state) {
+        updateState(CHANNEL_LIGHT_POWER, state);
     }
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.meross.internal.factory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 
 /**
  * The {@link TypeFactory} class is responsible for switching among different capabilities
@@ -22,11 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TypeFactory {
-    public static ModeFactory getFactory(String commandType) {
-        return switch (commandType) {
-            case "CONTROL_TOGGLEX" -> new TogglexFactory();
-            case "GARAGE_DOOR_STATE" -> new DoorStateFactory();
-            default -> throw new IllegalStateException("Unexpected value: " + commandType);
+    public static ModeFactory getFactory(Namespace commandNamespace) {
+        return switch (commandNamespace) {
+            case Namespace.CONTROL_TOGGLEX -> new TogglexFactory();
+            case Namespace.GARAGE_DOOR_STATE -> new DoorStateFactory();
+            default -> throw new IllegalStateException("Unexpected value: " + commandNamespace.name());
         };
     }
 }

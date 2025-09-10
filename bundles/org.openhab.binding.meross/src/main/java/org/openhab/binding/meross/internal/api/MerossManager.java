@@ -12,23 +12,28 @@
  */
 package org.openhab.binding.meross.internal.api;
 
-import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.command.Command;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
-import org.openhab.binding.meross.internal.exception.MerossMqttConnackException;
 import org.openhab.binding.meross.internal.factory.ModeFactory;
 import org.openhab.binding.meross.internal.factory.TypeFactory;
+import org.openhab.binding.meross.internal.handler.MerossDeviceHandler;
+import org.openhab.core.io.transport.mqtt.MqttException;
+import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -39,142 +44,207 @@ import com.google.gson.reflect.TypeToken;
  * appliances
  *
  * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Use mqtt transport
  */
 @NonNullByDefault
-public class MerossManager {
+public class MerossManager implements MqttMessageSubscriber {
     private final Logger logger = LoggerFactory.getLogger(MerossManager.class);
 
-    public static MerossManager newMerossManager(MerossHttpConnector merossHttpConnector) {
-        return new MerossManager(merossHttpConnector);
+    private MerossMqttConnector mqttConnector;
+    private String deviceUUID;
+    private MerossDeviceHandler callback;
+    private @Nullable InetAddress ipAddress;
+
+    private String deviceRequestTopic;
+
+    private Set<String> abilities = Set.of();
+
+    public MerossManager(MerossMqttConnector mqttConnector, String deviceUUID, MerossDeviceHandler callback) {
+        this.deviceUUID = deviceUUID;
+        this.deviceRequestTopic = MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID);
+        this.callback = callback;
+        this.mqttConnector = mqttConnector;
+        mqttConnector.addDeviceRequestTopicSubscriber(this, deviceUUID);
     }
 
-    final MerossHttpConnector merossHttpConnector;
+    public void dispose() {
+        mqttConnector.removeDeviceRequestTopicSubscriber(this, deviceUUID);
+    }
 
-    private MerossManager(MerossHttpConnector merossHttpConnector) {
-        this.merossHttpConnector = merossHttpConnector;
+    public void initialize() throws MqttException {
+        getSystemAll();
+        getAbilities();
+    }
+
+    private void getSystemAll() throws MqttException {
+        byte[] systemAllMessage = MqttMessageBuilder.buildMqttMessage("GET", MerossEnum.Namespace.SYSTEM_ALL.value(),
+                deviceUUID, Collections.emptyMap());
+        mqttConnector.publishMqttMessage(deviceRequestTopic, systemAllMessage);
+    }
+
+    private void getAbilities() throws MqttException {
+        byte[] systemAbilityMessage = MqttMessageBuilder.buildMqttMessage("GET",
+                MerossEnum.Namespace.SYSTEM_ABILITY.value(), deviceUUID, Collections.emptyMap());
+        mqttConnector.publishMqttMessage(deviceRequestTopic, systemAbilityMessage);
     }
 
     /**
-     * Initializes the mqtt connector with proper cloud credentials
-     *
-     */
-    public void initializeMerossMqttConnector() {
-        final var credentials = merossHttpConnector.readCredentials();
-        String clientId = MqttMessageBuilder.buildClientId();
-        MqttMessageBuilder.setClientId(clientId);
-        if (credentials == null) {
-            logger.debug("No credentials found");
-        } else {
-            String userId = credentials.userId();
-            MqttMessageBuilder.setUserId(userId);
-            String key = credentials.key();
-            MqttMessageBuilder.setKey(key);
-            String brokerAddress = credentials.mqttDomain();
-            MqttMessageBuilder.setBrokerAddress(brokerAddress);
-        }
-    }
-
-    /**
-     * @param deviceName The device name
-     * @param commandType The command type
+     * @param deviceChannel The device channel
+     * @param commandNamespace The command type
      * @param commandMode The command Mode
+     * @throws MqttException
      */
 
-    public void sendCommand(String deviceName, int deviceChannel, String commandType, String commandMode)
-            throws IOException, MerossMqttConnackException {
-        String uuid = merossHttpConnector.getDevUUIDByDevName(deviceName);
-        if (uuid.isEmpty()) {
-            return;
-        }
-        initializeMerossMqttConnector();
-        String deviceUUID = merossHttpConnector.getDevUUIDByDevName(deviceName);
-        MqttMessageBuilder.setDestinationDeviceUUID(deviceUUID);
-        String requestTopic = MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID);
-        ModeFactory modeFactory = TypeFactory.getFactory(commandType);
+    public void sendCommand(int deviceChannel, Namespace commandNamespace, String commandMode) throws MqttException {
+        ModeFactory modeFactory = TypeFactory.getFactory(commandNamespace);
 
-        var abilities = getAbilities(deviceUUID);
-        if (abilities != null && !abilities.isEmpty()) {
-            if (!abilities.contains(MerossEnum.Namespace.getAbilityValueByName(commandType))) {
-                logger.debug("Command {} not supported", commandType);
+        if (!abilities.isEmpty()) {
+            if (!abilities.contains(commandNamespace.value())) {
+                logger.debug("Ability {} not supported", commandNamespace.value());
                 return;
             }
         }
 
         Command command = modeFactory.commandMode(commandMode, deviceChannel);
-        byte[] commandMessage = command.commandType(commandType);
+        byte[] commandMessage = command.command(deviceUUID);
 
-        MerossMqttConnector.publishMqttMessage(commandMessage, requestTopic);
+        mqttConnector.publishMqttMessage(deviceRequestTopic, commandMessage);
     }
 
-    public int onlineStatus(String deviceName) throws IOException, MerossMqttConnackException {
-        String systemAll = getSystemAll(deviceName);
-        if (!systemAll.isEmpty()) {
-            JsonObject jsonObject = JsonParser.parseString(systemAll).getAsJsonObject();
-            if (jsonObject.has("payload") && !jsonObject.get("payload").isJsonNull()) {
-                JsonObject payloadObject = jsonObject.get("payload").getAsJsonObject();
-                if (payloadObject.has("all") && !payloadObject.get("all").isJsonNull()) {
-                    JsonObject allObject = payloadObject.get("all").getAsJsonObject();
-                    if (allObject.has("system") && !allObject.get("system").isJsonNull()) {
-                        JsonObject systemObject = allObject.get("system").getAsJsonObject();
-                        if (systemObject.has("online") && !systemObject.get("online").isJsonNull()) {
-                            JsonObject onlineObject = systemObject.get("online").getAsJsonObject();
-                            if (!onlineObject.isEmpty()) {
-                                Optional<JsonElement> jsonElement = Optional.of(onlineObject.get(("status")));
-                                return jsonElement.get().getAsInt();
-                            } else {
-                                logger.debug("Online status missing or null");
+    @Override
+    public void processMessage(String topic, byte[] mqttPayload) {
+        String mqttPayloadString = new String(mqttPayload, StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(mqttPayloadString).getAsJsonObject();
+
+        String method = null;
+        Namespace namespace = null;
+        if (jsonObject.has("header") && !jsonObject.get("header").isJsonNull()) {
+            JsonObject header = jsonObject.getAsJsonObject("header");
+            if (header.has("method") && !header.get("method").isJsonNull() && header.has("namespace")
+                    && !header.get("namespace").isJsonNull()) {
+                method = header.getAsJsonObject("method").getAsString();
+                String ability = header.getAsJsonObject("namespace").getAsString();
+                namespace = Namespace.getNamespaceByAbilityValue(ability);
+            }
+        }
+        if (method == null || namespace == null) {
+            return;
+        }
+
+        JsonObject payload;
+        if (jsonObject.has("payload") && !jsonObject.get("payload").isJsonNull()) {
+            payload = jsonObject.getAsJsonObject("payload");
+        } else {
+            return;
+        }
+
+        if ("GETACK".equals(method)) {
+            switch (namespace) {
+                case Namespace.SYSTEM_ALL:
+                    JsonObject all;
+                    if (payload.has("all") && !payload.get("all").isJsonNull()) {
+                        all = payload.getAsJsonObject("all");
+                    } else {
+                        return;
+                    }
+                    if (all.has("system") && !all.get("system").isJsonNull()) {
+                        JsonObject system = all.getAsJsonObject("system");
+
+                        // Get the local ip address of the device if available, so we can use local http calls
+                        if (system.has("firmware") && !system.get("firmware").isJsonNull()) {
+                            JsonObject firmware = system.getAsJsonObject("firmware");
+                            if (firmware.has("innerIp") && !firmware.get("innerIp").isJsonNull()) {
+                                String ipString = firmware.get("innerIp").getAsString();
+                                try {
+                                    ipAddress = InetAddress.getByName(ipString);
+                                } catch (UnknownHostException e) {
+                                    ipAddress = null;
+                                }
+                            }
+                        }
+                        if (system.has("online") && !system.get("online").isJsonNull()) {
+                            JsonObject online = system.getAsJsonObject("online");
+                            if (online.has("status") && !system.get("status").isJsonNull()) {
+                                int status = system.get("status").getAsInt();
+                                callback.setTingStatusFromMerossStatus(status);
                             }
                         }
                     }
-                }
-            }
-        }
-        return 4;
-    }
 
-    public String getSystemAll(String deviceName) throws IOException, MerossMqttConnackException {
-        initializeMerossMqttConnector();
-        String uuid = merossHttpConnector.getDevUUIDByDevName(deviceName);
-        String requestTopic = MqttMessageBuilder.buildDeviceRequestTopic(uuid);
-        byte[] systemAllMessage = MqttMessageBuilder.buildMqttMessage("GET", MerossEnum.Namespace.SYSTEM_ALL.value(),
-                Collections.emptyMap());
-        String mqttResponse = MerossMqttConnector.publishMqttMessage(systemAllMessage, requestTopic);
-        if (!mqttResponse.isEmpty()) {
-            return mqttResponse;
-        }
-        return "";
-    }
-
-    @Nullable
-    public HashSet<String> getAbilities(String deviceName) throws IOException, MerossMqttConnackException {
-        initializeMerossMqttConnector();
-        String uuid = merossHttpConnector.getDevUUIDByDevName(deviceName);
-        if (!uuid.isEmpty()) {
-            String requestTopic = MqttMessageBuilder.buildDeviceRequestTopic(uuid);
-            byte[] systemAbilityMessage = MqttMessageBuilder.buildMqttMessage("GET",
-                    MerossEnum.Namespace.SYSTEM_ABILITY.value(), Collections.emptyMap());
-            JsonObject jsonObject;
-            String mqttResponse = MerossMqttConnector.publishMqttMessage(systemAbilityMessage, requestTopic);
-            if (!mqttResponse.isEmpty()) {
-                jsonObject = JsonParser.parseString(mqttResponse).getAsJsonObject();
-                if (jsonObject.has("payload") && !jsonObject.get("payload").isJsonNull()) {
-                    JsonObject payloadObject = jsonObject.getAsJsonObject("payload");
-                    if (payloadObject.has("ability") && !payloadObject.get("ability").isJsonNull()) {
-                        JsonElement abilityObject = payloadObject.get("ability");
-                        if (!abilityObject.isJsonNull()) {
-                            Optional<JsonElement> ability = Optional.of(abilityObject.getAsJsonObject());
-                            TypeToken<HashMap<String, HashMap<String, String>>> type = new TypeToken<>() {
-                            };
-                            HashMap<String, HashMap<String, String>> abilities = new Gson().fromJson(ability.get(),
-                                    type);
-                            return new HashSet<>(abilities.keySet());
-                        } else {
-                            logger.debug("Abilities missing or null");
+                    if (all.has("digest") && !all.get("digest").isJsonNull()) {
+                        JsonObject digest = all.getAsJsonObject("digest");
+                        if (digest.has("togglex") && !digest.get("togglex").isJsonNull()) {
+                            JsonArray entries = digest.getAsJsonArray("togglex");
+                            entries.forEach(entry -> {
+                                processUpdateMessage(Namespace.CONTROL_TOGGLEX, entry.getAsJsonObject());
+                            });
+                        }
+                        if (digest.has("garageDoor") && !digest.get("garageDoor").isJsonNull()) {
+                            JsonArray entries = digest.getAsJsonArray("garageDoor");
+                            entries.forEach(entry -> {
+                                processUpdateMessage(Namespace.GARAGE_DOOR_STATE, entry.getAsJsonObject());
+                            });
                         }
                     }
-                }
+                    break;
+                case Namespace.SYSTEM_ABILITY:
+                    if (payload.has("ability") && !payload.get("ability").isJsonNull()) {
+                        JsonElement ability = payload.get("ability");
+                        TypeToken<Map<String, Map<String, String>>> type = new TypeToken<>() {
+                        };
+                        Map<String, Map<String, String>> abilities = new Gson().fromJson(ability, type);
+                        this.abilities = abilities.keySet();
+                    }
+                    break;
+                default:
+                    logger.debug("Ability {} not implemented", namespace.value());
+                    break;
             }
+        } else if ("SETACK".equals(method)) {
+            JsonObject update = switch (namespace) {
+                case Namespace.CONTROL_TOGGLEX -> payload.get("togglex").getAsJsonObject();
+                case Namespace.GARAGE_DOOR_STATE -> payload.get("state").getAsJsonObject();
+                default -> null;
+            };
+            if (update == null) {
+                logger.debug("Ability {} not implemented", namespace.value());
+                return;
+            }
+            processUpdateMessage(namespace, update);
+        } else {
+            logger.debug("Processing method {} not implemented", method);
         }
-        return null;
+    }
+
+    private void processUpdateMessage(Namespace namespace, JsonObject update) {
+        ModeFactory modeFactory = TypeFactory.getFactory(namespace);
+        int merossState;
+        int deviceChannel = 0;
+        switch (namespace) {
+            case Namespace.CONTROL_TOGGLEX:
+                if (update.has("onoff") && !update.get("onoff").isJsonNull()) {
+                    merossState = update.get("onoff").getAsInt();
+                    if (update.has("channel") && !update.get("channel").isJsonNull()) {
+                        deviceChannel = update.get("channel").getAsInt();
+                    }
+                } else {
+                    return;
+                }
+                break;
+            case Namespace.GARAGE_DOOR_STATE:
+                if (update.has("open") && !update.get("open").isJsonNull()) {
+                    merossState = update.get("open").getAsInt();
+                    if (update.has("channel") && !update.get("channel").isJsonNull()) {
+                        deviceChannel = update.get("channel").getAsInt();
+                    }
+                } else {
+                    return;
+                }
+                break;
+            default:
+                logger.debug("Ability {} not implemented", namespace.value());
+                return;
+        }
+        callback.updateState(deviceChannel, modeFactory.state(merossState));
     }
 }

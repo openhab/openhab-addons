@@ -32,14 +32,15 @@ public class TogglexCommand {
         protected final int onOffValue;
         protected int deviceChannel;
 
-        protected Base(int onOffValue, int deviceChannel) {
+        protected Base(int deviceChannel, int onOffValue) {
             this.onOffValue = onOffValue;
         }
 
         @Override
-        public byte[] commandType(String type) {
+        public byte[] command(String deviceUUID) {
             Map<String, Object> payload = Map.of("togglex", Map.of("onoff", onOffValue, "channel", deviceChannel));
-            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.CONTROL_TOGGLEX.value(), payload);
+            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.CONTROL_TOGGLEX.value(), deviceUUID,
+                    payload);
         }
     }
 
@@ -48,7 +49,7 @@ public class TogglexCommand {
      */
     public static class TurnOn extends Base {
         public TurnOn(int deviceChannel) {
-            super(1, deviceChannel);
+            super(deviceChannel, 1);
         }
     }
 
@@ -57,7 +58,7 @@ public class TogglexCommand {
      */
     public static class TurnOff extends Base {
         public TurnOff(int deviceChannel) {
-            super(0, deviceChannel);
+            super(deviceChannel, 0);
         }
     }
 }

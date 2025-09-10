@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.meross.internal.discovery;
 
+import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Giovanni Fabiani - Initial contribution
  * @author Mark Herwege - Added garage door support
+ * @author Mark Herwege - Discovery on bridge initialization
  */
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = MerossDiscoveryService.class)
@@ -56,7 +59,8 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     @Override
     public void startBackgroundDiscovery() {
-        discoverDevices();
+        // Don't allow automatic background discovery to avoid excessive cloud traffic and being blocked by Meross.
+        // Discovery will happen on bridge initialization and when manually triggered.
     }
 
     @Override
@@ -78,15 +82,23 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
         }
     }
 
-    public void discoverDevices() {
-        List<Device> devices = null;
-        if (thingHandler.getMerossHttpConnector() != null) {
-            var merossHttpConnector = thingHandler.getMerossHttpConnector();
-            if (merossHttpConnector != null) {
-                devices = merossHttpConnector.readDevices();
-            }
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        super.setThingHandler(handler);
+        if (handler instanceof MerossBridgeHandler bridgeHandler) {
+            bridgeHandler.setDiscoveryService(this);
         }
-        if (devices == null || devices.isEmpty()) {
+    }
+
+    public void discoverDevices() {
+        List<Device> devices;
+        try {
+            devices = thingHandler.discoverDevices();
+        } catch (ConnectException e) {
+            logger.debug("Connection error, could not retrieve devices");
+            return;
+        }
+        if (devices.isEmpty()) {
             logger.debug("No device found");
         } else {
             ThingUID bridgeUID = thingHandler.getThing().getUID();

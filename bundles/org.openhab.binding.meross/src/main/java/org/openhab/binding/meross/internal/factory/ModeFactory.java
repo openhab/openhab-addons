@@ -15,13 +15,17 @@ package org.openhab.binding.meross.internal.factory;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meross.internal.command.Command;
+import org.openhab.core.types.State;
 
 /**
  * The {@link ModeFactory} class is responsible for implementing command mode
  *
  * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Add state update
  */
 @NonNullByDefault
 public abstract class ModeFactory {
     public abstract Command commandMode(String mode, @Nullable Integer deviceChannel);
+
+    public abstract State state(int merossState);
 }
