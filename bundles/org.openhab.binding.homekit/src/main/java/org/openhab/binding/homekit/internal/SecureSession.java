@@ -15,6 +15,10 @@ package org.openhab.binding.homekit.internal;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * Manages a secure session using ChaCha20 encryption for a HomeKit accessory.
+ * This class handles encryption and decryption of messages using session keys.
+ * It maintains separate counters for read and write operations to ensure nonce uniqueness.
+ *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class SecureSession {
@@ -29,16 +33,35 @@ public class SecureSession {
         this.readKey = keys.readKey;
     }
 
+    /**
+     * * Encrypts the given plaintext using the write key and a unique nonce.
+     *
+     * @param plaintext The plaintext to encrypt.
+     * @return The encrypted ciphertext.
+     */
     public byte[] encrypt(byte[] plaintext) {
         byte[] nonce = generateNonce(writeCounter.getAndIncrement());
         return ChaCha20.encrypt(writeKey, nonce, plaintext);
     }
 
+    /**
+     * Decrypts the given ciphertext using the read key and a unique nonce.
+     *
+     * @param ciphertext The ciphertext to decrypt.
+     * @return The decrypted plaintext.
+     */
     public byte[] decrypt(byte[] ciphertext) {
         byte[] nonce = generateNonce(readCounter.getAndIncrement());
         return ChaCha20.decrypt(readKey, nonce, ciphertext);
     }
 
+    /**
+     * * Generates a 12-byte nonce using the given counter.
+     * The first 4 bytes are zero, and the last 8 bytes are the counter in big-endian format.
+     *
+     * @param counter The counter value.
+     * @return The generated nonce.
+     */
     private byte[] generateNonce(int counter) {
         byte[] nonce = new byte[12];
         nonce[4] = (byte) ((counter >> 24) & 0xFF);

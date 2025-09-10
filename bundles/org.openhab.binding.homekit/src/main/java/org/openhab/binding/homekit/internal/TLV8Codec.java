@@ -18,6 +18,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * Utility class for encoding and decoding TLV8 (Type-Length-Value) data.
+ * TLV8 is used in HomeKit for structured data exchange.
+ * Handles splitting and combining values that exceed the maximum length of 255 bytes.
+ *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class TLV8Codec {

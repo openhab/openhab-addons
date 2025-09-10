@@ -31,8 +31,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HomekitMdnsDiscoveryParticipant} is responsible for discovering new HomeKit server devices.
- * It uses the central {@link org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService}.
+ * Discovers new HomeKit server devices.
+ * HomeKit devices advertise themselves using mDNS with the service type "_hap._tcp.local.".
+ * Each device is identified by its MAC address, which is included in the mDNS properties.
+ * The device category is also included, allowing differentiation between bridges and accessories.
+ * The discovery participant creates a ThingUID based on the MAC address and device category.
+ * Discovered devices are published as Things of type
+ * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_DEVICE}
+ * or {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_BRIDGE}.
+ * Discovered Things include properties such as model name, protocol version, and IP address.
+ * This class does not perform active scanning; instead, it relies on the central mDNS discovery
+ * service to notify it of new services.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -46,7 +55,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_ACCESSORY);
+        return Set.of(THING_TYPE_DEVICE);
     }
 
     @Override
@@ -85,7 +94,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                 if ("2".equals(deviceCategory)) {
                     return new ThingUID(THING_TYPE_BRIDGE, macAddress.replace(":", "-").toLowerCase());
                 } else {
-                    return new ThingUID(THING_TYPE_ACCESSORY, macAddress.replace(":", "-").toLowerCase());
+                    return new ThingUID(THING_TYPE_DEVICE, macAddress.replace(":", "-").toLowerCase());
                 }
             }
         }

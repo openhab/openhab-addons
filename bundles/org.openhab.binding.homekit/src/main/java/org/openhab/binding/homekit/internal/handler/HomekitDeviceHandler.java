@@ -15,8 +15,8 @@ package org.openhab.binding.homekit.internal.handler;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.homekit.internal.SecureAccessoryClient;
-import org.openhab.binding.homekit.internal.discovery.HomekitAccessoryDiscoveryService;
+import org.openhab.binding.homekit.internal.SecureClient;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -25,29 +25,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HomekitAccessoryHandler} is an instance of a {@link BaseHomekitServerHandler} that
- * handles a single HomeKit accessory.
+ * Handles a single HomeKit accessory.
+ * It provides a polling mechanism to regularly update the state of the accessory.
+ * It also handles commands sent to the accessory's channels.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomekitAccessoryHandler extends BaseHomekitServerHandler {
+public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitDeviceHandler.class);
 
-    public HomekitAccessoryHandler(Thing thing, HomekitAccessoryDiscoveryService discoveryService) {
-        super(thing, discoveryService);
+    public HomekitDeviceHandler(Thing thing, HttpClientFactory httpClientFactory) {
+        super(thing, httpClientFactory);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        scheduler.scheduleAtFixedRate(this::poll, 0, 60, TimeUnit.SECONDS);
+        String interval = getConfig().get("pollingInterval").toString();
+        try {
+            int intervalSeconds = Integer.parseInt(interval);
+            if (intervalSeconds > 0) {
+                scheduler.scheduleAtFixedRate(this::poll, 0, intervalSeconds, TimeUnit.SECONDS);
+            }
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid polling interval configuration: {}", interval);
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        SecureAccessoryClient accessoryClient = this.accessoryClient;
+        SecureClient accessoryClient = this.client;
         if (accessoryClient != null) {
             String channelId = channelUID.getId();
             try {
@@ -66,11 +75,15 @@ public class HomekitAccessoryHandler extends BaseHomekitServerHandler {
         }
     }
 
+    /**
+     * Polls the accessory for its current state and updates the corresponding channels.
+     * This method is called periodically by a scheduled executor.
+     */
     private void poll() {
-        SecureAccessoryClient accessoryClient = this.accessoryClient;
+        SecureClient accessoryClient = this.client;
         if (accessoryClient != null) {
             try {
-                String power = accessoryClient.readCharacteristic("1", "10"); // Example AID/IID
+                String power = accessoryClient.readCharacteristic("1", "10"); // TODO example AID/IID
                 // Parse powerState and update channel state accordingly
                 if ("true".equals(power)) {
                     updateState(new ChannelUID(getThing().getUID(), "power"), OnOffType.ON);

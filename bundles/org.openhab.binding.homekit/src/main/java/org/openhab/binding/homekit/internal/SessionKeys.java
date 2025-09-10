@@ -18,6 +18,10 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
+ * Derives session keys for encrypting and decrypting messages between a HomeKit controller and accessory.
+ * Uses HKDF with HMAC-SHA512 as the underlying hash function.
+ * The derived keys are used for ChaCha20 encryption in the secure session.
+ *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class SessionKeys {

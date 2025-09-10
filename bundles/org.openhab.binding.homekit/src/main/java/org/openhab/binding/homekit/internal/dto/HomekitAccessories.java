@@ -18,7 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Accessories DTO
+ * HomeKit accessories DTO.
+ * Used to deserialize the JSON response from the /accessories endpoint of a HomeKit bridge.
+ * Contains a list of HomeKitAccessory objects.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

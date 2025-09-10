@@ -18,7 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Characteristic DTO
+ * HomeKit characteristic DTO.
+ * Used to deserialize individual characteristics from the /accessories endpoint of a HomeKit bridge.
+ * Each characteristic has a type, instance ID (iid), value, permissions (perms), and format.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

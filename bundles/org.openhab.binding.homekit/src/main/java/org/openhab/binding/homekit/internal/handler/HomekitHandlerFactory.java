@@ -18,7 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.discovery.HomekitAccessoryDiscoveryService;
+import org.openhab.binding.homekit.internal.discovery.HomekitDeviceDiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -30,8 +31,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link HomekitHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * Creates things and thing handlers. Supports HomeKit bridges and accessories.
+ * Passes on a {@link HomekitDeviceDiscoveryService} so that created things can to manage discovery of accessories.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -39,12 +40,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class)
 public class HomekitHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_ACCESSORY);
-    private final HomekitAccessoryDiscoveryService discoveryService;
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
+
+    private final HomekitDeviceDiscoveryService discoveryService;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public HomekitHandlerFactory(@Reference HomekitAccessoryDiscoveryService discoveryService) {
+    public HomekitHandlerFactory(@Reference HomekitDeviceDiscoveryService discoveryService,
+            @Reference HttpClientFactory httpClientFactory) {
         this.discoveryService = discoveryService;
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -55,14 +60,11 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new HomekitBridgeHandler((Bridge) thing, discoveryService);
+            return new HomekitBridgeHandler((Bridge) thing, httpClientFactory, discoveryService);
+        } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
+            return new HomekitDeviceHandler(thing, httpClientFactory);
         }
-        if (THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
-            return new HomekitAccessoryHandler(thing, discoveryService);
-        }
-
         return null;
     }
 }

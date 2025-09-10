@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homekit.internal.discovery;
 
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.THING_TYPE_ACCESSORY;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.THING_TYPE_DEVICE;
 
 import java.util.List;
 import java.util.Set;
@@ -27,30 +27,32 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Discovery service to find resource things on a Hue Bridge that is running CLIP 2.
+ * Discovery service component that publishes newly discovered child accessories of a HomeKit bridge accessory.
+ * No active scanning is performed; it relies on being informed of new accessories by the bridge handler.
+ * Discovered accessories are published with a ThingUID based on their accessory ID (aid) and service ID (iid).
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class)
-public class HomekitAccessoryDiscoveryService extends AbstractDiscoveryService {
+public class HomekitDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    protected HomekitAccessoryDiscoveryService() {
-        super(Set.of(THING_TYPE_ACCESSORY), 10, false);
+    protected HomekitDeviceDiscoveryService() {
+        super(Set.of(THING_TYPE_DEVICE), 10, false);
     }
 
     @Override
     protected void startScan() {
-        // do nothing
+        // no scanning is done; it relies on being informed of new accessories
     }
 
-    public void accessoriesDscovered(Thing bridge, List<HomekitAccessory> accessories) {
+    public void devicesDiscovered(Thing bridge, List<HomekitAccessory> accessories) {
         accessories.forEach(accessory -> {
             if (accessory.aid != null && accessory.services != null) {
                 accessory.services.forEach(service -> {
                     if (service.type != null && service.iid != null) {
                         String id = "%d-%d".formatted(accessory.aid, service.iid);
-                        ThingUID uid = new ThingUID(THING_TYPE_ACCESSORY, bridge.getUID(), id);
+                        ThingUID uid = new ThingUID(THING_TYPE_DEVICE, bridge.getUID(), id);
                         thingDiscovered(DiscoveryResultBuilder.create(uid) //
                                 .withBridge(bridge.getUID()) //
                                 .withLabel(service.type) //

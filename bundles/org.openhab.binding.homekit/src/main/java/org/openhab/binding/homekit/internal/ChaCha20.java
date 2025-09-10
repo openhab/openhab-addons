@@ -17,10 +17,25 @@ import org.bouncycastle.crypto.params.AEADParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
 
 /**
+ * ChaCha20 encryption and decryption utility class.
+ * Uses BouncyCastle's ChaCha20Poly1305 implementation.
+ * Requires a 32-byte key and a 12-byte nonce.
+ * The nonce must be unique for each encryption operation with the same key.
+ * The ciphertext includes the authentication tag.
+ * See RFC 8439 for more details.
+ *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class ChaCha20 {
 
+    /**
+     * Encrypts the given plaintext using ChaCha20-Poly1305.
+     *
+     * @param key 32-byte encryption key
+     * @param nonce 12-byte nonce
+     * @param plaintext data to encrypt
+     * @return encrypted data (ciphertext + authentication tag)
+     */
     public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plaintext) {
         try {
             ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
@@ -36,6 +51,14 @@ public class ChaCha20 {
         }
     }
 
+    /**
+     * Decrypts the given ciphertext using ChaCha20-Poly1305.
+     *
+     * @param key 32-byte decryption key
+     * @param nonce 12-byte nonce
+     * @param ciphertext data to decrypt (ciphertext + authentication tag)
+     * @return decrypted data (plaintext)
+     */
     public static byte[] decrypt(byte[] key, byte[] nonce, byte[] ciphertext) {
         try {
             ChaCha20Poly1305 cipher = new ChaCha20Poly1305();

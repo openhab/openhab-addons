@@ -12,19 +12,22 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.homekit.internal.SecureSession;
-import org.openhab.binding.homekit.internal.discovery.HomekitAccessoryDiscoveryService;
+import org.openhab.binding.homekit.internal.discovery.HomekitDeviceDiscoveryService;
 import org.openhab.binding.homekit.internal.dto.HomekitAccessories;
 import org.openhab.binding.homekit.internal.dto.HomekitAccessory;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -35,22 +38,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link HomekitBridgeHandler} is an instance of a {@link BaseHomekitServerHandler} that
- * marshals communications with multiple HomeKit accessories within a HomeKit bridge server.
+ * Handler for HomeKit bridge devices.
+ * It marshals the communications with multiple HomeKit child accessories within a HomeKit bridge server.
+ * It uses the /accessories endpoint to discover embedded accessories and their services.
+ * It notifies the {@link HomekitDeviceDiscoveryService} when accessories are discovered.
+ * It does not currently handle commands for channels, that is left to the child accessory handlers.
+ * It extends {@link HomekitBaseServerHandler} to handle pairing and secure session setup.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomekitBridgeHandler extends BaseHomekitServerHandler implements BridgeHandler {
+public class HomekitBridgeHandler extends HomekitBaseServerHandler implements BridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
 
     private static final Gson GSON = new Gson();
+    private final HomekitDeviceDiscoveryService discoveryService;
 
-    public HomekitBridgeHandler(Bridge bridge, HomekitAccessoryDiscoveryService discoveryService) {
-        super(bridge, discoveryService);
+    public HomekitBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory,
+            HomekitDeviceDiscoveryService discoveryService) {
+        super(bridge, httpClientFactory);
+        this.discoveryService = discoveryService;
     }
 
     @Override
@@ -77,7 +88,7 @@ public class HomekitBridgeHandler extends BaseHomekitServerHandler implements Br
         super.initialize();
         scheduler.submit(() -> {
             List<HomekitAccessory> accessories = getAccessories();
-            discoveryService.accessoriesDscovered(thing, accessories);
+            discoveryService.devicesDiscovered(thing, accessories);
         });
     }
 
@@ -89,30 +100,38 @@ public class HomekitBridgeHandler extends BaseHomekitServerHandler implements Br
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         // TODO Auto-generated method stub
-
     }
 
     /**
-     * Get information about embedded accessories and their respective channels
+     * Get information about embedded accessories and their respective channels.
+     * Uses the /accessories endpoint.
+     * Returns an empty list if there was a problem.
+     * Requires a valid secure session.
+     *
+     * @return list of accessories (may be empty)
+     * @see <a href="https://datatracker.ietf.org/doc/html/draft-ietf-homekit-http">HomeKit HTTP</a>
      */
     private List<HomekitAccessory> getAccessories() {
-        HomekitAccessories result = null;
         SecureSession session = this.session;
         if (session != null) {
-            URI uri = URI.create(accessoryAddress + "/accessories");
-            HttpRequest request = HttpRequest.newBuilder().uri(uri).timeout(Duration.ofSeconds(5))
-                    .header("Accept", "application/json").GET().build();
-            HttpResponse<byte[]> response;
+            Request request = httpClient.newRequest(baseUrl + "/accessories") //
+                    .timeout(5, TimeUnit.SECONDS) //
+                    .method(HttpMethod.GET) //
+                    .header(HttpHeader.ACCEPT, "application/json");
             try {
-                response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
-                if (response.statusCode() == 200) {
-                    byte[] decrypted = session.decrypt(response.body());
-                    result = GSON.fromJson(new String(decrypted, StandardCharsets.UTF_8), HomekitAccessories.class);
+                ContentResponse response = request.send();
+                if (response.getStatus() == 200) {
+                    byte[] decrypted = session.decrypt(response.getContent());
+                    HomekitAccessories result = GSON.fromJson(new String(decrypted, StandardCharsets.UTF_8),
+                            HomekitAccessories.class);
+                    if (result != null && result.accessories != null) {
+                        return result.accessories;
+                    }
                 }
-            } catch (IOException | InterruptedException e) {
+            } catch (TimeoutException | ExecutionException | InterruptedException | JsonSyntaxException e) {
             }
         }
-        return result == null ? List.of() : result.accessories == null ? List.of() : result.accessories;
+        return List.of();
     }
 
 }

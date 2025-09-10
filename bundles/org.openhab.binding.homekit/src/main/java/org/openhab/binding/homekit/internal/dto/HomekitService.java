@@ -18,7 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Service DTO
+ * HomeKit service DTO.
+ * Used to deserialize individual services from the /accessories endpoint of a HomeKit bridge.
+ * Each service has a type, instance ID (iid), and a list of characteristics.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
