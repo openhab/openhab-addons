@@ -285,6 +285,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 if (response.getStatus() == 200) {
                     logger.debug("Sending command was successful");
                 } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     logger.debug("Sending command was unsuccessful, got this error:\n {}",
                             response.getContentAsString());
                 }
