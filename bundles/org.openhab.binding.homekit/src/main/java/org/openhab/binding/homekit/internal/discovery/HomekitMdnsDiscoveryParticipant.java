@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homekit.internal.discovery;
 
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.util.Set;
 
@@ -46,7 +46,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_DEVICE);
+        return Set.of(THING_TYPE_ACCESSORY);
     }
 
     @Override
@@ -80,10 +80,16 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         String macAddress = service.getPropertyString("id");
         if (macAddress != null) {
-            return new ThingUID(THING_TYPE_DEVICE, macAddress.replace(":", "-").toLowerCase());
-        } else {
-            logger.warn("Discovered HomeKit device without MAC address property - ignoring");
-            return null;
+            String deviceCategory = service.getPropertyString("ci"); // HomeKit device category
+            if (deviceCategory != null) {
+                if ("2".equals(deviceCategory)) {
+                    return new ThingUID(THING_TYPE_BRIDGE, macAddress.replace(":", "-").toLowerCase());
+                } else {
+                    return new ThingUID(THING_TYPE_ACCESSORY, macAddress.replace(":", "-").toLowerCase());
+                }
+            }
         }
+        logger.warn("Discovered HomeKit device without valid properties - ignoring");
+        return null;
     }
 }

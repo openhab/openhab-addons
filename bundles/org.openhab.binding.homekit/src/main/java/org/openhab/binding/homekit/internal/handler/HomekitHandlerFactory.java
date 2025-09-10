@@ -18,13 +18,16 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.discovery.HomekitAccessoryDiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HomekitHandlerFactory} is responsible for creating things and thing
@@ -33,10 +36,16 @@ import org.osgi.service.component.annotations.Component;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.homekit", service = ThingHandlerFactory.class)
+@Component(service = ThingHandlerFactory.class)
 public class HomekitHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_ACCESSORY);
+    private final HomekitAccessoryDiscoveryService discoveryService;
+
+    @Activate
+    public HomekitHandlerFactory(@Reference HomekitAccessoryDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,7 +57,10 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new HomekitBridgeHandler((Bridge) thing);
+            return new HomekitBridgeHandler((Bridge) thing, discoveryService);
+        }
+        if (THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
+            return new HomekitAccessoryHandler(thing, discoveryService);
         }
 
         return null;

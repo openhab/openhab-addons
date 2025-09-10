@@ -18,10 +18,6 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Map;
 
-import org.bouncycastle.crypto.modes.ChaCha20Poly1305;
-import org.bouncycastle.crypto.params.AEADParameters;
-import org.bouncycastle.crypto.params.KeyParameter;
-
 /**
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -74,14 +70,14 @@ public class SRPClient {
         // Encrypt controller identifier and public key using shared key K
         byte[] plaintext = "...".getBytes(); // TODO input TLV8 encoded identifiers
         byte[] nonce = generateNonce();
-        byte[] encrypted = encryptChaCha20Poly1305(K, nonce, plaintext);
+        byte[] encrypted = ChaCha20.encrypt(K, nonce, plaintext);
         return Map.of(0x05, nonce, 0x06, encrypted);
     }
 
     public void verifyAccessoryIdentifiers(Map<Integer, byte[]> tlv6) throws Exception {
         byte[] nonce = tlv6.get(0x05);
         byte[] encrypted = tlv6.get(0x06);
-        byte[] decrypted = decryptChaCha20Poly1305(K, nonce, encrypted);
+        byte[] decrypted = ChaCha20.decrypt(K, nonce, encrypted);
         // TODO Parse TLV8 and validate accessory identity
     }
 
@@ -117,27 +113,5 @@ public class SRPClient {
         byte[] nonce = new byte[12];
         new SecureRandom().nextBytes(nonce);
         return nonce;
-    }
-
-    private byte[] encryptChaCha20Poly1305(byte[] key, byte[] nonce, byte[] plaintext) throws Exception {
-        ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
-        AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, null);
-        cipher.init(true, params);
-
-        byte[] ciphertext = new byte[cipher.getOutputSize(plaintext.length)];
-        int len = cipher.processBytes(plaintext, 0, plaintext.length, ciphertext, 0);
-        cipher.doFinal(ciphertext, len);
-        return ciphertext;
-    }
-
-    private byte[] decryptChaCha20Poly1305(byte[] key, byte[] nonce, byte[] ciphertext) throws Exception {
-        ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
-        AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, null);
-        cipher.init(false, params);
-
-        byte[] plaintext = new byte[cipher.getOutputSize(ciphertext.length)];
-        int len = cipher.processBytes(ciphertext, 0, ciphertext.length, plaintext, 0);
-        cipher.doFinal(plaintext, len);
-        return plaintext;
     }
 }

@@ -10,20 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.config;
+package org.openhab.binding.homekit.internal.dto;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link HomekitBridgeConfiguration} contains fields mapping device configuration parameters.
+ * Accessories DTO
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomekitDeviceConfiguration {
-    public @Nullable String ipV4Address; // dotted ipV4 address of the device
-    public @Nullable String protocolVersion; // e.g. "1.0" HAP protocol version
-    public @Nullable Integer deviceCategory; // e.g. 2 the HomeKit device category
-    public @Nullable String pairingCode; // e.g. "031-45-154" the device pairing code
+public class HomekitAccessories {
+    public @Nullable List<HomekitAccessory> accessories;
 }

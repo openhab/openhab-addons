@@ -25,10 +25,10 @@ import java.util.Map;
 public class PairingManager {
 
     private final SRPClient srpClient;
-    private final HttpClient client;
+    private final HttpClient httpClient;
 
-    public PairingManager(String setupCode) {
-        this.client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
+    public PairingManager(HttpClient httpClient, String setupCode) {
+        this.httpClient = httpClient;
         this.srpClient = new SRPClient(setupCode);
     }
 
@@ -66,7 +66,7 @@ public class PairingManager {
                 .header("Content-Type", "application/pairing+tlv8").header("Accept", "application/pairing+tlv8")
                 .POST(HttpRequest.BodyPublishers.ofByteArray(payload)).build();
 
-        HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+        HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
 
         if (response.statusCode() != 200) {
             throw new RuntimeException("Pairing failed: HTTP " + response.statusCode());
