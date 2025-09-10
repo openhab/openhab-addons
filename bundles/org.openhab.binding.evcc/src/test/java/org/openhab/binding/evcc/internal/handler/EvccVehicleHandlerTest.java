@@ -13,8 +13,7 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -30,24 +29,17 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 /**
- * The {@link EvccSiteHandlerTest} is responsible for testing the EvccPvHandler implementation
+ * The {@link EvccVehicleHandlerTest} is responsible for testing the EvccSiteHandler implementation
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccPvHandlerTest extends AbstractThingHandlerTestClass<EvccPvHandler> {
-
-    private final JsonObject testState = new JsonObject();
-    private final JsonObject testObject = new JsonObject();
-    private final JsonObject verifyObject = new JsonObject();
+public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVehicleHandler> {
 
     @Override
-    protected EvccPvHandler createHandler() {
-        return new EvccPvHandler(thing, channelTypeRegistry) {
+    protected EvccVehicleHandler createHandler() {
+        return new EvccVehicleHandler(thing, channelTypeRegistry) {
 
             @Override
             protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
@@ -76,55 +68,22 @@ public class EvccPvHandlerTest extends AbstractThingHandlerTestClass<EvccPvHandl
         };
     }
 
+    @SuppressWarnings("null")
     @BeforeEach
     public void setup() {
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
-        when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "pv"));
+        when(thing.getProperties()).thenReturn(Map.of("id", "vehicle_1", "type", "vehicle"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         handler = spy(createHandler());
-
-        verifyObject.addProperty("power", 2000);
-
-        testObject.addProperty("power", 2000);
-        JsonArray loadpointArray = new JsonArray();
-        loadpointArray.add(testObject);
-        testState.add("pv", loadpointArray);
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        handler.bridgeHandler = bridgeHandler;
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
-        handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(testState);
-
         handler.initialize();
         assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
-        handler.isInitialized = true;
-
-        handler.prepareApiResponseForChannelStateUpdate(testState);
-        assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
-
-        handler.prepareApiResponseForChannelStateUpdate(testState);
-        assertSame(ThingStatus.UNKNOWN, lastThingStatus);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testGetStateFromCachedState() {
-        JsonObject result = handler.getStateFromCachedState(testState);
-        assertSame(testState.getAsJsonArray("pv").get(0), result);
     }
 }

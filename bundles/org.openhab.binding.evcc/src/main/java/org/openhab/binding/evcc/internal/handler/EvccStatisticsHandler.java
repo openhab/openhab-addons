@@ -24,6 +24,7 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,12 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
             handler.register(this);
             updateStatus(ThingStatus.ONLINE);
             isInitialized = true;
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            if (stateOpt.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
+            prepareApiResponseForChannelStateUpdate(stateOpt);
         });
     }
 
@@ -63,6 +70,11 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
+        if (!isInitialized || state.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        updateStatus(ThingStatus.ONLINE);
         for (String statisticsKey : state.keySet()) {
             JsonObject statistic = state.getAsJsonObject(statisticsKey);
             logger.debug("Extracting statistics for {}", statisticsKey);

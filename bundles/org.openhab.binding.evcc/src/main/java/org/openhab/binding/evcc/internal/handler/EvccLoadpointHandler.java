@@ -46,7 +46,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     // JSON keys that need a special treatment, in example for backwards compatibility
     private static final Map<String, String> JSON_KEYS = Map.ofEntries(
             Map.entry(JSON_KEY_CHARGE_CURRENT, JSON_KEY_OFFERED_CURRENT),
-            Map.entry(JSON_KEY_VEHICLE_PRESENT, JSON_KEY_CONNECTED), Map.entry(JSON_KEY_ENABLED, JSON_KEY_CHARGING),
+            Map.entry(JSON_KEY_VEHICLE_PRESENT, JSON_KEY_CONNECTED),
             Map.entry(JSON_KEY_PHASES, JSON_KEY_PHASES_CONFIGURED), Map.entry(JSON_KEY_CHARGE_CURRENTS, ""),
             Map.entry(JSON_KEY_CHARGE_VOLTAGES, ""));
     protected final int index;

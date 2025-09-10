@@ -43,9 +43,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteHandler> {
 
-    private final JsonObject testState = new JsonObject();
-    private final JsonObject verifyObject = new JsonObject();
     private final JsonObject gridConfigured = new JsonObject();
+    private final JsonObject modifiedVerifyObject = verifyObject.deepCopy();
 
     @Override
     protected EvccSiteHandler createHandler() {
@@ -80,20 +79,21 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
     @BeforeEach
     public void setup() {
-        handler = spy(createHandler());
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "pv"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
+        handler = spy(createHandler());
 
-        verifyObject.addProperty("version", "0.207.0");
-        verifyObject.addProperty("gridPower", 2000);
-        verifyObject.addProperty("gridEnergy", 10000);
-        verifyObject.addProperty("gridCurrentL1", 6);
-        verifyObject.addProperty("gridCurrentL2", 7);
-        verifyObject.addProperty("gridCurrentL3", 8);
-        verifyObject.addProperty("gridVoltageL1", 230.0);
-        verifyObject.addProperty("gridVoltageL2", 231.0);
-        verifyObject.addProperty("gridVoltageL3", 229.0);
+        modifiedVerifyObject.addProperty("gridPower", 2000);
+        modifiedVerifyObject.addProperty("gridEnergy", 10000);
+        modifiedVerifyObject.addProperty("gridCurrentL1", 6);
+        modifiedVerifyObject.addProperty("gridCurrentL2", 7);
+        modifiedVerifyObject.addProperty("gridCurrentL3", 8);
+        modifiedVerifyObject.addProperty("gridVoltageL1", 230.0);
+        modifiedVerifyObject.addProperty("gridVoltageL2", 231.0);
+        modifiedVerifyObject.addProperty("gridVoltageL3", 229.0);
+        modifiedVerifyObject.remove("gridConfigured");
+        modifiedVerifyObject.remove("grid");
 
         gridConfigured.addProperty("power", 2000);
         gridConfigured.addProperty("energy", 10000);
@@ -107,7 +107,6 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
         voltages.add(231.0);
         voltages.add(229.0);
         gridConfigured.add("voltages", voltages);
-        testState.addProperty("version", "0.207.0");
     }
 
     @SuppressWarnings("null")
@@ -115,7 +114,7 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
     public void testInitializeWithBridgeHandlerWithValidState() {
         EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(testState);
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
         handler.initialize();
         assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -130,7 +129,7 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
             handler.bridgeHandler = mock(EvccBridgeHandler.class);
             handler.isInitialized = true;
 
-            handler.prepareApiResponseForChannelStateUpdate(testState);
+            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
             assertSame(ThingStatus.ONLINE, lastThingStatus);
         }
 
@@ -138,7 +137,7 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
         public void handlerIsNotInitialized() {
             handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
-            handler.prepareApiResponseForChannelStateUpdate(testState);
+            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
             assertSame(ThingStatus.UNKNOWN, lastThingStatus);
         }
 
@@ -146,17 +145,17 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
         public void stateContainsGridConfigured() {
             handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
-            testState.addProperty("gridConfigured", true);
-            testState.add("grid", gridConfigured);
-            handler.prepareApiResponseForChannelStateUpdate(testState);
-            assertEquals(verifyObject, testState);
+            exampleResponse.addProperty("gridConfigured", true);
+            exampleResponse.add("grid", gridConfigured);
+            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            assertEquals(modifiedVerifyObject, exampleResponse);
         }
     }
 
     @SuppressWarnings("null")
     @Test
     public void testGetStateFromCachedState() {
-        JsonObject result = handler.getStateFromCachedState(testState);
-        assertSame(testState, result);
+        JsonObject result = handler.getStateFromCachedState(exampleResponse);
+        assertSame(exampleResponse, result);
     }
 }

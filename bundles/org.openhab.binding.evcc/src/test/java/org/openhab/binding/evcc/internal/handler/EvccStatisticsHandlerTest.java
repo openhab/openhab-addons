@@ -12,38 +12,39 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
-
-import com.google.gson.JsonObject;
+import org.openhab.core.types.State;
 
 /**
- * The {@link EvccBatteryHandlerTest} is responsible for testing the EvccBatteryHandler implementation
+ * The {@link EvccStatisticsHandlerTest} is responsible for testing the EvccSiteHandler implementation
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBatteryHandler> {
+public class EvccStatisticsHandlerTest extends AbstractThingHandlerTestClass<EvccStatisticsHandler> {
 
-    private static JsonObject batteryState = new JsonObject();
+    private boolean updateStateCalled = false;
+    private int updateStateCounter = 0;
 
     @Override
-    protected EvccBatteryHandler createHandler() {
-        return new EvccBatteryHandler(thing, channelTypeRegistry) {
+    protected EvccStatisticsHandler createHandler() {
+        return new EvccStatisticsHandler(thing, channelTypeRegistry) {
 
             @Override
             protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
@@ -67,56 +68,43 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
             }
 
             @Override
-            public void updateThing(Thing thing) {
+            public void updateState(ChannelUID uid, State state) {
+                updateStateCalled = true;
+                updateStateCounter++;
             }
         };
-    }
-
-    @BeforeAll
-    static void setUpOnce() {
-        batteryState = exampleResponse.getAsJsonArray("battery").get(0).getAsJsonObject();
     }
 
     @SuppressWarnings("null")
     @BeforeEach
     public void setup() {
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
-        when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
+        when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "statistics"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         handler = spy(createHandler());
-
         EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
     }
 
     @SuppressWarnings("null")
-    @Test
-    public void testInitializeWithBridgeHandlerWithValidState() {
-        handler.initialize();
-        assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
+    @Nested
+    public class TestPrepareApiResponseForChannelStateUpdate {
 
-    @SuppressWarnings("null")
-    @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        handler.isInitialized = true;
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
-        assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
+        @Test
+        public void handlerIsInitialized() {
+            handler.isInitialized = true;
 
-    @SuppressWarnings("null")
-    @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
-        verify(handler).updateStatesFromApiResponse(batteryState);
-        assertSame(ThingStatus.UNKNOWN, lastThingStatus);
-    }
+            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            assertTrue(updateStateCalled);
+            assertEquals(16, updateStateCounter);
+            assertSame(ThingStatus.ONLINE, lastThingStatus);
+        }
 
-    @SuppressWarnings("null")
-    @Test
-    public void testGetStateFromCachedState() {
-        JsonObject result = handler.getStateFromCachedState(exampleResponse);
-        assertSame(batteryState, result);
+        @Test
+        public void handlerIsNotInitialized() {
+            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            assertSame(ThingStatus.OFFLINE, lastThingStatus);
+        }
     }
 }

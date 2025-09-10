@@ -14,9 +14,8 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -31,7 +30,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
@@ -42,8 +40,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHeatingHandler> {
 
-    private final JsonObject testState = new JsonObject();
-    private final JsonObject verifyObject = new JsonObject();
+    private JsonObject heatingObject = new JsonObject();
 
     @Override
     protected EvccHeatingHandler createHandler() {
@@ -76,40 +73,33 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
         };
     }
 
+    @SuppressWarnings("null")
     @BeforeEach
     public void setup() {
-        handler = spy(createHandler());
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "heating"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
+        handler = spy(createHandler());
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        handler.bridgeHandler = bridgeHandler;
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
-        verifyObject.addProperty("chargedEnergy", 50);
-        verifyObject.addProperty("effectiveLimitTemperature", 60);
-        verifyObject.addProperty("vehicleTemperature", 90);
-        verifyObject.addProperty("limitTemperature", 80);
-        verifyObject.addProperty("effectivePlanTemperature", 70);
-        verifyObject.addProperty("vehicleLimitTemperature", 90);
-
-        JsonObject testObject = new JsonObject();
-        testObject.addProperty("chargedEnergy", 50);
-        testObject.addProperty("effectiveLimitSoc", 60);
-        testObject.addProperty("effectivePlanSoc", 70);
-        testObject.addProperty("limitSoc", 80);
-        testObject.addProperty("vehicleLimitSoc", 90);
-        testObject.addProperty("vehicleSoc", 90);
-        JsonArray loadpointArray = new JsonArray();
-        loadpointArray.add(testObject);
-        testState.add("loadpoints", loadpointArray);
+        heatingObject = verifyObject.getAsJsonArray(JSON_KEY_LOADPOINTS).get(0).getAsJsonObject();
+        heatingObject.remove(JSON_KEY_EFFECTIVE_LIMIT_SOC);
+        heatingObject.remove(JSON_KEY_VEHICLE_SOC);
+        heatingObject.remove(JSON_KEY_LIMIT_SOC);
+        heatingObject.remove(JSON_KEY_EFFECTIVE_PLAN_SOC);
+        heatingObject.remove(JSON_KEY_VEHICLE_LIMIT_SOC);
+        heatingObject.addProperty("effectiveLimitTemperature", 80);
+        heatingObject.addProperty("vehicleTemperature", 48.3);
+        heatingObject.addProperty("limitTemperature", 80);
+        heatingObject.addProperty("effectivePlanTemperature", 20);
+        heatingObject.addProperty("vehicleLimitTemperature", 80);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
-        handler.bridgeHandler = bridgeHandler;
-
-        when(bridgeHandler.getCachedEvccState()).thenReturn(testState);
-
         handler.initialize();
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
@@ -117,33 +107,30 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
         handler.isInitialized = true;
 
-        handler.prepareApiResponseForChannelStateUpdate(testState);
+        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
-
-        handler.prepareApiResponseForChannelStateUpdate(testState);
+        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
         assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testJsonGetsModifiedCorrectly() {
-        handler.prepareApiResponseForChannelStateUpdate(testState);
-        assertEquals(verifyObject, testState.getAsJsonArray("loadpoints").get(0));
+        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+        assertEquals(heatingObject, exampleResponse.getAsJsonArray("loadpoints").get(0));
     }
 
     @SuppressWarnings("null")
     @Test
     public void testGetStateFromCachedState() {
-        JsonObject result = handler.getStateFromCachedState(testState);
-        assertSame(testState.getAsJsonArray("loadpoints").get(0), result);
+        JsonObject result = handler.getStateFromCachedState(exampleResponse);
+        assertSame(exampleResponse.getAsJsonArray("loadpoints").get(0), result);
     }
 }

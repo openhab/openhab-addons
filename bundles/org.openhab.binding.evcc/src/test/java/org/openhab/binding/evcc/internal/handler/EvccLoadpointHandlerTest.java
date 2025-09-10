@@ -43,9 +43,10 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<EvccLoadpointHandler> {
 
-    private final JsonObject testState = new JsonObject();
-    private final JsonObject testObject = new JsonObject();
-    private final JsonObject verifyObject = new JsonObject();
+    private final JsonObject modifiedTestState = exampleResponse.deepCopy();
+    private final JsonObject testObject = exampleResponse.getAsJsonArray("loadpoints").get(0).getAsJsonObject();
+    private final JsonObject modifiedVerifyObject = verifyObject.deepCopy().getAsJsonArray("loadpoints").get(0)
+            .getAsJsonObject();
 
     @Override
     protected EvccLoadpointHandler createHandler() {
@@ -80,27 +81,28 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
 
     @BeforeEach
     public void setup() {
-        handler = spy(createHandler());
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "loadpoint"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
+        handler = spy(createHandler());
 
-        verifyObject.addProperty("chargedEnergy", 50);
-        verifyObject.addProperty(JSON_KEY_OFFERED_CURRENT, 6);
-        verifyObject.addProperty(JSON_KEY_CONNECTED, true);
-        verifyObject.addProperty(JSON_KEY_CHARGING, true);
-        verifyObject.addProperty(JSON_KEY_PHASES_CONFIGURED, "3");
-        verifyObject.addProperty("chargeCurrentL1", 6);
-        verifyObject.addProperty("chargeCurrentL2", 7);
-        verifyObject.addProperty("chargeCurrentL3", 8);
-        verifyObject.addProperty("chargeVoltageL1", 230.0);
-        verifyObject.addProperty("chargeVoltageL2", 231.0);
-        verifyObject.addProperty("chargeVoltageL3", 229.0);
+        modifiedVerifyObject.addProperty("chargedEnergy", 50);
+        modifiedVerifyObject.addProperty(JSON_KEY_OFFERED_CURRENT, 6);
+        modifiedVerifyObject.addProperty(JSON_KEY_CONNECTED, true);
+        modifiedVerifyObject.addProperty(JSON_KEY_PHASES_CONFIGURED, "3");
+        modifiedVerifyObject.addProperty("chargeCurrentL1", 6);
+        modifiedVerifyObject.addProperty("chargeCurrentL2", 7);
+        modifiedVerifyObject.addProperty("chargeCurrentL3", 8);
+        modifiedVerifyObject.addProperty("chargeVoltageL1", 230.0);
+        modifiedVerifyObject.addProperty("chargeVoltageL2", 231.0);
+        modifiedVerifyObject.addProperty("chargeVoltageL3", 229.0);
+        modifiedVerifyObject.remove(JSON_KEY_CHARGE_CURRENT);
+        modifiedVerifyObject.remove(JSON_KEY_VEHICLE_PRESENT);
+        modifiedVerifyObject.remove(JSON_KEY_PHASES);
 
         testObject.addProperty("chargedEnergy", 50);
         testObject.addProperty(JSON_KEY_CHARGE_CURRENT, 6);
         testObject.addProperty(JSON_KEY_VEHICLE_PRESENT, true);
-        testObject.addProperty(JSON_KEY_ENABLED, true);
         testObject.addProperty(JSON_KEY_PHASES, "3");
         JsonArray currents = new JsonArray();
         currents.add(6);
@@ -112,10 +114,9 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
         voltages.add(231.0);
         voltages.add(229.0);
         testObject.add(JSON_KEY_CHARGE_VOLTAGES, voltages);
-        JsonArray loadpointArray = new JsonArray();
-        loadpointArray.add(testObject);
-        testState.add("loadpoints", loadpointArray);
-        testState.addProperty("version", "0.207.0");
+        JsonArray loadpointArray = exampleResponse.getAsJsonArray("loadpoints");
+        loadpointArray.set(0, testObject);
+        modifiedTestState.add("loadpoints", loadpointArray);
     }
 
     @SuppressWarnings("null")
@@ -123,7 +124,7 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
     public void testInitializeWithBridgeHandlerWithValidState() {
         EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(testState);
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
         handler.initialize();
         assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -135,7 +136,7 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
         handler.bridgeHandler = mock(EvccBridgeHandler.class);
         handler.isInitialized = true;
 
-        handler.prepareApiResponseForChannelStateUpdate(testState);
+        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
@@ -144,21 +145,21 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
     public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
         handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
-        handler.prepareApiResponseForChannelStateUpdate(testState);
+        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
         assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testJsonGetsModifiedCorrectly() {
-        handler.prepareApiResponseForChannelStateUpdate(testState);
-        assertEquals(verifyObject, testState.getAsJsonArray("loadpoints").get(0));
+        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+        assertEquals(modifiedVerifyObject, modifiedTestState.getAsJsonArray("loadpoints").get(0));
     }
 
     @SuppressWarnings("null")
     @Test
     public void testGetStateFromCachedState() {
-        JsonObject result = handler.getStateFromCachedState(testState);
-        assertSame(testState.getAsJsonArray("loadpoints").get(0), result);
+        JsonObject result = handler.getStateFromCachedState(exampleResponse);
+        assertSame(exampleResponse.getAsJsonArray("loadpoints").get(0), result);
     }
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,7 +51,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
             String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
-            String value = "";
+            String value;
             if (command instanceof OnOffType) {
                 value = command == OnOffType.ON ? "true" : "false";
             } else {
@@ -68,7 +70,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        if (state.has("gridConfigured")) {
+        if (state.has(JSON_KEY_GRID_CONFIGURED)) {
             modifyJSON(state);
         }
         updateStatesFromApiResponse(state);
@@ -86,11 +88,11 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             }
 
             // Set the smart cost type
-            if (state.has("smartCostType") && !state.get("smartCostType").isJsonNull()) {
-                smartCostType = state.get("smartCostType").getAsString();
+            if (state.has(JSON_KEY_SMART_COST_TYPE) && !state.get(JSON_KEY_SMART_COST_TYPE).isJsonNull()) {
+                smartCostType = state.get(JSON_KEY_SMART_COST_TYPE).getAsString();
             }
 
-            if (state.has("gridConfigured")) {
+            if (state.has(JSON_KEY_GRID_CONFIGURED)) {
                 modifyJSON(state);
             }
             commonInitialize(state);
@@ -98,17 +100,17 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     }
 
     private void modifyJSON(JsonObject state) {
-        for (Map.Entry<String, JsonElement> entry : state.getAsJsonObject("grid").entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : state.getAsJsonObject(JSON_KEY_GRID).entrySet()) {
             if ("currents".equals(entry.getKey())) {
                 addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Current");
             } else if ("voltages".equals(entry.getKey())) {
                 addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Voltage");
             } else {
-                state.add("grid" + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
+                state.add(JSON_KEY_GRID + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
             }
         }
-        state.remove("grid");
-        state.remove("gridConfigured");
+        state.remove(JSON_KEY_GRID);
+        state.remove(JSON_KEY_GRID_CONFIGURED);
     }
 
     protected void addMeasurementDatapointsToState(JsonObject state, JsonArray values, String datapoint) {

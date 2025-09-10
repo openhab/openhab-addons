@@ -15,11 +15,15 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,6 +34,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Abstract base test for EvccBaseThingHandler implementations.
@@ -49,21 +54,40 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
     protected ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
     protected ThingStatusDetail lastThingStatusDetail = ThingStatusDetail.NONE;
 
+    protected static JsonObject exampleResponse = new JsonObject();
+    protected static JsonObject verifyObject = new JsonObject();
+
     /**
      * Implement this to provide a handler instance for testing.
      */
     protected abstract T createHandler();
 
-    @BeforeEach
-    public void setUp() {
-        handler = spy(createHandler());
-        when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
-        when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
-        when(thing.getChannels()).thenReturn(new ArrayList<>());
+    @BeforeAll
+    static void setUpOnce() {
+        try (InputStream is = EvccBatteryHandlerTest.class.getClassLoader()
+                .getResourceAsStream("responses/example_response.json")) {
+            if (is == null) {
+                throw new IllegalArgumentException("Couldn't find response file");
+            }
+            String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            exampleResponse = JsonParser.parseString(json).getAsJsonObject();
+            verifyObject = exampleResponse.deepCopy();
+
+        } catch (IOException e) {
+            fail("Failed to read example response file", e);
+        }
     }
 
     @Nested
     class InitializeTests {
+
+        @BeforeEach
+        public void setUp() {
+            handler = spy(createHandler());
+            when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
+            when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
+            when(thing.getChannels()).thenReturn(new ArrayList<>());
+        }
 
         @Test
         public void initializeWithoutBridgeHandler() {

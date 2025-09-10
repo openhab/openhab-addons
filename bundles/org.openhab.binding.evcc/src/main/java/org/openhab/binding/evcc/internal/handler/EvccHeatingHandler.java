@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.JSON_KEY_LOADPOINTS;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Map;
 
@@ -38,9 +38,11 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
     private final Logger logger = LoggerFactory.getLogger(EvccHeatingHandler.class);
 
     private static final Map<String, String> JSON_KEYS = Map.ofEntries(
-            Map.entry("effectiveLimitTemperature", "effectiveLimitSoc"),
-            Map.entry("effectivePlanTemperature", "effectivePlanSoc"), Map.entry("limitTemperature", "limitSoc"),
-            Map.entry("vehicleLimitTemperature", "vehicleLimitSoc"), Map.entry("vehicleTemperature", "vehicleSoc"));
+            Map.entry("effectiveLimitTemperature", JSON_KEY_EFFECTIVE_LIMIT_SOC),
+            Map.entry("effectivePlanTemperature", JSON_KEY_EFFECTIVE_PLAN_SOC),
+            Map.entry("limitTemperature", JSON_KEY_LIMIT_SOC),
+            Map.entry("vehicleLimitTemperature", JSON_KEY_VEHICLE_LIMIT_SOC),
+            Map.entry("vehicleTemperature", JSON_KEY_VEHICLE_SOC));
 
     public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
