@@ -97,7 +97,7 @@ public class PLCLogoClient extends S7Client {
         int offset = packet;
 
         int retry = 0;
-        int result = -1;
+        int result;
         do {
             // read first portion directly to data
             result = super.ReadArea(Area, DBNumber, Start, packet, WordLength, Data);
@@ -139,6 +139,56 @@ public class PLCLogoClient extends S7Client {
     }
 
     /**
+     * Reads a data block area from a PLC
+     *
+     * @param DBNumber S7 data block number
+     * @param Start First position within data block read from
+     * @param Amount Number of words to read
+     * @param Data Buffer to read into
+     * @return Zero on success, error code otherwise
+     */
+    public int readBits(int DBNumber, int Start, int Amount, byte[] Data) {
+        return readDBArea(DBNumber, Start, Amount, S7Client.S7WLBit, Data);
+    }
+
+    /**
+     * Reads a data block area from a PLC
+     *
+     * @param Start First position within data block read from
+     * @param Amount Number of words to read
+     * @param Data Buffer to read into
+     * @return Zero on success, error code otherwise
+     */
+    public int readBits(int Start, int Amount, byte[] Data) {
+        return readBits(1, Start, Amount, Data);
+    }
+
+    /**
+     * Reads a data block area from a PLC
+     *
+     * @param DBNumber S7 data block number
+     * @param Start First position within data block read from
+     * @param Amount Number of words to read
+     * @param Data Buffer to read into
+     * @return Zero on success, error code otherwise
+     */
+    public int readBytes(int DBNumber, int Start, int Amount, byte[] Data) {
+        return readDBArea(DBNumber, Start, Amount, S7Client.S7WLByte, Data);
+    }
+
+    /**
+     * Reads a data block area from a PLC
+     *
+     * @param Start First position within data block read from
+     * @param Amount Number of words to read
+     * @param Data Buffer to read into
+     * @return Zero on success, error code otherwise
+     */
+    public int readBytes(int Start, int Amount, byte[] Data) {
+        return readBytes(1, Start, Amount, Data);
+    }
+
+    /**
      * Writes a data area into a PLC
      *
      * @param Area S7 Area ID. Can be S7AreaPE, S7AreaPA, S7AreaMK, S7AreaDB, S7AreaCT or S7AreaTM
@@ -160,7 +210,7 @@ public class PLCLogoClient extends S7Client {
         }
 
         int retry = 0;
-        int result = -1;
+        int result;
         do {
             result = super.WriteArea(Area, DBNumber, Start, Amount, WordLength, Data);
 
@@ -192,6 +242,56 @@ public class PLCLogoClient extends S7Client {
      */
     public int writeDBArea(int DBNumber, int Start, int Amount, int WordLength, byte[] Data) {
         return WriteArea(S7.S7AreaDB, DBNumber, Start, Amount, WordLength, Data);
+    }
+
+    /**
+     * Writes a data block area into a PLC
+     *
+     * @param DBNumber S7 data block number
+     * @param Start First position within data block write into
+     * @param Amount Number of words to write
+     * @param Data Buffer to write from
+     * @return Zero on success, error code otherwise
+     */
+    public int writeBits(int DBNumber, int Start, int Amount, byte[] Data) {
+        return writeDBArea(DBNumber, Start, Amount, S7Client.S7WLBit, Data);
+    }
+
+    /**
+     * Writes a data block area into a PLC
+     *
+     * @param Start First position within data block write into
+     * @param Amount Number of words to write
+     * @param Data Buffer to write from
+     * @return Zero on success, error code otherwise
+     */
+    public int writeBits(int Start, int Amount, byte[] Data) {
+        return writeBits(1, Start, Amount, Data);
+    }
+
+    /**
+     * Writes a data block area into a PLC
+     *
+     * @param DBNumber S7 data block number
+     * @param Start First position within data block write into
+     * @param Amount Number of words to write
+     * @param Data Buffer to write from
+     * @return Zero on success, error code otherwise
+     */
+    public int writeBytes(int DBNumber, int Start, int Amount, byte[] Data) {
+        return writeDBArea(DBNumber, Start, Amount, S7Client.S7WLByte, Data);
+    }
+
+    /**
+     * Writes a data block area into a PLC
+     *
+     * @param Start First position within data block write into
+     * @param Amount Number of words to write
+     * @param Data Buffer to write from
+     * @return Zero on success, error code otherwise
+     */
+    public int writeBytes(int Start, int Amount, byte[] Data) {
+        return writeBytes(1, Start, Amount, Data);
     }
 
     /**
