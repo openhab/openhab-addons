@@ -51,7 +51,7 @@ Import-Package: \
 	com.h2database.mvstore;version='[2.1.212,2.1.213)',\
 	com.zaxxer.HikariCP;version='[2.4.7,2.4.8)',\
 	io.dropwizard.metrics.core;version='[3.2.2,3.2.3)',\
-	org.apache.commons.commons-codec;version='[1.17.1,1.17.2)',\
+	org.apache.commons.commons-codec;version='[1.16.0,1.16.1)',\
 	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
 	org.apache.felix.http.servlet-api;version='[1.2.0,1.2.1)',\
 	org.osgi.service.component;version='[1.5.1,1.5.2)',\
